@@ -1,0 +1,1 @@
+# Generacion de los dominios que se contectan con la base de datos  
