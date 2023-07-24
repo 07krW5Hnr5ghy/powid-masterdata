@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(value = BadRequestExceptions.class)
-    public ResponseEntity<ErrorHandler> handlerBadRequestExceptions(RuntimeException ex){
-        ErrorHandler errorHandler = ErrorHandler.builder()
+    public ResponseEntity<ErrorResponse> handlerBadRequestExceptions(RuntimeException ex){
+        ErrorResponse errorHandler = ErrorResponse.builder()
                 .code(CodeError.BADREQUEST.getCode())
                 .errorCode(CodeError.BADREQUEST.getMessage())
                 .message(ex.getMessage())
@@ -19,8 +19,8 @@ public class RestResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = UnauthorizedExceptions.class)
-    public ResponseEntity<ErrorHandler> handlerUnauthorizedExceptions(RuntimeException ex){
-        ErrorHandler errorHandler = ErrorHandler.builder()
+    public ResponseEntity<ErrorResponse> handlerUnauthorizedExceptions(RuntimeException ex){
+        ErrorResponse errorHandler = ErrorResponse.builder()
                 .code(CodeError.UNAUTHORIZED.getCode())
                 .errorCode(CodeError.UNAUTHORIZED.getMessage())
                 .message(ex.getMessage())
@@ -29,8 +29,8 @@ public class RestResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = ForbiddenExceptions.class)
-    public ResponseEntity<ErrorHandler> handlerForbiddenExceptions(RuntimeException ex){
-        ErrorHandler errorHandler = ErrorHandler.builder()
+    public ResponseEntity<ErrorResponse> handlerForbiddenExceptions(RuntimeException ex){
+        ErrorResponse errorHandler = ErrorResponse.builder()
                 .code(CodeError.FORBIDDEN.getCode())
                 .errorCode(CodeError.FORBIDDEN.getMessage())
                 .message(ex.getMessage())
@@ -39,8 +39,8 @@ public class RestResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = NotFoundExceptions.class)
-    public ResponseEntity<ErrorHandler> handlerNotFoundExceptions(RuntimeException ex){
-        ErrorHandler errorHandler = ErrorHandler.builder()
+    public ResponseEntity<ErrorResponse> handlerNotFoundExceptions(RuntimeException ex){
+        ErrorResponse errorHandler = ErrorResponse.builder()
                 .code(CodeError.NOTFOUND.getCode())
                 .errorCode(CodeError.NOTFOUND.getMessage())
                 .message(ex.getMessage())
@@ -49,8 +49,8 @@ public class RestResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = ConflictExceptions.class)
-    public ResponseEntity<ErrorHandler> handlerConflictExceptions(RuntimeException ex){
-        ErrorHandler errorHandler = ErrorHandler.builder()
+    public ResponseEntity<ErrorResponse> handlerConflictExceptions(RuntimeException ex){
+        ErrorResponse errorHandler = ErrorResponse.builder()
                 .code(CodeError.CONFLICT.getCode())
                 .errorCode(CodeError.CONFLICT.getMessage())
                 .message(ex.getMessage())
@@ -59,8 +59,8 @@ public class RestResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = InternalErrorExceptions.class)
-    public ResponseEntity<ErrorHandler> handlerInternalErrorExceptions(RuntimeException ex){
-        ErrorHandler errorHandler = ErrorHandler.builder()
+    public ResponseEntity<ErrorResponse> handlerInternalErrorExceptions(RuntimeException ex){
+        ErrorResponse errorHandler = ErrorResponse.builder()
                 .code(CodeError.INTERNALSERVERERRO.getCode())
                 .errorCode(CodeError.INTERNALSERVERERRO.getMessage())
                 .message(ex.getMessage())

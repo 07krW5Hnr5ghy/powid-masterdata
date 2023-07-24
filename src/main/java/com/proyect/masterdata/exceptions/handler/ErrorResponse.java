@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class ErrorHandler {
+public class ErrorResponse {
     private int code;
     private String errorCode;
     private String message;
