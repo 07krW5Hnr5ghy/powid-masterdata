@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableFeignClients
+@Configuration
 public class MasterdataApplication {
 
 	public static void main(String[] args) {
