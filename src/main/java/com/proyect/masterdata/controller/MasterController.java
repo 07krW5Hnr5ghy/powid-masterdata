@@ -65,4 +65,10 @@ public class MasterController {
         return new ResponseEntity<>("Payment method " + paymentMethod + " created.",HttpStatus.OK);
     }
 
+    @DeleteMapping(value = "/payment-method-delete")
+    public ResponseEntity<String> deletePaymentMethod(@RequestBody Long id) throws BadRequestExceptions{
+        iPaymentMethod.deletePaymentMethod(id);
+        return new ResponseEntity<>("Payment method with id : " + id + " deleted.",HttpStatus.OK);
+    }
+
 }

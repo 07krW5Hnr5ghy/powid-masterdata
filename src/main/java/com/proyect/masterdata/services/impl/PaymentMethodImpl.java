@@ -26,6 +26,12 @@ public class PaymentMethodImpl implements IPaymentMethod {
     @Override
     public void addPaymentMethod(String paymentMethod) throws BadRequestExceptions {
         paymentMethodRepository.save(PaymentMethod.builder().name(paymentMethod).build());
-        System.out.println("Payment method : " + paymentMethod + "was added to the table");
+        System.out.println("Payment method : " + paymentMethod + " was added to the table");
+    }
+
+    @Override
+    public void deletePaymentMethod(Long id) throws BadRequestExceptions {
+        paymentMethodRepository.deleteById(id);
+        System.out.println("Payment method with id : " + id + " deleted ");
     }
 }
