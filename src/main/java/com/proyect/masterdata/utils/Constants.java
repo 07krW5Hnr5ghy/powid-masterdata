@@ -5,4 +5,5 @@ public class Constants {
     public static final String schemaMaster= "master";
     //Tablas
     public static final String tableDepartment= "departamento";
+    public static final String tablePaymentMethods = "medios_pago";
 }
