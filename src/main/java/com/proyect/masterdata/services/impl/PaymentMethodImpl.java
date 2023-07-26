@@ -22,4 +22,10 @@ public class PaymentMethodImpl implements IPaymentMethod {
         paymentMethodRepository.save(PaymentMethod.builder().name("EFECTIVO").build());
         return paymentMethodMapper.paymentMethodListToPaymentMethodListDTO(paymentMethodRepository.findAll());
     }
+
+    @Override
+    public void addPaymentMethod(String paymentMethod) throws BadRequestExceptions {
+        paymentMethodRepository.save(PaymentMethod.builder().name(paymentMethod).build());
+        System.out.println("Payment method : " + paymentMethod + "was added to the table");
+    }
 }
