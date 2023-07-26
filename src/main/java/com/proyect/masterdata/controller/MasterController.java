@@ -62,13 +62,21 @@ public class MasterController {
     @PostMapping(value = "/payment-method-add")
     public ResponseEntity<String> addPaymentMethod(@RequestBody String paymentMethod) throws BadRequestExceptions{
         iPaymentMethod.addPaymentMethod(paymentMethod);
-        return new ResponseEntity<>("Payment method " + paymentMethod + " created.",HttpStatus.OK);
+        return new ResponseEntity<>("Payment method " + paymentMethod + " created.",HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/payment-method-delete")
     public ResponseEntity<String> deletePaymentMethod(@RequestBody Long id) throws BadRequestExceptions{
         iPaymentMethod.deletePaymentMethod(id);
         return new ResponseEntity<>("Payment method with id : " + id + " deleted.",HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/payment-method-put")
+    public ResponseEntity<String> updatePaymentMethod(@RequestBody PaymentMethodDTO data) throws BadRequestExceptions{
+        System.out.println(data.getName());
+        System.out.println(data.getId());
+        iPaymentMethod.updatePaymentMethod(data.getName(), data.getId());
+        return new ResponseEntity<>("Payment method with id : " + data.getId() + "change name to " + data.getName() + ".",HttpStatus.OK);
     }
 
 }

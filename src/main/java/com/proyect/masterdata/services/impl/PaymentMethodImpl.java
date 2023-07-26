@@ -6,6 +6,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.PaymentMethodMapper;
 import com.proyect.masterdata.repository.PaymentMethodRepository;
 import com.proyect.masterdata.services.IPaymentMethod;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -33,5 +34,14 @@ public class PaymentMethodImpl implements IPaymentMethod {
     public void deletePaymentMethod(Long id) throws BadRequestExceptions {
         paymentMethodRepository.deleteById(id);
         System.out.println("Payment method with id : " + id + " deleted ");
+    }
+
+    @Override
+    @Transactional
+    public void updatePaymentMethod(String name,Long id) throws BadRequestExceptions {
+        System.out.println("service id " + id);
+        System.out.println("service name " + name);
+        paymentMethodRepository.updatePaymentMethod(name,id);
+        System.out.println("Payment method with id : " + id + "change name to " + name + ".");
     }
 }

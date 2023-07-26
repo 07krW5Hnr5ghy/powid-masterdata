@@ -8,4 +8,5 @@ public interface IPaymentMethod {
     List<PaymentMethodDTO> listPaymentMethod() throws BadRequestExceptions;
     void addPaymentMethod(String paymentMethod) throws BadRequestExceptions;
     void deletePaymentMethod(Long id) throws BadRequestExceptions;
+    void updatePaymentMethod(String name,Long id) throws BadRequestExceptions;
 }
