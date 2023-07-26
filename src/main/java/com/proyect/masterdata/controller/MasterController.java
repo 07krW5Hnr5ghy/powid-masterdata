@@ -73,8 +73,6 @@ public class MasterController {
 
     @PutMapping(value = "/payment-method-put")
     public ResponseEntity<String> updatePaymentMethod(@RequestBody PaymentMethodDTO data) throws BadRequestExceptions{
-        System.out.println(data.getName());
-        System.out.println(data.getId());
         iPaymentMethod.updatePaymentMethod(data.getName(), data.getId());
         return new ResponseEntity<>("Payment method with id : " + data.getId() + "change name to " + data.getName() + ".",HttpStatus.OK);
     }
