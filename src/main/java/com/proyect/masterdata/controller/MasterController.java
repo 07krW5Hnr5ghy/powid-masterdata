@@ -14,10 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -60,6 +57,12 @@ public class MasterController {
     public ResponseEntity<List<PaymentMethodDTO>> listPaymentMethod() throws BadRequestExceptions{
         List<PaymentMethodDTO>  result = iPaymentMethod.listPaymentMethod();
         return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/payment-method-add")
+    public ResponseEntity<String> addPaymentMethod(@RequestBody String paymentMethod) throws BadRequestExceptions{
+        iPaymentMethod.addPaymentMethod(paymentMethod);
+        return new ResponseEntity<>("Payment method " + paymentMethod + " created.",HttpStatus.OK);
     }
 
 }
