@@ -6,7 +6,6 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.DepartmentMapper;
 import com.proyect.masterdata.repository.DepartamentRepository;
 import com.proyect.masterdata.services.IDepartment;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;

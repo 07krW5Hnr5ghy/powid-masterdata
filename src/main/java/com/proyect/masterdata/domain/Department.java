@@ -34,6 +34,6 @@ public class Department {
     @Column(name = "codigo", unique = true)
     private Long code;
 
-    @Column(name="departamento", length=50, nullable=false, unique=true)
+    @Column(name="departamento", length=50, unique=true)
     private String name;
 }
