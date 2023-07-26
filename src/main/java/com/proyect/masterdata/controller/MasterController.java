@@ -1,9 +1,11 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.DepartmentDTO;
+import com.proyect.masterdata.dto.PaymentMethodDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
 import com.proyect.masterdata.services.IDepartment;
+import com.proyect.masterdata.services.IPaymentMethod;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +28,7 @@ import java.util.List;
 public class MasterController {
 
     private final IDepartment iDepartment;
+    private final IPaymentMethod iPaymentMethod;
 
     @Operation(summary = "lista los departemanetos ",
         description = "Lista los departamentos maestros")
@@ -45,10 +48,18 @@ public class MasterController {
         @ApiResponse(responseCode = "500", description = "Internal Server Error",
             content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @GetMapping(value = "/departmentd")
+
+    @GetMapping(value = "/department")
     public ResponseEntity<List<DepartmentDTO>> listDepartment() throws BadRequestExceptions {
         //throw new BadRequestExceptions("Error datos");
         List<DepartmentDTO> result = iDepartment.listDepartment();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @GetMapping(value = "/payment-method")
+    public ResponseEntity<List<PaymentMethodDTO>> listPaymentMethod() throws BadRequestExceptions{
+        List<PaymentMethodDTO>  result = iPaymentMethod.listPaymentMethod();
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
 }
