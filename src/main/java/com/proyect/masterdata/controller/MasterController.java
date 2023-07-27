@@ -86,4 +86,10 @@ public class MasterController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
+    @PostMapping(value = "/payment-state-add")
+    public ResponseEntity<String> addPaymentState(@RequestBody String paymentState) throws BadRequestExceptions{
+        iPaymentState.addPaymentState(paymentState);
+        return new ResponseEntity<>("Payment method " + paymentState + " created.",HttpStatus.CREATED);
+    }
+
 }
