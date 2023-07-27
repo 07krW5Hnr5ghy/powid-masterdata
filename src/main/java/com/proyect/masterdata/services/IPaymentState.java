@@ -8,4 +8,5 @@ import java.util.List;
 public interface IPaymentState {
     List<PaymentStateDTO> listPaymentState() throws BadRequestExceptions;
     void addPaymentState(String paymentState) throws BadRequestExceptions;
+    void deletePaymentState(Long id) throws BadRequestExceptions;
 }
