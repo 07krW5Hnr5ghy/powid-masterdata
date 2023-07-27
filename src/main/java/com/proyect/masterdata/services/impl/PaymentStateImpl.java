@@ -28,7 +28,13 @@ public class PaymentStateImpl implements IPaymentState {
     @Override
     public void addPaymentState(String paymentState) throws BadRequestExceptions {
         paymentStateRepository.save(PaymentState.builder().name(paymentState).build());
-        System.out.println("Payment method : " + paymentState + " was added to the table");
+        System.out.println("Payment state : " + paymentState + " was added to the table");
+    }
+
+    @Override
+    public void deletePaymentState(Long id) throws BadRequestExceptions {
+        paymentStateRepository.deleteById(id);
+        System.out.println("Payment state with id : " + id + " deleted ");
     }
 
 }
