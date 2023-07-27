@@ -2,10 +2,12 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.DepartmentDTO;
 import com.proyect.masterdata.dto.PaymentMethodDTO;
+import com.proyect.masterdata.dto.PaymentStateDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
 import com.proyect.masterdata.services.IDepartment;
 import com.proyect.masterdata.services.IPaymentMethod;
+import com.proyect.masterdata.services.IPaymentState;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +28,7 @@ public class MasterController {
 
     private final IDepartment iDepartment;
     private final IPaymentMethod iPaymentMethod;
+    private final IPaymentState iPaymentState;
 
     @Operation(summary = "lista los departemanetos ",
         description = "Lista los departamentos maestros")
@@ -75,6 +78,12 @@ public class MasterController {
     public ResponseEntity<String> updatePaymentMethod(@RequestBody PaymentMethodDTO data) throws BadRequestExceptions{
         iPaymentMethod.updatePaymentMethod(data.getName(), data.getId());
         return new ResponseEntity<>("Payment method with id : " + data.getId() + "change name to " + data.getName() + ".",HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/payment-state")
+    public ResponseEntity<List<PaymentStateDTO>> listPaymentState() throws BadRequestExceptions{
+        List<PaymentStateDTO> result = iPaymentState.listPaymentState();
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }
