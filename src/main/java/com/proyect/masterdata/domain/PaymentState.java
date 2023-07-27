@@ -16,8 +16,6 @@ import org.hibernate.annotations.Parameter;
 @Data
 @Table(name= Constants.tablePaymentState,schema=Constants.schemaMaster)
 public class PaymentState {
-    private Long id;
-    private String name;
 
     @Id
     @GeneratedValue(generator = "sequence-generator")
@@ -32,11 +30,15 @@ public class PaymentState {
     )
 
     @Column(name = "id", unique = true)
+    private Long id;
+
+    @Column(name = "nombre",length=50,unique = true)
+    private String name;
+
     public Long getId() {
         return id;
     }
 
-    @Column(name = "nombre",length=50,unique = true)
     public void setId(Long id) {
         this.id = id;
     }
