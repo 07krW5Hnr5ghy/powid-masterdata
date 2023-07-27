@@ -40,6 +40,6 @@ public class PaymentMethodImpl implements IPaymentMethod {
     @Transactional
     public void updatePaymentMethod(String name,Long id) throws BadRequestExceptions {
         paymentMethodRepository.updatePaymentMethod(name,id);
-        System.out.println("Payment method with id : " + id + "change name to " + name + ".");
+        System.out.println("Payment method with id : " + id + " change name to " + name + ".");
     }
 }

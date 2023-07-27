@@ -98,4 +98,10 @@ public class MasterController {
         return new ResponseEntity<>("Payment state with id : " + id + " deleted.",HttpStatus.OK);
     }
 
+    @PutMapping(value = "/payment-state-put")
+    public ResponseEntity<String> updatePaymentState(@RequestBody PaymentStateDTO data) throws BadRequestExceptions{
+        iPaymentState.updatePaymentState(data.getName(), data.getId());
+        return new ResponseEntity<>("Payment state with id : " + data.getId() + " change name to " + data.getName() + ".",HttpStatus.OK);
+    }
+
 }
