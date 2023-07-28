@@ -45,7 +45,7 @@ public class MasterController {
         @ApiResponse(responseCode = "500", description = "Internal Server Error",
             content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @GetMapping(value = "/department")
+    @GetMapping(value = "/departmentd")
     public ResponseEntity<List<DepartmentDTO>> listDepartment() throws BadRequestExceptions {
         //throw new BadRequestExceptions("Error datos");
         List<DepartmentDTO> result = iDepartment.listDepartment();
