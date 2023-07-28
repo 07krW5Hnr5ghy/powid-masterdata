@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import java.util.Date;
 
 @Entity
 @Builder
@@ -34,19 +37,11 @@ public class PaymentMethod {
     @Column(name = "nombre",length=50,unique = true)
     private String name;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean status = true;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "fecha_registro")
+    @CreationTimestamp
+    private Date dateRegistration;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
