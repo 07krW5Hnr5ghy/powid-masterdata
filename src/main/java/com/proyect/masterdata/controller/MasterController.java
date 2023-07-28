@@ -27,7 +27,6 @@ import java.util.List;
 public class MasterController {
 
     private final IDepartment iDepartment;
-    private final IPaymentMethod iPaymentMethod;
     private final IPaymentState iPaymentState;
 
     @Operation(summary = "lista los departemanetos ",
@@ -48,37 +47,6 @@ public class MasterController {
         @ApiResponse(responseCode = "500", description = "Internal Server Error",
             content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
-
-    @GetMapping(value = "/department")
-    public ResponseEntity<List<DepartmentDTO>> listDepartment() throws BadRequestExceptions {
-        //throw new BadRequestExceptions("Error datos");
-        List<DepartmentDTO> result = iDepartment.listDepartment();
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/payment-method")
-    public ResponseEntity<List<PaymentMethodDTO>> listPaymentMethod() throws BadRequestExceptions{
-        List<PaymentMethodDTO>  result = iPaymentMethod.listPaymentMethod();
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/payment-method-add")
-    public ResponseEntity<String> addPaymentMethod(@RequestBody String paymentMethod) throws BadRequestExceptions{
-        iPaymentMethod.addPaymentMethod(paymentMethod);
-        return new ResponseEntity<>("Payment method " + paymentMethod + " created.",HttpStatus.CREATED);
-    }
-
-    @DeleteMapping(value = "/payment-method-delete")
-    public ResponseEntity<String> deletePaymentMethod(@RequestBody Long id) throws BadRequestExceptions{
-        iPaymentMethod.deletePaymentMethod(id);
-        return new ResponseEntity<>("Payment method with id : " + id + " deleted.",HttpStatus.OK);
-    }
-
-    @PutMapping(value = "/payment-method-put")
-    public ResponseEntity<String> updatePaymentMethod(@RequestBody PaymentMethodDTO data) throws BadRequestExceptions{
-        iPaymentMethod.updatePaymentMethod(data.getName(), data.getId());
-        return new ResponseEntity<>("Payment method with id : " + data.getId() + "change name to " + data.getName() + ".",HttpStatus.OK);
-    }
 
     @GetMapping(value = "/payment-state")
     public ResponseEntity<List<PaymentStateDTO>> listPaymentState() throws BadRequestExceptions{

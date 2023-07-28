@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.dto.PaymentMethodDTO;
+import com.proyect.masterdata.dto.response.ResponsePaymentMethod;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.PaymentMethodMapper;
 import com.proyect.masterdata.repository.PaymentMethodRepository;
@@ -25,9 +26,16 @@ public class PaymentMethodImpl implements IPaymentMethod {
     }
 
     @Override
-    public void addPaymentMethod(String paymentMethod) throws BadRequestExceptions {
-        paymentMethodRepository.save(PaymentMethod.builder().name(paymentMethod).build());
-        System.out.println("Payment method : " + paymentMethod + " was added to the table");
+    public ResponsePaymentMethod addPaymentMethod(String paymentMethod) throws BadRequestExceptions {
+        try{
+            paymentMethodRepository.save(PaymentMethod.builder().name(paymentMethod).build());
+            return ResponsePaymentMethod.builder()
+                    .code(200)
+                    .message("Success")
+                    .build();
+        }catch (RuntimeException ex){
+            throw new BadRequestExceptions(ex.getMessage());
+        }
     }
 
     @Override
