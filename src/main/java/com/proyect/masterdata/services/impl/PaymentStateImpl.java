@@ -41,7 +41,7 @@ public class PaymentStateImpl implements IPaymentState {
     @Override
     @Transactional
     public void updatePaymentState(String name,Long id) throws BadRequestExceptions {
-        paymentStateRepository.updatePaymentState(name,id);
+        paymentStateRepository.save(PaymentState.builder().id(id).name(name).build());
         System.out.println("Payment state with id : " + id + " change name to " + name + ".");
     }
 
