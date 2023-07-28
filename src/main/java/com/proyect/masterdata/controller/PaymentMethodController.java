@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.dto.PaymentMethodDTO;
 import com.proyect.masterdata.dto.response.ResponsePaymentMethod;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -28,21 +29,27 @@ public class PaymentMethodController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @Operation(summary = "Registrar los metodos de pago ",
+            description = "Registrar los metodos de pago")
     @PostMapping()
     public ResponseEntity<ResponsePaymentMethod> addPaymentMethod(@RequestParam("name") String name) throws BadRequestExceptions{
         ResponsePaymentMethod result = iPaymentMethod.addPaymentMethod(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
+    @Operation(summary = "Borrar los metodos de pago ",
+            description = "Borrar los metodos de pago")
     @DeleteMapping()
-    public ResponseEntity<String> deletePaymentMethod(@RequestBody Long id) throws BadRequestExceptions{
-        iPaymentMethod.deletePaymentMethod(id);
-        return new ResponseEntity<>("Payment method with id : " + id + " deleted.",HttpStatus.OK);
+    public ResponseEntity<ResponsePaymentMethod> deletePaymentMethod(@RequestParam("id") Long id) throws BadRequestExceptions{
+        ResponsePaymentMethod result = iPaymentMethod.deletePaymentMethod(id);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
+    @Operation(summary = "Editar los metodos de pago ",
+            description = "Editar los metodos de pago")
     @PutMapping()
-    public ResponseEntity<String> updatePaymentMethod(@RequestBody PaymentMethodDTO data) throws BadRequestExceptions{
-        iPaymentMethod.updatePaymentMethod(data.getName(), data.getId());
-        return new ResponseEntity<>("Payment method with id : " + data.getId() + "change name to " + data.getName() + ".",HttpStatus.OK);
+    public ResponseEntity<PaymentMethodDTO> updatePaymentMethod(@RequestBody PaymentMethodDTO data) throws BadRequestExceptions{
+        PaymentMethodDTO result = iPaymentMethod.updatePaymentMethod(data.getName(), data.getId());
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

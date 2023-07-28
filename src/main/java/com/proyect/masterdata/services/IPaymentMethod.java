@@ -8,6 +8,6 @@ import java.util.List;
 public interface IPaymentMethod {
     List<PaymentMethodDTO> listPaymentMethod() throws BadRequestExceptions;
     ResponsePaymentMethod addPaymentMethod(String paymentMethod) throws BadRequestExceptions;
-    void deletePaymentMethod(Long id) throws BadRequestExceptions;
-    void updatePaymentMethod(String name,Long id) throws BadRequestExceptions;
+    ResponsePaymentMethod deletePaymentMethod(Long id) throws BadRequestExceptions;
+    PaymentMethodDTO updatePaymentMethod(String name,Long id) throws BadRequestExceptions;
 }
