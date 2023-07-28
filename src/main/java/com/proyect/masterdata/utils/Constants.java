@@ -7,4 +7,5 @@ public class Constants {
     public static final String tableDepartment= "departamento";
     public static final String tableProvince= "provincia";
     public static final String tableDistrict= "distrito";
+    public static final String tablePaymentMethods = "medios_pago";
 }
