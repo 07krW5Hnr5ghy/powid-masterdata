@@ -39,7 +39,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
     @Override
     @Transactional
     public void updatePaymentMethod(String name,Long id) throws BadRequestExceptions {
-        paymentMethodRepository.updatePaymentMethod(name,id);
+        paymentMethodRepository.save(PaymentMethod.builder().id(id).name(name).build());
         System.out.println("Payment method with id : " + id + " change name to " + name + ".");
     }
 }
