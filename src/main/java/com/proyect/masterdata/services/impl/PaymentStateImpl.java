@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.domain.PaymentState;
 import com.proyect.masterdata.dto.PaymentStateDTO;
+import com.proyect.masterdata.dto.response.ResponsePaymentState;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.PaymentStateMapper;
 import com.proyect.masterdata.repository.PaymentStateRepository;
@@ -11,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
@@ -21,28 +23,44 @@ public class PaymentStateImpl implements IPaymentState {
 
     @Override
     public List<PaymentStateDTO> listPaymentState() throws BadRequestExceptions {
-        paymentStateRepository.save(PaymentState.builder().name("Por Recaudar").build());
-        paymentStateRepository.save(PaymentState.builder().name("Recaudado").build());
         return paymentStateMapper.paymentStateListToPaymentStateListDTO(paymentStateRepository.findAll());
     }
 
     @Override
-    public void addPaymentState(String paymentState) throws BadRequestExceptions {
-        paymentStateRepository.save(PaymentState.builder().name(paymentState).build());
-        System.out.println("Payment state : " + paymentState + " was added to the table");
+    public ResponsePaymentState addPaymentState(String paymentState) throws BadRequestExceptions {
+        try{
+            paymentStateRepository.save(PaymentState.builder().name(paymentState).status(true).build());
+            return ResponsePaymentState.builder()
+                    .code(200)
+                    .message("Success")
+                    .build();
+        }catch(RuntimeException ex){
+            throw new BadRequestExceptions(ex.getMessage());
+        }
     }
 
     @Override
-    public void deletePaymentState(Long id) throws BadRequestExceptions {
-        paymentStateRepository.deleteById(id);
-        System.out.println("Payment state with id : " + id + " deleted ");
+    public ResponsePaymentState deletePaymentState(Long id) throws BadRequestExceptions {
+        try{
+            PaymentState record = paymentStateRepository.findById(id).get();
+            paymentStateRepository.save(PaymentState.builder().name(record.getName()).dateRegistration(new Date(System.currentTimeMillis())).id(record.getId()).status(false).build());
+            return ResponsePaymentState.builder()
+                    .code(200)
+                    .message("Success")
+                    .build();
+        }catch (RuntimeException ex){
+            throw new BadRequestExceptions(ex.getMessage());
+        }
     }
 
     @Override
-    @Transactional
-    public void updatePaymentState(String name,Long id) throws BadRequestExceptions {
-        paymentStateRepository.updatePaymentState(name,id);
-        System.out.println("Payment state with id : " + id + " change name to " + name + ".");
+    public PaymentStateDTO updatePaymentState(String name,Long id) throws BadRequestExceptions {
+        try{
+            PaymentState paymentState = paymentStateRepository.save(PaymentState.builder().id(id).dateRegistration(new Date(System.currentTimeMillis())).name(name).status(true).build());
+            return PaymentStateMapper.INSTANCE.paymentStateToPaymentStateDTO(paymentState);
+        }catch(RuntimeException ex){
+            throw new BadRequestExceptions(ex.getMessage());
+        }
     }
 
 }
