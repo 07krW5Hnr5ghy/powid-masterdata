@@ -2,14 +2,11 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.State;
 import com.proyect.masterdata.dto.MasterListDTO;
-import com.proyect.masterdata.dto.StateDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
-import com.proyect.masterdata.dto.response.ResponseState;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.StateMapper;
 import com.proyect.masterdata.repository.StateRepository;
 import com.proyect.masterdata.services.IMasterList;
-import com.proyect.masterdata.services.IState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
