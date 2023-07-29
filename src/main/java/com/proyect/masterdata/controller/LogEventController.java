@@ -4,7 +4,7 @@ import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.impl.ColorImpl;
+import com.proyect.masterdata.services.impl.LogEventImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,13 +19,13 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/color")
+@RequestMapping("/log-event")
 @AllArgsConstructor
-public class ColorController {
-    private final ColorImpl iColor;
+public class LogEventController {
+    private final LogEventImpl iLogEvent;
 
-    @Operation(summary = "Lista los colores",
-            description = "Lista los colores")
+    @Operation(summary = "Lista los eventos de logeo",
+            description = "Lista los eventos de logeo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
@@ -43,33 +43,32 @@ public class ColorController {
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listColors() throws BadRequestExceptions{
-        List<MasterListDTO> result = iColor.listRecords();
+    public ResponseEntity<List<MasterListDTO>> listColors() throws BadRequestExceptions {
+        List<MasterListDTO> result = iLogEvent.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Registra colores",
-            description = "Registra colores")
+    @Operation(summary = "Registra evento de logeo",
+            description = "Registra evento de logeo")
     @PostMapping()
     public ResponseEntity<ResponseMasterList> addState(@RequestParam("name") String name) throws BadRequestExceptions{
-        ResponseMasterList result = iColor.addRecord(name);
+        ResponseMasterList result = iLogEvent.addRecord(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar colores",
-            description = "Eliminar colores")
+    @Operation(summary = "Eliminar evento de logeo",
+            description = "Eliminar evento de logeo")
     @DeleteMapping()
     public ResponseEntity<ResponseMasterList> deleteState(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iColor.deleteRecord(id);
+        ResponseMasterList result = iLogEvent.deleteRecord(id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Editar colores",
-            description = "Editar colores")
+    @Operation(summary = "Editar evento de logeo",
+            description = "Editar evento de logeo")
     @PutMapping()
     public ResponseEntity<MasterListDTO> updateState(@RequestBody MasterListDTO data) throws BadRequestExceptions{
-        MasterListDTO result = iColor.updateRecord(data.getName(), data.getId());
+        MasterListDTO result = iLogEvent.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
-
 }
