@@ -44,7 +44,7 @@ public class SaleChannelController {
     })
 
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listStates() throws BadRequestExceptions {
+    public ResponseEntity<List<MasterListDTO>> listSaleChannels() throws BadRequestExceptions {
         List<MasterListDTO> result = iSaleChannel.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -52,7 +52,7 @@ public class SaleChannelController {
     @Operation(summary = "Registra canal de venta",
             description = "Registra canal de venta")
     @PostMapping()
-    public ResponseEntity<ResponseMasterList> addState(@RequestParam("name") String name) throws BadRequestExceptions{
+    public ResponseEntity<ResponseMasterList> addSaleChannel(@RequestParam("name") String name) throws BadRequestExceptions{
         ResponseMasterList result = iSaleChannel.addRecord(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
@@ -60,7 +60,7 @@ public class SaleChannelController {
     @Operation(summary = "Eliminar canal de venta",
             description = "Eliminar canal de venta")
     @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deleteState(@RequestParam("id") Long id) throws BadRequestExceptions{
+    public ResponseEntity<ResponseMasterList> deleteSaleChannel(@RequestParam("id") Long id) throws BadRequestExceptions{
         ResponseMasterList result = iSaleChannel.deleteRecord(id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
@@ -68,7 +68,7 @@ public class SaleChannelController {
     @Operation(summary = "Editar canal de venta",
             description = "Editar canal de venta")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateState(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+    public ResponseEntity<MasterListDTO> updateSaleChannel(@RequestBody MasterListDTO data) throws BadRequestExceptions{
         MasterListDTO result = iSaleChannel.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }

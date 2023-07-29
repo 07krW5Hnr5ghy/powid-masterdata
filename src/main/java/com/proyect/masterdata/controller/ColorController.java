@@ -51,7 +51,7 @@ public class ColorController {
     @Operation(summary = "Registra colores",
             description = "Registra colores")
     @PostMapping()
-    public ResponseEntity<ResponseMasterList> addState(@RequestParam("name") String name) throws BadRequestExceptions{
+    public ResponseEntity<ResponseMasterList> addColor(@RequestParam("name") String name) throws BadRequestExceptions{
         ResponseMasterList result = iColor.addRecord(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
@@ -59,7 +59,7 @@ public class ColorController {
     @Operation(summary = "Eliminar colores",
             description = "Eliminar colores")
     @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deleteState(@RequestParam("id") Long id) throws BadRequestExceptions{
+    public ResponseEntity<ResponseMasterList> deleteColor(@RequestParam("id") Long id) throws BadRequestExceptions{
         ResponseMasterList result = iColor.deleteRecord(id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
@@ -67,7 +67,7 @@ public class ColorController {
     @Operation(summary = "Editar colores",
             description = "Editar colores")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateState(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+    public ResponseEntity<MasterListDTO> updateColor(@RequestBody MasterListDTO data) throws BadRequestExceptions{
         MasterListDTO result = iColor.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }

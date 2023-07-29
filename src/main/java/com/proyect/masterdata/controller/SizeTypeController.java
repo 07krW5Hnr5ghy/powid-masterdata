@@ -4,8 +4,8 @@ import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.IMasterList;
 import com.proyect.masterdata.services.impl.SizeImpl;
+import com.proyect.masterdata.services.impl.SizeTypeImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,13 +20,12 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/size")
+@RequestMapping("/size-type")
 @AllArgsConstructor
-public class SizeController {
-
-    private final SizeImpl iSize;
-    @Operation(summary = "Lista las tallas",
-            description = "Lista las tallas")
+public class SizeTypeController {
+    private final SizeTypeImpl iSizeType;
+    @Operation(summary = "Lista los tipos de talla",
+            description = "Lista los tipos de talla")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
@@ -45,33 +44,32 @@ public class SizeController {
     })
 
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listSizes() throws BadRequestExceptions {
-        List<MasterListDTO> result = iSize.listRecords();
+    public ResponseEntity<List<MasterListDTO>> listSizeTypes() throws BadRequestExceptions {
+        List<MasterListDTO> result = iSizeType.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Registra tallas",
-            description = "Registra tallas")
+    @Operation(summary = "Registra tipo de talla",
+            description = "Registra tipo de talla")
     @PostMapping()
-    public ResponseEntity<ResponseMasterList> addSize(@RequestParam("name") String name) throws BadRequestExceptions{
-        ResponseMasterList result = iSize.addRecord(name);
+    public ResponseEntity<ResponseMasterList> addState(@RequestParam("name") String name) throws BadRequestExceptions{
+        ResponseMasterList result = iSizeType.addRecord(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar tallas",
-            description = "Eliminar tallas")
+    @Operation(summary = "Eliminar tipo de talla",
+            description = "Eliminar tipo de talla")
     @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deleteSize(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iSize.deleteRecord(id);
+    public ResponseEntity<ResponseMasterList> deleteState(@RequestParam("id") Long id) throws BadRequestExceptions{
+        ResponseMasterList result = iSizeType.deleteRecord(id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Editar tallas",
-            description = "Editar tallas")
+    @Operation(summary = "Editar tipo de talla",
+            description = "Editar tipo de talla")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateSize(@RequestBody MasterListDTO data) throws BadRequestExceptions{
-        MasterListDTO result = iSize.updateRecord(data.getName(), data.getId());
+    public ResponseEntity<MasterListDTO> updateState(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+        MasterListDTO result = iSizeType.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
-
 }

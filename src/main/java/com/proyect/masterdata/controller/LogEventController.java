@@ -43,7 +43,7 @@ public class LogEventController {
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listColors() throws BadRequestExceptions {
+    public ResponseEntity<List<MasterListDTO>> listLogEvents() throws BadRequestExceptions {
         List<MasterListDTO> result = iLogEvent.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -51,7 +51,7 @@ public class LogEventController {
     @Operation(summary = "Registra evento de logeo",
             description = "Registra evento de logeo")
     @PostMapping()
-    public ResponseEntity<ResponseMasterList> addState(@RequestParam("name") String name) throws BadRequestExceptions{
+    public ResponseEntity<ResponseMasterList> addLogEvent(@RequestParam("name") String name) throws BadRequestExceptions{
         ResponseMasterList result = iLogEvent.addRecord(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
@@ -59,7 +59,7 @@ public class LogEventController {
     @Operation(summary = "Eliminar evento de logeo",
             description = "Eliminar evento de logeo")
     @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deleteState(@RequestParam("id") Long id) throws BadRequestExceptions{
+    public ResponseEntity<ResponseMasterList> deleteLogEvent(@RequestParam("id") Long id) throws BadRequestExceptions{
         ResponseMasterList result = iLogEvent.deleteRecord(id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
@@ -67,7 +67,7 @@ public class LogEventController {
     @Operation(summary = "Editar evento de logeo",
             description = "Editar evento de logeo")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateState(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+    public ResponseEntity<MasterListDTO> updateLogEvent(@RequestBody MasterListDTO data) throws BadRequestExceptions{
         MasterListDTO result = iLogEvent.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }

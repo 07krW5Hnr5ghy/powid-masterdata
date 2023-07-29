@@ -15,4 +15,5 @@ public class Constants {
     public static final String tableSaleChannel = "canales_venta";
     public static final String tableLogEvent = "eventos_log";
     public static final String tableModule = "modulos";
+    public static final String tableSizeType = "tipos_talla";
 }
