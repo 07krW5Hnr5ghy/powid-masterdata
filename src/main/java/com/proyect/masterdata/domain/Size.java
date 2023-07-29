@@ -17,16 +17,15 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name= Constants.tableState,schema=Constants.schemaMaster)
-public class State {
-
+@Table(name= Constants.tableSize,schema=Constants.schemaMaster)
+public class Size {
     @Id
     @GeneratedValue(generator = "sequence-generator")
     @GenericGenerator(
             name = "sequence-generator",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
-                    @Parameter(name = "sequence_name", value = "estados_sequence"),
+                    @Parameter(name = "sequence_name", value = "tallas_sequence"),
                     @Parameter(name = "initial_value", value = "1"),
                     @Parameter(name = "increment_size", value = "1")
             }
