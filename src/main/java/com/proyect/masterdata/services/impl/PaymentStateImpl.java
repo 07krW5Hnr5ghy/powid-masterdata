@@ -54,7 +54,12 @@ public class PaymentStateImpl implements IPaymentState {
     @Override
     public PaymentStateDTO updatePaymentState(String name,Long id) throws BadRequestExceptions {
         try{
-            PaymentState paymentState = paymentStateRepository.save(PaymentState.builder().id(id).dateRegistration(new Date(System.currentTimeMillis())).name(name).status(true).build());
+            PaymentState paymentState = paymentStateRepository.save(PaymentState.builder()
+                    .id(id)
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .name(name)
+                    .status(true)
+                    .build());
             return PaymentStateMapper.INSTANCE.paymentStateToPaymentStateDTO(paymentState);
         }catch(RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());

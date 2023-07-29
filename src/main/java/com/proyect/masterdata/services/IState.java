@@ -7,7 +7,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import java.util.List;
 
 public interface IState {
-    List<StateDTO> listState() throws BadRequestExceptions;
+    //List<StateDTO> listState() throws BadRequestExceptions;
     ResponseState addState(String state) throws BadRequestExceptions;
     ResponseState deleteState(Long id) throws BadRequestExceptions;
     StateDTO updateState(String name,Long id) throws BadRequestExceptions;
