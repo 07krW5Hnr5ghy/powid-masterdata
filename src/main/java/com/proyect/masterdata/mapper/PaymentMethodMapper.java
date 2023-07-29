@@ -1,7 +1,7 @@
 package com.proyect.masterdata.mapper;
 
 import com.proyect.masterdata.domain.PaymentMethod;
-import com.proyect.masterdata.dto.PaymentMethodDTO;
+import com.proyect.masterdata.dto.MasterListDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -11,7 +11,7 @@ import java.util.List;
 public interface PaymentMethodMapper {
     PaymentMethodMapper INSTANCE = Mappers.getMapper(PaymentMethodMapper.class);
 
-    PaymentMethodDTO paymentMethodToPaymentMethodDTO(PaymentMethod paymentMethod);
+    MasterListDTO paymentMethodToPaymentMethodDTO(PaymentMethod paymentMethod);
 
-    List<PaymentMethodDTO> paymentMethodListToPaymentMethodListDTO(List<PaymentMethod> paymentMethodList);
+    List<MasterListDTO> paymentMethodListToPaymentMethodListDTO(List<PaymentMethod> paymentMethodList);
 }
