@@ -50,8 +50,8 @@ public class SizeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "registra tallas",
-            description = "registra tallas")
+    @Operation(summary = "Registra tallas",
+            description = "Registra tallas")
     @PostMapping()
     public ResponseEntity<ResponseMasterList> addState(@RequestParam("name") String name) throws BadRequestExceptions{
         ResponseMasterList result = iSize.addRecord(name);

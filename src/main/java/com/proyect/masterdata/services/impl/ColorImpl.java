@@ -1,11 +1,11 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Size;
+import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.mapper.SizeMapper;
-import com.proyect.masterdata.repository.SizeRepository;
+import com.proyect.masterdata.mapper.ColorMapper;
+import com.proyect.masterdata.repository.ColorRepository;
 import com.proyect.masterdata.services.IMasterList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,25 +15,27 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SizeImpl implements IMasterList {
-    private final SizeRepository sizeRepository;
-    private final SizeMapper sizeMapper;
-
-
+public class ColorImpl implements IMasterList {
+    private final ColorRepository colorRepository;
+    private final ColorMapper colorMapper;
     @Override
     public List<MasterListDTO> listRecords() throws BadRequestExceptions {
-        return sizeMapper.sizeListToSizeListDTO(sizeRepository.findAll());
+        return colorMapper.INSTANCE.colorListToColorListDTO(colorRepository.findAll());
     }
 
     @Override
     public ResponseMasterList addRecord(String name) throws BadRequestExceptions {
         try{
-            sizeRepository.save(Size.builder().name(name).status(true).build());
+            colorRepository.save(Color.builder()
+                    .name(name)
+                    .status(true)
+                    .build()
+            );
             return ResponseMasterList.builder()
                     .code(200)
                     .message("Success")
                     .build();
-        }catch(RuntimeException ex){
+        }catch (RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }
     }
@@ -41,13 +43,14 @@ public class SizeImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            Size record = sizeRepository.findById(id).get();
-            sizeRepository.save(Size.builder()
+            Color record = colorRepository.findById(id).get();
+            colorRepository.save(Color.builder()
                     .name(record.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .id(record.getId())
                     .status(false)
-                    .build());
+                    .build()
+            );
             return ResponseMasterList.builder()
                     .code(200)
                     .message("Success")
@@ -60,14 +63,14 @@ public class SizeImpl implements IMasterList {
     @Override
     public MasterListDTO updateRecord(String name, Long id) throws BadRequestExceptions {
         try{
-            Size size = sizeRepository.save(Size.builder()
+            Color color = colorRepository.save(Color.builder()
                     .id(id)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .name(name)
                     .status(true)
                     .build()
             );
-            return sizeMapper.INSTANCE.sizeToSizeDTO(size);
+            return colorMapper.INSTANCE.colorToColorDTO(color);
         }catch (RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }

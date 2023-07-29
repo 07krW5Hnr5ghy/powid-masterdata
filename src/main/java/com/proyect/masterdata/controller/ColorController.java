@@ -4,9 +4,7 @@ import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.IMasterList;
-import com.proyect.masterdata.services.impl.SizeImpl;
-import com.proyect.masterdata.services.impl.StateImpl;
+import com.proyect.masterdata.services.impl.ColorImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,13 +19,13 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/state")
+@RequestMapping("/color")
 @AllArgsConstructor
-public class StateController {
+public class ColorController {
+    private final ColorImpl iColor;
 
-    private final StateImpl iState;
-    @Operation(summary = "Lista los estados de pedido",
-            description = "Lista los estados de pedido")
+    @Operation(summary = "Lista los colores",
+            description = "Lista los colores")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
@@ -44,34 +42,33 @@ public class StateController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
-
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listStates() throws BadRequestExceptions{
-        List<MasterListDTO> result = iState.listRecords();
+    public ResponseEntity<List<MasterListDTO>> listColors() throws BadRequestExceptions{
+        List<MasterListDTO> result = iColor.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Registra estados de pedido",
-            description = "Registra estados de pedido")
+    @Operation(summary = "Registra colores",
+            description = "Registra colores")
     @PostMapping()
     public ResponseEntity<ResponseMasterList> addState(@RequestParam("name") String name) throws BadRequestExceptions{
-        ResponseMasterList result = iState.addRecord(name);
+        ResponseMasterList result = iColor.addRecord(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar estados de pedido",
-            description = "Eliminar estados de pedido")
+    @Operation(summary = "Eliminar tallas",
+            description = "Eliminar tallas")
     @DeleteMapping()
     public ResponseEntity<ResponseMasterList> deleteState(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iState.deleteRecord(id);
+        ResponseMasterList result = iColor.deleteRecord(id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Editar estados de pedido",
-            description = "Editar estados de pedido")
+    @Operation(summary = "Editar colores",
+            description = "Editar colores")
     @PutMapping()
     public ResponseEntity<MasterListDTO> updateState(@RequestBody MasterListDTO data) throws BadRequestExceptions{
-        MasterListDTO result = iState.updateRecord(data.getName(), data.getId());
+        MasterListDTO result = iColor.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

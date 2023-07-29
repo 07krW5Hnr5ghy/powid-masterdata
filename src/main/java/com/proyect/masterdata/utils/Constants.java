@@ -11,4 +11,5 @@ public class Constants {
     public static final String tablePaymentState = "estados_pago";
     public static final String tableState = "estados";
     public static final String tableSize = "tallas";
+    public static final String tableColor = "colores";
 }

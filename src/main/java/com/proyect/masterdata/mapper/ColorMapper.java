@@ -1,6 +1,6 @@
 package com.proyect.masterdata.mapper;
 
-import com.proyect.masterdata.domain.State;
+import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.dto.MasterListDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,9 +9,9 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface StateMapper {
-    StateMapper INSTANCE = Mappers.getMapper(StateMapper.class);
+public interface ColorMapper {
+    ColorMapper INSTANCE = Mappers.getMapper(ColorMapper.class);
     @Mapping(source="id",target = "id")
-    MasterListDTO stateToStateDTO(State state);
-    List<MasterListDTO> stateListToStateListDTO(List<State> stateList);
+    MasterListDTO colorToColorDTO(Color color);
+    List<MasterListDTO> colorListToColorListDTO(List<Color> colorList);
 }
