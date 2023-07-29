@@ -5,6 +5,8 @@ import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
 import com.proyect.masterdata.services.IMasterList;
+import com.proyect.masterdata.services.impl.SizeImpl;
+import com.proyect.masterdata.services.impl.StateImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,7 +24,8 @@ import java.util.List;
 @RequestMapping("/state")
 @AllArgsConstructor
 public class StateController {
-    private final IMasterList iState;
+
+    private final StateImpl iState;
     @Operation(summary = "lista los estados de pedido",
             description = "Lista los estados de pedido")
     @ApiResponses(value = {

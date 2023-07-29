@@ -9,6 +9,6 @@ import java.util.List;
 public interface IMasterList {
     List<MasterListDTO> listRecords() throws BadRequestExceptions;
     ResponseMasterList addRecord(String name) throws BadRequestExceptions;
-    ResponseMasterList deleteRecord(Long Id) throws BadRequestExceptions;
+    ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions;
     MasterListDTO updateRecord(String name,Long id) throws BadRequestExceptions;
 }

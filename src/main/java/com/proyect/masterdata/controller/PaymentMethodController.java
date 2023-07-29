@@ -4,6 +4,7 @@ import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IMasterList;
+import com.proyect.masterdata.services.impl.PaymentMethodImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 public class PaymentMethodController {
 
-    private final IMasterList iPaymentMethod;
+
+    private final PaymentMethodImpl iPaymentMethod;
 
     @Operation(summary = "Lista los metodos de pago ",
             description = "Lista los metodos de pago maestro")
