@@ -1,6 +1,5 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.domain.PaymentState;
 import com.proyect.masterdata.dto.PaymentStateDTO;
 import com.proyect.masterdata.dto.response.ResponsePaymentState;
@@ -8,7 +7,6 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.PaymentStateMapper;
 import com.proyect.masterdata.repository.PaymentStateRepository;
 import com.proyect.masterdata.services.IPaymentState;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
