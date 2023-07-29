@@ -1,11 +1,7 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.PaymentMethodDTO;
-import com.proyect.masterdata.dto.PaymentStateDTO;
-import com.proyect.masterdata.dto.response.ResponsePaymentState;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.IPaymentState;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
