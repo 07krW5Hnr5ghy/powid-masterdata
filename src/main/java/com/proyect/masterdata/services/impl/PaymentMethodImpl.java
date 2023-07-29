@@ -43,11 +43,11 @@ public class PaymentMethodImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            PaymentMethod record = paymentMethodRepository.findById(id).get();
+            PaymentMethod paymentMethod = paymentMethodRepository.findById(id).get();
             paymentMethodRepository.save(PaymentMethod.builder()
-                    .name(record.getName())
+                    .name(paymentMethod.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(record.getId())
+                    .id(paymentMethod.getId())
                     .status(false)
                     .build());
             return ResponseMasterList.builder()

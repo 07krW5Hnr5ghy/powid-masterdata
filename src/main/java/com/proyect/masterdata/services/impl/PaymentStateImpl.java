@@ -40,11 +40,11 @@ public class PaymentStateImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            PaymentState record = paymentStateRepository.findById(id).get();
+            PaymentState paymentState = paymentStateRepository.findById(id).get();
             paymentStateRepository.save(PaymentState.builder()
-                    .name(record.getName())
+                    .name(paymentState.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(record.getId())
+                    .id(paymentState.getId())
                     .status(false)
                     .build());
             return ResponseMasterList.builder()

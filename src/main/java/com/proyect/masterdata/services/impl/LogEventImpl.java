@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.LogEvent;
-import com.proyect.masterdata.domain.Size;
 import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -40,11 +39,11 @@ public class LogEventImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            LogEvent record = logEventRepository.findById(id).get();
+            LogEvent logEvent = logEventRepository.findById(id).get();
             logEventRepository.save(LogEvent.builder()
-                    .name(record.getName())
+                    .name(logEvent.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(record.getId())
+                    .id(logEvent.getId())
                     .status(false)
                     .build());
             return ResponseMasterList.builder()

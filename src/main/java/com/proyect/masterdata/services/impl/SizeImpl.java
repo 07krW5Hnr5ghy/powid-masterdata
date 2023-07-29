@@ -41,11 +41,11 @@ public class SizeImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            Size record = sizeRepository.findById(id).get();
+            Size size = sizeRepository.findById(id).get();
             sizeRepository.save(Size.builder()
-                    .name(record.getName())
+                    .name(size.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(record.getId())
+                    .id(size.getId())
                     .status(false)
                     .build());
             return ResponseMasterList.builder()

@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.SaleChannel;
-import com.proyect.masterdata.domain.Size;
 import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -41,11 +40,11 @@ public class SaleChannelImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            SaleChannel record = saleChannelRepository.findById(id).get();
+            SaleChannel saleChannel = saleChannelRepository.findById(id).get();
             saleChannelRepository.save(SaleChannel.builder()
-                    .name(record.getName())
+                    .name(saleChannel.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(record.getId())
+                    .id(saleChannel.getId())
                     .status(false)
                     .build());
             return ResponseMasterList.builder()

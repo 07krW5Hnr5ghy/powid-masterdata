@@ -43,11 +43,11 @@ public class ColorImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            Color record = colorRepository.findById(id).get();
+            Color color = colorRepository.findById(id).get();
             colorRepository.save(Color.builder()
-                    .name(record.getName())
+                    .name(color.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(record.getId())
+                    .id(color.getId())
                     .status(false)
                     .build()
             );
