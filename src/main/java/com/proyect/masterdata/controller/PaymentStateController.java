@@ -1,7 +1,10 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
+import com.proyect.masterdata.services.IMasterList;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,9 +23,9 @@ import java.util.List;
 @AllArgsConstructor
 public class PaymentStateController {
 
-    private final IPaymentState iPaymentState;
+    private final IMasterList iPaymentState;
 
-    @Operation(summary = "lista los estados de pago",
+    @Operation(summary = "Lista los estados de pago",
             description = "Lista los estados de pago")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
@@ -42,32 +45,32 @@ public class PaymentStateController {
     })
 
     @GetMapping()
-    public ResponseEntity<List<PaymentStateDTO>> listPaymentState() throws BadRequestExceptions{
-        List<PaymentStateDTO> result = iPaymentState.listPaymentState();
+    public ResponseEntity<List<MasterListDTO>> listPaymentStates() throws BadRequestExceptions{
+        List<MasterListDTO> result = iPaymentState.listRecords();
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
     @Operation(summary = "Registrar estados de pago",
             description = "Registrar estados de pago")
     @PostMapping()
-    public ResponseEntity<ResponsePaymentState> addPaymentState(@RequestParam("name") String name) throws BadRequestExceptions {
-        ResponsePaymentState result = iPaymentState.addPaymentState(name);
+    public ResponseEntity<ResponseMasterList> addPaymentState(@RequestParam("name") String name) throws BadRequestExceptions {
+        ResponseMasterList result = iPaymentState.addRecord(name);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @Operation(summary = "Eliminar estados de pago",
             description = "Eliminar estados de pago")
     @DeleteMapping()
-    public ResponseEntity<ResponsePaymentState> deletePaymentState(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponsePaymentState result = iPaymentState.deletePaymentState(id);
+    public ResponseEntity<ResponseMasterList> deletePaymentState(@RequestParam("id") Long id) throws BadRequestExceptions{
+        ResponseMasterList result = iPaymentState.deleteRecord(id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
     @Operation(summary = "Editar estados de pago",
             description = "Editar estados de pago")
     @PutMapping()
-    public ResponseEntity<PaymentStateDTO> updatePaymentState(@RequestBody PaymentStateDTO data) throws BadRequestExceptions{
-        PaymentStateDTO result = iPaymentState.updatePaymentState(data.getName(), data.getId());
+    public ResponseEntity<MasterListDTO> updatePaymentState(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+        MasterListDTO result = iPaymentState.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
