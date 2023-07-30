@@ -1,11 +1,13 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.CategoryDTO;
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.request.RequestCategory;
 import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.impl.ColorImpl;
+import com.proyect.masterdata.services.ICategory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,13 +22,13 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/color")
+@RequestMapping("/category")
 @AllArgsConstructor
-public class ColorController {
-    private final ColorImpl iColor;
+public class CategoryController {
+    private final ICategory iCategory;
 
-    @Operation(summary = "Lista los colores",
-            description = "Lista los colores")
+    @Operation(summary = "Lista las categorias",
+            description = "Lista las categorias")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
@@ -44,33 +46,32 @@ public class ColorController {
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listColors() throws BadRequestExceptions{
-        List<MasterListDTO> result = iColor.listRecords();
+    public ResponseEntity<List<CategoryDTO>> listCategories() throws BadRequestExceptions {
+        List<CategoryDTO> result = iCategory.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Registra colores",
-            description = "Registra colores")
+    @Operation(summary = "Registra categoria",
+            description = "Registra categoria")
     @PostMapping()
-    public ResponseEntity<ResponseMasterList> addColor(@RequestParam("name") String name) throws BadRequestExceptions{
-        ResponseMasterList result = iColor.addRecord(name);
+    public ResponseEntity<ResponseMasterList> addCategory(@RequestParam("name") String name,@RequestParam("description") String description) throws BadRequestExceptions{
+        ResponseMasterList result = iCategory.addRecord(name,description);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar colores",
-            description = "Eliminar colores")
+    @Operation(summary = "Eliminar categoria",
+            description = "Eliminar categoria")
     @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deleteColor(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iColor.deleteRecord(id);
+    public ResponseEntity<ResponseMasterList> deleteCategory(@RequestParam("id") Long id) throws BadRequestExceptions{
+        ResponseMasterList result = iCategory.deleteRecord(id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Editar colores",
-            description = "Editar colores")
+    @Operation(summary = "Editar categoria",
+            description = "Editar categoria")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateColor(@RequestBody RequestMasterList data) throws BadRequestExceptions{
-        MasterListDTO result = iColor.updateRecord(data.getName(), data.getId());
+    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody RequestCategory data) throws BadRequestExceptions{
+        CategoryDTO result = iCategory.updateRecord(data.getName(), data.getId(),data.getDescription());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
-
 }
