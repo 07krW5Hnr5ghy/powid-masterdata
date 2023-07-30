@@ -1,4 +1,4 @@
-package com.proyect.masterdata.dto.request;
+package com.proyect.masterdata.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestCategory {
+public class PaymentMethodDTO {
     Long id;
     String name;
-    String description;
 }

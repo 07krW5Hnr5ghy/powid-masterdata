@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class MasterListDTO {
+public class PaymentStateDTO {
     Long id;
     String name;
-    Boolean status;
 }

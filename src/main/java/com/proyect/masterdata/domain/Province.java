@@ -24,13 +24,13 @@ public class Province {
             name = "sequence-generator",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "provincias_sequence"),
+                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "provincia_sequence"),
                     @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
                     @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
             }
     )
     @Column(name = "id_provincia", unique = true)
-    private Long id;
+    private Long codeProvince;
 
     @Column(name="nombre", length=50, unique=true)
     private String name;
