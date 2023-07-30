@@ -8,7 +8,7 @@ import com.proyect.masterdata.domain.Module;
 
 import java.util.List;
 
-@Mapper(componentModel = "string")
+@Mapper(componentModel = "spring")
 public interface ModuleMapper {
     ModuleMapper INSTANCE = Mappers.getMapper(ModuleMapper.class);
     @Mapping(source="id",target = "id")

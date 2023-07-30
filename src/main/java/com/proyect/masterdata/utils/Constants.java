@@ -17,4 +17,5 @@ public class Constants {
     public static final String tableModule = "modulos";
     public static final String tableSizeType = "tipos_talla";
     public static final String tableUserRole = "roles_usuario";
+    public static final String tableMembership = "membresias";
 }
