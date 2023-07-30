@@ -1,53 +1,80 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Department;
-import com.proyect.masterdata.dto.DepartmentDTO;
-import com.proyect.masterdata.dto.response.ResponseDepartment;
+import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.DepartmentMapper;
-import com.proyect.masterdata.repository.DepartamentRepository;
-import com.proyect.masterdata.services.IDepartment;
+import com.proyect.masterdata.repository.DepartmentRepository;
+import com.proyect.masterdata.services.IMasterList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.sql.Date;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
-public class DepartmentImpl implements IDepartment {
+public class DepartmentImpl implements IMasterList {
 
-    private final DepartamentRepository departamentRepository;
+    private final DepartmentRepository departmentRepository;
 
     private final DepartmentMapper departmentMapper;
 
     @Override
-    public ResponseDepartment createDepartment(String name) throws BadRequestExceptions {
-        try {
-            departamentRepository.save(Department.builder().name(name).build());
-            return ResponseDepartment.builder()
+    public List<MasterListDTO> listRecords() throws BadRequestExceptions {
+        return departmentMapper.INSTANCE.departmentListToDepartmentDTOList(departmentRepository.findAll());
+    }
+
+    @Override
+    public ResponseMasterList addRecord(String name) throws BadRequestExceptions {
+        try{
+            departmentRepository.save(Department.builder()
+                    .name(name)
+                    .status(true)
+                    .build()
+            );
+            return ResponseMasterList.builder()
                     .code(200)
                     .message("Success")
                     .build();
-        } catch (RuntimeException ex){
+        }catch (RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }
     }
 
     @Override
-    public List<DepartmentDTO> listDepartment() throws BadRequestExceptions {
-        return departmentMapper.departmentListToDepartmentDTOList(departamentRepository.findAll());
-    }
-
-    @Override
-    public DepartmentDTO update(Long code, String name) throws BadRequestExceptions {
-        try {
-            Department department = departamentRepository.save(Department.builder().codeDepartment(code).name(name).build());
-            return departmentMapper.departmentToDepartmentDTO(department);
-        } catch (RuntimeException ex){
+    public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
+        try{
+            Department department = departmentRepository.findById(id).get();
+            departmentRepository.save(Department.builder()
+                    .name(department.getName())
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .id(department.getId())
+                    .status(false)
+                    .build()
+            );
+            return ResponseMasterList.builder()
+                    .code(200)
+                    .message("Success")
+                    .build();
+        }catch (RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }
     }
 
     @Override
-    public ResponseDepartment deleteDepartment(Long code) throws BadRequestExceptions {
-        return null;
+    public MasterListDTO updateRecord(String name, Long id) throws BadRequestExceptions {
+        try{
+            Department department = departmentRepository.save(Department.builder()
+                    .id(id)
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .name(name)
+                    .status(true)
+                    .build()
+            );
+            return departmentMapper.INSTANCE.departmentToDepartmentDTO(department);
+        }catch (RuntimeException ex){
+            throw new BadRequestExceptions(ex.getMessage());
+        }
     }
 }

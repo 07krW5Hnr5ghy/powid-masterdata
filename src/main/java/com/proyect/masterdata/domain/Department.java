@@ -24,13 +24,13 @@ public class Department {
         name = "sequence-generator",
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
         parameters = {
-            @Parameter(name = "sequence_name", value = "departamento_sequence"),
+            @Parameter(name = "sequence_name", value = "departamentos_sequence"),
             @Parameter(name = "initial_value", value = "1"),
             @Parameter(name = "increment_size", value = "1")
         }
     )
-    @Column(name = "id_departameto", unique = true)
-    private Long codeDepartment;
+    @Column(name = "id", unique = true)
+    private Long id;
 
     @Column(name="nombre", length=50, unique=true)
     private String name;
