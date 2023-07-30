@@ -53,6 +53,22 @@ public class SizeController {
 
     @Operation(summary = "Registra tallas",
             description = "Registra tallas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "Conflict",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
     @PostMapping()
     public ResponseEntity<ResponseMasterList> addSize(@RequestParam("name") String name) throws BadRequestExceptions{
         ResponseMasterList result = iSize.addRecord(name);
@@ -61,6 +77,22 @@ public class SizeController {
 
     @Operation(summary = "Eliminar tallas",
             description = "Eliminar tallas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "Conflict",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
     @DeleteMapping()
     public ResponseEntity<ResponseMasterList> deleteSize(@RequestParam("id") Long id) throws BadRequestExceptions{
         ResponseMasterList result = iSize.deleteRecord(id);
@@ -69,6 +101,22 @@ public class SizeController {
 
     @Operation(summary = "Editar tallas",
             description = "Editar tallas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "Conflict",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
     @PutMapping()
     public ResponseEntity<MasterListDTO> updateSize(@RequestBody RequestMasterList data) throws BadRequestExceptions{
         MasterListDTO result = iSize.updateRecord(data.getName(), data.getId());

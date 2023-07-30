@@ -51,6 +51,22 @@ public class LogEventController {
 
     @Operation(summary = "Registra evento de logeo",
             description = "Registra evento de logeo")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "Conflict",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
     @PostMapping()
     public ResponseEntity<ResponseMasterList> addLogEvent(@RequestParam("name") String name) throws BadRequestExceptions{
         ResponseMasterList result = iLogEvent.addRecord(name);
@@ -59,6 +75,22 @@ public class LogEventController {
 
     @Operation(summary = "Eliminar evento de logeo",
             description = "Eliminar evento de logeo")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "Conflict",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
     @DeleteMapping()
     public ResponseEntity<ResponseMasterList> deleteLogEvent(@RequestParam("id") Long id) throws BadRequestExceptions{
         ResponseMasterList result = iLogEvent.deleteRecord(id);
@@ -67,6 +99,22 @@ public class LogEventController {
 
     @Operation(summary = "Editar evento de logeo",
             description = "Editar evento de logeo")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "Conflict",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
     @PutMapping()
     public ResponseEntity<MasterListDTO> updateLogEvent(@RequestBody RequestMasterList data) throws BadRequestExceptions{
         MasterListDTO result = iLogEvent.updateRecord(data.getName(), data.getId());
