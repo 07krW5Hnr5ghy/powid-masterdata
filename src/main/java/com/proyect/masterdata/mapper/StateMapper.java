@@ -12,6 +12,8 @@ import java.util.List;
 public interface StateMapper {
     StateMapper INSTANCE = Mappers.getMapper(StateMapper.class);
     @Mapping(source="id",target = "id")
+    @Mapping(source="name",target = "name")
+    @Mapping(source = "status",target = "status")
     MasterListDTO stateToStateDTO(State state);
     List<MasterListDTO> stateListToStateListDTO(List<State> stateList);
 }

@@ -12,6 +12,8 @@ import java.util.List;
 public interface PaymentMethodMapper {
     PaymentMethodMapper INSTANCE = Mappers.getMapper(PaymentMethodMapper.class);
     @Mapping(source="id",target = "id")
+    @Mapping(source="name",target = "name")
+    @Mapping(source = "status",target = "status")
     MasterListDTO paymentMethodToPaymentMethodDTO(PaymentMethod paymentMethod);
 
     List<MasterListDTO> paymentMethodListToPaymentMethodListDTO(List<PaymentMethod> paymentMethodList);

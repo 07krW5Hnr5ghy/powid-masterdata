@@ -11,7 +11,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface LogEventMapper {
     LogEventMapper INSTANCE = Mappers.getMapper(LogEventMapper.class);
-    @Mapping(source = "id",target="id")
+    @Mapping(source="id",target = "id")
+    @Mapping(source="name",target = "name")
+    @Mapping(source = "status",target = "status")
     MasterListDTO logEventToLogEventDTO(LogEvent logEvent);
     List<MasterListDTO> logEventListToLogEventListDTO(List<LogEvent> logEventList);
 }

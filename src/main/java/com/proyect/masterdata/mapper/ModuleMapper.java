@@ -12,6 +12,8 @@ import java.util.List;
 public interface ModuleMapper {
     ModuleMapper INSTANCE = Mappers.getMapper(ModuleMapper.class);
     @Mapping(source="id",target = "id")
+    @Mapping(source="name",target = "name")
+    @Mapping(source = "status",target = "status")
     MasterListDTO moduleToModuleDTO(Module module);
     List<MasterListDTO> moduleListToModuleListDTO(List<Module> moduleList);
 }

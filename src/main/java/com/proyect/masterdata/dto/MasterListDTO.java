@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class MasterListDTO {
     Long id;
     String name;
+    Boolean status;
 }

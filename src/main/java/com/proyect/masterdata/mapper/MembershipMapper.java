@@ -12,6 +12,8 @@ import java.util.List;
 public interface MembershipMapper {
     MembershipMapper INSTANCE = Mappers.getMapper(MembershipMapper.class);
     @Mapping(source="id",target = "id")
+    @Mapping(source="name",target = "name")
+    @Mapping(source = "status",target = "status")
     MasterListDTO membershipToMembershipDTO(Membership membership);
     List<MasterListDTO> membershipListToMembershipListDTO(List<Membership> memberships);
 }

@@ -12,6 +12,8 @@ import java.util.List;
 public interface SizeMapper {
      SizeMapper INSTANCE = Mappers.getMapper(SizeMapper.class);
      @Mapping(source="id",target = "id")
+     @Mapping(source="name",target = "name")
+     @Mapping(source = "status",target = "status")
      MasterListDTO sizeToSizeDTO(Size size);
      List<MasterListDTO> sizeListToSizeListDTO(List<Size> sizeList);
 }

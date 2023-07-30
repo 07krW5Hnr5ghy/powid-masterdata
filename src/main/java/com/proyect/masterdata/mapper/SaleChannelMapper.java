@@ -12,6 +12,8 @@ import java.util.List;
 public interface SaleChannelMapper {
     SaleChannelMapper INSTANCE = Mappers.getMapper(SaleChannelMapper.class);
     @Mapping(source="id",target = "id")
+    @Mapping(source="name",target = "name")
+    @Mapping(source = "status",target = "status")
     MasterListDTO saleChannelToSaleChannelDTO(SaleChannel saleChannel);
     List<MasterListDTO> saleChannelListToSaleChannelListDTO(List<SaleChannel> saleChannelList);
 }
