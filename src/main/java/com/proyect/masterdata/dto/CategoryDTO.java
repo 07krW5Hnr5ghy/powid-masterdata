@@ -1,4 +1,4 @@
-package com.proyect.masterdata.dto.response;
+package com.proyect.masterdata.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ResponseDepartment {
-    private int code;
-    private String message;
+public class CategoryDTO {
+    Long id;
+    String name;
+    String description;
+    Boolean status;
 }

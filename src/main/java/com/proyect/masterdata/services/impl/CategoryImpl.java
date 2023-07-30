@@ -1,35 +1,36 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Department;
-import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.domain.Category;
+import com.proyect.masterdata.domain.Color;
+import com.proyect.masterdata.dto.CategoryDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.mapper.DepartmentMapper;
-import com.proyect.masterdata.repository.DepartmentRepository;
-import com.proyect.masterdata.services.IMasterList;
+import com.proyect.masterdata.mapper.CategoryMapper;
+import com.proyect.masterdata.repository.CategoryRepository;
+import com.proyect.masterdata.services.ICategory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
-public class DepartmentImpl implements IMasterList {
-
-    private final DepartmentRepository departmentRepository;
-
-    private final DepartmentMapper departmentMapper;
+public class CategoryImpl implements ICategory {
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
-    public List<MasterListDTO> listRecords() throws BadRequestExceptions {
-        return departmentMapper.INSTANCE.departmentListToDepartmentDTOList(departmentRepository.findAll());
+    public List<CategoryDTO> listRecords() throws BadRequestExceptions {
+        return categoryMapper.INSTANCE.categoryListToCategoryListDTO(categoryRepository.findAll());
     }
 
     @Override
-    public ResponseMasterList addRecord(String name) throws BadRequestExceptions {
+    public ResponseMasterList addRecord(String name, String description) throws BadRequestExceptions {
         try{
-            departmentRepository.save(Department.builder()
+            categoryRepository.save(Category.builder()
                     .name(name)
+                    .description(description)
                     .status(true)
                     .build()
             );
@@ -45,11 +46,12 @@ public class DepartmentImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            Department department = departmentRepository.findById(id).get();
-            departmentRepository.save(Department.builder()
-                    .name(department.getName())
+            Category category = categoryRepository.findById(id).get();
+            categoryRepository.save(Category.builder()
+                    .name(category.getName())
+                    .description(category.getDescription())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(department.getId())
+                    .id(category.getId())
                     .status(false)
                     .build()
             );
@@ -63,16 +65,17 @@ public class DepartmentImpl implements IMasterList {
     }
 
     @Override
-    public MasterListDTO updateRecord(String name, Long id) throws BadRequestExceptions {
+    public CategoryDTO updateRecord(String name, Long id, String description) throws BadRequestExceptions {
         try{
-            Department department = departmentRepository.save(Department.builder()
+            Category category = categoryRepository.save(Category.builder()
                     .id(id)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .name(name)
+                    .description(description)
                     .status(true)
                     .build()
             );
-            return departmentMapper.INSTANCE.departmentToDepartmentDTO(department);
+            return categoryMapper.INSTANCE.categoryToCategoryDTO(category);
         }catch (RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }

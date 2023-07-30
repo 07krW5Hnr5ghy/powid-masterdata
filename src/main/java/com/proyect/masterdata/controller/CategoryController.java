@@ -1,12 +1,13 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.CategoryDTO;
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.request.RequestCategory;
 import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.IMasterList;
-import com.proyect.masterdata.services.impl.PaymentStateImpl;
+import com.proyect.masterdata.services.ICategory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,14 +22,13 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/payment-state")
+@RequestMapping("/category")
 @AllArgsConstructor
-public class PaymentStateController {
+public class CategoryController {
+    private final ICategory iCategory;
 
-    private final PaymentStateImpl iPaymentState;
-
-    @Operation(summary = "Lista los estados de pago",
-            description = "Lista los estados de pago")
+    @Operation(summary = "Lista las categorias",
+            description = "Lista las categorias")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
@@ -45,34 +45,33 @@ public class PaymentStateController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
-
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listPaymentStates() throws BadRequestExceptions{
-        List<MasterListDTO> result = iPaymentState.listRecords();
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @Operation(summary = "Registrar estados de pago",
-            description = "Registrar estados de pago")
-    @PostMapping()
-    public ResponseEntity<ResponseMasterList> addPaymentState(@RequestParam("name") String name) throws BadRequestExceptions {
-        ResponseMasterList result = iPaymentState.addRecord(name);
+    public ResponseEntity<List<CategoryDTO>> listCategories() throws BadRequestExceptions {
+        List<CategoryDTO> result = iCategory.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar estados de pago",
-            description = "Eliminar estados de pago")
-    @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deletePaymentState(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iPaymentState.deleteRecord(id);
+    @Operation(summary = "Registra categoria",
+            description = "Registra categoria")
+    @PostMapping()
+    public ResponseEntity<ResponseMasterList> addCategory(@RequestParam("name") String name,@RequestParam("description") String description) throws BadRequestExceptions{
+        ResponseMasterList result = iCategory.addRecord(name,description);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Editar estados de pago",
-            description = "Editar estados de pago")
+    @Operation(summary = "Eliminar categoria",
+            description = "Eliminar categoria")
+    @DeleteMapping()
+    public ResponseEntity<ResponseMasterList> deleteCategory(@RequestParam("id") Long id) throws BadRequestExceptions{
+        ResponseMasterList result = iCategory.deleteRecord(id);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @Operation(summary = "Editar categoria",
+            description = "Editar categoria")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updatePaymentState(@RequestBody RequestMasterList data) throws BadRequestExceptions{
-        MasterListDTO result = iPaymentState.updateRecord(data.getName(), data.getId());
+    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody RequestCategory data) throws BadRequestExceptions{
+        CategoryDTO result = iCategory.updateRecord(data.getName(), data.getId(),data.getDescription());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

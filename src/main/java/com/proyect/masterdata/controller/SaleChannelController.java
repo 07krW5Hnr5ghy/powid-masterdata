@@ -5,8 +5,8 @@ import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.IMasterList;
-import com.proyect.masterdata.services.impl.PaymentStateImpl;
+import com.proyect.masterdata.services.impl.SaleChannelImpl;
+import com.proyect.masterdata.services.impl.SizeImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,14 +21,12 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/payment-state")
+@RequestMapping("/sale-channel")
 @AllArgsConstructor
-public class PaymentStateController {
-
-    private final PaymentStateImpl iPaymentState;
-
-    @Operation(summary = "Lista los estados de pago",
-            description = "Lista los estados de pago")
+public class SaleChannelController {
+    private final SaleChannelImpl iSaleChannel;
+    @Operation(summary = "Lista los canales de venta",
+            description = "Lista los canales de venta")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
@@ -47,32 +45,32 @@ public class PaymentStateController {
     })
 
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listPaymentStates() throws BadRequestExceptions{
-        List<MasterListDTO> result = iPaymentState.listRecords();
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @Operation(summary = "Registrar estados de pago",
-            description = "Registrar estados de pago")
-    @PostMapping()
-    public ResponseEntity<ResponseMasterList> addPaymentState(@RequestParam("name") String name) throws BadRequestExceptions {
-        ResponseMasterList result = iPaymentState.addRecord(name);
+    public ResponseEntity<List<MasterListDTO>> listSaleChannels() throws BadRequestExceptions {
+        List<MasterListDTO> result = iSaleChannel.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar estados de pago",
-            description = "Eliminar estados de pago")
-    @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deletePaymentState(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iPaymentState.deleteRecord(id);
+    @Operation(summary = "Registra canal de venta",
+            description = "Registra canal de venta")
+    @PostMapping()
+    public ResponseEntity<ResponseMasterList> addSaleChannel(@RequestParam("name") String name) throws BadRequestExceptions{
+        ResponseMasterList result = iSaleChannel.addRecord(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Editar estados de pago",
-            description = "Editar estados de pago")
+    @Operation(summary = "Eliminar canal de venta",
+            description = "Eliminar canal de venta")
+    @DeleteMapping()
+    public ResponseEntity<ResponseMasterList> deleteSaleChannel(@RequestParam("id") Long id) throws BadRequestExceptions{
+        ResponseMasterList result = iSaleChannel.deleteRecord(id);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @Operation(summary = "Editar canal de venta",
+            description = "Editar canal de venta")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updatePaymentState(@RequestBody RequestMasterList data) throws BadRequestExceptions{
-        MasterListDTO result = iPaymentState.updateRecord(data.getName(), data.getId());
+    public ResponseEntity<MasterListDTO> updateSaleChannel(@RequestBody RequestMasterList data) throws BadRequestExceptions{
+        MasterListDTO result = iSaleChannel.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

@@ -1,4 +1,4 @@
-package com.proyect.masterdata.dto.response;
+package com.proyect.masterdata.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ResponsePaymentState {
-    private int code;
-    private String message;
+public class RequestMasterList {
+    Long id;
+    String name;
 }
-

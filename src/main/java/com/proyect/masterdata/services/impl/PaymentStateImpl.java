@@ -1,14 +1,12 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.domain.PaymentState;
-import com.proyect.masterdata.dto.PaymentStateDTO;
-import com.proyect.masterdata.dto.response.ResponsePaymentState;
+import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.PaymentStateMapper;
 import com.proyect.masterdata.repository.PaymentStateRepository;
-import com.proyect.masterdata.services.IPaymentState;
-import jakarta.transaction.Transactional;
+import com.proyect.masterdata.services.IMasterList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,21 +14,21 @@ import java.sql.Date;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
-public class PaymentStateImpl implements IPaymentState {
+public class PaymentStateImpl implements IMasterList {
 
     private final PaymentStateRepository paymentStateRepository;
     private final PaymentStateMapper paymentStateMapper;
 
     @Override
-    public List<PaymentStateDTO> listPaymentState() throws BadRequestExceptions {
+    public List<MasterListDTO> listRecords() throws BadRequestExceptions {
         return paymentStateMapper.paymentStateListToPaymentStateListDTO(paymentStateRepository.findAll());
     }
 
     @Override
-    public ResponsePaymentState addPaymentState(String paymentState) throws BadRequestExceptions {
+    public ResponseMasterList addRecord(String name) throws BadRequestExceptions {
         try{
-            paymentStateRepository.save(PaymentState.builder().name(paymentState).status(true).build());
-            return ResponsePaymentState.builder()
+            paymentStateRepository.save(PaymentState.builder().name(name).status(true).build());
+            return ResponseMasterList.builder()
                     .code(200)
                     .message("Success")
                     .build();
@@ -40,11 +38,16 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public ResponsePaymentState deletePaymentState(Long id) throws BadRequestExceptions {
+    public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            PaymentState record = paymentStateRepository.findById(id).get();
-            paymentStateRepository.save(PaymentState.builder().name(record.getName()).dateRegistration(new Date(System.currentTimeMillis())).id(record.getId()).status(false).build());
-            return ResponsePaymentState.builder()
+            PaymentState paymentState = paymentStateRepository.findById(id).get();
+            paymentStateRepository.save(PaymentState.builder()
+                    .name(paymentState.getName())
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .id(paymentState.getId())
+                    .status(false)
+                    .build());
+            return ResponseMasterList.builder()
                     .code(200)
                     .message("Success")
                     .build();
@@ -54,9 +57,14 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public PaymentStateDTO updatePaymentState(String name,Long id) throws BadRequestExceptions {
+    public MasterListDTO updateRecord(String name,Long id) throws BadRequestExceptions {
         try{
-            PaymentState paymentState = paymentStateRepository.save(PaymentState.builder().id(id).dateRegistration(new Date(System.currentTimeMillis())).name(name).status(true).build());
+            PaymentState paymentState = paymentStateRepository.save(PaymentState.builder()
+                    .id(id)
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .name(name)
+                    .status(true)
+                    .build());
             return PaymentStateMapper.INSTANCE.paymentStateToPaymentStateDTO(paymentState);
         }catch(RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
