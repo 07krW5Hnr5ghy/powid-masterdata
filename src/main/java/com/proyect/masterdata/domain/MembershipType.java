@@ -17,8 +17,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableMembership, schema = Constants.schemaMaster)
-public class Membership {
+@Table(name = Constants.tableMembershipType, schema = Constants.schemaMaster)
+public class MembershipType {
     @Id
     @GeneratedValue(generator = "sequence-generator")
     @GenericGenerator(

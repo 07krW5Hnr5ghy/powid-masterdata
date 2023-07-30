@@ -1,12 +1,11 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.LogEvent;
-import com.proyect.masterdata.domain.Membership;
+import com.proyect.masterdata.domain.MembershipType;
 import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.mapper.MembershipMapper;
-import com.proyect.masterdata.repository.MembershipRepository;
+import com.proyect.masterdata.mapper.MembershipTypeMapper;
+import com.proyect.masterdata.repository.MembershipTypeRepository;
 import com.proyect.masterdata.services.IMasterList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,19 +15,19 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MembershipImpl implements IMasterList {
-    private final MembershipRepository membershipRepository;
-    private final MembershipMapper membershipMapper;
+public class MembershipTypeImpl implements IMasterList {
+    private final MembershipTypeRepository membershipTypeRepository;
+    private final MembershipTypeMapper membershipTypeMapper;
 
     @Override
     public List<MasterListDTO> listRecords() throws BadRequestExceptions {
-        return membershipMapper.membershipListToMembershipListDTO(membershipRepository.findAll());
+        return membershipTypeMapper.membershipTypeListToMembershipTypeListDTO(membershipTypeRepository.findAll());
     }
 
     @Override
     public ResponseMasterList addRecord(String name) throws BadRequestExceptions {
         try{
-            membershipRepository.save(Membership.builder().name(name).status(true).build());
+            membershipTypeRepository.save(MembershipType.builder().name(name).status(true).build());
             return ResponseMasterList.builder()
                     .code(200)
                     .message("Success")
@@ -41,11 +40,11 @@ public class MembershipImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            Membership membership = membershipRepository.findById(id).get();
-            membershipRepository.save(Membership.builder()
-                    .name(membership.getName())
+            MembershipType membershipType = membershipTypeRepository.findById(id).get();
+            membershipTypeRepository.save(MembershipType.builder()
+                    .name(membershipType.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(membership.getId())
+                    .id(membershipType.getId())
                     .status(false)
                     .build()
             );
@@ -61,14 +60,14 @@ public class MembershipImpl implements IMasterList {
     @Override
     public MasterListDTO updateRecord(String name, Long id) throws BadRequestExceptions {
         try{
-            Membership membership = membershipRepository.save(Membership.builder()
+            MembershipType membershipType = membershipTypeRepository.save(MembershipType.builder()
                     .id(id)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .name(name)
                     .status(true)
                     .build()
             );
-            return membershipMapper.INSTANCE.membershipToMembershipDTO(membership);
+            return membershipTypeMapper.INSTANCE.membershipTypeToMembershipTypeDTO(membershipType);
         }catch (RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }
