@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import java.util.Date;
 
@@ -16,23 +17,23 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableProvince, schema = Constants.schemaMaster)
-public class Province {
+@Table(name = Constants.tableLogEvent, schema = Constants.schemaMaster)
+public class LogEvent {
     @Id
     @GeneratedValue(generator = "sequence-generator")
     @GenericGenerator(
             name = "sequence-generator",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "provincias_sequence"),
-                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+                    @Parameter(name = "sequence_name", value = "eventos_log_sequence"),
+                    @Parameter(name = "initial_value", value = "1"),
+                    @Parameter(name = "increment_size", value = "1")
             }
     )
-    @Column(name = "id_provincia", unique = true)
+    @Column(name = "id", unique = true)
     private Long id;
 
-    @Column(name="nombre", length=50, unique=true)
+    @Column(name = "nombre",length=50,unique = true)
     private String name;
 
     @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE")
@@ -41,9 +42,4 @@ public class Province {
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date dateRegistration;
-
-    @ManyToOne
-    @JoinColumn(name = "id_departameto", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_departemaneto"))
-    private Department department;
-
 }

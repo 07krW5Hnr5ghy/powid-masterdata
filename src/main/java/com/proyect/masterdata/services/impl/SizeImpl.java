@@ -1,43 +1,39 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Department;
+import com.proyect.masterdata.domain.Size;
 import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.mapper.DepartmentMapper;
-import com.proyect.masterdata.repository.DepartmentRepository;
+import com.proyect.masterdata.mapper.SizeMapper;
+import com.proyect.masterdata.repository.SizeRepository;
 import com.proyect.masterdata.services.IMasterList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
-public class DepartmentImpl implements IMasterList {
+public class SizeImpl implements IMasterList {
+    private final SizeRepository sizeRepository;
+    private final SizeMapper sizeMapper;
 
-    private final DepartmentRepository departmentRepository;
-
-    private final DepartmentMapper departmentMapper;
 
     @Override
     public List<MasterListDTO> listRecords() throws BadRequestExceptions {
-        return departmentMapper.INSTANCE.departmentListToDepartmentDTOList(departmentRepository.findAll());
+        return sizeMapper.sizeListToSizeListDTO(sizeRepository.findAll());
     }
 
     @Override
     public ResponseMasterList addRecord(String name) throws BadRequestExceptions {
         try{
-            departmentRepository.save(Department.builder()
-                    .name(name)
-                    .status(true)
-                    .build()
-            );
+            sizeRepository.save(Size.builder().name(name).status(true).build());
             return ResponseMasterList.builder()
                     .code(200)
                     .message("Success")
                     .build();
-        }catch (RuntimeException ex){
+        }catch(RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }
     }
@@ -45,14 +41,13 @@ public class DepartmentImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            Department department = departmentRepository.findById(id).get();
-            departmentRepository.save(Department.builder()
-                    .name(department.getName())
+            Size size = sizeRepository.findById(id).get();
+            sizeRepository.save(Size.builder()
+                    .name(size.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(department.getId())
+                    .id(size.getId())
                     .status(false)
-                    .build()
-            );
+                    .build());
             return ResponseMasterList.builder()
                     .code(200)
                     .message("Success")
@@ -65,14 +60,14 @@ public class DepartmentImpl implements IMasterList {
     @Override
     public MasterListDTO updateRecord(String name, Long id) throws BadRequestExceptions {
         try{
-            Department department = departmentRepository.save(Department.builder()
+            Size size = sizeRepository.save(Size.builder()
                     .id(id)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .name(name)
                     .status(true)
                     .build()
             );
-            return departmentMapper.INSTANCE.departmentToDepartmentDTO(department);
+            return sizeMapper.INSTANCE.sizeToSizeDTO(size);
         }catch (RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }

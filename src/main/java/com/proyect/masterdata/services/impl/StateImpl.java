@@ -1,43 +1,37 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Department;
+import com.proyect.masterdata.domain.State;
 import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.mapper.DepartmentMapper;
-import com.proyect.masterdata.repository.DepartmentRepository;
+import com.proyect.masterdata.mapper.StateMapper;
+import com.proyect.masterdata.repository.StateRepository;
 import com.proyect.masterdata.services.IMasterList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
-public class DepartmentImpl implements IMasterList {
-
-    private final DepartmentRepository departmentRepository;
-
-    private final DepartmentMapper departmentMapper;
-
+public class StateImpl implements IMasterList {
+    private final StateRepository stateRepository;
+    private final StateMapper stateMapper;
     @Override
     public List<MasterListDTO> listRecords() throws BadRequestExceptions {
-        return departmentMapper.INSTANCE.departmentListToDepartmentDTOList(departmentRepository.findAll());
+        return stateMapper.stateListToStateListDTO(stateRepository.findAll());
     }
 
     @Override
     public ResponseMasterList addRecord(String name) throws BadRequestExceptions {
         try{
-            departmentRepository.save(Department.builder()
-                    .name(name)
-                    .status(true)
-                    .build()
-            );
+            stateRepository.save(State.builder().name(name).status(true).build());
             return ResponseMasterList.builder()
                     .code(200)
                     .message("Success")
                     .build();
-        }catch (RuntimeException ex){
+        }catch(RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }
     }
@@ -45,14 +39,13 @@ public class DepartmentImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            Department department = departmentRepository.findById(id).get();
-            departmentRepository.save(Department.builder()
-                    .name(department.getName())
+            State state = stateRepository.findById(id).get();
+            stateRepository.save(State.builder()
+                    .name(state.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(department.getId())
+                    .id(state.getId())
                     .status(false)
-                    .build()
-            );
+                    .build());
             return ResponseMasterList.builder()
                     .code(200)
                     .message("Success")
@@ -65,16 +58,17 @@ public class DepartmentImpl implements IMasterList {
     @Override
     public MasterListDTO updateRecord(String name, Long id) throws BadRequestExceptions {
         try{
-            Department department = departmentRepository.save(Department.builder()
+            State state = stateRepository.save(State.builder()
                     .id(id)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .name(name)
                     .status(true)
-                    .build()
-            );
-            return departmentMapper.INSTANCE.departmentToDepartmentDTO(department);
-        }catch (RuntimeException ex){
+                    .build());
+            return StateMapper.INSTANCE.stateToStateDTO(state);
+        }catch(RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }
     }
+
+
 }

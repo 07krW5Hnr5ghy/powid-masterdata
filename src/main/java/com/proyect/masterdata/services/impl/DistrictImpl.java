@@ -1,34 +1,34 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Department;
+import com.proyect.masterdata.domain.Color;
+import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.mapper.DepartmentMapper;
-import com.proyect.masterdata.repository.DepartmentRepository;
+import com.proyect.masterdata.mapper.DistrictMapper;
+import com.proyect.masterdata.repository.DistrictRepository;
 import com.proyect.masterdata.services.IMasterList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
-public class DepartmentImpl implements IMasterList {
-
-    private final DepartmentRepository departmentRepository;
-
-    private final DepartmentMapper departmentMapper;
+public class DistrictImpl implements IMasterList {
+    private final DistrictRepository districtRepository;
+    private final DistrictMapper districtMapper;
 
     @Override
     public List<MasterListDTO> listRecords() throws BadRequestExceptions {
-        return departmentMapper.INSTANCE.departmentListToDepartmentDTOList(departmentRepository.findAll());
+        return districtMapper.INSTANCE.districtListToDistrictListDTO(districtRepository.findAll());
     }
 
     @Override
     public ResponseMasterList addRecord(String name) throws BadRequestExceptions {
         try{
-            departmentRepository.save(Department.builder()
+            districtRepository.save(District.builder()
                     .name(name)
                     .status(true)
                     .build()
@@ -45,11 +45,11 @@ public class DepartmentImpl implements IMasterList {
     @Override
     public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
         try{
-            Department department = departmentRepository.findById(id).get();
-            departmentRepository.save(Department.builder()
-                    .name(department.getName())
+            District district = districtRepository.findById(id).get();
+            districtRepository.save(District.builder()
+                    .name(district.getName())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(department.getId())
+                    .id(district.getId())
                     .status(false)
                     .build()
             );
@@ -65,14 +65,14 @@ public class DepartmentImpl implements IMasterList {
     @Override
     public MasterListDTO updateRecord(String name, Long id) throws BadRequestExceptions {
         try{
-            Department department = departmentRepository.save(Department.builder()
+            District district = districtRepository.save(District.builder()
                     .id(id)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .name(name)
                     .status(true)
                     .build()
             );
-            return departmentMapper.INSTANCE.departmentToDepartmentDTO(department);
+            return districtMapper.INSTANCE.districtToDistrictDTO(district);
         }catch (RuntimeException ex){
             throw new BadRequestExceptions(ex.getMessage());
         }

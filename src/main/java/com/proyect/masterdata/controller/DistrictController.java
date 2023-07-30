@@ -5,8 +5,7 @@ import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.IMasterList;
-import com.proyect.masterdata.services.impl.PaymentStateImpl;
+import com.proyect.masterdata.services.impl.DistrictImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,14 +20,13 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/payment-state")
+@RequestMapping("/district")
 @AllArgsConstructor
-public class PaymentStateController {
+public class DistrictController {
+    private final DistrictImpl iDistrict;
 
-    private final PaymentStateImpl iPaymentState;
-
-    @Operation(summary = "Lista los estados de pago",
-            description = "Lista los estados de pago")
+    @Operation(summary = "Lista los distritos",
+            description = "Lista los distritos")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
@@ -45,34 +43,33 @@ public class PaymentStateController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
-
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listPaymentStates() throws BadRequestExceptions{
-        List<MasterListDTO> result = iPaymentState.listRecords();
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @Operation(summary = "Registrar estados de pago",
-            description = "Registrar estados de pago")
-    @PostMapping()
-    public ResponseEntity<ResponseMasterList> addPaymentState(@RequestParam("name") String name) throws BadRequestExceptions {
-        ResponseMasterList result = iPaymentState.addRecord(name);
+    public ResponseEntity<List<MasterListDTO>> listDistricts() throws BadRequestExceptions {
+        List<MasterListDTO> result = iDistrict.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar estados de pago",
-            description = "Eliminar estados de pago")
-    @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deletePaymentState(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iPaymentState.deleteRecord(id);
+    @Operation(summary = "Registra distrito",
+            description = "Registra distrito")
+    @PostMapping()
+    public ResponseEntity<ResponseMasterList> addDistrict(@RequestParam("name") String name) throws BadRequestExceptions{
+        ResponseMasterList result = iDistrict.addRecord(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Editar estados de pago",
-            description = "Editar estados de pago")
+    @Operation(summary = "Eliminar distrito",
+            description = "Eliminar distrito")
+    @DeleteMapping()
+    public ResponseEntity<ResponseMasterList> deleteDistrict(@RequestParam("id") Long id) throws BadRequestExceptions{
+        ResponseMasterList result = iDistrict.deleteRecord(id);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @Operation(summary = "Editar Distrito",
+            description = "Editar Distrito")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updatePaymentState(@RequestBody RequestMasterList data) throws BadRequestExceptions{
-        MasterListDTO result = iPaymentState.updateRecord(data.getName(), data.getId());
+    public ResponseEntity<MasterListDTO> updateDistrict(@RequestBody RequestMasterList data) throws BadRequestExceptions{
+        MasterListDTO result = iDistrict.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

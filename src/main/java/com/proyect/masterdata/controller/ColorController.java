@@ -5,8 +5,7 @@ import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.IMasterList;
-import com.proyect.masterdata.services.impl.PaymentStateImpl;
+import com.proyect.masterdata.services.impl.ColorImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,14 +20,13 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/payment-state")
+@RequestMapping("/color")
 @AllArgsConstructor
-public class PaymentStateController {
+public class ColorController {
+    private final ColorImpl iColor;
 
-    private final PaymentStateImpl iPaymentState;
-
-    @Operation(summary = "Lista los estados de pago",
-            description = "Lista los estados de pago")
+    @Operation(summary = "Lista los colores",
+            description = "Lista los colores")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
@@ -45,34 +43,34 @@ public class PaymentStateController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
-
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listPaymentStates() throws BadRequestExceptions{
-        List<MasterListDTO> result = iPaymentState.listRecords();
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @Operation(summary = "Registrar estados de pago",
-            description = "Registrar estados de pago")
-    @PostMapping()
-    public ResponseEntity<ResponseMasterList> addPaymentState(@RequestParam("name") String name) throws BadRequestExceptions {
-        ResponseMasterList result = iPaymentState.addRecord(name);
+    public ResponseEntity<List<MasterListDTO>> listColors() throws BadRequestExceptions{
+        List<MasterListDTO> result = iColor.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar estados de pago",
-            description = "Eliminar estados de pago")
-    @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deletePaymentState(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iPaymentState.deleteRecord(id);
+    @Operation(summary = "Registra colores",
+            description = "Registra colores")
+    @PostMapping()
+    public ResponseEntity<ResponseMasterList> addColor(@RequestParam("name") String name) throws BadRequestExceptions{
+        ResponseMasterList result = iColor.addRecord(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Editar estados de pago",
-            description = "Editar estados de pago")
-    @PutMapping()
-    public ResponseEntity<MasterListDTO> updatePaymentState(@RequestBody RequestMasterList data) throws BadRequestExceptions{
-        MasterListDTO result = iPaymentState.updateRecord(data.getName(), data.getId());
+    @Operation(summary = "Eliminar colores",
+            description = "Eliminar colores")
+    @DeleteMapping()
+    public ResponseEntity<ResponseMasterList> deleteColor(@RequestParam("id") Long id) throws BadRequestExceptions{
+        ResponseMasterList result = iColor.deleteRecord(id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
+
+    @Operation(summary = "Editar colores",
+            description = "Editar colores")
+    @PutMapping()
+    public ResponseEntity<MasterListDTO> updateColor(@RequestBody RequestMasterList data) throws BadRequestExceptions{
+        MasterListDTO result = iColor.updateRecord(data.getName(), data.getId());
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
 }
