@@ -5,8 +5,7 @@ import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.IMasterList;
-import com.proyect.masterdata.services.impl.PaymentStateImpl;
+import com.proyect.masterdata.services.impl.LogEventImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,14 +20,13 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/payment-state")
+@RequestMapping("/log-event")
 @AllArgsConstructor
-public class PaymentStateController {
+public class LogEventController {
+    private final LogEventImpl iLogEvent;
 
-    private final PaymentStateImpl iPaymentState;
-
-    @Operation(summary = "Lista los estados de pago",
-            description = "Lista los estados de pago")
+    @Operation(summary = "Lista los eventos de logeo",
+            description = "Lista los eventos de logeo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
@@ -45,34 +43,33 @@ public class PaymentStateController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
-
     @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listPaymentStates() throws BadRequestExceptions{
-        List<MasterListDTO> result = iPaymentState.listRecords();
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @Operation(summary = "Registrar estados de pago",
-            description = "Registrar estados de pago")
-    @PostMapping()
-    public ResponseEntity<ResponseMasterList> addPaymentState(@RequestParam("name") String name) throws BadRequestExceptions {
-        ResponseMasterList result = iPaymentState.addRecord(name);
+    public ResponseEntity<List<MasterListDTO>> listLogEvents() throws BadRequestExceptions {
+        List<MasterListDTO> result = iLogEvent.listRecords();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar estados de pago",
-            description = "Eliminar estados de pago")
-    @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deletePaymentState(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iPaymentState.deleteRecord(id);
+    @Operation(summary = "Registra evento de logeo",
+            description = "Registra evento de logeo")
+    @PostMapping()
+    public ResponseEntity<ResponseMasterList> addLogEvent(@RequestParam("name") String name) throws BadRequestExceptions{
+        ResponseMasterList result = iLogEvent.addRecord(name);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @Operation(summary = "Editar estados de pago",
-            description = "Editar estados de pago")
+    @Operation(summary = "Eliminar evento de logeo",
+            description = "Eliminar evento de logeo")
+    @DeleteMapping()
+    public ResponseEntity<ResponseMasterList> deleteLogEvent(@RequestParam("id") Long id) throws BadRequestExceptions{
+        ResponseMasterList result = iLogEvent.deleteRecord(id);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @Operation(summary = "Editar evento de logeo",
+            description = "Editar evento de logeo")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updatePaymentState(@RequestBody RequestMasterList data) throws BadRequestExceptions{
-        MasterListDTO result = iPaymentState.updateRecord(data.getName(), data.getId());
+    public ResponseEntity<MasterListDTO> updateLogEvent(@RequestBody RequestMasterList data) throws BadRequestExceptions{
+        MasterListDTO result = iLogEvent.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
