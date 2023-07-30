@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
@@ -70,7 +71,7 @@ public class PaymentStateController {
     @Operation(summary = "Editar estados de pago",
             description = "Editar estados de pago")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updatePaymentState(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+    public ResponseEntity<MasterListDTO> updatePaymentState(@RequestBody RequestMasterList data) throws BadRequestExceptions{
         MasterListDTO result = iPaymentState.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }

@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
@@ -68,7 +69,7 @@ public class UserRoleController {
     @Operation(summary = "Editar rol de usuario",
             description = "Editar rol de usuario")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateUserRole(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+    public ResponseEntity<MasterListDTO> updateUserRole(@RequestBody RequestMasterList data) throws BadRequestExceptions{
         MasterListDTO result = iUserRole.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }

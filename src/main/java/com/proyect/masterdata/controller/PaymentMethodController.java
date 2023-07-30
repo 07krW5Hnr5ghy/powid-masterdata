@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IMasterList;
@@ -49,7 +50,7 @@ public class PaymentMethodController {
     @Operation(summary = "Editar los metodos de pago ",
             description = "Editar los metodos de pago")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updatePaymentMethod(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+    public ResponseEntity<MasterListDTO> updatePaymentMethod(@RequestBody RequestMasterList data) throws BadRequestExceptions{
         MasterListDTO result = iPaymentMethod.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }

@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
@@ -67,7 +68,7 @@ public class LogEventController {
     @Operation(summary = "Editar evento de logeo",
             description = "Editar evento de logeo")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateLogEvent(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+    public ResponseEntity<MasterListDTO> updateLogEvent(@RequestBody RequestMasterList data) throws BadRequestExceptions{
         MasterListDTO result = iLogEvent.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }

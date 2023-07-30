@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
@@ -69,7 +70,7 @@ public class SizeController {
     @Operation(summary = "Editar tallas",
             description = "Editar tallas")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateSize(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+    public ResponseEntity<MasterListDTO> updateSize(@RequestBody RequestMasterList data) throws BadRequestExceptions{
         MasterListDTO result = iSize.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }

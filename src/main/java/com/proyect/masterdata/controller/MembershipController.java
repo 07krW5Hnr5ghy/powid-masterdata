@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.impl.MembershipImpl;
@@ -46,7 +47,7 @@ public class MembershipController {
     @Operation(summary = "Editar membresia",
             description = "Editar membresia")
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateMembership(@RequestBody MasterListDTO data) throws BadRequestExceptions{
+    public ResponseEntity<MasterListDTO> updateMembership(@RequestBody RequestMasterList data) throws BadRequestExceptions{
         MasterListDTO result = iMembership.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
