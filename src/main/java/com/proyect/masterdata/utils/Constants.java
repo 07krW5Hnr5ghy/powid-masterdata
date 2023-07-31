@@ -24,4 +24,9 @@ public class Constants {
     public static final String register="registration correctly";
     public static final String update="correctly updated";
     public static final String delete="successfully deleted";
+    //Errores
+    public static final String ErrorWhileRegistering= "Error while registering";
+    public static final String ErrorWhileUpdating= "Error while updating";
+    public static final String ErrorWhenDeleting= "Error when deleting";
+    public static final String ResultsFound= "no results found";
 }
