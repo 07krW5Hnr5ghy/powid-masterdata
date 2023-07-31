@@ -35,8 +35,8 @@ public class Department {
     @Column(name="nombre", length=50, unique=true)
     private String name;
 
-    @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private Boolean status = true;
+    @Column(name = "estado", columnDefinition = "boolean default true")
+    private boolean status = true;
 
     @Column(name = "fecha_registro")
     @CreationTimestamp

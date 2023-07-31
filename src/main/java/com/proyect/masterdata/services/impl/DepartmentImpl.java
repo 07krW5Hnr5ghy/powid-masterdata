@@ -11,9 +11,9 @@ import com.proyect.masterdata.repository.DepartmentRepository;
 import com.proyect.masterdata.services.IDepartment;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -25,7 +25,7 @@ public class DepartmentImpl implements IDepartment {
     @Override
     public ResponseSuccess save(String name) throws BadRequestExceptions {
         try {
-            departmentRepository.save(departmentMapper.departmentToName(name));
+            departmentRepository.save(departmentMapper.departmentToName(name.toUpperCase()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -38,7 +38,8 @@ public class DepartmentImpl implements IDepartment {
     @Override
     public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
         try {
-            departmentRepository.saveAll(departmentMapper.listDepartmentToListName(names));
+            departmentRepository.saveAll(departmentMapper.listDepartmentToListName(
+                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -51,6 +52,7 @@ public class DepartmentImpl implements IDepartment {
     @Override
     public DepartmentDTO update(RequestDepartment requestDepartment) throws BadRequestExceptions {
         try {
+            requestDepartment.setName(requestDepartment.getName().toUpperCase());
             Department department = departmentRepository.save(departmentMapper.requestDepartmentToDepartment(requestDepartment));
             return departmentMapper.departmentToDepartmentDTO(department);
         } catch (RuntimeException e){
@@ -105,7 +107,7 @@ public class DepartmentImpl implements IDepartment {
     @Override
     public DepartmentDTO findByName(String name) throws BadRequestExceptions{
         try {
-            return departmentMapper.departmentToDepartmentDTO(departmentRepository.findByName(name));
+            return departmentMapper.departmentToDepartmentDTO(departmentRepository.findByName(name.toUpperCase()));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
