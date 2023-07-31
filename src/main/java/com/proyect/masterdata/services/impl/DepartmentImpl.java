@@ -10,6 +10,7 @@ import com.proyect.masterdata.mapper.DepartmentMapper;
 import com.proyect.masterdata.repository.DepartmentRepository;
 import com.proyect.masterdata.services.IDepartment;
 import com.proyect.masterdata.utils.Constants;
+import com.proyect.masterdata.utils.Encrypt;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
