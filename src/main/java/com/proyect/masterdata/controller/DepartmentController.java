@@ -1,11 +1,7 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.MasterListDTO;
-import com.proyect.masterdata.dto.request.RequestMasterList;
-import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
-import com.proyect.masterdata.services.impl.DepartmentImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,7 +19,7 @@ import java.util.List;
 @RequestMapping("/department")
 @AllArgsConstructor
 public class DepartmentController {
-    private final DepartmentImpl iDepartment;
+    /*private final DepartmentImpl iDepartment;
 
     @Operation(summary = "Lista los departmentos",
             description = "Lista los departamentos")
@@ -119,5 +115,5 @@ public class DepartmentController {
     public ResponseEntity<MasterListDTO> updateDepartment(@RequestBody RequestMasterList data) throws BadRequestExceptions{
         MasterListDTO result = iDepartment.updateRecord(data.getName(), data.getId());
         return new ResponseEntity<>(result,HttpStatus.OK);
-    }
+    }*/
 }
