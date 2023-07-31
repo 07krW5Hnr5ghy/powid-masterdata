@@ -1,0 +1,50 @@
+package com.proyect.masterdata.services.impl;
+
+import com.proyect.masterdata.dto.ProvinceDTO;
+import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
+import com.proyect.masterdata.services.IProvince;
+
+import java.util.List;
+
+public class ProvinceImpl implements IProvince {
+    @Override
+    public ResponseSuccess save(String name) {
+        return null;
+    }
+
+    @Override
+    public ResponseSuccess saveAll(List<String> names) {
+        return null;
+    }
+
+    @Override
+    public ProvinceDTO update(Long code, String name) {
+        return null;
+    }
+
+    @Override
+    public ResponseDelete delete(Long code) {
+        return null;
+    }
+
+    @Override
+    public ResponseDelete deleteAll(List<Long> codes) {
+        return null;
+    }
+
+    @Override
+    public List<ProvinceDTO> list() {
+        return null;
+    }
+
+    @Override
+    public ProvinceDTO findByCode(Long code) {
+        return null;
+    }
+
+    @Override
+    public ProvinceDTO findByName(String name) {
+        return null;
+    }
+}
