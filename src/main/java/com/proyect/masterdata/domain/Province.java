@@ -42,8 +42,11 @@ public class Province {
     @CreationTimestamp
     private Date dateRegistration;
 
+    @Column(name = "id_departameto")
+    private Long idDepartment;
+
     @ManyToOne
-    @JoinColumn(name = "id_departameto", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_departemaneto"))
+    @JoinColumn(name = "id_departameto", columnDefinition = "idDepartment",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_departemaneto"))
     private Department department;
 
 }
