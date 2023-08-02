@@ -31,7 +31,7 @@ public class SizeType {
             }
     )
 
-    @Column(name = "id", unique = true)
+    @Column(name = "id_tipo_talla", unique = true)
     private Long id;
 
     @Column(name = "nombre",length=50,unique = true)

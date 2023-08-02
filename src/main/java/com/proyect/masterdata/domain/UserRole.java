@@ -31,7 +31,7 @@ public class UserRole {
             }
     )
 
-    @Column(name = "id", unique = true)
+    @Column(name = "id_rol_usuario", unique = true)
     private Long id;
 
     @Column(name = "nombre",length=50,unique = true)

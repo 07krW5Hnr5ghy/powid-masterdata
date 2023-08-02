@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RequestCategory {
-    Long id;
-    String name;
-    String description;
+    private Long code;
+    private String name;
+    private String description;
+    private boolean status;
 }

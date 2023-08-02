@@ -30,7 +30,7 @@ public class SaleChannel {
                     @Parameter(name = "increment_size", value = "1")
             }
     )
-    @Column(name = "id", unique = true)
+    @Column(name = "id_canal_venta", unique = true)
     private Long id;
 
     @Column(name = "nombre",length=50,unique = true)

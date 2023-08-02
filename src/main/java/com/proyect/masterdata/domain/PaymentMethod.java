@@ -31,7 +31,7 @@ public class PaymentMethod {
             }
     )
 
-    @Column(name = "id", unique = true)
+    @Column(name = "id_medio_pago", unique = true)
     private Long id;
 
     @Column(name = "nombre",length=50,unique = true)

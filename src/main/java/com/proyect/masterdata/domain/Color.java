@@ -30,14 +30,14 @@ public class Color {
                     @Parameter(name = "increment_size", value = "1")
             }
     )
-    @Column(name = "id", unique = true)
+    @Column(name = "id_color", unique = true)
     private Long id;
 
-    @Column(name = "nombre",length=50,unique = true)
+    @Column(name="nombre", length=50, unique=true)
     private String name;
 
     @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private Boolean status = true;
+    private boolean status = true;
 
     @Column(name = "fecha_registro")
     @CreationTimestamp

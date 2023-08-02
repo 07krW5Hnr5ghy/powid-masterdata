@@ -32,7 +32,7 @@ public class PaymentState {
             }
     )
 
-    @Column(name = "id", unique = true)
+    @Column(name = "id_estado_pago", unique = true)
     private Long id;
 
     @Column(name = "nombre",length=50,unique = true)
