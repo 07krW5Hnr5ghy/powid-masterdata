@@ -11,10 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
-    @Mapping(source="id",target = "id")
-    @Mapping(source="name",target = "name")
-    @Mapping(source = "description",target = "description")
-    @Mapping(source = "status",target = "status")
+    @Mapping(source="code",target = "id")
     CategoryDTO categoryToCategoryDTO(Category category);
 
     List<CategoryDTO> categoryListToCategoryListDTO(List<Category> categoryList);
