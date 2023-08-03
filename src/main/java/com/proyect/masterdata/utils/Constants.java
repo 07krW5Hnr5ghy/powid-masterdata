@@ -10,8 +10,15 @@ public class Constants {
     public static final String tableLogin= "sesion";
     public static final String tableUser= "usuario";
     public static final String tableUserType= "tipo_usuario";
-
-
+    public static final String tableChannel = "canal";
+    public static final String tableClient = "cliente";
+    public static final String tableMenbresia = "menbresia";
+    public static final String tableUserTypeModule = "tipo_usuario_modulo";
+    public static final String tablePayment = "pago";
+    public static final String tableModule = "modulo";
+    public static final String tableDiscount = "descuento";
+    public static final String tableEvent = "evento";
+    public static final String tablePaymentType = "tipo_pago";
 
     public static final String tablePaymentMethod = "medios_pago";
     public static final String tablePaymentState = "estados_pago";
@@ -20,7 +27,6 @@ public class Constants {
     public static final String tableColor = "colores";
     public static final String tableSaleChannel = "canales_venta";
     public static final String tableLogEvent = "eventos_log";
-    public static final String tableModule = "modulos";
     public static final String tableSizeType = "tipos_talla";
     public static final String tableUserRole = "roles_usuario";
     public static final String tableMembershipType = "tipos_membresia";

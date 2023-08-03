@@ -24,21 +24,14 @@ public class User {
     @Column(name = "nombre")
     private String name;
 
-    @Column(name = "id_tipo_usuario")
-    private Long idUserType;
-
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_usuario", columnDefinition = "idUserType",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_usuario"))
-    private UserType userType;
-
-    @ManyToOne
-    @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_login"))
-    private Login login;
-
     @Column(name = "estado")
     private Long status;
 
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date dateRegistration;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_sesion"))
+    private Login login;
 }

@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.util.Date;
 
 
@@ -31,4 +30,11 @@ public class Login {
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date dateRegistration;
+
+    @Column(name = "id_tipo_usuario")
+    private Long idUserType;
+
+    @ManyToOne
+    @JoinColumn(name = "id_tipo_usuario", columnDefinition = "idUserType",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_usuario"))
+    private UserType userType;
 }
