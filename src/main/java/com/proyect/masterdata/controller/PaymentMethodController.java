@@ -44,7 +44,7 @@ public class PaymentMethodController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/departments")
+    @PostMapping(value = "/payment-methods")
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestBody() List<String> names
     ) throws BadRequestExceptions {
@@ -68,7 +68,7 @@ public class PaymentMethodController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/departments")
+    @DeleteMapping(value = "/payment-methods")
     public ResponseEntity<ResponseDelete> deleteall(
             @RequestBody() List<Long> codes
     ) throws BadRequestExceptions {

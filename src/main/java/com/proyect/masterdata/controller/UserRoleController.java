@@ -40,7 +40,7 @@ public class UserRoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/departments")
+    @PostMapping(value = "/user-roles")
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestBody() List<String> names
     ) throws BadRequestExceptions {
@@ -64,7 +64,7 @@ public class UserRoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/departments")
+    @DeleteMapping(value = "/user-roles")
     public ResponseEntity<ResponseDelete> deleteall(
             @RequestBody() List<Long> codes
     ) throws BadRequestExceptions {
