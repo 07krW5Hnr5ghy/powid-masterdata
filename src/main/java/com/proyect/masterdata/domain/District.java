@@ -47,7 +47,14 @@ public class District {
     @Column(name = "id_provincia")
     private Long idProvince;
 
+    @Column(name = "usuario", unique = true)
+    private String user;
+
     @ManyToOne
     @JoinColumn(name = "id_provincia", columnDefinition = "idProvince", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_provincia"))
     private Province province;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_sesion"))
+    private Login login;
 }

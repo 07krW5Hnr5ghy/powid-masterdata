@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestDepartment {
-    private Long code;
+public class RequestDepartmentSave {
     private String name;
-    private boolean status;
     private String user;
 }

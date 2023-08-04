@@ -22,17 +22,19 @@ public class DepartmentController {
 
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name
+            @RequestParam("name") String name,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iDepartment.save(name);
+        ResponseSuccess result = iDepartment.save(name,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/departments")
     public ResponseEntity<ResponseSuccess> saveall(
+            @RequestParam("user") String user,
             @RequestBody() List<String> names
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iDepartment.saveAll(names);
+        ResponseSuccess result = iDepartment.saveAll(names, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -46,23 +48,31 @@ public class DepartmentController {
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code
+            @RequestParam("code") Long code,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iDepartment.delete(code);
+        ResponseDelete result = iDepartment.delete(code, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/departments")
     public ResponseEntity<ResponseDelete> deleteall(
+            @RequestParam("user") String user,
             @RequestBody() List<Long> codes
     ) throws BadRequestExceptions {
-        ResponseDelete result = iDepartment.deleteAll(codes);
+        ResponseDelete result = iDepartment.deleteAll(codes, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
     public ResponseEntity<List<DepartmentDTO>> list() throws BadRequestExceptions {
         List<DepartmentDTO> result = iDepartment.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/StatusFalse")
+    public ResponseEntity<List<DepartmentDTO>> listStatusFalse() throws BadRequestExceptions {
+        List<DepartmentDTO> result = iDepartment.listStatusFalse();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -79,6 +89,14 @@ public class DepartmentController {
             @RequestParam("name") String name
     ) throws BadRequestExceptions {
         DepartmentDTO result = iDepartment.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user")
+    public ResponseEntity<DepartmentDTO> findByUser(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        DepartmentDTO result = iDepartment.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

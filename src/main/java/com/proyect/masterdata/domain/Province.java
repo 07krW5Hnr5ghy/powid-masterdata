@@ -45,8 +45,15 @@ public class Province {
     @Column(name = "id_departameto")
     private Long idDepartment;
 
+    @Column(name = "usuario", unique = true)
+    private String user;
+
+    //@ManyToOne
+    //@JoinColumn(name = "id_departameto", columnDefinition = "idDepartment",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_departemaneto"))
+    //private Department department;
+
     @ManyToOne
-    @JoinColumn(name = "id_departameto", columnDefinition = "idDepartment",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_departemaneto"))
-    private Department department;
+    @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_sesion"))
+    private Login login;
 
 }

@@ -9,12 +9,15 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import java.util.List;
 
 public interface IDepartment {
-    ResponseSuccess save(String name) throws BadRequestExceptions;
-    ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions;
+    ResponseSuccess save(String name, String user) throws BadRequestExceptions;
+    ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions;
     DepartmentDTO update(RequestDepartment requestDepartment) throws BadRequestExceptions;
-    ResponseDelete delete(Long code) throws BadRequestExceptions;
-    ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions;
+    ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
+    ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions;
     List<DepartmentDTO> list() throws BadRequestExceptions;
+
+    List<DepartmentDTO> listStatusFalse() throws BadRequestExceptions;
     DepartmentDTO findByCode(Long code) throws BadRequestExceptions;
     DepartmentDTO findByName(String name) throws BadRequestExceptions;
+    DepartmentDTO findByUser(String user) throws BadRequestExceptions;
 }
