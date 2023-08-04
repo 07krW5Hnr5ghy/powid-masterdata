@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import java.util.Date;
 
 @Entity
 @Builder
@@ -30,6 +33,19 @@ public class Channel {
     @Column(name = "id_canal", unique = true)
     private Long id;
 
+    @Column(name = "nombre", unique = true)
+    private String name;
+
+    @Column(name = "meses")
+    private int months;
+
+    @Column(name = "estado")
+    private boolean status;
+
+    @Column(name = "fecha_registro")
+    @CreationTimestamp
+    private Date dateRegistration;
+
     @Column(name = "usuario", unique = true)
     private String user;
 
@@ -39,14 +55,11 @@ public class Channel {
     @Column(name = "id_menbresia", unique = true)
     private Long idMenbresia;
 
-    @Column(name = "id_pago", unique = true)
-    private Long idPayment;
-
-    @Column(name = "id_descuento", unique = true)
-    private Long idDiscount;
-
     @Column(name = "id_tipo_pago", unique = true)
     private Long idPaymentType;
+
+    @Column(name = "id_conexion", unique = true)
+    private Long idConnection;
 
     @ManyToOne
     @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_sesion"))
@@ -61,14 +74,10 @@ public class Channel {
     private Menbresia menbresia;
 
     @ManyToOne
-    @JoinColumn(name = "id_pago", columnDefinition = "idPayment",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_pago"))
-    private Payment payment;
-
-    @ManyToOne
-    @JoinColumn(name = "id_descuento", columnDefinition = "idDiscount",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_descuento"))
-    private Discount discount;
-
-    @ManyToOne
     @JoinColumn(name = "id_tipo_pago", columnDefinition = "idPaymentType",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_pago"))
     private PaymentType paymentType;
+
+    @ManyToOne
+    @JoinColumn(name = "id_conexion", columnDefinition = "idConnection",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_conexion"))
+    private Connection connection;
 }

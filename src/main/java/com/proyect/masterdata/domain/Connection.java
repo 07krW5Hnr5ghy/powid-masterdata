@@ -17,24 +17,24 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableDiscount, schema = Constants.schemaMaster)
-public class Discount {
+@Table(name = Constants.tableConnection, schema = Constants.schemaMaster)
+public class Connection {
     @Id
     @GeneratedValue(generator = "sequence-generator")
     @GenericGenerator(
             name = "sequence-generator",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
-                    @Parameter(name = "sequence_name", value = "descuento_sequence"),
+                    @Parameter(name = "sequence_name", value = "conexion_sequence"),
                     @Parameter(name = "initial_value", value = "1"),
                     @Parameter(name = "increment_size", value = "1")
             }
     )
-    @Column(name = "id_descuento", unique = true)
-    private Long id;
+    @Column(name = "id_conexion", unique = true)
+    private Long idConnection;
 
-    @Column(name = "descuento")
-    private double discount;
+    @Column(name = "url", unique = true)
+    private String url;
 
     @Column(name = "estado")
     private boolean status;
@@ -42,12 +42,4 @@ public class Discount {
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date dateRegistration;
-
-    @Column(name = "id_canal", unique = true)
-    private Long idChannel;
-
-    @ManyToOne
-    @JoinColumn(name = "id_canal", columnDefinition = "idChannel",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_canal"))
-    private Channel channel;
 }
-

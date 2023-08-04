@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import java.util.Date;
 
 @Entity
 @Builder
@@ -29,4 +32,14 @@ public class UserTypeModule {
     )
     @Column(name = "id_tipo_usuario_modulo", unique = true)
     private Long id;
+
+    @Column(name = "tipo_usuario", unique = true)
+    private String usertype;
+
+    @Column(name = "estado", columnDefinition = "boolean default true")
+    private boolean status = true;
+
+    @Column(name = "fecha_registro")
+    @CreationTimestamp
+    private Date dateRegistration;
 }

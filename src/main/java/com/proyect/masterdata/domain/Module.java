@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import java.util.Date;
 
 @Entity
 @Builder
@@ -22,18 +25,27 @@ public class Module {
             name = "sequence-generator",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
-                    @Parameter(name = "sequence_name", value = "tipo_usuario_modulo_sequence"),
+                    @Parameter(name = "sequence_name", value = "modulo_sequence"),
                     @Parameter(name = "initial_value", value = "1"),
                     @Parameter(name = "increment_size", value = "1")
             }
     )
-    @Column(name = "id_moduloa", unique = true)
+    @Column(name = "id_modulo", unique = true)
     private Long id;
 
-    @Column(name = "id_tipo_usuario_modulo", unique = true)
-    private Long idUserTypeModule;
+    @Column(name = "nombre", unique = true)
+    private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_usuario_modulo", columnDefinition = "idUserTypeModule",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_usuario_modulo"))
-    private UserTypeModule userTypeModule;
+    @Column(name = "precio")
+    private double price;
+
+    @Column(name = "estado_modulo")
+    private int status_module;
+
+    @Column(name = "estado")
+    private boolean status;
+
+    @Column(name = "fecha_registro")
+    @CreationTimestamp
+    private Date dateRegistration;
 }
