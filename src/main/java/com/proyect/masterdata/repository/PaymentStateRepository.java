@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface PaymentStateRepository extends JpaRepository<PaymentState,Long> {
-    Department findByName(String name);
+    PaymentState findByName(String name);
 }

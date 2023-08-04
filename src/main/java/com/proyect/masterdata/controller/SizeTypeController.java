@@ -1,10 +1,17 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.SizeDTO;
+import com.proyect.masterdata.dto.SizeTypeDTO;
 import com.proyect.masterdata.dto.request.RequestMasterList;
+import com.proyect.masterdata.dto.request.RequestSize;
+import com.proyect.masterdata.dto.request.RequestSizeType;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
+import com.proyect.masterdata.services.ISizeType;
 import com.proyect.masterdata.services.impl.SizeImpl;
 import com.proyect.masterdata.services.impl.SizeTypeImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,101 +31,66 @@ import java.util.List;
 @RequestMapping("/size-type")
 @AllArgsConstructor
 public class SizeTypeController {
-    private final SizeTypeImpl iSizeType;
-    @Operation(summary = "Lista los tipos de talla",
-            description = "Lista los tipos de talla")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
-
-    @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listSizeTypes() throws BadRequestExceptions {
-        List<MasterListDTO> result = iSizeType.listRecords();
+    private final ISizeType iSizeType;
+    @PostMapping()
+    public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("name") String name
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iSizeType.save(name);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Registra tipo de talla",
-            description = "Registra tipo de talla")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
-    @PostMapping()
-    public ResponseEntity<ResponseMasterList> addState(@RequestParam("name") String name) throws BadRequestExceptions{
-        ResponseMasterList result = iSizeType.addRecord(name);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    @PostMapping(value = "/departments")
+    public ResponseEntity<ResponseSuccess> saveall(
+            @RequestBody() List<String> names
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iSizeType.saveAll(names);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar tipo de talla",
-            description = "Eliminar tipo de talla")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
-    @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deleteState(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iSizeType.deleteRecord(id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @Operation(summary = "Editar tipo de talla",
-            description = "Editar tipo de talla")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateState(@RequestBody RequestMasterList data) throws BadRequestExceptions{
-        MasterListDTO result = iSizeType.updateRecord(data.getName(), data.getId());
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    public ResponseEntity<SizeTypeDTO> update(
+            @RequestBody() RequestSizeType requestSizeType
+    ) throws BadRequestExceptions {
+        SizeTypeDTO result = iSizeType.update(requestSizeType);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("code") Long code
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iSizeType.delete(code);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/departments")
+    public ResponseEntity<ResponseDelete> deleteall(
+            @RequestBody() List<Long> codes
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iSizeType.deleteAll(codes);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<SizeTypeDTO>> list() throws BadRequestExceptions {
+        List<SizeTypeDTO> result = iSizeType.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/code")
+    public ResponseEntity<SizeTypeDTO> findByCode(
+            @RequestParam("code") Long code
+    ) throws BadRequestExceptions {
+        SizeTypeDTO result = iSizeType.findByCode(code);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/name")
+    public ResponseEntity<SizeTypeDTO> findByName(
+            @RequestParam("name") String name
+    ) throws BadRequestExceptions {
+        SizeTypeDTO result = iSizeType.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

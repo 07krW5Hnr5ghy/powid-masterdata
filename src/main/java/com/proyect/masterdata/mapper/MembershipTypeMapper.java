@@ -12,16 +12,16 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface MembershipTypeMapper {
     MembershipTypeMapper INSTANCE = Mappers.getMapper(MembershipTypeMapper.class);
-    @Mapping(source="code",target = "id")
+    @Mapping(target = "code", source = "id")
     MembershipTypeDTO membershipTypeToMembershipTypeDTO(MembershipType membershipType);
-    List<MembershipTypeDTO> membershipTypeListToMembershipTypeListDTO(List<MembershipType> membershipTypeList);
+    List<MembershipTypeDTO> listMembershipTypeToListMembershipTypeDTO(List<MembershipType> membershipTypeList);
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "name")
     MembershipType membershipTypeToName(String name);
 
-    List<MembershipType> membershipTypeToListName(List<String> names);
+    List<MembershipType> listMembershipTypeToListName(List<String> names);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

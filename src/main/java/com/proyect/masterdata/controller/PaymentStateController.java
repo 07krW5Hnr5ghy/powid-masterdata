@@ -1,11 +1,18 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.PaymentMethodDTO;
+import com.proyect.masterdata.dto.PaymentStateDTO;
 import com.proyect.masterdata.dto.request.RequestMasterList;
+import com.proyect.masterdata.dto.request.RequestPaymentMethod;
+import com.proyect.masterdata.dto.request.RequestPaymentState;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
 import com.proyect.masterdata.services.IMasterList;
+import com.proyect.masterdata.services.IPaymentState;
 import com.proyect.masterdata.services.impl.PaymentStateImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,102 +32,67 @@ import java.util.List;
 @AllArgsConstructor
 public class PaymentStateController {
 
-    private final PaymentStateImpl iPaymentState;
+    private final IPaymentState iPaymentState;
 
-    @Operation(summary = "Lista los estados de pago",
-            description = "Lista los estados de pago")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
-
-    @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listPaymentStates() throws BadRequestExceptions{
-        List<MasterListDTO> result = iPaymentState.listRecords();
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @Operation(summary = "Registrar estados de pago",
-            description = "Registrar estados de pago")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
     @PostMapping()
-    public ResponseEntity<ResponseMasterList> addPaymentState(@RequestParam("name") String name) throws BadRequestExceptions {
-        ResponseMasterList result = iPaymentState.addRecord(name);
+    public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("name") String name
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iPaymentState.save(name);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar estados de pago",
-            description = "Eliminar estados de pago")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
-    @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deletePaymentState(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iPaymentState.deleteRecord(id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    @PostMapping(value = "/departments")
+    public ResponseEntity<ResponseSuccess> saveall(
+            @RequestBody() List<String> names
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iPaymentState.saveAll(names);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Editar estados de pago",
-            description = "Editar estados de pago")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updatePaymentState(@RequestBody RequestMasterList data) throws BadRequestExceptions{
-        MasterListDTO result = iPaymentState.updateRecord(data.getName(), data.getId());
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    public ResponseEntity<PaymentStateDTO> update(
+            @RequestBody() RequestPaymentState requestPaymentState
+    ) throws BadRequestExceptions {
+        PaymentStateDTO result = iPaymentState.update(requestPaymentState);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("code") Long code
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iPaymentState.delete(code);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/departments")
+    public ResponseEntity<ResponseDelete> deleteall(
+            @RequestBody() List<Long> codes
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iPaymentState.deleteAll(codes);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<PaymentStateDTO>> list() throws BadRequestExceptions {
+        List<PaymentStateDTO> result = iPaymentState.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/code")
+    public ResponseEntity<PaymentStateDTO> findByCode(
+            @RequestParam("code") Long code
+    ) throws BadRequestExceptions {
+        PaymentStateDTO result = iPaymentState.findByCode(code);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/name")
+    public ResponseEntity<PaymentStateDTO> findByName(
+            @RequestParam("name") String name
+    ) throws BadRequestExceptions {
+        PaymentStateDTO result = iPaymentState.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

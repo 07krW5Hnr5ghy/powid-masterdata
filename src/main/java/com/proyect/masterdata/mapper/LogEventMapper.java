@@ -13,16 +13,16 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface LogEventMapper {
     LogEventMapper INSTANCE = Mappers.getMapper(LogEventMapper.class);
-    @Mapping(source="code",target = "id")
+    @Mapping(target = "code", source = "id")
     LogEventDTO logEventToLogEventDTO(LogEvent logEvent);
-    List<LogEventDTO> logEventListToLogEventListDTO(List<LogEvent> logEventList);
+    List<LogEventDTO> listLogEventToListLogEventDTO(List<LogEvent> logEventList);
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "name")
     LogEvent logEventToName(String name);
 
-    List<LogEvent> logEventToListName(List<String> names);
+    List<LogEvent> listLogEventToListName(List<String> names);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

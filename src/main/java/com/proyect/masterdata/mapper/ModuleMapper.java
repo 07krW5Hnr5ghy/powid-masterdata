@@ -12,16 +12,16 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ModuleMapper {
     ModuleMapper INSTANCE = Mappers.getMapper(ModuleMapper.class);
-    @Mapping(source="code",target = "id")
+    @Mapping(target = "code", source = "id")
     ModuleDTO moduleToModuleDTO(Module module);
-    List<ModuleDTO> moduleListToModuleListDTO(List<Module> moduleList);
+    List<ModuleDTO> listModuleToListModuleDTO(List<Module> moduleList);
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "name")
     Module moduleToName(String name);
 
-    List<Module> moduleToListName(List<String> names);
+    List<Module> listModuleToListName(List<String> names);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

@@ -1,78 +1,122 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Color;
+import com.proyect.masterdata.domain.Department;
+import com.proyect.masterdata.dto.ColorDTO;
+import com.proyect.masterdata.dto.DepartmentDTO;
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.request.RequestColor;
+import com.proyect.masterdata.dto.request.RequestDepartment;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.ColorMapper;
 import com.proyect.masterdata.repository.ColorRepository;
+import com.proyect.masterdata.services.IColor;
 import com.proyect.masterdata.services.IMasterList;
+import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ColorImpl implements IMasterList {
+public class ColorImpl implements IColor {
     private final ColorRepository colorRepository;
     private final ColorMapper colorMapper;
-    @Override
-    public List<MasterListDTO> listRecords() throws BadRequestExceptions {
-        return colorMapper.INSTANCE.colorListToColorListDTO(colorRepository.findAll());
-    }
 
     @Override
-    public ResponseMasterList addRecord(String name) throws BadRequestExceptions {
-        try{
-            colorRepository.save(Color.builder()
-                    .name(name)
-                    .status(true)
-                    .build()
-            );
-            return ResponseMasterList.builder()
+    public ResponseSuccess save(String name) throws BadRequestExceptions {
+        try {
+            colorRepository.save(colorMapper.colorToName(name.toUpperCase()));
+            return ResponseSuccess.builder()
                     .code(200)
-                    .message("Success")
+                    .message(Constants.register)
                     .build();
-        }catch (RuntimeException ex){
-            throw new BadRequestExceptions(ex.getMessage());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
         }
     }
 
     @Override
-    public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
-        try{
-            Color color = colorRepository.findById(id).get();
-            colorRepository.save(Color.builder()
-                    .name(color.getName())
-                    .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(color.getId())
-                    .status(false)
-                    .build()
-            );
-            return ResponseMasterList.builder()
+    public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
+        try {
+            colorRepository.saveAll(colorMapper.listColorToListName(
+                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
+            return ResponseSuccess.builder()
                     .code(200)
-                    .message("Success")
+                    .message(Constants.register)
                     .build();
-        }catch (RuntimeException ex){
-            throw new BadRequestExceptions(ex.getMessage());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
         }
     }
 
     @Override
-    public MasterListDTO updateRecord(String name, Long id) throws BadRequestExceptions {
-        try{
-            Color color = colorRepository.save(Color.builder()
-                    .id(id)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
-                    .name(name)
-                    .status(true)
-                    .build()
-            );
-            return colorMapper.INSTANCE.colorToColorDTO(color);
-        }catch (RuntimeException ex){
-            throw new BadRequestExceptions(ex.getMessage());
+    public ColorDTO update(RequestColor requestColor) throws BadRequestExceptions {
+        try {
+            requestColor.setName(requestColor.getName().toUpperCase());
+            Color color = colorRepository.save(colorMapper.requestColorToColor(requestColor));
+            return colorMapper.colorToColorDTO(color);
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
+        }
+    }
+
+    @Override
+    public ResponseDelete delete(Long code) throws BadRequestExceptions{
+        try {
+            colorRepository.deleteById(code);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+        }
+    }
+
+    @Override
+    public ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions{
+        try {
+            colorRepository.deleteAllById(codes);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+        }
+    }
+
+    @Override
+    public List<ColorDTO> list() throws BadRequestExceptions{
+        try {
+            return colorMapper.listColorToListColorDTO(colorRepository.findAll());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public ColorDTO findByCode(Long code) throws BadRequestExceptions{
+        try {
+            return colorMapper.colorToColorDTO(colorRepository.findById(code).orElse(null));
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public ColorDTO findByName(String name) throws BadRequestExceptions{
+        try {
+            return colorMapper.colorToColorDTO(colorRepository.findByName(name.toUpperCase()));
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }
 }

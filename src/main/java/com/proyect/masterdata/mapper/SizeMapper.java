@@ -12,16 +12,16 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface SizeMapper {
      SizeMapper INSTANCE = Mappers.getMapper(SizeMapper.class);
-     @Mapping(source="code",target = "id")
+     @Mapping(target = "code", source = "id")
      SizeDTO sizeToSizeDTO(Size size);
-     List<SizeDTO> sizeListToSizeListDTO(List<Size> sizeList);
+     List<SizeDTO> listSizeToListSizeDTO(List<Size> sizeList);
      @Mapping(target = "id", ignore = true)
      @Mapping(target = "status", constant = "true")
      @Mapping(target = "dateRegistration", ignore = true)
      @Mapping(target = "name", source = "name")
      Size sizeToName(String name);
 
-     List<Size> sizeToListName(List<String> names);
+     List<Size> listSizeToListName(List<String> names);
 
      @Mapping(target = "id", source = "code")
      @Mapping(target = "dateRegistration", ignore = true)

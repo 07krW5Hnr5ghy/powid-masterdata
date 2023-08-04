@@ -1,10 +1,18 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.domain.SaleChannel;
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.PaymentStateDTO;
+import com.proyect.masterdata.dto.SaleChannelDTO;
 import com.proyect.masterdata.dto.request.RequestMasterList;
+import com.proyect.masterdata.dto.request.RequestPaymentState;
+import com.proyect.masterdata.dto.request.RequestSaleChannel;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.handler.ErrorResponse;
+import com.proyect.masterdata.services.ISaleChannel;
 import com.proyect.masterdata.services.impl.SaleChannelImpl;
 import com.proyect.masterdata.services.impl.SizeImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,101 +32,66 @@ import java.util.List;
 @RequestMapping("/sale-channel")
 @AllArgsConstructor
 public class SaleChannelController {
-    private final SaleChannelImpl iSaleChannel;
-    @Operation(summary = "Lista los canales de venta",
-            description = "Lista los canales de venta")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
-
-    @GetMapping()
-    public ResponseEntity<List<MasterListDTO>> listSaleChannels() throws BadRequestExceptions {
-        List<MasterListDTO> result = iSaleChannel.listRecords();
+    private final ISaleChannel iSaleChannel;
+    @PostMapping()
+    public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("name") String name
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iSaleChannel.save(name);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Registra canal de venta",
-            description = "Registra canal de venta")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
-    @PostMapping()
-    public ResponseEntity<ResponseMasterList> addSaleChannel(@RequestParam("name") String name) throws BadRequestExceptions{
-        ResponseMasterList result = iSaleChannel.addRecord(name);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    @PostMapping(value = "/departments")
+    public ResponseEntity<ResponseSuccess> saveall(
+            @RequestBody() List<String> names
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iSaleChannel.saveAll(names);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Operation(summary = "Eliminar canal de venta",
-            description = "Eliminar canal de venta")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
-    @DeleteMapping()
-    public ResponseEntity<ResponseMasterList> deleteSaleChannel(@RequestParam("id") Long id) throws BadRequestExceptions{
-        ResponseMasterList result = iSaleChannel.deleteRecord(id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @Operation(summary = "Editar canal de venta",
-            description = "Editar canal de venta")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
     @PutMapping()
-    public ResponseEntity<MasterListDTO> updateSaleChannel(@RequestBody RequestMasterList data) throws BadRequestExceptions{
-        MasterListDTO result = iSaleChannel.updateRecord(data.getName(), data.getId());
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    public ResponseEntity<SaleChannelDTO> update(
+            @RequestBody() RequestSaleChannel requestSaleChannel
+    ) throws BadRequestExceptions {
+        SaleChannelDTO result = iSaleChannel.update(requestSaleChannel);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("code") Long code
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iSaleChannel.delete(code);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/departments")
+    public ResponseEntity<ResponseDelete> deleteall(
+            @RequestBody() List<Long> codes
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iSaleChannel.deleteAll(codes);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<SaleChannelDTO>> list() throws BadRequestExceptions {
+        List<SaleChannelDTO> result = iSaleChannel.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/code")
+    public ResponseEntity<SaleChannelDTO> findByCode(
+            @RequestParam("code") Long code
+    ) throws BadRequestExceptions {
+        SaleChannelDTO result = iSaleChannel.findByCode(code);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/name")
+    public ResponseEntity<SaleChannelDTO> findByName(
+            @RequestParam("name") String name
+    ) throws BadRequestExceptions {
+        SaleChannelDTO result = iSaleChannel.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

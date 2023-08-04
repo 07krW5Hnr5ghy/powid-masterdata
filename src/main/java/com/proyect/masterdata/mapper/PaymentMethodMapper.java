@@ -13,16 +13,16 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface PaymentMethodMapper {
     PaymentMethodMapper INSTANCE = Mappers.getMapper(PaymentMethodMapper.class);
-    @Mapping(source="code",target = "id")
+    @Mapping(target = "code", source = "id")
     PaymentMethodDTO paymentMethodToPaymentMethodDTO(PaymentMethod paymentMethod);
-    List<PaymentMethodDTO> paymentMethodListToPaymentMethodListDTO(List<PaymentMethod> paymentMethodList);
+    List<PaymentMethodDTO> listPaymentMethodToListPaymentMethodDTO(List<PaymentMethod> paymentMethodList);
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "name")
     PaymentMethod paymentMethodToName(String name);
 
-    List<PaymentMethod> paymentMethodToListName(List<String> names);
+    List<PaymentMethod> listPaymentMethodToListName(List<String> names);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

@@ -12,16 +12,16 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface StateMapper {
     StateMapper INSTANCE = Mappers.getMapper(StateMapper.class);
-    @Mapping(source="code",target = "id")
+    @Mapping(target = "code", source = "id")
     StateDTO stateToStateDTO(State state);
-    List<StateDTO> stateListToStateListDTO(List<State> stateList);
+    List<StateDTO> listStateToListStateDTO(List<State> stateList);
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "name")
     State stateToName(String name);
 
-    List<State> stateToListName(List<String> names);
+    List<State> listStateToListName(List<String> names);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

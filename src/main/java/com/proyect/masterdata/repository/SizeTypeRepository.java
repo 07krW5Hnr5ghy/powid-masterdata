@@ -5,5 +5,5 @@ import com.proyect.masterdata.domain.SizeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SizeTypeRepository extends JpaRepository<SizeType,Long> {
-    Department findByName(String name);
+    SizeType findByName(String name);
 }

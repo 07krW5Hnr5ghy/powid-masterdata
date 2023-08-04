@@ -1,74 +1,123 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.domain.PaymentState;
 import com.proyect.masterdata.dto.MasterListDTO;
+import com.proyect.masterdata.dto.PaymentMethodDTO;
+import com.proyect.masterdata.dto.PaymentStateDTO;
+import com.proyect.masterdata.dto.request.RequestPaymentMethod;
+import com.proyect.masterdata.dto.request.RequestPaymentState;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseMasterList;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.PaymentStateMapper;
 import com.proyect.masterdata.repository.PaymentStateRepository;
 import com.proyect.masterdata.services.IMasterList;
+import com.proyect.masterdata.services.IPaymentState;
+import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
-public class PaymentStateImpl implements IMasterList {
+public class PaymentStateImpl implements IPaymentState {
 
     private final PaymentStateRepository paymentStateRepository;
     private final PaymentStateMapper paymentStateMapper;
 
     @Override
-    public List<MasterListDTO> listRecords() throws BadRequestExceptions {
-        return paymentStateMapper.paymentStateListToPaymentStateListDTO(paymentStateRepository.findAll());
-    }
-
-    @Override
-    public ResponseMasterList addRecord(String name) throws BadRequestExceptions {
-        try{
-            paymentStateRepository.save(PaymentState.builder().name(name).status(true).build());
-            return ResponseMasterList.builder()
+    public ResponseSuccess save(String name) throws BadRequestExceptions {
+        try {
+            paymentStateRepository.save(paymentStateMapper.paymentStateToName(name.toUpperCase()));
+            return ResponseSuccess.builder()
                     .code(200)
-                    .message("Success")
+                    .message(Constants.register)
                     .build();
-        }catch(RuntimeException ex){
-            throw new BadRequestExceptions(ex.getMessage());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
         }
     }
 
     @Override
-    public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
-        try{
-            PaymentState paymentState = paymentStateRepository.findById(id).get();
-            paymentStateRepository.save(PaymentState.builder()
-                    .name(paymentState.getName())
-                    .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(paymentState.getId())
-                    .status(false)
-                    .build());
-            return ResponseMasterList.builder()
+    public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
+        try {
+            paymentStateRepository.saveAll(paymentStateMapper.listPaymentStateToListName(
+                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
+            return ResponseSuccess.builder()
                     .code(200)
-                    .message("Success")
+                    .message(Constants.register)
                     .build();
-        }catch (RuntimeException ex){
-            throw new BadRequestExceptions(ex.getMessage());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
         }
     }
 
     @Override
-    public MasterListDTO updateRecord(String name,Long id) throws BadRequestExceptions {
-        try{
-            PaymentState paymentState = paymentStateRepository.save(PaymentState.builder()
-                    .id(id)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
-                    .name(name)
-                    .status(true)
-                    .build());
-            return PaymentStateMapper.INSTANCE.paymentStateToPaymentStateDTO(paymentState);
-        }catch(RuntimeException ex){
-            throw new BadRequestExceptions(ex.getMessage());
+    public PaymentStateDTO update(RequestPaymentState requestPaymentState) throws BadRequestExceptions {
+        try {
+            requestPaymentState.setName(requestPaymentState.getName().toUpperCase());
+            PaymentState paymentState = paymentStateRepository.save(paymentStateMapper.requestPaymentStateToPaymentState(requestPaymentState));
+            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentState);
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
     }
 
+    @Override
+    public ResponseDelete delete(Long code) throws BadRequestExceptions{
+        try {
+            paymentStateRepository.deleteById(code);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+        }
+    }
+
+    @Override
+    public ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions{
+        try {
+            paymentStateRepository.deleteAllById(codes);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+        }
+    }
+
+    @Override
+    public List<PaymentStateDTO> list() throws BadRequestExceptions{
+        try {
+            return paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStateRepository.findAll());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public PaymentStateDTO findByCode(Long code) throws BadRequestExceptions{
+        try {
+            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentStateRepository.findById(code).orElse(null));
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public PaymentStateDTO findByName(String name) throws BadRequestExceptions{
+        try {
+            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentStateRepository.findByName(name.toUpperCase()));
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
 }

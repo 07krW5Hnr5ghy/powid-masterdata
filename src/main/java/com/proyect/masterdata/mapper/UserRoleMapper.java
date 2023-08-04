@@ -13,18 +13,18 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserRoleMapper {
     UserRoleMapper INSTANCE = Mappers.getMapper(UserRoleMapper.class);
-    @Mapping(source="code",target = "id")
+    @Mapping(target = "code", source = "id")
     UserRoleDTO userRoleToUserRoleDTO(UserRole userRole);
-    List<UserRoleDTO> userRoleListToUserRoleListDTO(List<State> userRoleList);
+    List<UserRoleDTO> listUserRoleToListUserRoleDTO(List<UserRole> userRoleList);
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "name")
-    State userRoleToName(String name);
+    UserRole userRoleToName(String name);
 
-    List<State> userRoleToListName(List<String> names);
+    List<UserRole> listUserRoleToListName(List<String> names);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)
-    State requestUserRoleToUserRole(RequestUserRole requestUserRole);
+    UserRole requestUserRoleToUserRole(RequestUserRole requestUserRole);
 }
