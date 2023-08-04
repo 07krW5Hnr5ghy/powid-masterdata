@@ -1,25 +1,18 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Color;
-import com.proyect.masterdata.domain.Department;
 import com.proyect.masterdata.dto.ColorDTO;
-import com.proyect.masterdata.dto.DepartmentDTO;
-import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.request.RequestColor;
-import com.proyect.masterdata.dto.request.RequestDepartment;
 import com.proyect.masterdata.dto.response.ResponseDelete;
-import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.ColorMapper;
 import com.proyect.masterdata.repository.ColorRepository;
 import com.proyect.masterdata.services.IColor;
-import com.proyect.masterdata.services.IMasterList;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
