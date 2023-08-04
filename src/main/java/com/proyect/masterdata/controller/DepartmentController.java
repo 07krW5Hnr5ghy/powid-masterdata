@@ -70,7 +70,7 @@ public class DepartmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value="/StatusFalse")
+    @GetMapping(value="/statusFalse")
     public ResponseEntity<List<DepartmentDTO>> listStatusFalse() throws BadRequestExceptions {
         List<DepartmentDTO> result = iDepartment.listStatusFalse();
         return new ResponseEntity<>(result, HttpStatus.OK);
