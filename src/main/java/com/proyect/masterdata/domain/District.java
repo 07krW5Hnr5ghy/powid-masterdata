@@ -7,32 +7,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-
 import java.util.Date;
-
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@IdClass(DistrictPK.class)
 @Table(name = Constants.tableDistrict, schema = Constants.schemaMaster)
 public class District {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
-    @GenericGenerator(
-            name = "sequence-generator",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @Parameter(name = "sequence_name", value = "distritos_sequence"),
-                    @Parameter(name = "initial_value", value = "1"),
-                    @Parameter(name = "increment_size", value = "1")
-            }
-    )
-    @Column(name = "id_distrito", unique = true)
     private Long id;
+
+    @Id
+    private String user;
 
     @Column(name="nombre", length=50, unique=true)
     private String name;
@@ -47,11 +36,9 @@ public class District {
     @Column(name = "id_provincia")
     private Long idProvince;
 
-    @Column(name = "usuario", unique = true)
-    private String user;
-
     @ManyToOne
     @JoinColumn(name = "id_provincia", columnDefinition = "idProvince", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_provincia"))
+    @JoinColumn(name = "usuario", columnDefinition = "user", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_usuario"))
     private Province province;
 
     @ManyToOne

@@ -64,11 +64,15 @@ public class Client {
     @CreationTimestamp
     private Date dateRegistration;
 
-    @Column(name = "id_distrito", unique = true)
+    @Column(name = "id_distrito")
     private Long id_district;
+
+    @Column(name = "usuario")
+    private String user;
 
     @ManyToOne
     @JoinColumn(name = "id_distrito", columnDefinition = "id_district",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_distrito"))
+    @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_usuario"))
     private District district;
 
 }
