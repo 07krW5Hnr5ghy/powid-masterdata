@@ -23,7 +23,7 @@ public interface CategoryMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "name")
     Category categoryToName(String name,String description);
-    
+
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)
     Category requestCategoryToCategory(RequestCategory requestCategory);

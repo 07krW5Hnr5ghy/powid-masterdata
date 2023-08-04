@@ -1,23 +1,11 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.ColorDTO;
 import com.proyect.masterdata.dto.LogEventDTO;
-import com.proyect.masterdata.dto.MasterListDTO;
-import com.proyect.masterdata.dto.request.RequestColor;
 import com.proyect.masterdata.dto.request.RequestLogEvent;
-import com.proyect.masterdata.dto.request.RequestMasterList;
 import com.proyect.masterdata.dto.response.ResponseDelete;
-import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.exceptions.handler.ErrorResponse;
 import com.proyect.masterdata.services.ILogEvent;
-import com.proyect.masterdata.services.impl.LogEventImpl;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
