@@ -93,10 +93,10 @@ public class DepartmentController {
     }
 
     @GetMapping(value = "/user")
-    public ResponseEntity<DepartmentDTO> findByUser(
+    public ResponseEntity<List<DepartmentDTO>> findByUser(
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        DepartmentDTO result = iDepartment.findByUser(user);
+        List<DepartmentDTO> result = iDepartment.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

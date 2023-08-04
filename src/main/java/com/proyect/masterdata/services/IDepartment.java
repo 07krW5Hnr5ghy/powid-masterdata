@@ -19,5 +19,5 @@ public interface IDepartment {
     List<DepartmentDTO> listStatusFalse() throws BadRequestExceptions;
     DepartmentDTO findByCode(Long code) throws BadRequestExceptions;
     DepartmentDTO findByName(String name) throws BadRequestExceptions;
-    DepartmentDTO findByUser(String user) throws BadRequestExceptions;
+    List<DepartmentDTO> findByUser(String user) throws BadRequestExceptions;
 }

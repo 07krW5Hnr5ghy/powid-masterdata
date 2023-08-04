@@ -140,9 +140,9 @@ public class DepartmentImpl implements IDepartment {
     }
 
     @Override
-    public DepartmentDTO findByUser(String user) throws BadRequestExceptions{
+    public List<DepartmentDTO> findByUser(String user) throws BadRequestExceptions{
         try {
-            return departmentMapper.departmentToDepartmentDTO(departmentRepository.findByLoginUser(user.toUpperCase()));
+            return departmentMapper.listDepartmentToListDepartmentDTO(departmentRepository.findByLoginUser(user.toUpperCase()));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
