@@ -1,25 +1,18 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.LogEvent;
 import com.proyect.masterdata.domain.MembershipType;
-import com.proyect.masterdata.dto.LogEventDTO;
-import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.MembershipTypeDTO;
-import com.proyect.masterdata.dto.request.RequestLogEvent;
 import com.proyect.masterdata.dto.request.RequestMembershipType;
 import com.proyect.masterdata.dto.response.ResponseDelete;
-import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.MembershipTypeMapper;
 import com.proyect.masterdata.repository.MembershipTypeRepository;
-import com.proyect.masterdata.services.IMasterList;
 import com.proyect.masterdata.services.IMembershipType;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 

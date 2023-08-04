@@ -1,18 +1,21 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Category;
-import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.dto.CategoryDTO;
-import com.proyect.masterdata.dto.response.ResponseMasterList;
+import com.proyect.masterdata.dto.request.RequestCategory;
+import com.proyect.masterdata.dto.request.RequestCreateCategory;
+import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.CategoryMapper;
 import com.proyect.masterdata.repository.CategoryRepository;
 import com.proyect.masterdata.services.ICategory;
+import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,63 +24,103 @@ public class CategoryImpl implements ICategory {
     private final CategoryMapper categoryMapper;
 
     @Override
-    public List<CategoryDTO> listRecords() throws BadRequestExceptions {
-        return categoryMapper.INSTANCE.categoryListToCategoryListDTO(categoryRepository.findAll());
-    }
-
-    @Override
-    public ResponseMasterList addRecord(String name, String description) throws BadRequestExceptions {
-        try{
-            categoryRepository.save(Category.builder()
-                    .name(name)
-                    .description(description)
-                    .status(true)
-                    .build()
-            );
-            return ResponseMasterList.builder()
+    public ResponseSuccess save(String name,String description) throws BadRequestExceptions {
+        try {
+            categoryRepository.save(categoryMapper.categoryToName(name.toUpperCase(),description.toUpperCase()));
+            return ResponseSuccess.builder()
                     .code(200)
-                    .message("Success")
+                    .message(Constants.register)
                     .build();
-        }catch (RuntimeException ex){
-            throw new BadRequestExceptions(ex.getMessage());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
         }
     }
 
     @Override
-    public ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions {
-        try{
-            Category category = categoryRepository.findById(id).get();
-            categoryRepository.save(Category.builder()
-                    .name(category.getName())
-                    .description(category.getDescription())
-                    .dateRegistration(new Date(System.currentTimeMillis()))
-                    .id(category.getId())
-                    .status(false)
-                    .build()
+    public ResponseSuccess saveAll(List<RequestCreateCategory> requestCategoryList) throws BadRequestExceptions{
+        try {
+            categoryRepository.saveAll(categoryMapper.listRequestCreateCategoryToListCategory(requestCategoryList)
+                    .stream().map(
+                            c -> {
+                                Category category = new Category();
+                                category.setName(c.getName().toUpperCase());
+                                category.setDescription(c.getDescription().toUpperCase());
+                                category.setStatus(true);
+                                return category;
+                            }
+                    ).collect(Collectors.toList())
             );
-            return ResponseMasterList.builder()
+            return ResponseSuccess.builder()
                     .code(200)
-                    .message("Success")
+                    .message(Constants.register)
                     .build();
-        }catch (RuntimeException ex){
-            throw new BadRequestExceptions(ex.getMessage());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
         }
     }
 
     @Override
-    public CategoryDTO updateRecord(String name, Long id, String description) throws BadRequestExceptions {
-        try{
-            Category category = categoryRepository.save(Category.builder()
-                    .id(id)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
-                    .name(name)
-                    .description(description)
-                    .status(true)
-                    .build()
-            );
-            return categoryMapper.INSTANCE.categoryToCategoryDTO(category);
-        }catch (RuntimeException ex){
-            throw new BadRequestExceptions(ex.getMessage());
+    public CategoryDTO update(RequestCategory requestCategory) throws BadRequestExceptions {
+        try {
+            requestCategory.setName(requestCategory.getName().toUpperCase());
+            requestCategory.setDescription(requestCategory.getDescription().toUpperCase());
+            Category category = categoryRepository.save(categoryMapper.requestCategoryToCategory(requestCategory));
+            return categoryMapper.categoryToCategoryDTO(category);
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
+        }
+    }
+
+    @Override
+    public ResponseDelete delete(Long code) throws BadRequestExceptions{
+        try {
+            categoryRepository.deleteById(code);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+        }
+    }
+
+    @Override
+    public ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions{
+        try {
+            categoryRepository.deleteAllById(codes);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+        }
+    }
+
+    @Override
+    public List<CategoryDTO> list() throws BadRequestExceptions{
+        try {
+            return categoryMapper.categoryListToCategoryListDTO(categoryRepository.findAll());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public CategoryDTO findByCode(Long code) throws BadRequestExceptions{
+        try {
+            return categoryMapper.categoryToCategoryDTO(categoryRepository.findById(code).orElse(null));
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public CategoryDTO findByName(String name) throws BadRequestExceptions{
+        try {
+            return categoryMapper.categoryToCategoryDTO(categoryRepository.findByName(name.toUpperCase()));
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }
 }

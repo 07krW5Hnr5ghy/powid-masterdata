@@ -1,25 +1,18 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.domain.LogEvent;
-import com.proyect.masterdata.dto.ColorDTO;
 import com.proyect.masterdata.dto.LogEventDTO;
-import com.proyect.masterdata.dto.MasterListDTO;
-import com.proyect.masterdata.dto.request.RequestColor;
 import com.proyect.masterdata.dto.request.RequestLogEvent;
 import com.proyect.masterdata.dto.response.ResponseDelete;
-import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.LogEventMapper;
 import com.proyect.masterdata.repository.LogEventRepository;
 import com.proyect.masterdata.services.ILogEvent;
-import com.proyect.masterdata.services.IMasterList;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -1,25 +1,18 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.SaleChannel;
 import com.proyect.masterdata.domain.Size;
-import com.proyect.masterdata.dto.MasterListDTO;
-import com.proyect.masterdata.dto.SaleChannelDTO;
 import com.proyect.masterdata.dto.SizeDTO;
-import com.proyect.masterdata.dto.request.RequestSaleChannel;
 import com.proyect.masterdata.dto.request.RequestSize;
 import com.proyect.masterdata.dto.response.ResponseDelete;
-import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.SizeMapper;
 import com.proyect.masterdata.repository.SizeRepository;
-import com.proyect.masterdata.services.IMasterList;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -1,25 +1,18 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.domain.PaymentState;
-import com.proyect.masterdata.dto.MasterListDTO;
-import com.proyect.masterdata.dto.PaymentMethodDTO;
 import com.proyect.masterdata.dto.PaymentStateDTO;
-import com.proyect.masterdata.dto.request.RequestPaymentMethod;
 import com.proyect.masterdata.dto.request.RequestPaymentState;
 import com.proyect.masterdata.dto.response.ResponseDelete;
-import com.proyect.masterdata.dto.response.ResponseMasterList;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.PaymentStateMapper;
 import com.proyect.masterdata.repository.PaymentStateRepository;
-import com.proyect.masterdata.services.IMasterList;
 import com.proyect.masterdata.services.IPaymentState;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 

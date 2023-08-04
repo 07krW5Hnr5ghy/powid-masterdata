@@ -1,6 +1,5 @@
 package com.proyect.masterdata.mapper;
 
-import com.proyect.masterdata.domain.State;
 import com.proyect.masterdata.domain.UserRole;
 import com.proyect.masterdata.dto.UserRoleDTO;
 import com.proyect.masterdata.dto.request.RequestUserRole;

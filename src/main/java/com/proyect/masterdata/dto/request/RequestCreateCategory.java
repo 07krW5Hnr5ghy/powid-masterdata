@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestCategory {
-    private Long code;
+public class RequestCreateCategory {
     private String name;
     private String description;
-    private boolean status = true;
 }

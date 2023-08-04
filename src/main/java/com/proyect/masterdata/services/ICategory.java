@@ -1,17 +1,21 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.dto.CategoryDTO;
-import com.proyect.masterdata.dto.MasterListDTO;
-import com.proyect.masterdata.dto.response.ResponseMasterList;
+import com.proyect.masterdata.dto.request.RequestCategory;
+import com.proyect.masterdata.dto.request.RequestCreateCategory;
+import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 public interface ICategory {
-    List<CategoryDTO> listRecords() throws BadRequestExceptions;
-    ResponseMasterList addRecord(String name,String description) throws BadRequestExceptions;
-    ResponseMasterList deleteRecord(Long id) throws BadRequestExceptions;
-    CategoryDTO updateRecord(String name,Long id,String description) throws BadRequestExceptions;
+    ResponseSuccess save(String name, String description) throws BadRequestExceptions;
+    ResponseSuccess saveAll(List<RequestCreateCategory> requestCategoryList) throws BadRequestExceptions;
+    CategoryDTO update(RequestCategory requestCategory) throws BadRequestExceptions;
+    ResponseDelete delete(Long code) throws BadRequestExceptions;
+    ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions;
+    List<CategoryDTO> list() throws BadRequestExceptions;
+    CategoryDTO findByCode(Long code) throws BadRequestExceptions;
+    CategoryDTO findByName(String name) throws BadRequestExceptions;
 }

@@ -1,18 +1,12 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.CategoryDTO;
-import com.proyect.masterdata.dto.MasterListDTO;
 import com.proyect.masterdata.dto.request.RequestCategory;
-import com.proyect.masterdata.dto.request.RequestMasterList;
-import com.proyect.masterdata.dto.response.ResponseMasterList;
+import com.proyect.masterdata.dto.request.RequestCreateCategory;
+import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.exceptions.handler.ErrorResponse;
 import com.proyect.masterdata.services.ICategory;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,101 +19,66 @@ import java.util.List;
 @RequestMapping("/category")
 @AllArgsConstructor
 public class CategoryController {
-//    private final ICategory iCategory;
-//
-//    @Operation(summary = "Lista las categorias",
-//            description = "Lista las categorias")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Success",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-//            @ApiResponse(responseCode = "400", description = "Bad Request",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "401", description = "Unauthorized",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "404", description = "Not Found",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "409", description = "Conflict",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-//    })
-//    @GetMapping()
-//    public ResponseEntity<List<CategoryDTO>> listCategories() throws BadRequestExceptions {
-//        List<CategoryDTO> result = iCategory.listRecords();
-//        return new ResponseEntity<>(result, HttpStatus.OK);
-//    }
-//
-//    @Operation(summary = "Registra categoria",
-//            description = "Registra categoria")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Success",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-//            @ApiResponse(responseCode = "400", description = "Bad Request",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "401", description = "Unauthorized",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "404", description = "Not Found",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "409", description = "Conflict",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-//    })
-//    @PostMapping()
-//    public ResponseEntity<ResponseMasterList> addCategory(@RequestParam("name") String name,@RequestParam("description") String description) throws BadRequestExceptions{
-//        ResponseMasterList result = iCategory.addRecord(name,description);
-//        return new ResponseEntity<>(result,HttpStatus.OK);
-//    }
-//
-//    @Operation(summary = "Eliminar categoria",
-//            description = "Eliminar categoria")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Success",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-//            @ApiResponse(responseCode = "400", description = "Bad Request",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "401", description = "Unauthorized",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "404", description = "Not Found",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "409", description = "Conflict",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-//    })
-//    @DeleteMapping()
-//    public ResponseEntity<ResponseMasterList> deleteCategory(@RequestParam("id") Long id) throws BadRequestExceptions{
-//        ResponseMasterList result = iCategory.deleteRecord(id);
-//        return new ResponseEntity<>(result,HttpStatus.OK);
-//    }
-//
-//    @Operation(summary = "Editar categoria",
-//            description = "Editar categoria")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Success",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-//            @ApiResponse(responseCode = "400", description = "Bad Request",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "401", description = "Unauthorized",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "404", description = "Not Found",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "409", description = "Conflict",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-//                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-//    })
-//    @PutMapping()
-//    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody RequestCategory data) throws BadRequestExceptions{
-//        CategoryDTO result = iCategory.updateRecord(data.getName(), data.getId(),data.getDescription());
-//        return new ResponseEntity<>(result,HttpStatus.OK);
-//    }
+    private final ICategory iCategory;
+    @PostMapping()
+    public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("name") String name,@RequestParam("description") String description
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iCategory.save(name,description);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/categories")
+    public ResponseEntity<ResponseSuccess> saveall(
+            @RequestBody() List<RequestCreateCategory> requestCreateCategoryList
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iCategory.saveAll(requestCreateCategoryList);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PutMapping()
+    public ResponseEntity<CategoryDTO> update(
+            @RequestBody() RequestCategory requestCategory
+    ) throws BadRequestExceptions {
+        CategoryDTO result = iCategory.update(requestCategory);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("code") Long code
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iCategory.delete(code);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/categories")
+    public ResponseEntity<ResponseDelete> deleteall(
+            @RequestBody() List<Long> codes
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iCategory.deleteAll(codes);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<CategoryDTO>> list() throws BadRequestExceptions {
+        List<CategoryDTO> result = iCategory.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/code")
+    public ResponseEntity<CategoryDTO> findByCode(
+            @RequestParam("code") Long code
+    ) throws BadRequestExceptions {
+        CategoryDTO result = iCategory.findByCode(code);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/name")
+    public ResponseEntity<CategoryDTO> findByName(
+            @RequestParam("name") String name
+    ) throws BadRequestExceptions {
+        CategoryDTO result = iCategory.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
