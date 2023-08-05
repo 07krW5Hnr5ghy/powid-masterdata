@@ -13,6 +13,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,9 @@ public class StateImpl implements IState {
     public StateDTO update(RequestState requestState) throws BadRequestExceptions {
         try {
             requestState.setName(requestState.getName().toUpperCase());
-            State state = stateRepository.save(stateMapper.requestStateToState(requestState));
+            State updatedState = stateMapper.requestStateToState(requestState);
+            updatedState.setDateRegistration(new Date(System.currentTimeMillis()));
+            State state = stateRepository.save(updatedState);
             return stateMapper.stateToStateDTO(state);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);

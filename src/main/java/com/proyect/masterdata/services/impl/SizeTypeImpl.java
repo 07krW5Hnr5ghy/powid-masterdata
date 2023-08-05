@@ -13,6 +13,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,9 @@ public class SizeTypeImpl implements ISizeType {
     public SizeTypeDTO update(RequestSizeType requestSizeType) throws BadRequestExceptions {
         try {
             requestSizeType.setName(requestSizeType.getName().toUpperCase());
-            SizeType sizeType = sizeTypeRepository.save(sizeTypeMapper.requestSizeTypeToSizeType(requestSizeType));
+            SizeType updatedSizeType = sizeTypeMapper.requestSizeTypeToSizeType(requestSizeType);
+            updatedSizeType.setDateRegistration(new Date(System.currentTimeMillis()));
+            SizeType sizeType = sizeTypeRepository.save(updatedSizeType);
             return sizeTypeMapper.sizeTypeToSizeTypeDTO(sizeType);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);

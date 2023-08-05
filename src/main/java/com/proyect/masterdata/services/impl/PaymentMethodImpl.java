@@ -13,6 +13,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,9 @@ public class PaymentMethodImpl implements IPaymentMethod {
     public PaymentMethodDTO update(RequestPaymentMethod requestPaymentMethod) throws BadRequestExceptions {
         try {
             requestPaymentMethod.setName(requestPaymentMethod.getName().toUpperCase());
-            PaymentMethod paymentMethod = paymentMethodRepository.save(paymentMethodMapper.requestPaymentMethodToPaymentMethod(requestPaymentMethod));
+            PaymentMethod updatedPaymentMethod = paymentMethodMapper.requestPaymentMethodToPaymentMethod(requestPaymentMethod);
+            updatedPaymentMethod.setDateRegistration(new Date(System.currentTimeMillis()));
+            PaymentMethod paymentMethod = paymentMethodRepository.save(updatedPaymentMethod);
             return paymentMethodMapper.paymentMethodToPaymentMethodDTO(paymentMethod);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);

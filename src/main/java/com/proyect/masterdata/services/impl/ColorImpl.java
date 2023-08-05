@@ -13,6 +13,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,9 @@ public class ColorImpl implements IColor {
     public ColorDTO update(RequestColor requestColor) throws BadRequestExceptions {
         try {
             requestColor.setName(requestColor.getName().toUpperCase());
-            Color color = colorRepository.save(colorMapper.requestColorToColor(requestColor));
+            Color updatedColor = colorMapper.requestColorToColor(requestColor);
+            updatedColor.setDateRegistration(new Date(System.currentTimeMillis()));
+            Color color = colorRepository.save(updatedColor);
             return colorMapper.colorToColorDTO(color);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);

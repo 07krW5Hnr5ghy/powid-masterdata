@@ -13,6 +13,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,9 @@ public class UserRoleImpl implements IUserRole {
     public UserRoleDTO update(RequestUserRole requestUserRole) throws BadRequestExceptions {
         try {
             requestUserRole.setName(requestUserRole.getName().toUpperCase());
-            UserRole userRole = userRoleRepository.save(userRoleMapper.requestUserRoleToUserRole(requestUserRole));
+            UserRole updatedUserRole = userRoleMapper.requestUserRoleToUserRole(requestUserRole);
+            updatedUserRole.setDateRegistration(new Date(System.currentTimeMillis()));
+            UserRole userRole = userRoleRepository.save(updatedUserRole);
             return userRoleMapper.userRoleToUserRoleDTO(userRole);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);

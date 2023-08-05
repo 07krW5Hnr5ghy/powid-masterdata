@@ -14,6 +14,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,8 @@ public class CategoryImpl implements ICategory {
         try {
             requestCategory.setName(requestCategory.getName().toUpperCase());
             requestCategory.setDescription(requestCategory.getDescription().toUpperCase());
+            Category updatedCategory = categoryMapper.requestCategoryToCategory(requestCategory);
+            updatedCategory.setDateRegistration(new Date(System.currentTimeMillis()));
             Category category = categoryRepository.save(categoryMapper.requestCategoryToCategory(requestCategory));
             return categoryMapper.categoryToCategoryDTO(category);
         } catch (RuntimeException e){

@@ -13,6 +13,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,9 @@ public class SaleChannelImpl implements ISaleChannel {
     public SaleChannelDTO update(RequestSaleChannel requestSaleChannel) throws BadRequestExceptions {
         try {
             requestSaleChannel.setName(requestSaleChannel.getName().toUpperCase());
-            SaleChannel saleChannel = saleChannelRepository.save(saleChannelMapper.requestSaleChannelToSaleChannel(requestSaleChannel));
+            SaleChannel updatedSaleChannel = saleChannelMapper.requestSaleChannelToSaleChannel(requestSaleChannel);
+            updatedSaleChannel.setDateRegistration(new Date(System.currentTimeMillis()));
+            SaleChannel saleChannel = saleChannelRepository.save(updatedSaleChannel);
             return saleChannelMapper.saleChannelToSaleChannelDTO(saleChannel);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);

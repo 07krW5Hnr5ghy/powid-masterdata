@@ -13,6 +13,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,9 @@ public class MembershipTypeImpl implements IMembershipType {
     public MembershipTypeDTO update(RequestMembershipType requestMembershipType) throws BadRequestExceptions {
         try {
             requestMembershipType.setName(requestMembershipType.getName().toUpperCase());
-            MembershipType membershipType = membershipTypeRepository.save(membershipTypeMapper.requestMembershipTypeToMembershipType(requestMembershipType));
+            MembershipType updatedMembershipType = membershipTypeMapper.requestMembershipTypeToMembershipType(requestMembershipType);
+            updatedMembershipType.setDateRegistration(new Date(System.currentTimeMillis()));
+            MembershipType membershipType = membershipTypeRepository.save(updatedMembershipType);
             return membershipTypeMapper.membershipTypeToMembershipTypeDTO(membershipType);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);

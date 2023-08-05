@@ -13,6 +13,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,9 @@ public class LogEventImpl implements ILogEvent {
     public LogEventDTO update(RequestLogEvent requestLogEvent) throws BadRequestExceptions {
         try {
             requestLogEvent.setName(requestLogEvent.getName().toUpperCase());
-            LogEvent logEvent = logEventRepository.save(logEventMapper.requestLogEventToLogEvent(requestLogEvent));
+            LogEvent updatedLogEvent = logEventMapper.requestLogEventToLogEvent(requestLogEvent);
+            updatedLogEvent.setDateRegistration(new Date(System.currentTimeMillis()));
+            LogEvent logEvent = logEventRepository.save(updatedLogEvent);
             return logEventMapper.logEventToLogEventDTO(logEvent);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);

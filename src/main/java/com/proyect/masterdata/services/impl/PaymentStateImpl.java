@@ -13,6 +13,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,9 @@ public class PaymentStateImpl implements IPaymentState {
     public PaymentStateDTO update(RequestPaymentState requestPaymentState) throws BadRequestExceptions {
         try {
             requestPaymentState.setName(requestPaymentState.getName().toUpperCase());
-            PaymentState paymentState = paymentStateRepository.save(paymentStateMapper.requestPaymentStateToPaymentState(requestPaymentState));
+            PaymentState updatedPaymentState = paymentStateMapper.requestPaymentStateToPaymentState(requestPaymentState);
+            updatedPaymentState.setDateRegistration(new Date(System.currentTimeMillis()));
+            PaymentState paymentState = paymentStateRepository.save(updatedPaymentState);
             return paymentStateMapper.paymentStateToPaymentStateDTO(paymentState);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
