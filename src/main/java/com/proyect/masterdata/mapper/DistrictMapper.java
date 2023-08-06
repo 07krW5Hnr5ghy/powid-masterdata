@@ -28,8 +28,8 @@ public interface DistrictMapper {
     District requestDistrictToDistrict(RequestDistrict requestDistrict);
 
     @Mapping(target = "code", source = "id")
-    DistrictDTO districtToDistrictDTO(District province);
+    DistrictDTO districtToDistrictDTO(District district);
 
-    List<DistrictDTO> listDistrictToListDistrictDTO(List<District> provinceList);
+    List<DistrictDTO> listDistrictToListDistrictDTO(List<District> districtList);
 
 }
