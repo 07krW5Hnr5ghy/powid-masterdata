@@ -9,9 +9,9 @@ import java.util.List;
 public interface ProvinceRepository extends JpaRepository<Province, ProvincePK> {
     List<Province> findAllByStatusTrue();
     List<Province> findAllByStatusFalse();
+    List<Province> findByLoginUser(String user);
     List<Province> findAllByStatusTrueAndDepartmentId(Long id);
     List<Province> findAllByStatusTrueAndDepartmentName(String name);
-    List<Province> findByLoginUser(String user);
     Province findByIdAndStatusTrue(Long id);
     Province findByNameAndStatusTrue(String name);
 }

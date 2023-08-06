@@ -1,9 +1,10 @@
 package com.proyect.masterdata.mapper;
 
-import com.proyect.masterdata.domain.Department;
+
 import com.proyect.masterdata.domain.Province;
-import com.proyect.masterdata.dto.DepartmentDTO;
 import com.proyect.masterdata.dto.ProvinceDTO;
+import com.proyect.masterdata.dto.request.RequestProvince;
+import com.proyect.masterdata.dto.request.RequestProvinceSave;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -14,8 +15,21 @@ import java.util.List;
 public interface ProvinceMapper {
     ProvinceMapper INSTANCE = Mappers.getMapper(ProvinceMapper.class);
 
-    @Mapping(target = "code", source = "id")
-    ProvinceDTO provinceToProvinceDTO(Province department);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", constant = "true")
+    @Mapping(target = "dateRegistration", ignore = true)
+    @Mapping(target = "name", source = "requestProvinceSave.name")
+    @Mapping(target = "user", source = "requestProvinceSave.user")
+    @Mapping(target = "idDepartment", source = "requestProvinceSave.codeDepártment")
+    Province provinceToName(RequestProvinceSave requestProvinceSave);
 
-    List<ProvinceDTO> listProvinceToListProvinceDTO(List<Province> departmentList);
+    @Mapping(target = "id", source = "code")
+    @Mapping(target = "idDepartment", source = "codeDepartment")
+    @Mapping(target = "dateRegistration", ignore = true)
+    Province requestProvinceToProvince(RequestProvince requestProvince);
+
+    @Mapping(target = "code", source = "id")
+    ProvinceDTO provinceToProvinceDTO(Province province);
+
+    List<ProvinceDTO> listProvinceToListProvinceDTO(List<Province> provinceList);
 }

@@ -36,7 +36,6 @@ public class DepartmentImpl implements IDepartment {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e){
-            log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
         }
     }
