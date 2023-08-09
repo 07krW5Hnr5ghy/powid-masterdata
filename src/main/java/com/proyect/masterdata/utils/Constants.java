@@ -42,5 +42,9 @@ public class Constants {
     public static final String ErrorWhileRegistering= "Error while registering";
     public static final String ErrorWhileUpdating= "Error while updating";
     public static final String ErrorWhenDeleting= "Error when deleting";
+
+    public static final String ErrorUser= "the user is incorrect";
     public static final String ResultsFound= "no results found";
+
+
 }

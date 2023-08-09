@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.District;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.DistrictDTO;
 import com.proyect.masterdata.dto.request.RequestDistrict;
 import com.proyect.masterdata.dto.request.RequestDistrictSave;
@@ -9,6 +10,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.DistrictMapper;
 import com.proyect.masterdata.repository.DistrictRepository;
+import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IDistrict;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
@@ -24,9 +26,16 @@ public class DistrictImpl implements IDistrict {
     
     private final DistrictRepository districtRepository;
     private final DistrictMapper districtMapper;
+    private final UserRepository userRepository;
 
     @Override
     public ResponseSuccess save(String name, String user, Long codeProvince) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             districtRepository.save(districtMapper.districtToName(RequestDistrictSave.builder()
                     .codeProvince(codeProvince)
@@ -43,6 +52,12 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public ResponseSuccess saveAll(List<String> names, String user, Long codeProvince) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             List<RequestDistrictSave> districtSaves = names.stream().map(data -> RequestDistrictSave.builder()
                     .user(user.toUpperCase())
@@ -60,6 +75,12 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public DistrictDTO update(RequestDistrict requestDistrict) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestDistrict.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             requestDistrict.setName(requestDistrict.getName().toUpperCase());
             requestDistrict.setUser(requestDistrict.getUser().toUpperCase());
@@ -73,6 +94,12 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             districtRepository.deleteByIdAndUser(code, user);
             return ResponseDelete.builder()
@@ -86,6 +113,12 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             codes.stream().forEach(data -> {
                 districtRepository.deleteByIdAndUser(data, user);
@@ -137,6 +170,12 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public List<DistrictDTO> findByUser(String user) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             return districtMapper.listDistrictToListDistrictDTO(districtRepository.findByUser(user.toUpperCase()));
         } catch (RuntimeException e){

@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Department;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.DepartmentDTO;
 import com.proyect.masterdata.dto.request.RequestDepartment;
 import com.proyect.masterdata.dto.request.RequestDepartmentSave;
@@ -9,6 +10,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.DepartmentMapper;
 import com.proyect.masterdata.repository.DepartmentRepository;
+import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IDepartment;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
@@ -23,9 +25,15 @@ public class DepartmentImpl implements IDepartment {
 
     private final DepartmentRepository departmentRepository;
     private final DepartmentMapper departmentMapper;
-
+    private final UserRepository userRepository;
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             departmentRepository.save(departmentMapper.departmentToName(RequestDepartmentSave
                     .builder().name(name.toUpperCase()).user(user.toUpperCase()).build()));
@@ -37,9 +45,14 @@ public class DepartmentImpl implements IDepartment {
             throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
         }
     }
-
     @Override
     public ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions{
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             List<RequestDepartmentSave> departmentSaves = names.stream().map(data -> RequestDepartmentSave.builder()
                     .user(user.toUpperCase())
@@ -57,6 +70,12 @@ public class DepartmentImpl implements IDepartment {
 
     @Override
     public DepartmentDTO update(RequestDepartment requestDepartment) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestDepartment.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             requestDepartment.setName(requestDepartment.getName().toUpperCase());
             requestDepartment.setUser(requestDepartment.getUser().toUpperCase());
@@ -69,6 +88,12 @@ public class DepartmentImpl implements IDepartment {
 
     @Override
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions{
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             departmentRepository.deleteByIdAndUser(code, user);
             return ResponseDelete.builder()
@@ -82,6 +107,12 @@ public class DepartmentImpl implements IDepartment {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions{
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             codes.stream().forEach(data -> {
                 departmentRepository.deleteByIdAndUser(data, user);
@@ -133,6 +164,12 @@ public class DepartmentImpl implements IDepartment {
 
     @Override
     public List<DepartmentDTO> findByUser(String user) throws BadRequestExceptions{
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             return departmentMapper.listDepartmentToListDepartmentDTO(departmentRepository.findByUser(user.toUpperCase()));
         } catch (RuntimeException e){

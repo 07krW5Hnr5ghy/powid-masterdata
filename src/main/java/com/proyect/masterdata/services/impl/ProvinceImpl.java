@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Province;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.ProvinceDTO;
 import com.proyect.masterdata.dto.request.RequestProvince;
 import com.proyect.masterdata.dto.request.RequestProvinceSave;
@@ -9,6 +10,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.ProvinceMapper;
 import com.proyect.masterdata.repository.ProvinceRepository;
+import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IProvince;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
@@ -24,9 +26,15 @@ public class ProvinceImpl implements IProvince {
 
     private final ProvinceRepository provinceRepository;
     private final ProvinceMapper provinceMapper;
-
+    private final UserRepository userRepository;
     @Override
     public ResponseSuccess save(String name, String user, Long codeDepartment) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             provinceRepository.save(provinceMapper.provinceToName(RequestProvinceSave.builder()
                             .codeDepártment(codeDepartment)
@@ -43,6 +51,12 @@ public class ProvinceImpl implements IProvince {
 
     @Override
     public ResponseSuccess saveAll(List<String> names, String user, Long codeDepartment) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             List<RequestProvinceSave> provinceSaves = names.stream().map(data -> RequestProvinceSave.builder()
                     .user(user.toUpperCase())
@@ -60,6 +74,12 @@ public class ProvinceImpl implements IProvince {
 
     @Override
     public ProvinceDTO update(RequestProvince requestProvince) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestProvince.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             requestProvince.setName(requestProvince.getName().toUpperCase());
             requestProvince.setUser(requestProvince.getUser().toUpperCase());
@@ -73,6 +93,12 @@ public class ProvinceImpl implements IProvince {
 
     @Override
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             provinceRepository.deleteByIdAndUser(code, user);
             return ResponseDelete.builder()
@@ -86,6 +112,12 @@ public class ProvinceImpl implements IProvince {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             codes.stream().forEach(data -> {
                 provinceRepository.deleteByIdAndUser(data, user);
