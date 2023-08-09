@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.District;
-import com.proyect.masterdata.domain.DistrictPK;
 import com.proyect.masterdata.dto.DistrictDTO;
 import com.proyect.masterdata.dto.request.RequestDistrict;
 import com.proyect.masterdata.dto.request.RequestDistrictSave;
@@ -75,10 +74,7 @@ public class DistrictImpl implements IDistrict {
     @Override
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions {
         try {
-            districtRepository.deleteById(DistrictPK.builder()
-                    .id(code)
-                    .user(user)
-                    .build());
+            districtRepository.deleteByIdAndUser(code, user);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -91,11 +87,9 @@ public class DistrictImpl implements IDistrict {
     @Override
     public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions {
         try {
-            List<DistrictPK> districtPKList = codes.stream().map(data -> DistrictPK.builder()
-                    .user(user.toUpperCase())
-                    .id(data)
-                    .build()).toList();
-            districtRepository.deleteAllById(districtPKList);
+            codes.stream().forEach(data -> {
+                districtRepository.deleteByIdAndUser(data, user);
+            });
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -144,7 +138,7 @@ public class DistrictImpl implements IDistrict {
     @Override
     public List<DistrictDTO> findByUser(String user) throws BadRequestExceptions {
         try {
-            return districtMapper.listDistrictToListDistrictDTO(districtRepository.findByLoginUser(user.toUpperCase()));
+            return districtMapper.listDistrictToListDistrictDTO(districtRepository.findByUser(user.toUpperCase()));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }

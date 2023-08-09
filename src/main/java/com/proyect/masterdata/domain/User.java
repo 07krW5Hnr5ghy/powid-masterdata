@@ -42,6 +42,9 @@ public class User {
     @Column(name = "celular")
     private String mobile;
 
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "estado")
     private Long status;
 
@@ -52,12 +55,14 @@ public class User {
     @Column(name = "id_distrito", unique = true)
     private Long id_district;
 
+    @Column(name = "id_tipo_usuario")
+    private Long idUserType;
+
     @ManyToOne
     @JoinColumn(name = "id_distrito", columnDefinition = "id_district",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_distrito"))
-    @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_usuario"))
     private District district;
 
     @ManyToOne
-    @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_sesion"))
-    private Login login;
+    @JoinColumn(name = "id_tipo_usuario", columnDefinition = "idUserType",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_usuario"))
+    private UserType userType;
 }

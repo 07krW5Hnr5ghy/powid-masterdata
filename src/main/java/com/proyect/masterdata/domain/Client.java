@@ -72,7 +72,6 @@ public class Client {
 
     @ManyToOne
     @JoinColumn(name = "id_distrito", columnDefinition = "id_district",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_distrito"))
-    @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_usuario"))
     private District district;
 
 }

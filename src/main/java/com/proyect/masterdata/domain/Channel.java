@@ -62,8 +62,8 @@ public class Channel {
     private Long idConnection;
 
     @ManyToOne
-    @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_sesion"))
-    private Login login;
+    @JoinColumn(name = "usuario", columnDefinition = "user",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_user"))
+    private User datauser;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", columnDefinition = "idClient",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_cliente"))

@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Department;
-import com.proyect.masterdata.domain.DepartmentPK;
 import com.proyect.masterdata.dto.DepartmentDTO;
 import com.proyect.masterdata.dto.request.RequestDepartment;
 import com.proyect.masterdata.dto.request.RequestDepartmentSave;
@@ -16,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import java.util.List;
-
 
 @Service
 @AllArgsConstructor
@@ -72,10 +70,7 @@ public class DepartmentImpl implements IDepartment {
     @Override
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions{
         try {
-            departmentRepository.deleteById(DepartmentPK.builder()
-                            .id(code)
-                            .user(user)
-                    .build());
+            departmentRepository.deleteByIdAndUser(code, user);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -88,11 +83,9 @@ public class DepartmentImpl implements IDepartment {
     @Override
     public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions{
         try {
-            List<DepartmentPK> departmentPKList = codes.stream().map(data -> DepartmentPK.builder()
-                    .user(user.toUpperCase())
-                    .id(data)
-                    .build()).toList();
-            departmentRepository.deleteAllById(departmentPKList);
+            codes.stream().forEach(data -> {
+                departmentRepository.deleteByIdAndUser(data, user);
+            });
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -141,7 +134,7 @@ public class DepartmentImpl implements IDepartment {
     @Override
     public List<DepartmentDTO> findByUser(String user) throws BadRequestExceptions{
         try {
-            return departmentMapper.listDepartmentToListDepartmentDTO(departmentRepository.findByLoginUser(user.toUpperCase()));
+            return departmentMapper.listDepartmentToListDepartmentDTO(departmentRepository.findByUser(user.toUpperCase()));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
