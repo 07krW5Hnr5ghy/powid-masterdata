@@ -42,4 +42,7 @@ public class SaleChannel {
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date dateRegistration;
+
+    @Column(name="usuario")
+    private String user;
 }

@@ -44,4 +44,7 @@ public class PaymentMethod {
     @CreationTimestamp
     private Date dateRegistration;
 
+    @Column(name="usuario")
+    private String user;
+
 }

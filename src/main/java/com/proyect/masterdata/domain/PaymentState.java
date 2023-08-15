@@ -45,4 +45,7 @@ public class PaymentState {
     @CreationTimestamp
     private Date dateRegistration;
 
+    @Column(name="usuario")
+    private String user;
+
 }

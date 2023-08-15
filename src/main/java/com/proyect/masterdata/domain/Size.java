@@ -50,4 +50,7 @@ public class Size {
     @ManyToOne
     @JoinColumn(name = "id_tipo_talla", columnDefinition = "idSizeType", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_talla"))
     private SizeType sizeType;
+
+    @Column(name="usuario")
+    private String user;
 }

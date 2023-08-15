@@ -42,4 +42,7 @@ public class Color {
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date dateRegistration;
+
+    @Column(name="usuario")
+    private String user;
 }
