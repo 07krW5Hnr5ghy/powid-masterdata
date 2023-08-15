@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.dto.ColorDTO;
 import com.proyect.masterdata.dto.request.RequestColor;
+import com.proyect.masterdata.dto.request.RequestCreateColor;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -24,9 +25,9 @@ public class ColorImpl implements IColor {
     private final ColorMapper colorMapper;
 
     @Override
-    public ResponseSuccess save(String name) throws BadRequestExceptions {
+    public ResponseSuccess save(String name, String user) throws BadRequestExceptions {
         try {
-            colorRepository.save(colorMapper.colorToName(name.toUpperCase()));
+            colorRepository.save(colorMapper.colorToName(name.toUpperCase(), user.toUpperCase()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -37,10 +38,19 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestCreateColor> requestCreateColorList) throws BadRequestExceptions{
         try {
-            colorRepository.saveAll(colorMapper.listColorToListName(
-                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
+            colorRepository.saveAll(colorMapper.listRequestCreateColorToListColor(requestCreateColorList)
+                    .stream().map(
+                            c -> {
+                                Color color = new Color();
+                                color.setName(c.getName().toUpperCase());
+                                color.setStatus(true);
+                                color.setUser(c.getUser().toUpperCase());
+                                return color;
+                            }
+                    ).collect(Collectors.toList())
+            );
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
