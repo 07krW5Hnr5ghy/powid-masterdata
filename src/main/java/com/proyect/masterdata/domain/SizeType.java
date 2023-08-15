@@ -20,9 +20,9 @@ import java.util.Date;
 @Table(name= Constants.tableSizeType,schema=Constants.schemaMaster)
 public class SizeType {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-size-type")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-size-type",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "tipos_talla_sequence"),

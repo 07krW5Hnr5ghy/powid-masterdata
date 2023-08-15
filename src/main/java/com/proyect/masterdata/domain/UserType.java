@@ -20,9 +20,9 @@ import java.util.Date;
 @Table(name = Constants.tableUserType, schema = Constants.schemaMaster)
 public class UserType {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-user-type")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-user-type",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "tipo_usuario_sequence"),

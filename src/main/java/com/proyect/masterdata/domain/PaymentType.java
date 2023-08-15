@@ -20,9 +20,9 @@ import java.util.Date;
 @Table(name = Constants.tablePaymentType, schema = Constants.schemaMaster)
 public class PaymentType {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-payment-type")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-payment-type",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "tipo_pago_sequence"),

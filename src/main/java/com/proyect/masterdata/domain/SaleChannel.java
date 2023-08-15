@@ -20,9 +20,9 @@ import java.util.Date;
 @Table(name = Constants.tableSaleChannel, schema = Constants.schemaMaster)
 public class SaleChannel {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-sale-channel")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-sale-channel",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "canales_venta_sequence"),

@@ -19,9 +19,9 @@ import java.util.Date;
 @Table(name = Constants.tableProvince, schema = Constants.schemaMaster)
 public class Province {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-province")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-province",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @org.hibernate.annotations.Parameter(name = "sequence_name", value = "provincias_sequence"),

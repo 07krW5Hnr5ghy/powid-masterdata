@@ -21,9 +21,9 @@ import java.util.Date;
 public class PaymentState {
 
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-payment-state")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-state",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "estados_pago_sequence"),
