@@ -43,6 +43,9 @@ public class Discount {
     @CreationTimestamp
     private Date dateRegistration;
 
+    @Column(name = "meses")
+    private int months;
+
     @Column(name = "id_canal", unique = true)
     private Long idChannel;
 
