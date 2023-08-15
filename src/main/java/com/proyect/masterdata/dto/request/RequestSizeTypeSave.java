@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestSizeType {
-    private Long code;
+public class RequestSizeTypeSave {
     private String name;
     private String user;
-    private boolean status;
 }

@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.SizeTypeDTO;
 import com.proyect.masterdata.dto.request.RequestSizeType;
+import com.proyect.masterdata.dto.request.RequestSizeTypeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -21,17 +22,17 @@ public class SizeTypeController {
     private final ISizeType iSizeType;
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name
+            @RequestParam("name") String name,@RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iSizeType.save(name);
+        ResponseSuccess result = iSizeType.save(name,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/size-types")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names
+            @RequestBody() List<RequestSizeTypeSave> requestSizeTypeSaveList
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iSizeType.saveAll(names);
+        ResponseSuccess result = iSizeType.saveAll(requestSizeTypeSaveList);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

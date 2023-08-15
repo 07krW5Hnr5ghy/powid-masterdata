@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.SizeType;
 import com.proyect.masterdata.dto.SizeTypeDTO;
 import com.proyect.masterdata.dto.request.RequestSizeType;
+import com.proyect.masterdata.dto.request.RequestSizeTypeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -24,9 +25,9 @@ public class SizeTypeImpl implements ISizeType {
     private final SizeTypeMapper sizeTypeMapper;
 
     @Override
-    public ResponseSuccess save(String name) throws BadRequestExceptions {
+    public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
         try {
-            sizeTypeRepository.save(sizeTypeMapper.sizeTypeToName(name.toUpperCase()));
+            sizeTypeRepository.save(sizeTypeMapper.sizeTypeToName(name.toUpperCase(),user.toUpperCase()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -37,10 +38,20 @@ public class SizeTypeImpl implements ISizeType {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestSizeTypeSave> requestSizeTypeSaveList) throws BadRequestExceptions{
         try {
-            sizeTypeRepository.saveAll(sizeTypeMapper.listSizeTypeToListName(
-                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
+            sizeTypeRepository.saveAll(sizeTypeMapper.listRequestSizeTypeSaveTypeToListSizeType(requestSizeTypeSaveList)
+                    .stream()
+                    .map(
+                            c -> {
+                                SizeType sizeType = new SizeType();
+                                sizeType.setName(c.getName().toUpperCase());
+                                sizeType.setStatus(c.getStatus());
+                                sizeType.setUser(c.getUser().toUpperCase());
+                                return sizeType;
+                            }
+                    ).collect(Collectors.toList())
+            );
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -54,6 +65,7 @@ public class SizeTypeImpl implements ISizeType {
     public SizeTypeDTO update(RequestSizeType requestSizeType) throws BadRequestExceptions {
         try {
             requestSizeType.setName(requestSizeType.getName().toUpperCase());
+            requestSizeType.setUser(requestSizeType.getUser().toUpperCase());
             SizeType updatedSizeType = sizeTypeMapper.requestSizeTypeToSizeType(requestSizeType);
             updatedSizeType.setDateRegistration(new Date(System.currentTimeMillis()));
             SizeType sizeType = sizeTypeRepository.save(updatedSizeType);

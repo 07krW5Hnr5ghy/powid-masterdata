@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.SizeType;
 import com.proyect.masterdata.dto.SizeTypeDTO;
 import com.proyect.masterdata.dto.request.RequestSize;
 import com.proyect.masterdata.dto.request.RequestSizeType;
+import com.proyect.masterdata.dto.request.RequestSizeTypeSave;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -20,12 +21,14 @@ public interface SizeTypeMapper {
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "name")
-    SizeType sizeTypeToName(String name);
-
-    List<SizeType> listSizeTypeToListName(List<String> names);
+    SizeType sizeTypeToName(String name,String user);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)
     SizeType requestSizeTypeToSizeType(RequestSizeType requestSizeType);
+
+    List<SizeType> listRequestSizeTypeSaveTypeToListSizeType(List<RequestSizeTypeSave> requestSizeTypeSaveList);
+
+
 
 }
