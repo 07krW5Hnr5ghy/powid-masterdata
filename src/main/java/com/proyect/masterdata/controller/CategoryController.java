@@ -2,7 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.CategoryDTO;
 import com.proyect.masterdata.dto.request.RequestCategory;
-import com.proyect.masterdata.dto.request.RequestCreateCategory;
+import com.proyect.masterdata.dto.request.RequestCategorySave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -30,9 +30,9 @@ public class CategoryController {
 
     @PostMapping(value = "/categories")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<RequestCreateCategory> requestCreateCategoryList
+            @RequestBody() List<RequestCategorySave> requestCategorySaveList
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iCategory.saveAll(requestCreateCategoryList);
+        ResponseSuccess result = iCategory.saveAll(requestCategorySaveList);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

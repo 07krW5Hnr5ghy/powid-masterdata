@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestCreatePaymentState {
+public class RequestColorSave {
     private String name;
     private String user;
 }

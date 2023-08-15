@@ -3,7 +3,7 @@ package com.proyect.masterdata.mapper;
 import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.dto.ColorDTO;
 import com.proyect.masterdata.dto.request.RequestColor;
-import com.proyect.masterdata.dto.request.RequestCreateColor;
+import com.proyect.masterdata.dto.request.RequestColorSave;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -26,6 +26,6 @@ public interface ColorMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     Color requestColorToColor(RequestColor requestColor);
 
-    List<Color> listRequestCreateColorToListColor(List<RequestCreateColor> requestCreateColorList);
+    List<Color> listRequestCreateColorToListColor(List<RequestColorSave> requestColorSaveList);
 
 }

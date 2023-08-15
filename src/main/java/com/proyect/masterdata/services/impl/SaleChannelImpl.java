@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.SaleChannel;
 import com.proyect.masterdata.dto.SaleChannelDTO;
+import com.proyect.masterdata.dto.request.RequestSaleChannelSave;
 import com.proyect.masterdata.dto.request.RequestSaleChannel;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -24,9 +25,9 @@ public class SaleChannelImpl implements ISaleChannel {
     private final SaleChannelMapper saleChannelMapper;
 
     @Override
-    public ResponseSuccess save(String name) throws BadRequestExceptions {
+    public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
         try {
-            saleChannelRepository.save(saleChannelMapper.saleChannelToName(name.toUpperCase()));
+            saleChannelRepository.save(saleChannelMapper.saleChannelToName(name.toUpperCase(),user.toUpperCase()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -37,10 +38,20 @@ public class SaleChannelImpl implements ISaleChannel {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestSaleChannelSave> requestSaleChannelSaveList) throws BadRequestExceptions{
         try {
-            saleChannelRepository.saveAll(saleChannelMapper.listSaleChannelToListName(
-                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
+            saleChannelRepository.saveAll(saleChannelMapper.listRequestCreateSaleChannelToListSaleChannel(requestSaleChannelSaveList)
+                    .stream()
+                    .map(
+                            c -> {
+                                SaleChannel saleChannel = new SaleChannel();
+                                saleChannel.setName(c.getName().toUpperCase());
+                                saleChannel.setStatus(c.getStatus());
+                                saleChannel.setUser(c.getUser().toUpperCase());
+                                return saleChannel;
+                            }
+                    ).collect(Collectors.toList())
+            );
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -54,6 +65,7 @@ public class SaleChannelImpl implements ISaleChannel {
     public SaleChannelDTO update(RequestSaleChannel requestSaleChannel) throws BadRequestExceptions {
         try {
             requestSaleChannel.setName(requestSaleChannel.getName().toUpperCase());
+
             SaleChannel updatedSaleChannel = saleChannelMapper.requestSaleChannelToSaleChannel(requestSaleChannel);
             updatedSaleChannel.setDateRegistration(new Date(System.currentTimeMillis()));
             SaleChannel saleChannel = saleChannelRepository.save(updatedSaleChannel);

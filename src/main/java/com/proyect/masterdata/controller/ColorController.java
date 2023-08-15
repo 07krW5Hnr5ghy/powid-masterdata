@@ -2,12 +2,11 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.ColorDTO;
 import com.proyect.masterdata.dto.request.RequestColor;
-import com.proyect.masterdata.dto.request.RequestCreateColor;
+import com.proyect.masterdata.dto.request.RequestColorSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IColor;
-import com.proyect.masterdata.services.impl.ColorImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +31,9 @@ public class ColorController {
 
     @PostMapping(value = "/colors")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<RequestCreateColor> requestCreateColorList
+            @RequestBody() List<RequestColorSave> requestColorSaveList
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iColor.saveAll(requestCreateColorList);
+        ResponseSuccess result = iColor.saveAll(requestColorSaveList);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

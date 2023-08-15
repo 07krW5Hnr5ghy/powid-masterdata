@@ -3,7 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Category;
 import com.proyect.masterdata.dto.CategoryDTO;
 import com.proyect.masterdata.dto.request.RequestCategory;
-import com.proyect.masterdata.dto.request.RequestCreateCategory;
+import com.proyect.masterdata.dto.request.RequestCategorySave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -38,7 +38,7 @@ public class CategoryImpl implements ICategory {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestCreateCategory> requestCategoryList) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestCategorySave> requestCategoryList) throws BadRequestExceptions{
         try {
             categoryRepository.saveAll(categoryMapper.listRequestCreateCategoryToListCategory(requestCategoryList)
                     .stream().map(

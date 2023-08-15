@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestCreatePaymentMethod {
+public class RequestPaymentMethodSave {
     private String name;
     private String user;
 }

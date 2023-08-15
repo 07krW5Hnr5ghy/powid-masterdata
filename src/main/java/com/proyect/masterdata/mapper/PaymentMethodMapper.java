@@ -3,7 +3,7 @@ package com.proyect.masterdata.mapper;
 
 import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.dto.PaymentMethodDTO;
-import com.proyect.masterdata.dto.request.RequestCreatePaymentMethod;
+import com.proyect.masterdata.dto.request.RequestPaymentMethodSave;
 import com.proyect.masterdata.dto.request.RequestPaymentMethod;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -26,6 +26,6 @@ public interface PaymentMethodMapper {
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)
     PaymentMethod requestPaymentMethodToPaymentMethod(RequestPaymentMethod requestPaymentMethod);
-    List<PaymentMethod> listRequestPaymentMethodToListPaymentMethod(List<RequestCreatePaymentMethod> requestCreatePaymentMethodList);
+    List<PaymentMethod> listRequestPaymentMethodToListPaymentMethod(List<RequestPaymentMethodSave> requestPaymentMethodSaveList);
 
 }

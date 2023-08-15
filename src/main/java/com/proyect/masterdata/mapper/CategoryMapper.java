@@ -3,7 +3,7 @@ package com.proyect.masterdata.mapper;
 import com.proyect.masterdata.domain.Category;
 import com.proyect.masterdata.dto.CategoryDTO;
 import com.proyect.masterdata.dto.request.RequestCategory;
-import com.proyect.masterdata.dto.request.RequestCreateCategory;
+import com.proyect.masterdata.dto.request.RequestCategorySave;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -32,6 +32,6 @@ public interface CategoryMapper {
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "name")
-    List<Category> listRequestCreateCategoryToListCategory(List<RequestCreateCategory> requestCreateCategoryList);
+    List<Category> listRequestCreateCategoryToListCategory(List<RequestCategorySave> requestCategorySaveList);
 
 }

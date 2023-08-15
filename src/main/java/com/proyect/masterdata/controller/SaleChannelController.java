@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.SaleChannelDTO;
+import com.proyect.masterdata.dto.request.RequestSaleChannelSave;
 import com.proyect.masterdata.dto.request.RequestSaleChannel;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -21,17 +22,17 @@ public class SaleChannelController {
     private final ISaleChannel iSaleChannel;
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name
+            @RequestParam("name") String name,@RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iSaleChannel.save(name);
+        ResponseSuccess result = iSaleChannel.save(name,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/sale-channels")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names
+            @RequestBody() List<RequestSaleChannelSave> requestSaleChannelSaveList
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iSaleChannel.saveAll(names);
+        ResponseSuccess result = iSaleChannel.saveAll(requestSaleChannelSaveList);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

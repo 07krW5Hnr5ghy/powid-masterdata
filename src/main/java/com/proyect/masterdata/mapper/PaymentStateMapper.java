@@ -3,7 +3,7 @@ package com.proyect.masterdata.mapper;
 
 import com.proyect.masterdata.domain.PaymentState;
 import com.proyect.masterdata.dto.PaymentStateDTO;
-import com.proyect.masterdata.dto.request.RequestCreatePaymentState;
+import com.proyect.masterdata.dto.request.RequestPaymentStateSave;
 import com.proyect.masterdata.dto.request.RequestPaymentState;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,6 +27,6 @@ public interface PaymentStateMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     PaymentState requestPaymentStateToPaymentState(RequestPaymentState requestPaymentState);
 
-    List<PaymentState> listRequestCreatePaymentStateToListPaymentState(List<RequestCreatePaymentState> requestCreatePaymentStateList);
+    List<PaymentState> listRequestCreatePaymentStateToListPaymentState(List<RequestPaymentStateSave> requestPaymentStateSaveList);
 
 }

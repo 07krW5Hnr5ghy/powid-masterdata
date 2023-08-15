@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestCreateCategory {
+public class RequestSaleChannelSave {
     private String name;
-    private String description;
+    private String user;
 }

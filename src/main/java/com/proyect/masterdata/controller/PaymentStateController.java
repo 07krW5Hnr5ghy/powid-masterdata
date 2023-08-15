@@ -1,7 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.PaymentStateDTO;
-import com.proyect.masterdata.dto.request.RequestCreatePaymentState;
+import com.proyect.masterdata.dto.request.RequestPaymentStateSave;
 import com.proyect.masterdata.dto.request.RequestPaymentState;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -32,9 +32,9 @@ public class PaymentStateController {
 
     @PostMapping(value = "/payment-states")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<RequestCreatePaymentState> requestCreatePaymentStateList
+            @RequestBody() List<RequestPaymentStateSave> requestPaymentStateSaveList
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iPaymentState.saveAll(requestCreatePaymentStateList);
+        ResponseSuccess result = iPaymentState.saveAll(requestPaymentStateSaveList);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

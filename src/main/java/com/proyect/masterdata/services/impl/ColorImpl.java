@@ -3,7 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.dto.ColorDTO;
 import com.proyect.masterdata.dto.request.RequestColor;
-import com.proyect.masterdata.dto.request.RequestCreateColor;
+import com.proyect.masterdata.dto.request.RequestColorSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -38,9 +38,9 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestCreateColor> requestCreateColorList) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestColorSave> requestColorSaveList) throws BadRequestExceptions{
         try {
-            colorRepository.saveAll(colorMapper.listRequestCreateColorToListColor(requestCreateColorList)
+            colorRepository.saveAll(colorMapper.listRequestCreateColorToListColor(requestColorSaveList)
                     .stream().map(
                             c -> {
                                 Color color = new Color();

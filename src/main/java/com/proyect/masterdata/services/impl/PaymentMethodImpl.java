@@ -2,7 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.dto.PaymentMethodDTO;
-import com.proyect.masterdata.dto.request.RequestCreatePaymentMethod;
+import com.proyect.masterdata.dto.request.RequestPaymentMethodSave;
 import com.proyect.masterdata.dto.request.RequestPaymentMethod;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -38,9 +38,9 @@ public class PaymentMethodImpl implements IPaymentMethod {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestCreatePaymentMethod> requestCreatePaymentMethodList) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestPaymentMethodSave> requestPaymentMethodSaveList) throws BadRequestExceptions{
         try {
-            paymentMethodRepository.saveAll(paymentMethodMapper.listRequestPaymentMethodToListPaymentMethod(requestCreatePaymentMethodList)
+            paymentMethodRepository.saveAll(paymentMethodMapper.listRequestPaymentMethodToListPaymentMethod(requestPaymentMethodSaveList)
                     .stream()
                     .map(
                             c -> {

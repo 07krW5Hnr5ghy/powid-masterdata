@@ -1,7 +1,7 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.dto.PaymentMethodDTO;
-import com.proyect.masterdata.dto.request.RequestCreatePaymentMethod;
+import com.proyect.masterdata.dto.request.RequestPaymentMethodSave;
 import com.proyect.masterdata.dto.request.RequestPaymentMethod;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface IPaymentMethod {
     ResponseSuccess save(String name, String user) throws BadRequestExceptions;
-    ResponseSuccess saveAll(List<RequestCreatePaymentMethod> requestCreatePaymentMethodList) throws BadRequestExceptions;
+    ResponseSuccess saveAll(List<RequestPaymentMethodSave> requestPaymentMethodSaveList) throws BadRequestExceptions;
     PaymentMethodDTO update(RequestPaymentMethod requestPaymentMethod) throws BadRequestExceptions;
     ResponseDelete delete(Long code) throws BadRequestExceptions;
     ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions;

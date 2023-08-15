@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestCreateColor {
+public class RequestCategorySave {
     private String name;
-    private String user;
+    private String description;
 }
