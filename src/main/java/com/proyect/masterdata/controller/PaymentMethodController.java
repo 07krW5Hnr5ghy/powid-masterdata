@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.PaymentMethodDTO;
+import com.proyect.masterdata.dto.request.RequestCreatePaymentMethod;
 import com.proyect.masterdata.dto.request.RequestPaymentMethod;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -24,17 +25,17 @@ public class PaymentMethodController {
 
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name
+            @RequestParam("name") String name,@RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iPaymentMethod.save(name);
+        ResponseSuccess result = iPaymentMethod.save(name,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/payment-methods")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names
+            @RequestBody() List<RequestCreatePaymentMethod> requestCreatePaymentMethodList
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iPaymentMethod.saveAll(names);
+        ResponseSuccess result = iPaymentMethod.saveAll(requestCreatePaymentMethodList);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

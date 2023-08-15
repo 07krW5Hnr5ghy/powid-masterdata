@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.PaymentState;
 import com.proyect.masterdata.dto.PaymentStateDTO;
+import com.proyect.masterdata.dto.request.RequestCreatePaymentState;
 import com.proyect.masterdata.dto.request.RequestPaymentState;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -25,9 +26,9 @@ public class PaymentStateImpl implements IPaymentState {
     private final PaymentStateMapper paymentStateMapper;
 
     @Override
-    public ResponseSuccess save(String name) throws BadRequestExceptions {
+    public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
         try {
-            paymentStateRepository.save(paymentStateMapper.paymentStateToName(name.toUpperCase()));
+            paymentStateRepository.save(paymentStateMapper.paymentStateToName(name.toUpperCase(),user.toUpperCase()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -38,10 +39,20 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestCreatePaymentState> requestCreatePaymentStateList) throws BadRequestExceptions{
         try {
-            paymentStateRepository.saveAll(paymentStateMapper.listPaymentStateToListName(
-                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
+            paymentStateRepository.saveAll(paymentStateMapper.listRequestCreatePaymentStateToListPaymentState(requestCreatePaymentStateList)
+                    .stream()
+                    .map(
+                            c -> {
+                                PaymentState paymentState = new PaymentState();
+                                paymentState.setName(c.getName().toUpperCase());
+                                paymentState.setStatus(c.getStatus());
+                                paymentState.setUser(c.getUser().toUpperCase());
+                                return paymentState;
+                            }
+                    ).collect(Collectors.toList())
+            );
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -55,6 +66,7 @@ public class PaymentStateImpl implements IPaymentState {
     public PaymentStateDTO update(RequestPaymentState requestPaymentState) throws BadRequestExceptions {
         try {
             requestPaymentState.setName(requestPaymentState.getName().toUpperCase());
+            requestPaymentState.setUser(requestPaymentState.getUser().toUpperCase());
             PaymentState updatedPaymentState = paymentStateMapper.requestPaymentStateToPaymentState(requestPaymentState);
             updatedPaymentState.setDateRegistration(new Date(System.currentTimeMillis()));
             PaymentState paymentState = paymentStateRepository.save(updatedPaymentState);

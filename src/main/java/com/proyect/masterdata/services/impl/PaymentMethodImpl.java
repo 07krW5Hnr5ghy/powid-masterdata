@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.dto.PaymentMethodDTO;
+import com.proyect.masterdata.dto.request.RequestCreatePaymentMethod;
 import com.proyect.masterdata.dto.request.RequestPaymentMethod;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -24,9 +25,9 @@ public class PaymentMethodImpl implements IPaymentMethod {
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentMethodMapper paymentMethodMapper;
     @Override
-    public ResponseSuccess save(String name) throws BadRequestExceptions {
+    public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
         try {
-            paymentMethodRepository.save(paymentMethodMapper.paymentMethodToName(name.toUpperCase()));
+            paymentMethodRepository.save(paymentMethodMapper.paymentMethodToName(name.toUpperCase(),user.toUpperCase()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -37,10 +38,19 @@ public class PaymentMethodImpl implements IPaymentMethod {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestCreatePaymentMethod> requestCreatePaymentMethodList) throws BadRequestExceptions{
         try {
-            paymentMethodRepository.saveAll(paymentMethodMapper.listPaymentMethodToListName(
-                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
+            paymentMethodRepository.saveAll(paymentMethodMapper.listRequestPaymentMethodToListPaymentMethod(requestCreatePaymentMethodList)
+                    .stream()
+                    .map(
+                            c -> {
+                                PaymentMethod paymentMethod = new PaymentMethod();
+                                paymentMethod.setName(c.getName().toUpperCase());
+                                paymentMethod.setStatus(c.getStatus());
+                                paymentMethod.setUser(c.getUser().toUpperCase());
+                                return paymentMethod;
+                            }
+                    ).collect(Collectors.toList()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -54,6 +64,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
     public PaymentMethodDTO update(RequestPaymentMethod requestPaymentMethod) throws BadRequestExceptions {
         try {
             requestPaymentMethod.setName(requestPaymentMethod.getName().toUpperCase());
+            requestPaymentMethod.setUser(requestPaymentMethod.getUser().toUpperCase());
             PaymentMethod updatedPaymentMethod = paymentMethodMapper.requestPaymentMethodToPaymentMethod(requestPaymentMethod);
             updatedPaymentMethod.setDateRegistration(new Date(System.currentTimeMillis()));
             PaymentMethod paymentMethod = paymentMethodRepository.save(updatedPaymentMethod);
