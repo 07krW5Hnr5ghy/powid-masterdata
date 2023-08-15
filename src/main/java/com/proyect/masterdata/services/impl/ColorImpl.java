@@ -64,6 +64,7 @@ public class ColorImpl implements IColor {
     public ColorDTO update(RequestColor requestColor) throws BadRequestExceptions {
         try {
             requestColor.setName(requestColor.getName().toUpperCase());
+            requestColor.setUser(requestColor.getUser().toUpperCase());
             Color updatedColor = colorMapper.requestColorToColor(requestColor);
             updatedColor.setDateRegistration(new Date(System.currentTimeMillis()));
             Color color = colorRepository.save(updatedColor);

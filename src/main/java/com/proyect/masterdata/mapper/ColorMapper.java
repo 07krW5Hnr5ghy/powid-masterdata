@@ -22,9 +22,10 @@ public interface ColorMapper {
     @Mapping(target = "name", source = "name")
     Color colorToName(String name,String user);
 
-    List<Color> listRequestCreateColorToListColor(List<RequestCreateColor> requestCreateColorList);
-
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)
     Color requestColorToColor(RequestColor requestColor);
+
+    List<Color> listRequestCreateColorToListColor(List<RequestCreateColor> requestCreateColorList);
+
 }
