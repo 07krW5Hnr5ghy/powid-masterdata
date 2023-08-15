@@ -43,4 +43,11 @@ public class Size {
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date dateRegistration;
+
+    @Column(name = "id_tipo_talla", unique = true)
+    private Long idSizeType;
+
+    @ManyToOne
+    @JoinColumn(name = "id_tipo_talla", columnDefinition = "idSizeType", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_talla"))
+    private SizeType sizeType;
 }
