@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.SizeDTO;
 import com.proyect.masterdata.dto.request.RequestSize;
+import com.proyect.masterdata.dto.request.RequestSizeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -22,17 +23,17 @@ public class SizeController {
     private final ISize iSize;
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name
+            @RequestParam("name") String name, @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iSize.save(name);
+        ResponseSuccess result = iSize.save(name,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/sizes")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names
+            @RequestBody() List<RequestSizeSave> requestSizeSaveList
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iSize.saveAll(names);
+        ResponseSuccess result = iSize.saveAll(requestSizeSaveList);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

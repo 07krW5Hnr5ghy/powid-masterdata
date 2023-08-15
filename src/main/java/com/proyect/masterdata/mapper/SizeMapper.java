@@ -3,6 +3,7 @@ package com.proyect.masterdata.mapper;
 import com.proyect.masterdata.domain.Size;
 import com.proyect.masterdata.dto.SizeDTO;
 import com.proyect.masterdata.dto.request.RequestSize;
+import com.proyect.masterdata.dto.request.RequestSizeSave;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -19,11 +20,13 @@ public interface SizeMapper {
      @Mapping(target = "status", constant = "true")
      @Mapping(target = "dateRegistration", ignore = true)
      @Mapping(target = "name", source = "name")
-     Size sizeToName(String name);
-
-     List<Size> listSizeToListName(List<String> names);
+     Size sizeToName(String name,String user);
 
      @Mapping(target = "id", source = "code")
      @Mapping(target = "dateRegistration", ignore = true)
      Size requestSizeToSize(RequestSize requestSize);
+
+     List<Size> listRequestSizeSaveToListSize(List<RequestSizeSave> requestSizeSaveList);
+
+
 }

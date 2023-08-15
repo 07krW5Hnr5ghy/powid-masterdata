@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Size;
 import com.proyect.masterdata.dto.SizeDTO;
 import com.proyect.masterdata.dto.request.RequestSize;
+import com.proyect.masterdata.dto.request.RequestSizeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -24,9 +25,9 @@ public class SizeImpl implements ISize {
     private final SizeMapper sizeMapper;
 
     @Override
-    public ResponseSuccess save(String name) throws BadRequestExceptions {
+    public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
         try {
-            sizeRepository.save(sizeMapper.sizeToName(name.toUpperCase()));
+            sizeRepository.save(sizeMapper.sizeToName(name.toUpperCase(), user.toUpperCase()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -37,10 +38,20 @@ public class SizeImpl implements ISize {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestSizeSave> requestSizeSaveList) throws BadRequestExceptions{
         try {
-            sizeRepository.saveAll(sizeMapper.listSizeToListName(
-                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
+            sizeRepository.saveAll(sizeMapper.listRequestSizeSaveToListSize(requestSizeSaveList)
+                    .stream()
+                    .map(
+                            c -> {
+                                Size size = new Size();
+                                size.setName(c.getName().toUpperCase());
+                                size.setStatus(c.getStatus());
+                                size.setUser(c.getUser().toUpperCase());
+                                return size;
+                            }
+                    ).collect(Collectors.toList())
+            );
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -54,6 +65,7 @@ public class SizeImpl implements ISize {
     public SizeDTO update(RequestSize requestSize) throws BadRequestExceptions {
         try {
             requestSize.setName(requestSize.getName().toUpperCase());
+            requestSize.setUser(requestSize.getUser().toUpperCase());
             Size updatedSize = sizeMapper.requestSizeToSize(requestSize);
             updatedSize.setDateRegistration(new Date(System.currentTimeMillis()));
             Size size = sizeRepository.save(updatedSize);
