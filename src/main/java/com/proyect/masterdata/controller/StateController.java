@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.StateDTO;
 import com.proyect.masterdata.dto.request.RequestState;
+import com.proyect.masterdata.dto.request.RequestStateSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -22,17 +23,17 @@ public class StateController {
     private final IState iState;
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name
+            @RequestParam("name") String name,@RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iState.save(name);
+        ResponseSuccess result = iState.save(name,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/states")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names
+            @RequestBody() List<RequestStateSave> requestStateSaveList
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iState.saveAll(names);
+        ResponseSuccess result = iState.saveAll(requestStateSaveList);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

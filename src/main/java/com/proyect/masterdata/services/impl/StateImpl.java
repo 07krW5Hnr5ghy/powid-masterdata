@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.State;
 import com.proyect.masterdata.dto.StateDTO;
 import com.proyect.masterdata.dto.request.RequestState;
+import com.proyect.masterdata.dto.request.RequestStateSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -23,9 +24,9 @@ public class StateImpl implements IState {
     private final StateRepository stateRepository;
     private final StateMapper stateMapper;
     @Override
-    public ResponseSuccess save(String name) throws BadRequestExceptions {
+    public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
         try {
-            stateRepository.save(stateMapper.stateToName(name.toUpperCase()));
+            stateRepository.save(stateMapper.stateToName(name.toUpperCase(),user.toUpperCase()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -36,10 +37,20 @@ public class StateImpl implements IState {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestStateSave> requestStateSaveList) throws BadRequestExceptions{
         try {
-            stateRepository.saveAll(stateMapper.listStateToListName(
-                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
+            stateRepository.saveAll(stateMapper.listRequestStateSaveToListState(requestStateSaveList)
+                    .stream()
+                    .map(
+                            c -> {
+                                State state = new State();
+                                state.setName(c.getName().toUpperCase());
+                                state.setStatus(c.getStatus());
+                                state.setUser(c.getUser().toUpperCase());
+                                return state;
+                            }
+                    ).collect(Collectors.toList())
+            );
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -53,6 +64,7 @@ public class StateImpl implements IState {
     public StateDTO update(RequestState requestState) throws BadRequestExceptions {
         try {
             requestState.setName(requestState.getName().toUpperCase());
+            requestState.setUser(requestState.getUser().toUpperCase());
             State updatedState = stateMapper.requestStateToState(requestState);
             updatedState.setDateRegistration(new Date(System.currentTimeMillis()));
             State state = stateRepository.save(updatedState);
