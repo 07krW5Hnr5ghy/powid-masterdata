@@ -21,9 +21,9 @@ import java.util.Date;
 @Table(name = Constants.tableCategory, schema = Constants.schemaMaster)
 public class Category {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-category")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-category",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "categorias_sequence"),

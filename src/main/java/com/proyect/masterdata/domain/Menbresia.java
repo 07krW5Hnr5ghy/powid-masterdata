@@ -17,9 +17,9 @@ import org.hibernate.annotations.Parameter;
 @Table(name = Constants.tableMenbresia, schema = Constants.schemaMaster)
 public class Menbresia {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-menbresia")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-menbresia",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "menbresia_sequence"),

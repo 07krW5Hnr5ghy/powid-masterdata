@@ -20,9 +20,9 @@ import java.util.Date;
 @Table(name = Constants.tableConnection, schema = Constants.schemaMaster)
 public class Connection {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-connection")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-connection",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "conexion_sequence"),

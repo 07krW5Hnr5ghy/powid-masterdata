@@ -20,9 +20,9 @@ import java.util.Date;
 @Table(name = Constants.tableDiscount, schema = Constants.schemaMaster)
 public class Discount {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-discount")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-discount",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "descuento_sequence"),

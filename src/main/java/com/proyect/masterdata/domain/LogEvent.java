@@ -20,9 +20,9 @@ import java.util.Date;
 @Table(name = Constants.tableLogEvent, schema = Constants.schemaMaster)
 public class LogEvent {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-log-event")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-log-event",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "eventos_log_sequence"),

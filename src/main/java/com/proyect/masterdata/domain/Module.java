@@ -20,9 +20,9 @@ import java.util.Date;
 @Table(name = Constants.tableModule, schema = Constants.schemaMaster)
 public class Module {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-module")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-module",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "modulo_sequence"),

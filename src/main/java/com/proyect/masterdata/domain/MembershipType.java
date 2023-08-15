@@ -20,9 +20,9 @@ import java.util.Date;
 @Table(name = Constants.tableMembershipType, schema = Constants.schemaMaster)
 public class MembershipType {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-membership-type")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-membership-type",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "membresias_sequence"),

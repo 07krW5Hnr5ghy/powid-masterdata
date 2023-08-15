@@ -20,9 +20,9 @@ import java.util.Date;
 @Table(name = Constants.tableColor, schema = Constants.schemaMaster)
 public class Color {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
+    @GeneratedValue(generator = "sequence-color")
     @GenericGenerator(
-            name = "sequence-generator",
+            name = "sequence-color",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "colores_sequence"),
