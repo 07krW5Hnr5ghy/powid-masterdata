@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestUserRole {
-    private Long code;
+public class RequestUserRoleSave {
     private String name;
     private String user;
-    private boolean status;
 }

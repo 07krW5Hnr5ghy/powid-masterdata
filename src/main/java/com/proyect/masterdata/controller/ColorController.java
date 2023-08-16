@@ -2,7 +2,6 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.ColorDTO;
 import com.proyect.masterdata.dto.request.RequestColor;
-import com.proyect.masterdata.dto.request.RequestColorSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -31,9 +30,9 @@ public class ColorController {
 
     @PostMapping(value = "/colors")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<RequestColorSave> requestColorSaveList
+            @RequestBody() List<String> names,@RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iColor.saveAll(requestColorSaveList);
+        ResponseSuccess result = iColor.saveAll(names,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

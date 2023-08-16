@@ -26,6 +26,5 @@ public interface SaleChannelMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     SaleChannel requestSaleChannelToSaleChannel(RequestSaleChannel requestSaleChannel);
 
-    List<SaleChannel> listRequestCreateSaleChannelToListSaleChannel(List<RequestSaleChannelSave> requestSaleChannelSaveList);
-
+    List<SaleChannel> listSaleChannelToListName(List<RequestSaleChannelSave> requestSaleChannelSaveList);
 }

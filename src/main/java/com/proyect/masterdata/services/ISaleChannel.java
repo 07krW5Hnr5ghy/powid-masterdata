@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.dto.SaleChannelDTO;
-import com.proyect.masterdata.dto.request.RequestSaleChannelSave;
 import com.proyect.masterdata.dto.request.RequestSaleChannel;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public interface ISaleChannel {
     ResponseSuccess save(String name,String user) throws BadRequestExceptions;
-    ResponseSuccess saveAll(List<RequestSaleChannelSave> requestSaleChannelSaveList) throws BadRequestExceptions;
+    ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
     SaleChannelDTO update(RequestSaleChannel requestSaleChannel) throws BadRequestExceptions;
     ResponseDelete delete(Long code) throws BadRequestExceptions;
     ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions;

@@ -2,8 +2,8 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.SaleChannel;
 import com.proyect.masterdata.dto.SaleChannelDTO;
-import com.proyect.masterdata.dto.request.RequestSaleChannelSave;
 import com.proyect.masterdata.dto.request.RequestSaleChannel;
+import com.proyect.masterdata.dto.request.RequestSaleChannelSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,20 +37,13 @@ public class SaleChannelImpl implements ISaleChannel {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestSaleChannelSave> requestSaleChannelSaveList) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
         try {
-            saleChannelRepository.saveAll(saleChannelMapper.listRequestCreateSaleChannelToListSaleChannel(requestSaleChannelSaveList)
-                    .stream()
-                    .map(
-                            c -> {
-                                SaleChannel saleChannel = new SaleChannel();
-                                saleChannel.setName(c.getName().toUpperCase());
-                                saleChannel.setStatus(c.getStatus());
-                                saleChannel.setUser(c.getUser().toUpperCase());
-                                return saleChannel;
-                            }
-                    ).collect(Collectors.toList())
-            );
+            List<RequestSaleChannelSave> saleChannelSaves = names.stream().map(data -> RequestSaleChannelSave.builder()
+                    .user(user)
+                    .name(data.toUpperCase())
+                    .build()).toList();
+            saleChannelRepository.saveAll(saleChannelMapper.listSaleChannelToListName(saleChannelSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

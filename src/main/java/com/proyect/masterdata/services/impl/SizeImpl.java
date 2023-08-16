@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,20 +37,13 @@ public class SizeImpl implements ISize {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestSizeSave> requestSizeSaveList) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
         try {
-            sizeRepository.saveAll(sizeMapper.listRequestSizeSaveToListSize(requestSizeSaveList)
-                    .stream()
-                    .map(
-                            c -> {
-                                Size size = new Size();
-                                size.setName(c.getName().toUpperCase());
-                                size.setStatus(c.getStatus());
-                                size.setUser(c.getUser().toUpperCase());
-                                return size;
-                            }
-                    ).collect(Collectors.toList())
-            );
+            List<RequestSizeSave> sizeSaves = names.stream().map(data -> RequestSizeSave.builder()
+                    .user(user)
+                    .name(data.toUpperCase())
+                    .build()).toList();
+            sizeRepository.saveAll(sizeMapper.listSizeToListName(sizeSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

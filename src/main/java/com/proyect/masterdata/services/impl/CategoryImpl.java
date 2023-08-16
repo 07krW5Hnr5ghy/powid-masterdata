@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.Category;
 import com.proyect.masterdata.dto.CategoryDTO;
 import com.proyect.masterdata.dto.request.RequestCategory;
 import com.proyect.masterdata.dto.request.RequestCategorySave;
+import com.proyect.masterdata.dto.request.RequestCreateCategory;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +25,9 @@ public class CategoryImpl implements ICategory {
     private final CategoryMapper categoryMapper;
 
     @Override
-    public ResponseSuccess save(String name,String description) throws BadRequestExceptions {
+    public ResponseSuccess save(String name,String description,String user) throws BadRequestExceptions {
         try {
-            categoryRepository.save(categoryMapper.categoryToName(name.toUpperCase(),description.toUpperCase()));
+            categoryRepository.save(categoryMapper.categoryToName(name.toUpperCase(),description.toUpperCase(),user.toUpperCase()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -38,19 +38,14 @@ public class CategoryImpl implements ICategory {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestCategorySave> requestCategoryList) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<RequestCreateCategory> categories,String user) throws BadRequestExceptions{
         try {
-            categoryRepository.saveAll(categoryMapper.listRequestCreateCategoryToListCategory(requestCategoryList)
-                    .stream().map(
-                            c -> {
-                                Category category = new Category();
-                                category.setName(c.getName().toUpperCase());
-                                category.setDescription(c.getDescription().toUpperCase());
-                                category.setStatus(true);
-                                return category;
-                            }
-                    ).collect(Collectors.toList())
-            );
+            List<RequestCategorySave> categorySaves = categories.stream().map(data -> RequestCategorySave.builder()
+                    .user(user)
+                    .name(data.getName().toUpperCase())
+                    .description(data.getDescription().toUpperCase())
+                    .build()).toList();
+            categoryRepository.saveAll(categoryMapper.ListCategoryToListName(categorySaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

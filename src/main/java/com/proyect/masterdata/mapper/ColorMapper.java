@@ -26,6 +26,6 @@ public interface ColorMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     Color requestColorToColor(RequestColor requestColor);
 
-    List<Color> listRequestCreateColorToListColor(List<RequestColorSave> requestColorSaveList);
+    List<Color> listColorToListName(List<RequestColorSave> requestColorSaveList);
 
 }

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +25,7 @@ public class ColorImpl implements IColor {
 
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions {
+
         try {
             colorRepository.save(colorMapper.colorToName(name.toUpperCase(), user.toUpperCase()));
             return ResponseSuccess.builder()
@@ -38,19 +38,13 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestColorSave> requestColorSaveList) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
         try {
-            colorRepository.saveAll(colorMapper.listRequestCreateColorToListColor(requestColorSaveList)
-                    .stream().map(
-                            c -> {
-                                Color color = new Color();
-                                color.setName(c.getName().toUpperCase());
-                                color.setStatus(true);
-                                color.setUser(c.getUser().toUpperCase());
-                                return color;
-                            }
-                    ).collect(Collectors.toList())
-            );
+            List<RequestColorSave> colorSaves = names.stream().map(data -> RequestColorSave.builder()
+                    .user(user.toUpperCase())
+                    .name(data.toUpperCase())
+                    .build()).toList();
+            colorRepository.saveAll(colorMapper.listColorToListName(colorSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

@@ -22,17 +22,17 @@ public class UserRoleController {
 
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name
+            @RequestParam("name") String name,@RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iUserRole.save(name);
+        ResponseSuccess result = iUserRole.save(name,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/user-roles")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names
+            @RequestBody() List<String> names,@RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iUserRole.saveAll(names);
+        ResponseSuccess result = iUserRole.saveAll(names,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

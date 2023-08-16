@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.UserRole;
 import com.proyect.masterdata.dto.UserRoleDTO;
 import com.proyect.masterdata.dto.request.RequestUserRole;
+import com.proyect.masterdata.dto.request.RequestUserRoleSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +24,9 @@ public class UserRoleImpl implements IUserRole {
     private final UserRoleMapper userRoleMapper;
 
     @Override
-    public ResponseSuccess save(String name) throws BadRequestExceptions {
+    public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
         try {
-            userRoleRepository.save(userRoleMapper.userRoleToName(name.toUpperCase()));
+            userRoleRepository.save(userRoleMapper.userRoleToName(name.toUpperCase(),user.toUpperCase()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -37,10 +37,13 @@ public class UserRoleImpl implements IUserRole {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
         try {
-            userRoleRepository.saveAll(userRoleMapper.listUserRoleToListName(
-                    names.stream().map(String::toUpperCase).collect(Collectors.toList())));
+            List<RequestUserRoleSave> userRoleSaves = names.stream().map(data -> RequestUserRoleSave.builder()
+                    .user(user)
+                    .name(data.toUpperCase())
+                    .build()).toList();
+            userRoleRepository.saveAll(userRoleMapper.listUserRoleToListName(userRoleSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -54,6 +57,7 @@ public class UserRoleImpl implements IUserRole {
     public UserRoleDTO update(RequestUserRole requestUserRole) throws BadRequestExceptions {
         try {
             requestUserRole.setName(requestUserRole.getName().toUpperCase());
+            requestUserRole.setUser(requestUserRole.getUser().toUpperCase());
             UserRole updatedUserRole = userRoleMapper.requestUserRoleToUserRole(requestUserRole);
             updatedUserRole.setDateRegistration(new Date(System.currentTimeMillis()));
             UserRole userRole = userRoleRepository.save(updatedUserRole);

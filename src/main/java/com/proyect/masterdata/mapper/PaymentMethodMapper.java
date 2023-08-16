@@ -26,6 +26,6 @@ public interface PaymentMethodMapper {
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)
     PaymentMethod requestPaymentMethodToPaymentMethod(RequestPaymentMethod requestPaymentMethod);
-    List<PaymentMethod> listRequestPaymentMethodToListPaymentMethod(List<RequestPaymentMethodSave> requestPaymentMethodSaveList);
 
+    List<PaymentMethod> listPaymentMethodToListName(List<RequestPaymentMethodSave> requestPaymentMethodSaveList);
 }

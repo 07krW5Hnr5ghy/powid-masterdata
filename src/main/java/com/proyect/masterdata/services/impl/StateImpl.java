@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,20 +36,13 @@ public class StateImpl implements IState {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestStateSave> requestStateSaveList) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
         try {
-            stateRepository.saveAll(stateMapper.listRequestStateSaveToListState(requestStateSaveList)
-                    .stream()
-                    .map(
-                            c -> {
-                                State state = new State();
-                                state.setName(c.getName().toUpperCase());
-                                state.setStatus(c.getStatus());
-                                state.setUser(c.getUser().toUpperCase());
-                                return state;
-                            }
-                    ).collect(Collectors.toList())
-            );
+            List<RequestStateSave> stateSaves = names.stream().map(data -> RequestStateSave.builder()
+                    .user(user)
+                    .name(data.toUpperCase())
+                    .build()).toList();
+            stateRepository.saveAll(stateMapper.listStateToListName(stateSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

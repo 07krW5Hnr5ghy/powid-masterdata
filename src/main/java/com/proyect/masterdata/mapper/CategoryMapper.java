@@ -22,16 +22,12 @@ public interface CategoryMapper {
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "name")
-    Category categoryToName(String name,String description);
+    Category categoryToName(String name,String description,String user);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)
     Category requestCategoryToCategory(RequestCategory requestCategory);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", constant = "true")
-    @Mapping(target = "dateRegistration", ignore = true)
-    @Mapping(target = "name", source = "name")
-    List<Category> listRequestCreateCategoryToListCategory(List<RequestCategorySave> requestCategorySaveList);
+    List<Category> ListCategoryToListName(List<RequestCategorySave> requestCategorySaveList);
 
 }

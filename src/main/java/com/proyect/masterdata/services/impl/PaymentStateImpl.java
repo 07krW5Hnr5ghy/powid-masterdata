@@ -2,8 +2,8 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.PaymentState;
 import com.proyect.masterdata.dto.PaymentStateDTO;
-import com.proyect.masterdata.dto.request.RequestPaymentStateSave;
 import com.proyect.masterdata.dto.request.RequestPaymentState;
+import com.proyect.masterdata.dto.request.RequestPaymentStateSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,20 +38,13 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestPaymentStateSave> requestPaymentStateSaveList) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
         try {
-            paymentStateRepository.saveAll(paymentStateMapper.listRequestCreatePaymentStateToListPaymentState(requestPaymentStateSaveList)
-                    .stream()
-                    .map(
-                            c -> {
-                                PaymentState paymentState = new PaymentState();
-                                paymentState.setName(c.getName().toUpperCase());
-                                paymentState.setStatus(c.getStatus());
-                                paymentState.setUser(c.getUser().toUpperCase());
-                                return paymentState;
-                            }
-                    ).collect(Collectors.toList())
-            );
+            List<RequestPaymentStateSave> requestPaymentStateSaves = names.stream().map(data -> RequestPaymentStateSave.builder()
+                    .user(user.toUpperCase())
+                    .name(data.toUpperCase())
+                    .build()).toList();
+            paymentStateRepository.saveAll(paymentStateMapper.listPaymentStateToListName(requestPaymentStateSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

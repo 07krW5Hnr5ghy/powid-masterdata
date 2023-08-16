@@ -2,7 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.CategoryDTO;
 import com.proyect.masterdata.dto.request.RequestCategory;
-import com.proyect.masterdata.dto.request.RequestCategorySave;
+import com.proyect.masterdata.dto.request.RequestCreateCategory;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -22,17 +22,20 @@ public class CategoryController {
     private final ICategory iCategory;
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name,@RequestParam("description") String description
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iCategory.save(name,description);
+        ResponseSuccess result = iCategory.save(name,description,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/categories")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<RequestCategorySave> requestCategorySaveList
+            @RequestBody() List<RequestCreateCategory> categories,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iCategory.saveAll(requestCategorySaveList);
+        ResponseSuccess result = iCategory.saveAll(categories,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

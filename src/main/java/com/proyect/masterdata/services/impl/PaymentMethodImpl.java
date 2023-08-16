@@ -2,8 +2,8 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.PaymentMethod;
 import com.proyect.masterdata.dto.PaymentMethodDTO;
-import com.proyect.masterdata.dto.request.RequestPaymentMethodSave;
 import com.proyect.masterdata.dto.request.RequestPaymentMethod;
+import com.proyect.masterdata.dto.request.RequestPaymentMethodSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,19 +37,13 @@ public class PaymentMethodImpl implements IPaymentMethod {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestPaymentMethodSave> requestPaymentMethodSaveList) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
         try {
-            paymentMethodRepository.saveAll(paymentMethodMapper.listRequestPaymentMethodToListPaymentMethod(requestPaymentMethodSaveList)
-                    .stream()
-                    .map(
-                            c -> {
-                                PaymentMethod paymentMethod = new PaymentMethod();
-                                paymentMethod.setName(c.getName().toUpperCase());
-                                paymentMethod.setStatus(c.getStatus());
-                                paymentMethod.setUser(c.getUser().toUpperCase());
-                                return paymentMethod;
-                            }
-                    ).collect(Collectors.toList()));
+            List<RequestPaymentMethodSave> paymentMethodSaves = names.stream().map(data -> RequestPaymentMethodSave.builder()
+                    .user(user.toUpperCase())
+                    .name(data.toUpperCase())
+                    .build()).toList();
+            paymentMethodRepository.saveAll(paymentMethodMapper.listPaymentMethodToListName(paymentMethodSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

@@ -4,14 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestUserRole {
-    private Long code;
+public class RequestCreateCategory {
     private String name;
-    private String user;
-    private boolean status;
+    private String description;
 }

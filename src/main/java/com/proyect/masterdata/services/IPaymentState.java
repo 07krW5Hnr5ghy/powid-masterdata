@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.dto.PaymentStateDTO;
-import com.proyect.masterdata.dto.request.RequestPaymentStateSave;
 import com.proyect.masterdata.dto.request.RequestPaymentState;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public interface IPaymentState {
     ResponseSuccess save(String name,String user) throws BadRequestExceptions;
-    ResponseSuccess saveAll(List<RequestPaymentStateSave> requestPaymentStateSaveList) throws BadRequestExceptions;
+    ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
     PaymentStateDTO update(RequestPaymentState requestPaymentState) throws BadRequestExceptions;
     ResponseDelete delete(Long code) throws BadRequestExceptions;
     ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions;

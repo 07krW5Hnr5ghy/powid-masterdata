@@ -26,7 +26,7 @@ public interface StateMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     State requestStateToState(RequestState requestState);
 
-    List<State> listRequestStateSaveToListState(List<RequestStateSave> requestStateSaveList);
+    List<State> listStateToListName(List<RequestStateSave> requestStateSaveList);
 
 
 }

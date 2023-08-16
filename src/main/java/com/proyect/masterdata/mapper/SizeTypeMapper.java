@@ -27,8 +27,5 @@ public interface SizeTypeMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     SizeType requestSizeTypeToSizeType(RequestSizeType requestSizeType);
 
-    List<SizeType> listRequestSizeTypeSaveTypeToListSizeType(List<RequestSizeTypeSave> requestSizeTypeSaveList);
-
-
-
+    List<SizeType> listSizeToListName(List<RequestSizeTypeSave> requestSizeTypeSaveList);
 }

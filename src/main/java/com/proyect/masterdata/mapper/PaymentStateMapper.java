@@ -27,6 +27,6 @@ public interface PaymentStateMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     PaymentState requestPaymentStateToPaymentState(RequestPaymentState requestPaymentState);
 
-    List<PaymentState> listRequestCreatePaymentStateToListPaymentState(List<RequestPaymentStateSave> requestPaymentStateSaveList);
+    List<PaymentState> listPaymentStateToListName(List<RequestPaymentStateSave> requestPaymentStateSaveList);
 
 }

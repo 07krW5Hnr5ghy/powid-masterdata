@@ -2,7 +2,6 @@ package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.dto.SizeDTO;
 import com.proyect.masterdata.dto.request.RequestSize;
-import com.proyect.masterdata.dto.request.RequestSizeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public interface ISize {
     ResponseSuccess save(String name,String user) throws BadRequestExceptions;
-    ResponseSuccess saveAll(List<RequestSizeSave> requestSizeSaveList) throws BadRequestExceptions;
+    ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions;
     SizeDTO update(RequestSize requestSize) throws BadRequestExceptions;
     ResponseDelete delete(Long code) throws BadRequestExceptions;
     ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions;
