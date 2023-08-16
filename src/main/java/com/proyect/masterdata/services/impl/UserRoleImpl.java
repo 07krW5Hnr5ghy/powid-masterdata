@@ -33,7 +33,7 @@ public class UserRoleImpl implements IUserRole {
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        
+
         try {
             userRoleRepository.save(userRoleMapper.userRoleToName(name.toUpperCase(),user.toUpperCase()));
             return ResponseSuccess.builder()

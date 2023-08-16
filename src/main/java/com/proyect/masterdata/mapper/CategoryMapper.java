@@ -16,7 +16,7 @@ public interface CategoryMapper {
     @Mapping(target = "code", source = "id")
     CategoryDTO categoryToCategoryDTO(Category category);
 
-    List<CategoryDTO> categoryListToCategoryListDTO(List<Category> categoryList);
+    List<CategoryDTO> listCategoryToListCategoryDTO(List<Category> categoryList);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
