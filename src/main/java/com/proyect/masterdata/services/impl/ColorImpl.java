@@ -75,6 +75,12 @@ public class ColorImpl implements IColor {
 
     @Override
     public ColorDTO update(RequestColor requestColor) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestColor.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             requestColor.setName(requestColor.getName().toUpperCase());
             requestColor.setUser(requestColor.getUser().toUpperCase());

@@ -77,6 +77,12 @@ public class CategoryImpl implements ICategory {
 
     @Override
     public CategoryDTO update(RequestCategory requestCategory) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestCategory.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             requestCategory.setName(requestCategory.getName().toUpperCase());
             requestCategory.setDescription(requestCategory.getDescription().toUpperCase());

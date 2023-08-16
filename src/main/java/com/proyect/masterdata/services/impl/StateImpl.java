@@ -71,6 +71,12 @@ public class StateImpl implements IState {
 
     @Override
     public StateDTO update(RequestState requestState) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestState.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             requestState.setName(requestState.getName().toUpperCase());
             requestState.setUser(requestState.getUser().toUpperCase());

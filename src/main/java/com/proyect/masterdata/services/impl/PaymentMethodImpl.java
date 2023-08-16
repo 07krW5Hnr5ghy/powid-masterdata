@@ -72,6 +72,12 @@ public class PaymentMethodImpl implements IPaymentMethod {
 
     @Override
     public PaymentMethodDTO update(RequestPaymentMethod requestPaymentMethod) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestPaymentMethod.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             requestPaymentMethod.setName(requestPaymentMethod.getName().toUpperCase());
             requestPaymentMethod.setUser(requestPaymentMethod.getUser().toUpperCase());

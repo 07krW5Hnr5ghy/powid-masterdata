@@ -72,6 +72,12 @@ public class SizeTypeImpl implements ISizeType {
 
     @Override
     public SizeTypeDTO update(RequestSizeType requestSizeType) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestSizeType.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             requestSizeType.setName(requestSizeType.getName().toUpperCase());
             requestSizeType.setUser(requestSizeType.getUser().toUpperCase());

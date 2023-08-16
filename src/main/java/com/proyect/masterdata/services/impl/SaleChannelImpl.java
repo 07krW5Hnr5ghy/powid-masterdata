@@ -72,6 +72,12 @@ public class SaleChannelImpl implements ISaleChannel {
 
     @Override
     public SaleChannelDTO update(RequestSaleChannel requestSaleChannel) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestSaleChannel.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             requestSaleChannel.setName(requestSaleChannel.getName().toUpperCase());
 

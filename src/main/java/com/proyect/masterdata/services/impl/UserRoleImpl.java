@@ -71,6 +71,12 @@ public class UserRoleImpl implements IUserRole {
 
     @Override
     public UserRoleDTO update(RequestUserRole requestUserRole) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestUserRole.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+        
         try {
             requestUserRole.setName(requestUserRole.getName().toUpperCase());
             requestUserRole.setUser(requestUserRole.getUser().toUpperCase());

@@ -74,6 +74,12 @@ public class PaymentStateImpl implements IPaymentState {
 
     @Override
     public PaymentStateDTO update(RequestPaymentState requestPaymentState) throws BadRequestExceptions {
+        User datauser = userRepository.findById(requestPaymentState.getUser()).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             requestPaymentState.setName(requestPaymentState.getName().toUpperCase());
             requestPaymentState.setUser(requestPaymentState.getUser().toUpperCase());
