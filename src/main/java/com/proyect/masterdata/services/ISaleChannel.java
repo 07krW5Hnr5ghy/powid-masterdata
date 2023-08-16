@@ -18,4 +18,5 @@ public interface ISaleChannel {
     List<SaleChannelDTO> listStatusFalse() throws BadRequestExceptions;
     SaleChannelDTO findByCode(Long code) throws BadRequestExceptions;
     SaleChannelDTO findByName(String name) throws BadRequestExceptions;
+    List<SaleChannelDTO> findByUser(String user) throws BadRequestExceptions;
 }

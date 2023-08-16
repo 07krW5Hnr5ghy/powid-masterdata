@@ -18,4 +18,5 @@ public interface ISize {
     List<SizeDTO> listStatusFalse() throws BadRequestExceptions;
     SizeDTO findByCode(Long code) throws BadRequestExceptions;
     SizeDTO findByName(String name) throws BadRequestExceptions;
+    List<SizeDTO> findByUser(String user) throws BadRequestExceptions;
 }

@@ -114,7 +114,9 @@ public class PaymentStateImpl implements IPaymentState {
         }
 
         try {
-            paymentStateRepository.deleteAllById(codes);
+            codes.stream().forEach(data -> {
+                paymentStateRepository.deleteByIdAndUser(data,user);
+            });
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)

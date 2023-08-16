@@ -18,4 +18,5 @@ public interface IState {
     List<StateDTO> listStatusFalse() throws BadRequestExceptions;
     StateDTO findByCode(Long code) throws BadRequestExceptions;
     StateDTO findByName(String name) throws BadRequestExceptions;
+    List<StateDTO> findByUser(String user) throws BadRequestExceptions;
 }

@@ -19,4 +19,5 @@ public interface IUserRole {
     List<UserRoleDTO> listStatusFalse() throws BadRequestExceptions;
     UserRoleDTO findByCode(Long code) throws BadRequestExceptions;
     UserRoleDTO findByName(String name) throws BadRequestExceptions;
+    List<UserRoleDTO> findByUser(String user) throws BadRequestExceptions;
 }
