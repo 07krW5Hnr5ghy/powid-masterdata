@@ -16,6 +16,7 @@ import com.proyect.masterdata.services.IColor;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.util.List;
@@ -86,6 +87,7 @@ public class ColorImpl implements IColor {
     }
 
     @Override
+    @Transactional
     public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
 
         User datauser = userRepository.findById(user).orElse(null);
