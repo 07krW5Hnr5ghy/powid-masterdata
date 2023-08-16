@@ -1,7 +1,6 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.CategoryDTO;
-import com.proyect.masterdata.dto.ColorDTO;
 import com.proyect.masterdata.dto.request.RequestCategory;
 import com.proyect.masterdata.dto.request.RequestCreateCategory;
 import com.proyect.masterdata.dto.response.ResponseDelete;
