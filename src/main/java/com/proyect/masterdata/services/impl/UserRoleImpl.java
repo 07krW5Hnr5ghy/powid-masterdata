@@ -76,7 +76,7 @@ public class UserRoleImpl implements IUserRole {
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        
+
         try {
             requestUserRole.setName(requestUserRole.getName().toUpperCase());
             requestUserRole.setUser(requestUserRole.getUser().toUpperCase());
