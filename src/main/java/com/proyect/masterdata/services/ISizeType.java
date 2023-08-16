@@ -12,9 +12,10 @@ public interface ISizeType {
     ResponseSuccess save(String name, String user) throws BadRequestExceptions;
     ResponseSuccess saveAll(List<String> name,String user) throws BadRequestExceptions;
     SizeTypeDTO update(RequestSizeType requestSizeType) throws BadRequestExceptions;
-    ResponseDelete delete(Long code) throws BadRequestExceptions;
-    ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions;
+    ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
+    ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions;
     List<SizeTypeDTO> list() throws BadRequestExceptions;
+    List<SizeTypeDTO> listStatusFalse() throws BadRequestExceptions;
     SizeTypeDTO findByCode(Long code) throws BadRequestExceptions;
     SizeTypeDTO findByName(String name) throws BadRequestExceptions;
 }
