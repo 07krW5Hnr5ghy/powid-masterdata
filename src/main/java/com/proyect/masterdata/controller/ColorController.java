@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.ColorDTO;
+import com.proyect.masterdata.dto.DepartmentDTO;
 import com.proyect.masterdata.dto.request.RequestColor;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -65,6 +66,12 @@ public class ColorController {
     @GetMapping()
     public ResponseEntity<List<ColorDTO>> list() throws BadRequestExceptions {
         List<ColorDTO> result = iColor.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/statusFalse")
+    public ResponseEntity<List<ColorDTO>> listStatusFalse() throws BadRequestExceptions {
+        List<ColorDTO> result = iColor.listStatusFalse();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

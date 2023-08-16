@@ -15,6 +15,7 @@ public interface IColor {
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
     ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions;
     List<ColorDTO> list() throws BadRequestExceptions;
+    List<ColorDTO> listStatusFalse() throws BadRequestExceptions;
     ColorDTO findByCode(Long code) throws BadRequestExceptions;
     ColorDTO findByName(String name) throws BadRequestExceptions;
     List<ColorDTO> findByUser(String user) throws BadRequestExceptions;

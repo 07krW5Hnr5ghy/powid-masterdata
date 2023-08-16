@@ -129,7 +129,16 @@ public class ColorImpl implements IColor {
     @Override
     public List<ColorDTO> list() throws BadRequestExceptions{
         try {
-            return colorMapper.listColorToListColorDTO(colorRepository.findAll());
+            return colorMapper.listColorToListColorDTO(colorRepository.findAllByStatusTrue());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public List<ColorDTO> listStatusFalse() throws BadRequestExceptions{
+        try {
+            return colorMapper.listColorToListColorDTO(colorRepository.findAllByStatusFalse());
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
@@ -138,7 +147,7 @@ public class ColorImpl implements IColor {
     @Override
     public ColorDTO findByCode(Long code) throws BadRequestExceptions{
         try {
-            return colorMapper.colorToColorDTO(colorRepository.findById(code).orElse(null));
+            return colorMapper.colorToColorDTO(colorRepository.findByIdAndStatusTrue(code));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
