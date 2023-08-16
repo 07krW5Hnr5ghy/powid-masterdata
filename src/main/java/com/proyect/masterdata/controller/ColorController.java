@@ -1,7 +1,6 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.ColorDTO;
-import com.proyect.masterdata.dto.DepartmentDTO;
 import com.proyect.masterdata.dto.request.RequestColor;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
