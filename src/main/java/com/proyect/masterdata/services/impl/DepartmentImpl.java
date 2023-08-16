@@ -16,6 +16,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -87,6 +88,7 @@ public class DepartmentImpl implements IDepartment {
     }
 
     @Override
+    @Transactional
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user).orElse(null);
 
@@ -101,6 +103,7 @@ public class DepartmentImpl implements IDepartment {
                     .message(Constants.delete)
                     .build();
         } catch (RuntimeException e){
+            log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
         }
     }
