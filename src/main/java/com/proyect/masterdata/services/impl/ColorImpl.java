@@ -160,7 +160,7 @@ public class ColorImpl implements IColor {
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        
+
         try {
             return colorMapper.listColorToListColorDTO(colorRepository.findByUser(user.toUpperCase()));
         } catch (RuntimeException e){

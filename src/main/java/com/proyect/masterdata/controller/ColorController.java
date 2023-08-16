@@ -46,17 +46,19 @@ public class ColorController {
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code
+            @RequestParam("code") Long code,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iColor.delete(code);
+        ResponseDelete result = iColor.delete(code,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/colors")
     public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes
+            @RequestBody() List<Long> codes,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iColor.deleteAll(codes);
+        ResponseDelete result = iColor.deleteAll(codes,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -79,6 +81,14 @@ public class ColorController {
             @RequestParam("name") String name
     ) throws BadRequestExceptions {
         ColorDTO result = iColor.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user")
+    public ResponseEntity<List<ColorDTO>> findByUser(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<ColorDTO> result = iColor.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
