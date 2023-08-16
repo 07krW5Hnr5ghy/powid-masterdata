@@ -12,9 +12,11 @@ public interface IPaymentState {
     ResponseSuccess save(String name,String user) throws BadRequestExceptions;
     ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
     PaymentStateDTO update(RequestPaymentState requestPaymentState) throws BadRequestExceptions;
-    ResponseDelete delete(Long code) throws BadRequestExceptions;
-    ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions;
+    ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
+    ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions;
     List<PaymentStateDTO> list() throws BadRequestExceptions;
+    List<PaymentStateDTO> listStatusFalse() throws BadRequestExceptions;
     PaymentStateDTO findByCode(Long code) throws BadRequestExceptions;
     PaymentStateDTO findByName(String name) throws BadRequestExceptions;
+    List<PaymentStateDTO> findByUser(String user) throws BadRequestExceptions;
 }

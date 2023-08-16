@@ -1,6 +1,8 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.PaymentState;
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.PaymentMethodDTO;
 import com.proyect.masterdata.dto.PaymentStateDTO;
 import com.proyect.masterdata.dto.request.RequestPaymentState;
 import com.proyect.masterdata.dto.request.RequestPaymentStateSave;
@@ -9,10 +11,12 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.PaymentStateMapper;
 import com.proyect.masterdata.repository.PaymentStateRepository;
+import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IPaymentState;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.util.List;
@@ -23,9 +27,16 @@ public class PaymentStateImpl implements IPaymentState {
 
     private final PaymentStateRepository paymentStateRepository;
     private final PaymentStateMapper paymentStateMapper;
+    private final UserRepository userRepository;
 
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             paymentStateRepository.save(paymentStateMapper.paymentStateToName(name.toUpperCase(),user.toUpperCase()));
             return ResponseSuccess.builder()
@@ -39,6 +50,12 @@ public class PaymentStateImpl implements IPaymentState {
 
     @Override
     public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             List<RequestPaymentStateSave> requestPaymentStateSaves = names.stream().map(data -> RequestPaymentStateSave.builder()
                     .user(user.toUpperCase())
@@ -69,9 +86,16 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public ResponseDelete delete(Long code) throws BadRequestExceptions{
+    @Transactional
+    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
-            paymentStateRepository.deleteById(code);
+            paymentStateRepository.deleteByIdAndUser(code,user);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -82,7 +106,13 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public ResponseDelete deleteAll(List<Long> codes) throws BadRequestExceptions{
+    public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
         try {
             paymentStateRepository.deleteAllById(codes);
             return ResponseDelete.builder()
@@ -97,7 +127,16 @@ public class PaymentStateImpl implements IPaymentState {
     @Override
     public List<PaymentStateDTO> list() throws BadRequestExceptions{
         try {
-            return paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStateRepository.findAll());
+            return paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStateRepository.findAllByStatusTrue());
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public List<PaymentStateDTO> listStatusFalse() throws BadRequestExceptions{
+        try {
+            return paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStateRepository.findAllByStatusFalse());
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
@@ -106,7 +145,7 @@ public class PaymentStateImpl implements IPaymentState {
     @Override
     public PaymentStateDTO findByCode(Long code) throws BadRequestExceptions{
         try {
-            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentStateRepository.findById(code).orElse(null));
+            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentStateRepository.findByIdAndStatusTrue(code));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
@@ -115,7 +154,22 @@ public class PaymentStateImpl implements IPaymentState {
     @Override
     public PaymentStateDTO findByName(String name) throws BadRequestExceptions{
         try {
-            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentStateRepository.findByName(name.toUpperCase()));
+            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentStateRepository.findByNameAndStatusTrue(name.toUpperCase()));
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public List<PaymentStateDTO> findByUser(String user) throws BadRequestExceptions{
+        User datauser = userRepository.findById(user).orElse(null);
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
+        try {
+            return paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStateRepository.findByUser(user.toUpperCase()));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }

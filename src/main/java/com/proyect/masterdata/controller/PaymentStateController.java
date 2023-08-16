@@ -47,23 +47,31 @@ public class PaymentStateController {
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code
+            @RequestParam("code") Long code,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iPaymentState.delete(code);
+        ResponseDelete result = iPaymentState.delete(code,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/payment-states")
     public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes
+            @RequestBody() List<Long> codes,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iPaymentState.deleteAll(codes);
+        ResponseDelete result = iPaymentState.deleteAll(codes,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
     public ResponseEntity<List<PaymentStateDTO>> list() throws BadRequestExceptions {
         List<PaymentStateDTO> result = iPaymentState.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/statusFalse")
+    public ResponseEntity<List<PaymentStateDTO>> listStatusFalse() throws BadRequestExceptions {
+        List<PaymentStateDTO> result = iPaymentState.listStatusFalse();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -80,6 +88,14 @@ public class PaymentStateController {
             @RequestParam("name") String name
     ) throws BadRequestExceptions {
         PaymentStateDTO result = iPaymentState.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user")
+    public ResponseEntity<List<PaymentStateDTO>> findByUser(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<PaymentStateDTO> result = iPaymentState.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
