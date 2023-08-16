@@ -14,4 +14,5 @@ public class RequestSize {
     private String name;
     private String user;
     private boolean status;
+    private Long codeSizeType;
 }

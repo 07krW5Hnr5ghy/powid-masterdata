@@ -19,8 +19,9 @@ public interface StateMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
-    @Mapping(target = "name", source = "name")
-    State stateToName(String name,String user);
+    @Mapping(target = "name", source = "requestStateSave.name")
+    @Mapping(target = "user", source = "requestStateSave.user")
+    State stateToName(RequestStateSave requestStateSave);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

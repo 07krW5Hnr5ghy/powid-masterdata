@@ -36,7 +36,8 @@ public class SaleChannelImpl implements ISaleChannel {
         }
 
         try {
-            saleChannelRepository.save(saleChannelMapper.saleChannelToName(name.toUpperCase(),user.toUpperCase()));
+            saleChannelRepository.save(saleChannelMapper.saleChannelToName(RequestSaleChannelSave.builder()
+                    .name(name.toUpperCase()).user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

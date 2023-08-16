@@ -36,7 +36,8 @@ public class SizeTypeImpl implements ISizeType {
         }
 
         try {
-            sizeTypeRepository.save(sizeTypeMapper.sizeTypeToName(name.toUpperCase(),user.toUpperCase()));
+            sizeTypeRepository.save(sizeTypeMapper.sizeTypeToName(RequestSizeTypeSave.builder()
+                    .name(name.toUpperCase()).user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

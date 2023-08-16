@@ -36,7 +36,8 @@ public class PaymentMethodImpl implements IPaymentMethod {
         }
 
         try {
-            paymentMethodRepository.save(paymentMethodMapper.paymentMethodToName(name.toUpperCase(),user.toUpperCase()));
+            paymentMethodRepository.save(paymentMethodMapper.paymentMethodToName(RequestPaymentMethodSave.builder()
+                    .name(name.toUpperCase()).user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

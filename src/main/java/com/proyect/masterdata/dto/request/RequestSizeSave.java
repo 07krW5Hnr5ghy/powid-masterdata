@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class RequestSizeSave {
     private String name;
     private String user;
+    private Long codeSizeType;
 }

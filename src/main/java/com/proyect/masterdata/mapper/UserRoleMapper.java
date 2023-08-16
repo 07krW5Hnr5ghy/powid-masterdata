@@ -19,8 +19,9 @@ public interface UserRoleMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
-    @Mapping(target = "name", source = "name")
-    UserRole userRoleToName(String name,String user);
+    @Mapping(target = "name", source = "requestUserRoleSave.name")
+    @Mapping(target = "user", source = "requestUserRoleSave.user")
+    UserRole userRoleToName(RequestUserRoleSave requestUserRoleSave);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

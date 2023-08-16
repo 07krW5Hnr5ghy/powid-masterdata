@@ -38,7 +38,8 @@ public class ColorImpl implements IColor {
         }
 
         try {
-            colorRepository.save(colorMapper.colorToName(name.toUpperCase(), user.toUpperCase()));
+            colorRepository.save(colorMapper.colorToName(RequestColorSave
+                    .builder().name(name.toUpperCase()).user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

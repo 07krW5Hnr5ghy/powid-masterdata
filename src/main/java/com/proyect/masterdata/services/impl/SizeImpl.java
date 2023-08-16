@@ -28,7 +28,7 @@ public class SizeImpl implements ISize {
     private final UserRepository userRepository;
 
     @Override
-    public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
+    public ResponseSuccess save(String name,String user,Long codeSizeType) throws BadRequestExceptions {
         User datauser = userRepository.findById(user).orElse(null);
 
         if (datauser==null){
@@ -36,7 +36,10 @@ public class SizeImpl implements ISize {
         }
 
         try {
-            sizeRepository.save(sizeMapper.sizeToName(name.toUpperCase(), user.toUpperCase()));
+            sizeRepository.save(sizeMapper.sizeToName(RequestSizeSave.builder()
+                    .codeSizeType(codeSizeType)
+                    .name(name.toUpperCase())
+                    .user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -47,7 +50,7 @@ public class SizeImpl implements ISize {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
+    public ResponseSuccess saveAll(List<String> names,String user,Long codeSizeType) throws BadRequestExceptions{
         User datauser = userRepository.findById(user).orElse(null);
 
         if (datauser==null){
@@ -57,6 +60,7 @@ public class SizeImpl implements ISize {
         try {
             List<RequestSizeSave> sizeSaves = names.stream().map(data -> RequestSizeSave.builder()
                     .user(user)
+                    .codeSizeType(codeSizeType)
                     .name(data.toUpperCase())
                     .build()).toList();
             sizeRepository.saveAll(sizeMapper.listSizeToListName(sizeSaves));
@@ -169,6 +173,24 @@ public class SizeImpl implements ISize {
 
         try {
             return sizeMapper.listSizeToListSizeDTO(sizeRepository.findByUser(user.toUpperCase()));
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public List<SizeDTO> findAllSizeTypeId(Long codeSizeType) throws BadRequestExceptions {
+        try {
+            return sizeMapper.listSizeToListSizeDTO(sizeRepository.findAllByStatusTrueAndSizeTypeId(codeSizeType));
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public List<SizeDTO> findAllSizeTypeName(String nameSizeType) throws BadRequestExceptions {
+        try {
+            return sizeMapper.listSizeToListSizeDTO(sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }

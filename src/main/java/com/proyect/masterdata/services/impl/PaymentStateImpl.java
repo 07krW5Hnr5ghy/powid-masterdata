@@ -38,7 +38,8 @@ public class PaymentStateImpl implements IPaymentState {
         }
 
         try {
-            paymentStateRepository.save(paymentStateMapper.paymentStateToName(name.toUpperCase(),user.toUpperCase()));
+            paymentStateRepository.save(paymentStateMapper.paymentStateToName(RequestPaymentStateSave.builder()
+                    .name(name.toUpperCase()).user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

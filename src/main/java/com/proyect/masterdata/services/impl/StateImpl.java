@@ -35,7 +35,8 @@ public class StateImpl implements IState {
         }
 
         try {
-            stateRepository.save(stateMapper.stateToName(name.toUpperCase(),user.toUpperCase()));
+            stateRepository.save(stateMapper.stateToName(RequestStateSave.builder()
+                    .name(name.toUpperCase()).user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

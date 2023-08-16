@@ -19,8 +19,9 @@ public interface ColorMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
-    @Mapping(target = "name", source = "name")
-    Color colorToName(String name,String user);
+    @Mapping(target = "name", source = "requestColorSave.name")
+    @Mapping(target = "user", source = "requestColorSave.user")
+    Color colorToName(RequestColorSave requestColorSave);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

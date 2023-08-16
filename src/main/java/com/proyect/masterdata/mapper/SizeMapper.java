@@ -19,8 +19,10 @@ public interface SizeMapper {
      @Mapping(target = "id", ignore = true)
      @Mapping(target = "status", constant = "true")
      @Mapping(target = "dateRegistration", ignore = true)
-     @Mapping(target = "name", source = "name")
-     Size sizeToName(String name,String user);
+     @Mapping(target = "name", source = "requestSizeSave.name")
+     @Mapping(target = "user", source = "requestSizeSave.user")
+     @Mapping(target = "idSizeType", source = "requestSizeSave.codeSizeType")
+     Size sizeToName(RequestSizeSave requestSizeSave);
 
      @Mapping(target = "id", source = "code")
      @Mapping(target = "dateRegistration", ignore = true)

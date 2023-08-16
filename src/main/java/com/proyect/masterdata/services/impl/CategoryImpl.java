@@ -37,7 +37,11 @@ public class CategoryImpl implements ICategory {
         }
 
         try {
-            categoryRepository.save(categoryMapper.categoryToName(name.toUpperCase(),description.toUpperCase(),user.toUpperCase()));
+            categoryRepository.save(categoryMapper.categoryToName(RequestCategorySave.builder()
+                    .name(name.toUpperCase())
+                    .description(description.toUpperCase())
+                    .user(user.toUpperCase()).build())
+            );
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

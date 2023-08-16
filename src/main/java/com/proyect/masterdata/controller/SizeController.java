@@ -22,17 +22,21 @@ public class SizeController {
     private final ISize iSize;
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name, @RequestParam("user") String user
+            @RequestParam("name") String name,
+            @RequestParam("user") String user,
+            @RequestParam("codeSizeType") Long codeSizeType
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iSize.save(name,user);
+        ResponseSuccess result = iSize.save(name,user,codeSizeType);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/sizes")
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names,@RequestParam("user") String user
+            @RequestBody() List<String> names,
+            @RequestParam("user") String user,
+            @RequestParam("codeSizeType") Long codeSizeType
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iSize.saveAll(names,user);
+        ResponseSuccess result = iSize.saveAll(names,user,codeSizeType);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -95,6 +99,22 @@ public class SizeController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
         List<SizeDTO> result = iSize.findByUser(user);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/size-type/code")
+    public ResponseEntity<List<SizeDTO>> findAllSizeTypeId(
+            @RequestParam("codeSizeType") Long codeSizeType
+    ) throws BadRequestExceptions {
+        List<SizeDTO> result = iSize.findAllSizeTypeId(codeSizeType);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/size-type/name")
+    public ResponseEntity<List<SizeDTO>> findAllSizeTypeName(
+            @RequestParam("nameSizeType") String nameSizeType
+    ) throws BadRequestExceptions {
+        List<SizeDTO> result = iSize.findAllSizeTypeName(nameSizeType);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

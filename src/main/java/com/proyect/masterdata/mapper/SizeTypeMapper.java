@@ -20,8 +20,9 @@ public interface SizeTypeMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
-    @Mapping(target = "name", source = "name")
-    SizeType sizeTypeToName(String name,String user);
+    @Mapping(target = "name", source = "requestSizeTypeSave.name")
+    @Mapping(target = "user", source = "requestSizeTypeSave.user")
+    SizeType sizeTypeToName(RequestSizeTypeSave requestSizeTypeSave);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

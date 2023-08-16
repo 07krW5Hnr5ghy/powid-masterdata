@@ -21,8 +21,10 @@ public interface CategoryMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
-    @Mapping(target = "name", source = "name")
-    Category categoryToName(String name,String description,String user);
+    @Mapping(target = "name", source = "requestCategorySave.name")
+    @Mapping(target = "description", source = "requestCategorySave.description")
+    @Mapping(target = "user", source = "requestCategorySave.user")
+    Category categoryToName(RequestCategorySave requestCategorySave);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

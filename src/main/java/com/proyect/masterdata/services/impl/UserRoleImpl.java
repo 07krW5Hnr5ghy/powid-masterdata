@@ -35,7 +35,8 @@ public class UserRoleImpl implements IUserRole {
         }
 
         try {
-            userRoleRepository.save(userRoleMapper.userRoleToName(name.toUpperCase(),user.toUpperCase()));
+            userRoleRepository.save(userRoleMapper.userRoleToName(RequestUserRoleSave.builder()
+                    .name(name.toUpperCase()).user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

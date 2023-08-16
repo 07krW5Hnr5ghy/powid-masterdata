@@ -20,8 +20,9 @@ public interface PaymentMethodMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
-    @Mapping(target = "name", source = "name")
-    PaymentMethod paymentMethodToName(String name,String user);
+    @Mapping(target = "name", source = "requestPaymentMethodSave.name")
+    @Mapping(target = "user", source = "requestPaymentMethodSave.user")
+    PaymentMethod paymentMethodToName(RequestPaymentMethodSave requestPaymentMethodSave);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)

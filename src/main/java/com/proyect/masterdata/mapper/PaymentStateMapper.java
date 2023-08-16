@@ -20,8 +20,9 @@ public interface PaymentStateMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
-    @Mapping(target = "name", source = "name")
-    PaymentState paymentStateToName(String name,String user);
+    @Mapping(target = "name", source = "requestPaymentStateSave.name")
+    @Mapping(target = "user", source = "requestPaymentStateSave.user")
+    PaymentState paymentStateToName(RequestPaymentStateSave requestPaymentStateSave);
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "dateRegistration", ignore = true)
