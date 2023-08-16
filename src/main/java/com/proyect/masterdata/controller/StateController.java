@@ -46,23 +46,31 @@ public class StateController {
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code
+            @RequestParam("code") Long code,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iState.delete(code);
+        ResponseDelete result = iState.delete(code,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/states")
     public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes
+            @RequestBody() List<Long> codes,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iState.deleteAll(codes);
+        ResponseDelete result = iState.deleteAll(codes,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
     public ResponseEntity<List<StateDTO>> list() throws BadRequestExceptions {
         List<StateDTO> result = iState.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/statusFalse")
+    public ResponseEntity<List<StateDTO>> listStatusFalse() throws BadRequestExceptions {
+        List<StateDTO> result = iState.listStatusFalse();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -79,6 +87,14 @@ public class StateController {
             @RequestParam("name") String name
     ) throws BadRequestExceptions {
         StateDTO result = iState.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user")
+    public ResponseEntity<List<StateDTO>> findByUser(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<StateDTO> result = iState.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

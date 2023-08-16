@@ -35,7 +35,7 @@ public class CategoryImpl implements ICategory {
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        
+
         try {
             categoryRepository.save(categoryMapper.categoryToName(name.toUpperCase(),description.toUpperCase(),user.toUpperCase()));
             return ResponseSuccess.builder()

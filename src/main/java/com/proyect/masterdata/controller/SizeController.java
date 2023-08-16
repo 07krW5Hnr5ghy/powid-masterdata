@@ -46,23 +46,31 @@ public class SizeController {
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code
+            @RequestParam("code") Long code,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iSize.delete(code);
+        ResponseDelete result = iSize.delete(code,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/sizes")
     public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes
+            @RequestBody() List<Long> codes,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iSize.deleteAll(codes);
+        ResponseDelete result = iSize.deleteAll(codes,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
     public ResponseEntity<List<SizeDTO>> list() throws BadRequestExceptions {
         List<SizeDTO> result = iSize.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/statusFalse")
+    public ResponseEntity<List<SizeDTO>> listStatusFalse() throws BadRequestExceptions {
+        List<SizeDTO> result = iSize.listStatusFalse();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -79,6 +87,14 @@ public class SizeController {
             @RequestParam("name") String name
     ) throws BadRequestExceptions {
         SizeDTO result = iSize.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user")
+    public ResponseEntity<List<SizeDTO>> findByUser(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<SizeDTO> result = iSize.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

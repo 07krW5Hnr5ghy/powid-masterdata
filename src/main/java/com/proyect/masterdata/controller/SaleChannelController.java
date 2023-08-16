@@ -45,23 +45,31 @@ public class SaleChannelController {
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code
+            @RequestParam("code") Long code,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iSaleChannel.delete(code);
+        ResponseDelete result = iSaleChannel.delete(code,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/sale-channels")
     public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes
+            @RequestBody() List<Long> codes,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iSaleChannel.deleteAll(codes);
+        ResponseDelete result = iSaleChannel.deleteAll(codes,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
     public ResponseEntity<List<SaleChannelDTO>> list() throws BadRequestExceptions {
         List<SaleChannelDTO> result = iSaleChannel.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/statusFalse")
+    public ResponseEntity<List<SaleChannelDTO>> listStatusFalse() throws BadRequestExceptions {
+        List<SaleChannelDTO> result = iSaleChannel.listStatusFalse();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -78,6 +86,14 @@ public class SaleChannelController {
             @RequestParam("name") String name
     ) throws BadRequestExceptions {
         SaleChannelDTO result = iSaleChannel.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user")
+    public ResponseEntity<List<SaleChannelDTO>> findByUser(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<SaleChannelDTO> result = iSaleChannel.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.CategoryDTO;
+import com.proyect.masterdata.dto.ColorDTO;
 import com.proyect.masterdata.dto.request.RequestCategory;
 import com.proyect.masterdata.dto.request.RequestCreateCategory;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -49,23 +50,31 @@ public class CategoryController {
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code
+            @RequestParam("code") Long code,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iCategory.delete(code);
+        ResponseDelete result = iCategory.delete(code,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/categories")
     public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes
+            @RequestBody() List<Long> codes,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iCategory.deleteAll(codes);
+        ResponseDelete result = iCategory.deleteAll(codes,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
     public ResponseEntity<List<CategoryDTO>> list() throws BadRequestExceptions {
         List<CategoryDTO> result = iCategory.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/statusFalse")
+    public ResponseEntity<List<CategoryDTO>> listStatusFalse() throws BadRequestExceptions {
+        List<CategoryDTO> result = iCategory.listStatusFalse();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -82,6 +91,14 @@ public class CategoryController {
             @RequestParam("name") String name
     ) throws BadRequestExceptions {
         CategoryDTO result = iCategory.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user")
+    public ResponseEntity<List<CategoryDTO>> findByUser(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<CategoryDTO> result = iCategory.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

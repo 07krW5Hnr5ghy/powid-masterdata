@@ -46,23 +46,31 @@ public class UserRoleController {
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code
+            @RequestParam("code") Long code,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iUserRole.delete(code);
+        ResponseDelete result = iUserRole.delete(code,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/user-roles")
     public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes
+            @RequestBody() List<Long> codes,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseDelete result = iUserRole.deleteAll(codes);
+        ResponseDelete result = iUserRole.deleteAll(codes,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
     public ResponseEntity<List<UserRoleDTO>> list() throws BadRequestExceptions {
         List<UserRoleDTO> result = iUserRole.list();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/statusFalse")
+    public ResponseEntity<List<UserRoleDTO>> listStatusFalse() throws BadRequestExceptions {
+        List<UserRoleDTO> result = iUserRole.listStatusFalse();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -79,6 +87,14 @@ public class UserRoleController {
             @RequestParam("name") String name
     ) throws BadRequestExceptions {
         UserRoleDTO result = iUserRole.findByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user")
+    public ResponseEntity<List<UserRoleDTO>> findByUser(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<UserRoleDTO> result = iUserRole.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
