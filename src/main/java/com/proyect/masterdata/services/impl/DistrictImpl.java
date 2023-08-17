@@ -66,6 +66,7 @@ public class DistrictImpl implements IDistrict {
                     .codeProvince(codeProvince)
                     .name(data.toUpperCase())
                     .build()).toList();
+            districtRepository.saveAll(districtMapper.listDistrictToListName(districtSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -199,7 +200,7 @@ public class DistrictImpl implements IDistrict {
     @Override
     public List<DistrictDTO> findAllProvinceName(String nameProvincet) throws BadRequestExceptions {
         try {
-            return districtMapper.listDistrictToListDistrictDTO(districtRepository.findAllByStatusTrueAndProvinceName(nameProvincet));
+            return districtMapper.listDistrictToListDistrictDTO(districtRepository.findAllByStatusTrueAndProvinceName(nameProvincet.toUpperCase()));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }

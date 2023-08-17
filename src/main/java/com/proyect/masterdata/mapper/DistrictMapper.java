@@ -32,4 +32,6 @@ public interface DistrictMapper {
 
     List<DistrictDTO> listDistrictToListDistrictDTO(List<District> districtList);
 
+    List<District> listDistrictToListName(List<RequestDistrictSave> requestDistrictSaveList);
+
 }

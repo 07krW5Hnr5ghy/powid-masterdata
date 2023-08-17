@@ -193,7 +193,7 @@ public class ProvinceImpl implements IProvince {
     @Override
     public List<ProvinceDTO> findAllDepartmentName(String nameDepartment) throws BadRequestExceptions {
         try {
-            return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findAllByStatusTrueAndDepartmentName(nameDepartment));
+            return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findAllByStatusTrueAndDepartmentName(nameDepartment.toUpperCase()));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
