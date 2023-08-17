@@ -44,7 +44,7 @@ public class Size {
     @CreationTimestamp
     private Date dateRegistration;
 
-    @Column(name = "id_tipo_talla", unique = true)
+    @Column(name = "id_tipo_talla")
     private Long idSizeType;
 
     @ManyToOne
