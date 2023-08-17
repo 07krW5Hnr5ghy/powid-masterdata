@@ -57,7 +57,7 @@ public class SizeTypeImpl implements ISizeType {
 
         try {
             List<RequestSizeTypeSave> sizeTypeSaves = names.stream().map(data -> RequestSizeTypeSave.builder()
-                    .user(user)
+                    .user(user.toUpperCase())
                     .name(data.toUpperCase())
                     .build()).toList();
             sizeTypeRepository.saveAll(sizeTypeMapper.listSizeToListName(sizeTypeSaves));

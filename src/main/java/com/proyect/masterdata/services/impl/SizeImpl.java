@@ -59,7 +59,7 @@ public class SizeImpl implements ISize {
 
         try {
             List<RequestSizeSave> sizeSaves = names.stream().map(data -> RequestSizeSave.builder()
-                    .user(user)
+                    .user(user.toUpperCase())
                     .codeSizeType(codeSizeType)
                     .name(data.toUpperCase())
                     .build()).toList();

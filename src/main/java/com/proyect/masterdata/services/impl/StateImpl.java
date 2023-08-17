@@ -56,7 +56,7 @@ public class StateImpl implements IState {
 
         try {
             List<RequestStateSave> stateSaves = names.stream().map(data -> RequestStateSave.builder()
-                    .user(user)
+                    .user(user.toUpperCase())
                     .name(data.toUpperCase())
                     .build()).toList();
             stateRepository.saveAll(stateMapper.listStateToListName(stateSaves));

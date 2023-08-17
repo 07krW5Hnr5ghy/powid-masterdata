@@ -57,7 +57,7 @@ public class SaleChannelImpl implements ISaleChannel {
 
         try {
             List<RequestSaleChannelSave> saleChannelSaves = names.stream().map(data -> RequestSaleChannelSave.builder()
-                    .user(user)
+                    .user(user.toUpperCase())
                     .name(data.toUpperCase())
                     .build()).toList();
             saleChannelRepository.saveAll(saleChannelMapper.listSaleChannelToListName(saleChannelSaves));

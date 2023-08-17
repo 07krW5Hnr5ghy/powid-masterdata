@@ -61,7 +61,7 @@ public class CategoryImpl implements ICategory {
 
         try {
             List<RequestCategorySave> categorySaves = categories.stream().map(data -> RequestCategorySave.builder()
-                    .user(user)
+                    .user(user.toUpperCase())
                     .name(data.getName().toUpperCase())
                     .description(data.getDescription().toUpperCase())
                     .build()).toList();

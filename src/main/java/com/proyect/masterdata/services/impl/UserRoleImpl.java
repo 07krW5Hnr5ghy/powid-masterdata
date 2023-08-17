@@ -56,7 +56,7 @@ public class UserRoleImpl implements IUserRole {
 
         try {
             List<RequestUserRoleSave> userRoleSaves = names.stream().map(data -> RequestUserRoleSave.builder()
-                    .user(user)
+                    .user(user.toUpperCase())
                     .name(data.toUpperCase())
                     .build()).toList();
             userRoleRepository.saveAll(userRoleMapper.listUserRoleToListName(userRoleSaves));
