@@ -29,7 +29,7 @@ public class SizeTypeImpl implements ISizeType {
 
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -49,7 +49,7 @@ public class SizeTypeImpl implements ISizeType {
 
     @Override
     public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -72,7 +72,7 @@ public class SizeTypeImpl implements ISizeType {
 
     @Override
     public SizeTypeDTO update(RequestSizeType requestSizeType) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestSizeType.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestSizeType.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -81,10 +81,9 @@ public class SizeTypeImpl implements ISizeType {
         try {
             requestSizeType.setName(requestSizeType.getName().toUpperCase());
             requestSizeType.setUser(requestSizeType.getUser().toUpperCase());
-            SizeType updatedSizeType = sizeTypeMapper.requestSizeTypeToSizeType(requestSizeType);
-            updatedSizeType.setDateRegistration(new Date(System.currentTimeMillis()));
-            SizeType sizeType = sizeTypeRepository.save(updatedSizeType);
-            return sizeTypeMapper.sizeTypeToSizeTypeDTO(sizeType);
+            SizeType sizeType = sizeTypeMapper.requestSizeTypeToSizeType(requestSizeType);
+            sizeType.setDateRegistration(new Date(System.currentTimeMillis()));
+            return sizeTypeMapper.sizeTypeToSizeTypeDTO(sizeTypeRepository.save(sizeType));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
@@ -93,7 +92,7 @@ public class SizeTypeImpl implements ISizeType {
     @Override
     @Transactional
     public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -112,7 +111,7 @@ public class SizeTypeImpl implements ISizeType {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -168,7 +167,7 @@ public class SizeTypeImpl implements ISizeType {
 
     @Override
     public List<SizeTypeDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());

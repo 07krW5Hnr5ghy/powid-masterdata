@@ -17,6 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Date;
 import java.util.List;
 
 @Service
@@ -29,7 +31,7 @@ public class DepartmentImpl implements IDepartment {
     private final UserRepository userRepository;
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -48,7 +50,7 @@ public class DepartmentImpl implements IDepartment {
     }
     @Override
     public ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -71,7 +73,7 @@ public class DepartmentImpl implements IDepartment {
 
     @Override
     public DepartmentDTO update(RequestDepartment requestDepartment) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestDepartment.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestDepartment.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -81,6 +83,7 @@ public class DepartmentImpl implements IDepartment {
             requestDepartment.setName(requestDepartment.getName().toUpperCase());
             requestDepartment.setUser(requestDepartment.getUser().toUpperCase());
             Department department = departmentRepository.save(departmentMapper.requestDepartmentToDepartment(requestDepartment));
+            department.setDateRegistration(new Date(System.currentTimeMillis()));
             return departmentMapper.departmentToDepartmentDTO(department);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
@@ -90,7 +93,7 @@ public class DepartmentImpl implements IDepartment {
     @Override
     @Transactional
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -110,7 +113,7 @@ public class DepartmentImpl implements IDepartment {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -167,7 +170,7 @@ public class DepartmentImpl implements IDepartment {
 
     @Override
     public List<DepartmentDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());

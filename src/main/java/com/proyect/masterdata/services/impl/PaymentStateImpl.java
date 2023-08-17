@@ -31,7 +31,7 @@ public class PaymentStateImpl implements IPaymentState {
 
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -51,7 +51,7 @@ public class PaymentStateImpl implements IPaymentState {
 
     @Override
     public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -74,7 +74,7 @@ public class PaymentStateImpl implements IPaymentState {
 
     @Override
     public PaymentStateDTO update(RequestPaymentState requestPaymentState) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestPaymentState.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestPaymentState.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -83,10 +83,9 @@ public class PaymentStateImpl implements IPaymentState {
         try {
             requestPaymentState.setName(requestPaymentState.getName().toUpperCase());
             requestPaymentState.setUser(requestPaymentState.getUser().toUpperCase());
-            PaymentState updatedPaymentState = paymentStateMapper.requestPaymentStateToPaymentState(requestPaymentState);
-            updatedPaymentState.setDateRegistration(new Date(System.currentTimeMillis()));
-            PaymentState paymentState = paymentStateRepository.save(updatedPaymentState);
-            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentState);
+            PaymentState paymentState = paymentStateMapper.requestPaymentStateToPaymentState(requestPaymentState);
+            paymentState.setDateRegistration(new Date(System.currentTimeMillis()));
+            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentStateRepository.save(paymentState));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
@@ -95,7 +94,7 @@ public class PaymentStateImpl implements IPaymentState {
     @Override
     @Transactional
     public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -114,7 +113,7 @@ public class PaymentStateImpl implements IPaymentState {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -171,7 +170,7 @@ public class PaymentStateImpl implements IPaymentState {
 
     @Override
     public List<PaymentStateDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());

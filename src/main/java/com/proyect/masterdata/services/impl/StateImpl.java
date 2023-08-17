@@ -28,7 +28,7 @@ public class StateImpl implements IState {
     private final UserRepository userRepository;
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -48,7 +48,7 @@ public class StateImpl implements IState {
 
     @Override
     public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -71,7 +71,7 @@ public class StateImpl implements IState {
 
     @Override
     public StateDTO update(RequestState requestState) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestState.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestState.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -80,10 +80,9 @@ public class StateImpl implements IState {
         try {
             requestState.setName(requestState.getName().toUpperCase());
             requestState.setUser(requestState.getUser().toUpperCase());
-            State updatedState = stateMapper.requestStateToState(requestState);
-            updatedState.setDateRegistration(new Date(System.currentTimeMillis()));
-            State state = stateRepository.save(updatedState);
-            return stateMapper.stateToStateDTO(state);
+            State state = stateMapper.requestStateToState(requestState);
+            state.setDateRegistration(new Date(System.currentTimeMillis()));
+            return stateMapper.stateToStateDTO(stateRepository.save(state));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
@@ -92,7 +91,7 @@ public class StateImpl implements IState {
     @Override
     @Transactional
     public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -111,7 +110,7 @@ public class StateImpl implements IState {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -167,7 +166,7 @@ public class StateImpl implements IState {
 
     @Override
     public List<StateDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());

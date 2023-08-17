@@ -31,7 +31,7 @@ public class ColorImpl implements IColor {
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions {
 
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -52,7 +52,7 @@ public class ColorImpl implements IColor {
     @Override
     public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
 
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -75,7 +75,7 @@ public class ColorImpl implements IColor {
 
     @Override
     public ColorDTO update(RequestColor requestColor) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestColor.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestColor.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -84,10 +84,9 @@ public class ColorImpl implements IColor {
         try {
             requestColor.setName(requestColor.getName().toUpperCase());
             requestColor.setUser(requestColor.getUser().toUpperCase());
-            Color updatedColor = colorMapper.requestColorToColor(requestColor);
-            updatedColor.setDateRegistration(new Date(System.currentTimeMillis()));
-            Color color = colorRepository.save(updatedColor);
-            return colorMapper.colorToColorDTO(color);
+            Color color = colorMapper.requestColorToColor(requestColor);
+            color.setDateRegistration(new Date(System.currentTimeMillis()));
+            return colorMapper.colorToColorDTO(colorRepository.save(color));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
@@ -97,7 +96,7 @@ public class ColorImpl implements IColor {
     @Transactional
     public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
 
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -116,7 +115,7 @@ public class ColorImpl implements IColor {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -173,7 +172,7 @@ public class ColorImpl implements IColor {
 
     @Override
     public List<ColorDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());

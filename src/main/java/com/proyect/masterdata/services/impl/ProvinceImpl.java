@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 
 @Service
@@ -29,7 +30,7 @@ public class ProvinceImpl implements IProvince {
     private final UserRepository userRepository;
     @Override
     public ResponseSuccess save(String name, String user, Long codeDepartment) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -51,7 +52,7 @@ public class ProvinceImpl implements IProvince {
 
     @Override
     public ResponseSuccess saveAll(List<String> names, String user, Long codeDepartment) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -74,7 +75,7 @@ public class ProvinceImpl implements IProvince {
 
     @Override
     public ProvinceDTO update(RequestProvince requestProvince) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestProvince.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestProvince.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -84,6 +85,7 @@ public class ProvinceImpl implements IProvince {
             requestProvince.setName(requestProvince.getName().toUpperCase());
             requestProvince.setUser(requestProvince.getUser().toUpperCase());
             Province province = provinceRepository.save(provinceMapper.requestProvinceToProvince(requestProvince));
+            province.setDateRegistration(new Date(System.currentTimeMillis()));
             return provinceMapper.provinceToProvinceDTO(province);
 
         } catch (RuntimeException e){
@@ -93,7 +95,7 @@ public class ProvinceImpl implements IProvince {
 
     @Override
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -112,7 +114,7 @@ public class ProvinceImpl implements IProvince {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());

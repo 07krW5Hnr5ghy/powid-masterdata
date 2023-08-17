@@ -28,7 +28,7 @@ public class UserRoleImpl implements IUserRole {
     private final UserRepository userRepository;
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -48,7 +48,7 @@ public class UserRoleImpl implements IUserRole {
 
     @Override
     public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -71,7 +71,7 @@ public class UserRoleImpl implements IUserRole {
 
     @Override
     public UserRoleDTO update(RequestUserRole requestUserRole) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestUserRole.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestUserRole.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -80,10 +80,9 @@ public class UserRoleImpl implements IUserRole {
         try {
             requestUserRole.setName(requestUserRole.getName().toUpperCase());
             requestUserRole.setUser(requestUserRole.getUser().toUpperCase());
-            UserRole updatedUserRole = userRoleMapper.requestUserRoleToUserRole(requestUserRole);
-            updatedUserRole.setDateRegistration(new Date(System.currentTimeMillis()));
-            UserRole userRole = userRoleRepository.save(updatedUserRole);
-            return userRoleMapper.userRoleToUserRoleDTO(userRole);
+            UserRole userRole = userRoleMapper.requestUserRoleToUserRole(requestUserRole);
+            userRole.setDateRegistration(new Date(System.currentTimeMillis()));
+            return userRoleMapper.userRoleToUserRoleDTO(userRoleRepository.save(userRole));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
@@ -92,7 +91,7 @@ public class UserRoleImpl implements IUserRole {
     @Override
     @Transactional
     public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -111,7 +110,7 @@ public class UserRoleImpl implements IUserRole {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -167,7 +166,7 @@ public class UserRoleImpl implements IUserRole {
 
     @Override
     public List<UserRoleDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());

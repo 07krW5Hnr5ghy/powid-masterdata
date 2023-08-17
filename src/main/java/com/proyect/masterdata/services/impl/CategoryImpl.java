@@ -30,7 +30,7 @@ public class CategoryImpl implements ICategory {
 
     @Override
     public ResponseSuccess save(String name,String description,String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -53,7 +53,7 @@ public class CategoryImpl implements ICategory {
 
     @Override
     public ResponseSuccess saveAll(List<RequestCreateCategory> categories,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -77,7 +77,7 @@ public class CategoryImpl implements ICategory {
 
     @Override
     public CategoryDTO update(RequestCategory requestCategory) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestCategory.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestCategory.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -86,10 +86,9 @@ public class CategoryImpl implements ICategory {
         try {
             requestCategory.setName(requestCategory.getName().toUpperCase());
             requestCategory.setDescription(requestCategory.getDescription().toUpperCase());
-            Category updatedCategory = categoryMapper.requestCategoryToCategory(requestCategory);
-            updatedCategory.setDateRegistration(new Date(System.currentTimeMillis()));
-            Category category = categoryRepository.save(categoryMapper.requestCategoryToCategory(requestCategory));
-            return categoryMapper.categoryToCategoryDTO(category);
+            Category category = categoryMapper.requestCategoryToCategory(requestCategory);
+            category.setDateRegistration(new Date(System.currentTimeMillis()));
+            return categoryMapper.categoryToCategoryDTO(categoryRepository.save(categoryMapper.requestCategoryToCategory(requestCategory)));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
@@ -98,7 +97,7 @@ public class CategoryImpl implements ICategory {
     @Override
     @Transactional
     public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -117,7 +116,7 @@ public class CategoryImpl implements ICategory {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -171,7 +170,7 @@ public class CategoryImpl implements ICategory {
 
     @Override
     public List<CategoryDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());

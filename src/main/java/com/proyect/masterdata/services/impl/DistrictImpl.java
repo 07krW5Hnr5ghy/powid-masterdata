@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 
 @Service
@@ -30,7 +31,7 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public ResponseSuccess save(String name, String user, Long codeProvince) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -52,7 +53,7 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public ResponseSuccess saveAll(List<String> names, String user, Long codeProvince) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -75,7 +76,7 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public DistrictDTO update(RequestDistrict requestDistrict) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestDistrict.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestDistrict.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -85,6 +86,7 @@ public class DistrictImpl implements IDistrict {
             requestDistrict.setName(requestDistrict.getName().toUpperCase());
             requestDistrict.setUser(requestDistrict.getUser().toUpperCase());
             District district = districtRepository.save(districtMapper.requestDistrictToDistrict(requestDistrict));
+            district.setDateRegistration(new Date(System.currentTimeMillis()));
             return districtMapper.districtToDistrictDTO(district);
 
         } catch (RuntimeException e){
@@ -94,7 +96,7 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -113,7 +115,7 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -170,7 +172,7 @@ public class DistrictImpl implements IDistrict {
 
     @Override
     public List<DistrictDTO> findByUser(String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());

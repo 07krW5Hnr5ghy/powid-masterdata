@@ -29,7 +29,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
     private final UserRepository userRepository;
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -49,7 +49,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
 
     @Override
     public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -72,7 +72,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
 
     @Override
     public PaymentMethodDTO update(RequestPaymentMethod requestPaymentMethod) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestPaymentMethod.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestPaymentMethod.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -81,10 +81,9 @@ public class PaymentMethodImpl implements IPaymentMethod {
         try {
             requestPaymentMethod.setName(requestPaymentMethod.getName().toUpperCase());
             requestPaymentMethod.setUser(requestPaymentMethod.getUser().toUpperCase());
-            PaymentMethod updatedPaymentMethod = paymentMethodMapper.requestPaymentMethodToPaymentMethod(requestPaymentMethod);
-            updatedPaymentMethod.setDateRegistration(new Date(System.currentTimeMillis()));
-            PaymentMethod paymentMethod = paymentMethodRepository.save(updatedPaymentMethod);
-            return paymentMethodMapper.paymentMethodToPaymentMethodDTO(paymentMethod);
+            PaymentMethod paymentMethod = paymentMethodMapper.requestPaymentMethodToPaymentMethod(requestPaymentMethod);
+            paymentMethod.setDateRegistration(new Date(System.currentTimeMillis()));
+            return paymentMethodMapper.paymentMethodToPaymentMethodDTO(paymentMethodRepository.save(paymentMethod));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
@@ -93,7 +92,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
     @Override
     @Transactional
     public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -112,7 +111,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -169,7 +168,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
 
     @Override
     public List<PaymentMethodDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());

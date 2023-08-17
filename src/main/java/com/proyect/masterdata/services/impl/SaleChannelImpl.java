@@ -29,7 +29,7 @@ public class SaleChannelImpl implements ISaleChannel {
 
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -49,7 +49,7 @@ public class SaleChannelImpl implements ISaleChannel {
 
     @Override
     public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -72,7 +72,7 @@ public class SaleChannelImpl implements ISaleChannel {
 
     @Override
     public SaleChannelDTO update(RequestSaleChannel requestSaleChannel) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestSaleChannel.getUser()).orElse(null);
+        User datauser = userRepository.findById(requestSaleChannel.getUser().toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -80,11 +80,10 @@ public class SaleChannelImpl implements ISaleChannel {
 
         try {
             requestSaleChannel.setName(requestSaleChannel.getName().toUpperCase());
-
-            SaleChannel updatedSaleChannel = saleChannelMapper.requestSaleChannelToSaleChannel(requestSaleChannel);
-            updatedSaleChannel.setDateRegistration(new Date(System.currentTimeMillis()));
-            SaleChannel saleChannel = saleChannelRepository.save(updatedSaleChannel);
-            return saleChannelMapper.saleChannelToSaleChannelDTO(saleChannel);
+            requestSaleChannel.setUser(requestSaleChannel.getUser().toUpperCase());
+            SaleChannel saleChannel = saleChannelMapper.requestSaleChannelToSaleChannel(requestSaleChannel);
+            saleChannel.setDateRegistration(new Date(System.currentTimeMillis()));
+            return saleChannelMapper.saleChannelToSaleChannelDTO(saleChannelRepository.save(saleChannel));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
@@ -93,7 +92,7 @@ public class SaleChannelImpl implements ISaleChannel {
     @Override
     @Transactional
     public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -112,7 +111,7 @@ public class SaleChannelImpl implements ISaleChannel {
 
     @Override
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
@@ -168,7 +167,7 @@ public class SaleChannelImpl implements ISaleChannel {
 
     @Override
     public List<SaleChannelDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user).orElse(null);
+        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
