@@ -32,4 +32,6 @@ public interface ProvinceMapper {
     ProvinceDTO provinceToProvinceDTO(Province province);
 
     List<ProvinceDTO> listProvinceToListProvinceDTO(List<Province> provinceList);
+
+    List<Province> listProvinceToListName(List<RequestProvinceSave> requestProvinceSaveList);
 }

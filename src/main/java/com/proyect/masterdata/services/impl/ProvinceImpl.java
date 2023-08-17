@@ -65,6 +65,7 @@ public class ProvinceImpl implements IProvince {
                     .codeDepártment(codeDepartment)
                     .name(data.toUpperCase())
                     .build()).toList();
+            provinceRepository.saveAll(provinceMapper.listProvinceToListName(provinceSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

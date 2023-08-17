@@ -29,7 +29,7 @@ public class ProvinceController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/departments")
+    @PostMapping(value = "/provinces")
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestParam("user") String user,
             @RequestParam("codeDepartment") Long codeDepartment,
