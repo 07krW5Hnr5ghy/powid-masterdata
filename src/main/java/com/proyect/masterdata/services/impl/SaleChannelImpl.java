@@ -99,7 +99,7 @@ public class SaleChannelImpl implements ISaleChannel {
         }
 
         try {
-            saleChannelRepository.deleteByIdAndUser(code,user);
+            saleChannelRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -119,7 +119,7 @@ public class SaleChannelImpl implements ISaleChannel {
 
         try {
             codes.stream().forEach(data -> {
-                saleChannelRepository.deleteByIdAndUser(data,user);
+                saleChannelRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

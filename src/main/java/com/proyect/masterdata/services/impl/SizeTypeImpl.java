@@ -99,7 +99,7 @@ public class SizeTypeImpl implements ISizeType {
         }
 
         try {
-            sizeTypeRepository.deleteByIdAndUser(code,user);
+            sizeTypeRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -119,7 +119,7 @@ public class SizeTypeImpl implements ISizeType {
 
         try {
             codes.stream().forEach(data -> {
-                sizeTypeRepository.deleteByIdAndUser(data,user);
+                sizeTypeRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

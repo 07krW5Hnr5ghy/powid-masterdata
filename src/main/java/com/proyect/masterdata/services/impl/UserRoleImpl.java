@@ -98,7 +98,7 @@ public class UserRoleImpl implements IUserRole {
         }
 
         try {
-            userRoleRepository.deleteByIdAndUser(code,user);
+            userRoleRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -118,7 +118,7 @@ public class UserRoleImpl implements IUserRole {
 
         try {
             codes.stream().forEach(data -> {
-                userRoleRepository.deleteByIdAndUser(data,user);
+                userRoleRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

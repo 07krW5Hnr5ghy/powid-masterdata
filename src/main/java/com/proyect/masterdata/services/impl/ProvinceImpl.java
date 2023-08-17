@@ -102,7 +102,7 @@ public class ProvinceImpl implements IProvince {
         }
 
         try {
-            provinceRepository.deleteByIdAndUser(code, user);
+            provinceRepository.deleteByIdAndUser(code.longValue(), user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -122,7 +122,7 @@ public class ProvinceImpl implements IProvince {
 
         try {
             codes.stream().forEach(data -> {
-                provinceRepository.deleteByIdAndUser(data, user);
+                provinceRepository.deleteByIdAndUser(data.longValue(), user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

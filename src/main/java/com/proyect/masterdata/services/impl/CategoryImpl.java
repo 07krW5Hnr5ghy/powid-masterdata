@@ -104,7 +104,7 @@ public class CategoryImpl implements ICategory {
         }
 
         try {
-            categoryRepository.deleteByIdAndUser(code,user);
+            categoryRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -123,7 +123,9 @@ public class CategoryImpl implements ICategory {
         }
 
         try {
-            categoryRepository.deleteAllById(codes);
+            codes.stream().forEach(data -> {
+                categoryRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
+            });
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)

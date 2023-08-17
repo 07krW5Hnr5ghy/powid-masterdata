@@ -103,7 +103,7 @@ public class ColorImpl implements IColor {
         }
 
         try {
-            colorRepository.deleteByIdAndUser(code,user);
+            colorRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -123,7 +123,7 @@ public class ColorImpl implements IColor {
 
         try {
             codes.stream().forEach(data -> {
-                colorRepository.deleteByIdAndUser(data,user);
+                colorRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

@@ -98,7 +98,7 @@ public class StateImpl implements IState {
         }
 
         try {
-            stateRepository.deleteByIdAndUser(code,user);
+            stateRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -118,7 +118,7 @@ public class StateImpl implements IState {
 
         try {
             codes.stream().forEach(data -> {
-                stateRepository.deleteByIdAndUser(data,user);
+                stateRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

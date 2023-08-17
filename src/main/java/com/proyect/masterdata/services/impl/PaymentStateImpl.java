@@ -101,7 +101,7 @@ public class PaymentStateImpl implements IPaymentState {
         }
 
         try {
-            paymentStateRepository.deleteByIdAndUser(code,user);
+            paymentStateRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -121,7 +121,7 @@ public class PaymentStateImpl implements IPaymentState {
 
         try {
             codes.stream().forEach(data -> {
-                paymentStateRepository.deleteByIdAndUser(data,user);
+                paymentStateRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

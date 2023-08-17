@@ -100,7 +100,7 @@ public class DepartmentImpl implements IDepartment {
         }
 
         try {
-            departmentRepository.deleteByIdAndUser(code, user);
+            departmentRepository.deleteByIdAndUser(code.longValue(), user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)

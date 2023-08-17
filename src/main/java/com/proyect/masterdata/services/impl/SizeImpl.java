@@ -102,7 +102,7 @@ public class SizeImpl implements ISize {
         }
 
         try {
-            sizeRepository.deleteByIdAndUser(code,user);
+            sizeRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -122,7 +122,7 @@ public class SizeImpl implements ISize {
 
         try {
             codes.stream().forEach(data -> {
-                sizeRepository.deleteByIdAndUser(data,user);
+                sizeRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

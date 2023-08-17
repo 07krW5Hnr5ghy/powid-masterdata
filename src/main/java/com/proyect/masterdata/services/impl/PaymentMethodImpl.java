@@ -99,7 +99,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         }
 
         try {
-            paymentMethodRepository.deleteByIdAndUser(code,user);
+            paymentMethodRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -119,7 +119,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
 
         try {
             codes.stream().forEach(data -> {
-                paymentMethodRepository.deleteByIdAndUser(data,user);
+                paymentMethodRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

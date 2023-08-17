@@ -103,7 +103,7 @@ public class DistrictImpl implements IDistrict {
         }
 
         try {
-            districtRepository.deleteByIdAndUser(code, user);
+            districtRepository.deleteByIdAndUser(code.longValue(), user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
