@@ -196,7 +196,7 @@ public class SizeImpl implements ISize {
     @Override
     public List<SizeDTO> findAllSizeTypeName(String nameSizeType) throws BadRequestExceptions {
         try {
-            return sizeMapper.listSizeToListSizeDTO(sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType));
+            return sizeMapper.listSizeToListSizeDTO(sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType.toUpperCase()));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
