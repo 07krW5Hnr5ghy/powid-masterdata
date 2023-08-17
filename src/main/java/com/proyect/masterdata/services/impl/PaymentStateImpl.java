@@ -101,7 +101,7 @@ public class PaymentStateImpl implements IPaymentState {
         }
 
         try {
-            paymentStateRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
+            paymentStateRepository.deleteByIdAndUser(code,user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -112,6 +112,7 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
@@ -121,7 +122,7 @@ public class PaymentStateImpl implements IPaymentState {
 
         try {
             codes.stream().forEach(data -> {
-                paymentStateRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
+                paymentStateRepository.deleteByIdAndUser(data,user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

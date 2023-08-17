@@ -100,7 +100,7 @@ public class DepartmentImpl implements IDepartment {
         }
 
         try {
-            departmentRepository.deleteByIdAndUser(code.longValue(), user.toUpperCase());
+            departmentRepository.deleteByIdAndUser(code, user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -112,6 +112,7 @@ public class DepartmentImpl implements IDepartment {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 

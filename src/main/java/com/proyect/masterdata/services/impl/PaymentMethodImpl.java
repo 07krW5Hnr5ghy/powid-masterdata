@@ -99,7 +99,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         }
 
         try {
-            paymentMethodRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
+            paymentMethodRepository.deleteByIdAndUser(code,user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -110,6 +110,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
@@ -119,7 +120,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
 
         try {
             codes.stream().forEach(data -> {
-                paymentMethodRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
+                paymentMethodRepository.deleteByIdAndUser(data,user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

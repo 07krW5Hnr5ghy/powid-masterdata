@@ -16,6 +16,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.util.List;
@@ -103,7 +104,7 @@ public class DistrictImpl implements IDistrict {
         }
 
         try {
-            districtRepository.deleteByIdAndUser(code.longValue(), user.toUpperCase());
+            districtRepository.deleteByIdAndUser(code, user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -114,6 +115,7 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions {
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 

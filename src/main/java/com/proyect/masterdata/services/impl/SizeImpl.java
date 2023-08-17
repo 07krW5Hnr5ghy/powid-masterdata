@@ -102,7 +102,7 @@ public class SizeImpl implements ISize {
         }
 
         try {
-            sizeRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
+            sizeRepository.deleteByIdAndUser(code,user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -113,6 +113,7 @@ public class SizeImpl implements ISize {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
@@ -122,7 +123,7 @@ public class SizeImpl implements ISize {
 
         try {
             codes.stream().forEach(data -> {
-                sizeRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
+                sizeRepository.deleteByIdAndUser(data,user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

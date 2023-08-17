@@ -98,7 +98,7 @@ public class StateImpl implements IState {
         }
 
         try {
-            stateRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
+            stateRepository.deleteByIdAndUser(code,user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -109,6 +109,7 @@ public class StateImpl implements IState {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
@@ -118,7 +119,7 @@ public class StateImpl implements IState {
 
         try {
             codes.stream().forEach(data -> {
-                stateRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
+                stateRepository.deleteByIdAndUser(data,user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

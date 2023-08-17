@@ -103,7 +103,7 @@ public class ColorImpl implements IColor {
         }
 
         try {
-            colorRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
+            colorRepository.deleteByIdAndUser(code,user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -114,6 +114,7 @@ public class ColorImpl implements IColor {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
@@ -123,7 +124,7 @@ public class ColorImpl implements IColor {
 
         try {
             codes.stream().forEach(data -> {
-                colorRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
+                colorRepository.deleteByIdAndUser(data,user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

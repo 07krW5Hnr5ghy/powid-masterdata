@@ -99,7 +99,7 @@ public class SaleChannelImpl implements ISaleChannel {
         }
 
         try {
-            saleChannelRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
+            saleChannelRepository.deleteByIdAndUser(code,user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -110,6 +110,7 @@ public class SaleChannelImpl implements ISaleChannel {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
@@ -119,7 +120,7 @@ public class SaleChannelImpl implements ISaleChannel {
 
         try {
             codes.stream().forEach(data -> {
-                saleChannelRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
+                saleChannelRepository.deleteByIdAndUser(data,user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

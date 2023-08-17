@@ -98,7 +98,7 @@ public class UserRoleImpl implements IUserRole {
         }
 
         try {
-            userRoleRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
+            userRoleRepository.deleteByIdAndUser(code,user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -109,6 +109,7 @@ public class UserRoleImpl implements IUserRole {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
@@ -118,7 +119,7 @@ public class UserRoleImpl implements IUserRole {
 
         try {
             codes.stream().forEach(data -> {
-                userRoleRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
+                userRoleRepository.deleteByIdAndUser(data,user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

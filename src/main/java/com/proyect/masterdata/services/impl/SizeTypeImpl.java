@@ -99,7 +99,7 @@ public class SizeTypeImpl implements ISizeType {
         }
 
         try {
-            sizeTypeRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
+            sizeTypeRepository.deleteByIdAndUser(code,user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -110,6 +110,7 @@ public class SizeTypeImpl implements ISizeType {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
@@ -119,7 +120,7 @@ public class SizeTypeImpl implements ISizeType {
 
         try {
             codes.stream().forEach(data -> {
-                sizeTypeRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
+                sizeTypeRepository.deleteByIdAndUser(data,user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)

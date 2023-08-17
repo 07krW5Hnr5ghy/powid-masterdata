@@ -104,7 +104,7 @@ public class CategoryImpl implements ICategory {
         }
 
         try {
-            categoryRepository.deleteByIdAndUser(code.longValue(),user.toUpperCase());
+            categoryRepository.deleteByIdAndUser(code,user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -115,6 +115,7 @@ public class CategoryImpl implements ICategory {
     }
 
     @Override
+    @Transactional
     public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
 
@@ -124,7 +125,7 @@ public class CategoryImpl implements ICategory {
 
         try {
             codes.stream().forEach(data -> {
-                categoryRepository.deleteByIdAndUser(data.longValue(),user.toUpperCase());
+                categoryRepository.deleteByIdAndUser(data,user.toUpperCase());
             });
             return ResponseDelete.builder()
                     .code(200)
