@@ -7,6 +7,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IDepartment;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,14 +66,28 @@ public class DepartmentController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<DepartmentDTO>> list() throws BadRequestExceptions {
-        List<DepartmentDTO> result = iDepartment.list();
+    public ResponseEntity<Page<DepartmentDTO>> list(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws BadRequestExceptions {
+        Page<DepartmentDTO> result = iDepartment.list(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value="/statusFalse")
-    public ResponseEntity<List<DepartmentDTO>> listStatusFalse() throws BadRequestExceptions {
-        List<DepartmentDTO> result = iDepartment.listStatusFalse();
+    public ResponseEntity<Page<DepartmentDTO>> listStatusFalse(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws BadRequestExceptions {
+        Page<DepartmentDTO> result = iDepartment.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -84,21 +99,6 @@ public class DepartmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/name")
-    public ResponseEntity<DepartmentDTO> findByName(
-            @RequestParam("name") String name
-    ) throws BadRequestExceptions {
-        DepartmentDTO result = iDepartment.findByName(name);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/user")
-    public ResponseEntity<List<DepartmentDTO>> findByUser(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<DepartmentDTO> result = iDepartment.findByUser(user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
 }
 /*
     @Operation(summary = "Lista los departmentos",

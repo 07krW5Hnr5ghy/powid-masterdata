@@ -10,15 +10,19 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mapper.DepartmentMapper;
 import com.proyect.masterdata.repository.DepartmentRepository;
+import com.proyect.masterdata.repository.DepartmentRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IDepartment;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -27,6 +31,7 @@ import java.util.List;
 public class DepartmentImpl implements IDepartment {
 
     private final DepartmentRepository departmentRepository;
+    private final DepartmentRepositoryCustom departmentRepositoryCustom;
     private final DepartmentMapper departmentMapper;
     private final UserRepository userRepository;
     @Override
@@ -134,51 +139,42 @@ public class DepartmentImpl implements IDepartment {
     }
 
     @Override
-    public List<DepartmentDTO> list() throws BadRequestExceptions{
+    public Page<DepartmentDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
+        Page<Department> departmentPage;
         try {
-            return departmentMapper.listDepartmentToListDepartmentDTO(departmentRepository.findAllByStatusTrue());
+            departmentPage = departmentRepositoryCustom.searchForDepartment(name, user, sort, sortColumn, pageNumber, pageSize, true);
         } catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+
+        if (departmentPage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(departmentMapper.listDepartmentToListDepartmentDTO(departmentPage.getContent()),
+                departmentPage.getPageable(), departmentPage.getTotalElements());
     }
 
     @Override
-    public List<DepartmentDTO> listStatusFalse() throws BadRequestExceptions{
+    public Page<DepartmentDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
+        Page<Department> departmentPage;
         try {
-            return departmentMapper.listDepartmentToListDepartmentDTO(departmentRepository.findAllByStatusFalse());
+            departmentPage = departmentRepositoryCustom.searchForDepartment(name, user, sort, sortColumn, pageNumber, pageSize, false);
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+
+        if (departmentPage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(departmentMapper.listDepartmentToListDepartmentDTO(departmentPage.getContent()),
+                departmentPage.getPageable(), departmentPage.getTotalElements());
     }
 
     @Override
     public DepartmentDTO findByCode(Long code) throws BadRequestExceptions{
         try {
             return departmentMapper.departmentToDepartmentDTO(departmentRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
-
-    @Override
-    public DepartmentDTO findByName(String name) throws BadRequestExceptions{
-        try {
-            return departmentMapper.departmentToDepartmentDTO(departmentRepository.findByNameAndStatusTrue(name.toUpperCase()));
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
-
-    @Override
-    public List<DepartmentDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
-
-        if (datauser==null){
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        try {
-            return departmentMapper.listDepartmentToListDepartmentDTO(departmentRepository.findByUser(user.toUpperCase()));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }

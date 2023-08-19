@@ -36,7 +36,7 @@ public class Department {
     private String name;
 
     @Column(name = "estado")
-    private boolean status;
+    private Boolean status;
 
     @Column(name = "fecha_registro")
     @CreationTimestamp

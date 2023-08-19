@@ -5,6 +5,7 @@ import com.proyect.masterdata.dto.request.RequestDepartment;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -14,10 +15,9 @@ public interface IDepartment {
     DepartmentDTO update(RequestDepartment requestDepartment) throws BadRequestExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
     ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions;
-    List<DepartmentDTO> list() throws BadRequestExceptions;
+    Page<DepartmentDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
 
-    List<DepartmentDTO> listStatusFalse() throws BadRequestExceptions;
+    Page<DepartmentDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
     DepartmentDTO findByCode(Long code) throws BadRequestExceptions;
-    DepartmentDTO findByName(String name) throws BadRequestExceptions;
-    List<DepartmentDTO> findByUser(String user) throws BadRequestExceptions;
+
 }
