@@ -56,15 +56,6 @@ public class DepartmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/departments")
-    public ResponseEntity<ResponseDelete> deleteall(
-            @RequestParam("user") String user,
-            @RequestBody() List<Long> codes
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iDepartment.deleteAll(codes, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @GetMapping()
     public ResponseEntity<Page<DepartmentDTO>> list(
             @RequestParam(value = "name", required = false) String name,

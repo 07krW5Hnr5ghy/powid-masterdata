@@ -8,6 +8,7 @@ import com.proyect.masterdata.dto.request.RequestDepartmentSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.DepartmentMapper;
 import com.proyect.masterdata.repository.DepartmentRepository;
 import com.proyect.masterdata.repository.DepartmentRepositoryCustom;
@@ -19,10 +20,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Date;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -35,106 +34,133 @@ public class DepartmentImpl implements IDepartment {
     private final DepartmentMapper departmentMapper;
     private final UserRepository userRepository;
     @Override
-    public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+    public ResponseSuccess save(String name,String user) throws BadRequestExceptions, InternalErrorExceptions {
+        User datauser;
+        Department department;
+        try {
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            department = departmentRepository.findByNameAndStatusTrue(name.toUpperCase());
+        } catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if (department!=null){
+            throw new BadRequestExceptions(Constants.ErrorDepartmentExist.toUpperCase());
+        }
 
         try {
             departmentRepository.save(departmentMapper.departmentToName(RequestDepartmentSave
-                    .builder().name(name.toUpperCase()).user(user.toUpperCase()).build()));
+                    .builder().name(name.toUpperCase()).user(datauser.getUser()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
     }
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+    public ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions, InternalErrorExceptions{
+        User datauser;
+        List<Department> departments;
+        try {
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            departments = departmentRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
+        } catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if (!departments.isEmpty()){
+            throw new BadRequestExceptions(Constants.ErrorDepartmentList.toUpperCase());
+        }
 
-        try {
-            List<RequestDepartmentSave> departmentSaves = names.stream().map(data -> RequestDepartmentSave.builder()
+        List<RequestDepartmentSave> departmentSaves = names.stream().map(data -> RequestDepartmentSave.builder()
                     .user(user.toUpperCase())
                     .name(data.toUpperCase())
                     .build()).toList();
+        try {
             departmentRepository.saveAll(departmentMapper.listDepartmentToListName(departmentSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public DepartmentDTO update(RequestDepartment requestDepartment) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestDepartment.getUser().toUpperCase()).orElse(null);
-
-        if (datauser==null){
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
+    public DepartmentDTO update(RequestDepartment requestDepartment) throws BadRequestExceptions, InternalErrorExceptions {
+        User datauser;
+        Department department;
         try {
-            requestDepartment.setName(requestDepartment.getName().toUpperCase());
-            requestDepartment.setUser(requestDepartment.getUser().toUpperCase());
-            Department department = departmentRepository.save(departmentMapper.requestDepartmentToDepartment(requestDepartment));
-            department.setDateRegistration(new Date(System.currentTimeMillis()));
-            return departmentMapper.departmentToDepartmentDTO(department);
+            datauser = userRepository.findById(requestDepartment.getUser().toUpperCase()).orElse(null);
+            department = departmentRepository.findById(requestDepartment.getCode()).orElse(null);
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-    }
-
-    @Override
-    @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
-
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
 
+        if (department==null){
+            throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
+        }
+
+        department.setName(requestDepartment.getName().toUpperCase());
+        department.setUser(datauser.getUser());
+        department.setStatus(requestDepartment.isStatus());
+        department.setDateRegistration(new Date());
+
         try {
-            departmentRepository.deleteByIdAndUser(code, user.toUpperCase());
+            return departmentMapper.departmentToDepartmentDTO(departmentRepository.save(department));
+        } catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions{
+        User datauser;
+        Department department;
+        try {
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            department = departmentRepository.findById(code).orElse(null);
+        } catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (datauser==null){
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+        if (department==null){
+            throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
+        }
+
+        department.setStatus(false);
+        try {
+            departmentRepository.save(department);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
                     .build();
         } catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
-        }
-    }
-
-    @Override
-    @Transactional
-    public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
-
-        if (datauser==null){
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        try {
-            codes.stream().forEach(data -> {
-                departmentRepository.deleteByIdAndUser(data, user);
-            });
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 

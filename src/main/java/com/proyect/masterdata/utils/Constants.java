@@ -45,6 +45,10 @@ public class Constants {
 
     public static final String ErrorUser= "the user is incorrect";
     public static final String ResultsFound= "no results found";
+    public static final String InternalErrorExceptions="Internal Server Error";
+    public static final String ErrorDepartment= "The department does not exist";
+    public static final String ErrorDepartmentList= "In the list there is a department that exists";
+    public static final String ErrorDepartmentExist= "The department does exist";
 
 
 }
