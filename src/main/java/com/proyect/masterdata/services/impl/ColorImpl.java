@@ -9,12 +9,14 @@ import com.proyect.masterdata.dto.request.RequestColorSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.ColorMapper;
 import com.proyect.masterdata.repository.ColorRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IColor;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class ColorImpl implements IColor {
     private final ColorRepository colorRepository;
     private final ColorMapper colorMapper;
@@ -94,16 +97,30 @@ public class ColorImpl implements IColor {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
+    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions,InternalErrorExceptions{
 
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+        User datauser;
+        Color color;
+
+        try{
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            color = colorRepository.findById(code).orElse(null);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if(color==null){
+            throw new BadRequestExceptions(Constants.ErrorColor.toUpperCase());
+        }
+
+        color.setStatus(false);
 
         try {
-            colorRepository.deleteByIdAndUser(code,user.toUpperCase());
+            colorRepository.save(color);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)

@@ -55,6 +55,5 @@ public class Constants {
     public static final String ErrorProvinceExist= "Exit province";
     public static final String ErrorProvinceNotExist= "Exit The province does not exist";
     public static final String ErrorCategory = "The category does not exist";
-
-
+    public static final String ErrorColor = "The color does not exist";
 }
