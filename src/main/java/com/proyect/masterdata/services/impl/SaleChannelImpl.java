@@ -8,12 +8,14 @@ import com.proyect.masterdata.dto.request.RequestSaleChannelSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.SaleChannelMapper;
 import com.proyect.masterdata.repository.SaleChannelRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.ISaleChannel;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class SaleChannelImpl implements ISaleChannel {
     private final SaleChannelRepository saleChannelRepository;
     private final SaleChannelMapper saleChannelMapper;
@@ -91,14 +94,28 @@ public class SaleChannelImpl implements ISaleChannel {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions {
+        User datauser;
+        SaleChannel saleChannel;
+
+        try{
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            saleChannel = saleChannelRepository.findById(code).orElse(null);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if(saleChannel==null){
+            throw new BadRequestExceptions(Constants.ErrorSaleChannel.toUpperCase());
+        }
 
         try {
+            saleChannel.setStatus(false);
+            saleChannel.setDateRegistration(new Date(System.currentTimeMillis()));
             saleChannelRepository.deleteByIdAndUser(code,user.toUpperCase());
             return ResponseDelete.builder()
                     .code(200)
