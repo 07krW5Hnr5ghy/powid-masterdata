@@ -9,12 +9,14 @@ import com.proyect.masterdata.dto.request.RequestCreateCategory;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.CategoryMapper;
 import com.proyect.masterdata.repository.CategoryRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.ICategory;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class CategoryImpl implements ICategory {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
@@ -96,21 +99,35 @@ public class CategoryImpl implements ICategory {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions {
+        User datauser;
+        Category category;
+        try{
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            category = categoryRepository.findById(code).orElse(null);
+        }catch(RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if(category==null){
+            throw new BadRequestExceptions(Constants.ErrorCategory.toUpperCase());
+        }
+
+        category.setStatus(false);
 
         try {
-            categoryRepository.deleteByIdAndUser(code,user.toUpperCase());
+            categoryRepository.save(category);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
                     .build();
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
