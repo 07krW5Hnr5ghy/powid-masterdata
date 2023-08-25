@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class ProvinceDTO {
     private Long code;
     private String name;
+    private String nameDepartment;
 }
 

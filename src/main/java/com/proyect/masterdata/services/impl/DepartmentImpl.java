@@ -20,6 +20,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -162,6 +164,21 @@ public class DepartmentImpl implements IDepartment {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public List<DepartmentDTO> listDepartment() {
+        List<Department> departments = new ArrayList<>();
+        try {
+            departments = departmentRepository.findAllByStatusTrue();
+        } catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+        if (departments.isEmpty()){
+            return Collections.emptyList();
+        }
+        return departmentMapper.listDepartmentToListDepartmentDTO(departments);
     }
 
     @Override

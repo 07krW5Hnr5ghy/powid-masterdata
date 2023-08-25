@@ -15,6 +15,8 @@ public interface IDepartment {
     ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions, InternalErrorExceptions;
     DepartmentDTO update(RequestDepartment requestDepartment) throws BadRequestExceptions, InternalErrorExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
+
+    List<DepartmentDTO> listDepartment();
     Page<DepartmentDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
 
     Page<DepartmentDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;

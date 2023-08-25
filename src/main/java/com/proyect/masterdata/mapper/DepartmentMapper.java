@@ -2,7 +2,6 @@ package com.proyect.masterdata.mapper;
 
 import com.proyect.masterdata.domain.Department;
 import com.proyect.masterdata.dto.DepartmentDTO;
-import com.proyect.masterdata.dto.request.RequestDepartment;
 import com.proyect.masterdata.dto.request.RequestDepartmentSave;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,8 +26,4 @@ public interface DepartmentMapper {
     Department departmentToName(RequestDepartmentSave requestDepartmentSave);
 
     List<Department> listDepartmentToListName(List<RequestDepartmentSave> requestDepartmentSaveList);
-
-    @Mapping(target = "id", source = "code")
-    @Mapping(target = "dateRegistration", ignore = true)
-    Department requestDepartmentToDepartment(RequestDepartment requestDepartment);
 }

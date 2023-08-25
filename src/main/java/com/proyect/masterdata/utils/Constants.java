@@ -50,5 +50,10 @@ public class Constants {
     public static final String ErrorDepartmentList= "In the list there is a department that exists";
     public static final String ErrorDepartmentExist= "The department does exist";
 
+    public static final String ErrorProvinceList= "In the list there is a province that exists";
+
+    public static final String ErrorProvinceExist= "Exit province";
+    public static final String ErrorProvinceNotExist= "Exit The province does not exist";
+
 
 }

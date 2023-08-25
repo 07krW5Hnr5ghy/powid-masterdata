@@ -29,6 +29,7 @@ public interface ProvinceMapper {
     Province requestProvinceToProvince(RequestProvince requestProvince);
 
     @Mapping(target = "code", source = "id")
+    @Mapping(target = "nameDepartment", source = "department.name")
     ProvinceDTO provinceToProvinceDTO(Province province);
 
     List<ProvinceDTO> listProvinceToListProvinceDTO(List<Province> provinceList);

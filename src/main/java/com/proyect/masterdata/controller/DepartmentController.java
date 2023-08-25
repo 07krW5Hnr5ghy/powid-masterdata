@@ -56,6 +56,12 @@ public class DepartmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/list")
+    public ResponseEntity<List<DepartmentDTO>> listDepartment() throws BadRequestExceptions {
+        List<DepartmentDTO> result = iDepartment.listDepartment();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping()
     public ResponseEntity<Page<DepartmentDTO>> list(
             @RequestParam(value = "name", required = false) String name,
