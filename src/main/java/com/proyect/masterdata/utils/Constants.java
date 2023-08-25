@@ -58,4 +58,5 @@ public class Constants {
     public static final String ErrorColor = "The color does not exist";
     public static final String ErrorDistrict = "The district does not exist";
     public static final String ErrorPaymentMethod = "The payment method does not exist";
+    public static final String ErrorPaymentState = "The payment state does not exist";
 }
