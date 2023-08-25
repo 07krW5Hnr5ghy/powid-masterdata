@@ -114,6 +114,8 @@ public class PaymentMethodImpl implements IPaymentMethod {
         }
 
         try {
+            paymentMethod.setStatus(false);
+            paymentMethod.setDateRegistration(new Date(System.currentTimeMillis()));
             paymentMethodRepository.save(paymentMethod);
             return ResponseDelete.builder()
                     .code(200)

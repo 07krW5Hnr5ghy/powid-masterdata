@@ -117,9 +117,9 @@ public class CategoryImpl implements ICategory {
             throw new BadRequestExceptions(Constants.ErrorCategory.toUpperCase());
         }
 
-        category.setStatus(false);
-
         try {
+            category.setStatus(false);
+            category.setDateRegistration(new Date(System.currentTimeMillis()));
             categoryRepository.save(category);
             return ResponseDelete.builder()
                     .code(200)

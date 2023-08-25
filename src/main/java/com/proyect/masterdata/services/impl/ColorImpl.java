@@ -117,9 +117,9 @@ public class ColorImpl implements IColor {
             throw new BadRequestExceptions(Constants.ErrorColor.toUpperCase());
         }
 
-        color.setStatus(false);
-
         try {
+            color.setStatus(false);
+            color.setDateRegistration(new Date(System.currentTimeMillis()));
             colorRepository.save(color);
             return ResponseDelete.builder()
                     .code(200)

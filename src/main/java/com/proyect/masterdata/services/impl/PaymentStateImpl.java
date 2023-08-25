@@ -116,6 +116,8 @@ public class PaymentStateImpl implements IPaymentState {
         }
 
         try {
+            paymentState.setStatus(false);
+            paymentState.setDateRegistration(new Date(System.currentTimeMillis()));
             paymentStateRepository.save(paymentState);
             return ResponseDelete.builder()
                     .code(200)
