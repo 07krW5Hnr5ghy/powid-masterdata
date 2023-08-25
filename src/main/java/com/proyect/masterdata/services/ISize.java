@@ -13,7 +13,6 @@ public interface ISize {
     ResponseSuccess saveAll(List<String> names, String user,Long codeSizeType) throws BadRequestExceptions;
     SizeDTO update(RequestSize requestSize) throws BadRequestExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
-    ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions;
     List<SizeDTO> list() throws BadRequestExceptions;
     List<SizeDTO> listStatusFalse() throws BadRequestExceptions;
     SizeDTO findByCode(Long code) throws BadRequestExceptions;

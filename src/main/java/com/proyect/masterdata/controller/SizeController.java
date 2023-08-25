@@ -57,15 +57,6 @@ public class SizeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/sizes")
-    public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iSize.deleteAll(codes,user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @GetMapping()
     public ResponseEntity<List<SizeDTO>> list() throws BadRequestExceptions {
         List<SizeDTO> result = iSize.list();

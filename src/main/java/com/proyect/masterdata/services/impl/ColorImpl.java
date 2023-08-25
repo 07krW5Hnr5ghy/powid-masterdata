@@ -114,28 +114,6 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    @Transactional
-    public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
-
-        if (datauser==null){
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        try {
-            codes.stream().forEach(data -> {
-                colorRepository.deleteByIdAndUser(data,user.toUpperCase());
-            });
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
-        }
-    }
-
-    @Override
     public List<ColorDTO> list() throws BadRequestExceptions{
         try {
             return colorMapper.listColorToListColorDTO(colorRepository.findAllByStatusTrue());

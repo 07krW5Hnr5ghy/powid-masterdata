@@ -52,15 +52,6 @@ public class SaleChannelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/sale-channels")
-    public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iSaleChannel.deleteAll(codes,user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @GetMapping()
     public ResponseEntity<List<SaleChannelDTO>> list() throws BadRequestExceptions {
         List<SaleChannelDTO> result = iSaleChannel.list();

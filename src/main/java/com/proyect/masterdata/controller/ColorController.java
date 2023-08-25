@@ -53,15 +53,6 @@ public class ColorController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/colors")
-    public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iColor.deleteAll(codes,user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @GetMapping()
     public ResponseEntity<List<ColorDTO>> list() throws BadRequestExceptions {
         List<ColorDTO> result = iColor.list();

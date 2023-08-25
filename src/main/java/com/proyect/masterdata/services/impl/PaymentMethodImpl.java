@@ -110,28 +110,6 @@ public class PaymentMethodImpl implements IPaymentMethod {
     }
 
     @Override
-    @Transactional
-    public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
-
-        if (datauser==null){
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        try {
-            codes.stream().forEach(data -> {
-                paymentMethodRepository.deleteByIdAndUser(data,user.toUpperCase());
-            });
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
-        }
-    }
-
-    @Override
     public List<PaymentMethodDTO> list() throws BadRequestExceptions{
         try {
             return paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodRepository.findAllByStatusTrue());

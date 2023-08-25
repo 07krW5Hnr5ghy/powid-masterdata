@@ -13,7 +13,6 @@ public interface IState {
     ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
     StateDTO update(RequestState requestState) throws BadRequestExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
-    ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions;
     List<StateDTO> list() throws BadRequestExceptions;
     List<StateDTO> listStatusFalse() throws BadRequestExceptions;
     StateDTO findByCode(Long code) throws BadRequestExceptions;

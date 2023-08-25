@@ -14,7 +14,6 @@ public interface IUserRole {
     ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
     UserRoleDTO update(RequestUserRole requestUserRole) throws BadRequestExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
-    ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions;
     List<UserRoleDTO> list() throws BadRequestExceptions;
     List<UserRoleDTO> listStatusFalse() throws BadRequestExceptions;
     UserRoleDTO findByCode(Long code) throws BadRequestExceptions;

@@ -53,15 +53,6 @@ public class StateController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/states")
-    public ResponseEntity<ResponseDelete> deleteall(
-            @RequestBody() List<Long> codes,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iState.deleteAll(codes,user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @GetMapping()
     public ResponseEntity<List<StateDTO>> list() throws BadRequestExceptions {
         List<StateDTO> result = iState.list();

@@ -113,28 +113,6 @@ public class SizeImpl implements ISize {
     }
 
     @Override
-    @Transactional
-    public ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
-
-        if (datauser==null){
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        try {
-            codes.stream().forEach(data -> {
-                sizeRepository.deleteByIdAndUser(data,user.toUpperCase());
-            });
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
-        }
-    }
-
-    @Override
     public List<SizeDTO> list() throws BadRequestExceptions{
         try {
             return sizeMapper.listSizeToListSizeDTO(sizeRepository.findAllByStatusTrue());

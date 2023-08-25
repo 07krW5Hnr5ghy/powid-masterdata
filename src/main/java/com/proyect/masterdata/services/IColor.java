@@ -13,7 +13,6 @@ public interface IColor {
     ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
     ColorDTO update(RequestColor requestColor) throws BadRequestExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
-    ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions;
     List<ColorDTO> list() throws BadRequestExceptions;
     List<ColorDTO> listStatusFalse() throws BadRequestExceptions;
     ColorDTO findByCode(Long code) throws BadRequestExceptions;

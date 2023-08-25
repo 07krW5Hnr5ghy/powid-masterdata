@@ -13,7 +13,6 @@ public interface ISaleChannel {
     ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
     SaleChannelDTO update(RequestSaleChannel requestSaleChannel) throws BadRequestExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
-    ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions;
     List<SaleChannelDTO> list() throws BadRequestExceptions;
     List<SaleChannelDTO> listStatusFalse() throws BadRequestExceptions;
     SaleChannelDTO findByCode(Long code) throws BadRequestExceptions;

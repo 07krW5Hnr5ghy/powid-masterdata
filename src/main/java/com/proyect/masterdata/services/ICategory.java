@@ -15,7 +15,6 @@ public interface ICategory {
     ResponseSuccess saveAll(List<RequestCreateCategory> categories,String user) throws BadRequestExceptions;
     CategoryDTO update(RequestCategory requestCategory) throws BadRequestExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
-    ResponseDelete deleteAll(List<Long> codes,String user) throws BadRequestExceptions;
     List<CategoryDTO> list() throws BadRequestExceptions;
     List<CategoryDTO> listStatusFalse() throws BadRequestExceptions;
     CategoryDTO findByCode(Long code) throws BadRequestExceptions;
