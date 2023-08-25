@@ -8,12 +8,14 @@ import com.proyect.masterdata.dto.request.RequestSizeTypeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.SizeTypeMapper;
 import com.proyect.masterdata.repository.SizeTypeRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.ISizeType;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class SizeTypeImpl implements ISizeType {
     private final SizeTypeRepository sizeTypeRepository;
     private final SizeTypeMapper sizeTypeMapper;
@@ -91,15 +94,29 @@ public class SizeTypeImpl implements ISizeType {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions {
+        User datauser;
+        SizeType sizeType;
+
+        try{
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            sizeType = sizeTypeRepository.findById(code).orElse(null);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if(sizeType==null){
+            throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
+        }
 
         try {
-            sizeTypeRepository.deleteByIdAndUser(code,user.toUpperCase());
+            sizeType.setStatus(false);
+            sizeType.setDateRegistration(new Date(System.currentTimeMillis()));
+            sizeTypeRepository.save(sizeType);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)

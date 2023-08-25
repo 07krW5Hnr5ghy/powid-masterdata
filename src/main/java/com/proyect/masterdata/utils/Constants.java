@@ -60,4 +60,8 @@ public class Constants {
     public static final String ErrorPaymentMethod = "The payment method does not exist";
     public static final String ErrorPaymentState = "The payment state does not exist";
     public static final String ErrorSaleChannel = "The sale channel does not exist";
+    public static final String ErrorSize = "The size does not exist";
+    public static final String ErrorSizeType = "The size type does not exist";
+    public static final String ErrorState = "The state does not exist";
+    public static final String ErrorUserRole = "The user role does not exist";
 }

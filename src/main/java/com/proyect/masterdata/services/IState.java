@@ -5,6 +5,7 @@ import com.proyect.masterdata.dto.request.RequestState;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface IState {
     ResponseSuccess save(String name,String user) throws BadRequestExceptions;
     ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
     StateDTO update(RequestState requestState) throws BadRequestExceptions;
-    ResponseDelete delete(Long code,String user) throws BadRequestExceptions;
+    ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
     List<StateDTO> list() throws BadRequestExceptions;
     List<StateDTO> listStatusFalse() throws BadRequestExceptions;
     StateDTO findByCode(Long code) throws BadRequestExceptions;

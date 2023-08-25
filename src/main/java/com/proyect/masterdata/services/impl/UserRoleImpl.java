@@ -8,12 +8,14 @@ import com.proyect.masterdata.dto.request.RequestUserRoleSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.UserRoleMapper;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.repository.UserRoleRepository;
 import com.proyect.masterdata.services.IUserRole;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserRoleImpl implements IUserRole {
     private final UserRoleRepository userRoleRepository;
     private final UserRoleMapper userRoleMapper;
@@ -90,15 +93,29 @@ public class UserRoleImpl implements IUserRole {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions {
+        User datauser;
+        UserRole userRole;
+
+        try{
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            userRole = userRoleRepository.findById(code).orElse(null);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if(userRole==null){
+            throw new BadRequestExceptions(Constants.ErrorUserRole.toUpperCase());
+        }
 
         try {
-            userRoleRepository.deleteByIdAndUser(code,user.toUpperCase());
+            userRole.setStatus(false);
+            userRole.setDateRegistration(new Date(System.currentTimeMillis()));
+            userRoleRepository.save(userRole);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)

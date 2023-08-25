@@ -8,12 +8,14 @@ import com.proyect.masterdata.dto.request.RequestSizeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.SizeMapper;
 import com.proyect.masterdata.repository.SizeRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class SizeImpl implements ISize {
     private final SizeRepository sizeRepository;
     private final SizeMapper sizeMapper;
@@ -94,15 +97,29 @@ public class SizeImpl implements ISize {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
+    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+        Size size;
+
+        try{
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            size = sizeRepository.findById(code).orElse(null);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if(size==null){
+            throw new BadRequestExceptions(Constants.ErrorSize.toUpperCase());
+        }
 
         try {
-            sizeRepository.deleteByIdAndUser(code,user.toUpperCase());
+            size.setStatus(false);
+            size.setDateRegistration(new Date(System.currentTimeMillis()));
+            sizeRepository.save(size);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
