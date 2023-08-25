@@ -8,12 +8,14 @@ import com.proyect.masterdata.dto.request.RequestPaymentMethodSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.PaymentMethodMapper;
 import com.proyect.masterdata.repository.PaymentMethodRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IPaymentMethod;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class PaymentMethodImpl implements IPaymentMethod {
 
     private final PaymentMethodRepository paymentMethodRepository;
@@ -91,15 +94,27 @@ public class PaymentMethodImpl implements IPaymentMethod {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions {
+        User datauser;
+        PaymentMethod paymentMethod;
+
+        try{
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            paymentMethod = paymentMethodRepository.findById(code).orElse(null);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if(paymentMethod==null){
+            throw new BadRequestExceptions(Constants.ErrorPaymentMethod.toUpperCase());
+        }
 
         try {
-            paymentMethodRepository.deleteByIdAndUser(code,user.toUpperCase());
+            paymentMethodRepository.save(paymentMethod);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
