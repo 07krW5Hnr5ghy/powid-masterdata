@@ -55,7 +55,7 @@ public class ColorImpl implements IColor {
 
         try {
             colorRepository.save(colorMapper.colorToName(RequestColorSave
-                    .builder().name(name.toUpperCase()).user(user.toUpperCase()).build()));
+                    .builder().name(name.toUpperCase()).user(datauser.getUser().toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -131,7 +131,7 @@ public class ColorImpl implements IColor {
             return colorMapper.colorToColorDTO(colorRepository.save(color));
         } catch (RuntimeException e){
             log.error(e);
-            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
@@ -166,7 +166,7 @@ public class ColorImpl implements IColor {
                     .message(Constants.delete)
                     .build();
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 

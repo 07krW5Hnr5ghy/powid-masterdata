@@ -57,7 +57,7 @@ public class PaymentMethodController {
 
     @GetMapping()
     public ResponseEntity<List<PaymentMethodDTO>> list() throws BadRequestExceptions {
-        List<PaymentMethodDTO> result = iPaymentMethod.list();
+        List<PaymentMethodDTO> result = iPaymentMethod.listPaymentMethod();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -74,20 +74,5 @@ public class PaymentMethodController {
         PaymentMethodDTO result = iPaymentMethod.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-    @GetMapping(value = "/name")
-    public ResponseEntity<PaymentMethodDTO> findByName(
-            @RequestParam("name") String name
-    ) throws BadRequestExceptions {
-        PaymentMethodDTO result = iPaymentMethod.findByName(name);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/user")
-    public ResponseEntity<List<PaymentMethodDTO>> findByUser(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<PaymentMethodDTO> result = iPaymentMethod.findByUser(user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+    
 }

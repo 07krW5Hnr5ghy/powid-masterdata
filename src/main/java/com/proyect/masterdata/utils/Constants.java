@@ -61,9 +61,11 @@ public class Constants {
     public static final String ErrorCategoryListDescription = "In the list there is a category with a description that exists";
     public static final String ErrorColor = "The color does not exist";
     public static final String ErrorColorExists = "The color does exist";
-    public static final String ErrorColorList = "In the list there is a color thtat exists";
+    public static final String ErrorColorList = "In the list there is a color that exists";
     public static final String ErrorDistrict = "The district does not exist";
     public static final String ErrorPaymentMethod = "The payment method does not exist";
+    public static final String ErrorPaymentMethodExists = "The payment method does exist";
+    public static final String ErrorPaymentMethodList = "In the list there is a payment method that exists";
     public static final String ErrorPaymentState = "The payment state does not exist";
     public static final String ErrorSaleChannel = "The sale channel does not exist";
     public static final String ErrorSize = "The size does not exist";
