@@ -10,13 +10,11 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import java.util.List;
 
 public interface ISaleChannel {
-    ResponseSuccess save(String name,String user) throws BadRequestExceptions;
-    ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
-    SaleChannelDTO update(RequestSaleChannel requestSaleChannel) throws BadRequestExceptions;
+    ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions;
+    ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions;
+    SaleChannelDTO update(RequestSaleChannel requestSaleChannel) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
-    List<SaleChannelDTO> list() throws BadRequestExceptions;
+    List<SaleChannelDTO> listSaleChannel() throws BadRequestExceptions;
     List<SaleChannelDTO> listStatusFalse() throws BadRequestExceptions;
     SaleChannelDTO findByCode(Long code) throws BadRequestExceptions;
-    SaleChannelDTO findByName(String name) throws BadRequestExceptions;
-    List<SaleChannelDTO> findByUser(String user) throws BadRequestExceptions;
 }

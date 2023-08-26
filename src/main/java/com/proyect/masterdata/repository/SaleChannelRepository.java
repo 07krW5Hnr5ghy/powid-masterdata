@@ -10,6 +10,5 @@ public interface SaleChannelRepository extends JpaRepository<SaleChannel,Long> {
     List<SaleChannel> findAllByStatusFalse();
     SaleChannel findByIdAndStatusTrue(Long id);
     SaleChannel findByNameAndStatusTrue(String name);
-    List<SaleChannel> findByUser(String user);
-    void deleteByIdAndUser(Long id, String User);
+    List<SaleChannel> findByNameIn(List<String> names);
 }

@@ -53,8 +53,8 @@ public class SaleChannelController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<SaleChannelDTO>> list() throws BadRequestExceptions {
-        List<SaleChannelDTO> result = iSaleChannel.list();
+    public ResponseEntity<List<SaleChannelDTO>> listSaleChannel() throws BadRequestExceptions {
+        List<SaleChannelDTO> result = iSaleChannel.listSaleChannel();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -71,20 +71,5 @@ public class SaleChannelController {
         SaleChannelDTO result = iSaleChannel.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-    @GetMapping(value = "/name")
-    public ResponseEntity<SaleChannelDTO> findByName(
-            @RequestParam("name") String name
-    ) throws BadRequestExceptions {
-        SaleChannelDTO result = iSaleChannel.findByName(name);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/user")
-    public ResponseEntity<List<SaleChannelDTO>> findByUser(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<SaleChannelDTO> result = iSaleChannel.findByUser(user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+    
 }

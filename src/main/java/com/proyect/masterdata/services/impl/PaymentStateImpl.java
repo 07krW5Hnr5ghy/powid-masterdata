@@ -62,6 +62,7 @@ public class PaymentStateImpl implements IPaymentState {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e){
+            log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
@@ -83,7 +84,7 @@ public class PaymentStateImpl implements IPaymentState {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if(!paymentStates.isEmpty()){
-            throw new BadRequestExceptions(Constants.ErrorPaymentMethodList.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorPaymentStateList.toUpperCase());
         }
 
         try {
@@ -97,6 +98,7 @@ public class PaymentStateImpl implements IPaymentState {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
