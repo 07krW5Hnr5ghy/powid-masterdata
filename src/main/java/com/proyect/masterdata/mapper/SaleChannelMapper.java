@@ -23,9 +23,5 @@ public interface SaleChannelMapper {
     @Mapping(target = "user", source = "requestSaleChannelSave.user")
     SaleChannel saleChannelToName(RequestSaleChannelSave requestSaleChannelSave);
 
-    @Mapping(target = "id", source = "code")
-    @Mapping(target = "dateRegistration", ignore = true)
-    SaleChannel requestSaleChannelToSaleChannel(RequestSaleChannel requestSaleChannel);
-
     List<SaleChannel> listSaleChannelToListName(List<RequestSaleChannelSave> requestSaleChannelSaveList);
 }

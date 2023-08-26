@@ -23,10 +23,6 @@ public interface StateMapper {
     @Mapping(target = "user", source = "requestStateSave.user")
     State stateToName(RequestStateSave requestStateSave);
 
-    @Mapping(target = "id", source = "code")
-    @Mapping(target = "dateRegistration", ignore = true)
-    State requestStateToState(RequestState requestState);
-
     List<State> listStateToListName(List<RequestStateSave> requestStateSaveList);
 
 

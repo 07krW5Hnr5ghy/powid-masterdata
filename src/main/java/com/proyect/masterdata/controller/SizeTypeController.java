@@ -71,5 +71,5 @@ public class SizeTypeController {
         SizeTypeDTO result = iSizeType.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    
+
 }

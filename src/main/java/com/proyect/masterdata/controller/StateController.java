@@ -54,8 +54,8 @@ public class StateController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<StateDTO>> list() throws BadRequestExceptions {
-        List<StateDTO> result = iState.list();
+    public ResponseEntity<List<StateDTO>> listState() throws BadRequestExceptions {
+        List<StateDTO> result = iState.listState();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -72,21 +72,5 @@ public class StateController {
         StateDTO result = iState.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-    @GetMapping(value = "/name")
-    public ResponseEntity<StateDTO> findByName(
-            @RequestParam("name") String name
-    ) throws BadRequestExceptions {
-        StateDTO result = iState.findByName(name);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/user")
-    public ResponseEntity<List<StateDTO>> findByUser(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<StateDTO> result = iState.findByUser(user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
+    
 }

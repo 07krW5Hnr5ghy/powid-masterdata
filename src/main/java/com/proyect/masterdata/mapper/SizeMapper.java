@@ -24,10 +24,6 @@ public interface SizeMapper {
      @Mapping(target = "idSizeType", source = "requestSizeSave.codeSizeType")
      Size sizeToName(RequestSizeSave requestSizeSave);
 
-     @Mapping(target = "id", source = "code")
-     @Mapping(target = "dateRegistration", ignore = true)
-     Size requestSizeToSize(RequestSize requestSize);
-
      List<Size> listSizeToListName(List<RequestSizeSave> requestSizeSaveList);
 
 }

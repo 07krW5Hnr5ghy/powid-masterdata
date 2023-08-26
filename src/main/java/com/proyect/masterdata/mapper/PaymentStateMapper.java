@@ -24,10 +24,6 @@ public interface PaymentStateMapper {
     @Mapping(target = "user", source = "requestPaymentStateSave.user")
     PaymentState paymentStateToName(RequestPaymentStateSave requestPaymentStateSave);
 
-    @Mapping(target = "id", source = "code")
-    @Mapping(target = "dateRegistration", ignore = true)
-    PaymentState requestPaymentStateToPaymentState(RequestPaymentState requestPaymentState);
-
     List<PaymentState> listPaymentStateToListName(List<RequestPaymentStateSave> requestPaymentStateSaveList);
 
 }

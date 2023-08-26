@@ -10,13 +10,11 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import java.util.List;
 
 public interface IState {
-    ResponseSuccess save(String name,String user) throws BadRequestExceptions;
-    ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
-    StateDTO update(RequestState requestState) throws BadRequestExceptions;
+    ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions;
+    ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions;
+    StateDTO update(RequestState requestState) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
-    List<StateDTO> list() throws BadRequestExceptions;
+    List<StateDTO> listState() throws BadRequestExceptions;
     List<StateDTO> listStatusFalse() throws BadRequestExceptions;
     StateDTO findByCode(Long code) throws BadRequestExceptions;
-    StateDTO findByName(String name) throws BadRequestExceptions;
-    List<StateDTO> findByUser(String user) throws BadRequestExceptions;
 }

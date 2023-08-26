@@ -79,5 +79,7 @@ public class Constants {
     public static final String ErrorSizeTypeExists = "The size type does exist";
     public static final String ErrorSizeTypeList = "In the list there is a size type that exists";
     public static final String ErrorState = "The state does not exist";
+    public static final String ErrorStateExist = "The state does exists";
+    public static final String ErrorStateList = "In the list there is a state that exists";
     public static final String ErrorUserRole = "The user role does not exist";
 }

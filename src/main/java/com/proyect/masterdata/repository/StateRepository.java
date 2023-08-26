@@ -10,6 +10,5 @@ public interface StateRepository extends JpaRepository<State,Long> {
     List<State> findAllByStatusFalse();
     State findByIdAndStatusTrue(Long id);
     State findByNameAndStatusTrue(String name);
-    List<State> findByUser(String user);
-    void deleteByIdAndUser(Long id, String User);
+    List<State> findByNameIn(List<String> names);
 }
