@@ -67,6 +67,8 @@ public class Constants {
     public static final String ErrorPaymentMethodExists = "The payment method does exist";
     public static final String ErrorPaymentMethodList = "In the list there is a payment method that exists";
     public static final String ErrorPaymentState = "The payment state does not exist";
+    public static final String ErrorPaymentStateExists = "The payment state does exist";
+    public static final String ErrorPaymentStateList = "In the list there is a payment state that exists";
     public static final String ErrorSaleChannel = "The sale channel does not exist";
     public static final String ErrorSize = "The size does not exist";
     public static final String ErrorSizeType = "The size type does not exist";

@@ -55,8 +55,8 @@ public class PaymentStateController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<PaymentStateDTO>> list() throws BadRequestExceptions {
-        List<PaymentStateDTO> result = iPaymentState.list();
+    public ResponseEntity<List<PaymentStateDTO>> listPaymentState() throws BadRequestExceptions {
+        List<PaymentStateDTO> result = iPaymentState.listPaymentState();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -71,22 +71,6 @@ public class PaymentStateController {
             @RequestParam("code") Long code
     ) throws BadRequestExceptions {
         PaymentStateDTO result = iPaymentState.findByCode(code);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/name")
-    public ResponseEntity<PaymentStateDTO> findByName(
-            @RequestParam("name") String name
-    ) throws BadRequestExceptions {
-        PaymentStateDTO result = iPaymentState.findByName(name);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/user")
-    public ResponseEntity<List<PaymentStateDTO>> findByUser(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<PaymentStateDTO> result = iPaymentState.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

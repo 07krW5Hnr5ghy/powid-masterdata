@@ -56,7 +56,7 @@ public class PaymentMethodController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<PaymentMethodDTO>> list() throws BadRequestExceptions {
+    public ResponseEntity<List<PaymentMethodDTO>> listPaymentMethod() throws BadRequestExceptions {
         List<PaymentMethodDTO> result = iPaymentMethod.listPaymentMethod();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -74,5 +74,5 @@ public class PaymentMethodController {
         PaymentMethodDTO result = iPaymentMethod.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    
+
 }

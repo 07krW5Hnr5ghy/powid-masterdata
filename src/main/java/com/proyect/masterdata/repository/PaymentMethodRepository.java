@@ -12,6 +12,4 @@ public interface PaymentMethodRepository extends JpaRepository<PaymentMethod,Lon
     PaymentMethod findByIdAndStatusTrue(Long id);
     PaymentMethod findByNameAndStatusTrue(String name);
     List<PaymentMethod> findByNameIn(List<String> names);
-    List<PaymentMethod> findByUser(String user);
-    void deleteByIdAndUser(Long id, String User);
 }

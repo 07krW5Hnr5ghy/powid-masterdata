@@ -10,13 +10,11 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import java.util.List;
 
 public interface IPaymentState {
-    ResponseSuccess save(String name,String user) throws BadRequestExceptions;
-    ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions;
-    PaymentStateDTO update(RequestPaymentState requestPaymentState) throws BadRequestExceptions;
+    ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions;
+    ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions;
+    PaymentStateDTO update(RequestPaymentState requestPaymentState) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
-    List<PaymentStateDTO> list() throws BadRequestExceptions;
+    List<PaymentStateDTO> listPaymentState() throws BadRequestExceptions;
     List<PaymentStateDTO> listStatusFalse() throws BadRequestExceptions;
     PaymentStateDTO findByCode(Long code) throws BadRequestExceptions;
-    PaymentStateDTO findByName(String name) throws BadRequestExceptions;
-    List<PaymentStateDTO> findByUser(String user) throws BadRequestExceptions;
 }

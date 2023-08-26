@@ -54,7 +54,7 @@ public class ColorController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<ColorDTO>> list() throws BadRequestExceptions {
+    public ResponseEntity<List<ColorDTO>> listColor() throws BadRequestExceptions {
         List<ColorDTO> result = iColor.listColor();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

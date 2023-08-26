@@ -60,6 +60,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e){
+            log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
@@ -127,6 +128,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         try {
             return paymentMethodMapper.paymentMethodToPaymentMethodDTO(paymentMethodRepository.save(paymentMethod));
         } catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
@@ -161,6 +163,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
                     .message(Constants.delete)
                     .build();
         } catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }

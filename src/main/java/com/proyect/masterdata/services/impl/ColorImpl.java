@@ -166,6 +166,7 @@ public class ColorImpl implements IColor {
                     .message(Constants.delete)
                     .build();
         } catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }

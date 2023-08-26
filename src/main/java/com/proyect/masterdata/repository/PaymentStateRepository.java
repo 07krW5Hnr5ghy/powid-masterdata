@@ -11,6 +11,5 @@ public interface PaymentStateRepository extends JpaRepository<PaymentState,Long>
     List<PaymentState> findAllByStatusFalse();
     PaymentState findByIdAndStatusTrue(Long id);
     PaymentState findByNameAndStatusTrue(String name);
-    List<PaymentState> findByUser(String user);
-    void deleteByIdAndUser(Long id, String User);
+    List<PaymentState> findByNameIn(List<String> names);
 }
