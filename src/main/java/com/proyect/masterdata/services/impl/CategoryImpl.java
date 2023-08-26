@@ -45,7 +45,7 @@ public class CategoryImpl implements ICategory {
             categoryName = categoryRepository.findByNameAndStatusTrue(name.toUpperCase());
             categoryDescription = categoryRepository.findByDescriptionAndStatusTrue(description.toUpperCase());
         }catch(RuntimeException e){
-            log.error(e);
+            log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
@@ -63,14 +63,15 @@ public class CategoryImpl implements ICategory {
             categoryRepository.save(categoryMapper.categoryToName(RequestCategorySave.builder()
                     .name(name.toUpperCase())
                     .description(description.toUpperCase())
-                    .user(user.toUpperCase()).build())
+                    .user(datauser.getUser().toUpperCase()).build())
             );
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
@@ -117,7 +118,8 @@ public class CategoryImpl implements ICategory {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
+            log.error(e);
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
@@ -143,13 +145,15 @@ public class CategoryImpl implements ICategory {
 
         category.setName(requestCategory.getName().toUpperCase());
         category.setDescription(requestCategory.getDescription().toUpperCase());
+        category.setUser(datauser.getUser().toUpperCase());
         category.setStatus(requestCategory.isStatus());
         category.setDateRegistration(new Date(System.currentTimeMillis()));
 
         try {
             return categoryMapper.categoryToCategoryDTO(categoryRepository.save(category));
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
+            log.error(e);
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
@@ -188,7 +192,7 @@ public class CategoryImpl implements ICategory {
     }
 
     @Override
-    public List<CategoryDTO> list() throws BadRequestExceptions{
+    public List<CategoryDTO> listCategory() throws BadRequestExceptions{
         List<Category> categories = new ArrayList<>();
         try {
             categories = categoryRepository.findAllByStatusTrue();

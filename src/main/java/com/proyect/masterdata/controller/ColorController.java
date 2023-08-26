@@ -55,7 +55,7 @@ public class ColorController {
 
     @GetMapping()
     public ResponseEntity<List<ColorDTO>> list() throws BadRequestExceptions {
-        List<ColorDTO> result = iColor.list();
+        List<ColorDTO> result = iColor.listColor();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -70,22 +70,6 @@ public class ColorController {
             @RequestParam("code") Long code
     ) throws BadRequestExceptions {
         ColorDTO result = iColor.findByCode(code);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/name")
-    public ResponseEntity<ColorDTO> findByName(
-            @RequestParam("name") String name
-    ) throws BadRequestExceptions {
-        ColorDTO result = iColor.findByName(name);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/user")
-    public ResponseEntity<List<ColorDTO>> findByUser(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<ColorDTO> result = iColor.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

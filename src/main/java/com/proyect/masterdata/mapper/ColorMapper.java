@@ -23,10 +23,6 @@ public interface ColorMapper {
     @Mapping(target = "user", source = "requestColorSave.user")
     Color colorToName(RequestColorSave requestColorSave);
 
-    @Mapping(target = "id", source = "code")
-    @Mapping(target = "dateRegistration", ignore = true)
-    Color requestColorToColor(RequestColor requestColor);
-
     List<Color> listColorToListName(List<RequestColorSave> requestColorSaveList);
 
 }

@@ -10,6 +10,7 @@ public interface ColorRepository extends JpaRepository<Color,Long> {
     List<Color> findAllByStatusFalse();
     Color findByIdAndStatusTrue(Long id);
     Color findByNameAndStatusTrue(String name);
+    List<Color> findByNameIn(List<String> names);
     List<Color> findByUser(String user);
     void deleteByIdAndUser(Long id, String User);
 }
