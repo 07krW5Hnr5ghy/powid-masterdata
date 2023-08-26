@@ -13,6 +13,5 @@ public interface SizeRepository extends JpaRepository<Size,Long> {
     List<Size> findAllByStatusTrueAndSizeTypeName(String name);
     Size findByIdAndStatusTrue(Long id);
     Size findByNameAndStatusTrue(String name);
-
-    void deleteByIdAndUser(Long id, String User);
+    List<Size> findByNameIn(List<String> names);
 }

@@ -71,5 +71,5 @@ public class SaleChannelController {
         SaleChannelDTO result = iSaleChannel.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    
+
 }
