@@ -26,10 +26,6 @@ public interface CategoryMapper {
     @Mapping(target = "user", source = "requestCategorySave.user")
     Category categoryToName(RequestCategorySave requestCategorySave);
 
-    @Mapping(target = "id", source = "code")
-    @Mapping(target = "dateRegistration", ignore = true)
-    Category requestCategoryToCategory(RequestCategory requestCategory);
-
     List<Category> ListCategoryToListName(List<RequestCategorySave> requestCategorySaveList);
 
 }
