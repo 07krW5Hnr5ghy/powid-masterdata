@@ -57,7 +57,7 @@ public class SizeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("/list")
     public ResponseEntity<List<SizeDTO>> listSize() throws BadRequestExceptions {
         List<SizeDTO> result = iSize.listSize();
         return new ResponseEntity<>(result, HttpStatus.OK);

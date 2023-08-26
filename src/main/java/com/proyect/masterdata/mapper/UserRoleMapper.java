@@ -23,9 +23,5 @@ public interface UserRoleMapper {
     @Mapping(target = "user", source = "requestUserRoleSave.user")
     UserRole userRoleToName(RequestUserRoleSave requestUserRoleSave);
 
-    @Mapping(target = "id", source = "code")
-    @Mapping(target = "dateRegistration", ignore = true)
-    UserRole requestUserRoleToUserRole(RequestUserRole requestUserRole);
-
     List<UserRole> listUserRoleToListName(List<RequestUserRoleSave> requestUserRoleSaveList);
 }

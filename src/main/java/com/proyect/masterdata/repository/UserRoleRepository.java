@@ -10,6 +10,5 @@ public interface UserRoleRepository extends JpaRepository<UserRole,Long> {
     List<UserRole> findAllByStatusFalse();
     UserRole findByIdAndStatusTrue(Long id);
     UserRole findByNameAndStatusTrue(String name);
-    List<UserRole> findByUser(String user);
-    void deleteByIdAndUser(Long id, String User);
+    List<UserRole> findByNameIn(List<String> names);
 }

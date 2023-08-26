@@ -53,9 +53,9 @@ public class UserRoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
-    public ResponseEntity<List<UserRoleDTO>> list() throws BadRequestExceptions {
-        List<UserRoleDTO> result = iUserRole.list();
+    @GetMapping("/list")
+    public ResponseEntity<List<UserRoleDTO>> listUserRole() throws BadRequestExceptions {
+        List<UserRoleDTO> result = iUserRole.listUserRole();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -70,22 +70,6 @@ public class UserRoleController {
             @RequestParam("code") Long code
     ) throws BadRequestExceptions {
         UserRoleDTO result = iUserRole.findByCode(code);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/name")
-    public ResponseEntity<UserRoleDTO> findByName(
-            @RequestParam("name") String name
-    ) throws BadRequestExceptions {
-        UserRoleDTO result = iUserRole.findByName(name);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/user")
-    public ResponseEntity<List<UserRoleDTO>> findByUser(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<UserRoleDTO> result = iUserRole.findByUser(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

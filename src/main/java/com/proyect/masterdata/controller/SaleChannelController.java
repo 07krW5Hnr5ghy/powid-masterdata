@@ -52,7 +52,7 @@ public class SaleChannelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("/list")
     public ResponseEntity<List<SaleChannelDTO>> listSaleChannel() throws BadRequestExceptions {
         List<SaleChannelDTO> result = iSaleChannel.listSaleChannel();
         return new ResponseEntity<>(result, HttpStatus.OK);

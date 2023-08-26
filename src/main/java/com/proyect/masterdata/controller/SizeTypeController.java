@@ -52,7 +52,7 @@ public class SizeTypeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("/list")
     public ResponseEntity<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions {
         List<SizeTypeDTO> result = iSizeType.listSizeType();
         return new ResponseEntity<>(result, HttpStatus.OK);

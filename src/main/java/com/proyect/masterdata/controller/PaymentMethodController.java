@@ -55,7 +55,7 @@ public class PaymentMethodController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("/list")
     public ResponseEntity<List<PaymentMethodDTO>> listPaymentMethod() throws BadRequestExceptions {
         List<PaymentMethodDTO> result = iPaymentMethod.listPaymentMethod();
         return new ResponseEntity<>(result, HttpStatus.OK);

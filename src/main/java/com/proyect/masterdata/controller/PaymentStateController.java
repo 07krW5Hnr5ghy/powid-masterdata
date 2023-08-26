@@ -54,7 +54,7 @@ public class PaymentStateController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("/list")
     public ResponseEntity<List<PaymentStateDTO>> listPaymentState() throws BadRequestExceptions {
         List<PaymentStateDTO> result = iPaymentState.listPaymentState();
         return new ResponseEntity<>(result, HttpStatus.OK);

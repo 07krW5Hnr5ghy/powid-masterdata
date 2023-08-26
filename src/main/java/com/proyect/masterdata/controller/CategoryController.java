@@ -56,7 +56,7 @@ public class CategoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(value = "/list")
     public ResponseEntity<List<CategoryDTO>> listCategory() throws BadRequestExceptions {
         List<CategoryDTO> result = iCategory.listCategory();
         return new ResponseEntity<>(result, HttpStatus.OK);

@@ -82,4 +82,6 @@ public class Constants {
     public static final String ErrorStateExist = "The state does exists";
     public static final String ErrorStateList = "In the list there is a state that exists";
     public static final String ErrorUserRole = "The user role does not exist";
+    public static final String ErrorUserRoleExists = "The user role does exists";
+    public static final String ErrorUserRoleList = "In the list there is an user role that exists";
 }

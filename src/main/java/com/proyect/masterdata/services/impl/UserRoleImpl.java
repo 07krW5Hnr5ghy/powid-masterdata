@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -30,31 +31,56 @@ public class UserRoleImpl implements IUserRole {
     private final UserRoleMapper userRoleMapper;
     private final UserRepository userRepository;
     @Override
-    public ResponseSuccess save(String name,String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+    public ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions {
+        User datauser;
+        UserRole userRole;
+
+        try{
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            userRole = userRoleRepository.findByNameAndStatusTrue(name.toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if(userRole!=null){
+            throw new BadRequestExceptions(Constants.ErrorUserRoleExists.toUpperCase());
+        }
 
         try {
             userRoleRepository.save(userRoleMapper.userRoleToName(RequestUserRoleSave.builder()
-                    .name(name.toUpperCase()).user(user.toUpperCase()).build()));
+                    .name(name.toUpperCase()).user(datauser.getUser().toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions{
+        User datauser;
+        List<UserRole> userRoles;
+
+        try{
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            userRoles = userRoleRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+        if(!userRoles.isEmpty()){
+            throw new BadRequestExceptions(Constants.ErrorUserRoleList.toUpperCase());
         }
 
         try {
@@ -68,26 +94,41 @@ public class UserRoleImpl implements IUserRole {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
+            log.error(e);
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public UserRoleDTO update(RequestUserRole requestUserRole) throws BadRequestExceptions {
-        User datauser = userRepository.findById(requestUserRole.getUser().toUpperCase()).orElse(null);
+    public UserRoleDTO update(RequestUserRole requestUserRole) throws BadRequestExceptions,InternalErrorExceptions {
+        User datauser;
+        UserRole userRole;
+
+        try{
+            datauser = userRepository.findById(requestUserRole.getUser().toUpperCase()).orElse(null);
+            userRole = userRoleRepository.findById(requestUserRole.getCode()).orElse(null);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+        if(userRole==null){
+            throw new BadRequestExceptions(Constants.ErrorUserRole.toUpperCase());
+        }
+
+        userRole.setName(requestUserRole.getName().toUpperCase());
+        userRole.setStatus(requestUserRole.isStatus());
+        userRole.setDateRegistration(new Date(System.currentTimeMillis()));
+        userRole.setUser(datauser.getUser().toUpperCase());
 
         try {
-            requestUserRole.setName(requestUserRole.getName().toUpperCase());
-            requestUserRole.setUser(requestUserRole.getUser().toUpperCase());
-            UserRole userRole = userRoleMapper.requestUserRoleToUserRole(requestUserRole);
-            userRole.setDateRegistration(new Date(System.currentTimeMillis()));
             return userRoleMapper.userRoleToUserRoleDTO(userRoleRepository.save(userRole));
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
+            log.error(e);
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
@@ -121,17 +162,24 @@ public class UserRoleImpl implements IUserRole {
                     .message(Constants.delete)
                     .build();
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+            log.error(e);
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public List<UserRoleDTO> list() throws BadRequestExceptions{
-        try {
-            return userRoleMapper.listUserRoleToListUserRoleDTO(userRoleRepository.findAllByStatusTrue());
-        } catch (RuntimeException e){
+    public List<UserRoleDTO> listUserRole() throws BadRequestExceptions{
+        List<UserRole> userRoles;
+        try{
+            userRoles = userRoleRepository.findAllByStatusTrue();
+        }catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+        if(userRoles.isEmpty()){
+            return Collections.emptyList();
+        }
+        return userRoleMapper.listUserRoleToListUserRoleDTO(userRoles);
     }
 
     public List<UserRoleDTO> listStatusFalse() throws BadRequestExceptions{
@@ -151,27 +199,4 @@ public class UserRoleImpl implements IUserRole {
         }
     }
 
-    @Override
-    public UserRoleDTO findByName(String name) throws BadRequestExceptions{
-        try {
-            return userRoleMapper.userRoleToUserRoleDTO(userRoleRepository.findByNameAndStatusTrue(name.toUpperCase()));
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
-
-    @Override
-    public List<UserRoleDTO> findByUser(String user) throws BadRequestExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
-
-        if (datauser==null){
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        try {
-            return userRoleMapper.listUserRoleToListUserRoleDTO(userRoleRepository.findByUser(user.toUpperCase()));
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
 }

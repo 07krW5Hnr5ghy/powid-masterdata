@@ -66,7 +66,7 @@ public class StateImpl implements IState {
 
     @Override
     public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions{
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+        User datauser;
         List<State> states;
 
         try{

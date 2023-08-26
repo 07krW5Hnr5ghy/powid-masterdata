@@ -53,7 +53,7 @@ public class StateController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("/list")
     public ResponseEntity<List<StateDTO>> listState() throws BadRequestExceptions {
         List<StateDTO> result = iState.listState();
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -72,5 +72,5 @@ public class StateController {
         StateDTO result = iState.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    
+
 }
