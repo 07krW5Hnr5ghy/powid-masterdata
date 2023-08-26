@@ -53,8 +53,8 @@ public class SizeTypeController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<SizeTypeDTO>> list() throws BadRequestExceptions {
-        List<SizeTypeDTO> result = iSizeType.list();
+    public ResponseEntity<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions {
+        List<SizeTypeDTO> result = iSizeType.listSizeType();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -71,20 +71,5 @@ public class SizeTypeController {
         SizeTypeDTO result = iSizeType.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-    @GetMapping(value = "/name")
-    public ResponseEntity<SizeTypeDTO> findByName(
-            @RequestParam("name") String name
-    ) throws BadRequestExceptions {
-        SizeTypeDTO result = iSizeType.findByName(name);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/user")
-    public ResponseEntity<List<SizeTypeDTO>> findByUser(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<SizeTypeDTO> result = iSizeType.findByUser(user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+    
 }

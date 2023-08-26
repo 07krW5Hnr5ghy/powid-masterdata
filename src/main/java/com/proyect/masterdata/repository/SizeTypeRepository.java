@@ -10,6 +10,5 @@ public interface SizeTypeRepository extends JpaRepository<SizeType,Long> {
     List<SizeType> findAllByStatusFalse();
     SizeType findByIdAndStatusTrue(Long id);
     SizeType findByNameAndStatusTrue(String name);
-    List<SizeType> findByUser(String user);
-    void deleteByIdAndUser(Long id, String User);
+    List<SizeType> findByNameIn(List<String> names);
 }

@@ -10,13 +10,11 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import java.util.List;
 
 public interface ISizeType {
-    ResponseSuccess save(String name, String user) throws BadRequestExceptions;
-    ResponseSuccess saveAll(List<String> name,String user) throws BadRequestExceptions;
-    SizeTypeDTO update(RequestSizeType requestSizeType) throws BadRequestExceptions;
+    ResponseSuccess save(String name, String user) throws BadRequestExceptions,InternalErrorExceptions;
+    ResponseSuccess saveAll(List<String> name,String user) throws BadRequestExceptions,InternalErrorExceptions;
+    SizeTypeDTO update(RequestSizeType requestSizeType) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
-    List<SizeTypeDTO> list() throws BadRequestExceptions;
+    List<SizeTypeDTO> listSizeType() throws BadRequestExceptions;
     List<SizeTypeDTO> listStatusFalse() throws BadRequestExceptions;
     SizeTypeDTO findByCode(Long code) throws BadRequestExceptions;
-    SizeTypeDTO findByName(String name) throws BadRequestExceptions;
-    List<SizeTypeDTO> findByUser(String user) throws BadRequestExceptions;
 }
