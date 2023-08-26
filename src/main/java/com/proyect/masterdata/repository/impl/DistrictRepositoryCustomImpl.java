@@ -1,8 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Department;
-import com.proyect.masterdata.domain.Province;
-import com.proyect.masterdata.repository.ProvinceRepositoryCustom;
+import com.proyect.masterdata.domain.District;
+import com.proyect.masterdata.repository.DistrictRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -13,47 +12,46 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class ProvinceRepositoryCustomImpl implements ProvinceRepositoryCustom {
+public class DistrictRepositoryCustomImpl implements DistrictRepositoryCustom {
 
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<Province> searchForProvince(String name, String user, Long idDepartment, String nameDepartment, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<District> searchForDistrict(String name, String user, Long idProvince, String nameProvince, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Province> criteriaQuery = criteriaBuilder.createQuery(Province.class);
-        Root<Province> itemRoot = criteriaQuery.from(Province.class);
+        CriteriaQuery<District> criteriaQuery = criteriaBuilder.createQuery(District.class);
+        Root<District> itemRoot = criteriaQuery.from(District.class);
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name, user, idDepartment, nameDepartment, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, user, idProvince, nameProvince, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
-            List<Order> provinceList = new ArrayList<>();
+            List<Order> districtList = new ArrayList<>();
             if(sort.equalsIgnoreCase("ASC")){
-                provinceList =  listASC(sortColumn, criteriaBuilder,itemRoot);
+                districtList =  listASC(sortColumn, criteriaBuilder,itemRoot);
             }
             if(sort.equalsIgnoreCase("DESC")){
-                provinceList =  listDESC(sortColumn, criteriaBuilder,itemRoot);
+                districtList =  listDESC(sortColumn, criteriaBuilder,itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[]{})).orderBy(provinceList);
+            criteriaQuery.where(conditions.toArray(new Predicate[]{})).orderBy(districtList);
         } else{
             criteriaQuery.where(conditions.toArray(new Predicate[]{}));
         }
 
-        TypedQuery<Province> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<District> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber*pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, user, idDepartment, nameDepartment, status);
+        long count = getOrderCount(name, user, idProvince, nameProvince, status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable,count);
     }
 
-    private List<Predicate> predicateConditions(String name, String user, Long idDepartment, String nameDepartment, Boolean status, CriteriaBuilder criteriaBuilder, Root<Province> itemRoot) {
+    private List<Predicate> predicateConditions(String name, String user, Long idProvince, String nameProvince, Boolean status, CriteriaBuilder criteriaBuilder, Root<District> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
         if (name!=null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
@@ -63,12 +61,12 @@ public class ProvinceRepositoryCustomImpl implements ProvinceRepositoryCustom {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("user")), user.toUpperCase())));
         }
 
-        if (idDepartment!=null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("department").get("id"), idDepartment)));
+        if (idProvince!=null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("province").get("id"), idProvince)));
         }
 
-        if (nameDepartment!=null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("department").get("name")), nameDepartment.toUpperCase())));
+        if (nameProvince!=null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("province").get("name")), nameProvince.toUpperCase())));
         }
 
         if (status){
@@ -78,10 +76,11 @@ public class ProvinceRepositoryCustomImpl implements ProvinceRepositoryCustom {
         if (!status){
             conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
+
         return conditions;
     }
 
-    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Province> itemRoot) {
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<District> itemRoot) {
         List<Order> departmentsList = new ArrayList<>();
         if (sortColumn.equals("NAME")){
             departmentsList.add(criteriaBuilder.asc(itemRoot.get("name")));
@@ -89,16 +88,16 @@ public class ProvinceRepositoryCustomImpl implements ProvinceRepositoryCustom {
         if (sortColumn.equals("USER")){
             departmentsList.add(criteriaBuilder.asc(itemRoot.get("user")));
         }
-        if (sortColumn.equals("IDDEPARTMENT")){
-            departmentsList.add(criteriaBuilder.asc(itemRoot.get("department").get("id")));
+        if (sortColumn.equals("IDPROVINCE")){
+            departmentsList.add(criteriaBuilder.asc(itemRoot.get("province").get("id")));
         }
-        if (sortColumn.equals("DEPARTMENT")){
-            departmentsList.add(criteriaBuilder.asc(itemRoot.get("department").get("name")));
+        if (sortColumn.equals("PROVINCE")){
+            departmentsList.add(criteriaBuilder.asc(itemRoot.get("province").get("name")));
         }
         return departmentsList;
     }
 
-    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Province> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<District> itemRoot) {
         List<Order> departmentsList = new ArrayList<>();
         if (sortColumn.equals("NAME")){
             departmentsList.add(criteriaBuilder.desc(itemRoot.get("name")));
@@ -106,22 +105,22 @@ public class ProvinceRepositoryCustomImpl implements ProvinceRepositoryCustom {
         if (sortColumn.equals("USER")){
             departmentsList.add(criteriaBuilder.desc(itemRoot.get("user")));
         }
-        if (sortColumn.equals("IDDEPARTMENT")){
-            departmentsList.add(criteriaBuilder.desc(itemRoot.get("department").get("id")));
+        if (sortColumn.equals("IDPROVINCE")){
+            departmentsList.add(criteriaBuilder.desc(itemRoot.get("province").get("id")));
         }
-        if (sortColumn.equals("DEPARTMENT")){
-            departmentsList.add(criteriaBuilder.desc(itemRoot.get("department").get("name")));
+        if (sortColumn.equals("PROVINCE")){
+            departmentsList.add(criteriaBuilder.desc(itemRoot.get("province").get("name")));
         }
         return departmentsList;
     }
 
-    private long getOrderCount(String name, String user, Long idDepartment, String nameDepartment, Boolean status) {
+    private long getOrderCount(String name, String user, Long idProvince, String nameProvince, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Province> itemRoot = criteriaQuery.from(Province.class);
+        Root<District> itemRoot = criteriaQuery.from(District.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, user, idDepartment, nameDepartment,status,criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, user, idProvince, nameProvince,status,criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[]{}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

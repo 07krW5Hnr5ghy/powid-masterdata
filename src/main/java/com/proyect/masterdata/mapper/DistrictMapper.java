@@ -28,6 +28,7 @@ public interface DistrictMapper {
     District requestDistrictToDistrict(RequestDistrict requestDistrict);
 
     @Mapping(target = "code", source = "id")
+    @Mapping(target = "nameProvince", source = "province.name")
     DistrictDTO districtToDistrictDTO(District district);
 
     List<DistrictDTO> listDistrictToListDistrictDTO(List<District> districtList);

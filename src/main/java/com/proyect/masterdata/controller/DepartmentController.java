@@ -9,6 +9,7 @@ import com.proyect.masterdata.services.IDepartment;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
 public class DepartmentController {
     private final IDepartment iDepartment;
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("user") String user
@@ -30,7 +31,7 @@ public class DepartmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/departments")
+    @PostMapping(value = "/departments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestParam("user") String user,
             @RequestBody() List<String> names
@@ -39,7 +40,7 @@ public class DepartmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping()
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DepartmentDTO> update(
             @RequestBody() RequestDepartment requestDepartment
     ) throws BadRequestExceptions {
@@ -47,7 +48,7 @@ public class DepartmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping()
+    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("code") Long code,
             @RequestParam("user") String user
@@ -56,13 +57,13 @@ public class DepartmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list")
+    @GetMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<DepartmentDTO>> listDepartment() throws BadRequestExceptions {
         List<DepartmentDTO> result = iDepartment.listDepartment();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<DepartmentDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -75,7 +76,7 @@ public class DepartmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value="/statusFalse")
+    @GetMapping(value="/statusFalse", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<DepartmentDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -88,7 +89,7 @@ public class DepartmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code")
+    @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DepartmentDTO> findByCode(
             @RequestParam("code") Long code
     ) throws BadRequestExceptions {

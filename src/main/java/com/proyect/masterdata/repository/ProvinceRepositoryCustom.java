@@ -6,13 +6,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProvinceRepositoryCustom {
-    Page<Province> searchForDepartment(String name,
-                                       String user,
-                                       Long idDepartment,
-                                       String nameDepartment,
-                                       String sort,
-                                       String sortColumn,
-                                       Integer pageNumber,
-                                       Integer pageSize,
-                                       Boolean status);
+    Page<Province> searchForProvince(String name,
+                                     String user,
+                                     Long idDepartment,
+                                     String nameDepartment,
+                                     String sort,
+                                     String sortColumn,
+                                     Integer pageNumber,
+                                     Integer pageSize,
+                                     Boolean status);
 }

@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Province;
-import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.ProvinceDTO;
 import com.proyect.masterdata.dto.request.RequestProvince;
 import com.proyect.masterdata.dto.request.RequestProvinceSave;
@@ -18,10 +17,11 @@ import com.proyect.masterdata.services.IProvince;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.sql.Date;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -34,6 +34,7 @@ public class ProvinceImpl implements IProvince {
     private final DepartmentRepository departmentRepository;
     private final ProvinceMapper provinceMapper;
     private final UserRepository userRepository;
+
     @Override
     public ResponseSuccess save(String name, String user, Long codeDepartment) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
@@ -188,85 +189,64 @@ public class ProvinceImpl implements IProvince {
     }
 
     @Override
-    @Transactional
-    public ResponseDelete deleteAll(List<Long> codes, String user) throws BadRequestExceptions {
-        User datauser = userRepository.findById(user.toUpperCase()).orElse(null);
-
-        if (datauser==null){
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        try {
-            codes.stream().forEach(data -> {
-                provinceRepository.deleteByIdAndUser(data, user.toUpperCase());
-            });
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
-        }
-    }
-
-    @Override
-    public List<ProvinceDTO> list() throws BadRequestExceptions {
+    public List<ProvinceDTO> listProvince() throws BadRequestExceptions {
         try {
             return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findAllByStatusTrue());
         } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public List<ProvinceDTO> listStatusFalse() throws BadRequestExceptions {
+    public Page<ProvinceDTO> list(String name, String user, Long codeDepartment, String nameDepartment, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        Page<Province> provincePage;
         try {
-            return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findAllByStatusFalse());
+            provincePage = provinceRepositoryCustom.searchForProvince(name, user,codeDepartment, nameDepartment,sort, sortColumn, pageNumber, pageSize, true);
         } catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+
+        if (provincePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(provinceMapper.listProvinceToListProvinceDTO(provincePage.getContent()),
+                provincePage.getPageable(), provincePage.getTotalElements());
+    }
+
+    @Override
+    public Page<ProvinceDTO> listStatusFalse(String name, String user, Long codeDepartment, String nameDepartment, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        Page<Province> provincePage;
+        try {
+            provincePage = provinceRepositoryCustom.searchForProvince(name, user,codeDepartment, nameDepartment,sort, sortColumn, pageNumber, pageSize, false);
+        } catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (provincePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(provinceMapper.listProvinceToListProvinceDTO(provincePage.getContent()),
+                provincePage.getPageable(), provincePage.getTotalElements());
     }
 
     @Override
     public ProvinceDTO findByCode(Long code) throws BadRequestExceptions {
+        boolean exists;
         try {
-            return provinceMapper.provinceToProvinceDTO(provinceRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e){
+            exists = provinceRepository.existsById(code);
+        }catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-    }
 
-    @Override
-    public ProvinceDTO findByName(String name) throws BadRequestExceptions {
-        try {
-            return provinceMapper.provinceToProvinceDTO(provinceRepository.findByNameAndStatusTrue(name.toUpperCase()));
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
+        if (!exists){
+            throw new BadRequestExceptions(Constants.ErrorProvinceNotExist);
         }
-    }
 
-    @Override
-    public List<ProvinceDTO> findByUser(String user) throws BadRequestExceptions {
         try {
-            return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findByUser(user.toUpperCase()));
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
-
-    @Override
-    public List<ProvinceDTO> findAllDepartmentId(Long codeDepartment) throws BadRequestExceptions {
-        try {
-            return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findAllByStatusTrueAndDepartmentId(codeDepartment));
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
-
-    @Override
-    public List<ProvinceDTO> findAllDepartmentName(String nameDepartment) throws BadRequestExceptions {
-        try {
-            return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findAllByStatusTrueAndDepartmentName(nameDepartment.toUpperCase()));
+            return provinceMapper.provinceToProvinceDTO(provinceRepository.findById(code).orElse(null));
         } catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }

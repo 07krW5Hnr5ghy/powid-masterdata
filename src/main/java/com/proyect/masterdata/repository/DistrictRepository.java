@@ -6,13 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface DistrictRepository extends JpaRepository<District, Long> {
+    boolean existsByName(String name);
+    List<District> findByNameIn(List<String> name);
     List<District> findAllByStatusTrue();
-    List<District> findAllByStatusFalse();
-    List<District> findAllByStatusTrueAndProvinceId(Long id);
-    List<District> findAllByStatusTrueAndProvinceName(String name);
-    List<District> findByUser(String user);
-    District findByIdAndStatusTrue(Long id);
     District findByNameAndStatusTrue(String name);
-
-    void deleteByIdAndUser(Long id, String User);
 }
