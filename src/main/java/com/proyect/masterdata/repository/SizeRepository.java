@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SizeRepository extends JpaRepository<Size,Long> {
+    boolean existsByName(String name);
     List<Size> findAllByStatusTrue();
     List<Size> findAllByStatusFalse();
     List<Size> findAllByStatusTrueAndSizeTypeId(Long id);

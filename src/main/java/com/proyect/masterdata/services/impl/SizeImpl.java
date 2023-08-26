@@ -11,6 +11,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.SizeMapper;
 import com.proyect.masterdata.repository.SizeRepository;
+import com.proyect.masterdata.repository.SizeTypeRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.utils.Constants;
@@ -31,32 +32,38 @@ public class SizeImpl implements ISize {
     private final SizeRepository sizeRepository;
     private final SizeMapper sizeMapper;
     private final UserRepository userRepository;
+    private final SizeTypeRepository sizeTypeRepository;
 
     @Override
     public ResponseSuccess save(String name,String user,Long codeSizeType) throws BadRequestExceptions,InternalErrorExceptions {
-        User datauser;
-        Size size;
+        boolean existsUser;
+        boolean existsSize;
+        boolean existsSizeType;
 
         try{
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
-            size = sizeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            existsUser = userRepository.existsById(user.toUpperCase());
+            existsSize = sizeRepository.existsByName(name.toUpperCase());
+            existsSizeType =sizeTypeRepository.existsById(codeSizeType);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (!existsUser){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(size!=null){
+        if(existsSize){
             throw new BadRequestExceptions(Constants.ErrorSizeExists.toUpperCase());
+        }
+        if(!existsSizeType){
+            throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
         }
 
         try {
             sizeRepository.save(sizeMapper.sizeToName(RequestSizeSave.builder()
                     .codeSizeType(codeSizeType)
                     .name(name.toUpperCase())
-                    .user(datauser.getUser().toUpperCase()).build()));
+                    .user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -69,19 +76,24 @@ public class SizeImpl implements ISize {
 
     @Override
     public ResponseSuccess saveAll(List<String> names,String user,Long codeSizeType) throws BadRequestExceptions,InternalErrorExceptions{
-        User datauser;
+        boolean existsUser;
+        boolean existsSizeType;
         List<Size> sizes;
 
         try{
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            existsUser = userRepository.existsById(user.toUpperCase());
+            existsSizeType = sizeTypeRepository.existsById(codeSizeType);
             sizes = sizeRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         }catch (RuntimeException e){
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (!existsUser){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+        if(!existsSizeType){
+            throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
         }
         if(!sizes.isEmpty()){
             throw new BadRequestExceptions(Constants.ErrorSizeList.toUpperCase());
@@ -106,28 +118,33 @@ public class SizeImpl implements ISize {
 
     @Override
     public SizeDTO update(RequestSize requestSize) throws BadRequestExceptions,InternalErrorExceptions {
-        User datauser;
+        boolean existsUser;
+        boolean existsSizeType;
         Size size;
 
         try{
-            datauser = userRepository.findById(requestSize.getUser().toUpperCase()).orElse(null);
+            existsUser = userRepository.existsById(requestSize.getUser().toUpperCase());
+            existsSizeType = sizeTypeRepository.existsById(requestSize.getCodeSizeType());
             size = sizeRepository.findById(requestSize.getCode()).orElse(null);
         }catch (RuntimeException e){
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (!existsUser){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if(size==null){
             throw new BadRequestExceptions(Constants.ErrorSize.toUpperCase());
         }
+        if(!existsSizeType){
+            throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
+        }
 
         size.setName(requestSize.getName().toUpperCase());
         size.setIdSizeType(requestSize.getCodeSizeType());
         size.setStatus(requestSize.isStatus());
-        size.setUser(datauser.getUser().toUpperCase());
+        size.setUser(requestSize.getUser().toUpperCase());
         size.setDateRegistration(new Date(System.currentTimeMillis()));
 
         try {
@@ -141,18 +158,18 @@ public class SizeImpl implements ISize {
     @Override
     @Transactional
     public ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
+        boolean existsUser;
         Size size;
 
         try{
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            existsUser = userRepository.existsById(user.toUpperCase());
             size = sizeRepository.findById(code).orElse(null);
         }catch (RuntimeException e){
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (!existsUser){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if(size==null){
