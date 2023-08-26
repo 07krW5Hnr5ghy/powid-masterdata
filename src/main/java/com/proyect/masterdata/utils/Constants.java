@@ -55,6 +55,10 @@ public class Constants {
     public static final String ErrorProvinceExist= "Exit province";
     public static final String ErrorProvinceNotExist= "Exit The province does not exist";
     public static final String ErrorCategory = "The category does not exist";
+    public static final String ErrorCategoryExists = "The category does exist";
+    public static final String ErrorCategoryDescriptionExists = "The category description does exist";
+    public static final String ErrorCategoryList = "In the list there is a category that exists";
+    public static final String ErrorCategoryListDescription = "In the list there is a category with a description that exists";
     public static final String ErrorColor = "The color does not exist";
     public static final String ErrorDistrict = "The district does not exist";
     public static final String ErrorPaymentMethod = "The payment method does not exist";

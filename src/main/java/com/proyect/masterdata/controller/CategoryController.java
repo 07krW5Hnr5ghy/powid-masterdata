@@ -75,20 +75,4 @@ public class CategoryController {
         CategoryDTO result = iCategory.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-    @GetMapping(value = "/name")
-    public ResponseEntity<CategoryDTO> findByName(
-            @RequestParam("name") String name
-    ) throws BadRequestExceptions {
-        CategoryDTO result = iCategory.findByName(name);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/user")
-    public ResponseEntity<List<CategoryDTO>> findByUser(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<CategoryDTO> result = iCategory.findByUser(user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
 }

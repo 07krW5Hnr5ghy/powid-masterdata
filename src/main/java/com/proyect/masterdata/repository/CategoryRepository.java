@@ -10,6 +10,7 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
     List<Category> findAllByStatusFalse();
     Category findByIdAndStatusTrue(Long id);
     Category findByNameAndStatusTrue(String name);
-    List<Category> findByUser(String user);
-    void deleteByIdAndUser(Long id, String User);
+    Category findByDescriptionAndStatusTrue(String description);
+    List<Category> findByNameIn(List<String> names);
+    List<Category> findByDescriptionIn(List<String> descriptions);
 }
