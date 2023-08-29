@@ -12,11 +12,14 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.ColorMapper;
 import com.proyect.masterdata.repository.ColorRepository;
+import com.proyect.masterdata.repository.ColorRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IColor;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,7 @@ public class ColorImpl implements IColor {
     private final ColorRepository colorRepository;
     private final ColorMapper colorMapper;
     private final UserRepository userRepository;
+    private final ColorRepositoryCustom colorRepositoryCustom;
 
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions,InternalErrorExceptions {
@@ -187,12 +191,37 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public List<ColorDTO> listStatusFalse() throws BadRequestExceptions{
-        try {
-            return colorMapper.listColorToListColorDTO(colorRepository.findAllByStatusFalse());
-        } catch (RuntimeException e){
+    public Page<ColorDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<Color> colorPage;
+        try{
+            colorPage = colorRepositoryCustom.searchForColor(name,user,sort,sortColumn,pageNumber,pageSize,true);
+        }catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+        if(colorPage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(colorMapper.listColorToListColorDTO(colorPage.getContent()),
+                colorPage.getPageable(),colorPage.getTotalElements());
+    }
+
+    @Override
+    public Page<ColorDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<Color> colorPage;
+        try{
+            colorPage = colorRepositoryCustom.searchForColor(name,user,sort,sortColumn,pageNumber,pageSize,false);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(colorPage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        return new PageImpl<>(colorMapper.listColorToListColorDTO(colorPage.getContent()),
+                colorPage.getPageable(),colorPage.getTotalElements());
     }
 
     @Override
