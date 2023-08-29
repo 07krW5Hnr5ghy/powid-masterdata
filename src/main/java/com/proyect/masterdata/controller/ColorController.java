@@ -22,7 +22,7 @@ import java.util.List;
 public class ColorController {
     private final IColor iColor;
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("user") String user

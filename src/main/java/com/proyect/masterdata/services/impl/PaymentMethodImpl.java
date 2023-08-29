@@ -11,11 +11,14 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.PaymentMethodMapper;
 import com.proyect.masterdata.repository.PaymentMethodRepository;
+import com.proyect.masterdata.repository.PaymentMethodRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IPaymentMethod;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentMethodMapper paymentMethodMapper;
     private final UserRepository userRepository;
+    private final PaymentMethodRepositoryCustom paymentMethodRepositoryCustom;
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions {
         User datauser;
@@ -184,12 +188,39 @@ public class PaymentMethodImpl implements IPaymentMethod {
     }
 
     @Override
-    public List<PaymentMethodDTO> listStatusFalse() throws BadRequestExceptions{
-        try {
-            return paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodRepository.findAllByStatusFalse());
-        } catch (RuntimeException e){
+    public Page<PaymentMethodDTO> list(String name, String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<PaymentMethod> paymentMethodPage;
+        try{
+            paymentMethodPage = paymentMethodRepositoryCustom.searchForPaymentMethod(name,user,sort,sortColumn,pageNumber,pageSize,true);
+        }catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+
+        if(paymentMethodPage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        return new PageImpl<>(paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
+                paymentMethodPage.getPageable(),paymentMethodPage.getTotalElements());
+    }
+
+    @Override
+    public Page<PaymentMethodDTO> listStatusFalse(String name, String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<PaymentMethod> paymentMethodPage;
+        try{
+            paymentMethodPage = paymentMethodRepositoryCustom.searchForPaymentMethod(name,user,sort,sortColumn,pageNumber,pageSize,false);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(paymentMethodPage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        return new PageImpl<>(paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
+                paymentMethodPage.getPageable(),paymentMethodPage.getTotalElements());
     }
 
     @Override
