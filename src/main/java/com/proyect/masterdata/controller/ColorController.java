@@ -56,13 +56,13 @@ public class ColorController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-color")
+    @GetMapping(value = "/list-color",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ColorDTO>> listColor() throws BadRequestExceptions {
         List<ColorDTO> result = iColor.listColor();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ColorDTO>> list(
             @RequestParam(value = "name",required = false) String name,
             @RequestParam(value = "user",required = false) String user,
@@ -88,7 +88,7 @@ public class ColorController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code")
+    @GetMapping(value = "/code",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ColorDTO> findByCode(
             @RequestParam("code") Long code
     ) throws BadRequestExceptions {

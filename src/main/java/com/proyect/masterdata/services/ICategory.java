@@ -7,6 +7,7 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public interface ICategory {
     CategoryDTO update(RequestCategory requestCategory) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
     List<CategoryDTO> listCategory() throws BadRequestExceptions;
-    List<CategoryDTO> listStatusFalse() throws BadRequestExceptions;
+    Page<CategoryDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
+    Page<CategoryDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
     CategoryDTO findByCode(Long code) throws BadRequestExceptions;
 }
