@@ -17,6 +17,6 @@ public interface IState {
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
     List<StateDTO> listState() throws BadRequestExceptions;
     Page<StateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    Page<StateDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;;
+    Page<StateDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
     StateDTO findByCode(Long code) throws BadRequestExceptions;
 }

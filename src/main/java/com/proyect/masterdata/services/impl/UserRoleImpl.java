@@ -12,10 +12,13 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.UserRoleMapper;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.repository.UserRoleRepository;
+import com.proyect.masterdata.repository.UserRoleRepositoryCustom;
 import com.proyect.masterdata.services.IUserRole;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +33,7 @@ public class UserRoleImpl implements IUserRole {
     private final UserRoleRepository userRoleRepository;
     private final UserRoleMapper userRoleMapper;
     private final UserRepository userRepository;
+    private final UserRoleRepositoryCustom userRoleRepositoryCustom;
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions {
         User datauser;
@@ -182,12 +186,35 @@ public class UserRoleImpl implements IUserRole {
         return userRoleMapper.listUserRoleToListUserRoleDTO(userRoles);
     }
 
-    public List<UserRoleDTO> listStatusFalse() throws BadRequestExceptions{
-        try {
-            return userRoleMapper.listUserRoleToListUserRoleDTO(userRoleRepository.findAllByStatusFalse());
-        } catch (RuntimeException e){
+    @Override
+    public Page<UserRoleDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<UserRole> userRolePage;
+        try{
+            userRolePage = userRoleRepositoryCustom.searchForUserRole(name,user,sort,sortColumn,pageNumber,pageSize,true);
+        }catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+        if(userRolePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(userRoleMapper.listUserRoleToListUserRoleDTO(userRolePage.getContent()),
+                userRolePage.getPageable(),userRolePage.getTotalElements());
+    }
+    @Override
+    public Page<UserRoleDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<UserRole> userRolePage;
+        try{
+            userRolePage = userRoleRepositoryCustom.searchForUserRole(name,user,sort,sortColumn,pageNumber,pageSize,false);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+        if(userRolePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(userRoleMapper.listUserRoleToListUserRoleDTO(userRolePage.getContent()),
+                userRolePage.getPageable(),userRolePage.getTotalElements());
     }
 
     @Override

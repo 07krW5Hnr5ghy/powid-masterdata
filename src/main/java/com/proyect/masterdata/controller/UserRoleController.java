@@ -7,7 +7,9 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IUserRole;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +22,7 @@ import java.util.List;
 public class UserRoleController {
     private IUserRole iUserRole;
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,@RequestParam("user") String user
     ) throws BadRequestExceptions {
@@ -28,7 +30,7 @@ public class UserRoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/user-roles")
+    @PostMapping(value = "/user-roles",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestBody() List<String> names,@RequestParam("user") String user
     ) throws BadRequestExceptions {
@@ -36,7 +38,7 @@ public class UserRoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping()
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserRoleDTO> update(
             @RequestBody() RequestUserRole requestUserRole
     ) throws BadRequestExceptions {
@@ -53,19 +55,39 @@ public class UserRoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/list")
+    @GetMapping(value = "/list",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<UserRoleDTO>> listUserRole() throws BadRequestExceptions {
         List<UserRoleDTO> result = iUserRole.listUserRole();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value="/statusFalse")
-    public ResponseEntity<List<UserRoleDTO>> listStatusFalse() throws BadRequestExceptions {
-        List<UserRoleDTO> result = iUserRole.listStatusFalse();
+    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<UserRoleDTO>> list(
+            @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "user",required = false) String user,
+            @RequestParam(value = "sort",required = false) String sort,
+            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws BadRequestExceptions{
+        Page<UserRoleDTO> result = iUserRole.list(name,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<UserRoleDTO>> listStatusFalse(
+            @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "user",required = false) String user,
+            @RequestParam(value = "sort",required = false) String sort,
+            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws BadRequestExceptions {
+        Page<UserRoleDTO> result = iUserRole.listStatusFalse(name,user,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code")
+    @GetMapping(value = "/code",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserRoleDTO> findByCode(
             @RequestParam("code") Long code
     ) throws BadRequestExceptions {
