@@ -19,5 +19,4 @@ public interface IDepartment {
     Page<DepartmentDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
     Page<DepartmentDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
     DepartmentDTO findByCode(Long code) throws BadRequestExceptions;
-
 }

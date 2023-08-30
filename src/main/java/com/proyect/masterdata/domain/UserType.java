@@ -34,7 +34,7 @@ public class UserType {
     private Long id;
 
     @Column(name = "tipo_usuario", unique = true)
-    private String usertype;
+    private String userType;
 
     @Column(name = "estado", columnDefinition = "boolean default true")
     private boolean status = true;
@@ -42,4 +42,7 @@ public class UserType {
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date dateRegistration;
+
+    @Column(name = "usuario")
+    private String user;
 }
