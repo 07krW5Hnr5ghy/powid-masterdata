@@ -11,11 +11,14 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.SizeTypeMapper;
 import com.proyect.masterdata.repository.SizeTypeRepository;
+import com.proyect.masterdata.repository.SizeTypeRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.ISizeType;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,7 @@ public class SizeTypeImpl implements ISizeType {
     private final SizeTypeRepository sizeTypeRepository;
     private final SizeTypeMapper sizeTypeMapper;
     private final UserRepository userRepository;
+    private final SizeTypeRepositoryCustom sizeTypeRepositoryCustom;
 
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions {
@@ -184,12 +188,36 @@ public class SizeTypeImpl implements ISizeType {
         return sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypes);
     }
 
-    public List<SizeTypeDTO> listStatusFalse() throws BadRequestExceptions{
-        try {
-            return sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypeRepository.findAllByStatusFalse());
-        } catch (RuntimeException e){
+    @Override
+    public Page<SizeTypeDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<SizeType> sizeTypePage;
+        try{
+            sizeTypePage = sizeTypeRepositoryCustom.searchForSizeType(name,user,sort,sortColumn,pageNumber,pageSize,true);
+        }catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+        if(sizeTypePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypePage.getContent()),
+                sizeTypePage.getPageable(),sizeTypePage.getTotalElements());
+    }
+
+    @Override
+    public Page<SizeTypeDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<SizeType> sizeTypePage;
+        try{
+            sizeTypePage = sizeTypeRepositoryCustom.searchForSizeType(name,user,sort,sortColumn,pageNumber,pageSize,false);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+        if(sizeTypePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypePage.getContent()),
+                sizeTypePage.getPageable(),sizeTypePage.getTotalElements());
     }
 
     @Override
