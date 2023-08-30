@@ -11,11 +11,14 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.StateMapper;
 import com.proyect.masterdata.repository.StateRepository;
+import com.proyect.masterdata.repository.StateRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IState;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,7 @@ public class StateImpl implements IState {
     private final StateRepository stateRepository;
     private final StateMapper stateMapper;
     private final UserRepository userRepository;
+    private final StateRepositoryCustom stateRepositoryCustom;
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions {
         User datauser;
@@ -183,12 +187,36 @@ public class StateImpl implements IState {
         return stateMapper.listStateToListStateDTO(states);
     }
 
-    public List<StateDTO> listStatusFalse() throws BadRequestExceptions{
-        try {
-            return stateMapper.listStateToListStateDTO(stateRepository.findAllByStatusFalse());
-        } catch (RuntimeException e){
+    @Override
+    public Page<StateDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<State> statePage;
+        try{
+            statePage = stateRepositoryCustom.searchForState(name,user,sort,sortColumn,pageNumber,pageSize,true);
+        }catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+        if(statePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(stateMapper.listStateToListStateDTO(statePage.getContent()),
+                statePage.getPageable(),statePage.getTotalElements());
+    }
+
+    @Override
+    public Page<StateDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<State> statePage;
+        try{
+            statePage = stateRepositoryCustom.searchForState(name,user,sort,sortColumn,pageNumber,pageSize,false);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+        if(statePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(stateMapper.listStateToListStateDTO(statePage.getContent()),
+                statePage.getPageable(),statePage.getTotalElements());
     }
 
     @Override
