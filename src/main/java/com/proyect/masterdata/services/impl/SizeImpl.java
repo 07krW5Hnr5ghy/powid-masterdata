@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Size;
-import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.SizeDTO;
 import com.proyect.masterdata.dto.request.RequestSize;
 import com.proyect.masterdata.dto.request.RequestSizeSave;
@@ -11,12 +10,15 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.SizeMapper;
 import com.proyect.masterdata.repository.SizeRepository;
+import com.proyect.masterdata.repository.SizeRepositoryCustom;
 import com.proyect.masterdata.repository.SizeTypeRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,7 @@ public class SizeImpl implements ISize {
     private final SizeMapper sizeMapper;
     private final UserRepository userRepository;
     private final SizeTypeRepository sizeTypeRepository;
+    private final SizeRepositoryCustom sizeRepositoryCustom;
 
     @Override
     public ResponseSuccess save(String name,String user,Long codeSizeType) throws BadRequestExceptions,InternalErrorExceptions {
@@ -205,12 +208,37 @@ public class SizeImpl implements ISize {
         return sizeMapper.listSizeToListSizeDTO(sizes);
     }
 
-    public List<SizeDTO> listStatusFalse() throws BadRequestExceptions{
+    @Override
+    public Page<SizeDTO> list(String name,String user, Long codeSizeType, String nameSizeType, String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<Size> sizePage;
         try {
-            return sizeMapper.listSizeToListSizeDTO(sizeRepository.findAllByStatusFalse());
+            sizePage = sizeRepositoryCustom.searchForSize(name, user,codeSizeType, nameSizeType,sort, sortColumn, pageNumber, pageSize, true);
         } catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+
+        if (sizePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(sizeMapper.listSizeToListSizeDTO(sizePage.getContent()),
+                sizePage.getPageable(), sizePage.getTotalElements());
+    }
+
+    public Page<SizeDTO> listStatusFalse(String name,String user, Long codeSizeType, String nameSizeType, String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<Size> sizePage;
+        try {
+            sizePage = sizeRepositoryCustom.searchForSize(name, user,codeSizeType, nameSizeType,sort, sortColumn, pageNumber, pageSize, false);
+        } catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (sizePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(sizeMapper.listSizeToListSizeDTO(sizePage.getContent()),
+                sizePage.getPageable(), sizePage.getTotalElements());
     }
 
     @Override
