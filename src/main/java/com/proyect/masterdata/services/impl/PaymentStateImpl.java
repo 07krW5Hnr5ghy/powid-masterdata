@@ -2,7 +2,6 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.PaymentState;
 import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.dto.PaymentMethodDTO;
 import com.proyect.masterdata.dto.PaymentStateDTO;
 import com.proyect.masterdata.dto.request.RequestPaymentState;
 import com.proyect.masterdata.dto.request.RequestPaymentStateSave;
@@ -12,11 +11,14 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.PaymentStateMapper;
 import com.proyect.masterdata.repository.PaymentStateRepository;
+import com.proyect.masterdata.repository.PaymentStateRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IPaymentState;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,7 @@ public class PaymentStateImpl implements IPaymentState {
     private final PaymentStateRepository paymentStateRepository;
     private final PaymentStateMapper paymentStateMapper;
     private final UserRepository userRepository;
+    private final PaymentStateRepositoryCustom paymentStateRepositoryCustom;
 
     @Override
     public ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions {
@@ -172,6 +175,22 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
+    public Page<PaymentStateDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions {
+        Page<PaymentState> paymentStatePage;
+        try{
+            paymentStatePage = paymentStateRepositoryCustom.searchForPaymentState(name,user,sort,sortColumn,pageNumber,pageSize,true);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+        if(paymentStatePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStatePage.getContent()),
+                paymentStatePage.getPageable(),paymentStatePage.getTotalElements());
+    }
+
+    @Override
     public List<PaymentStateDTO> listPaymentState() throws BadRequestExceptions{
         List<PaymentState> paymentStates = new ArrayList<>();
         try{
@@ -187,12 +206,19 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public List<PaymentStateDTO> listStatusFalse() throws BadRequestExceptions{
-        try {
-            return paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStateRepository.findAllByStatusFalse());
-        } catch (RuntimeException e){
+    public Page<PaymentStateDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+        Page<PaymentState> paymentStatePage;
+        try{
+            paymentStatePage = paymentStateRepositoryCustom.searchForPaymentState(name,user,sort,sortColumn,pageNumber,pageSize,false);
+        }catch (RuntimeException e){
+            log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+        if(paymentStatePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStatePage.getContent()),
+                paymentStatePage.getPageable(),paymentStatePage.getTotalElements());
     }
 
     @Override

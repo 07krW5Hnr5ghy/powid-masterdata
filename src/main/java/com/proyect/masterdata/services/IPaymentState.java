@@ -6,6 +6,7 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public interface IPaymentState {
     PaymentStateDTO update(RequestPaymentState requestPaymentState) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
     List<PaymentStateDTO> listPaymentState() throws BadRequestExceptions;
-    List<PaymentStateDTO> listStatusFalse() throws BadRequestExceptions;
+    Page<PaymentStateDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
+    Page<PaymentStateDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
     PaymentStateDTO findByCode(Long code) throws BadRequestExceptions;
 }
