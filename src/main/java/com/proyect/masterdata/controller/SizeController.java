@@ -67,12 +67,12 @@ public class SizeController {
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<SizeDTO>> list(
-            @RequestParam("name") String name,
-            @RequestParam("user") String user,
-            @RequestParam("codeSizeType") Long codeSizeType,
-            @RequestParam("nameSizeType") String nameSizeType,
-            @RequestParam("sort") String sort,
-            @RequestParam("sortColumn") String sortColumn,
+            @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "user",required = false) String user,
+            @RequestParam(value = "codeSizeType",required = false) Long codeSizeType,
+            @RequestParam(value = "nameSizeType",required = false) String nameSizeType,
+            @RequestParam(value = "sort",required = false) String sort,
+            @RequestParam(value = "sortColumn",required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions{
@@ -82,12 +82,12 @@ public class SizeController {
 
     @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<SizeDTO>> listStatusFalse(
-            @RequestParam("name") String name,
-            @RequestParam("user") String user,
-            @RequestParam("codeSizeType") Long codeSizeType,
-            @RequestParam("nameSizeType") String nameSizeType,
-            @RequestParam("sort") String sort,
-            @RequestParam("sortColumn") String sortColumn,
+            @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "user",required = false) String user,
+            @RequestParam(value = "codeSizeType",required = false) Long codeSizeType,
+            @RequestParam(value = "nameSizeType",required = false) String nameSizeType,
+            @RequestParam(value = "sort",required = false) String sort,
+            @RequestParam(value = "sortColumn",required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions {
