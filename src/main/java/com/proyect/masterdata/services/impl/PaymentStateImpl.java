@@ -53,7 +53,7 @@ public class PaymentStateImpl implements IPaymentState {
         if (datauser==null){
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(paymentState==null){
+        if(paymentState!=null){
             throw new BadRequestExceptions(Constants.ErrorPaymentStateExists.toUpperCase());
         }
 
