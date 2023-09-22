@@ -1,8 +1,8 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.PaymentDTO;
+import com.proyect.masterdata.dto.ClientChannelDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.mocks.PaymentMocks;
+import com.proyect.masterdata.mocks.ClientChannelMocks;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,16 +14,15 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/payments")
+@RequestMapping("/client-channels")
 @AllArgsConstructor
-public class PaymentController {
+public class ClientChannelController {
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PaymentDTO>> listPayments(
+    public ResponseEntity<List<ClientChannelDTO>> listClientChannels(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions{
-        PaymentMocks paymentMocks = new PaymentMocks();
-        List<PaymentDTO> paymentList = Arrays.asList(paymentMocks.getPaymentListDTO());
-        return new ResponseEntity<>(paymentList, HttpStatus.OK);
+    ) throws BadRequestExceptions {
+        ClientChannelMocks clientChannelMocks = new ClientChannelMocks();
+        List<ClientChannelDTO> clientChannelList = Arrays.asList(clientChannelMocks.getClientChannelList());
+        return new ResponseEntity<>(clientChannelList, HttpStatus.OK);
     }
-
 }

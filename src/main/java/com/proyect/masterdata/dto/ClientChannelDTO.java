@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class ClientChannelDTO {
     String ecommerceName;
     String url;
-    String name;
     String user;
     Boolean status;
 }
