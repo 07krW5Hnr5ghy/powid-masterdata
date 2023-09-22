@@ -1,14 +1,13 @@
 package com.proyect.masterdata.mocks;
 
 import com.proyect.masterdata.dto.UserDTO;
-
-import java.util.Collections;
-import java.util.List;
+import lombok.Getter;
 
 public class UserMocks {
     private String[] modulesList1 = {"ventas","operaciones"};
     private UserDTO user1 = UserDTO.builder()
             .dni("123456789")
+            .username("ag65")
             .name("ALEJANDRO")
             .surname("GOMEZ")
             .email("agomes@gmail.com")
@@ -23,12 +22,13 @@ public class UserMocks {
     private String[] modulesList2 = {"marketing","finanzas"};
     private UserDTO user2 = UserDTO.builder()
             .dni("123456789")
+            .username("gm33")
             .name("GERMAN")
             .surname("MENDEZ")
             .email("g45men@gmail.com")
             .password("123+abc")
             .district("LIMA")
-            .phoneNumber("987654321")
+            .phoneNumber("56567897")
             .userType("marketing")
             .gender("M")
             .modules(modulesList2)
@@ -37,12 +37,13 @@ public class UserMocks {
     private String[] modulesList3 = {"usuarios","operaciones","finanzas","inventario"};
     private UserDTO user3 = UserDTO.builder()
             .dni("123456789")
+            .username("lr66")
             .name("LINA")
             .surname("RODRIGUEZ")
-            .email("g45men@gmail.com")
-            .password("123+abc")
-            .district("LIMA")
-            .phoneNumber("987654321")
+            .email("lina78r@gmail.com")
+            .password("abc111+")
+            .district("CORDOBA")
+            .phoneNumber("56464321")
             .userType("administrador")
             .gender("F")
             .modules(modulesList3)
@@ -51,20 +52,18 @@ public class UserMocks {
     private String[] modulesList4 = {"operaciones","inventario","pedidos"};
     private UserDTO user4 = UserDTO.builder()
             .dni("123456789")
+            .username("ccc45")
             .name("CAROLINA")
             .surname("CASAS")
-            .email("g45men@gmail.com")
-            .password("123+abc")
-            .district("LIMA")
+            .email("cc120@gmail.com")
+            .password("+abc233")
+            .district("CALLAO")
             .phoneNumber("987654321")
-            .userType("administrador")
+            .userType("operaciones")
             .gender("F")
             .modules(modulesList4)
             .status(true)
             .build();
+    @Getter
     private UserDTO[] userList = {user1,user2,user3,user4};
-
-    public UserDTO[] getUserList(){
-        return userList;
-    }
 }
