@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class UsersDTO {
+public class UserDTO {
     String dni;
     String username;
     String name;

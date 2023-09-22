@@ -10,10 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ClientChannelsDTO {
-    String ecommerceName;
-    String url;
-    String name;
+public class ModuleDTO {
+    String moduleName;
+    Double modulePrice;
     User string;
     Boolean status;
 }
