@@ -1,6 +1,5 @@
 package com.proyect.masterdata.dto;
 
-import com.proyect.masterdata.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +13,6 @@ public class ClientChannelDTO {
     String ecommerceName;
     String url;
     String name;
-    User string;
+    String user;
     Boolean status;
 }

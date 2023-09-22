@@ -1,6 +1,5 @@
 package com.proyect.masterdata.dto;
 
-import com.proyect.masterdata.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class ModuleDTO {
     String moduleName;
     Double modulePrice;
-    User string;
     Boolean status;
 }

@@ -20,6 +20,8 @@ public class PaymentMocks {
             .startDate(new Date(2023,6,7))
             .paymentDate(new Date(2023,9,13))
             .monthsPayed(3)
+            .user("ag65")
+            .status(true)
             .build();
     private PaymentDTO payment2 = PaymentDTO.builder()
             .dni("3344446789")
@@ -35,6 +37,8 @@ public class PaymentMocks {
             .startDate(new Date(2023,7,7))
             .paymentDate(new Date(2023,9,13))
             .monthsPayed(2)
+            .user("lr66")
+            .status(true)
             .build();
     private PaymentDTO payment3 = PaymentDTO.builder()
             .dni("894849038")
@@ -50,6 +54,8 @@ public class PaymentMocks {
             .startDate(new Date(2023,5,10))
             .paymentDate(new Date(2023,9,13))
             .monthsPayed(4)
+            .user("ccc45")
+            .status(true)
             .build();
 
     private PaymentDTO payment4 = PaymentDTO.builder()
@@ -66,6 +72,8 @@ public class PaymentMocks {
             .startDate(new Date(2023,8,20))
             .paymentDate(new Date(2023,9,13))
             .monthsPayed(1)
+            .user("gm33")
+            .status(true)
             .build();
     @Getter
     private PaymentDTO[] paymentListDTO = {payment1,payment2,payment3,payment4};
