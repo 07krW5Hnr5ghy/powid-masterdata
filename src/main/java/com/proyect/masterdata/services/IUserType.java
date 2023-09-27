@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IUserType {
-    ResponseSuccess save(String usertype, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    ResponseSuccess save(String usertype, String user,Long code) throws BadRequestExceptions, InternalErrorExceptions;
     ResponseSuccess saveAll(List<String> usertype, String user) throws BadRequestExceptions, InternalErrorExceptions;
     UserTypeDTO update(RequestUserType requestUserType) throws BadRequestExceptions, InternalErrorExceptions;
     ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions;

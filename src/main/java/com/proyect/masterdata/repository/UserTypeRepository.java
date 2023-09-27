@@ -9,7 +9,6 @@ import java.util.List;
 public interface UserTypeRepository extends JpaRepository<UserType, Long> {
     List<UserType> findAllByStatusTrue();
     UserType findByIdAndStatusTrue(Long id);
-    UserType findByUsertypeAndStatusTrue(String name);
-    List<UserType> findByUsertypeIn(List<String> name);
-    boolean existsByIdUserType(String userType);
+    List<UserType> findByUserTypeIn(List<String> name);
+    boolean existsById(Long id);
 }

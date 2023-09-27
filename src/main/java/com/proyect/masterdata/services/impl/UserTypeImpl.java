@@ -17,6 +17,7 @@ import com.proyect.masterdata.repository.UserTypeRepositoryCustom;
 import com.proyect.masterdata.services.IUserType;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Log4j2
 public class UserTypeImpl implements IUserType {
 
@@ -36,12 +37,12 @@ public class UserTypeImpl implements IUserType {
     private final UserRepository userRepository;
 
     @Override
-    public ResponseSuccess save(String usertype, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(String usertype, String user,Long code) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsUserType;
         try {
-            existsUser = userRepository.existsById(user);
-            existsUserType = userTypeRepository.existsByIdUserType(usertype.toUpperCase());
+            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUserType = userTypeRepository.existsById(code);
         } catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -56,7 +57,7 @@ public class UserTypeImpl implements IUserType {
 
         try {
             userTypeRepository.save(userTypeMapper.userTypeToName(RequestUserTypeSave.builder()
-                    .userType(usertype.toUpperCase()).user(user.toUpperCase()).build()));
+                    .userType(usertype).user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -72,8 +73,8 @@ public class UserTypeImpl implements IUserType {
         boolean existsUser;
         List<UserType> userTypes;
         try {
-            existsUser = userRepository.existsById(user);
-            userTypes = userTypeRepository.findByUsertypeIn(usertype.stream().map(String::toUpperCase).toList());
+            existsUser = userRepository.existsById(user.toUpperCase());
+            userTypes = userTypeRepository.findByUserTypeIn(usertype.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e){
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -88,7 +89,7 @@ public class UserTypeImpl implements IUserType {
 
         List<RequestUserTypeSave> userTypeSave = usertype.stream().map(data -> RequestUserTypeSave.builder()
                 .user(user.toUpperCase())
-                .userType(data.toUpperCase())
+                .userType(data)
                 .build()).toList();
         try {
             userTypeRepository.saveAll(userTypeMapper.listUserTypeToListName(userTypeSave));
