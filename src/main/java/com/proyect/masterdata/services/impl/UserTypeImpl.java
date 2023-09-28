@@ -87,7 +87,7 @@ public class UserTypeImpl implements IUserType {
 
         List<RequestUserTypeSave> userTypeSave = usertype.stream().map(data -> RequestUserTypeSave.builder()
                 .user(user.toUpperCase())
-                .userType(data)
+                .userType(data.toUpperCase())
                 .build()).toList();
         try {
             userTypeRepository.saveAll(userTypeMapper.listUserTypeToListName(userTypeSave));

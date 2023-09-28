@@ -23,6 +23,7 @@ public interface UserTypeMapper {
     List<UserType> listUserTypeToListName(List<RequestUserTypeSave> requestUserTypeSaves);
 
     @Mapping(target = "code", source = "id")
+    @Mapping(target = "userType",source = "userType")
     UserTypeDTO userTypeToUserTypeDTO(UserType userType);
 
     List<UserTypeDTO> listUserTypeToListUserTypeDTO(List<UserType> userTypeList);
