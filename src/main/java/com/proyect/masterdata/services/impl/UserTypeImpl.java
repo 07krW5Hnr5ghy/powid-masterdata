@@ -1,7 +1,5 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Department;
-import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.UserType;
 import com.proyect.masterdata.dto.UserTypeDTO;
 import com.proyect.masterdata.dto.request.RequestUserType;
@@ -16,12 +14,12 @@ import com.proyect.masterdata.repository.UserTypeRepository;
 import com.proyect.masterdata.repository.UserTypeRepositoryCustom;
 import com.proyect.masterdata.services.IUserType;
 import com.proyect.masterdata.utils.Constants;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -37,12 +35,12 @@ public class UserTypeImpl implements IUserType {
     private final UserRepository userRepository;
 
     @Override
-    public ResponseSuccess save(String usertype, String user,Long code) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(String userType, String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsUserType;
         try {
             existsUser = userRepository.existsById(user.toUpperCase());
-            existsUserType = userTypeRepository.existsById(code);
+            existsUserType = userTypeRepository.existsByUserType(userType.toUpperCase());
         } catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -57,7 +55,7 @@ public class UserTypeImpl implements IUserType {
 
         try {
             userTypeRepository.save(userTypeMapper.userTypeToName(RequestUserTypeSave.builder()
-                    .userType(usertype).user(user.toUpperCase()).build()));
+                    .userType(userType.toUpperCase()).user(user.toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -183,41 +181,41 @@ public class UserTypeImpl implements IUserType {
         if (userTypes.isEmpty()){
             return Collections.emptyList();
         }
-        return userTypeMapper.listuserTypeToListuserTypeDTO(userTypes);
+        return userTypeMapper.listUserTypeToListUserTypeDTO(userTypes);
     }
 
     @Override
     public Page<UserTypeDTO> list(String usertype, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<UserType> userTypeage;
+        Page<UserType> userTypePage;
         try {
-            userTypeage = userTypeRepositoryCustom.searchForUserType(usertype, user, sort, sortColumn, pageNumber, pageSize, true);
+            userTypePage = userTypeRepositoryCustom.searchForUserType(usertype, user, sort, sortColumn, pageNumber, pageSize, true);
         } catch (RuntimeException e){
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
-        if (userTypeage.isEmpty()){
+        if (userTypePage.isEmpty()){
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(userTypeMapper.listuserTypeToListuserTypeDTO(userTypeage.getContent()),
-                userTypeage.getPageable(), userTypeage.getTotalElements());
+        return new PageImpl<>(userTypeMapper.listUserTypeToListUserTypeDTO(userTypePage.getContent()),
+                userTypePage.getPageable(), userTypePage.getTotalElements());
     }
 
     @Override
     public Page<UserTypeDTO> listStatusFalse(String usertype, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<UserType> userTypeage;
+        Page<UserType> userTypePage;
         try {
-            userTypeage = userTypeRepositoryCustom.searchForUserType(usertype, user, sort, sortColumn, pageNumber, pageSize, false);
+            userTypePage = userTypeRepositoryCustom.searchForUserType(usertype, user, sort, sortColumn, pageNumber, pageSize, false);
         } catch (RuntimeException e){
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
-        if (userTypeage.isEmpty()){
+        if (userTypePage.isEmpty()){
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(userTypeMapper.listuserTypeToListuserTypeDTO(userTypeage.getContent()),
-                userTypeage.getPageable(), userTypeage.getTotalElements());
+        return new PageImpl<>(userTypeMapper.listUserTypeToListUserTypeDTO(userTypePage.getContent()),
+                userTypePage.getPageable(), userTypePage.getTotalElements());
     }
 
     @Override

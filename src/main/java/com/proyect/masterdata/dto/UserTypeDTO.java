@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class UserTypeDTO {
     private Long code;
-    private String usertype;
+    private String userType;
 }
