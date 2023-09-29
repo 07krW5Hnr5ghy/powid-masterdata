@@ -1,4 +1,4 @@
-package com.proyect.masterdata.dto;
+package com.proyect.masterdata.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ModuleDTO {
-    Long code;
-    String moduleName;
-    Double modulePrice;
-    Boolean status;
+public class RequestModuleSave {
+    private String name;
+    private double price;
+    private int status_module;
 }

@@ -2,7 +2,6 @@ package com.proyect.masterdata.mapper;
 
 import com.proyect.masterdata.domain.State;
 import com.proyect.masterdata.dto.StateDTO;
-import com.proyect.masterdata.dto.request.RequestState;
 import com.proyect.masterdata.dto.request.RequestStateSave;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
