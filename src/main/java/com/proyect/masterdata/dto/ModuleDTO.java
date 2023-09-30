@@ -13,5 +13,6 @@ public class ModuleDTO {
     Long code;
     String moduleName;
     Double modulePrice;
+    int moduleStatus;
     Boolean status;
 }

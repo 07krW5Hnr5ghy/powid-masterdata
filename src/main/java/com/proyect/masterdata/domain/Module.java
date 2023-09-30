@@ -42,7 +42,7 @@ public class Module {
     @Column(name = "estado_modulo")
     private int status_module;
 
-    @Column(name = "estado")
+    @Column(name = "estado",columnDefinition="boolean default true")
     private boolean status;
 
     @Column(name = "fecha_registro")

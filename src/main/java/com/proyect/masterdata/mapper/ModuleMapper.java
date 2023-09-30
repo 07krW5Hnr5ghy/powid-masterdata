@@ -13,13 +13,16 @@ import java.util.List;
 public interface ModuleMapper {
     ModuleMapper INSTANCE = Mappers.getMapper(ModuleMapper.class);
     @Mapping(target="code",source = "id")
+    @Mapping(target="moduleName",source = "name")
+    @Mapping(target="modulePrice",source = "price")
+    @Mapping(target="moduleStatus",source="status_module")
     ModuleDTO moduleToModuleDTO(Module module);
     List<ModuleDTO> listModuleToListModuleDTO(List<Module> moduleList);
     @Mapping(target = "id",ignore = true)
     @Mapping(target = "name", source = "requestModuleSave.name")
     @Mapping(target = "price", source = "requestModuleSave.price")
-    @Mapping(target = "status_module", source = "requestModuleSave.status_module")
-    @Mapping(target = "status",ignore = true)
+    @Mapping(target = "status_module", source = "requestModuleSave.moduleStatus")
+    @Mapping(target = "status")
     @Mapping(target = "dateRegistration",ignore = true)
     Module moduleToName(RequestModuleSave requestModuleSave);
 

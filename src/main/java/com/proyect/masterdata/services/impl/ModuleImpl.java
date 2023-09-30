@@ -59,6 +59,7 @@ public class ModuleImpl implements IModule {
                     .name(name.toUpperCase())
                     .moduleStatus(moduleStatus)
                     .price(price)
+                    .status(true)
                     .build()));
             return ResponseSuccess.builder()
                     .code(200)
@@ -90,6 +91,7 @@ public class ModuleImpl implements IModule {
         List<RequestModuleSave> moduleSaveList = moduleList.stream().map(module -> RequestModuleSave.builder()
                 .name(module.getName().toUpperCase())
                 .price(module.getPrice())
+                .status(true)
                 .moduleStatus(module.getModuleStatus())
                 .build()).toList();
         try{
