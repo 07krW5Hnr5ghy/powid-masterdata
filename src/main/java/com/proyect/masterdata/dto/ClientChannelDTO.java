@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ClientChannelDTO {
-    String ecommerceName;
+    Long code;
+    String name;
     String url;
     String user;
     Boolean status;

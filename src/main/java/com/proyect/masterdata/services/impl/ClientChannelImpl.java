@@ -142,7 +142,7 @@ public class ClientChannelImpl implements IClientChannel {
         boolean existsUser;
         ClientChannel clientChannel;
         try{
-            existsUser = userRepository.existsById(user);
+            existsUser = userRepository.existsById(user.toUpperCase());
             clientChannel = clientChannelRepository.findById(code).orElse(null);
         }catch (RuntimeException e){
             log.error(e);

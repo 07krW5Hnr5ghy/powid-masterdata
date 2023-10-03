@@ -5,28 +5,28 @@ import lombok.Getter;
 
 public class ClientChannelMocks {
     private ClientChannelDTO clientChanel1 = ClientChannelDTO.builder()
-            .ecommerceName("compras en linea")
+            .name("compras en linea")
             .url("https://comprasonline.com")
             .user("gm33")
             .status(true)
             .build();
 
     private ClientChannelDTO clientChanel2 = ClientChannelDTO.builder()
-            .ecommerceName("descuentos en linea")
+            .name("descuentos en linea")
             .url("https://ediscounts.com")
             .user("lr66")
             .status(true)
             .build();
 
     private ClientChannelDTO clientChanel3 = ClientChannelDTO.builder()
-            .ecommerceName("swift")
+            .name("swift")
             .url("https://swiftfashion.com")
             .user("ag65")
             .status(true)
             .build();
 
     private ClientChannelDTO clientChanel4 = ClientChannelDTO.builder()
-            .ecommerceName("oclothes")
+            .name("oclothes")
             .url("https://oclothes.com")
             .user("ccc45")
             .status(true)

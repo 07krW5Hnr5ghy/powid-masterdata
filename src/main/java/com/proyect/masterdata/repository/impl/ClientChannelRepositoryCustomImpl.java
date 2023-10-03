@@ -17,12 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class ClientChannelCustomImpl implements ClientChannelRepositoryCustom {
+public class ClientChannelRepositoryCustomImpl implements ClientChannelRepositoryCustom {
     @PersistenceContext(name="entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<ClientChannel> searchForCategory(
+    public Page<ClientChannel> searchForClientChannel(
             String name,
             String user,
             String sort,
