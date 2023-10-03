@@ -31,8 +31,8 @@ public class Constants {
     public static final String tableLogEvent = "eventos_log";
     public static final String tableSizeType = "tipos_talla";
     public static final String tableUserRole = "roles_usuario";
-    public static final String tableMembershipType = "tipos_membresia";
     public static final String tableCategory = "categorias";
+    public static final String tableClientChannel = "canales_cliente";
 
     //Mensajes
     public static final String register="registration correctly";

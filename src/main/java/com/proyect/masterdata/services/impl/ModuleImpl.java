@@ -67,7 +67,7 @@ public class ModuleImpl implements IModule {
                     .build();
         } catch (RuntimeException e){
             log.error(e.getMessage());
-            throw new InternalErrorExceptions("Error interno");
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
