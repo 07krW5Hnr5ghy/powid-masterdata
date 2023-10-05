@@ -11,16 +11,16 @@ import lombok.NoArgsConstructor;
 @Data
 public class UserDTO {
     String dni;
-    String username;
+    String user;
     String name;
     String surname;
     String email;
     String password;
-    String district;
+    Long district;
     String address;
-    String phoneNumber;
-    String userType;
+    String mobile;
+    Long userType;
     String gender;
     String[] modules;
-    Boolean status;
+    Long status;
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -21,4 +23,6 @@ public class RequestUserSave {
     private String password;
     private Long id_district;
     private Long idUserType;
+    private Date dateRegistration;
+    private Long status;
 }
