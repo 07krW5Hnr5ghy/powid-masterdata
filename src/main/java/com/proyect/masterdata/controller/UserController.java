@@ -32,18 +32,19 @@ public class UserController {
 
     @PostMapping(value = "users",consumes=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<RequestUserSave> requestUserSaveList,
+            @RequestBody() List<RequestUser> requestUserList,
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iUser.saveAll(requestUserSaveList,user);
+        ResponseSuccess result = iUser.saveAll(requestUserList,user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> update(
-            @RequestBody() RequestUser requestUser
+            @RequestBody() RequestUser requestUser,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        UserDTO result = iUser.update(requestUser);
+        UserDTO result = iUser.update(requestUser,user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

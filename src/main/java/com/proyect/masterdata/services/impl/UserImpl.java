@@ -84,12 +84,16 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestUserSave> requestUserSaveList, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess saveAll(List<RequestUser> requestUserList, String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUSer;
         List<User> userList;
+        List<District> districtList;
+        List<UserType> userTypeList;
         try{
             existsUSer = userRepository.existsByUser(user.toUpperCase());
-            userList = userRepository.findByNameIn(requestUserSaveList.stream().map(userData -> userData.getName().toUpperCase()).collect(Collectors.toList()));
+            userList = userRepository.findByNameIn(requestUserList.stream().map(userData -> userData.getName().toUpperCase()).collect(Collectors.toList()));
+            districtList = districtRepository.findByNameIn(requestUserList.stream().map(userData -> userData.getDistrict().toUpperCase()).collect(Collectors.toList()));
+            userTypeList = userTypeRepository.findByUserTypeIn(requestUserList.stream().map(userData -> userData.getUserType().toUpperCase()).collect(Collectors.toList()));
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -100,21 +104,31 @@ public class UserImpl implements IUser {
         if(!userList.isEmpty()){
             throw new BadRequestExceptions("Usuario ya existe");
         }
-        List<RequestUserSave> userSaveList = requestUserSaveList.stream().map(userData -> RequestUserSave.builder()
-                .user(userData.getUser().toUpperCase())
-                .name(userData.getName().toUpperCase())
-                .surname(userData.getSurname().toUpperCase())
-                .dni(userData.getDni())
-                .address(userData.getAddress())
-                .email(userData.getEmail())
-                .mobile(userData.getMobile())
-                .gender(userData.getGender().toUpperCase())
-                .password(userData.getPassword())
-                .id_district(userData.getId_district())
-                .idUserType(userData.getIdUserType())
-                .dateRegistration(new Date(System.currentTimeMillis()))
-                .status(userData.getStatus())
-                .build()
+        if(districtList.isEmpty()){
+            throw new BadRequestExceptions("Distrito no existe");
+        }
+        if(userTypeList.isEmpty()){
+            throw new BadRequestExceptions("Tipo de usuario no existe");
+        }
+        List<RequestUserSave> userSaveList = requestUserList.stream().map((userData) -> {
+            District district = districtRepository.findByNameAndStatusTrue(userData.getDistrict().toUpperCase());
+            UserType userType = userTypeRepository.findByUserTypeAndStatusTrue(userData.getUserType().toUpperCase());
+            return RequestUserSave.builder()
+                    .user(userData.getUser().toUpperCase())
+                    .name(userData.getName().toUpperCase())
+                    .surname(userData.getSurname().toUpperCase())
+                    .dni(userData.getDni())
+                    .address(userData.getAddress())
+                    .email(userData.getEmail())
+                    .mobile(userData.getMobile())
+                    .gender(userData.getGender().toUpperCase())
+                    .password(userData.getPassword())
+                    .id_district(district.getId())
+                    .idUserType(userType.getId())
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .status(userData.getStatus())
+                    .build();
+                }
         ).toList();
         try{
             userRepository.saveAll(userMapper.listUserToListName(userSaveList));
@@ -129,23 +143,33 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public UserDTO update(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public UserDTO update(RequestUser requestUser,String user) throws BadRequestExceptions, InternalErrorExceptions {
+        boolean existsUser;
         User userData;
-
+        UserType userType;
         try{
-            userData = userRepository.findByUser(requestUser.getUser());
+            existsUser = userRepository.existsByUser(user.toUpperCase());
+            userData = userRepository.findByUser(requestUser.getUser().toUpperCase());
+            userType = userTypeRepository.findByUserTypeAndStatusTrue(requestUser.getUserType().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
-            throw new InternalErrorExceptions("USer not found");
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(!existsUser){
+            throw new BadRequestExceptions("Usuario no existe");
         }
         if(userData==null){
             throw new BadRequestExceptions("Usuario no existe");
         }
+        if(userType==null){
+            throw new BadRequestExceptions("Tipo de usuario no existe");
+        }
         userData.setName(requestUser.getName().toUpperCase());
+        userData.setSurname(requestUser.getSurname().toUpperCase());
         userData.setDni(requestUser.getDni());
         userData.setStatus(requestUser.getStatus());
         userData.setAddress(requestUser.getAddress());
-        //userData.setIdUserType(requestUser.getIdUserType());
+        userData.setIdUserType(userType.getId());
         userData.setDateRegistration(new Date(System.currentTimeMillis()));
         userData.setEmail(requestUser.getEmail());
         userData.setMobile(requestUser.getMobile());

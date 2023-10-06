@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface IUser {
     ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions;
-    ResponseSuccess saveAll(List<RequestUserSave> requestUserSaveList, String user) throws BadRequestExceptions, InternalErrorExceptions;
-    UserDTO update(RequestUser requestUser) throws BadRequestExceptions,InternalErrorExceptions;
+    ResponseSuccess saveAll(List<RequestUser> requestUser, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    UserDTO update(RequestUser requestUser,String user) throws BadRequestExceptions,InternalErrorExceptions;
 }
