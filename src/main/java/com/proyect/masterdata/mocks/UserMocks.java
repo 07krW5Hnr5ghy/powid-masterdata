@@ -16,7 +16,7 @@ public class UserMocks {
             .mobile("123456789")
             .userType(1L)
             .gender("M")
-            .modules(modulesList1)
+            //.modules(modulesList1)
             .status(1L)
             .build();
     private String[] modulesList2 = {"marketing","finanzas"};
@@ -31,7 +31,7 @@ public class UserMocks {
             .mobile("56567897")
             .userType(1L)
             .gender("M")
-            .modules(modulesList2)
+            //.modules(modulesList2)
             .status(1L)
             .build();
     private String[] modulesList3 = {"usuarios","operaciones","finanzas","inventario"};
@@ -46,7 +46,7 @@ public class UserMocks {
             .mobile("56464321")
             .userType(1L)
             .gender("F")
-            .modules(modulesList3)
+            //.modules(modulesList3)
             .status(1L)
             .build();
     private String[] modulesList4 = {"operaciones","inventario","pedidos"};
@@ -61,7 +61,7 @@ public class UserMocks {
             .mobile("987654321")
             .userType(1L)
             .gender("F")
-            .modules(modulesList4)
+            //.modules(modulesList4)
             .status(1L)
             .build();
     @Getter

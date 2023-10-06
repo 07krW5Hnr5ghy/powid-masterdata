@@ -21,6 +21,5 @@ public class UserDTO {
     String mobile;
     Long userType;
     String gender;
-    String[] modules;
     Long status;
 }

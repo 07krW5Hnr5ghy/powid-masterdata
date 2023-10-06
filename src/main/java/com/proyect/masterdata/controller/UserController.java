@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.UserDTO;
+import com.proyect.masterdata.dto.request.RequestUser;
 import com.proyect.masterdata.dto.request.RequestUserSave;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -23,9 +24,9 @@ public class UserController {
     private IUser iUser;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestBody() RequestUserSave requestUserSave
+            @RequestBody() RequestUser requestUser
             ) throws BadRequestExceptions {
-        ResponseSuccess result = iUser.save(requestUserSave);
+        ResponseSuccess result = iUser.save(requestUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -35,6 +36,14 @@ public class UserController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
         ResponseSuccess result = iUser.saveAll(requestUserSaveList,user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDTO> update(
+            @RequestBody() RequestUser requestUser
+    ) throws BadRequestExceptions {
+        UserDTO result = iUser.update(requestUser);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

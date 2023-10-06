@@ -52,7 +52,7 @@ public class User {
     @CreationTimestamp
     private Date dateRegistration;
 
-    @Column(name = "id_distrito", unique = true)
+    @Column(name = "id_distrito", updatable=false)
     private Long id_district;
 
     @Column(name = "id_tipo_usuario")

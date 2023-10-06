@@ -20,6 +20,6 @@ public class RequestUser {
     private String mobile;
     private String password;
     private Long status;
-    private Long id_district;
-    private Long idUserType;
+    private String district;
+    private String userType;
 }
