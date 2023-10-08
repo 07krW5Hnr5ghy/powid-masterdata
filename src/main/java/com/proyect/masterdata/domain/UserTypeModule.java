@@ -34,7 +34,7 @@ public class UserTypeModule {
     private Long id;
 
     @Column(name = "tipo_usuario", unique = true)
-    private String usertype;
+    private String userType;
 
     @Column(name = "estado", columnDefinition = "boolean default true")
     private boolean status = true;

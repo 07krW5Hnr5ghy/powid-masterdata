@@ -10,6 +10,7 @@ import java.util.List;
 public interface ModuleRepository extends JpaRepository<Module,Long> {
     List<Module> findAllByStatusTrue();
     Module findByIdAndStatusTrue(Long id);
+    Module findByNameAndStatusTrue(String name);
     List<Module> findByNameIn(List<String> name);
     boolean existsByName(String name);
 }

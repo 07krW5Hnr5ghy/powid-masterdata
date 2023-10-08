@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.UserType;
+import com.proyect.masterdata.domain.UserTypeModule;
 import com.proyect.masterdata.dto.UserTypeDTO;
 import com.proyect.masterdata.dto.request.RequestUserType;
 import com.proyect.masterdata.dto.request.RequestUserTypeSave;
@@ -10,6 +11,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.UserTypeMapper;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.UserTypeModuleRepository;
 import com.proyect.masterdata.repository.UserTypeRepository;
 import com.proyect.masterdata.repository.UserTypeRepositoryCustom;
 import com.proyect.masterdata.services.IUserType;
@@ -33,7 +35,7 @@ public class UserTypeImpl implements IUserType {
     private final UserTypeRepositoryCustom userTypeRepositoryCustom;
     private final UserTypeMapper userTypeMapper;
     private final UserRepository userRepository;
-
+    private final UserTypeModuleRepository userTypeModuleRepository;
     @Override
     public ResponseSuccess save(String userType, String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
@@ -56,6 +58,11 @@ public class UserTypeImpl implements IUserType {
         try {
             userTypeRepository.save(userTypeMapper.userTypeToName(RequestUserTypeSave.builder()
                     .userType(userType.toUpperCase()).user(user.toUpperCase()).build()));
+            userTypeModuleRepository.save(UserTypeModule.builder()
+                            .dateRegistration(new Date(System.currentTimeMillis()))
+                            .status(true)
+                            .userType(userType.toUpperCase())
+                    .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

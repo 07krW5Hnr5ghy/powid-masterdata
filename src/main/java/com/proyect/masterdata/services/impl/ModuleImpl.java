@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Module;
+import com.proyect.masterdata.domain.ModuleType;
 import com.proyect.masterdata.dto.ModuleDTO;
 import com.proyect.masterdata.dto.request.RequestModule;
 import com.proyect.masterdata.dto.request.RequestModuleSave;
@@ -11,6 +12,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.ModuleMapper;
 import com.proyect.masterdata.repository.ModuleRepository;
 import com.proyect.masterdata.repository.ModuleRepositoryCustom;
+import com.proyect.masterdata.repository.ModuleTypeRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IModule;
 import com.proyect.masterdata.utils.Constants;
@@ -33,7 +35,6 @@ public class ModuleImpl implements IModule {
     private final ModuleRepositoryCustom moduleRepositoryCustom;
     private final ModuleMapper moduleMapper;
     private final UserRepository userRepository;
-
 
     @Override
     public ResponseSuccess save(String name,double price,int moduleStatus, String user) throws BadRequestExceptions, InternalErrorExceptions {
