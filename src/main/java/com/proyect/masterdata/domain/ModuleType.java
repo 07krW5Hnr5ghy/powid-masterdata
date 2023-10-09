@@ -32,10 +32,10 @@ public class ModuleType {
     private Date dateRegistration;
 
     @ManyToOne
-    @JoinColumn(name = "id_modulo", columnDefinition = "idModule",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_modulo"))
+    @JoinColumn(name = "id_modulo", columnDefinition = "idModule",insertable = false, updatable = false)
     private Module module;
 
     @ManyToOne
-    @JoinColumn(name = "id_tipo_usuario_modulo", columnDefinition = "idUserTypeModule",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_usuario_modulo"))
+    @JoinColumn(name = "id_tipo_usuario_modulo", columnDefinition = "idUserTypeModule",insertable = false, updatable = false)
     private UserTypeModule userTypeModule;
 }
