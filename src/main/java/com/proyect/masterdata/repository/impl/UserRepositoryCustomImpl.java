@@ -73,12 +73,10 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                     )
             );
         }
-        if(status != 0L){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
+        if(status!=null){
+            conditions.add(criteriaBuilder.equal(itemRoot.get("status"),status));
         }
-        if(status == 0L){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
-        }
+
         return conditions;
     }
 
