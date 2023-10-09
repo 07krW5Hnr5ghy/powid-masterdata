@@ -79,7 +79,7 @@ public class StateRepositoryCustomImpl implements StateRepositoryCustom {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("name")),user.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("user")),user.toUpperCase())));
         }
 
         if(status){

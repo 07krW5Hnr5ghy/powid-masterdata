@@ -6,6 +6,7 @@ import com.proyect.masterdata.domain.UserType;
 import com.proyect.masterdata.dto.UserDTO;
 import com.proyect.masterdata.dto.request.RequestUser;
 import com.proyect.masterdata.dto.request.RequestUserSave;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -180,6 +181,34 @@ public class UserImpl implements IUser {
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions("USer not update");
+        }
+    }
+
+    @Override
+    public ResponseDelete delete(String user) throws InternalErrorExceptions,BadRequestExceptions{
+        User datauser;
+        try{
+            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(datauser==null){
+            throw new BadRequestExceptions("Usuario no existe");
+        }
+
+        try{
+            datauser.setDateRegistration(new Date(System.currentTimeMillis()));
+            datauser.setStatus(0L);
+            userRepository.save(datauser);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 }
