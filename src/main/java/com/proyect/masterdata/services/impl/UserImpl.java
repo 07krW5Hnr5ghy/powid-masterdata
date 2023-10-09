@@ -234,10 +234,10 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public Page<UserDTO> list(String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
+    public Page<UserDTO> list(String user,Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
         Page<User> userPage;
         try{
-            userPage = userRepositoryCustom.searchForUser(user,sort,sortColumn,pageNumber,pageSize,1L);
+            userPage = userRepositoryCustom.searchForUser(user,sort,sortColumn,pageNumber,pageSize,status);
         }catch (RuntimeException e){
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -250,7 +250,7 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public Page<UserDTO> listStatusFalse(String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
+    public Page<UserDTO> listStatusFalse(String user,Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
         Page<User> userPage;
         try{
             userPage = userRepositoryCustom.searchForUser(user,sort,sortColumn,pageNumber,pageSize,0L);

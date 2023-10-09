@@ -66,24 +66,26 @@ public class UserController {
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UserDTO>> list(
             @RequestParam(value = "user",required = false) String user,
+            @RequestParam(value = "status",required = false) Long status,
             @RequestParam(value = "sort",required = false) String sort,
             @RequestParam(value = "sortColumn",required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions{
-        Page<UserDTO> result = iUser.list(user,sort,sortColumn,pageNumber,pageSize);
+        Page<UserDTO> result = iUser.list(user,status,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
     @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UserDTO>> listStatusFalse(
             @RequestParam(value = "user",required = false) String user,
+            @RequestParam(value = "status",required = false) Long status,
             @RequestParam(value = "sort",required = false) String sort,
             @RequestParam(value = "sortColumn",required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions {
-        Page<UserDTO> result = iUser.listStatusFalse(user,sort,sortColumn,pageNumber,pageSize);
+        Page<UserDTO> result = iUser.listStatusFalse(user,status,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
