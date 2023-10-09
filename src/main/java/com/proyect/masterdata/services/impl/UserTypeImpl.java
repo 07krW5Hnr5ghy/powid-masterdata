@@ -56,8 +56,11 @@ public class UserTypeImpl implements IUserType {
         }
 
         try {
-            userTypeRepository.save(userTypeMapper.userTypeToName(RequestUserTypeSave.builder()
-                    .userType(userType.toUpperCase()).user(user.toUpperCase()).build()));
+            userTypeRepository.save(UserType.builder()
+                            .userType(userType.toUpperCase())
+                            .user(user.toUpperCase())
+                            .status(true)
+                    .build());
             userTypeModuleRepository.save(UserTypeModule.builder()
                             .dateRegistration(new Date(System.currentTimeMillis()))
                             .status(true)
