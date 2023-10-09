@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepositoryCustom {
     Page<User> searchForUser(
-            String username,
+            String user,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize,
-            Boolean status
+            Long status
     );
 }

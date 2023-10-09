@@ -13,14 +13,19 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.UserMapper;
 import com.proyect.masterdata.repository.DistrictRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.UserRepositoryCustom;
 import com.proyect.masterdata.repository.UserTypeRepository;
 import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +37,7 @@ public class UserImpl implements IUser {
     private final DistrictRepository districtRepository;
     private final UserTypeRepository userTypeRepository;
     private final UserMapper userMapper;
+    private final UserRepositoryCustom userRepositoryCustom;
     @Override
     public ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
@@ -209,6 +215,62 @@ public class UserImpl implements IUser {
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public List<UserDTO> listUser() throws BadRequestExceptions{
+        List<User> users = new ArrayList<>();
+        try {
+            users = userRepository.findAll();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+        if(users.isEmpty()){
+            return Collections.emptyList();
+        }
+        return userMapper.listUserToListUserDTO(users);
+    }
+
+    @Override
+    public Page<UserDTO> list(String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
+        Page<User> userPage;
+        try{
+            userPage = userRepositoryCustom.searchForUser(user,sort,sortColumn,pageNumber,pageSize,1L);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+        if(userPage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(userMapper.listUserToListUserDTO(userPage.getContent()),
+                userPage.getPageable(),userPage.getTotalElements());
+    }
+
+    @Override
+    public Page<UserDTO> listStatusFalse(String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
+        Page<User> userPage;
+        try{
+            userPage = userRepositoryCustom.searchForUser(user,sort,sortColumn,pageNumber,pageSize,0L);
+        }catch (RuntimeException e){
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+        if(userPage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(userMapper.listUserToListUserDTO(userPage.getContent()),
+                userPage.getPageable(),userPage.getTotalElements());
+    }
+
+    @Override
+    public UserDTO findByUser(String user) throws BadRequestExceptions{
+        try {
+            return userMapper.userToUserDTO(userRepository.findByUser(user));
+        } catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }
 }

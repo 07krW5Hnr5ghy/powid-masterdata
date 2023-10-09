@@ -24,7 +24,7 @@ public interface UserMapper {
     @Mapping(target = "status",source = "status")
     @Mapping(target = "district",source = "id_district")
     @Mapping(target = "userType",source = "idUserType")
-    @Mapping(target = "modules",ignore = true)
+    //@Mapping(target = "modules",ignore = true)
     UserDTO userToUserDTO(User user);
     @Mapping(target = "user",source = "user")
     @Mapping(target = "name",source = "name")
@@ -42,4 +42,5 @@ public interface UserMapper {
     User userToName(RequestUserSave requestUserSave);
 
     List<User> listUserToListName(List<RequestUserSave> requestUserSaveList);
+    List<UserDTO> listUserToListUserDTO(List<User> userList);
 }
