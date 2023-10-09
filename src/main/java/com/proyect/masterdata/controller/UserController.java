@@ -3,6 +3,7 @@ package com.proyect.masterdata.controller;
 import com.proyect.masterdata.dto.UserDTO;
 import com.proyect.masterdata.dto.request.RequestUser;
 import com.proyect.masterdata.dto.request.RequestUserSave;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.mocks.UserMocks;
@@ -45,6 +46,14 @@ public class UserController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
         UserDTO result = iUser.update(requestUser,user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions{
+        ResponseDelete result = iUser.delete(user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
