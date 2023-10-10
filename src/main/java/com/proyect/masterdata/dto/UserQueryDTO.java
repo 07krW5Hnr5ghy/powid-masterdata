@@ -17,10 +17,10 @@ public class UserQueryDTO {
     String surname;
     String email;
     String password;
-    Long district;
+    String district;
     String address;
     String mobile;
-    Long userType;
+    String userType;
     String gender;
     Long status;
     List<String> modules;

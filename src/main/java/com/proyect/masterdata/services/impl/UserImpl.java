@@ -261,8 +261,8 @@ public class UserImpl implements IUser {
                     .password(userData.getPassword())
                     .address(userData.getAddress().toUpperCase())
                     .mobile(userData.getMobile())
-                    .district(userData.getId_district())
-                    .userType(userData.getIdUserType())
+                    .district(districtRepository.findById(userData.getId_district()).orElse(null).getName())
+                    .userType(userType.getUserType())
                     .status(userData.getStatus())
                     .modules(modules)
                     .build();
