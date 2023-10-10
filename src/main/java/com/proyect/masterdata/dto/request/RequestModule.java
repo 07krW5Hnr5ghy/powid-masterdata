@@ -12,7 +12,6 @@ import java.sql.Date;
 @NoArgsConstructor
 @Data
 public class RequestModule {
-    private Long code;
     private String name;
     private double price;
     private int statusModule;

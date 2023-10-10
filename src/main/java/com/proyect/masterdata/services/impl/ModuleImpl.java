@@ -113,7 +113,7 @@ public class ModuleImpl implements IModule {
         Module module;
         try{
             existsUser = userRepository.existsById(requestModule.getUser().toUpperCase());
-            module = moduleRepository.findById(requestModule.getCode()).orElse(null);
+            module = moduleRepository.findByNameAndStatusTrue(requestModule.getName().toUpperCase());
         }catch (RuntimeException e){
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -124,7 +124,6 @@ public class ModuleImpl implements IModule {
         if(module==null){
             throw new BadRequestExceptions("Modulo no existe");
         }
-        module.setName(requestModule.getName().toUpperCase());
         module.setPrice(requestModule.getPrice());
         module.setStatus_module(requestModule.getStatusModule());
         module.setStatus(requestModule.isStatus());
