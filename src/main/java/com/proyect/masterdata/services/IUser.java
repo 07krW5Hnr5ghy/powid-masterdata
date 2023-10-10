@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.dto.UserDTO;
+import com.proyect.masterdata.dto.UserQueryDTO;
 import com.proyect.masterdata.dto.request.RequestUser;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -16,7 +17,7 @@ public interface IUser {
     UserDTO update(RequestUser requestUser,String user) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseDelete delete(String user) throws BadRequestExceptions,InternalErrorExceptions;
     List<UserDTO> listUser() throws BadRequestExceptions;
-    Page<UserDTO> list(String user,Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    Page<UserQueryDTO> list(String user, Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
     Page<UserDTO> listStatusFalse(String user,Long status,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
     UserDTO findByUser(String user) throws BadRequestExceptions;
 }

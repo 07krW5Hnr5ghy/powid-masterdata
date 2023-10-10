@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ModuleTypeRepository extends JpaRepository<ModuleType,Long> {
     List<ModuleType> findByModuleIn(List<String> modules);
+    List<ModuleType> findByIdUserTypeModule(Long idUserTypeModule);
 }

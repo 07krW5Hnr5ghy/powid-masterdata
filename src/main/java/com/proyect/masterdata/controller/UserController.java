@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.UserDTO;
+import com.proyect.masterdata.dto.UserQueryDTO;
 import com.proyect.masterdata.dto.request.RequestUser;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -64,7 +65,7 @@ public class UserController {
     }
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<UserDTO>> list(
+    public ResponseEntity<Page<UserQueryDTO>> list(
             @RequestParam(value = "user",required = false) String user,
             @RequestParam(value = "status",required = false) Long status,
             @RequestParam(value = "sort",required = false) String sort,
@@ -72,7 +73,7 @@ public class UserController {
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions{
-        Page<UserDTO> result = iUser.list(user,status,sort,sortColumn,pageNumber,pageSize);
+        Page<UserQueryDTO> result = iUser.list(user,status,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

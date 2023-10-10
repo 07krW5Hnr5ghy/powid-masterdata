@@ -6,12 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class UserDTO {
+public class UserQueryDTO {
     String dni;
     String user;
     String name;
@@ -24,4 +23,5 @@ public class UserDTO {
     Long userType;
     String gender;
     Long status;
+    List<String> modules;
 }

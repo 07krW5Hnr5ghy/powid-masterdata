@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserTypeModuleRepository extends JpaRepository<UserTypeModule,Long> {
     UserTypeModule findByUserTypeAndStatusTrue(String name);
+    UserTypeModule findByUserType(String name);
 }

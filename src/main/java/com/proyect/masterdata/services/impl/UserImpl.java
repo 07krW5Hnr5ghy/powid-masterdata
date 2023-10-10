@@ -1,9 +1,8 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.District;
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.UserType;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.UserDTO;
+import com.proyect.masterdata.dto.UserQueryDTO;
 import com.proyect.masterdata.dto.request.RequestUser;
 import com.proyect.masterdata.dto.request.RequestUserSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -11,10 +10,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.UserMapper;
-import com.proyect.masterdata.repository.DistrictRepository;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.repository.UserRepositoryCustom;
-import com.proyect.masterdata.repository.UserTypeRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +23,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +35,9 @@ public class UserImpl implements IUser {
     private final UserTypeRepository userTypeRepository;
     private final UserMapper userMapper;
     private final UserRepositoryCustom userRepositoryCustom;
+    private final UserTypeModuleRepository userTypeModuleRepository;
+    private final ModuleTypeRepository moduleTypeRepository;
+    private final ModuleRepository moduleRepository;
     @Override
     public ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
@@ -234,7 +234,7 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public Page<UserDTO> list(String user,Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
+    public Page<UserQueryDTO> list(String user, Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
         Page<User> userPage;
         try{
             userPage = userRepositoryCustom.searchForUser(user,sort,sortColumn,pageNumber,pageSize,status);
@@ -245,7 +245,29 @@ public class UserImpl implements IUser {
         if(userPage.isEmpty()){
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(userMapper.listUserToListUserDTO(userPage.getContent()),
+        List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
+            List<String> modules = new ArrayList<>();
+            UserType userType = userTypeRepository.findById(userData.getIdUserType()).orElse(null);
+            UserTypeModule userTypeModule = userTypeModuleRepository.findByUserType(userType.getUserType());
+            List<Long> moduleTypeList = moduleTypeRepository.findByIdUserTypeModule(userTypeModule.getId()).stream().map(moduleType -> moduleType.getIdModule()).toList();
+            modules = moduleRepository.findAllById(moduleTypeList).stream().map(module -> module.getName()).toList();
+            return UserQueryDTO.builder()
+                    .dni(userData.getDni())
+                    .user(userData.getUser().toUpperCase())
+                    .name(userData.getName().toUpperCase())
+                    .surname(userData.getSurname().toUpperCase())
+                    .gender(userData.getGender().toUpperCase())
+                    .email(userData.getEmail())
+                    .password(userData.getPassword())
+                    .address(userData.getAddress().toUpperCase())
+                    .mobile(userData.getMobile())
+                    .district(userData.getId_district())
+                    .userType(userData.getIdUserType())
+                    .status(userData.getStatus())
+                    .modules(modules)
+                    .build();
+        }).toList();
+        return new PageImpl<>(userDTOList,
                 userPage.getPageable(),userPage.getTotalElements());
     }
 
