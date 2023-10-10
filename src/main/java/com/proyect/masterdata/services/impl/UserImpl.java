@@ -219,21 +219,6 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public List<UserDTO> listUser() throws BadRequestExceptions{
-        List<User> users = new ArrayList<>();
-        try {
-            users = userRepository.findAll();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if(users.isEmpty()){
-            return Collections.emptyList();
-        }
-        return userMapper.listUserToListUserDTO(users);
-    }
-
-    @Override
     public Page<UserQueryDTO> list(String user, Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
         Page<User> userPage;
         try{
@@ -269,30 +254,5 @@ public class UserImpl implements IUser {
         }).toList();
         return new PageImpl<>(userDTOList,
                 userPage.getPageable(),userPage.getTotalElements());
-    }
-
-    @Override
-    public Page<UserDTO> listStatusFalse(String user,Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
-        Page<User> userPage;
-        try{
-            userPage = userRepositoryCustom.searchForUser(user,sort,sortColumn,pageNumber,pageSize,0L);
-        }catch (RuntimeException e){
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if(userPage.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(userMapper.listUserToListUserDTO(userPage.getContent()),
-                userPage.getPageable(),userPage.getTotalElements());
-    }
-
-    @Override
-    public UserDTO findByUser(String user) throws BadRequestExceptions{
-        try {
-            return userMapper.userToUserDTO(userRepository.findByUser(user));
-        } catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
     }
 }

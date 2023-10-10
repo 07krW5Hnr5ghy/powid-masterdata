@@ -56,14 +56,6 @@ public class UserController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @GetMapping(value = "list",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<UserDTO>> listUsers(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<UserDTO> userList = iUser.listUser();
-        return new ResponseEntity<>(userList, HttpStatus.OK);
-    }
-
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UserQueryDTO>> list(
             @RequestParam(value = "user",required = false) String user,
@@ -76,26 +68,4 @@ public class UserController {
         Page<UserQueryDTO> result = iUser.list(user,status,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
-
-    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<UserDTO>> listStatusFalse(
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "status",required = false) Long status,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<UserDTO> result = iUser.listStatusFalse(user,status,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/code",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> findByCode(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        UserDTO result = iUser.findByUser(user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
 }

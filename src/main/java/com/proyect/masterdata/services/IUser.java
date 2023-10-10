@@ -16,8 +16,5 @@ public interface IUser {
     ResponseSuccess saveAll(List<RequestUser> requestUser, String user) throws BadRequestExceptions, InternalErrorExceptions;
     UserDTO update(RequestUser requestUser,String user) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseDelete delete(String user) throws BadRequestExceptions,InternalErrorExceptions;
-    List<UserDTO> listUser() throws BadRequestExceptions;
     Page<UserQueryDTO> list(String user, Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    Page<UserDTO> listStatusFalse(String user,Long status,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
-    UserDTO findByUser(String user) throws BadRequestExceptions;
 }
