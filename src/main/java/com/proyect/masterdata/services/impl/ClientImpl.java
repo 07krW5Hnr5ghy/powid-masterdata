@@ -2,6 +2,8 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.District;
+import com.proyect.masterdata.dto.ClientDTO;
+import com.proyect.masterdata.dto.request.RequestClient;
 import com.proyect.masterdata.dto.request.RequestClientSave;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -115,6 +117,43 @@ public class ClientImpl implements IClient {
                         .user(user.toUpperCase())
                         .build()
             ).toList());
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public ClientDTO update(RequestClient requestClient) throws InternalErrorExceptions, BadRequestExceptions {
+        boolean existUser;
+        Client client;
+        try{
+            existUser = userRepository.existsById(requestClient.getUser().toUpperCase());
+            client = clientRepository.findByRuc(requestClient.getRuc());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(!existUser){
+            throw new BadRequestExceptions("Usuario no existe");
+        }
+        if(client==null){
+            throw new BadRequestExceptions("Cliente no existe");
+        }
+        try {
+            client.setName(requestClient.getName().toUpperCase());
+            client.setSurname(requestClient.getSurname().toUpperCase());
+            client.setDni(requestClient.getDni());
+            client.setDateRegistration(new Date(System.currentTimeMillis()));
+            client.setStatus(requestClient.getStatus());
+            client.setMobile(requestClient.getMobile());
+            client.setAddress(requestClient.getAddress().toUpperCase());
+            client.setEmail(requestClient.getEmail());
+            return clientMapper.clientToClientDTO(client);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
