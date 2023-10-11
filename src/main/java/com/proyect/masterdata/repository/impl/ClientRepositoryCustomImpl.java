@@ -92,7 +92,7 @@ public class ClientRepositoryCustomImpl implements ClientRepositoryCustom {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("user")),business.toUpperCase()
+                                    criteriaBuilder.upper(itemRoot.get("user")),user.toUpperCase()
                             )
                     )
             );
