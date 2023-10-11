@@ -5,6 +5,7 @@ import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.dto.ClientDTO;
 import com.proyect.masterdata.dto.request.RequestClient;
 import com.proyect.masterdata.dto.request.RequestClientSave;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -129,16 +130,16 @@ public class ClientImpl implements IClient {
 
     @Override
     public ClientDTO update(RequestClient requestClient) throws InternalErrorExceptions, BadRequestExceptions {
-        boolean existUser;
+        boolean existsUser;
         Client client;
         try{
-            existUser = userRepository.existsById(requestClient.getUser().toUpperCase());
+            existsUser = userRepository.existsById(requestClient.getUser().toUpperCase());
             client = clientRepository.findByRuc(requestClient.getRuc());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existUser){
+        if(!existsUser){
             throw new BadRequestExceptions("Usuario no existe");
         }
         if(client==null){
@@ -154,6 +155,36 @@ public class ClientImpl implements IClient {
             client.setAddress(requestClient.getAddress().toUpperCase());
             client.setEmail(requestClient.getEmail());
             return clientMapper.clientToClientDTO(client);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public ResponseDelete delete(String ruc,String user) throws InternalErrorExceptions, BadRequestExceptions {
+        boolean existsUser;
+        Client client;
+        try {
+            existsUser = userRepository.existsById(user.toUpperCase());
+            client = clientRepository.findByRuc(ruc);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(!existsUser){
+            throw new BadRequestExceptions("Usuario no existe");
+        }
+        if(client==null){
+            throw new BadRequestExceptions("Cliente no existe");
+        }
+        try {
+            client.setStatus(0L);
+            clientRepository.save(client);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
