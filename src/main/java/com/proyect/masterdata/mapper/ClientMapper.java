@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ClientMapper {
     ClientMapper INSTANCE = Mappers.getMapper(ClientMapper.class);
-    List<Client> listClientToListName(List<RequestClientSave> requestClientSaveList);
+    @Mapping(target = "district",ignore = true)
     ClientDTO clientToClientDTO(Client client);
     List<ClientDTO> listClientToListClientDTO(List<Client> clientList);
 }

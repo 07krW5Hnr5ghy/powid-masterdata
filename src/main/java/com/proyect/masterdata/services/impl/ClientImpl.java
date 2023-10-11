@@ -58,6 +58,7 @@ public class ClientImpl implements IClient {
             throw new BadRequestExceptions("Distrito no existe");
         }
         try{
+            District district = districtRepository.findByNameAndStatusTrue(requestClientSave.getDistrict());
             clientRepository.save(Client.builder()
                     .name(requestClientSave.getName().toUpperCase())
                     .surname(requestClientSave.getSurname().toUpperCase())
@@ -68,7 +69,8 @@ public class ClientImpl implements IClient {
                     .address(requestClientSave.getAddress().toUpperCase())
                     .mobile(requestClientSave.getMobile())
                     .ruc(requestClientSave.getRuc())
-                    .id_district(districtRepository.findByNameAndStatusTrue(requestClientSave.getDistrict()).getId())
+                    .id_district(district.getId())
+                    .district(district)
                     .status(1L)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .user(user.toUpperCase())
@@ -92,6 +94,7 @@ public class ClientImpl implements IClient {
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
             clientList = clientRepository.findByRucIn(requestClientSaveList.stream().map(client -> client.getRuc()).toList());
+            districtList = districtRepository.findByNameIn(requestClientSaveList.stream().map(client -> client.getDistrict()).toList());
         }catch (RuntimeException e){
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -102,9 +105,13 @@ public class ClientImpl implements IClient {
         if(!clientList.isEmpty()){
             throw new BadRequestExceptions("Cliente existente");
         }
+        if(districtList.size() != requestClientSaveList.size()){
+            throw new BadRequestExceptions("Distrito no existe");
+        }
         try {
-            clientRepository.saveAll(requestClientSaveList.stream().map(client ->
-                Client.builder()
+            clientRepository.saveAll(requestClientSaveList.stream().map(client -> {
+                District district = districtRepository.findByNameAndStatusTrue(client.getDistrict());
+                return Client.builder()
                         .name(client.getName().toUpperCase())
                         .surname(client.getSurname().toUpperCase())
                         .business(client.getBusiness().toUpperCase())
@@ -114,12 +121,13 @@ public class ClientImpl implements IClient {
                         .address(client.getAddress().toUpperCase())
                         .mobile(client.getMobile())
                         .ruc(client.getRuc())
-                        .id_district(districtRepository.findByNameAndStatusTrue(client.getDistrict()).getId())
+                        .id_district(district.getId())
+                        .district(district)
                         .status(1L)
                         .dateRegistration(new Date(System.currentTimeMillis()))
                         .user(user.toUpperCase())
-                        .build()
-            ).toList());
+                        .build();
+            }).toList());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

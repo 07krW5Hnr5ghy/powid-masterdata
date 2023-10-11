@@ -111,10 +111,10 @@ public class UserImpl implements IUser {
         if(!userList.isEmpty()){
             throw new BadRequestExceptions("Usuario ya existe");
         }
-        if(districtList.isEmpty()){
+        if(districtList.size() != requestUserList.size()){
             throw new BadRequestExceptions("Distrito no existe");
         }
-        if(userTypeList.isEmpty()){
+        if(userTypeList.size() != requestUserList.size()){
             throw new BadRequestExceptions("Tipo de usuario no existe");
         }
         List<RequestUserSave> userSaveList = requestUserList.stream().map((userData) -> {
