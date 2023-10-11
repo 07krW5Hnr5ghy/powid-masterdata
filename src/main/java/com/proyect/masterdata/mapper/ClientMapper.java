@@ -14,5 +14,4 @@ public interface ClientMapper {
     ClientMapper INSTANCE = Mappers.getMapper(ClientMapper.class);
     @Mapping(target = "district",ignore = true)
     ClientDTO clientToClientDTO(Client client);
-    List<ClientDTO> listClientToListClientDTO(List<Client> clientList);
 }

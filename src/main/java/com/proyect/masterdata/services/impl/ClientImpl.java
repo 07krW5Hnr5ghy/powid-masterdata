@@ -216,7 +216,21 @@ public class ClientImpl implements IClient {
         if(clientPage.isEmpty()){
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(clientMapper.listClientToListClientDTO(clientPage.getContent()),
+        List<ClientDTO> clientDTOList = clientPage.getContent().stream().map(client -> ClientDTO.builder()
+                .name(client.getName().toUpperCase())
+                .surname(client.getSurname().toUpperCase())
+                .business(client.getBusiness().toUpperCase())
+                .dni(client.getDni())
+                .email(client.getEmail())
+                .ruc(client.getRuc())
+                .address(client.getAddress().toUpperCase())
+                .mobile(client.getMobile())
+                .ruc(client.getRuc())
+                .district(districtRepository.findById(client.getId_district()).orElse(null).getName())
+                .status(client.getStatus())
+                .build()
+        ).toList();
+        return new PageImpl<>(clientDTOList,
                 clientPage.getPageable(),clientPage.getTotalElements());
     }
 }
