@@ -25,6 +25,7 @@ public class ClientRepositoryCustomImpl implements ClientRepositoryCustom {
     public Page<Client> searchForClient(
             String ruc,
             String business,
+            String user,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -36,7 +37,7 @@ public class ClientRepositoryCustomImpl implements ClientRepositoryCustom {
         Root<Client> itemRoot = criteriaQuery.from(Client.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(ruc,business,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(ruc,business,user,status,criteriaBuilder,itemRoot);
 
         if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
             List<Order> clientList = new ArrayList<>();
@@ -56,13 +57,14 @@ public class ClientRepositoryCustomImpl implements ClientRepositoryCustom {
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        long count = getOrderCount(ruc,business,status);
+        long count = getOrderCount(ruc,business,user,status);
         return new PageImpl<>(orderTypedQuery.getResultList(),pageable,count);
     }
 
     public List<Predicate> predicateConditions(
             String ruc,
             String business,
+            String user,
             Long status,
             CriteriaBuilder criteriaBuilder,
             Root<Client> itemRoot
@@ -82,6 +84,15 @@ public class ClientRepositoryCustomImpl implements ClientRepositoryCustom {
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
                                     criteriaBuilder.upper(itemRoot.get("business")),business.toUpperCase()
+                            )
+                    )
+            );
+        }
+        if(user!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    criteriaBuilder.upper(itemRoot.get("user")),business.toUpperCase()
                             )
                     )
             );
@@ -116,13 +127,13 @@ public class ClientRepositoryCustomImpl implements ClientRepositoryCustom {
         return clientList;
     }
 
-    private long getOrderCount(String ruc,String business,Long status){
+    private long getOrderCount(String ruc,String business,String user,Long status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Client> itemRoot = criteriaQuery.from(Client.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(ruc,business,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(ruc,business,user,status,criteriaBuilder,itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[]{}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

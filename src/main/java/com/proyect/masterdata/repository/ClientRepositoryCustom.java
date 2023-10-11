@@ -9,6 +9,7 @@ public interface ClientRepositoryCustom {
     Page<Client> searchForClient(
             String ruc,
             String business,
+            String user,
             String sort,
             String sortColumn,
             Integer pageNumber,

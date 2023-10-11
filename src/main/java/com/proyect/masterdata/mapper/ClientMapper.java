@@ -14,4 +14,5 @@ public interface ClientMapper {
     ClientMapper INSTANCE = Mappers.getMapper(ClientMapper.class);
     List<Client> listClientToListName(List<RequestClientSave> requestClientSaveList);
     ClientDTO clientToClientDTO(Client client);
+    List<ClientDTO> listClientToListClientDTO(List<Client> clientList);
 }

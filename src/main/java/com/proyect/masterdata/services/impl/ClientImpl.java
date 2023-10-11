@@ -11,19 +11,20 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.ClientMapper;
 import com.proyect.masterdata.repository.ClientRepository;
+import com.proyect.masterdata.repository.ClientRepositoryCustom;
 import com.proyect.masterdata.repository.DistrictRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IClient;
 import com.proyect.masterdata.utils.Constants;
-import feign.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,7 @@ public class ClientImpl implements IClient {
     private final ClientRepository clientRepository;
     private final DistrictRepository districtRepository;
     private final ClientMapper clientMapper;
+    private final ClientRepositoryCustom clientRepositoryCustom;
     @Override
     public ResponseSuccess save(RequestClientSave requestClientSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
@@ -191,5 +193,21 @@ public class ClientImpl implements IClient {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<ClientDTO> list(String ruc, String business, String user,Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+        Page<Client> clientPage;
+        try{
+            clientPage = clientRepositoryCustom.searchForClient(ruc,business,user,sort,sortColumn,pageNumber,pageSize,status);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(clientPage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return new PageImpl<>(clientMapper.listClientToListClientDTO(clientPage.getContent()),
+                clientPage.getPageable(),clientPage.getTotalElements());
     }
 }
