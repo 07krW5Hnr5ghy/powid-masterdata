@@ -43,7 +43,7 @@ public class ClientImpl implements IClient {
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
             existsClient = clientRepository.existsByRuc(requestClientSave.getRuc());
-            existDistrict = districtRepository.existsByName(requestClientSave.getName());
+            existDistrict = districtRepository.existsByName(requestClientSave.getDistrict().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -58,7 +58,7 @@ public class ClientImpl implements IClient {
             throw new BadRequestExceptions("Distrito no existe");
         }
         try{
-            District district = districtRepository.findByNameAndStatusTrue(requestClientSave.getDistrict());
+            District district = districtRepository.findByNameAndStatusTrue(requestClientSave.getDistrict().toUpperCase());
             clientRepository.save(Client.builder()
                     .name(requestClientSave.getName().toUpperCase())
                     .surname(requestClientSave.getSurname().toUpperCase())
@@ -94,7 +94,7 @@ public class ClientImpl implements IClient {
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
             clientList = clientRepository.findByRucIn(requestClientSaveList.stream().map(client -> client.getRuc()).toList());
-            districtList = districtRepository.findByNameIn(requestClientSaveList.stream().map(client -> client.getDistrict()).toList());
+            districtList = districtRepository.findByNameIn(requestClientSaveList.stream().map(client -> client.getDistrict().toUpperCase()).toList());
         }catch (RuntimeException e){
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -110,7 +110,7 @@ public class ClientImpl implements IClient {
         }
         try {
             clientRepository.saveAll(requestClientSaveList.stream().map(client -> {
-                District district = districtRepository.findByNameAndStatusTrue(client.getDistrict());
+                District district = districtRepository.findByNameAndStatusTrue(client.getDistrict().toUpperCase());
                 return Client.builder()
                         .name(client.getName().toUpperCase())
                         .surname(client.getSurname().toUpperCase())
