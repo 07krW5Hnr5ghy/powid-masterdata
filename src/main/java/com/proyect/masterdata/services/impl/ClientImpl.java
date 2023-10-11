@@ -164,6 +164,7 @@ public class ClientImpl implements IClient {
             client.setMobile(requestClient.getMobile());
             client.setAddress(requestClient.getAddress().toUpperCase());
             client.setEmail(requestClient.getEmail());
+            clientRepository.save(client);
             ClientDTO clientDTO = clientMapper.clientToClientDTO(client);
             clientDTO.setDistrict(districtRepository.findById(client.getId_district()).orElse(null).getName());
             return clientDTO;
