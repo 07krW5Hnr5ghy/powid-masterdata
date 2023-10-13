@@ -33,12 +33,12 @@ public class PaymentTypeImpl implements IPaymentType {
     private final PaymentTypeRepositoryCustom paymentTypeRepositoryCustom;
     private final PaymentTypeMapper paymentTypeMapper;
     @Override
-    public ResponseSuccess save(RequestPaymentTypeSave requestPaymentTypeSave) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String type,String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         boolean existsType;
         try{
-            existsUser = userRepository.existsById(requestPaymentTypeSave.getUser().toUpperCase());
-            existsType = paymentTypeRepository.existsByType(requestPaymentTypeSave.getType().toUpperCase());
+            existsUser = userRepository.existsById(user.toUpperCase());
+            existsType = paymentTypeRepository.existsByType(type.toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -51,10 +51,10 @@ public class PaymentTypeImpl implements IPaymentType {
         }
         try{
             paymentTypeRepository.save(PaymentType.builder()
-                            .type(requestPaymentTypeSave.getType().toUpperCase())
+                            .type(type.toUpperCase())
                             .dateRegistration(new Date(System.currentTimeMillis()))
                             .status(true)
-                            .user(requestPaymentTypeSave.getUser().toUpperCase())
+                            .user(user.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -80,8 +80,8 @@ public class PaymentTypeImpl implements IPaymentType {
         if(!existsUser){
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(paymentTypeList.size() != names.size()){
-            throw new BadRequestExceptions("Tipo de pago no existe");
+        if(!paymentTypeList.isEmpty()){
+            throw new BadRequestExceptions("Tipo de pago ya existe");
         }
         try{
             paymentTypeRepository.saveAll(paymentTypeMapper.listPaymentTypeToName(names.stream().map(name -> RequestPaymentTypeSave.builder()
