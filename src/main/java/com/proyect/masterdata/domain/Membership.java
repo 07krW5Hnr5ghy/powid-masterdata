@@ -14,12 +14,12 @@ import org.hibernate.annotations.Parameter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableMenbresia, schema = Constants.schemaMaster)
-public class Menbresia {
+@Table(name = Constants.tableMembership, schema = Constants.schemaMaster)
+public class Membership {
     @Id
-    @GeneratedValue(generator = "sequence-menbresia")
+    @GeneratedValue(generator = "sequence-membership")
     @GenericGenerator(
-            name = "sequence-menbresia",
+            name = "sequence-membership",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
                     @Parameter(name = "sequence_name", value = "menbresia_sequence"),

@@ -71,7 +71,7 @@ public class Channel {
 
     @ManyToOne
     @JoinColumn(name = "id_menbresia", columnDefinition = "idMenbresia",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_menbresia"))
-    private Menbresia menbresia;
+    private Membership membership;
 
     @ManyToOne
     @JoinColumn(name = "id_tipo_pago", columnDefinition = "idPaymentType",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_pago"))

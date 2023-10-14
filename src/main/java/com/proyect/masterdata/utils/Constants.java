@@ -12,7 +12,7 @@ public class Constants {
     public static final String tableUserType= "tipo_usuario";
     public static final String tableChannel = "canal";
     public static final String tableClient = "cliente";
-    public static final String tableMenbresia = "menbresia";
+    public static final String tableMembership = "membership";
     public static final String tableUserTypeModule = "tipo_usuario_modulo";
     public static final String tablePayment = "pago";
     public static final String tableModule = "modulo";
