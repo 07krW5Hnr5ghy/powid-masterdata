@@ -12,19 +12,8 @@ import java.sql.Date;
 @NoArgsConstructor
 @Data
 public class PaymentDTO {
-    String dni;
-    String email;
-    String name;
-    String surname;
-    String phoneNumber;
-    String paymentStatusName;
-    String billUrl;
-    String ecommerceName;
-    String paymentMethodName;
-    Double totalPaymentPerMonth;
-    Number monthsPayed;
-    Date startDate;
-    Date paymentDate;
-    String user;
-    Boolean status;
+    double totalPayment;
+    double discount;
+    String month;
+    String channel;
 }

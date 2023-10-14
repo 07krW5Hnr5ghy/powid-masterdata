@@ -13,5 +13,5 @@ public class RequestPaymentSave {
     double totalPayment;
     double discount;
     String month;
-    String canal;
+    String channel;
 }
