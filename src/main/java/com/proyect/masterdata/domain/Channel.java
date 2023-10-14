@@ -53,7 +53,7 @@ public class Channel {
     private Long idClient;
 
     @Column(name = "id_menbresia", unique = true)
-    private Long idMenbresia;
+    private Long idMembership;
 
     @Column(name = "id_tipo_pago", unique = true)
     private Long idPaymentType;
