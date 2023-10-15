@@ -73,7 +73,7 @@ public class PaymentRepositoryCustomImpl implements PaymentRepositoryCustom {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("totalPayment")),totalPayment)));
+                                    itemRoot.get("totalPayment"),totalPayment)));
         }
 
         if(month!=null){
@@ -87,7 +87,7 @@ public class PaymentRepositoryCustomImpl implements PaymentRepositoryCustom {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("idChannel")),idChannel)));
+                                    itemRoot.get("idChannel"),idChannel)));
         }
 
         return conditions;

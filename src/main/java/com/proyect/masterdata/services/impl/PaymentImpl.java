@@ -112,8 +112,12 @@ public class PaymentImpl implements IPayment {
         Page<Payment> paymentPage;
         Channel channelData;
         try{
-            channelData = channelRepository.findByName(channel.toUpperCase());
-            paymentPage = paymentRepositoryCustom.searchForPayment(totalPayment,month,channelData.getId(),sort,sortColumn,pageNumber,pageSize);
+            if(channel != null){
+                channelData = channelRepository.findByName(channel.toUpperCase());
+                paymentPage = paymentRepositoryCustom.searchForPayment(totalPayment,month,channelData.getId(),sort,sortColumn,pageNumber,pageSize);
+            }else{
+                paymentPage = paymentRepositoryCustom.searchForPayment(totalPayment,month,null,sort,sortColumn,pageNumber,pageSize);
+            }
         }catch (RuntimeException e){
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
