@@ -98,7 +98,7 @@ public class UserImpl implements IUser {
         List<UserType> userTypeList;
         try{
             existsUSer = userRepository.existsByUser(user.toUpperCase());
-            userList = userRepository.findByNameIn(requestUserList.stream().map(userData -> userData.getName().toUpperCase()).collect(Collectors.toList()));
+            userList = userRepository.findByUserIn(requestUserList.stream().map(userData -> userData.getName().toUpperCase()).collect(Collectors.toList()));
             districtList = districtRepository.findByNameIn(requestUserList.stream().map(userData -> userData.getDistrict().toUpperCase()).collect(Collectors.toList()));
             userTypeList = userTypeRepository.findByUserTypeIn(requestUserList.stream().map(userData -> userData.getUserType().toUpperCase()).collect(Collectors.toList()));
         }catch (RuntimeException e){

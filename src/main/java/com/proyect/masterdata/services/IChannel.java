@@ -13,7 +13,7 @@ import java.util.List;
 public interface IChannel {
     ResponseSuccess save(RequestChannelSave requestChannelSave, String user) throws InternalErrorExceptions, BadRequestExceptions;
     ResponseSuccess saveAll(List<RequestChannelSave> requestChannelSaveList,String user) throws InternalErrorExceptions,BadRequestExceptions;
-    ChannelDTO update(RequestChannelSave requestChannelSave,String user) throws InternalErrorExceptions,BadRequestExceptions;
+    ChannelDTO update(String name,Integer months,String user) throws InternalErrorExceptions,BadRequestExceptions;
     ResponseDelete delete(String name,String user) throws InternalErrorExceptions,BadRequestExceptions;
     Page<ChannelDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
     Page<ChannelDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;

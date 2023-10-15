@@ -11,6 +11,6 @@ public interface ModuleRepository extends JpaRepository<Module,Long> {
     List<Module> findAllByStatusTrue();
     Module findByIdAndStatusTrue(Long id);
     Module findByNameAndStatusTrue(String name);
-    List<Module> findByNameIn(List<String> name);
+    List<Module> findByNameIn(List<String> names);
     boolean existsByName(String name);
 }

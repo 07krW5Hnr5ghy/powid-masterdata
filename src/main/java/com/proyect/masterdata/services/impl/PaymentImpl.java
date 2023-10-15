@@ -106,10 +106,12 @@ public class PaymentImpl implements IPayment {
     }
 
     @Override
-    public Page<PaymentDTO> list(Double totalPayment, String month, Long idChannel, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<PaymentDTO> list(Double totalPayment, String month, String channel, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<Payment> paymentPage;
+        Channel channelData;
         try{
-            paymentPage = paymentRepositoryCustom.searchForPayment(totalPayment,month,idChannel,sort,sortColumn,pageNumber,pageSize);
+            channelData = channelRepository.findByName(channel);
+            paymentPage = paymentRepositoryCustom.searchForPayment(totalPayment,month,channelData.getId(),sort,sortColumn,pageNumber,pageSize);
         }catch (RuntimeException e){
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -117,7 +119,13 @@ public class PaymentImpl implements IPayment {
         if(paymentPage.isEmpty()){
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(paymentMapper.listPaymentToListPaymentDTO(paymentPage.getContent()),
+        List<PaymentDTO> paymentDTOList = paymentPage.getContent().stream().map(payment -> PaymentDTO.builder()
+                .totalPayment(payment.getTotalPayment())
+                .month(payment.getMonth())
+                .discount(payment.getDiscount())
+                .channel(payment.getChannel().getName())
+                .build()).toList();
+        return new PageImpl<>(paymentDTOList,
                 paymentPage.getPageable(),paymentPage.getTotalElements());
     }
 

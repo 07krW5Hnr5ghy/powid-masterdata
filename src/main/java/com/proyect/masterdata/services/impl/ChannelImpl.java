@@ -60,8 +60,8 @@ public class ChannelImpl implements IChannel {
         if(userData==null){
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(!channel){
-            throw new BadRequestExceptions("Canal no existe");
+        if(channel){
+            throw new BadRequestExceptions("Canal ya existe");
         }
         if(client==null){
             throw new BadRequestExceptions("Cliente no existe");
@@ -74,10 +74,15 @@ public class ChannelImpl implements IChannel {
                             .name(requestChannelSave.getName().toUpperCase())
                             .months(requestChannelSave.getMonths())
                             .client(client)
+                            .idClient(client.getIdClient())
                             .membership(membership)
+                            .idMembership(membership.getId())
                             .paymentType(paymentType)
+                            .idPaymentType(paymentType.getId())
                             .connection(connection)
+                            .idConnection(connection.getIdConnection())
                             .datauser(userData)
+                            .user(userData.getUser().toUpperCase())
                             .status(true)
                             .dateRegistration(new Date(System.currentTimeMillis()))
                     .build());
@@ -103,7 +108,7 @@ public class ChannelImpl implements IChannel {
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
             channelList = channelRepository.findByNameIn(requestChannelSaveList.stream().map(channel -> channel.getName().toUpperCase()).toList());
-            userList = userRepository.findByNameIn(requestChannelSaveList.stream().map(userData -> userData.getName().toUpperCase()).toList());
+            userList = userRepository.findByUserIn(requestChannelSaveList.stream().map(userData -> userData.getUser().toUpperCase()).toList());
             clientList = clientRepository.findByRucIn(requestChannelSaveList.stream().map(client -> client.getClient()).toList());
             membershipList = membershipRepository.findAllById(requestChannelSaveList.stream().map(membership -> membership.getMembership()).toList());
             paymentTypeList = paymentTypeRepository.findByTypeIn(requestChannelSaveList.stream().map(paymentType -> paymentType.getPaymentType().toUpperCase()).toList());
@@ -138,9 +143,13 @@ public class ChannelImpl implements IChannel {
                     .name(channel.getName().toUpperCase())
                     .months(channel.getMonths())
                     .client(clientRepository.findByRuc(channel.getClient()))
+                    .idClient(clientRepository.findByRuc(channel.getClient()).getIdClient())
                     .membership(membershipRepository.findById(channel.getMembership()).orElse(null))
+                    .idMembership(membershipRepository.findById(channel.getMembership()).orElse(null).getId())
                     .paymentType(paymentTypeRepository.findByType(channel.getPaymentType().toUpperCase()))
+                    .idPaymentType(paymentTypeRepository.findByType(channel.getPaymentType().toUpperCase()).getId())
                     .connection(connectionRepository.findByUrl(channel.getConnection()))
+                    .idConnection(connectionRepository.findByUrl(channel.getConnection()).getIdConnection())
                     .user(channel.getUser().toUpperCase())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .status(true)
@@ -148,7 +157,7 @@ public class ChannelImpl implements IChannel {
             ).toList());
             return ResponseSuccess.builder()
                     .code(200)
-                    .message(Constants.InternalErrorExceptions)
+                    .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -157,7 +166,7 @@ public class ChannelImpl implements IChannel {
     }
 
     @Override
-    public ChannelDTO update(RequestChannelSave requestChannelSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ChannelDTO update(String name,Integer months, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         Channel channel;
         User userData;
@@ -167,12 +176,7 @@ public class ChannelImpl implements IChannel {
         Connection connection;
         try {
             existsUser = userRepository.existsById(user.toUpperCase());
-            userData = userRepository.findByUser(requestChannelSave.getUser().toUpperCase());
-            channel = channelRepository.findByName(requestChannelSave.getName().toUpperCase());
-            client = clientRepository.findByRuc(requestChannelSave.getClient().toUpperCase());
-            membership = membershipRepository.findById(requestChannelSave.getMembership()).orElse(null);
-            paymentType = paymentTypeRepository.findByType(requestChannelSave.getPaymentType().toUpperCase());
-            connection = connectionRepository.findByUrl(requestChannelSave.getConnection());
+            channel = channelRepository.findByName(name.toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -184,12 +188,12 @@ public class ChannelImpl implements IChannel {
             throw new BadRequestExceptions("Canal no existe");
         }
         try {
-            channel.setMonths(requestChannelSave.getMonths());
-            channel.setClient(client);
-            channel.setMembership(membership);
-            channel.setPaymentType(paymentType);
-            channel.setConnection(connection);
-            channel.setDatauser(userData);
+            client = clientRepository.findByRuc(channel.getClient().getRuc());
+            membership = membershipRepository.findById(channel.getIdMembership()).orElse(null);
+            paymentType = paymentTypeRepository.findByType(channel.getPaymentType().getType());
+            connection = connectionRepository.findByUrl(channel.getConnection().getUrl());
+            userData = userRepository.findByUser(channel.getUser().toUpperCase());
+            channel.setMonths(months);
             channel.setDateRegistration(new Date(System.currentTimeMillis()));
             channel.setStatus(true);
             channelRepository.save(channel);
@@ -250,7 +254,16 @@ public class ChannelImpl implements IChannel {
         if(channelPage.isEmpty()){
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(channelMapper.listChannelToChannelListDTO(channelPage.getContent()),
+        List<ChannelDTO> channelDTOList = channelPage.getContent().stream().map(channel -> ChannelDTO.builder()
+                .name(channel.getName().toUpperCase())
+                .months(channel.getMonths())
+                .client(channel.getClient().getRuc())
+                .membership(channel.getIdMembership())
+                .connection(channel.getConnection().getUrl())
+                .paymentType(channel.getPaymentType().getType())
+                .user(channel.getUser().toUpperCase())
+                .build()).toList();
+        return new PageImpl<>(channelDTOList,
                 channelPage.getPageable(),channelPage.getTotalElements());
     }
 
@@ -266,7 +279,16 @@ public class ChannelImpl implements IChannel {
         if(channelPage.isEmpty()){
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(channelMapper.listChannelToChannelListDTO(channelPage.getContent()),
+        List<ChannelDTO> channelDTOList = channelPage.getContent().stream().map(channel -> ChannelDTO.builder()
+                .name(channel.getName().toUpperCase())
+                .months(channel.getMonths())
+                .client(channel.getClient().getRuc())
+                .membership(channel.getIdMembership())
+                .connection(channel.getConnection().getUrl())
+                .paymentType(channel.getPaymentType().getType())
+                .user(channel.getUser().toUpperCase())
+                .build()).toList();
+        return new PageImpl<>(channelDTOList,
                 channelPage.getPageable(),channelPage.getTotalElements());
     }
 }

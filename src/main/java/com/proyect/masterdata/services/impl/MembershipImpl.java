@@ -48,11 +48,12 @@ public class MembershipImpl implements IMembership {
         try{
             membershipRepository.save(Membership.builder()
                             .module(moduleData)
+                            .idModule(moduleData.getId())
                             .id(id)
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
-                    .message(Constants.InternalErrorExceptions)
+                    .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -67,7 +68,7 @@ public class MembershipImpl implements IMembership {
         List<Membership> memberships;
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
-            modules = moduleRepository.findByNameIn(moduleList);
+            modules = moduleRepository.findByNameIn(moduleList.stream().map(module -> module.toUpperCase()).toList());
             memberships = membershipRepository.findByIdAndIdModuleIn(id,modules.stream().map(module -> module.getId()).toList());
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -85,7 +86,8 @@ public class MembershipImpl implements IMembership {
         try{
             membershipRepository.saveAll(moduleList.stream().map(module -> Membership.builder()
                     .id(id)
-                    .module(moduleRepository.findByNameAndStatusTrue(module))
+                    .module(moduleRepository.findByNameAndStatusTrue(module.toUpperCase()))
+                    .idModule(moduleRepository.findByNameAndStatusTrue(module.toUpperCase()).getId())
                     .build()
             ).toList());
             return ResponseSuccess.builder()

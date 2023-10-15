@@ -35,7 +35,7 @@ public class ConnectionImpl implements IConnection {
         boolean existsUrl;
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
-            existsUrl = connectionRepository.existsByUrl(url.toUpperCase());
+            existsUrl = connectionRepository.existsByUrl(url);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -48,7 +48,7 @@ public class ConnectionImpl implements IConnection {
         }
         try{
             connectionRepository.save(Connection.builder()
-                            .url(url.toUpperCase())
+                            .url(url)
                             .status(true)
                             .dateRegistration(new Date(System.currentTimeMillis()))
                     .build());
@@ -81,7 +81,7 @@ public class ConnectionImpl implements IConnection {
         }
         try{
             connectionRepository.saveAll(urls.stream().map(url -> Connection.builder()
-                    .url(url.toUpperCase())
+                    .url(url)
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build()).toList());
@@ -101,7 +101,7 @@ public class ConnectionImpl implements IConnection {
         Connection connection;
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
-            connection = connectionRepository.findByUrl(url.toUpperCase());
+            connection = connectionRepository.findByUrl(url);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

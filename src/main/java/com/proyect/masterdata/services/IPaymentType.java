@@ -14,7 +14,6 @@ import java.util.List;
 public interface IPaymentType {
     ResponseSuccess save(String type,String user) throws InternalErrorExceptions, BadRequestExceptions;
     ResponseSuccess saveAll(List<String> names,String user) throws InternalErrorExceptions,BadRequestExceptions;
-    PaymentTypeDTO update(RequestPaymentTypeSave requestPaymentTypeSave) throws InternalErrorExceptions,BadRequestExceptions;
     ResponseDelete delete(String type, String user) throws InternalErrorExceptions,BadRequestExceptions;
     Page<PaymentTypeDTO> list(String type, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
     Page<PaymentTypeDTO> listStatusFalse(String type,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;

@@ -40,14 +40,6 @@ public class PaymentTypeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PaymentTypeDTO> update(
-            @RequestBody() RequestPaymentTypeSave requestPaymentTypeSave
-    ) throws BadRequestExceptions {
-        PaymentTypeDTO result = iPaymentType.update(requestPaymentTypeSave);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("type") String type,

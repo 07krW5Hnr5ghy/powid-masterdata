@@ -84,47 +84,15 @@ public class PaymentTypeImpl implements IPaymentType {
             throw new BadRequestExceptions("Tipo de pago ya existe");
         }
         try{
-            paymentTypeRepository.saveAll(paymentTypeMapper.listPaymentTypeToName(names.stream().map(name -> RequestPaymentTypeSave.builder()
+            paymentTypeRepository.saveAll(names.stream().map(name -> PaymentType.builder()
                     .type(name.toUpperCase())
                     .user(user.toUpperCase())
-                    .build()).toList()));
+                    .status(true)
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .build()).toList());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public PaymentTypeDTO update(RequestPaymentTypeSave requestPaymentTypeSave) throws InternalErrorExceptions, BadRequestExceptions {
-        boolean existsUser;
-        PaymentType paymentType;
-        try{
-            existsUser = userRepository.existsById(requestPaymentTypeSave.getUser().toUpperCase());
-            paymentType = paymentTypeRepository.findByType(requestPaymentTypeSave.getType().toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(!existsUser){
-            throw new BadRequestExceptions("Usuario no existe");
-        }
-        if(paymentType==null){
-            throw new BadRequestExceptions("Tipo de pago no existe");
-        }
-        try{
-            paymentTypeRepository.save(PaymentType.builder()
-                            .type(requestPaymentTypeSave.getType().toUpperCase())
-                            .user(requestPaymentTypeSave.getUser().toUpperCase())
-                            .status(true)
-                            .dateRegistration(new Date(System.currentTimeMillis()))
-                    .build());
-            return PaymentTypeDTO.builder()
-                    .type(requestPaymentTypeSave.getType().toUpperCase())
-                    .user(requestPaymentTypeSave.getUser().toUpperCase())
                     .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());

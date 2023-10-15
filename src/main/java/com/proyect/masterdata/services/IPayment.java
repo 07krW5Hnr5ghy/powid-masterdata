@@ -12,5 +12,5 @@ import java.util.List;
 public interface IPayment {
     ResponseSuccess save(RequestPaymentSave requestPaymentSave,String user) throws InternalErrorExceptions, BadRequestExceptions;
     ResponseSuccess saveAll(List<RequestPaymentSave> requestPaymentSaveList,String user) throws InternalErrorExceptions, BadRequestExceptions;
-    Page<PaymentDTO> list(Double totalPayment, String month, Long idChannel, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    Page<PaymentDTO> list(Double totalPayment, String month, String channel, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
 }

@@ -41,10 +41,11 @@ public class ChannelController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChannelDTO> update(
-            @RequestBody() RequestChannelSave requestChannelSave,
+            @RequestParam("name") String name,
+            @RequestParam("months") Integer months,
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ChannelDTO result = iChannel.update(requestChannelSave,user);
+        ChannelDTO result = iChannel.update(name,months,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
