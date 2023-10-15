@@ -54,8 +54,9 @@ public class PaymentImpl implements IPayment {
             paymentRepository.save(Payment.builder()
                     .totalPayment(requestPaymentSave.getTotalPayment())
                     .discount(requestPaymentSave.getDiscount())
-                    .month(requestPaymentSave.getMonth())
+                    .month(requestPaymentSave.getMonth().toUpperCase())
                     .channel(channel)
+                    .idChannel(channel.getId())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build()
             );
@@ -89,9 +90,10 @@ public class PaymentImpl implements IPayment {
         try{
             paymentRepository.saveAll(requestPaymentSaveList.stream().map(payment -> Payment.builder()
                     .totalPayment(payment.getTotalPayment())
-                    .month(payment.getMonth())
+                    .month(payment.getMonth().toUpperCase())
                     .discount(payment.getDiscount())
-                    .channel(channelRepository.findByName(payment.getChannel()))
+                    .channel(channelRepository.findByName(payment.getChannel().toUpperCase()))
+                    .idChannel(channelRepository.findByName(payment.getChannel().toUpperCase()).getId())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build()
             ).toList());
@@ -110,7 +112,7 @@ public class PaymentImpl implements IPayment {
         Page<Payment> paymentPage;
         Channel channelData;
         try{
-            channelData = channelRepository.findByName(channel);
+            channelData = channelRepository.findByName(channel.toUpperCase());
             paymentPage = paymentRepositoryCustom.searchForPayment(totalPayment,month,channelData.getId(),sort,sortColumn,pageNumber,pageSize);
         }catch (RuntimeException e){
             log.error(e);
