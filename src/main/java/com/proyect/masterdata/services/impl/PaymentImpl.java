@@ -1,6 +1,8 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Channel;
+import com.proyect.masterdata.domain.Client;
+import com.proyect.masterdata.domain.ClientChannel;
 import com.proyect.masterdata.domain.Payment;
 import com.proyect.masterdata.dto.PaymentDTO;
 import com.proyect.masterdata.dto.request.RequestPaymentSave;
@@ -8,10 +10,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.PaymentMapper;
-import com.proyect.masterdata.repository.ChannelRepository;
-import com.proyect.masterdata.repository.PaymentRepository;
-import com.proyect.masterdata.repository.PaymentRepositoryCustom;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IPayment;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,8 @@ public class PaymentImpl implements IPayment {
     private final ChannelRepository channelRepository;
     private final PaymentRepositoryCustom paymentRepositoryCustom;
     private final PaymentMapper paymentMapper;
+    private final ClientRepository clientRepository;
+    private final ClientChannelRepository clientChannelRepository;
     @Override
     public ResponseSuccess save(RequestPaymentSave requestPaymentSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
@@ -125,12 +126,17 @@ public class PaymentImpl implements IPayment {
         if(paymentPage.isEmpty()){
             return new PageImpl<>(Collections.emptyList());
         }
-        List<PaymentDTO> paymentDTOList = paymentPage.getContent().stream().map(payment -> PaymentDTO.builder()
+        List<PaymentDTO> paymentDTOList = paymentPage.getContent().stream().map(payment -> {
+            Client client = payment.getChannel().getClient();
+            ClientChannel clientChannel = clientChannelRepository.findByIdAndStatusTrue(client.getIdClient());
+            return PaymentDTO.builder()
                 .totalPayment(payment.getTotalPayment())
                 .month(payment.getMonth())
                 .discount(payment.getDiscount())
                 .channel(payment.getChannel().getName())
-                .build()).toList();
+                    .ecommerce(clientChannel.getName())
+                .build();
+        }).toList();
         return new PageImpl<>(paymentDTOList,
                 paymentPage.getPageable(),paymentPage.getTotalElements());
     }

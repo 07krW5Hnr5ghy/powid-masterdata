@@ -16,4 +16,5 @@ public class PaymentDTO {
     double discount;
     String month;
     String channel;
+    String ecommerce;
 }

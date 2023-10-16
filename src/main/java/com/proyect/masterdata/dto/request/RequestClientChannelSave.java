@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class RequestClientChannelSave {
     private String name;
     private String url;
-    private boolean status = true;
-    private String user;
+    private String ruc;
 }

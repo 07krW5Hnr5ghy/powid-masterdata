@@ -24,11 +24,10 @@ public class ClientChannelController {
     private IClientChannel iClientChannel;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name,
-            @RequestParam("url") String url,
+            @RequestBody() RequestClientChannelSave requestClientChannelSave,
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iClientChannel.save(name,url,user);
+        ResponseSuccess result = iClientChannel.save(requestClientChannelSave,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

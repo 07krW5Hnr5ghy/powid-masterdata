@@ -46,6 +46,9 @@ public class ClientChannel {
     @CreationTimestamp
     private Date dateRegistration;
 
+    @Column(name="id_cliente")
+    private Long idClient;
+
     @Column(name="usuario")
     private String user;
 }
