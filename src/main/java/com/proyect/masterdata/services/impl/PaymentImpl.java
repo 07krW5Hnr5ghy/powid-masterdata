@@ -141,6 +141,8 @@ public class PaymentImpl implements IPayment {
                     .phoneNumber(client.getMobile())
                     .ecommerce(clientChannel.getName().toUpperCase())
                     .user(client.getUser().toUpperCase())
+                    .starDate(client.getDateRegistration())
+                    .paymentDate(payment.getDateRegistration())
                 .build();
         }).toList();
         return new PageImpl<>(paymentDTOList,

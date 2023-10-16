@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Builder
 @AllArgsConstructor
@@ -23,4 +23,6 @@ public class PaymentDTO {
     private String channel;
     private String ecommerce;
     private String user;
+    private Date starDate;
+    private Date paymentDate;
 }
