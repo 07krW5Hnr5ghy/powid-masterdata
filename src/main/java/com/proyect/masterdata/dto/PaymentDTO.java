@@ -12,9 +12,15 @@ import java.sql.Date;
 @NoArgsConstructor
 @Data
 public class PaymentDTO {
-    double totalPayment;
-    double discount;
-    String month;
-    String channel;
-    String ecommerce;
+    private String dni;
+    private String email;
+    private String name;
+    private String surname;
+    private String phoneNumber;
+    private double totalPayment;
+    private double discount;
+    private String month;
+    private String channel;
+    private String ecommerce;
+    private String user;
 }

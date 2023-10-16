@@ -134,7 +134,13 @@ public class PaymentImpl implements IPayment {
                 .month(payment.getMonth())
                 .discount(payment.getDiscount())
                 .channel(payment.getChannel().getName())
-                    .ecommerce(clientChannel.getName())
+                    .dni(client.getDni())
+                    .email(client.getEmail())
+                    .name(client.getName().toUpperCase())
+                    .surname(client.getSurname().toUpperCase())
+                    .phoneNumber(client.getMobile())
+                    .ecommerce(clientChannel.getName().toUpperCase())
+                    .user(client.getUser().toUpperCase())
                 .build();
         }).toList();
         return new PageImpl<>(paymentDTOList,
