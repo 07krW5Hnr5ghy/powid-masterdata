@@ -1,9 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Channel;
-import com.proyect.masterdata.domain.Client;
-import com.proyect.masterdata.domain.ClientChannel;
-import com.proyect.masterdata.domain.Payment;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.PaymentDTO;
 import com.proyect.masterdata.dto.request.RequestPaymentSave;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -34,6 +31,7 @@ public class PaymentImpl implements IPayment {
     private final PaymentMapper paymentMapper;
     private final ClientRepository clientRepository;
     private final ClientChannelRepository clientChannelRepository;
+    private final PaymentTypeRepository paymentTypeRepository;
     @Override
     public ResponseSuccess save(RequestPaymentSave requestPaymentSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
@@ -127,8 +125,10 @@ public class PaymentImpl implements IPayment {
             return new PageImpl<>(Collections.emptyList());
         }
         List<PaymentDTO> paymentDTOList = paymentPage.getContent().stream().map(payment -> {
+            Channel channelXPayment = channelRepository.findById(payment.getIdChannel()).orElse(null);
             Client client = payment.getChannel().getClient();
             ClientChannel clientChannel = clientChannelRepository.findByIdAndStatusTrue(client.getIdClient());
+            PaymentType paymentType = paymentTypeRepository.findById(channelXPayment.getIdPaymentType()).orElse(null);
             return PaymentDTO.builder()
                 .totalPayment(payment.getTotalPayment())
                 .month(payment.getMonth())
@@ -141,6 +141,7 @@ public class PaymentImpl implements IPayment {
                     .phoneNumber(client.getMobile())
                     .ecommerce(clientChannel.getName().toUpperCase())
                     .user(client.getUser().toUpperCase())
+                    .paymentType(paymentType.getType())
                     .starDate(client.getDateRegistration())
                     .paymentDate(payment.getDateRegistration())
                 .build();

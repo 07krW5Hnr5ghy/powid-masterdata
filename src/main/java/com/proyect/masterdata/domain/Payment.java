@@ -49,6 +49,7 @@ public class Payment {
     @Column(name = "id_canal", unique = true)
     private Long idChannel;
 
+
     @ManyToOne
     @JoinColumn(name = "id_canal", columnDefinition = "idChannel",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_canal"))
     private Channel channel;

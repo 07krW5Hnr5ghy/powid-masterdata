@@ -23,6 +23,7 @@ public class PaymentDTO {
     private String channel;
     private String ecommerce;
     private String user;
+    private String paymentType;
     private Date starDate;
     private Date paymentDate;
 }
