@@ -34,6 +34,6 @@ public class Membership {
     private Long idModule;
 
     @ManyToOne
-    @JoinColumn(name = "id_modulo", columnDefinition = "idModule",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_modulo"))
+    @JoinColumn(name = "id_modulo", columnDefinition = "idModule",insertable = false, updatable = false)
     private Module module;
 }

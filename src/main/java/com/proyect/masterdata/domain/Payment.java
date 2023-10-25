@@ -33,14 +33,20 @@ public class Payment {
     @Column(name = "id_pago", unique = true)
     private Long id;
 
-    @Column(name = "pago_total ")
+    @Column(name = "pago_total")
     private double totalPayment;
 
     @Column(name = "descuento")
     private double discount;
 
-    @Column(name = "mes", unique = true)
+    @Column(name = "mes")
     private String month;
+
+    @Column(name="url_factura")
+    private String urlInvoice;
+
+    @Column(name="id_estado_pago")
+    private Long idPaymentState;
 
     @Column(name = "fecha_registro")
     @CreationTimestamp
@@ -48,7 +54,6 @@ public class Payment {
 
     @Column(name = "id_canal", unique = true)
     private Long idChannel;
-
 
     @ManyToOne
     @JoinColumn(name = "id_canal", columnDefinition = "idChannel",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_canal"))

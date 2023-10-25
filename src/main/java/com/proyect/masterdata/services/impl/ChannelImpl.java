@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.domain.Module;
 import com.proyect.masterdata.dto.ChannelDTO;
 import com.proyect.masterdata.dto.request.RequestChannelSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -33,6 +34,7 @@ public class ChannelImpl implements IChannel {
     private final PaymentTypeRepository paymentTypeRepository;
     private final ConnectionRepository connectionRepository;
     private final ChannelRepositoryCustom channelRepositoryCustom;
+    private final ModuleRepository moduleRepository;
     private final ChannelMapper channelMapper;
     @Override
     public ResponseSuccess save(RequestChannelSave requestChannelSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
@@ -48,7 +50,6 @@ public class ChannelImpl implements IChannel {
             userData = userRepository.findByUser(requestChannelSave.getUser().toUpperCase());
             channel = channelRepository.existsByName(requestChannelSave.getName().toUpperCase());
             client = clientRepository.findByRuc(requestChannelSave.getClient().toUpperCase());
-            membership = membershipRepository.findById(requestChannelSave.getMembership()).orElse(null);
             paymentType = paymentTypeRepository.findByType(requestChannelSave.getPaymentType().toUpperCase());
             connection = connectionRepository.findByUrl(requestChannelSave.getConnection());
         }catch (RuntimeException e){
@@ -66,9 +67,9 @@ public class ChannelImpl implements IChannel {
         if(client==null){
             throw new BadRequestExceptions("Cliente no existe");
         }
-        if(membership==null){
-            throw new BadRequestExceptions("Membresia no existe");
-        }
+        membership = membershipRepository.save(Membership.builder()
+                .idModule(moduleRepository.findByNameAndStatusTrue("CONFIGURACIONES").getId())
+                .build());
         try{
             channelRepository.save(Channel.builder()
                             .name(requestChannelSave.getName().toUpperCase())
@@ -102,7 +103,6 @@ public class ChannelImpl implements IChannel {
         List<Channel> channelList;
         List<User> userList;
         List<Client> clientList;
-        List<Membership> membershipList;
         List<PaymentType> paymentTypeList;
         List<Connection> connectionList;
         try{
@@ -110,7 +110,6 @@ public class ChannelImpl implements IChannel {
             channelList = channelRepository.findByNameIn(requestChannelSaveList.stream().map(channel -> channel.getName().toUpperCase()).toList());
             userList = userRepository.findByUserIn(requestChannelSaveList.stream().map(userData -> userData.getUser().toUpperCase()).toList());
             clientList = clientRepository.findByRucIn(requestChannelSaveList.stream().map(client -> client.getClient()).toList());
-            membershipList = membershipRepository.findAllById(requestChannelSaveList.stream().map(membership -> membership.getMembership()).toList());
             paymentTypeList = paymentTypeRepository.findByTypeIn(requestChannelSaveList.stream().map(paymentType -> paymentType.getPaymentType().toUpperCase()).toList());
             connectionList = connectionRepository.findByUrlIn(requestChannelSaveList.stream().map(connection -> connection.getConnection()).toList());
         }catch (RuntimeException e){
@@ -129,32 +128,34 @@ public class ChannelImpl implements IChannel {
         if(clientList.size() != requestChannelSaveList.size()){
             throw new BadRequestExceptions("Cliente no existe");
         }
-        if(membershipList.size() != requestChannelSaveList.size()){
-            throw new BadRequestExceptions("Membresia no existe");
-        }
         if(paymentTypeList.size() != requestChannelSaveList.size()){
             throw new BadRequestExceptions("Tipo de pago no existe");
         }
         if(connectionList.size() != requestChannelSaveList.size()){
             throw new BadRequestExceptions("Conexion no existe");
         }
+
         try{
-            channelRepository.saveAll(requestChannelSaveList.stream().map(channel -> Channel.builder()
-                    .name(channel.getName().toUpperCase())
-                    .months(channel.getMonths())
-                    .client(clientRepository.findByRuc(channel.getClient()))
-                    .idClient(clientRepository.findByRuc(channel.getClient()).getIdClient())
-                    .membership(membershipRepository.findById(channel.getMembership()).orElse(null))
-                    .idMembership(membershipRepository.findById(channel.getMembership()).orElse(null).getId())
-                    .paymentType(paymentTypeRepository.findByType(channel.getPaymentType().toUpperCase()))
-                    .idPaymentType(paymentTypeRepository.findByType(channel.getPaymentType().toUpperCase()).getId())
-                    .connection(connectionRepository.findByUrl(channel.getConnection()))
-                    .idConnection(connectionRepository.findByUrl(channel.getConnection()).getIdConnection())
-                    .user(channel.getUser().toUpperCase())
-                    .dateRegistration(new Date(System.currentTimeMillis()))
-                    .status(true)
-                    .build()
-            ).toList());
+            channelRepository.saveAll(requestChannelSaveList.stream().map(channel -> {
+                Membership membership = membershipRepository.save(Membership.builder()
+                        .idModule(moduleRepository.findByNameAndStatusTrue("CONFIGURACIONES").getId())
+                        .build());
+                return Channel.builder()
+                        .name(channel.getName().toUpperCase())
+                        .months(channel.getMonths())
+                        .client(clientRepository.findByRuc(channel.getClient()))
+                        .idClient(clientRepository.findByRuc(channel.getClient()).getIdClient())
+                        .membership(membership)
+                        .idMembership(membership.getId())
+                        .paymentType(paymentTypeRepository.findByType(channel.getPaymentType().toUpperCase()))
+                        .idPaymentType(paymentTypeRepository.findByType(channel.getPaymentType().toUpperCase()).getId())
+                        .connection(connectionRepository.findByUrl(channel.getConnection()))
+                        .idConnection(connectionRepository.findByUrl(channel.getConnection()).getIdConnection())
+                        .user(channel.getUser().toUpperCase())
+                        .dateRegistration(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .build();
+            }).toList());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

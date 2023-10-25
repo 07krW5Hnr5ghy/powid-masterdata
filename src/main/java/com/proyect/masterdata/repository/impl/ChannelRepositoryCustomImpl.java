@@ -20,7 +20,6 @@ import java.util.List;
 public class ChannelRepositoryCustomImpl implements ChannelRepositoryCustom {
     @PersistenceContext(name="entityManager")
     private EntityManager entityManager;
-
     @Override
     public Page<Channel> searchForChannel(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

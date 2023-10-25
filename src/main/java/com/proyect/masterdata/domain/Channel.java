@@ -52,7 +52,7 @@ public class Channel {
     @Column(name = "id_cliente", unique = true)
     private Long idClient;
 
-    @Column(name = "id_menbresia", unique = true)
+    @Column(name = "id_membresia", unique = true)
     private Long idMembership;
 
     @Column(name = "id_tipo_pago", unique = true)
@@ -70,7 +70,7 @@ public class Channel {
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "id_menbresia", columnDefinition = "idMenbresia",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_menbresia"))
+    @JoinColumn(name = "id_membresia", columnDefinition = "idMembresia",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_membresia"))
     private Membership membership;
 
     @ManyToOne
