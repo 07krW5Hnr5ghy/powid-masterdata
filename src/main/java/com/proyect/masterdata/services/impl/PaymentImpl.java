@@ -31,7 +31,7 @@ public class PaymentImpl implements IPayment {
     private final PaymentMapper paymentMapper;
     private final ClientRepository clientRepository;
     private final ClientChannelRepository clientChannelRepository;
-    private final PaymentTypeRepository paymentTypeRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
     @Override
     public ResponseSuccess save(RequestPaymentSave requestPaymentSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
@@ -54,8 +54,10 @@ public class PaymentImpl implements IPayment {
                     .totalPayment(requestPaymentSave.getTotalPayment())
                     .discount(requestPaymentSave.getDiscount())
                     .month(requestPaymentSave.getMonth().toUpperCase())
+                    .urlInvoice(requestPaymentSave.getInvoiceUrl())
                     .channel(channel)
                     .idChannel(channel.getId())
+                            .idPaymentState(1L)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build()
             );
@@ -92,6 +94,8 @@ public class PaymentImpl implements IPayment {
                     .month(payment.getMonth().toUpperCase())
                     .discount(payment.getDiscount())
                     .channel(channelRepository.findByName(payment.getChannel().toUpperCase()))
+                    .urlInvoice(payment.getInvoiceUrl())
+                    .idPaymentState(1L)
                     .idChannel(channelRepository.findByName(payment.getChannel().toUpperCase()).getId())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build()
@@ -128,7 +132,7 @@ public class PaymentImpl implements IPayment {
             Channel channelXPayment = channelRepository.findById(payment.getIdChannel()).orElse(null);
             Client client = payment.getChannel().getClient();
             ClientChannel clientChannel = clientChannelRepository.findByIdAndStatusTrue(client.getIdClient());
-            PaymentType paymentType = paymentTypeRepository.findById(channelXPayment.getIdPaymentType()).orElse(null);
+            PaymentMethod paymentMethod = paymentMethodRepository.findById(channelXPayment.getIdPaymentMethod()).orElse(null);
             return PaymentDTO.builder()
                 .totalPayment(payment.getTotalPayment())
                 .month(payment.getMonth())
@@ -141,7 +145,7 @@ public class PaymentImpl implements IPayment {
                     .phoneNumber(client.getMobile())
                     .ecommerce(clientChannel.getName().toUpperCase())
                     .user(client.getUser().toUpperCase())
-                    .paymentType(paymentType.getType())
+                    .paymentMethod(paymentMethod.getName())
                     .starDate(client.getDateRegistration())
                     .paymentDate(payment.getDateRegistration())
                 .build();

@@ -14,7 +14,7 @@ public class ChannelDTO {
     private Integer months;
     private String client;
     private Long membership;
-    private String paymentType;
+    private String paymentMethod;
     private String connection;
     private String user;
 }

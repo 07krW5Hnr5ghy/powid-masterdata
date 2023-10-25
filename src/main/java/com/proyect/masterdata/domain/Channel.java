@@ -55,8 +55,8 @@ public class Channel {
     @Column(name = "id_membresia", unique = true)
     private Long idMembership;
 
-    @Column(name = "id_tipo_pago", unique = true)
-    private Long idPaymentType;
+    @Column(name = "id_tipo_pago")
+    private Long idPaymentMethod;
 
     @Column(name = "id_conexion", unique = true)
     private Long idConnection;
@@ -74,8 +74,8 @@ public class Channel {
     private Membership membership;
 
     @ManyToOne
-    @JoinColumn(name = "id_tipo_pago", columnDefinition = "idPaymentType",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_pago"))
-    private PaymentType paymentType;
+    @JoinColumn(name = "id_tipo_pago", columnDefinition = "idPaymentType",insertable = false, updatable = false)
+    private PaymentMethod paymentMethod;
 
     @ManyToOne
     @JoinColumn(name = "id_conexion", columnDefinition = "idConnection",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_conexion"))

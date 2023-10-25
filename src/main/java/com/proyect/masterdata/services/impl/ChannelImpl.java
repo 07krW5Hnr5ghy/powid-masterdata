@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
-import com.proyect.masterdata.domain.Module;
 import com.proyect.masterdata.dto.ChannelDTO;
 import com.proyect.masterdata.dto.request.RequestChannelSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -35,6 +34,7 @@ public class ChannelImpl implements IChannel {
     private final ConnectionRepository connectionRepository;
     private final ChannelRepositoryCustom channelRepositoryCustom;
     private final ModuleRepository moduleRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
     private final ChannelMapper channelMapper;
     @Override
     public ResponseSuccess save(RequestChannelSave requestChannelSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
@@ -43,14 +43,14 @@ public class ChannelImpl implements IChannel {
         User userData;
         Client client;
         Membership membership;
-        PaymentType paymentType;
+        PaymentMethod paymentMethod;
         Connection connection;
         try {
             existsUser = userRepository.existsById(user.toUpperCase());
             userData = userRepository.findByUser(requestChannelSave.getUser().toUpperCase());
             channel = channelRepository.existsByName(requestChannelSave.getName().toUpperCase());
             client = clientRepository.findByRuc(requestChannelSave.getClient().toUpperCase());
-            paymentType = paymentTypeRepository.findByType(requestChannelSave.getPaymentType().toUpperCase());
+            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestChannelSave.getPaymentMethod().toUpperCase());
             connection = connectionRepository.findByUrl(requestChannelSave.getConnection());
         }catch (RuntimeException e){
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -78,8 +78,8 @@ public class ChannelImpl implements IChannel {
                             .idClient(client.getIdClient())
                             .membership(membership)
                             .idMembership(membership.getId())
-                            .paymentType(paymentType)
-                            .idPaymentType(paymentType.getId())
+                            .paymentMethod(paymentMethod)
+                            .idPaymentMethod(paymentMethod.getId())
                             .connection(connection)
                             .idConnection(connection.getIdConnection())
                             .datauser(userData)
@@ -103,14 +103,14 @@ public class ChannelImpl implements IChannel {
         List<Channel> channelList;
         List<User> userList;
         List<Client> clientList;
-        List<PaymentType> paymentTypeList;
+        List<PaymentMethod> paymentMethodList;
         List<Connection> connectionList;
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
             channelList = channelRepository.findByNameIn(requestChannelSaveList.stream().map(channel -> channel.getName().toUpperCase()).toList());
             userList = userRepository.findByUserIn(requestChannelSaveList.stream().map(userData -> userData.getUser().toUpperCase()).toList());
             clientList = clientRepository.findByRucIn(requestChannelSaveList.stream().map(client -> client.getClient()).toList());
-            paymentTypeList = paymentTypeRepository.findByTypeIn(requestChannelSaveList.stream().map(paymentType -> paymentType.getPaymentType().toUpperCase()).toList());
+            paymentMethodList = paymentMethodRepository.findByNameIn(requestChannelSaveList.stream().map(paymentMethod -> paymentMethod.getPaymentMethod().toUpperCase()).toList());
             connectionList = connectionRepository.findByUrlIn(requestChannelSaveList.stream().map(connection -> connection.getConnection()).toList());
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -128,7 +128,7 @@ public class ChannelImpl implements IChannel {
         if(clientList.size() != requestChannelSaveList.size()){
             throw new BadRequestExceptions("Cliente no existe");
         }
-        if(paymentTypeList.size() != requestChannelSaveList.size()){
+        if(paymentMethodList.size() != requestChannelSaveList.size()){
             throw new BadRequestExceptions("Tipo de pago no existe");
         }
         if(connectionList.size() != requestChannelSaveList.size()){
@@ -147,8 +147,8 @@ public class ChannelImpl implements IChannel {
                         .idClient(clientRepository.findByRuc(channel.getClient()).getIdClient())
                         .membership(membership)
                         .idMembership(membership.getId())
-                        .paymentType(paymentTypeRepository.findByType(channel.getPaymentType().toUpperCase()))
-                        .idPaymentType(paymentTypeRepository.findByType(channel.getPaymentType().toUpperCase()).getId())
+                        .paymentMethod(paymentMethodRepository.findByNameAndStatusTrue(channel.getPaymentMethod().toUpperCase()))
+                        .idPaymentMethod(paymentMethodRepository.findByNameAndStatusTrue(channel.getPaymentMethod().toUpperCase()).getId())
                         .connection(connectionRepository.findByUrl(channel.getConnection()))
                         .idConnection(connectionRepository.findByUrl(channel.getConnection()).getIdConnection())
                         .user(channel.getUser().toUpperCase())
@@ -173,7 +173,7 @@ public class ChannelImpl implements IChannel {
         User userData;
         Client client;
         Membership membership;
-        PaymentType paymentType;
+        PaymentMethod paymentMethod;
         Connection connection;
         try {
             existsUser = userRepository.existsById(user.toUpperCase());
@@ -191,7 +191,7 @@ public class ChannelImpl implements IChannel {
         try {
             client = clientRepository.findByRuc(channel.getClient().getRuc());
             membership = membershipRepository.findById(channel.getIdMembership()).orElse(null);
-            paymentType = paymentTypeRepository.findByType(channel.getPaymentType().getType());
+            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(channel.getPaymentMethod().getName());
             connection = connectionRepository.findByUrl(channel.getConnection().getUrl());
             userData = userRepository.findByUser(channel.getUser().toUpperCase());
             channel.setMonths(months);
@@ -203,7 +203,7 @@ public class ChannelImpl implements IChannel {
                     .months(channel.getMonths())
                     .client(client.getRuc())
                     .membership(membership.getId())
-                    .paymentType(paymentType.getType())
+                    .paymentMethod(paymentMethod.getName())
                     .connection(connection.getUrl())
                     .user(userData.getUser())
                     .build();
@@ -261,7 +261,7 @@ public class ChannelImpl implements IChannel {
                 .client(channel.getClient().getRuc())
                 .membership(channel.getIdMembership())
                 .connection(channel.getConnection().getUrl())
-                .paymentType(channel.getPaymentType().getType())
+                .paymentMethod(channel.getPaymentMethod().getName())
                 .user(channel.getUser().toUpperCase())
                 .build()).toList();
         return new PageImpl<>(channelDTOList,
@@ -286,7 +286,7 @@ public class ChannelImpl implements IChannel {
                 .client(channel.getClient().getRuc())
                 .membership(channel.getIdMembership())
                 .connection(channel.getConnection().getUrl())
-                .paymentType(channel.getPaymentType().getType())
+                .paymentMethod(channel.getPaymentMethod().getName())
                 .user(channel.getUser().toUpperCase())
                 .build()).toList();
         return new PageImpl<>(channelDTOList,

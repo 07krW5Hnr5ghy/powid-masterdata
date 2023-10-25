@@ -13,7 +13,7 @@ public class RequestChannelSave {
     private String name;
     private Integer months;
     private String client;
-    private String paymentType;
+    private String paymentMethod;
     private String connection;
     private String user;
 }
