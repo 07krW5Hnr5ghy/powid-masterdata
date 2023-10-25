@@ -2,7 +2,9 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.PaymentDTO;
+import com.proyect.masterdata.dto.PaymentUpdateDTO;
 import com.proyect.masterdata.dto.request.RequestPaymentSave;
+import com.proyect.masterdata.dto.request.RequestPaymentUpdate;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -32,6 +34,7 @@ public class PaymentImpl implements IPayment {
     private final ClientRepository clientRepository;
     private final ClientChannelRepository clientChannelRepository;
     private final PaymentMethodRepository paymentMethodRepository;
+    private final PaymentStateRepository paymentStateRepository;
     @Override
     public ResponseSuccess save(RequestPaymentSave requestPaymentSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
@@ -111,6 +114,60 @@ public class PaymentImpl implements IPayment {
     }
 
     @Override
+    public PaymentUpdateDTO update(RequestPaymentUpdate requestPaymentUpdate, String newPaymentState, String user) throws InternalErrorExceptions, BadRequestExceptions {
+        Payment payment;
+        boolean existsUser;
+        Channel channel;
+        PaymentState paymentState;
+        PaymentState newState;
+        try{
+            existsUser = userRepository.existsById(user.toUpperCase());
+            channel = channelRepository.findByName(requestPaymentUpdate.getChannel().toUpperCase());
+            paymentState = paymentStateRepository.findByNameAndStatusTrue(requestPaymentUpdate.getPaymentState().toUpperCase());
+            newState = paymentStateRepository.findByNameAndStatusTrue(newPaymentState.toUpperCase());
+            payment = paymentRepository.findByIdChannelAndMonthAndIdPaymentState(channel.getId(),requestPaymentUpdate.getMonth().toUpperCase(),paymentState.getId());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(!existsUser){
+            throw new BadRequestExceptions("Usuario no existe");
+        }
+        if(channel==null){
+            throw new BadRequestExceptions("Canal no existe");
+        }
+        if(paymentState==null){
+            throw new BadRequestExceptions("Estado de pago no existe");
+        }
+        if(newState==null){
+            throw new BadRequestExceptions("Nuevo estado de pago no existe");
+        }
+        if(payment==null){
+            throw new BadRequestExceptions("Pago no existe");
+        }
+
+        try {
+            payment.setIdPaymentState(newState.getId());
+            if(requestPaymentUpdate.getNewInvoiceUrl() != null & requestPaymentUpdate.getNewInvoiceUrl() != payment.getUrlInvoice()){
+                payment.setUrlInvoice(requestPaymentUpdate.getNewInvoiceUrl());
+            }
+            payment.setDateRegistration(new Date(System.currentTimeMillis()));
+            payment = paymentRepository.save(payment);
+            return PaymentUpdateDTO.builder()
+                    .totalPayment(payment.getIdPaymentState())
+                    .discount(payment.getDiscount())
+                    .channel(payment.getChannel().getName().toUpperCase())
+                    .month(payment.getMonth().toUpperCase())
+                    .urlInvoice(payment.getUrlInvoice())
+                    .paymentState(newState.getName().toUpperCase())
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
     public Page<PaymentDTO> list(Double totalPayment, String month, String channel, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<Payment> paymentPage;
         Channel channelData;
@@ -138,6 +195,7 @@ public class PaymentImpl implements IPayment {
                 .month(payment.getMonth())
                 .discount(payment.getDiscount())
                 .channel(payment.getChannel().getName())
+                    .invoiceUrl(payment.getUrlInvoice())
                     .dni(client.getDni())
                     .email(client.getEmail())
                     .name(client.getName().toUpperCase())

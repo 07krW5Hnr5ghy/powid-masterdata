@@ -1,4 +1,4 @@
-package com.proyect.masterdata.dto.request;
+package com.proyect.masterdata.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestPaymentUpdate {
-    private String channel;
+public class PaymentUpdateDTO {
+    private double totalPayment;
+    private double discount;
+    private String urlInvoice;
     private String month;
     private String paymentState;
-    private String newInvoiceUrl;
+    private String channel;
 }

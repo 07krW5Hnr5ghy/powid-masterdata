@@ -1,7 +1,10 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.domain.Payment;
 import com.proyect.masterdata.dto.PaymentDTO;
+import com.proyect.masterdata.dto.PaymentUpdateDTO;
 import com.proyect.masterdata.dto.request.RequestPaymentSave;
+import com.proyect.masterdata.dto.request.RequestPaymentUpdate;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IPayment;
@@ -37,6 +40,16 @@ public class PaymentController {
     ) throws BadRequestExceptions {
         ResponseSuccess result = iPayment.saveAll(requestPaymentSaveList,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PutMapping(consumes=MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PaymentUpdateDTO> update(
+            @RequestBody()RequestPaymentUpdate requestPaymentUpdate,
+            @RequestParam("newPaymentState") String newPaymentState,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        PaymentUpdateDTO result = iPayment.update(requestPaymentUpdate,newPaymentState,user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

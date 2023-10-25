@@ -22,6 +22,7 @@ public class PaymentDTO {
     private String month;
     private String channel;
     private String ecommerce;
+    private String invoiceUrl;
     private String user;
     private String paymentMethod;
     private Date starDate;
