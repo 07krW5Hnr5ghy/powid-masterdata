@@ -27,10 +27,10 @@ public class Membership {
                     @Parameter(name = "increment_size", value = "1")
             }
     )
-    @Column(name = "id_menbresia", unique = true)
+    @Column(name = "id_membresia")
     private Long id;
 
-    @Column(name = "id_modulo", unique = true)
+    @Column(name = "id_modulo")
     private Long idModule;
 
     @ManyToOne

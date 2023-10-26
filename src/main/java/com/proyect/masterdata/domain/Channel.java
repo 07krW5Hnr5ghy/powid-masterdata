@@ -55,7 +55,7 @@ public class Channel {
     @Column(name = "id_membresia", unique = true)
     private Long idMembership;
 
-    @Column(name = "id_tipo_pago")
+    @Column(name = "id_metodo_pago")
     private Long idPaymentMethod;
 
     @Column(name = "id_conexion", unique = true)
