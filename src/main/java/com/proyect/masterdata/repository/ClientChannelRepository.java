@@ -10,6 +10,7 @@ import java.util.List;
 public interface ClientChannelRepository extends JpaRepository<ClientChannel,Long> {
     List<ClientChannel> findAllByStatusTrue();
     ClientChannel findByIdAndStatusTrue(Long id);
+    ClientChannel findByIdClient(Long id);
     List<ClientChannel> findByNameIn(List<String> name);
     boolean existsByName(String name);
 }

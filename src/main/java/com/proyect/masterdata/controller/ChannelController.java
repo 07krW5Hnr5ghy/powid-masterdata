@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.ChannelDTO;
+import com.proyect.masterdata.dto.ChannelListDTO;
 import com.proyect.masterdata.dto.request.RequestChannelSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -59,7 +60,7 @@ public class ChannelController {
     }
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<ChannelDTO>> list(
+    public ResponseEntity<Page<ChannelListDTO>> list(
             @RequestParam(value = "name",required = false) String name,
             @RequestParam(value = "user",required = false) String user,
             @RequestParam(value = "sort",required = false) String sort,
@@ -67,12 +68,12 @@ public class ChannelController {
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions{
-        Page<ChannelDTO> result = iChannel.list(name,user,sort,sortColumn,pageNumber,pageSize);
+        Page<ChannelListDTO> result = iChannel.list(name,user,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
     @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<ChannelDTO>> listStatusFalse(
+    public ResponseEntity<Page<ChannelListDTO>> listStatusFalse(
             @RequestParam(value = "name",required = false) String name,
             @RequestParam(value = "user",required = false) String user,
             @RequestParam(value = "sort",required = false) String sort,
@@ -80,7 +81,7 @@ public class ChannelController {
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions {
-        Page<ChannelDTO> result = iChannel.listStatusFalse(name,user,sort,sortColumn,pageNumber,pageSize);
+        Page<ChannelListDTO> result = iChannel.listStatusFalse(name,user,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

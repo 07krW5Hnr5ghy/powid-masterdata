@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.ChannelDTO;
+import com.proyect.masterdata.dto.ChannelListDTO;
 import com.proyect.masterdata.dto.request.RequestChannelSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -33,8 +34,11 @@ public class ChannelImpl implements IChannel {
     private final PaymentTypeRepository paymentTypeRepository;
     private final ConnectionRepository connectionRepository;
     private final ChannelRepositoryCustom channelRepositoryCustom;
+    private final ClientChannelRepository clientChannelRepository;
     private final ModuleRepository moduleRepository;
     private final PaymentMethodRepository paymentMethodRepository;
+    private final PaymentRepository paymentRepository;
+    private final PaymentStateRepository paymentStateRepository;
     private final ChannelMapper channelMapper;
     @Override
     public ResponseSuccess save(RequestChannelSave requestChannelSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
@@ -244,7 +248,7 @@ public class ChannelImpl implements IChannel {
     }
 
     @Override
-    public Page<ChannelDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<ChannelListDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<Channel> channelPage;
         try{
             channelPage = channelRepositoryCustom.searchForChannel(name,user,sort,sortColumn,pageNumber,pageSize,true);
@@ -255,21 +259,28 @@ public class ChannelImpl implements IChannel {
         if(channelPage.isEmpty()){
             return new PageImpl<>(Collections.emptyList());
         }
-        List<ChannelDTO> channelDTOList = channelPage.getContent().stream().map(channel -> ChannelDTO.builder()
+        List<ChannelListDTO> channelDTOList = channelPage.getContent().stream().map(channel -> {
+            ClientChannel clientChannel = clientChannelRepository.findByIdClient(channel.getId());
+            // replace with the name of success state in payment states
+            List<Payment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());
+            return ChannelListDTO.builder()
                 .name(channel.getName().toUpperCase())
-                .months(channel.getMonths())
+                .subscribedMonths(channel.getMonths())
                 .client(channel.getClient().getRuc())
                 .membership(channel.getIdMembership())
                 .connection(channel.getConnection().getUrl())
                 .paymentMethod(channel.getPaymentMethod().getName())
                 .user(channel.getUser().toUpperCase())
-                .build()).toList();
+                .ecommerce(clientChannel.getName())
+                    .payedMonths(paymentList.size())
+                .build();
+        }).toList();
         return new PageImpl<>(channelDTOList,
                 channelPage.getPageable(),channelPage.getTotalElements());
     }
 
     @Override
-    public Page<ChannelDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<ChannelListDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<Channel> channelPage;
         try{
             channelPage = channelRepositoryCustom.searchForChannel(name,user,sort,sortColumn,pageNumber,pageSize,false);
@@ -280,15 +291,21 @@ public class ChannelImpl implements IChannel {
         if(channelPage.isEmpty()){
             return new PageImpl<>(Collections.emptyList());
         }
-        List<ChannelDTO> channelDTOList = channelPage.getContent().stream().map(channel -> ChannelDTO.builder()
-                .name(channel.getName().toUpperCase())
-                .months(channel.getMonths())
-                .client(channel.getClient().getRuc())
-                .membership(channel.getIdMembership())
-                .connection(channel.getConnection().getUrl())
-                .paymentMethod(channel.getPaymentMethod().getName())
-                .user(channel.getUser().toUpperCase())
-                .build()).toList();
+        List<ChannelListDTO> channelDTOList = channelPage.getContent().stream().map(channel -> {
+            ClientChannel clientChannel = clientChannelRepository.findByIdClient(channel.getId());
+            // replace with the name of success state in payment states
+            List<Payment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());
+            return ChannelListDTO.builder()
+                    .name(channel.getName().toUpperCase())
+                    .subscribedMonths(channel.getMonths())
+                    .client(channel.getClient().getRuc())
+                    .membership(channel.getIdMembership())
+                    .connection(channel.getConnection().getUrl())
+                    .paymentMethod(channel.getPaymentMethod().getName())
+                    .ecommerce(clientChannel.getName())
+                    .user(channel.getUser().toUpperCase())
+                    .build();
+        }).toList();
         return new PageImpl<>(channelDTOList,
                 channelPage.getPageable(),channelPage.getTotalElements());
     }

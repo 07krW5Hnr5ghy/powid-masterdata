@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.dto.ChannelDTO;
+import com.proyect.masterdata.dto.ChannelListDTO;
 import com.proyect.masterdata.dto.request.RequestChannelSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -15,6 +16,6 @@ public interface IChannel {
     ResponseSuccess saveAll(List<RequestChannelSave> requestChannelSaveList,String user) throws InternalErrorExceptions,BadRequestExceptions;
     ChannelDTO update(String name,Integer months,String user) throws InternalErrorExceptions,BadRequestExceptions;
     ResponseDelete delete(String name,String user) throws InternalErrorExceptions,BadRequestExceptions;
-    Page<ChannelDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    Page<ChannelDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
+    Page<ChannelListDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    Page<ChannelListDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
 }
