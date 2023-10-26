@@ -121,8 +121,8 @@ public class MembershipImpl implements IMembership {
         Channel channelData;
         Module moduleData;
         try{
-            channelData = channelRepository.findByName(channel);
-            moduleData = moduleRepository.findByNameAndStatusTrue(module);
+            channelData = channelRepository.findByName(channel.toUpperCase());
+            moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
             if(channelData != null && moduleData != null){
                 membershipPage = membershipRepositoryCustom.searchForMembership(channelData.getIdMembership(), moduleData.getId(),sort,sortColumn,pageNumber,pageSize);
             }

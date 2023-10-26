@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class MembershipDTO {
-    private String Channel;
-    private String Module;
+public class ModuleTypeDTO {
+    private String userType;
+    private String module;
 }

@@ -3,6 +3,8 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.ModuleType;
 import com.proyect.masterdata.domain.Module;
 import com.proyect.masterdata.domain.UserType;
+import com.proyect.masterdata.domain.UserTypeModule;
+import com.proyect.masterdata.dto.ModuleTypeDTO;
 import com.proyect.masterdata.dto.request.RequestModuleTypeSave;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -12,8 +14,11 @@ import com.proyect.masterdata.services.IModuleType;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +32,7 @@ public class ModuleTypeImpl implements IModuleType {
     private final UserTypeRepository userTypeRepository;
     private final UserTypeModuleRepository userTypeModuleRepository;
     private final ModuleTypeRepository moduleTypeRepository;
+    private final ModuleTypeRepositoryCustom moduleTypeRepositoryCustom;
     @Override
     public ResponseSuccess save(String userType, String module, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
@@ -115,5 +121,46 @@ public class ModuleTypeImpl implements IModuleType {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<ModuleTypeDTO> list(String userType, String module, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+        Page<ModuleType> moduleTypePage = null;
+        UserTypeModule userTypeModule;
+        Module moduleData;
+        try {
+            userTypeModule = userTypeModuleRepository.findByUserType(userType.toUpperCase());
+            moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
+            if(userTypeModule != null && moduleData != null){
+                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(userTypeModule.getId(), moduleData.getId(),sort,sortColumn,pageNumber,pageSize);
+            }
+
+            if(userTypeModule != null && moduleData == null){
+                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(userTypeModule.getId(),null,sort,sortColumn,pageNumber,pageSize);
+            }
+
+            if(userTypeModule == null && moduleData != null){
+                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(null, moduleData.getId(),sort,sortColumn,pageNumber,pageSize);
+            }
+
+            if(userTypeModule == null && moduleData == null){
+                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(null, null,sort,sortColumn,pageNumber,pageSize);
+            }
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(moduleTypePage.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+        List<ModuleTypeDTO> moduleTypeDTOS = moduleTypePage.getContent().stream().map(moduleType -> {
+            UserTypeModule innerUserTypeModule = userTypeModuleRepository.findById(moduleType.getIdUserTypeModule()).orElse(null);
+            Module innerModule = moduleRepository.findById(moduleType.getIdModule()).orElse(null);
+            return ModuleTypeDTO.builder()
+                    .userType(innerUserTypeModule.getUserType())
+                    .module(innerModule.getName())
+                    .build();
+        }).toList();
+        return new PageImpl<>(moduleTypeDTOS,moduleTypePage.getPageable(),moduleTypePage.getTotalElements());
     }
 }
