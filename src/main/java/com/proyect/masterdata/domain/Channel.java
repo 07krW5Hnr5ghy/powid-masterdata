@@ -74,7 +74,7 @@ public class Channel {
     private Membership membership;
 
     @ManyToOne
-    @JoinColumn(name = "id_tipo_pago", columnDefinition = "idPaymentType",insertable = false, updatable = false)
+    @JoinColumn(name = "id_metodo_pago", columnDefinition = "idPaymentMethod",insertable = false, updatable = false)
     private PaymentMethod paymentMethod;
 
     @ManyToOne

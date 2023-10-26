@@ -50,7 +50,7 @@ public class Discount {
     private Long idChannel;
 
     @ManyToOne
-    @JoinColumn(name = "id_canal", columnDefinition = "idChannel",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_canal"))
+    @JoinColumn(name = "id_canal", columnDefinition = "idChannel",insertable = false, updatable = false)
     private Channel channel;
 }
 
