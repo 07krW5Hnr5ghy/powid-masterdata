@@ -37,14 +37,14 @@ public class ClientChannelImpl implements IClientChannel {
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     @Override
-    public ResponseSuccess save(RequestClientChannelSave requestClientChannelSave, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(String ruc,RequestClientChannelSave requestClientChannelSave, String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsClientChannel;
         Client client;
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
             existsClientChannel = clientChannelRepository.existsByName(requestClientChannelSave.getName().toUpperCase());
-            client = clientRepository.findByRuc(requestClientChannelSave.getRuc());
+            client = clientRepository.findByRuc(ruc);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -80,14 +80,14 @@ public class ClientChannelImpl implements IClientChannel {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestClientChannelSave> clientChannelList, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess saveAll(String ruc,List<RequestClientChannelSave> clientChannelList, String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         List<ClientChannel> clientChannels;
-        List<Client> clientList;
+        Client client;
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
             clientChannels = clientChannelRepository.findByNameIn(clientChannelList.stream().map(clientChannel -> clientChannel.getName().toUpperCase()).collect(Collectors.toList()));
-            clientList = clientRepository.findByRucIn(clientChannelList.stream().map(clientChannel -> clientChannel.getRuc()).toList());
+            client = clientRepository.findByRuc(ruc);
         }catch (RuntimeException e){
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -99,19 +99,16 @@ public class ClientChannelImpl implements IClientChannel {
         if(!clientChannels.isEmpty()){
             throw new BadRequestExceptions("El canal ya existe");
         }
-        if(clientList.size() != clientChannelList.size()){
-            throw new BadRequestExceptions("ecommerce no existe");
+        if(client==null){
+            throw new BadRequestExceptions("cliente no existe");
         }
-        List<ClientChannel> clientChannelSaveList = clientChannelList.stream().map(clientChannel -> {
-            Client client = clientRepository.findByRuc(clientChannel.getRuc());
-            return ClientChannel.builder()
+        List<ClientChannel> clientChannelSaveList = clientChannelList.stream().map(clientChannel -> ClientChannel.builder()
                 .name(clientChannel.getName().toUpperCase())
                 .url(clientChannel.getUrl())
                     .idClient(client.getIdClient())
                 .status(true)
                 .user(user.toUpperCase())
-                .build();
-        }
+                .build()
         ).toList();
         try{
             clientChannelRepository.saveAll(clientChannelSaveList);

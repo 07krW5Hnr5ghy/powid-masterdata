@@ -98,7 +98,6 @@ public class ModuleTypeImpl implements IModuleType {
                 ModuleType moduleType = moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeData.getId(),moduleRepository.findByNameAndStatusTrue(module.toUpperCase()).getId());
                 return moduleType;
             }).toList();
-            System.out.println(moduleTypes);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

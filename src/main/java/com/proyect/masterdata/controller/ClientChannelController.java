@@ -24,19 +24,21 @@ public class ClientChannelController {
     private IClientChannel iClientChannel;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("ruc") String ruc,
             @RequestBody() RequestClientChannelSave requestClientChannelSave,
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iClientChannel.save(requestClientChannelSave,user);
+        ResponseSuccess result = iClientChannel.save(ruc,requestClientChannelSave,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/client-channels",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
+            @RequestParam("ruc") String ruc,
             @RequestBody() List<RequestClientChannelSave> clientChannels,
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iClientChannel.saveAll(clientChannels,user);
+        ResponseSuccess result = iClientChannel.saveAll(ruc,clientChannels,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
