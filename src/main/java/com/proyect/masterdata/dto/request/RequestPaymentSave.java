@@ -13,6 +13,5 @@ public class RequestPaymentSave {
     private double totalPayment;
     private double discount;
     private String month;
-    private String channel;
     private String invoiceUrl;
 }

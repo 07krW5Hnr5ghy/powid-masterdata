@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface IClientChannel {
     ResponseSuccess save(String rucClient,RequestClientChannelSave requestClientChannelSave,String user) throws BadRequestExceptions, InternalErrorExceptions;
-    ResponseSuccess saveAll(String rucClient,List<RequestClientChannelSave> ClientChannelList, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    ResponseSuccess saveAll(String rucClient,List<RequestClientChannelSave> clientChannelList, String user) throws BadRequestExceptions, InternalErrorExceptions;
     ClientChannelDTO update(RequestClientChannel requestClientChannel) throws BadRequestExceptions, InternalErrorExceptions;
     ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions;
     List<ClientChannelDTO> listClientChannel();

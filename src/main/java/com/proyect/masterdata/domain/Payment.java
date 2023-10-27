@@ -52,7 +52,7 @@ public class Payment {
     @CreationTimestamp
     private Date dateRegistration;
 
-    @Column(name = "id_canal", unique = true)
+    @Column(name = "id_canal")
     private Long idChannel;
 
     @ManyToOne

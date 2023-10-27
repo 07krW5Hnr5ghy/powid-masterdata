@@ -36,12 +36,12 @@ public class PaymentImpl implements IPayment {
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentStateRepository paymentStateRepository;
     @Override
-    public ResponseSuccess save(RequestPaymentSave requestPaymentSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String channel,RequestPaymentSave requestPaymentSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
-        Channel channel;
+        Channel channelData;
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
-            channel = channelRepository.findByName(requestPaymentSave.getChannel().toUpperCase());
+            channelData = channelRepository.findByName(channel.toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -58,8 +58,8 @@ public class PaymentImpl implements IPayment {
                     .discount(requestPaymentSave.getDiscount())
                     .month(requestPaymentSave.getMonth().toUpperCase())
                     .urlInvoice(requestPaymentSave.getInvoiceUrl())
-                    .channel(channel)
-                    .idChannel(channel.getId())
+                    .channel(channelData)
+                    .idChannel(channelData.getId())
                             .idPaymentState(1L)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build()
@@ -75,12 +75,12 @@ public class PaymentImpl implements IPayment {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestPaymentSave> requestPaymentSaveList, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess saveAll(String channel,List<RequestPaymentSave> requestPaymentSaveList, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
-        List<Channel> channelList;
+        Channel channelData;
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
-            channelList = channelRepository.findByNameIn(requestPaymentSaveList.stream().map(payment -> payment.getChannel().toUpperCase()).toList());
+            channelData = channelRepository.findByName(channel.toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -88,7 +88,7 @@ public class PaymentImpl implements IPayment {
         if(!existsUser){
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(channelList.size() != requestPaymentSaveList.size()){
+        if(channelData==null){
             throw new BadRequestExceptions("Canal no existe");
         }
         try{
@@ -96,10 +96,10 @@ public class PaymentImpl implements IPayment {
                     .totalPayment(payment.getTotalPayment())
                     .month(payment.getMonth().toUpperCase())
                     .discount(payment.getDiscount())
-                    .channel(channelRepository.findByName(payment.getChannel().toUpperCase()))
+                    .channel(channelData)
                     .urlInvoice(payment.getInvoiceUrl())
                     .idPaymentState(1L)
-                    .idChannel(channelRepository.findByName(payment.getChannel().toUpperCase()).getId())
+                    .idChannel(channelData.getId())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build()
             ).toList());
@@ -187,8 +187,8 @@ public class PaymentImpl implements IPayment {
         }
         List<PaymentDTO> paymentDTOList = paymentPage.getContent().stream().map(payment -> {
             Channel channelXPayment = channelRepository.findById(payment.getIdChannel()).orElse(null);
-            Client client = payment.getChannel().getClient();
-            ClientChannel clientChannel = clientChannelRepository.findByIdAndStatusTrue(client.getIdClient());
+            Client client = clientRepository.findById(channelXPayment.getIdClient()).orElse(null);
+            ClientChannel clientChannel = clientChannelRepository.findByIdClient(client.getIdClient());
             PaymentMethod paymentMethod = paymentMethodRepository.findById(channelXPayment.getIdPaymentMethod()).orElse(null);
             return PaymentDTO.builder()
                 .totalPayment(payment.getTotalPayment())

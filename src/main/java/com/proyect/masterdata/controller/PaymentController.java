@@ -26,19 +26,21 @@ public class PaymentController {
     private final IPayment iPayment;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("channel") String channel,
             @RequestBody()RequestPaymentSave requestPaymentSave,
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iPayment.save(requestPaymentSave,user);
+        ResponseSuccess result = iPayment.save(channel,requestPaymentSave,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/payments",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
+            @RequestParam("channel") String channel,
             @RequestBody() List<RequestPaymentSave> requestPaymentSaveList,
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iPayment.saveAll(requestPaymentSaveList,user);
+        ResponseSuccess result = iPayment.saveAll(channel,requestPaymentSaveList,user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

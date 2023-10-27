@@ -13,8 +13,8 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IPayment {
-    ResponseSuccess save(RequestPaymentSave requestPaymentSave,String user) throws InternalErrorExceptions, BadRequestExceptions;
-    ResponseSuccess saveAll(List<RequestPaymentSave> requestPaymentSaveList,String user) throws InternalErrorExceptions, BadRequestExceptions;
+    ResponseSuccess save(String channel,RequestPaymentSave requestPaymentSave,String user) throws InternalErrorExceptions, BadRequestExceptions;
+    ResponseSuccess saveAll(String channel,List<RequestPaymentSave> requestPaymentSaveList,String user) throws InternalErrorExceptions, BadRequestExceptions;
     PaymentUpdateDTO update(RequestPaymentUpdate requestPaymentUpdate, String newPaymentState, String user) throws InternalErrorExceptions,BadRequestExceptions;
     Page<PaymentDTO> list(Double totalPayment, String month, String channel, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
 }
