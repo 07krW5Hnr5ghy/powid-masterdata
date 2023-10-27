@@ -80,7 +80,7 @@ public class ClientChannelRepositoryCustomImpl implements ClientChannelRepositor
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("user")),name.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("user")),user.toUpperCase())));
         }
 
         if(status){
