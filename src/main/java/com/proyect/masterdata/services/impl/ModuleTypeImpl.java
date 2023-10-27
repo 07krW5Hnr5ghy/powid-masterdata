@@ -37,12 +37,14 @@ public class ModuleTypeImpl implements IModuleType {
     @Override
     public ResponseSuccess save(String userType, String module, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
-        boolean existsModule;
-        boolean existsUserType;
+        Module moduleData;
+        UserType userTypeData;
+        ModuleType moduleType;
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
-            existsModule = moduleRepository.existsByName(module.toUpperCase());
-            existsUserType = userTypeRepository.existsByUserType(userType.toUpperCase());
+            moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
+            userTypeData = userTypeRepository.findByUserTypeAndStatusTrue(userType.toUpperCase());
+            moduleType = moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeData.getId(),moduleData.getId());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -52,12 +54,16 @@ public class ModuleTypeImpl implements IModuleType {
             throw new BadRequestExceptions("Usuario no existe");
         }
 
-        if(!existsModule){
+        if(moduleData==null){
             throw new BadRequestExceptions("Modulo no existe");
         }
 
-        if(!existsUserType){
+        if(userType==null){
             throw new BadRequestExceptions("Tipo de usuario no existe");
+        }
+
+        if(moduleType!=null){
+            throw new BadRequestExceptions("Tipo de modulo ya existe");
         }
 
         try{
@@ -78,14 +84,17 @@ public class ModuleTypeImpl implements IModuleType {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestModuleTypeSave> requestModuleTypeSaveList, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess saveAll(String userType,List<String> moduleList, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         List<Module> modules;
-        List<UserType> userTypes;
+        UserType userTypeData;
+        List<ModuleType> moduleTypes;
         try{
             existsUser = userRepository.existsById(user.toUpperCase());
-            modules = moduleRepository.findByNameIn(requestModuleTypeSaveList.stream().map(module -> module.getModule().toUpperCase()).collect(Collectors.toList()));
-            userTypes = userTypeRepository.findByUserTypeIn(requestModuleTypeSaveList.stream().map(userType -> userType.getUserType().toUpperCase()).collect(Collectors.toList()));
+            modules = moduleRepository.findByNameIn(moduleList.stream().map(String::toUpperCase).toList());
+            userTypeData = userTypeRepository.findByUserTypeAndStatusTrue(userType.toUpperCase());
+            moduleTypes = moduleList.stream().map(module ->
+                    moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeData.getId(),moduleRepository.findByNameAndStatusTrue(module.toUpperCase()).getId())).toList();
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -96,18 +105,18 @@ public class ModuleTypeImpl implements IModuleType {
         if(modules.isEmpty()){
             throw new BadRequestExceptions("Modulos no existen");
         }
-        if(userTypes.isEmpty()){
-            throw new BadRequestExceptions("Tipos de usuario no existen");
+        if(userTypeData==null){
+            throw new BadRequestExceptions("Tipo de usuario no existen");
         }
-        if(modules.size() != requestModuleTypeSaveList.size()){
+        if(modules.size() != moduleList.size()){
             throw new BadRequestExceptions("Modulo no existe");
         }
-        if(userTypes.size() != requestModuleTypeSaveList.size()){
-            throw new BadRequestExceptions("Tipo de usuario no existe");
+        if(!moduleTypes.isEmpty()){
+            throw new BadRequestExceptions("Tipo de modulo ya existe");
         }
-        List<ModuleType> moduleTypeList = requestModuleTypeSaveList.stream().map(moduleType -> ModuleType.builder()
-                .idModule(moduleRepository.findByNameAndStatusTrue(moduleType.getModule().toUpperCase()).getId())
-                .idUserTypeModule(userTypeModuleRepository.findByUserTypeAndStatusTrue(moduleType.getUserType().toUpperCase()).getId())
+        List<ModuleType> moduleTypeList = moduleList.stream().map(moduleType -> ModuleType.builder()
+                .idModule(moduleRepository.findByNameAndStatusTrue(moduleType.toUpperCase()).getId())
+                .idUserTypeModule(userTypeModuleRepository.findByUserTypeAndStatusTrue(userTypeData.getUserType()).getId())
                 .dateRegistration(new Date(System.currentTimeMillis()))
                 .status(true)
                 .build()

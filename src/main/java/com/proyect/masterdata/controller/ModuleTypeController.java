@@ -32,10 +32,11 @@ public class ModuleTypeController {
 
     @PostMapping(value = "modules-types",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<RequestModuleTypeSave> requestModuleTypeSaveList,
+            @RequestParam("userType") String userType,
+            @RequestBody() List<String> moduleList,
             @RequestParam("user") String user
     ) throws BadRequestExceptions{
-        ResponseSuccess result = iModuleType.saveAll(requestModuleTypeSaveList,user);
+        ResponseSuccess result = iModuleType.saveAll(userType,moduleList,user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
