@@ -166,11 +166,15 @@ public class ModuleTypeImpl implements IModuleType {
     @Override
     public Page<ModuleTypeDTO> list(String userType, String module, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         Page<ModuleType> moduleTypePage = null;
-        UserTypeModule userTypeModule;
-        Module moduleData;
+        UserTypeModule userTypeModule = null;
+        Module moduleData = null;
         try {
-            userTypeModule = userTypeModuleRepository.findByUserType(userType.toUpperCase());
-            moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
+            if(userType != null){
+                userTypeModule = userTypeModuleRepository.findByUserType(userType.toUpperCase());
+            }
+            if(module != null){
+                moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
+            }
             if(userTypeModule != null && moduleData != null){
                 moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(userTypeModule.getId(), moduleData.getId(),sort,sortColumn,pageNumber,pageSize);
             }
