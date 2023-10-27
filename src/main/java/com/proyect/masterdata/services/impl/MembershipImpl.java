@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Channel;
 import com.proyect.masterdata.domain.Membership;
 import com.proyect.masterdata.dto.MembershipDTO;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.domain.Module;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -108,6 +109,45 @@ public class MembershipImpl implements IMembership {
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public ResponseDelete delete(String channel, String module, String user) throws InternalErrorExceptions, BadRequestExceptions {
+        boolean existsUser;
+        Channel channelData;
+        Module moduleData;
+        Membership membership;
+        try{
+            existsUser = userRepository.existsById(user.toUpperCase());
+            channelData = channelRepository.findByName(channel.toUpperCase());
+            moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
+            membership = membershipRepository.findByIdAndIdModule(channelData.getIdMembership(),moduleData.getId());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(!existsUser){
+            throw new BadRequestExceptions("Usuario no existe");
+        }
+        if(channel==null){
+            throw new BadRequestExceptions("Canal no existe");
+        }
+        if(module==null){
+            throw new BadRequestExceptions("Modulo no existe");
+        }
+        if(membership==null){
+            throw new BadRequestExceptions("Membresia no existe");
+        }
+        try {
+            membershipRepository.delete(membership);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
                     .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());

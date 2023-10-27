@@ -6,6 +6,7 @@ import com.proyect.masterdata.domain.UserType;
 import com.proyect.masterdata.domain.UserTypeModule;
 import com.proyect.masterdata.dto.ModuleTypeDTO;
 import com.proyect.masterdata.dto.request.RequestModuleTypeSave;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -116,6 +117,45 @@ public class ModuleTypeImpl implements IModuleType {
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public ResponseDelete delete(String userType, String module, String user) throws InternalErrorExceptions, BadRequestExceptions {
+        boolean existsUser;
+        UserTypeModule userTypeModule;
+        Module moduleData;
+        ModuleType moduleType;
+        try{
+            existsUser = userRepository.existsById(user.toUpperCase());
+            userTypeModule = userTypeModuleRepository.findByUserType(userType.toUpperCase());
+            moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
+            moduleType = moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeModule.getId(),moduleData.getId());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(!existsUser){
+            throw new BadRequestExceptions("Usuario no existe");
+        }
+        if(userTypeModule==null){
+            throw new BadRequestExceptions("Tipo de usuario no existe");
+        }
+        if(moduleData==null){
+            throw new BadRequestExceptions("Modulo no existe");
+        }
+        if(moduleType==null){
+            throw new BadRequestExceptions("Tipo de usuario x Modulo no existe");
+        }
+        try {
+            moduleTypeRepository.delete(moduleType);
+            return ResponseDelete.builder()
+                    .message(Constants.delete)
+                    .code(200)
                     .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());
