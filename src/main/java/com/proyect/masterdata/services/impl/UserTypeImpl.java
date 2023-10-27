@@ -77,12 +77,12 @@ public class UserTypeImpl implements IUserType {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> usertype, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess saveAll(List<String> userTypeList, String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         List<UserType> userTypes;
         try {
             existsUser = userRepository.existsById(user.toUpperCase());
-            userTypes = userTypeRepository.findByUserTypeIn(usertype.stream().map(String::toUpperCase).toList());
+            userTypes = userTypeRepository.findByUserTypeIn(userTypeList.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e){
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -95,12 +95,18 @@ public class UserTypeImpl implements IUserType {
             throw new BadRequestExceptions("Error en los tipo de usuario");
         }
 
-        List<RequestUserTypeSave> userTypeSave = usertype.stream().map(data -> RequestUserTypeSave.builder()
+        List<RequestUserTypeSave> userTypeSave = userTypeList.stream().map(data -> RequestUserTypeSave.builder()
                 .user(user.toUpperCase())
                 .userType(data.toUpperCase())
                 .build()).toList();
+        List<UserTypeModule> userTypeModules = userTypeList.stream().map(userType -> UserTypeModule.builder()
+                .userType(userType.toUpperCase())
+                .dateRegistration(new Date(System.currentTimeMillis()))
+                .status(true)
+                .build()).toList();
         try {
             userTypeRepository.saveAll(userTypeMapper.listUserTypeToListName(userTypeSave));
+            userTypeModuleRepository.saveAll(userTypeModules);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
