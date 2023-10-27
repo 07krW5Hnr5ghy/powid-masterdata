@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -93,8 +94,11 @@ public class ModuleTypeImpl implements IModuleType {
             existsUser = userRepository.existsById(user.toUpperCase());
             modules = moduleRepository.findByNameIn(moduleList.stream().map(String::toUpperCase).toList());
             userTypeData = userTypeRepository.findByUserTypeAndStatusTrue(userType.toUpperCase());
-            moduleTypes = moduleList.stream().map(module ->
-                    moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeData.getId(),moduleRepository.findByNameAndStatusTrue(module.toUpperCase()).getId())).toList();
+            moduleTypes = moduleList.stream().map(module -> {
+                ModuleType moduleType = moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeData.getId(),moduleRepository.findByNameAndStatusTrue(module.toUpperCase()).getId());
+                return moduleType;
+            }).toList();
+            System.out.println(moduleTypes);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -111,7 +115,7 @@ public class ModuleTypeImpl implements IModuleType {
         if(modules.size() != moduleList.size()){
             throw new BadRequestExceptions("Modulo no existe");
         }
-        if(!moduleTypes.isEmpty()){
+        if(!moduleTypes.stream().filter(Objects::nonNull).toList().isEmpty()){
             throw new BadRequestExceptions("Tipo de modulo ya existe");
         }
         List<ModuleType> moduleTypeList = moduleList.stream().map(moduleType -> ModuleType.builder()
