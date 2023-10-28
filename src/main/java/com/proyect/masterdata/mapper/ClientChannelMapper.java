@@ -21,8 +21,6 @@ public interface ClientChannelMapper {
     @Mapping(target = "id",ignore = true)
     @Mapping(target = "name", source = "requestClientChannelSave.name")
     @Mapping(target = "url", source = "requestClientChannelSave.url")
-    @Mapping(target = "status")
-    @Mapping(target = "dateRegistration",ignore = true)
     ClientChannel clientChannelToName(RequestClientChannelSave requestClientChannelSave);
 
     List<ClientChannel> listClientChannelToListName(List<RequestClientChannelSave> requestClientChannelSaveList);
