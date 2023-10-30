@@ -19,7 +19,6 @@ public class RequestUser {
     private String gender;
     private String mobile;
     private String password;
-    private Long status;
     private String district;
     private String userType;
 }

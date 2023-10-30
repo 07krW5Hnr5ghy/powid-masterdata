@@ -21,8 +21,8 @@ public class RequestUserSave {
     private String gender;
     private String mobile;
     private String password;
-    private Long id_district;
-    private Long idUserType;
+    private String district;
+    private String userType;
     private Date dateRegistration;
     private Long status;
 }

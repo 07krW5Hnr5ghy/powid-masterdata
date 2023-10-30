@@ -65,7 +65,7 @@ public class UserImpl implements IUser {
         }
 
         try{
-            userRepository.save(userMapper.userToName(RequestUserSave.builder()
+            userRepository.save(User.builder()
                             .user(requestUser.getUser().toUpperCase())
                             .name(requestUser.getName().toUpperCase())
                             .surname(requestUser.getSurname().toUpperCase())
@@ -76,10 +76,10 @@ public class UserImpl implements IUser {
                             .gender(requestUser.getGender().toUpperCase())
                             .password(requestUser.getPassword())
                             .dateRegistration(new Date(System.currentTimeMillis()))
-                            .id_district(district.getId())
+                            .idDistrict(district.getId())
                             .idUserType(userType.getId())
-                            .status(requestUser.getStatus())
-                    .build()));
+                            .status(1L)
+                    .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -130,10 +130,10 @@ public class UserImpl implements IUser {
                     .mobile(userData.getMobile())
                     .gender(userData.getGender().toUpperCase())
                     .password(userData.getPassword())
-                    .id_district(district.getId())
-                    .idUserType(userType.getId())
+                    .district(district.getName().toUpperCase())
+                    .userType(userType.getUserType().toUpperCase())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .status(userData.getStatus())
+                    .status(1L)
                     .build();
                 }
         ).toList();
@@ -150,14 +150,14 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public UserDTO update(RequestUser requestUser,String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public UserDTO update(RequestUserSave requestUserSave,String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         User userData;
         UserType userType;
         try{
             existsUser = userRepository.existsByUser(user.toUpperCase());
-            userData = userRepository.findByUser(requestUser.getUser().toUpperCase());
-            userType = userTypeRepository.findByUserTypeAndStatusTrue(requestUser.getUserType().toUpperCase());
+            userData = userRepository.findByUser(requestUserSave.getUser().toUpperCase());
+            userType = userTypeRepository.findByUserTypeAndStatusTrue(requestUserSave.getUserType().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -171,17 +171,17 @@ public class UserImpl implements IUser {
         if(userType==null){
             throw new BadRequestExceptions("Tipo de usuario no existe");
         }
-        userData.setName(requestUser.getName().toUpperCase());
-        userData.setSurname(requestUser.getSurname().toUpperCase());
-        userData.setDni(requestUser.getDni());
-        userData.setStatus(requestUser.getStatus());
-        userData.setAddress(requestUser.getAddress());
+        userData.setName(requestUserSave.getName().toUpperCase());
+        userData.setSurname(requestUserSave.getSurname().toUpperCase());
+        userData.setDni(requestUserSave.getDni());
+        userData.setStatus(requestUserSave.getStatus());
+        userData.setAddress(requestUserSave.getAddress());
         userData.setIdUserType(userType.getId());
         userData.setDateRegistration(new Date(System.currentTimeMillis()));
-        userData.setEmail(requestUser.getEmail());
-        userData.setMobile(requestUser.getMobile());
-        userData.setPassword(requestUser.getPassword());
-        userData.setGender(requestUser.getGender());
+        userData.setEmail(requestUserSave.getEmail());
+        userData.setMobile(requestUserSave.getMobile());
+        userData.setPassword(requestUserSave.getPassword());
+        userData.setGender(requestUserSave.getGender());
         try{
             return userMapper.userToUserDTO(userRepository.save(userData));
         }catch (RuntimeException e){
@@ -246,7 +246,7 @@ public class UserImpl implements IUser {
                     .password(userData.getPassword())
                     .address(userData.getAddress().toUpperCase())
                     .mobile(userData.getMobile())
-                    .district(districtRepository.findById(userData.getId_district()).orElse(null).getName())
+                    .district(districtRepository.findById(userData.getIdDistrict()).orElse(null).getName())
                     .userType(userType.getUserType())
                     .status(userData.getStatus())
                     .modules(modules)

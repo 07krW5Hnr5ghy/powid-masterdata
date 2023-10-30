@@ -3,6 +3,7 @@ package com.proyect.masterdata.controller;
 import com.proyect.masterdata.dto.UserDTO;
 import com.proyect.masterdata.dto.UserQueryDTO;
 import com.proyect.masterdata.dto.request.RequestUser;
+import com.proyect.masterdata.dto.request.RequestUserSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -41,10 +42,10 @@ public class UserController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> update(
-            @RequestBody() RequestUser requestUser,
+            @RequestBody() RequestUserSave requestUserSave,
             @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        UserDTO result = iUser.update(requestUser,user);
+        UserDTO result = iUser.update(requestUserSave,user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

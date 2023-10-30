@@ -53,16 +53,16 @@ public class User {
     private Date dateRegistration;
 
     @Column(name = "id_distrito", updatable=false)
-    private Long id_district;
+    private Long idDistrict;
 
     @Column(name = "id_tipo_usuario")
     private Long idUserType;
 
     @ManyToOne
-    @JoinColumn(name = "id_distrito", columnDefinition = "id_district",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_distrito"))
+    @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict",insertable = false, updatable = false)
     private District district;
 
     @ManyToOne
-    @JoinColumn(name = "id_tipo_usuario", columnDefinition = "idUserType",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_tipo_usuario"))
+    @JoinColumn(name = "id_tipo_usuario", columnDefinition = "idUserType",insertable = false, updatable = false)
     private UserType userType;
 }
