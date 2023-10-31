@@ -23,6 +23,5 @@ public class RequestUserSave {
     private String password;
     private String district;
     private String userType;
-    private Date dateRegistration;
     private Long status;
 }

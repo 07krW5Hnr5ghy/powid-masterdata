@@ -117,10 +117,10 @@ public class UserImpl implements IUser {
         if(userTypeList.size() != requestUserList.size()){
             throw new BadRequestExceptions("Tipo de usuario no existe");
         }
-        List<RequestUserSave> userSaveList = requestUserList.stream().map((userData) -> {
+        List<User> userSaveList = requestUserList.stream().map((userData) -> {
             District district = districtRepository.findByNameAndStatusTrue(userData.getDistrict().toUpperCase());
             UserType userType = userTypeRepository.findByUserTypeAndStatusTrue(userData.getUserType().toUpperCase());
-            return RequestUserSave.builder()
+            return User.builder()
                     .user(userData.getUser().toUpperCase())
                     .name(userData.getName().toUpperCase())
                     .surname(userData.getSurname().toUpperCase())
@@ -130,15 +130,17 @@ public class UserImpl implements IUser {
                     .mobile(userData.getMobile())
                     .gender(userData.getGender().toUpperCase())
                     .password(userData.getPassword())
-                    .district(district.getName().toUpperCase())
-                    .userType(userType.getUserType().toUpperCase())
+                    .idDistrict(district.getId())
+                    .district(district)
+                    .idUserType(userType.getId())
+                    .userType(userType)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .status(1L)
                     .build();
                 }
         ).toList();
         try{
-            userRepository.saveAll(userMapper.listUserToListName(userSaveList));
+            userRepository.saveAll(userSaveList);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -181,9 +183,23 @@ public class UserImpl implements IUser {
         userData.setEmail(requestUserSave.getEmail());
         userData.setMobile(requestUserSave.getMobile());
         userData.setPassword(requestUserSave.getPassword());
-        userData.setGender(requestUserSave.getGender());
+        userData.setGender(requestUserSave.getGender().toUpperCase());
         try{
-            return userMapper.userToUserDTO(userRepository.save(userData));
+            User updatedUser = userRepository.save(userData);
+            return UserDTO.builder()
+                    .user(updatedUser.getUser().toUpperCase())
+                    .name(updatedUser.getName().toUpperCase())
+                    .surname(updatedUser.getSurname().toUpperCase())
+                    .email(updatedUser.getEmail())
+                    .gender(updatedUser.getGender().toUpperCase())
+                    .password(updatedUser.getPassword())
+                    .address(updatedUser.getAddress().toUpperCase())
+                    .mobile(updatedUser.getMobile())
+                    .dni(updatedUser.getDni())
+                    .district(updatedUser.getDistrict().getName().toUpperCase())
+                    .userType(updatedUser.getUserType().getUserType().toUpperCase())
+                    .status(updatedUser.getStatus())
+                    .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions("USer not update");
@@ -233,9 +249,9 @@ public class UserImpl implements IUser {
         List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
             List<String> modules = new ArrayList<>();
             UserType userType = userTypeRepository.findById(userData.getIdUserType()).orElse(null);
-            UserTypeModule userTypeModule = userTypeModuleRepository.findByUserType(userType.getUserType());
+            UserTypeModule userTypeModule = userTypeModuleRepository.findByUserType(userType.getUserType().toUpperCase());
             List<Long> moduleTypeList = moduleTypeRepository.findByIdUserTypeModule(userTypeModule.getId()).stream().map(moduleType -> moduleType.getIdModule()).toList();
-            modules = moduleRepository.findAllById(moduleTypeList).stream().map(module -> module.getName()).toList();
+            modules = moduleRepository.findAllById(moduleTypeList).stream().map(module -> module.getName().toUpperCase()).toList();
             return UserQueryDTO.builder()
                     .dni(userData.getDni())
                     .user(userData.getUser().toUpperCase())
