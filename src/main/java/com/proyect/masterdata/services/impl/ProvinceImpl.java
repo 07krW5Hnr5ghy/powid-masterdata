@@ -62,10 +62,11 @@ public class ProvinceImpl implements IProvince {
         }
 
         try {
-            provinceRepository.save(provinceMapper.provinceToName(RequestProvinceSave.builder()
-                            .codeDepártment(codeDepartment)
-                            .name(name.toUpperCase())
-                            .user(user.toUpperCase()).build()));
+            provinceRepository.save(Province.builder()
+                    .name(name.toUpperCase())
+                    .idDepartment(codeDepartment)
+                    .status(true)
+                    .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

@@ -62,10 +62,11 @@ public class DistrictImpl implements IDistrict {
         }
 
         try {
-            districtRepository.save(districtMapper.districtToName(RequestDistrictSave.builder()
-                    .codeProvince(codeProvince)
+            districtRepository.save(District.builder()
                     .name(name.toUpperCase())
-                    .user(user.toUpperCase()).build()));
+                    .user(user.toUpperCase())
+                    .idProvince(codeProvince)
+                    .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

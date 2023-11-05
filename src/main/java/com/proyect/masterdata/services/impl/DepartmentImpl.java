@@ -55,8 +55,12 @@ public class DepartmentImpl implements IDepartment {
         }
 
         try {
-            departmentRepository.save(departmentMapper.departmentToName(RequestDepartmentSave
-                    .builder().name(name.toUpperCase()).user(datauser.getUser()).build()));
+            departmentRepository.save(Department.builder()
+                    .name(name.toUpperCase())
+                    .user(user.toUpperCase())
+                    .status(true)
+                    .build()
+            );
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
