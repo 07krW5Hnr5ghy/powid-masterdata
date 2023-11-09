@@ -10,6 +10,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,6 +50,13 @@ public class Product {
     @Column(name = "estado")
     private boolean status;
 
+    @Column(name = "id_modelo")
+    private Long idModel;
+
     @Column(name = "usuario")
     private String user;
+
+    @ManyToOne
+    @JoinColumn(name = "id_modelo", columnDefinition = "idModel", insertable = false, updatable = false)
+    private Model model;
 }

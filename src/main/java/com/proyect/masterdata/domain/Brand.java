@@ -48,4 +48,7 @@ public class Brand {
     @Column(name = "fecha_modificacion")
     @CreationTimestamp
     private Date dateUpdate;
+
+    @Column(name = "usuario")
+    private String user;
 }

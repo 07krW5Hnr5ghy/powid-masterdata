@@ -10,6 +10,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,4 +50,14 @@ public class Model {
     @Column(name = "fecha_modificacion")
     @CreationTimestamp
     private Date dateUpdate;
+
+    @Column(name = "id_marca")
+    private Long idBrand;
+
+    @ManyToOne
+    @JoinColumn(name = "id_marca", columnDefinition = "idBrand", insertable = false, updatable = false)
+    private Brand brand;
+
+    @Column(name = "usuario")
+    private String user;
 }
