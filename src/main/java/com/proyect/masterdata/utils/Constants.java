@@ -1,15 +1,15 @@
 package com.proyect.masterdata.utils;
 
 public class Constants {
-    //Esquemas
-    public static final String schemaMaster="master";
-    //Tablas
-    public static final String tableDepartment= "departamento";
-    public static final String tableProvince= "provincia";
-    public static final String tableDistrict= "distrito";
-    public static final String tableLogin= "sesion";
-    public static final String tableUser= "usuario";
-    public static final String tableUserType= "tipo_usuario";
+    // Esquemas
+    public static final String schemaMaster = "master";
+    // Tablas
+    public static final String tableDepartment = "departamento";
+    public static final String tableProvince = "provincia";
+    public static final String tableDistrict = "distrito";
+    public static final String tableLogin = "sesion";
+    public static final String tableUser = "usuario";
+    public static final String tableUserType = "tipo_usuario";
     public static final String tableChannel = "canal";
     public static final String tableClient = "cliente";
     public static final String tableMembership = "membresia";
@@ -21,7 +21,6 @@ public class Constants {
     public static final String tablePaymentType = "tipo_pago";
     public static final String tableModuleType = "modulo_tipo";
     public static final String tableConnection = "conexion";
-
     public static final String tablePaymentMethod = "medios_pago";
     public static final String tablePaymentState = "estados_pago";
     public static final String tableState = "estados";
@@ -33,27 +32,28 @@ public class Constants {
     public static final String tableUserRole = "roles_usuario";
     public static final String tableCategory = "categorias";
     public static final String tableClientChannel = "canales_cliente";
+    public static final String tableProduct = "producto";
 
-    //Mensajes
-    public static final String register="registration correctly";
-    public static final String update="correctly updated";
-    public static final String delete="successfully deleted";
-    //Errores
-    public static final String ErrorWhileRegistering= "Error while registering";
-    public static final String ErrorWhileUpdating= "Error while updating";
-    public static final String ErrorWhenDeleting= "Error when deleting";
+    // Mensajes
+    public static final String register = "registration correctly";
+    public static final String update = "correctly updated";
+    public static final String delete = "successfully deleted";
+    // Errores
+    public static final String ErrorWhileRegistering = "Error while registering";
+    public static final String ErrorWhileUpdating = "Error while updating";
+    public static final String ErrorWhenDeleting = "Error when deleting";
 
-    public static final String ErrorUser= "the user is incorrect";
-    public static final String ResultsFound= "no results found";
-    public static final String InternalErrorExceptions="Internal Server Error";
-    public static final String ErrorDepartment= "The department does not exist";
-    public static final String ErrorDepartmentList= "In the list there is a department that exists";
-    public static final String ErrorDepartmentExist= "The department does exist";
+    public static final String ErrorUser = "the user is incorrect";
+    public static final String ResultsFound = "no results found";
+    public static final String InternalErrorExceptions = "Internal Server Error";
+    public static final String ErrorDepartment = "The department does not exist";
+    public static final String ErrorDepartmentList = "In the list there is a department that exists";
+    public static final String ErrorDepartmentExist = "The department does exist";
 
-    public static final String ErrorProvinceList= "In the list there is a province that exists";
+    public static final String ErrorProvinceList = "In the list there is a province that exists";
 
-    public static final String ErrorProvinceExist= "Exit province";
-    public static final String ErrorProvinceNotExist= "Exit The province does not exist";
+    public static final String ErrorProvinceExist = "Exit province";
+    public static final String ErrorProvinceNotExist = "Exit The province does not exist";
     public static final String ErrorCategory = "The category does not exist";
     public static final String ErrorCategoryExists = "The category does exist";
     public static final String ErrorCategoryDescriptionExists = "The category description does exist";
