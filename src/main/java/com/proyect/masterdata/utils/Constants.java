@@ -33,6 +33,7 @@ public class Constants {
     public static final String tableCategory = "categorias";
     public static final String tableClientChannel = "canales_cliente";
     public static final String tableProduct = "producto";
+    public static final String tableBrand = "marca";
 
     // Mensajes
     public static final String register = "registration correctly";
