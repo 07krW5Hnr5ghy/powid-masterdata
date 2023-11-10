@@ -50,6 +50,7 @@ public class BrandImpl implements IBrand {
                     .name(name.toUpperCase())
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
+                    .user(user.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
