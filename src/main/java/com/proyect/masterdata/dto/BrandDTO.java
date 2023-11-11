@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CategoryDTO {
-    private Long code;
+public class BrandDTO {
     private String name;
-    private String description;
-    private Boolean status;
+    private String user;
 }
