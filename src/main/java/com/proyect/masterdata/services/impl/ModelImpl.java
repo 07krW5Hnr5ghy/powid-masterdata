@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -52,28 +53,77 @@ public class ModelImpl implements IModel {
             throw new BadRequestExceptions("Modelo ya existe");
         }
 
-        if(brandData==null){
+        if (brandData == null) {
             throw new BadRequestExceptions("Marca no existe");
         }
 
-        try{
+        try {
             modelRepository.save(Model.builder()
-                .name(name.toUpperCase())
-                .brand(brandData)
-                .idBrand(brandData.getId())
-                .dateRegistration(new Date(System.currentTimeMillis()))
-                .status(true)
-                .build()
-            );
+                    .name(name.toUpperCase())
+                    .brand(brandData)
+                    .idBrand(brandData.getId())
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .status(true)
+                    .user(user.toUpperCase())
+                    .build());
             return ResponseSuccess.builder()
-            .code(200)
-            .message(Constants.register)
-            .build();
-        }catch(RuntimeException e){
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        
+
+    }
+
+    @Override
+    public ResponseSuccess saveAll(List<String> names, String brand, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
+
+        boolean existsUser;
+        Brand brandData;
+        List<Model> models;
+
+        try {
+            existsUser = userRepository.existsByUser(user.toUpperCase());
+            brandData = brandRepository.findByName(brand.toUpperCase());
+            models = modelRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (!existsUser) {
+            throw new BadRequestExceptions("Usuario no existe");
+        }
+
+        if (brandData == null) {
+            throw new BadRequestExceptions("Marca no existe");
+        }
+
+        if (!models.isEmpty()) {
+            throw new BadRequestExceptions("Modelo ya existe");
+        }
+
+        try {
+            modelRepository.saveAll(names.stream().map(model -> Model.builder()
+                    .name(model.toUpperCase())
+                    .brand(brandData)
+                    .idBrand(brandData.getId())
+                    .status(true)
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .user(user.toUpperCase())
+                    .build()).toList());
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
     }
 
 }
