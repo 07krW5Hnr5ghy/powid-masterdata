@@ -65,7 +65,7 @@ public class BrandController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/statusFalse", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "statusFalse", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<BrandDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

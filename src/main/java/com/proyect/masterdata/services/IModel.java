@@ -2,6 +2,9 @@ package com.proyect.masterdata.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
+import com.proyect.masterdata.dto.ModelDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -15,4 +18,10 @@ public interface IModel {
             throws InternalErrorExceptions, BadRequestExceptions;
 
     ResponseDelete delete(String name, String user) throws InternalErrorExceptions, BadRequestExceptions;
+
+    Page<ModelDTO> list(String name, String user, String sort, String columnSort, Integer pageNumber, Integer pageSize);
+
+    Page<ModelDTO> listStatusFalse(String name, String user, String sort, String columnSort, Integer pageNumber,
+            Integer pageSize);
+
 }

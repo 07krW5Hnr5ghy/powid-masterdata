@@ -1,18 +1,24 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Brand;
 import com.proyect.masterdata.domain.Model;
+import com.proyect.masterdata.dto.ModelDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.mapper.ModelMapper;
 import com.proyect.masterdata.repository.BrandRepository;
 import com.proyect.masterdata.repository.ModelRepository;
+import com.proyect.masterdata.repository.ModelRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IModel;
 import com.proyect.masterdata.utils.Constants;
@@ -28,6 +34,8 @@ public class ModelImpl implements IModel {
     private final ModelRepository modelRepository;
     private final UserRepository userRepository;
     private final BrandRepository brandRepository;
+    private final ModelRepositoryCustom modelRepositoryCustom;
+    private final ModelMapper modelMapper;
 
     @Override
     public ResponseSuccess save(String name, String brand, String user)
@@ -161,6 +169,48 @@ public class ModelImpl implements IModel {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<ModelDTO> list(String name, String user, String sort, String columnSort, Integer pageNumber,
+            Integer pageSize) {
+
+        Page<Model> pageModel;
+
+        try {
+            pageModel = modelRepositoryCustom.searchForModel(name, user, sort, columnSort, pageNumber, pageSize, true);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (pageModel.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        return new PageImpl<>(modelMapper.listModelToListModelDTO(pageModel.getContent()), pageModel.getPageable(),
+                pageModel.getTotalElements());
+    }
+
+    @Override
+    public Page<ModelDTO> listStatusFalse(String name, String user, String sort, String columnSort, Integer pageNumber,
+            Integer pageSize) {
+
+        Page<Model> pageModel;
+
+        try {
+            pageModel = modelRepositoryCustom.searchForModel(name, user, sort, columnSort, pageNumber, pageSize, false);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (pageModel.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        return new PageImpl<>(modelMapper.listModelToListModelDTO(pageModel.getContent()), pageModel.getPageable(),
+                pageModel.getTotalElements());
     }
 
 }
