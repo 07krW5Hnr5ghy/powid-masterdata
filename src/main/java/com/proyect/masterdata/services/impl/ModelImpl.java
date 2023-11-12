@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Brand;
 import com.proyect.masterdata.domain.Model;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -124,6 +125,42 @@ public class ModelImpl implements IModel {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
+    }
+
+    @Override
+    public ResponseDelete delete(String name, String user) throws InternalErrorExceptions, BadRequestExceptions {
+
+        boolean existsUser;
+        Model modelData;
+
+        try {
+            existsUser = userRepository.existsByUser(user.toUpperCase());
+            modelData = modelRepository.findByName(name.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (!existsUser) {
+            throw new BadRequestExceptions("Usuario no existe");
+        }
+
+        if (modelData == null) {
+            throw new BadRequestExceptions("Modelo no existe");
+        }
+
+        try {
+            modelData.setStatus(false);
+            modelData.setDateUpdate(new Date(System.currentTimeMillis()));
+            modelRepository.save(modelData);
+            return ResponseDelete.builder()
+                    .message(Constants.delete)
+                    .code(200)
+                    .build();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 
 }

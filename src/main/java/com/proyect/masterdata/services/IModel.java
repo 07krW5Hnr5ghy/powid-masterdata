@@ -2,6 +2,7 @@ package com.proyect.masterdata.services;
 
 import java.util.List;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -12,4 +13,6 @@ public interface IModel {
 
     ResponseSuccess saveAll(List<String> names, String brand, String user)
             throws InternalErrorExceptions, BadRequestExceptions;
+
+    ResponseDelete delete(String name, String user) throws InternalErrorExceptions, BadRequestExceptions;
 }

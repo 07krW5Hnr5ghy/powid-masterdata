@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IModel;
@@ -42,6 +43,14 @@ public class ModelController {
             @RequestParam("brand") String brand,
             @RequestParam("user") String user) throws BadRequestExceptions {
         ResponseSuccess result = iModel.saveAll(names, brand, user);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("name") String name,
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseDelete result = iModel.delete(name, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
