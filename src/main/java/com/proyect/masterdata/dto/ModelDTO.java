@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class ModelDTO {
     private String name;
+    private String brand;
     private String user;
 }

@@ -59,24 +59,26 @@ public class ModelController {
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ModelDTO>> list(
             @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "brand", required = false) String brand,
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize) throws BadRequestExceptions {
-        Page<ModelDTO> result = iModel.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        Page<ModelDTO> result = iModel.list(name, brand, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "statusFalse", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ModelDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "name", required = false) String brand,
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize) throws BadRequestExceptions {
-        Page<ModelDTO> result = iModel.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        Page<ModelDTO> result = iModel.listStatusFalse(name, brand, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

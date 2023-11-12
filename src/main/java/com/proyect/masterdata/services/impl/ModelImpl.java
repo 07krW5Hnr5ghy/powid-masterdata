@@ -172,13 +172,22 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public Page<ModelDTO> list(String name, String user, String sort, String columnSort, Integer pageNumber,
+    public Page<ModelDTO> list(String name, String brand, String user, String sort, String columnSort,
+            Integer pageNumber,
             Integer pageSize) {
 
         Page<Model> pageModel;
+        Brand brandData;
+
+        if (brand != null) {
+            brandData = brandRepository.findByName(brand.toUpperCase());
+        } else {
+            brandData = null;
+        }
 
         try {
-            pageModel = modelRepositoryCustom.searchForModel(name, user, sort, columnSort, pageNumber, pageSize, true);
+            pageModel = modelRepositoryCustom.searchForModel(name, brandData, user, sort, columnSort, pageNumber,
+                    pageSize, true);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -188,18 +197,33 @@ public class ModelImpl implements IModel {
             return new PageImpl<>(Collections.emptyList());
         }
 
-        return new PageImpl<>(modelMapper.listModelToListModelDTO(pageModel.getContent()), pageModel.getPageable(),
+        List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
+                .name(model.getName())
+                .brand(model.getBrand().getName())
+                .user(model.getUser())
+                .build()).toList();
+
+        return new PageImpl<>(models, pageModel.getPageable(),
                 pageModel.getTotalElements());
     }
 
     @Override
-    public Page<ModelDTO> listStatusFalse(String name, String user, String sort, String columnSort, Integer pageNumber,
+    public Page<ModelDTO> listStatusFalse(String name, String brand, String user, String sort, String columnSort,
+            Integer pageNumber,
             Integer pageSize) {
 
         Page<Model> pageModel;
+        Brand brandData;
+
+        if (brand != null) {
+            brandData = brandRepository.findByName(brand.toUpperCase());
+        } else {
+            brandData = null;
+        }
 
         try {
-            pageModel = modelRepositoryCustom.searchForModel(name, user, sort, columnSort, pageNumber, pageSize, false);
+            pageModel = modelRepositoryCustom.searchForModel(name, brandData, user, sort, columnSort, pageNumber,
+                    pageSize, false);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -209,7 +233,13 @@ public class ModelImpl implements IModel {
             return new PageImpl<>(Collections.emptyList());
         }
 
-        return new PageImpl<>(modelMapper.listModelToListModelDTO(pageModel.getContent()), pageModel.getPageable(),
+        List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
+                .name(model.getName())
+                .brand(model.getBrand().getName())
+                .user(model.getUser())
+                .build()).toList();
+
+        return new PageImpl<>(models, pageModel.getPageable(),
                 pageModel.getTotalElements());
     }
 
