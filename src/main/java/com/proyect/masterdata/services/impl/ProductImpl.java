@@ -9,6 +9,7 @@ import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.Size;
+import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -37,7 +38,7 @@ public class ProductImpl implements IProduct {
     private final ColorRepository colorRepository;
 
     @Override
-    public ResponseSuccess save(String sku, String model, String size, String category, String color, String user)
+    public ResponseSuccess save(RequestProductSave product, String user)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         boolean existsUser;
@@ -49,11 +50,11 @@ public class ProductImpl implements IProduct {
 
         try {
             existsUser = userRepository.existsByUser(user.toUpperCase());
-            existsProduct = productRepository.existsBySku(sku.toUpperCase());
-            modelData = modelRepository.findByName(model.toUpperCase());
-            sizeData = sizeRepository.findByNameAndStatusTrue(size.toUpperCase());
-            categoryData = categoryRepository.findByNameAndStatusTrue(category.toUpperCase());
-            colorData = colorRepository.findByNameAndStatusTrue(color.toUpperCase());
+            existsProduct = productRepository.existsBySku(product.getSku().toUpperCase());
+            modelData = modelRepository.findByName(product.getModel().toUpperCase());
+            sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
+            categoryData = categoryRepository.findByNameAndStatusTrue(product.getCategory().toUpperCase());
+            colorData = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -85,7 +86,7 @@ public class ProductImpl implements IProduct {
 
         try {
             productRepository.save(Product.builder()
-                    .sku(sku.toUpperCase())
+                    .sku(product.getSku().toUpperCase())
                     .model(modelData)
                     .idModel(modelData.getId())
                     .size(sizeData)
