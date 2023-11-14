@@ -96,7 +96,7 @@ public class ProductImpl implements IProduct {
                     .color(colorData)
                     .idColor(colorData.getId())
                     .user(user.toUpperCase())
-                    .status(existsProduct)
+                    .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build());
             return ResponseSuccess.builder()
