@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -104,6 +105,97 @@ public class ProductImpl implements IProduct {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e) {
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+    }
+
+    @Override
+    public ResponseSuccess saveAll(List<RequestProductSave> products, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
+
+        boolean existsUser;
+        List<Product> productList;
+        List<Model> modelList;
+        List<Size> sizeList;
+        List<Category> categoryList;
+        List<Color> colorList;
+
+        try {
+            existsUser = userRepository
+                    .existsByUser(user.toUpperCase());
+            productList = productRepository
+                    .findBySkuIn(products.stream().map(product -> product.getSku().toUpperCase()).toList());
+            modelList = modelRepository
+                    .findByNameIn(products.stream().map(product -> product.getModel().toUpperCase()).toList());
+            sizeList = sizeRepository
+                    .findByNameIn(products.stream().map(product -> product.getSize().toUpperCase()).toList());
+            categoryList = categoryRepository
+                    .findByNameIn(products.stream().map(product -> product.getCategory().toUpperCase()).toList());
+            colorList = colorRepository
+                    .findByNameIn(products.stream().map(product -> product.getColor().toUpperCase()).toList());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (!existsUser) {
+            throw new BadRequestExceptions("Usuario no existe");
+        }
+
+        if (!productList.isEmpty()) {
+            throw new BadRequestExceptions("Producto ya existe");
+        }
+
+        if (modelList.size() != products.size()) {
+            throw new BadRequestExceptions("Modelo no existe");
+        }
+
+        if (sizeList.size() != products.size()) {
+            throw new BadRequestExceptions("Talla no existe");
+        }
+
+        if (categoryList.size() != products.size()) {
+            throw new BadRequestExceptions("Categoria no existe");
+        }
+
+        if (colorList.size() != products.size()) {
+            throw new BadRequestExceptions("Color no existe");
+        }
+
+        try {
+
+            List<Product> newProducts = products.stream().map(product -> {
+
+                Model model = modelRepository.findByName(product.getModel().toUpperCase());
+                Size size = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
+                Category category = categoryRepository.findByNameAndStatusTrue(product.getCategory().toUpperCase());
+                Color color = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
+
+                return Product.builder()
+                        .sku(product.getSku().toUpperCase())
+                        .model(model)
+                        .idModel(model.getId())
+                        .size(size)
+                        .idSize(size.getId())
+                        .category(category)
+                        .idCategory(category.getId())
+                        .color(color)
+                        .idColor(color.getId())
+                        .user(user.toUpperCase())
+                        .dateRegistration(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .build();
+            }).toList();
+
+            productRepository.saveAll(newProducts);
+
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
