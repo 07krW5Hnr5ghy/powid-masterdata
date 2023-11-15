@@ -11,6 +11,7 @@ import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.Size;
 import com.proyect.masterdata.dto.request.RequestProductSave;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -193,6 +194,42 @@ public class ProductImpl implements IProduct {
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
+                    .build();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+    }
+
+    @Override
+    public ResponseDelete delete(String sku, String user) throws InternalErrorExceptions, BadRequestExceptions {
+
+        boolean existsUser;
+        Product product;
+
+        try {
+            existsUser = userRepository.existsByUser(user.toUpperCase());
+            product = productRepository.findBySku(sku.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (!existsUser) {
+            throw new BadRequestExceptions("Usuario no existe");
+        }
+
+        if (product == null) {
+            throw new BadRequestExceptions("Producto no existe");
+        }
+
+        try {
+            product.setStatus(false);
+            product.setDateUpdate(new Date(System.currentTimeMillis()));
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
                     .build();
         } catch (RuntimeException e) {
             log.error(e.getMessage());

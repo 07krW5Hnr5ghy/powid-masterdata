@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
@@ -13,4 +14,6 @@ public interface IProduct {
 
     ResponseSuccess saveAll(List<RequestProductSave> products, String user)
             throws InternalErrorExceptions, BadRequestExceptions;
+
+    ResponseDelete delete(String sku, String user) throws InternalErrorExceptions, BadRequestExceptions;
 }

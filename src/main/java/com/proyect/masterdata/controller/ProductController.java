@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import com.proyect.masterdata.dto.request.RequestProductSave;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IProduct;
@@ -43,4 +45,13 @@ public class ProductController {
         ResponseSuccess result = iProduct.saveAll(productList, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("sku") String sku,
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseDelete result = iProduct.delete(sku, user);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 }
