@@ -227,6 +227,7 @@ public class ProductImpl implements IProduct {
         try {
             product.setStatus(false);
             product.setDateUpdate(new Date(System.currentTimeMillis()));
+            productRepository.save(product);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
