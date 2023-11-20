@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import java.util.Date;
 
@@ -19,27 +17,26 @@ import java.util.Date;
 @Data
 @Table(name = Constants.tableRole, schema = Constants.schemaMaster)
 public class Role {
-        @Id
-        @GeneratedValue(generator = "sequence-user-role")
-        @GenericGenerator(name = "sequence-user-role", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-                        @Parameter(name = "sequence_name", value = "roles_usuario_sequence"),
-                        @Parameter(name = "initial_value", value = "1"),
-                        @Parameter(name = "increment_size", value = "1")
-        })
 
-        @Column(name = "id_rol_usuario", unique = true)
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        @Column(name = "id_rol", unique = true)
         private Long id;
 
-        @Column(name = "nombre", length = 50, unique = true)
+        @Column(name = "nombre", length = 50, unique = true, nullable = false)
         private String name;
 
-        @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE")
+        @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
         private Boolean status;
-        // fecha
-        @Column(name = "fecha_registro")
+
+        @Column(name = "fecha_registro", nullable = false)
         @CreationTimestamp
         private Date dateRegistration;
 
-        @Column(name = "usuario")
-        private String user;
+        @Column(name = "fecha_modificacion", nullable = false)
+        @CreationTimestamp
+        private Date dateUpdate;
+
+        @Column(name = "usuario_token", nullable = false)
+        private String tokenUser;
 }

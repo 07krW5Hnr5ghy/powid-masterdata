@@ -38,56 +38,57 @@ public class ColorImpl implements IColor {
     private final ColorRepositoryCustom colorRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String name, String user) throws BadRequestExceptions,InternalErrorExceptions {
+    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         Color color;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             color = colorRepository.findByNameAndStatusTrue(name.toUpperCase());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(color!=null){
+        if (color != null) {
             throw new BadRequestExceptions(Constants.ErrorColorExists.toUpperCase());
         }
 
         try {
             colorRepository.save(colorMapper.colorToName(RequestColorSave
-                    .builder().name(name.toUpperCase()).user(datauser.getUser().toUpperCase()).build()));
+                    .builder().name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions{
+    public ResponseSuccess saveAll(List<String> names, String user)
+            throws BadRequestExceptions, InternalErrorExceptions {
 
         User datauser;
         List<Color> colors;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             colors = colorRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(!colors.isEmpty()){
+        if (!colors.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorColorList.toUpperCase());
         }
 
@@ -101,39 +102,39 @@ public class ColorImpl implements IColor {
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ColorDTO update(RequestColor requestColor) throws BadRequestExceptions,InternalErrorExceptions {
+    public ColorDTO update(RequestColor requestColor) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         Color color;
 
-        try{
+        try {
             datauser = userRepository.findById(requestColor.getUser().toUpperCase()).orElse(null);
             color = colorRepository.findById(requestColor.getCode()).orElse(null);
-        }catch(RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(color==null){
+        if (color == null) {
             throw new BadRequestExceptions(Constants.ErrorColor.toUpperCase());
         }
 
         color.setName(requestColor.getName().toUpperCase());
-        color.setUser(datauser.getUser().toUpperCase());
+        color.setUser(datauser.getUsername().toUpperCase());
         color.setStatus(requestColor.isStatus());
         color.setDateRegistration(new Date(System.currentTimeMillis()));
 
         try {
             return colorMapper.colorToColorDTO(colorRepository.save(color));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
@@ -141,23 +142,23 @@ public class ColorImpl implements IColor {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions,InternalErrorExceptions{
+    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
 
         User datauser;
         Color color;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             color = colorRepository.findById(code).orElse(null);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(color==null){
+        if (color == null) {
             throw new BadRequestExceptions(Constants.ErrorColor.toUpperCase());
         }
 
@@ -169,66 +170,68 @@ public class ColorImpl implements IColor {
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public List<ColorDTO> listColor() throws BadRequestExceptions{
+    public List<ColorDTO> listColor() throws BadRequestExceptions {
         List<Color> colors = new ArrayList<>();
-        try{
+        try {
             colors = colorRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(colors.isEmpty()){
+        if (colors.isEmpty()) {
             return Collections.emptyList();
         }
         return colorMapper.listColorToListColorDTO(colors);
     }
 
     @Override
-    public Page<ColorDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+    public Page<ColorDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         Page<Color> colorPage;
-        try{
-            colorPage = colorRepositoryCustom.searchForColor(name,user,sort,sortColumn,pageNumber,pageSize,true);
-        }catch (RuntimeException e){
+        try {
+            colorPage = colorRepositoryCustom.searchForColor(name, user, sort, sortColumn, pageNumber, pageSize, true);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(colorPage.isEmpty()){
+        if (colorPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(colorMapper.listColorToListColorDTO(colorPage.getContent()),
-                colorPage.getPageable(),colorPage.getTotalElements());
+                colorPage.getPageable(), colorPage.getTotalElements());
     }
 
     @Override
-    public Page<ColorDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+    public Page<ColorDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         Page<Color> colorPage;
-        try{
-            colorPage = colorRepositoryCustom.searchForColor(name,user,sort,sortColumn,pageNumber,pageSize,false);
-        }catch (RuntimeException e){
+        try {
+            colorPage = colorRepositoryCustom.searchForColor(name, user, sort, sortColumn, pageNumber, pageSize, false);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
-        if(colorPage.isEmpty()){
+        if (colorPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
 
         return new PageImpl<>(colorMapper.listColorToListColorDTO(colorPage.getContent()),
-                colorPage.getPageable(),colorPage.getTotalElements());
+                colorPage.getPageable(), colorPage.getTotalElements());
     }
 
     @Override
-    public ColorDTO findByCode(Long code) throws BadRequestExceptions{
+    public ColorDTO findByCode(Long code) throws BadRequestExceptions {
         try {
             return colorMapper.colorToColorDTO(colorRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }

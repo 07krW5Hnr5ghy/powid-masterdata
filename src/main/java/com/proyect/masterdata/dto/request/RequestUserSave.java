@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
-
 @Builder
 @Data
 @AllArgsConstructor
@@ -23,5 +21,4 @@ public class RequestUserSave {
     private String password;
     private String district;
     private String userType;
-    private Long status;
 }

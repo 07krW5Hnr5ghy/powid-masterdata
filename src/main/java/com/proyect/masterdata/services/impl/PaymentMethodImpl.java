@@ -36,102 +36,107 @@ public class PaymentMethodImpl implements IPaymentMethod {
     private final PaymentMethodMapper paymentMethodMapper;
     private final UserRepository userRepository;
     private final PaymentMethodRepositoryCustom paymentMethodRepositoryCustom;
+
     @Override
-    public ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions {
+    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         PaymentMethod paymentMethod;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(name.toUpperCase());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(paymentMethod!=null){
+        if (paymentMethod != null) {
             throw new BadRequestExceptions(Constants.ErrorPaymentMethodExists.toUpperCase());
         }
 
         try {
             paymentMethodRepository.save(paymentMethodMapper.paymentMethodToName(RequestPaymentMethodSave.builder()
-                    .name(name.toUpperCase()).user(datauser.getUser().toUpperCase()).build()));
+                    .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions{
+    public ResponseSuccess saveAll(List<String> names, String user)
+            throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         List<PaymentMethod> paymentMethods;
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             paymentMethods = paymentMethodRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(!paymentMethods.isEmpty()){
+        if (!paymentMethods.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorPaymentMethodList.toUpperCase());
         }
 
         try {
-            List<RequestPaymentMethodSave> paymentMethodSaves = names.stream().map(data -> RequestPaymentMethodSave.builder()
-                    .user(user.toUpperCase())
-                    .name(data.toUpperCase())
-                    .build()).toList();
+            List<RequestPaymentMethodSave> paymentMethodSaves = names.stream()
+                    .map(data -> RequestPaymentMethodSave.builder()
+                            .user(user.toUpperCase())
+                            .name(data.toUpperCase())
+                            .build())
+                    .toList();
             paymentMethodRepository.saveAll(paymentMethodMapper.listPaymentMethodToListName(paymentMethodSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public PaymentMethodDTO update(RequestPaymentMethod requestPaymentMethod) throws BadRequestExceptions,InternalErrorExceptions {
+    public PaymentMethodDTO update(RequestPaymentMethod requestPaymentMethod)
+            throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         PaymentMethod paymentMethod;
 
-        try{
+        try {
             datauser = userRepository.findById(requestPaymentMethod.getUser().toUpperCase()).orElse(null);
             paymentMethod = paymentMethodRepository.findById(requestPaymentMethod.getCode()).orElse(null);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(paymentMethod==null){
+        if (paymentMethod == null) {
             throw new BadRequestExceptions(Constants.ErrorPaymentMethod);
         }
 
         paymentMethod.setName(requestPaymentMethod.getName().toUpperCase());
-        paymentMethod.setUser(datauser.getUser().toUpperCase());
+        paymentMethod.setUser(datauser.getUsername().toUpperCase());
         paymentMethod.setStatus(requestPaymentMethod.isStatus());
         paymentMethod.setDateRegistration(new Date(System.currentTimeMillis()));
 
         try {
             return paymentMethodMapper.paymentMethodToPaymentMethodDTO(paymentMethodRepository.save(paymentMethod));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
@@ -139,22 +144,22 @@ public class PaymentMethodImpl implements IPaymentMethod {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         PaymentMethod paymentMethod;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             paymentMethod = paymentMethodRepository.findById(code).orElse(null);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(paymentMethod==null){
+        if (paymentMethod == null) {
             throw new BadRequestExceptions(Constants.ErrorPaymentMethod.toUpperCase());
         }
 
@@ -166,68 +171,75 @@ public class PaymentMethodImpl implements IPaymentMethod {
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public List<PaymentMethodDTO> listPaymentMethod() throws BadRequestExceptions{
+    public List<PaymentMethodDTO> listPaymentMethod() throws BadRequestExceptions {
         List<PaymentMethod> paymentMethods = new ArrayList<>();
-        try{
+        try {
             paymentMethods = paymentMethodRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(paymentMethods.isEmpty()){
+        if (paymentMethods.isEmpty()) {
             return Collections.emptyList();
         }
         return paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethods);
     }
 
     @Override
-    public Page<PaymentMethodDTO> list(String name, String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+    public Page<PaymentMethodDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         Page<PaymentMethod> paymentMethodPage;
-        try{
-            paymentMethodPage = paymentMethodRepositoryCustom.searchForPaymentMethod(name,user,sort,sortColumn,pageNumber,pageSize,true);
-        }catch (RuntimeException e){
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if(paymentMethodPage.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        return new PageImpl<>(paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
-                paymentMethodPage.getPageable(),paymentMethodPage.getTotalElements());
-    }
-
-    @Override
-    public Page<PaymentMethodDTO> listStatusFalse(String name, String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
-        Page<PaymentMethod> paymentMethodPage;
-        try{
-            paymentMethodPage = paymentMethodRepositoryCustom.searchForPaymentMethod(name,user,sort,sortColumn,pageNumber,pageSize,false);
-        }catch (RuntimeException e){
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if(paymentMethodPage.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        return new PageImpl<>(paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
-                paymentMethodPage.getPageable(),paymentMethodPage.getTotalElements());
-    }
-
-    @Override
-    public PaymentMethodDTO findByCode(Long code) throws BadRequestExceptions{
         try {
-            return paymentMethodMapper.paymentMethodToPaymentMethodDTO(paymentMethodRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e){
+            paymentMethodPage = paymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
+                    pageNumber, pageSize, true);
+        } catch (RuntimeException e) {
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (paymentMethodPage.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        return new PageImpl<>(
+                paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
+                paymentMethodPage.getPageable(), paymentMethodPage.getTotalElements());
+    }
+
+    @Override
+    public Page<PaymentMethodDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        Page<PaymentMethod> paymentMethodPage;
+        try {
+            paymentMethodPage = paymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
+                    pageNumber, pageSize, false);
+        } catch (RuntimeException e) {
+            log.error(e);
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (paymentMethodPage.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        return new PageImpl<>(
+                paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
+                paymentMethodPage.getPageable(), paymentMethodPage.getTotalElements());
+    }
+
+    @Override
+    public PaymentMethodDTO findByCode(Long code) throws BadRequestExceptions {
+        try {
+            return paymentMethodMapper
+                    .paymentMethodToPaymentMethodDTO(paymentMethodRepository.findByIdAndStatusTrue(code));
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }

@@ -59,7 +59,7 @@ public class RoleImpl implements IRole {
 
             roleRepository.save(roleMapper.nameToRole(RequestRoleSave.builder()
                     .name(name.toUpperCase())
-                    .user(datauser.getUser().toUpperCase())
+                    .user(datauser.getUsername().toUpperCase())
                     .build()));
 
             return ResponseSuccess.builder()
@@ -137,7 +137,7 @@ public class RoleImpl implements IRole {
         role.setName(requestUserRole.getName().toUpperCase());
         role.setStatus(requestUserRole.isStatus());
         role.setDateRegistration(new Date(System.currentTimeMillis()));
-        role.setUser(datauser.getUser().toUpperCase());
+        role.setUser(datauser.getUsername().toUpperCase());
 
         try {
             return roleMapper.roleToRoleDTO(roleRepository.save(role));

@@ -5,15 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class UserDTO {
     String dni;
-    String user;
+    String username;
     String name;
     String surname;
     String email;
@@ -23,5 +21,5 @@ public class UserDTO {
     String mobile;
     String userType;
     String gender;
-    Long status;
+    Boolean status;
 }

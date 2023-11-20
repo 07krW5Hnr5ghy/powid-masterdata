@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,6 +23,6 @@ public class UserQueryDTO {
     String mobile;
     String userType;
     String gender;
-    Long status;
+    Boolean status;
     List<String> modules;
 }

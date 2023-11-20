@@ -35,22 +35,23 @@ public class DepartmentImpl implements IDepartment {
     private final DepartmentRepositoryCustom departmentRepositoryCustom;
     private final DepartmentMapper departmentMapper;
     private final UserRepository userRepository;
+
     @Override
-    public ResponseSuccess save(String name,String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         Department department;
         try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             department = departmentRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (department!=null){
+        if (department != null) {
             throw new BadRequestExceptions(Constants.ErrorDepartmentExist.toUpperCase());
         }
 
@@ -59,101 +60,103 @@ public class DepartmentImpl implements IDepartment {
                     .name(name.toUpperCase())
                     .user(user.toUpperCase())
                     .status(true)
-                    .build()
-            );
+                    .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
     }
+
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions, InternalErrorExceptions{
+    public ResponseSuccess saveAll(List<String> names, String user)
+            throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         List<Department> departments;
         try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             departments = departmentRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (!departments.isEmpty()){
+        if (!departments.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorDepartmentList.toUpperCase());
         }
 
         List<RequestDepartmentSave> departmentSaves = names.stream().map(data -> RequestDepartmentSave.builder()
-                    .user(user.toUpperCase())
-                    .name(data.toUpperCase())
-                    .build()).toList();
+                .user(user.toUpperCase())
+                .name(data.toUpperCase())
+                .build()).toList();
         try {
             departmentRepository.saveAll(departmentMapper.listDepartmentToListName(departmentSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public DepartmentDTO update(RequestDepartment requestDepartment) throws BadRequestExceptions, InternalErrorExceptions {
+    public DepartmentDTO update(RequestDepartment requestDepartment)
+            throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         Department department;
         try {
             datauser = userRepository.findById(requestDepartment.getUser().toUpperCase()).orElse(null);
             department = departmentRepository.findById(requestDepartment.getCode()).orElse(null);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
 
-        if (department==null){
+        if (department == null) {
             throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
         }
 
         department.setName(requestDepartment.getName().toUpperCase());
-        department.setUser(datauser.getUser());
+        department.setUser(datauser.getUsername());
         department.setStatus(requestDepartment.isStatus());
         department.setDateRegistration(new Date());
 
         try {
             return departmentMapper.departmentToDepartmentDTO(departmentRepository.save(department));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions{
+    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         Department department;
         try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             department = departmentRepository.findById(code).orElse(null);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (department==null){
+        if (department == null) {
             throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
         }
 
@@ -164,7 +167,7 @@ public class DepartmentImpl implements IDepartment {
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -175,27 +178,29 @@ public class DepartmentImpl implements IDepartment {
         List<Department> departments = new ArrayList<>();
         try {
             departments = departmentRepository.findAllByStatusTrue();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if (departments.isEmpty()){
+        if (departments.isEmpty()) {
             return Collections.emptyList();
         }
         return departmentMapper.listDepartmentToListDepartmentDTO(departments);
     }
 
     @Override
-    public Page<DepartmentDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
+    public Page<DepartmentDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         Page<Department> departmentPage;
         try {
-            departmentPage = departmentRepositoryCustom.searchForDepartment(name, user, sort, sortColumn, pageNumber, pageSize, true);
-        } catch (RuntimeException e){
+            departmentPage = departmentRepositoryCustom.searchForDepartment(name, user, sort, sortColumn, pageNumber,
+                    pageSize, true);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
-        if (departmentPage.isEmpty()){
+        if (departmentPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(departmentMapper.listDepartmentToListDepartmentDTO(departmentPage.getContent()),
@@ -203,15 +208,17 @@ public class DepartmentImpl implements IDepartment {
     }
 
     @Override
-    public Page<DepartmentDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions{
+    public Page<DepartmentDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<Department> departmentPage;
         try {
-            departmentPage = departmentRepositoryCustom.searchForDepartment(name, user, sort, sortColumn, pageNumber, pageSize, false);
-        } catch (RuntimeException e){
+            departmentPage = departmentRepositoryCustom.searchForDepartment(name, user, sort, sortColumn, pageNumber,
+                    pageSize, false);
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
-        if (departmentPage.isEmpty()){
+        if (departmentPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(departmentMapper.listDepartmentToListDepartmentDTO(departmentPage.getContent()),
@@ -219,10 +226,10 @@ public class DepartmentImpl implements IDepartment {
     }
 
     @Override
-    public DepartmentDTO findByCode(Long code) throws BadRequestExceptions{
+    public DepartmentDTO findByCode(Long code) throws BadRequestExceptions {
         try {
             return departmentMapper.departmentToDepartmentDTO(departmentRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }

@@ -37,55 +37,56 @@ public class SaleChannelImpl implements ISaleChannel {
     private final SaleChannelRepositoryCustom saleChannelRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions {
+    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         SaleChannel saleChannel;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             saleChannel = saleChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(saleChannel!=null){
+        if (saleChannel != null) {
             throw new BadRequestExceptions(Constants.ErrorSaleChannelExists.toUpperCase());
         }
 
         try {
             saleChannelRepository.save(saleChannelMapper.saleChannelToName(RequestSaleChannelSave.builder()
-                    .name(name.toUpperCase()).user(datauser.getUser().toUpperCase()).build()));
+                    .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions{
+    public ResponseSuccess saveAll(List<String> names, String user)
+            throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         List<SaleChannel> saleChannels;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             saleChannels = saleChannelRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(!saleChannels.isEmpty()){
+        if (!saleChannels.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorSaleChannelList.toUpperCase());
         }
 
@@ -99,40 +100,41 @@ public class SaleChannelImpl implements ISaleChannel {
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public SaleChannelDTO update(RequestSaleChannel requestSaleChannel) throws BadRequestExceptions,InternalErrorExceptions {
+    public SaleChannelDTO update(RequestSaleChannel requestSaleChannel)
+            throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         SaleChannel saleChannel;
 
-        try{
+        try {
             datauser = userRepository.findById(requestSaleChannel.getUser().toUpperCase()).orElse(null);
             saleChannel = saleChannelRepository.findById(requestSaleChannel.getCode()).orElse(null);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(saleChannel==null){
+        if (saleChannel == null) {
             throw new BadRequestExceptions(Constants.ErrorSaleChannel.toUpperCase());
         }
 
         saleChannel.setName(requestSaleChannel.getName().toUpperCase());
-        saleChannel.setUser(datauser.getUser().toUpperCase());
+        saleChannel.setUser(datauser.getUsername().toUpperCase());
         saleChannel.setStatus(requestSaleChannel.isStatus());
         saleChannel.setDateRegistration(new Date(System.currentTimeMillis()));
 
         try {
             return saleChannelMapper.saleChannelToSaleChannelDTO(saleChannelRepository.save(saleChannel));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
@@ -140,22 +142,22 @@ public class SaleChannelImpl implements ISaleChannel {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         SaleChannel saleChannel;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             saleChannel = saleChannelRepository.findById(code).orElse(null);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(saleChannel==null){
+        if (saleChannel == null) {
             throw new BadRequestExceptions(Constants.ErrorSaleChannel.toUpperCase());
         }
 
@@ -167,64 +169,68 @@ public class SaleChannelImpl implements ISaleChannel {
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public List<SaleChannelDTO> listSaleChannel() throws BadRequestExceptions{
+    public List<SaleChannelDTO> listSaleChannel() throws BadRequestExceptions {
         List<SaleChannel> saleChannels = new ArrayList<>();
-        try{
+        try {
             saleChannels = saleChannelRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(saleChannels.isEmpty()){
+        if (saleChannels.isEmpty()) {
             return Collections.emptyList();
         }
         return saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannels);
     }
 
     @Override
-    public Page<SaleChannelDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+    public Page<SaleChannelDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         Page<SaleChannel> saleChannelPage;
-        try{
-            saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name,user,sort,sortColumn,pageNumber,pageSize,true);
-        }catch (RuntimeException e){
+        try {
+            saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name, user, sort, sortColumn, pageNumber,
+                    pageSize, true);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(saleChannelPage.isEmpty()){
+        if (saleChannelPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannelPage.getContent()),
-                saleChannelPage.getPageable(),saleChannelPage.getTotalElements());
+                saleChannelPage.getPageable(), saleChannelPage.getTotalElements());
     }
 
     @Override
-    public Page<SaleChannelDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+    public Page<SaleChannelDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<SaleChannel> saleChannelPage;
-        try{
-            saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name,user,sort,sortColumn,pageNumber,pageSize,false);
-        }catch (RuntimeException e){
+        try {
+            saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name, user, sort, sortColumn, pageNumber,
+                    pageSize, false);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(saleChannelPage.isEmpty()){
+        if (saleChannelPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannelPage.getContent()),
-                saleChannelPage.getPageable(),saleChannelPage.getTotalElements());
+                saleChannelPage.getPageable(), saleChannelPage.getTotalElements());
     }
 
     @Override
-    public SaleChannelDTO findByCode(Long code) throws BadRequestExceptions{
+    public SaleChannelDTO findByCode(Long code) throws BadRequestExceptions {
         try {
             return saleChannelMapper.saleChannelToSaleChannelDTO(saleChannelRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }

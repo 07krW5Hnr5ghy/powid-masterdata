@@ -12,19 +12,19 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-    @Mapping(target = "user",source = "user")
-    @Mapping(target = "name",source = "name")
-    @Mapping(target = "surname",source = "surname")
-    @Mapping(target = "dni",source = "dni")
-    @Mapping(target = "email",source = "email")
-    @Mapping(target = "address",source = "address")
-    @Mapping(target = "gender",source = "gender")
-    @Mapping(target = "mobile",source = "mobile")
-    @Mapping(target = "password",source = "password")
-    @Mapping(target = "status",source = "status")
-    @Mapping(target = "district",ignore = true)
-    @Mapping(target = "userType",ignore = true)
-    //@Mapping(target = "modules",ignore = true)
+
+    @Mapping(target = "username", source = "username")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "surname", source = "surname")
+    @Mapping(target = "dni", source = "dni")
+    @Mapping(target = "email", source = "email")
+    @Mapping(target = "address", source = "address")
+    @Mapping(target = "gender", source = "gender")
+    @Mapping(target = "mobile", source = "mobile")
+    @Mapping(target = "password", source = "password")
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "district", ignore = true)
+    @Mapping(target = "userType", ignore = true)
     UserDTO userToUserDTO(User user);
 
     List<UserDTO> listUserToListUserDTO(List<User> userList);

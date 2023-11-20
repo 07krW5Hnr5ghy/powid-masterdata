@@ -35,56 +35,58 @@ public class StateImpl implements IState {
     private final StateMapper stateMapper;
     private final UserRepository userRepository;
     private final StateRepositoryCustom stateRepositoryCustom;
+
     @Override
-    public ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions {
+    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         State state;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             state = stateRepository.findByNameAndStatusTrue(name.toUpperCase());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(state!=null){
+        if (state != null) {
             throw new BadRequestExceptions(Constants.ErrorStateExist.toUpperCase());
         }
 
         try {
             stateRepository.save(stateMapper.stateToName(RequestStateSave.builder()
-                    .name(name.toUpperCase()).user(datauser.getUser().toUpperCase()).build()));
+                    .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions{
+    public ResponseSuccess saveAll(List<String> names, String user)
+            throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         List<State> states;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             states = stateRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(!states.isEmpty()){
+        if (!states.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorStateList.toUpperCase());
         }
 
@@ -98,40 +100,40 @@ public class StateImpl implements IState {
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public StateDTO update(RequestState requestState) throws BadRequestExceptions,InternalErrorExceptions {
+    public StateDTO update(RequestState requestState) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         State state;
 
-        try{
+        try {
             datauser = userRepository.findById(requestState.getUser().toUpperCase()).orElse(null);
             state = stateRepository.findById(requestState.getCode()).orElse(null);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(state==null){
+        if (state == null) {
             throw new BadRequestExceptions(Constants.ErrorState.toUpperCase());
         }
 
         state.setName(requestState.getName().toUpperCase());
         state.setStatus(requestState.isStatus());
         state.setDateRegistration(new Date(System.currentTimeMillis()));
-        state.setUser(datauser.getUser().toUpperCase());
+        state.setUser(datauser.getUsername().toUpperCase());
 
         try {
             return stateMapper.stateToStateDTO(stateRepository.save(state));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
@@ -139,22 +141,22 @@ public class StateImpl implements IState {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         State state;
 
-        try{
+        try {
             datauser = userRepository.findById(user.toUpperCase()).orElse(null);
             state = stateRepository.findById(code).orElse(null);
-        }catch(RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser==null){
+        if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if(state==null){
+        if (state == null) {
             throw new BadRequestExceptions(Constants.ErrorState.toUpperCase());
         }
 
@@ -166,64 +168,66 @@ public class StateImpl implements IState {
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public List<StateDTO> listState() throws BadRequestExceptions{
+    public List<StateDTO> listState() throws BadRequestExceptions {
         List<State> states = new ArrayList<>();
-        try{
+        try {
             states = stateRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(states.isEmpty()){
+        if (states.isEmpty()) {
             return Collections.emptyList();
         }
         return stateMapper.listStateToListStateDTO(states);
     }
 
     @Override
-    public Page<StateDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+    public Page<StateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         Page<State> statePage;
-        try{
-            statePage = stateRepositoryCustom.searchForState(name,user,sort,sortColumn,pageNumber,pageSize,true);
-        }catch (RuntimeException e){
+        try {
+            statePage = stateRepositoryCustom.searchForState(name, user, sort, sortColumn, pageNumber, pageSize, true);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(statePage.isEmpty()){
+        if (statePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(stateMapper.listStateToListStateDTO(statePage.getContent()),
-                statePage.getPageable(),statePage.getTotalElements());
+                statePage.getPageable(), statePage.getTotalElements());
     }
 
     @Override
-    public Page<StateDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions{
+    public Page<StateDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         Page<State> statePage;
-        try{
-            statePage = stateRepositoryCustom.searchForState(name,user,sort,sortColumn,pageNumber,pageSize,false);
-        }catch (RuntimeException e){
+        try {
+            statePage = stateRepositoryCustom.searchForState(name, user, sort, sortColumn, pageNumber, pageSize, false);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(statePage.isEmpty()){
+        if (statePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(stateMapper.listStateToListStateDTO(statePage.getContent()),
-                statePage.getPageable(),statePage.getTotalElements());
+                statePage.getPageable(), statePage.getTotalElements());
     }
 
     @Override
-    public StateDTO findByCode(Long code) throws BadRequestExceptions{
+    public StateDTO findByCode(Long code) throws BadRequestExceptions {
         try {
             return stateMapper.stateToStateDTO(stateRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }

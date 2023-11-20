@@ -3,6 +3,8 @@ package com.proyect.masterdata.utils;
 public class Constants {
     // Esquemas
     public static final String schemaMaster = "master";
+    public static final String schemaManagement = "management";
+    public static final String schemaArticle = "article";
     // Tablas
     public static final String tableDepartment = "departamento";
     public static final String tableProvince = "provincia";
@@ -21,20 +23,21 @@ public class Constants {
     public static final String tablePaymentType = "tipo_pago";
     public static final String tableModuleType = "modulo_tipo";
     public static final String tableConnection = "conexion";
-    public static final String tablePaymentMethod = "medios_pago";
-    public static final String tablePaymentState = "estados_pago";
-    public static final String tableState = "estados";
-    public static final String tableSize = "tallas";
-    public static final String tableColor = "colores";
-    public static final String tableSaleChannel = "canales_venta";
-    public static final String tableLogEvent = "eventos_log";
-    public static final String tableSizeType = "tipos_talla";
+    public static final String tablePaymentMethod = "medio_pago";
+    public static final String tablePaymentState = "estado_pago";
+    public static final String tableState = "estado";
+    public static final String tableSize = "talla";
+    public static final String tableColor = "color";
+    public static final String tableSaleChannel = "canal_venta";
+    public static final String tableLogEvent = "evento_log";
+    public static final String tableSizeType = "tipo_talla";
     public static final String tableRole = "rol";
-    public static final String tableCategory = "categorias";
-    public static final String tableClientChannel = "canales_cliente";
+    public static final String tableCategory = "categoria";
+    public static final String tableClientChannel = "canal_cliente";
     public static final String tableProduct = "producto";
     public static final String tableBrand = "marca";
     public static final String tableModel = "modelo";
+    public static final String tableAccess = "acceso";
 
     // Mensajes
     public static final String register = "registration correctly";
