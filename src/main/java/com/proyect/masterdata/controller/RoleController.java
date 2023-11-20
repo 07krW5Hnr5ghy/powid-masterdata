@@ -20,6 +20,7 @@ import java.util.List;
 @RequestMapping("/role")
 @AllArgsConstructor
 public class RoleController {
+
     private IRole iRole;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

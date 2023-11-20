@@ -17,7 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableUserRole, schema = Constants.schemaMaster)
+@Table(name = Constants.tableRole, schema = Constants.schemaMaster)
 public class Role {
         @Id
         @GeneratedValue(generator = "sequence-user-role")

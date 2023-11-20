@@ -29,7 +29,7 @@ public class Constants {
     public static final String tableSaleChannel = "canales_venta";
     public static final String tableLogEvent = "eventos_log";
     public static final String tableSizeType = "tipos_talla";
-    public static final String tableUserRole = "roles_usuario";
+    public static final String tableRole = "rol";
     public static final String tableCategory = "categorias";
     public static final String tableClientChannel = "canales_cliente";
     public static final String tableProduct = "producto";
