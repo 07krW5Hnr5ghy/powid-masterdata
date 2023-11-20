@@ -81,7 +81,7 @@ public class RoleImpl implements IRole {
 
         try {
             datauser = userRepository.findByUsername(user.toUpperCase());
-            roles = roleRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
+            roles = roleRepository.findRoleByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

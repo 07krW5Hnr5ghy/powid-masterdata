@@ -1,5 +1,7 @@
 package com.proyect.masterdata.dto.request;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +22,5 @@ public class RequestUser {
     private String mobile;
     private String password;
     private String district;
-    private String userType;
+    private List<String> roles;
 }
