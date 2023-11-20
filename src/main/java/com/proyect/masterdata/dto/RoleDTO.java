@@ -1,4 +1,4 @@
-package com.proyect.masterdata.dto.request;
+package com.proyect.masterdata.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestUserRole {
+public class RoleDTO {
     private Long code;
     private String name;
-    private String user;
-    private boolean status;
 }

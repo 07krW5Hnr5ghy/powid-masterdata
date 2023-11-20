@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestUserRoleSave {
+public class RequestRoleSave {
     private String name;
     private String user;
 }
