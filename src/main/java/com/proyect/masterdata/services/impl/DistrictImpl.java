@@ -36,28 +36,29 @@ public class DistrictImpl implements IDistrict {
     private final UserRepository userRepository;
 
     @Override
-    public ResponseSuccess save(String name, String user, Long codeProvince) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(String name, String user, Long codeProvince)
+            throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsDistrict;
         boolean existsProvince;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             existsDistrict = districtRepository.existsByName(name.toUpperCase());
             existsProvince = provinceRepository.existsById(codeProvince);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
 
-        if (existsDistrict){
+        if (existsDistrict) {
             throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
         }
 
-        if (!existsProvince){
+        if (!existsProvince) {
             throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
         }
 
@@ -71,33 +72,34 @@ public class DistrictImpl implements IDistrict {
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user, Long codeProvince) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess saveAll(List<String> names, String user, Long codeProvince)
+            throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsProvince;
         List<District> districts;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             existsProvince = provinceRepository.existsById(codeProvince);
             districts = districtRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (!existsProvince){
+        if (!existsProvince) {
             throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
         }
-        if (!districts.isEmpty()){
+        if (!districts.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorProvinceList.toUpperCase());
         }
 
@@ -113,7 +115,7 @@ public class DistrictImpl implements IDistrict {
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
         }
     }
@@ -124,23 +126,23 @@ public class DistrictImpl implements IDistrict {
         boolean existsprovince;
         District district;
         try {
-            existsUser = userRepository.existsById(requestDistrict.getUser().toUpperCase());
+            existsUser = userRepository.existsByUsername(requestDistrict.getUser().toUpperCase());
             existsprovince = provinceRepository.existsById(requestDistrict.getCodeProvince());
             district = districtRepository.findByNameAndStatusTrue(requestDistrict.getName().toUpperCase());
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
 
-        if (district == null){
+        if (district == null) {
             throw new BadRequestExceptions(Constants.ErrorProvinceNotExist.toUpperCase());
         }
 
-        if (!existsprovince){
+        if (!existsprovince) {
             throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
         }
 
@@ -151,7 +153,7 @@ public class DistrictImpl implements IDistrict {
             district.setStatus(requestDistrict.isStatus());
             district.setIdProvince(requestDistrict.getCodeProvince());
             return districtMapper.districtToDistrictDTO(districtRepository.save(district));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
     }
@@ -161,18 +163,18 @@ public class DistrictImpl implements IDistrict {
         boolean existsUser;
         District district;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             district = districtRepository.findById(code).orElse(null);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
 
-        if (district == null){
+        if (district == null) {
             throw new BadRequestExceptions(Constants.ErrorProvinceNotExist.toUpperCase());
         }
 
@@ -184,7 +186,7 @@ public class DistrictImpl implements IDistrict {
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
         }
     }
@@ -193,23 +195,25 @@ public class DistrictImpl implements IDistrict {
     public List<DistrictDTO> listDistrict() throws BadRequestExceptions {
         try {
             return districtMapper.listDistrictToListDistrictDTO(districtRepository.findAllByStatusTrue());
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public Page<DistrictDTO> list(String name, String user, Long codeProvince, String nameProvince, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<DistrictDTO> list(String name, String user, Long codeProvince, String nameProvince, String sort,
+            String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<District> districtPage;
         try {
-            districtPage = districtRepositoryCustom.searchForDistrict(name, user,codeProvince, nameProvince,sort, sortColumn, pageNumber, pageSize, true);
-        } catch (RuntimeException e){
+            districtPage = districtRepositoryCustom.searchForDistrict(name, user, codeProvince, nameProvince, sort,
+                    sortColumn, pageNumber, pageSize, true);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
-        if (districtPage.isEmpty()){
+        if (districtPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(districtMapper.listDistrictToListDistrictDTO(districtPage.getContent()),
@@ -217,16 +221,18 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
-    public Page<DistrictDTO> listStatusFalse(String name, String user, Long codeProvince, String nameProvince, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<DistrictDTO> listStatusFalse(String name, String user, Long codeProvince, String nameProvince,
+            String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<District> districtPage;
         try {
-            districtPage = districtRepositoryCustom.searchForDistrict(name, user,codeProvince, nameProvince,sort, sortColumn, pageNumber, pageSize, false);
-        } catch (RuntimeException e){
+            districtPage = districtRepositoryCustom.searchForDistrict(name, user, codeProvince, nameProvince, sort,
+                    sortColumn, pageNumber, pageSize, false);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
-        if (districtPage.isEmpty()){
+        if (districtPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(districtMapper.listDistrictToListDistrictDTO(districtPage.getContent()),
@@ -238,17 +244,17 @@ public class DistrictImpl implements IDistrict {
         boolean exists;
         try {
             exists = districtRepository.existsById(code);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
-        if (!exists){
+        if (!exists) {
             throw new BadRequestExceptions(Constants.ErrorProvinceNotExist);
         }
 
         try {
             return districtMapper.districtToDistrictDTO(districtRepository.findById(code).orElse(null));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }

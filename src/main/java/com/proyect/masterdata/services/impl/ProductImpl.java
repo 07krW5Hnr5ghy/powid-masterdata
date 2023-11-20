@@ -51,7 +51,7 @@ public class ProductImpl implements IProduct {
         Color colorData;
 
         try {
-            existsUser = userRepository.existsByUser(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             existsProduct = productRepository.existsBySku(product.getSku().toUpperCase());
             modelData = modelRepository.findByName(product.getModel().toUpperCase());
             sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
@@ -124,7 +124,7 @@ public class ProductImpl implements IProduct {
 
         try {
             existsUser = userRepository
-                    .existsByUser(user.toUpperCase());
+                    .existsByUsername(user.toUpperCase());
             productList = productRepository
                     .findBySkuIn(products.stream().map(product -> product.getSku().toUpperCase()).toList());
             modelList = modelRepository
@@ -209,7 +209,7 @@ public class ProductImpl implements IProduct {
         Product product;
 
         try {
-            existsUser = userRepository.existsByUser(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             product = productRepository.findBySku(sku.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

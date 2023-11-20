@@ -7,11 +7,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.proyect.masterdata.utils.Constants;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

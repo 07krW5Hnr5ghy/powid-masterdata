@@ -35,21 +35,23 @@ public class PaymentImpl implements IPayment {
     private final ClientChannelRepository clientChannelRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentStateRepository paymentStateRepository;
+
     @Override
-    public ResponseSuccess save(String channel,RequestPaymentSave requestPaymentSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String channel, RequestPaymentSave requestPaymentSave, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         Channel channelData;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             channelData = channelRepository.findByName(channel.toUpperCase());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(channel==null){
+        if (channelData == null) {
             throw new BadRequestExceptions("Canal no existe");
         }
         try {
@@ -60,38 +62,38 @@ public class PaymentImpl implements IPayment {
                     .urlInvoice(requestPaymentSave.getInvoiceUrl())
                     .channel(channelData)
                     .idChannel(channelData.getId())
-                            .idPaymentState(1L)
+                    .idPaymentState(1L)
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .build()
-            );
+                    .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(String channel,List<RequestPaymentSave> requestPaymentSaveList, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess saveAll(String channel, List<RequestPaymentSave> requestPaymentSaveList, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         Channel channelData;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             channelData = channelRepository.findByName(channel.toUpperCase());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(channelData==null){
+        if (channelData == null) {
             throw new BadRequestExceptions("Canal no existe");
         }
-        try{
+        try {
             paymentRepository.saveAll(requestPaymentSaveList.stream().map(payment -> Payment.builder()
                     .totalPayment(payment.getTotalPayment())
                     .month(payment.getMonth().toUpperCase())
@@ -101,54 +103,61 @@ public class PaymentImpl implements IPayment {
                     .idPaymentState(1L)
                     .idChannel(channelData.getId())
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .build()
-            ).toList());
+                    .build()).toList());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public PaymentUpdateDTO update(RequestPaymentUpdate requestPaymentUpdate, String newPaymentState, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public PaymentUpdateDTO update(RequestPaymentUpdate requestPaymentUpdate, String newPaymentState, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         Payment payment;
         boolean existsUser;
         Channel channel;
         PaymentState paymentState;
         PaymentState newState;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             channel = channelRepository.findByName(requestPaymentUpdate.getChannel().toUpperCase());
-            paymentState = paymentStateRepository.findByNameAndStatusTrue(requestPaymentUpdate.getPaymentState().toUpperCase());
+            paymentState = paymentStateRepository
+                    .findByNameAndStatusTrue(requestPaymentUpdate.getPaymentState().toUpperCase());
             newState = paymentStateRepository.findByNameAndStatusTrue(newPaymentState.toUpperCase());
-            payment = paymentRepository.findByIdChannelAndMonthAndIdPaymentState(channel.getId(),requestPaymentUpdate.getMonth().toUpperCase(),paymentState.getId());
-        }catch (RuntimeException e){
+            payment = paymentRepository.findByIdChannelAndMonthAndIdPaymentState(channel.getId(),
+                    requestPaymentUpdate.getMonth().toUpperCase(), paymentState.getId());
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(channel==null){
+
+        if (channel == null) {
             throw new BadRequestExceptions("Canal no existe");
         }
-        if(paymentState==null){
+
+        if (paymentState == null) {
             throw new BadRequestExceptions("Estado de pago no existe");
         }
-        if(newState==null){
+        
+        if (newState == null) {
             throw new BadRequestExceptions("Nuevo estado de pago no existe");
         }
-        if(payment==null){
+        if (payment == null) {
             throw new BadRequestExceptions("Pago no existe");
         }
 
         try {
             payment.setIdPaymentState(newState.getId());
-            if(requestPaymentUpdate.getNewInvoiceUrl() != null & requestPaymentUpdate.getNewInvoiceUrl() != payment.getUrlInvoice()){
+            if (requestPaymentUpdate.getNewInvoiceUrl() != null
+                    & requestPaymentUpdate.getNewInvoiceUrl() != payment.getUrlInvoice()) {
                 payment.setUrlInvoice(requestPaymentUpdate.getNewInvoiceUrl());
             }
             payment.setDateRegistration(new Date(System.currentTimeMillis()));
@@ -161,40 +170,44 @@ public class PaymentImpl implements IPayment {
                     .urlInvoice(payment.getUrlInvoice())
                     .paymentState(newState.getName().toUpperCase())
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public Page<PaymentDTO> list(Double totalPayment, String month, String channel, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<PaymentDTO> list(Double totalPayment, String month, String channel, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<Payment> paymentPage;
         Channel channelData;
-        try{
-            if(channel != null){
+        try {
+            if (channel != null) {
                 channelData = channelRepository.findByName(channel.toUpperCase());
-                paymentPage = paymentRepositoryCustom.searchForPayment(totalPayment,month,channelData.getId(),sort,sortColumn,pageNumber,pageSize);
-            }else{
-                paymentPage = paymentRepositoryCustom.searchForPayment(totalPayment,month,null,sort,sortColumn,pageNumber,pageSize);
+                paymentPage = paymentRepositoryCustom.searchForPayment(totalPayment, month, channelData.getId(), sort,
+                        sortColumn, pageNumber, pageSize);
+            } else {
+                paymentPage = paymentRepositoryCustom.searchForPayment(totalPayment, month, null, sort, sortColumn,
+                        pageNumber, pageSize);
             }
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(paymentPage.isEmpty()){
+        if (paymentPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         List<PaymentDTO> paymentDTOList = paymentPage.getContent().stream().map(payment -> {
             Channel channelXPayment = channelRepository.findById(payment.getIdChannel()).orElse(null);
             Client client = clientRepository.findById(channelXPayment.getIdClient()).orElse(null);
             ClientChannel clientChannel = clientChannelRepository.findByIdClient(client.getIdClient());
-            PaymentMethod paymentMethod = paymentMethodRepository.findById(channelXPayment.getIdPaymentMethod()).orElse(null);
+            PaymentMethod paymentMethod = paymentMethodRepository.findById(channelXPayment.getIdPaymentMethod())
+                    .orElse(null);
             return PaymentDTO.builder()
-                .totalPayment(payment.getTotalPayment())
-                .month(payment.getMonth())
-                .discount(payment.getDiscount())
-                .channel(payment.getChannel().getName())
+                    .totalPayment(payment.getTotalPayment())
+                    .month(payment.getMonth())
+                    .discount(payment.getDiscount())
+                    .channel(payment.getChannel().getName())
                     .invoiceUrl(payment.getUrlInvoice())
                     .dni(client.getDni())
                     .email(client.getEmail())
@@ -206,10 +219,10 @@ public class PaymentImpl implements IPayment {
                     .paymentMethod(paymentMethod.getName())
                     .starDate(client.getDateRegistration())
                     .paymentDate(payment.getDateRegistration())
-                .build();
+                    .build();
         }).toList();
         return new PageImpl<>(paymentDTOList,
-                paymentPage.getPageable(),paymentPage.getTotalElements());
+                paymentPage.getPageable(), paymentPage.getTotalElements());
     }
 
 }

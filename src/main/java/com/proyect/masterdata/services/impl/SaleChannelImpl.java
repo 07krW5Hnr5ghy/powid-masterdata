@@ -42,7 +42,7 @@ public class SaleChannelImpl implements ISaleChannel {
         SaleChannel saleChannel;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             saleChannel = saleChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -76,7 +76,7 @@ public class SaleChannelImpl implements ISaleChannel {
         List<SaleChannel> saleChannels;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             saleChannels = saleChannelRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -113,7 +113,7 @@ public class SaleChannelImpl implements ISaleChannel {
         SaleChannel saleChannel;
 
         try {
-            datauser = userRepository.findById(requestSaleChannel.getUser().toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(requestSaleChannel.getUser().toUpperCase());
             saleChannel = saleChannelRepository.findById(requestSaleChannel.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -147,7 +147,7 @@ public class SaleChannelImpl implements ISaleChannel {
         SaleChannel saleChannel;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             saleChannel = saleChannelRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);

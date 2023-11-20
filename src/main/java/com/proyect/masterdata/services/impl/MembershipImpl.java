@@ -29,118 +29,122 @@ public class MembershipImpl implements IMembership {
     private final ModuleRepository moduleRepository;
     private final ChannelRepository channelRepository;
     private final MembershipRepositoryCustom membershipRepositoryCustom;
+
     @Override
-    public ResponseSuccess save(String channel, String module, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String channel, String module, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         Channel channelData;
         Module moduleData;
         Membership membership;
-        try{
+        try {
             channelData = channelRepository.findByName(channel.toUpperCase());
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
-            membership = membershipRepository.findByIdAndIdModule(channelData.getIdMembership(),moduleData.getId());
-        }catch (RuntimeException e){
+            membership = membershipRepository.findByIdAndIdModule(channelData.getIdMembership(), moduleData.getId());
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(channelData==null){
+        if (channelData == null) {
             throw new BadRequestExceptions("Canal no existe");
         }
-        if(module==null){
+        if (module == null) {
             throw new BadRequestExceptions("Modulo no existe");
         }
-        if(membership!=null){
+        if (membership != null) {
             throw new BadRequestExceptions("Membresia ya existe");
         }
-        try{
+        try {
             membershipRepository.save(Membership.builder()
-                            .module(moduleData)
-                            .idModule(moduleData.getId())
-                            .id(channelData.getIdMembership())
+                    .module(moduleData)
+                    .idModule(moduleData.getId())
+                    .id(channelData.getIdMembership())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(String channel, List<String> moduleList, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess saveAll(String channel, List<String> moduleList, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         List<Module> modules;
         List<Membership> memberships;
         Channel channelData;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             channelData = channelRepository.findByName(channel.toUpperCase());
             modules = moduleRepository.findByNameIn(moduleList.stream().map(module -> module.toUpperCase()).toList());
-            memberships = membershipRepository.findByIdAndIdModuleIn(channelData.getIdMembership(), modules.stream().map(module -> module.getId()).toList());
-        }catch (RuntimeException e){
+            memberships = membershipRepository.findByIdAndIdModuleIn(channelData.getIdMembership(),
+                    modules.stream().map(module -> module.getId()).toList());
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(channelData==null){
+        if (channelData == null) {
             throw new BadRequestExceptions("Canal no existe");
         }
-        if(modules.size() != moduleList.size()){
+        if (modules.size() != moduleList.size()) {
             throw new BadRequestExceptions("Modulo no existe");
         }
-        if(!memberships.isEmpty()){
+        if (!memberships.isEmpty()) {
             throw new BadRequestExceptions("Membresia ya existe");
         }
-        try{
+        try {
             membershipRepository.saveAll(moduleList.stream().map(module -> Membership.builder()
                     .id(channelData.getIdMembership())
                     .module(moduleRepository.findByNameAndStatusTrue(module.toUpperCase()))
                     .idModule(moduleRepository.findByNameAndStatusTrue(module.toUpperCase()).getId())
-                    .build()
-            ).toList());
+                    .build()).toList());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseDelete delete(String channel, String module, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseDelete delete(String channel, String module, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         Channel channelData;
         Module moduleData;
         Membership membership;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             channelData = channelRepository.findByName(channel.toUpperCase());
             moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
-            membership = membershipRepository.findByIdAndIdModule(channelData.getIdMembership(),moduleData.getId());
-        }catch (RuntimeException e){
+            membership = membershipRepository.findByIdAndIdModule(channelData.getIdMembership(), moduleData.getId());
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(channel==null){
+        if (channel == null) {
             throw new BadRequestExceptions("Canal no existe");
         }
-        if(module==null){
+        if (module == null) {
             throw new BadRequestExceptions("Modulo no existe");
         }
-        if(membership==null){
+        if (membership == null) {
             throw new BadRequestExceptions("Membresia no existe");
         }
         try {
@@ -149,40 +153,45 @@ public class MembershipImpl implements IMembership {
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public Page<MembershipDTO> list(String channel, String module,String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+    public Page<MembershipDTO> list(String channel, String module, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         Page<Membership> membershipPage = null;
         Channel channelData;
         Module moduleData;
-        try{
+        try {
             channelData = channelRepository.findByName(channel.toUpperCase());
             moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
-            if(channelData != null && moduleData != null){
-                membershipPage = membershipRepositoryCustom.searchForMembership(channelData.getIdMembership(), moduleData.getId(),sort,sortColumn,pageNumber,pageSize);
+            if (channelData != null && moduleData != null) {
+                membershipPage = membershipRepositoryCustom.searchForMembership(channelData.getIdMembership(),
+                        moduleData.getId(), sort, sortColumn, pageNumber, pageSize);
             }
 
-            if(channelData != null && moduleData == null){
-                membershipPage = membershipRepositoryCustom.searchForMembership(channelData.getIdMembership(),null,sort,sortColumn,pageNumber,pageSize);
+            if (channelData != null && moduleData == null) {
+                membershipPage = membershipRepositoryCustom.searchForMembership(channelData.getIdMembership(), null,
+                        sort, sortColumn, pageNumber, pageSize);
             }
 
-            if(channelData == null && moduleData != null){
-                membershipPage = membershipRepositoryCustom.searchForMembership(null, moduleData.getId(),sort,sortColumn,pageNumber,pageSize);
+            if (channelData == null && moduleData != null) {
+                membershipPage = membershipRepositoryCustom.searchForMembership(null, moduleData.getId(), sort,
+                        sortColumn, pageNumber, pageSize);
             }
 
-            if(channelData == null && moduleData == null){
-                membershipPage = membershipRepositoryCustom.searchForMembership(null, null,sort,sortColumn,pageNumber,pageSize);
+            if (channelData == null && moduleData == null) {
+                membershipPage = membershipRepositoryCustom.searchForMembership(null, null, sort, sortColumn,
+                        pageNumber, pageSize);
             }
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(membershipPage.isEmpty()){
+        if (membershipPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         List<MembershipDTO> membershipDTOS = membershipPage.getContent().stream().map(membership -> {
@@ -193,7 +202,7 @@ public class MembershipImpl implements IMembership {
                     .Module(innerModule.getName())
                     .build();
         }).toList();
-        return new PageImpl<>(membershipDTOS,membershipPage.getPageable(),membershipPage.getTotalElements());
+        return new PageImpl<>(membershipDTOS, membershipPage.getPageable(), membershipPage.getTotalElements());
     }
 
 }

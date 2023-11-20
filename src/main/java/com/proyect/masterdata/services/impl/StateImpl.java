@@ -42,7 +42,7 @@ public class StateImpl implements IState {
         State state;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             state = stateRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -76,7 +76,7 @@ public class StateImpl implements IState {
         List<State> states;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             states = stateRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -112,7 +112,7 @@ public class StateImpl implements IState {
         State state;
 
         try {
-            datauser = userRepository.findById(requestState.getUser().toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(requestState.getUser().toUpperCase());
             state = stateRepository.findById(requestState.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -146,7 +146,7 @@ public class StateImpl implements IState {
         State state;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             state = stateRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);

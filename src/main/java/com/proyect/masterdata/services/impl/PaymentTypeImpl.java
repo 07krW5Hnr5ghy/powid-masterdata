@@ -1,9 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.PaymentType;
-import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.PaymentTypeDTO;
-import com.proyect.masterdata.dto.request.RequestPaymentTypeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -32,58 +30,60 @@ public class PaymentTypeImpl implements IPaymentType {
     private final UserRepository userRepository;
     private final PaymentTypeRepositoryCustom paymentTypeRepositoryCustom;
     private final PaymentTypeMapper paymentTypeMapper;
+
     @Override
-    public ResponseSuccess save(String type,String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String type, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         boolean existsType;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             existsType = paymentTypeRepository.existsByType(type.toUpperCase());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(existsType){
+        if (existsType) {
             throw new BadRequestExceptions("Tipo de pago ya existe");
         }
-        try{
+        try {
             paymentTypeRepository.save(PaymentType.builder()
-                            .type(type.toUpperCase())
-                            .dateRegistration(new Date(System.currentTimeMillis()))
-                            .status(true)
-                            .user(user.toUpperCase())
+                    .type(type.toUpperCase())
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .status(true)
+                    .user(user.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names,String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess saveAll(List<String> names, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         List<PaymentType> paymentTypeList;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             paymentTypeList = paymentTypeRepository.findByTypeIn(names);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(!paymentTypeList.isEmpty()){
+        if (!paymentTypeList.isEmpty()) {
             throw new BadRequestExceptions("Tipo de pago ya existe");
         }
-        try{
+        try {
             paymentTypeRepository.saveAll(names.stream().map(name -> PaymentType.builder()
                     .type(name.toUpperCase())
                     .user(user.toUpperCase())
@@ -94,7 +94,7 @@ public class PaymentTypeImpl implements IPaymentType {
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -104,60 +104,64 @@ public class PaymentTypeImpl implements IPaymentType {
     public ResponseDelete delete(String type, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         PaymentType paymentType;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             paymentType = paymentTypeRepository.findByType(type.toUpperCase());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(paymentType==null){
+        if (paymentType == null) {
             throw new BadRequestExceptions("Tipo de pago no existe");
         }
-        try{
+        try {
             paymentType.setStatus(false);
             paymentType.setDateRegistration(new Date(System.currentTimeMillis()));
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public Page<PaymentTypeDTO> list(String type,String user,String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+    public Page<PaymentTypeDTO> list(String type, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         Page<PaymentType> paymentTypePage;
-        try{
-            paymentTypePage = paymentTypeRepositoryCustom.searchForPaymentType(type,user,sort,sortColumn,pageNumber,pageSize,true);
-        }catch (RuntimeException e){
+        try {
+            paymentTypePage = paymentTypeRepositoryCustom.searchForPaymentType(type, user, sort, sortColumn, pageNumber,
+                    pageSize, true);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(paymentTypePage.isEmpty()){
+        if (paymentTypePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(paymentTypeMapper.listPaymentTypeToListPaymentTypeDTO(paymentTypePage.getContent()),
-                paymentTypePage.getPageable(),paymentTypePage.getTotalElements());
+                paymentTypePage.getPageable(), paymentTypePage.getTotalElements());
     }
 
     @Override
-    public Page<PaymentTypeDTO> listStatusFalse(String type, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<PaymentTypeDTO> listStatusFalse(String type, String user, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<PaymentType> paymentTypePage;
-        try{
-            paymentTypePage = paymentTypeRepositoryCustom.searchForPaymentType(type,user,sort,sortColumn,pageNumber,pageSize,false);
-        }catch (RuntimeException e){
+        try {
+            paymentTypePage = paymentTypeRepositoryCustom.searchForPaymentType(type, user, sort, sortColumn, pageNumber,
+                    pageSize, false);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if(paymentTypePage.isEmpty()){
+        if (paymentTypePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(paymentTypeMapper.listPaymentTypeToListPaymentTypeDTO(paymentTypePage.getContent()),
-                paymentTypePage.getPageable(),paymentTypePage.getTotalElements());
+                paymentTypePage.getPageable(), paymentTypePage.getTotalElements());
     }
 }

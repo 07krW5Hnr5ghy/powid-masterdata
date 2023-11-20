@@ -45,7 +45,7 @@ public class UserImpl implements IUser {
         District district;
         UserType userType;
         try {
-            existsUser = userRepository.existsByUser(requestUser.getUser().toUpperCase());
+            existsUser = userRepository.existsByUsername(requestUser.getUser().toUpperCase());
             district = districtRepository.findByNameAndStatusTrue(requestUser.getDistrict().toUpperCase());
             userType = userTypeRepository.findByUserTypeAndStatusTrue(requestUser.getUserType().toUpperCase());
         } catch (RuntimeException e) {
@@ -99,8 +99,8 @@ public class UserImpl implements IUser {
         List<District> districtList;
         List<UserType> userTypeList;
         try {
-            existsUSer = userRepository.existsByUser(user.toUpperCase());
-            userList = userRepository.findByUserIn(requestUserList.stream()
+            existsUSer = userRepository.existsByUsername(user.toUpperCase());
+            userList = userRepository.findByUsernameIn(requestUserList.stream()
                     .map(userData -> userData.getName().toUpperCase()).collect(Collectors.toList()));
             districtList = districtRepository.findByNameIn(requestUserList.stream()
                     .map(userData -> userData.getDistrict().toUpperCase()).collect(Collectors.toList()));
@@ -126,7 +126,7 @@ public class UserImpl implements IUser {
             District district = districtRepository.findByNameAndStatusTrue(userData.getDistrict().toUpperCase());
             UserType userType = userTypeRepository.findByUserTypeAndStatusTrue(userData.getUserType().toUpperCase());
             return User.builder()
-                    .user(userData.getUser().toUpperCase())
+                    .username(userData.getUser().toUpperCase())
                     .name(userData.getName().toUpperCase())
                     .surname(userData.getSurname().toUpperCase())
                     .dni(userData.getDni())
@@ -162,8 +162,8 @@ public class UserImpl implements IUser {
         User userData;
         UserType userType;
         try {
-            existsUser = userRepository.existsByUser(user.toUpperCase());
-            userData = userRepository.findByUser(requestUserSave.getUser().toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            userData = userRepository.findByUsername(requestUserSave.getUser().toUpperCase());
             userType = userTypeRepository.findByUserTypeAndStatusTrue(requestUserSave.getUserType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -214,7 +214,7 @@ public class UserImpl implements IUser {
     public ResponseDelete delete(String user) throws InternalErrorExceptions, BadRequestExceptions {
         User datauser;
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -262,7 +262,7 @@ public class UserImpl implements IUser {
                     .map(module -> module.getName().toUpperCase()).toList();
             return UserQueryDTO.builder()
                     .dni(userData.getDni())
-                    .user(userData.getUser().toUpperCase())
+                    .username(userData.getUser().toUpperCase())
                     .name(userData.getName().toUpperCase())
                     .surname(userData.getSurname().toUpperCase())
                     .gender(userData.getGender().toUpperCase())

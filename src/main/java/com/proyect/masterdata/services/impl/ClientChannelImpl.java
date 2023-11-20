@@ -36,31 +36,34 @@ public class ClientChannelImpl implements IClientChannel {
     private final ClientChannelMapper clientChannelMapper;
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
+
     @Override
-    public ResponseSuccess save(String ruc,RequestClientChannelSave requestClientChannelSave, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(String ruc, RequestClientChannelSave requestClientChannelSave, String user)
+            throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsClientChannel;
         Client client;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
-            existsClientChannel = clientChannelRepository.existsByName(requestClientChannelSave.getName().toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsClientChannel = clientChannelRepository
+                    .existsByName(requestClientChannelSave.getName().toUpperCase());
             client = clientRepository.findByRuc(ruc);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario incorrecto");
         }
-        if (existsClientChannel){
+        if (existsClientChannel) {
             throw new BadRequestExceptions("El canal ya existe");
         }
-        if(client==null){
+        if (client == null) {
             throw new BadRequestExceptions("cliente no existe");
         }
 
-        try{
+        try {
             clientChannelRepository.save(ClientChannel.builder()
                     .name(requestClientChannelSave.getName().toUpperCase())
                     .url(requestClientChannelSave.getUrl())
@@ -73,70 +76,74 @@ public class ClientChannelImpl implements IClientChannel {
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(String ruc,List<RequestClientChannelSave> clientChannelList, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess saveAll(String ruc, List<RequestClientChannelSave> clientChannelList, String user)
+            throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         List<ClientChannel> clientChannels;
         Client client;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
-            clientChannels = clientChannelRepository.findByNameIn(clientChannelList.stream().map(clientChannel -> clientChannel.getName().toUpperCase()).collect(Collectors.toList()));
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            clientChannels = clientChannelRepository.findByNameIn(clientChannelList.stream()
+                    .map(clientChannel -> clientChannel.getName().toUpperCase()).collect(Collectors.toList()));
             client = clientRepository.findByRuc(ruc);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(!clientChannels.isEmpty()){
+        if (!clientChannels.isEmpty()) {
             throw new BadRequestExceptions("El canal ya existe");
         }
-        if(client==null){
+        if (client == null) {
             throw new BadRequestExceptions("cliente no existe");
         }
-        List<ClientChannel> clientChannelSaveList = clientChannelList.stream().map(clientChannel -> ClientChannel.builder()
-                .name(clientChannel.getName().toUpperCase())
-                .url(clientChannel.getUrl())
-                    .idClient(client.getIdClient())
-                .status(true)
-                .user(user.toUpperCase())
-                .build()
-        ).toList();
-        try{
+        List<ClientChannel> clientChannelSaveList = clientChannelList.stream()
+                .map(clientChannel -> ClientChannel.builder()
+                        .name(clientChannel.getName().toUpperCase())
+                        .url(clientChannel.getUrl())
+                        .idClient(client.getIdClient())
+                        .status(true)
+                        .user(user.toUpperCase())
+                        .build())
+                .toList();
+        try {
             clientChannelRepository.saveAll(clientChannelSaveList);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ClientChannelDTO update(RequestClientChannel requestClientChannel) throws BadRequestExceptions, InternalErrorExceptions {
+    public ClientChannelDTO update(RequestClientChannel requestClientChannel)
+            throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         ClientChannel clientChannel;
-        try{
-            existsUser = userRepository.existsById(requestClientChannel.getUser().toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(requestClientChannel.getUser().toUpperCase());
             clientChannel = clientChannelRepository.findById(requestClientChannel.getCode()).orElse(null);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(clientChannel==null){
+        if (clientChannel == null) {
             throw new BadRequestExceptions("Canal no existe");
         }
         clientChannel.setName(requestClientChannel.getName().toUpperCase());
@@ -144,9 +151,9 @@ public class ClientChannelImpl implements IClientChannel {
         clientChannel.setStatus(requestClientChannel.isStatus());
         clientChannel.setUser(requestClientChannel.getUser().toUpperCase());
         clientChannel.setDateRegistration(new Date(System.currentTimeMillis()));
-        try{
+        try {
             return clientChannelMapper.clientChannelToClientChannelDTO(clientChannelRepository.save(clientChannel));
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -156,28 +163,28 @@ public class ClientChannelImpl implements IClientChannel {
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         ClientChannel clientChannel;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             clientChannel = clientChannelRepository.findById(code).orElse(null);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(clientChannel==null){
+        if (clientChannel == null) {
             throw new BadRequestExceptions("Canal no existe");
         }
         clientChannel.setStatus(false);
         clientChannel.setDateRegistration(new Date(System.currentTimeMillis()));
-        try{
+        try {
             clientChannelRepository.save(clientChannel);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -186,55 +193,62 @@ public class ClientChannelImpl implements IClientChannel {
     @Override
     public List<ClientChannelDTO> listClientChannel() {
         List<ClientChannel> clientChannels;
-        try{
+        try {
             clientChannels = clientChannelRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(clientChannels.isEmpty()){
+        if (clientChannels.isEmpty()) {
             return Collections.emptyList();
         }
         return clientChannelMapper.listClientChannelToListClientChannelDTO(clientChannels);
     }
 
     @Override
-    public Page<ClientChannelDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<ClientChannelDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         Page<ClientChannel> clientChannelPage;
-        try{
-            clientChannelPage = clientChannelRepositoryCustom.searchForClientChannel(name,user,sort,sortColumn,pageNumber,pageSize,true);
-        }catch (RuntimeException e){
+        try {
+            clientChannelPage = clientChannelRepositoryCustom.searchForClientChannel(name, user, sort, sortColumn,
+                    pageNumber, pageSize, true);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(clientChannelPage.isEmpty()){
+        if (clientChannelPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(clientChannelMapper.listClientChannelToListClientChannelDTO(clientChannelPage.getContent()),
-                clientChannelPage.getPageable(),clientChannelPage.getTotalElements());
+        return new PageImpl<>(
+                clientChannelMapper.listClientChannelToListClientChannelDTO(clientChannelPage.getContent()),
+                clientChannelPage.getPageable(), clientChannelPage.getTotalElements());
     }
 
     @Override
-    public Page<ClientChannelDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<ClientChannelDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<ClientChannel> clientChannelPage;
-        try{
-            clientChannelPage = clientChannelRepositoryCustom.searchForClientChannel(name,user,sort,sortColumn,pageNumber,pageSize,false);
-        }catch (RuntimeException e){
+        try {
+            clientChannelPage = clientChannelRepositoryCustom.searchForClientChannel(name, user, sort, sortColumn,
+                    pageNumber, pageSize, false);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(clientChannelPage.isEmpty()){
+        if (clientChannelPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(clientChannelMapper.listClientChannelToListClientChannelDTO(clientChannelPage.getContent()),
-                clientChannelPage.getPageable(),clientChannelPage.getTotalElements());
+        return new PageImpl<>(
+                clientChannelMapper.listClientChannelToListClientChannelDTO(clientChannelPage.getContent()),
+                clientChannelPage.getPageable(), clientChannelPage.getTotalElements());
     }
 
     @Override
     public ClientChannelDTO findByCode(Long code) throws BadRequestExceptions {
-        try{
-            return clientChannelMapper.clientChannelToClientChannelDTO(clientChannelRepository.findByIdAndStatusTrue(code));
-        }catch (RuntimeException e){
+        try {
+            return clientChannelMapper
+                    .clientChannelToClientChannelDTO(clientChannelRepository.findByIdAndStatusTrue(code));
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }

@@ -43,7 +43,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         PaymentMethod paymentMethod;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -76,7 +76,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         User datauser;
         List<PaymentMethod> paymentMethods;
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             paymentMethods = paymentMethodRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -115,7 +115,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         PaymentMethod paymentMethod;
 
         try {
-            datauser = userRepository.findById(requestPaymentMethod.getUser().toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(requestPaymentMethod.getUser().toUpperCase());
             paymentMethod = paymentMethodRepository.findById(requestPaymentMethod.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -149,7 +149,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         PaymentMethod paymentMethod;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             paymentMethod = paymentMethodRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);

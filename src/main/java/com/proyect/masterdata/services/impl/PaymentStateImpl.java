@@ -43,7 +43,7 @@ public class PaymentStateImpl implements IPaymentState {
         PaymentState paymentState;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             paymentState = paymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -77,7 +77,7 @@ public class PaymentStateImpl implements IPaymentState {
         List<PaymentState> paymentStates;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             paymentStates = paymentStateRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -116,7 +116,7 @@ public class PaymentStateImpl implements IPaymentState {
         PaymentState paymentState;
 
         try {
-            datauser = userRepository.findById(requestPaymentState.getUser().toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(requestPaymentState.getUser().toUpperCase());
             paymentState = paymentStateRepository.findById(requestPaymentState.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -150,7 +150,7 @@ public class PaymentStateImpl implements IPaymentState {
         PaymentState paymentState;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             paymentState = paymentStateRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);

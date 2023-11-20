@@ -52,8 +52,8 @@ public class ChannelImpl implements IChannel {
         PaymentMethod paymentMethod;
         Connection connection;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
-            userData = userRepository.findByUser(requestChannelSave.getUser().toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            userData = userRepository.findByUsername(requestChannelSave.getUser().toUpperCase());
             channel = channelRepository.existsByName(requestChannelSave.getName().toUpperCase());
             client = clientRepository.findByRuc(requestChannelSave.getClient().toUpperCase());
             paymentMethod = paymentMethodRepository
@@ -114,10 +114,10 @@ public class ChannelImpl implements IChannel {
         List<PaymentMethod> paymentMethodList;
         List<Connection> connectionList;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             channelList = channelRepository.findByNameIn(
                     requestChannelSaveList.stream().map(channel -> channel.getName().toUpperCase()).toList());
-            userList = userRepository.findByUserIn(
+            userList = userRepository.findByUsernameIn(
                     requestChannelSaveList.stream().map(userData -> userData.getUser().toUpperCase()).toList());
             clientList = clientRepository
                     .findByRucIn(requestChannelSaveList.stream().map(client -> client.getClient()).toList());
@@ -192,7 +192,7 @@ public class ChannelImpl implements IChannel {
         PaymentMethod paymentMethod;
         Connection connection;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             channel = channelRepository.findByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -209,7 +209,7 @@ public class ChannelImpl implements IChannel {
             membership = membershipRepository.findById(channel.getIdMembership()).orElse(null);
             paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(channel.getPaymentMethod().getName());
             connection = connectionRepository.findByUrl(channel.getConnection().getUrl());
-            userData = userRepository.findByUser(channel.getUser().toUpperCase());
+            userData = userRepository.findByUsername(channel.getUser().toUpperCase());
             channel.setMonths(months);
             channel.setDateRegistration(new Date(System.currentTimeMillis()));
             channel.setStatus(true);
@@ -234,7 +234,7 @@ public class ChannelImpl implements IChannel {
         boolean existsUser;
         Channel channel;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             channel = channelRepository.findByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

@@ -42,7 +42,7 @@ public class SizeTypeImpl implements ISizeType {
         SizeType sizeType;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             sizeType = sizeTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -76,7 +76,7 @@ public class SizeTypeImpl implements ISizeType {
         List<SizeType> sizeTypes;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             sizeTypes = sizeTypeRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -112,7 +112,7 @@ public class SizeTypeImpl implements ISizeType {
         SizeType sizeType;
 
         try {
-            datauser = userRepository.findById(requestSizeType.getUser().toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(requestSizeType.getUser().toUpperCase());
             sizeType = sizeTypeRepository.findById(requestSizeType.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -146,7 +146,7 @@ public class SizeTypeImpl implements ISizeType {
         SizeType sizeType;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             sizeType = sizeTypeRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);

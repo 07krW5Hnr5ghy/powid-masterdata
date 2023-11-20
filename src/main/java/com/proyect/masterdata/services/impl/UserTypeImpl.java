@@ -36,62 +36,64 @@ public class UserTypeImpl implements IUserType {
     private final UserTypeMapper userTypeMapper;
     private final UserRepository userRepository;
     private final UserTypeModuleRepository userTypeModuleRepository;
+
     @Override
     public ResponseSuccess save(String userType, String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsUserType;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             existsUserType = userTypeRepository.existsByUserType(userType.toUpperCase());
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario incorrecto");
         }
-        if (existsUserType){
+        if (existsUserType) {
             throw new BadRequestExceptions("El tipo de usuario existe");
         }
 
         try {
             userTypeRepository.save(UserType.builder()
-                            .userType(userType.toUpperCase())
-                            .user(user.toUpperCase())
-                            .status(true)
+                    .userType(userType.toUpperCase())
+                    .user(user.toUpperCase())
+                    .status(true)
                     .build());
             userTypeModuleRepository.save(UserTypeModule.builder()
-                            .dateRegistration(new Date(System.currentTimeMillis()))
-                            .status(true)
-                            .userType(userType.toUpperCase())
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .status(true)
+                    .userType(userType.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions("Error interno");
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> userTypeList, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess saveAll(List<String> userTypeList, String user)
+            throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         List<UserType> userTypes;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             userTypes = userTypeRepository.findByUserTypeIn(userTypeList.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if (!userTypes.isEmpty()){
+        if (!userTypes.isEmpty()) {
             throw new BadRequestExceptions("Error en los tipo de usuario");
         }
 
@@ -111,7 +113,7 @@ public class UserTypeImpl implements IUserType {
                     .code(200)
                     .message(Constants.register)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -122,18 +124,18 @@ public class UserTypeImpl implements IUserType {
         boolean existsUser;
         UserType userType;
         try {
-            existsUser = userRepository.existsById(requestUserType.getUser().toUpperCase());
+            existsUser = userRepository.existsByUsername(requestUserType.getUser().toUpperCase());
             userType = userTypeRepository.findById(requestUserType.getCode()).orElse(null);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario incorrecto");
         }
 
-        if (userType==null){
+        if (userType == null) {
             throw new BadRequestExceptions("Tipo de usuario no existe");
         }
 
@@ -144,7 +146,7 @@ public class UserTypeImpl implements IUserType {
 
         try {
             return userTypeMapper.userTypeToUserTypeDTO(userTypeRepository.save(userType));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -155,18 +157,18 @@ public class UserTypeImpl implements IUserType {
         boolean existsUser;
         UserType userType;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             userType = userTypeRepository.findById(code).orElse(null);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario incorrecto");
         }
 
-        if (userType==null){
+        if (userType == null) {
             throw new BadRequestExceptions("Tipo de usuario no existe");
         }
 
@@ -179,7 +181,7 @@ public class UserTypeImpl implements IUserType {
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -190,27 +192,29 @@ public class UserTypeImpl implements IUserType {
         List<UserType> userTypes;
         try {
             userTypes = userTypeRepository.findAllByStatusTrue();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if (userTypes.isEmpty()){
+        if (userTypes.isEmpty()) {
             return Collections.emptyList();
         }
         return userTypeMapper.listUserTypeToListUserTypeDTO(userTypes);
     }
 
     @Override
-    public Page<UserTypeDTO> list(String usertype, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<UserTypeDTO> list(String usertype, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         Page<UserType> userTypePage;
         try {
-            userTypePage = userTypeRepositoryCustom.searchForUserType(usertype, user, sort, sortColumn, pageNumber, pageSize, true);
-        } catch (RuntimeException e){
+            userTypePage = userTypeRepositoryCustom.searchForUserType(usertype, user, sort, sortColumn, pageNumber,
+                    pageSize, true);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
-        if (userTypePage.isEmpty()){
+        if (userTypePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(userTypeMapper.listUserTypeToListUserTypeDTO(userTypePage.getContent()),
@@ -218,16 +222,18 @@ public class UserTypeImpl implements IUserType {
     }
 
     @Override
-    public Page<UserTypeDTO> listStatusFalse(String usertype, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<UserTypeDTO> listStatusFalse(String usertype, String user, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<UserType> userTypePage;
         try {
-            userTypePage = userTypeRepositoryCustom.searchForUserType(usertype, user, sort, sortColumn, pageNumber, pageSize, false);
-        } catch (RuntimeException e){
+            userTypePage = userTypeRepositoryCustom.searchForUserType(usertype, user, sort, sortColumn, pageNumber,
+                    pageSize, false);
+        } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
-        if (userTypePage.isEmpty()){
+        if (userTypePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         return new PageImpl<>(userTypeMapper.listUserTypeToListUserTypeDTO(userTypePage.getContent()),
@@ -238,7 +244,7 @@ public class UserTypeImpl implements IUserType {
     public UserTypeDTO findByCode(Long code) throws BadRequestExceptions {
         try {
             return userTypeMapper.userTypeToUserTypeDTO(userTypeRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }

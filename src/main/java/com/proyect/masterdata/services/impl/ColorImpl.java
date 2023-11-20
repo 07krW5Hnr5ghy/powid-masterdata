@@ -43,7 +43,7 @@ public class ColorImpl implements IColor {
         Color color;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             color = colorRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -78,7 +78,7 @@ public class ColorImpl implements IColor {
         List<Color> colors;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             colors = colorRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -114,7 +114,7 @@ public class ColorImpl implements IColor {
         Color color;
 
         try {
-            datauser = userRepository.findById(requestColor.getUser().toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(requestColor.getUser().toUpperCase());
             color = colorRepository.findById(requestColor.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -148,7 +148,7 @@ public class ColorImpl implements IColor {
         Color color;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             color = colorRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);

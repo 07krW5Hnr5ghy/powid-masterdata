@@ -41,7 +41,7 @@ public class RoleImpl implements IRole {
         Role role;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             role = roleRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -80,7 +80,7 @@ public class RoleImpl implements IRole {
         List<Role> roles;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             roles = roleRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -120,7 +120,7 @@ public class RoleImpl implements IRole {
         Role role;
 
         try {
-            datauser = userRepository.findById(requestRole.getTokenUser().toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(requestRole.getTokenUser().toUpperCase());
             role = roleRepository.findById(requestRole.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -154,7 +154,7 @@ public class RoleImpl implements IRole {
         Role role;
 
         try {
-            datauser = userRepository.findById(user.toUpperCase()).orElse(null);
+            datauser = userRepository.findByUsername(user.toUpperCase());
             role = roleRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);

@@ -35,30 +35,33 @@ public class ClientImpl implements IClient {
     private final DistrictRepository districtRepository;
     private final ClientMapper clientMapper;
     private final ClientRepositoryCustom clientRepositoryCustom;
+
     @Override
-    public ResponseSuccess save(RequestClientSave requestClientSave, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(RequestClientSave requestClientSave, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         boolean existsClient;
         boolean existDistrict;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             existsClient = clientRepository.existsByRuc(requestClientSave.getRuc());
             existDistrict = districtRepository.existsByName(requestClientSave.getDistrict().toUpperCase());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(existsClient){
+        if (existsClient) {
             throw new BadRequestExceptions("Cliente ya existe");
         }
-        if(!existDistrict){
+        if (!existDistrict) {
             throw new BadRequestExceptions("Distrito no existe");
         }
-        try{
-            District district = districtRepository.findByNameAndStatusTrue(requestClientSave.getDistrict().toUpperCase());
+        try {
+            District district = districtRepository
+                    .findByNameAndStatusTrue(requestClientSave.getDistrict().toUpperCase());
             clientRepository.save(Client.builder()
                     .name(requestClientSave.getName().toUpperCase())
                     .surname(requestClientSave.getSurname().toUpperCase())
@@ -74,38 +77,40 @@ public class ClientImpl implements IClient {
                     .status(1L)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .user(user.toUpperCase())
-                    .build()
-            );
+                    .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestClientSave> requestClientSaveList, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess saveAll(List<RequestClientSave> requestClientSaveList, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         List<Client> clientList;
         List<District> districtList;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
-            clientList = clientRepository.findByRucIn(requestClientSaveList.stream().map(client -> client.getRuc()).toList());
-            districtList = districtRepository.findByNameIn(requestClientSaveList.stream().map(client -> client.getDistrict().toUpperCase()).toList());
-        }catch (RuntimeException e){
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            clientList = clientRepository
+                    .findByRucIn(requestClientSaveList.stream().map(client -> client.getRuc()).toList());
+            districtList = districtRepository.findByNameIn(
+                    requestClientSaveList.stream().map(client -> client.getDistrict().toUpperCase()).toList());
+        } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(!clientList.isEmpty()){
+        if (!clientList.isEmpty()) {
             throw new BadRequestExceptions("Cliente existente");
         }
-        if(districtList.size() != requestClientSaveList.size()){
+        if (districtList.size() != requestClientSaveList.size()) {
             throw new BadRequestExceptions("Distrito no existe");
         }
         try {
@@ -132,7 +137,7 @@ public class ClientImpl implements IClient {
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -142,17 +147,17 @@ public class ClientImpl implements IClient {
     public ClientDTO update(RequestClient requestClient) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         Client client;
-        try{
-            existsUser = userRepository.existsById(requestClient.getUser().toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(requestClient.getUser().toUpperCase());
             client = clientRepository.findByRuc(requestClient.getRuc());
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(client==null){
+        if (client == null) {
             throw new BadRequestExceptions("Cliente no existe");
         }
         try {
@@ -168,27 +173,27 @@ public class ClientImpl implements IClient {
             ClientDTO clientDTO = clientMapper.clientToClientDTO(client);
             clientDTO.setDistrict(districtRepository.findById(client.getId_district()).orElse(null).getName());
             return clientDTO;
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseDelete delete(String ruc,String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseDelete delete(String ruc, String user) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         Client client;
         try {
-            existsUser = userRepository.existsById(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             client = clientRepository.findByRuc(ruc);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(client==null){
+        if (client == null) {
             throw new BadRequestExceptions("Cliente no existe");
         }
         try {
@@ -198,22 +203,24 @@ public class ClientImpl implements IClient {
                     .code(200)
                     .message(Constants.delete)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public Page<ClientDTO> list(String ruc, String business, String user,Long status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+    public Page<ClientDTO> list(String ruc, String business, String user, Long status, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         Page<Client> clientPage;
-        try{
-            clientPage = clientRepositoryCustom.searchForClient(ruc,business,user,sort,sortColumn,pageNumber,pageSize,status);
-        }catch (RuntimeException e){
+        try {
+            clientPage = clientRepositoryCustom.searchForClient(ruc, business, user, sort, sortColumn, pageNumber,
+                    pageSize, status);
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(clientPage.isEmpty()){
+        if (clientPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         List<ClientDTO> clientDTOList = clientPage.getContent().stream().map(client -> ClientDTO.builder()
@@ -228,9 +235,8 @@ public class ClientImpl implements IClient {
                 .ruc(client.getRuc())
                 .district(districtRepository.findById(client.getId_district()).orElse(null).getName())
                 .status(client.getStatus())
-                .build()
-        ).toList();
+                .build()).toList();
         return new PageImpl<>(clientDTOList,
-                clientPage.getPageable(),clientPage.getTotalElements());
+                clientPage.getPageable(), clientPage.getTotalElements());
     }
 }

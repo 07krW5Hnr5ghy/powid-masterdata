@@ -35,132 +35,140 @@ public class ModuleTypeImpl implements IModuleType {
     private final UserTypeModuleRepository userTypeModuleRepository;
     private final ModuleTypeRepository moduleTypeRepository;
     private final ModuleTypeRepositoryCustom moduleTypeRepositoryCustom;
+
     @Override
-    public ResponseSuccess save(String userType, String module, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String userType, String module, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         Module moduleData;
         UserType userTypeData;
         ModuleType moduleType;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
             userTypeData = userTypeRepository.findByUserTypeAndStatusTrue(userType.toUpperCase());
-            moduleType = moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeData.getId(),moduleData.getId());
-        }catch (RuntimeException e){
+            moduleType = moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeData.getId(),
+                    moduleData.getId());
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
 
-        if(moduleData==null){
+        if (moduleData == null) {
             throw new BadRequestExceptions("Modulo no existe");
         }
 
-        if(userType==null){
+        if (userType == null) {
             throw new BadRequestExceptions("Tipo de usuario no existe");
         }
 
-        if(moduleType!=null){
+        if (moduleType != null) {
             throw new BadRequestExceptions("Tipo de modulo ya existe");
         }
 
-        try{
+        try {
             moduleTypeRepository.save(ModuleType.builder()
-                            .status(true)
-                            .dateRegistration(new Date(System.currentTimeMillis()))
-                            .idModule(moduleRepository.findByNameAndStatusTrue(module.toUpperCase()).getId())
-                            .idUserTypeModule(userTypeModuleRepository.findByUserTypeAndStatusTrue(userType.toUpperCase()).getId())
+                    .status(true)
+                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .idModule(moduleRepository.findByNameAndStatusTrue(module.toUpperCase()).getId())
+                    .idUserTypeModule(
+                            userTypeModuleRepository.findByUserTypeAndStatusTrue(userType.toUpperCase()).getId())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseSuccess saveAll(String userType,List<String> moduleList, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess saveAll(String userType, List<String> moduleList, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         List<Module> modules;
         UserType userTypeData;
         List<ModuleType> moduleTypes;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             modules = moduleRepository.findByNameIn(moduleList.stream().map(String::toUpperCase).toList());
             userTypeData = userTypeRepository.findByUserTypeAndStatusTrue(userType.toUpperCase());
             moduleTypes = moduleList.stream().map(module -> {
-                ModuleType moduleType = moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeData.getId(),moduleRepository.findByNameAndStatusTrue(module.toUpperCase()).getId());
+                ModuleType moduleType = moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeData.getId(),
+                        moduleRepository.findByNameAndStatusTrue(module.toUpperCase()).getId());
                 return moduleType;
             }).toList();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(modules.isEmpty()){
+        if (modules.isEmpty()) {
             throw new BadRequestExceptions("Modulos no existen");
         }
-        if(userTypeData==null){
+        if (userTypeData == null) {
             throw new BadRequestExceptions("Tipo de usuario no existen");
         }
-        if(modules.size() != moduleList.size()){
+        if (modules.size() != moduleList.size()) {
             throw new BadRequestExceptions("Modulo no existe");
         }
-        if(!moduleTypes.stream().filter(Objects::nonNull).toList().isEmpty()){
+        if (!moduleTypes.stream().filter(Objects::nonNull).toList().isEmpty()) {
             throw new BadRequestExceptions("Tipo de modulo ya existe");
         }
         List<ModuleType> moduleTypeList = moduleList.stream().map(moduleType -> ModuleType.builder()
                 .idModule(moduleRepository.findByNameAndStatusTrue(moduleType.toUpperCase()).getId())
-                .idUserTypeModule(userTypeModuleRepository.findByUserTypeAndStatusTrue(userTypeData.getUserType()).getId())
+                .idUserTypeModule(
+                        userTypeModuleRepository.findByUserTypeAndStatusTrue(userTypeData.getUserType()).getId())
                 .dateRegistration(new Date(System.currentTimeMillis()))
                 .status(true)
-                .build()
-        ).toList();
-        try{
+                .build()).toList();
+        try {
             moduleTypeRepository.saveAll(moduleTypeList);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public ResponseDelete delete(String userType, String module, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseDelete delete(String userType, String module, String user)
+            throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         UserTypeModule userTypeModule;
         Module moduleData;
         ModuleType moduleType;
-        try{
-            existsUser = userRepository.existsById(user.toUpperCase());
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
             userTypeModule = userTypeModuleRepository.findByUserType(userType.toUpperCase());
             moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
-            moduleType = moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeModule.getId(),moduleData.getId());
-        }catch (RuntimeException e){
+            moduleType = moduleTypeRepository.findByIdUserTypeModuleAndIdModule(userTypeModule.getId(),
+                    moduleData.getId());
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(!existsUser){
+        if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if(userTypeModule==null){
+        if (userTypeModule == null) {
             throw new BadRequestExceptions("Tipo de usuario no existe");
         }
-        if(moduleData==null){
+        if (moduleData == null) {
             throw new BadRequestExceptions("Modulo no existe");
         }
-        if(moduleType==null){
+        if (moduleType == null) {
             throw new BadRequestExceptions("Tipo de usuario x Modulo no existe");
         }
         try {
@@ -169,54 +177,60 @@ public class ModuleTypeImpl implements IModuleType {
                     .message(Constants.delete)
                     .code(200)
                     .build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public Page<ModuleTypeDTO> list(String userType, String module, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+    public Page<ModuleTypeDTO> list(String userType, String module, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         Page<ModuleType> moduleTypePage = null;
         UserTypeModule userTypeModule = null;
         Module moduleData = null;
         try {
-            if(userType != null){
+            if (userType != null) {
                 userTypeModule = userTypeModuleRepository.findByUserType(userType.toUpperCase());
             }
-            if(module != null){
+            if (module != null) {
                 moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
             }
-            if(userTypeModule != null && moduleData != null){
-                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(userTypeModule.getId(), moduleData.getId(),sort,sortColumn,pageNumber,pageSize);
+            if (userTypeModule != null && moduleData != null) {
+                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(userTypeModule.getId(),
+                        moduleData.getId(), sort, sortColumn, pageNumber, pageSize);
             }
 
-            if(userTypeModule != null && moduleData == null){
-                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(userTypeModule.getId(),null,sort,sortColumn,pageNumber,pageSize);
+            if (userTypeModule != null && moduleData == null) {
+                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(userTypeModule.getId(), null, sort,
+                        sortColumn, pageNumber, pageSize);
             }
 
-            if(userTypeModule == null && moduleData != null){
-                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(null, moduleData.getId(),sort,sortColumn,pageNumber,pageSize);
+            if (userTypeModule == null && moduleData != null) {
+                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(null, moduleData.getId(), sort,
+                        sortColumn, pageNumber, pageSize);
             }
 
-            if(userTypeModule == null && moduleData == null){
-                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(null, null,sort,sortColumn,pageNumber,pageSize);
+            if (userTypeModule == null && moduleData == null) {
+                moduleTypePage = moduleTypeRepositoryCustom.searchForModuleType(null, null, sort, sortColumn,
+                        pageNumber, pageSize);
             }
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(moduleTypePage.isEmpty()){
+        if (moduleTypePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
         List<ModuleTypeDTO> moduleTypeDTOS = moduleTypePage.getContent().stream().map(moduleType -> {
-            UserTypeModule innerUserTypeModule = userTypeModuleRepository.findById(moduleType.getIdUserTypeModule()).orElse(null);
+            UserTypeModule innerUserTypeModule = userTypeModuleRepository.findById(moduleType.getIdUserTypeModule())
+                    .orElse(null);
             Module innerModule = moduleRepository.findById(moduleType.getIdModule()).orElse(null);
             return ModuleTypeDTO.builder()
                     .userType(innerUserTypeModule.getUserType())
                     .module(innerModule.getName())
                     .build();
         }).toList();
-        return new PageImpl<>(moduleTypeDTOS,moduleTypePage.getPageable(),moduleTypePage.getTotalElements());
+        return new PageImpl<>(moduleTypeDTOS, moduleTypePage.getPageable(), moduleTypePage.getTotalElements());
     }
 }
