@@ -13,6 +13,6 @@ public class RequestClientChannel {
     private Long code;
     private String name;
     private String url;
-    private boolean status = true;
+    private boolean status;
     private String user;
 }

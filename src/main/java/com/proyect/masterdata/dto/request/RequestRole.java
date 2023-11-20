@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class RequestRole {
     private Long code;
     private String name;
-    private String user;
+    private String tokenUser;
     private boolean status;
 }

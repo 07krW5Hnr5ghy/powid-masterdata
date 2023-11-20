@@ -13,5 +13,5 @@ public class RequestModuleSave {
     private String name;
     private double price;
     private int moduleStatus;
-    private boolean status = true;
+    private boolean status;
 }

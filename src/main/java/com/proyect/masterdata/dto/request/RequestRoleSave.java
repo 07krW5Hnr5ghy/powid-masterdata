@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestRoleSave {
     private String name;
-    private String user;
+    private String tokenUser;
 }
