@@ -59,7 +59,7 @@ public class RoleImpl implements IRole {
 
             roleRepository.save(roleMapper.nameToRole(RequestRoleSave.builder()
                     .name(name.toUpperCase())
-                    .user(datauser.getUsername().toUpperCase())
+                    .tokenUser(datauser.getUsername().toUpperCase())
                     .build()));
 
             return ResponseSuccess.builder()
@@ -97,7 +97,7 @@ public class RoleImpl implements IRole {
         try {
 
             List<RequestRoleSave> roleSaves = names.stream().map(data -> RequestRoleSave.builder()
-                    .user(user.toUpperCase())
+                    .tokenUser(user.toUpperCase())
                     .name(data.toUpperCase())
                     .build()).toList();
 
@@ -115,13 +115,13 @@ public class RoleImpl implements IRole {
     }
 
     @Override
-    public RoleDTO update(RequestRole requestUserRole) throws BadRequestExceptions, InternalErrorExceptions {
+    public RoleDTO update(RequestRole requestRole) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         Role role;
 
         try {
-            datauser = userRepository.findById(requestUserRole.getUser().toUpperCase()).orElse(null);
-            role = roleRepository.findById(requestUserRole.getCode()).orElse(null);
+            datauser = userRepository.findById(requestRole.getTokenUser().toUpperCase()).orElse(null);
+            role = roleRepository.findById(requestRole.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -134,10 +134,10 @@ public class RoleImpl implements IRole {
             throw new BadRequestExceptions(Constants.ErrorUserRole.toUpperCase());
         }
 
-        role.setName(requestUserRole.getName().toUpperCase());
-        role.setStatus(requestUserRole.isStatus());
+        role.setName(requestRole.getName().toUpperCase());
+        role.setStatus(requestRole.isStatus());
         role.setDateRegistration(new Date(System.currentTimeMillis()));
-        role.setUser(datauser.getUsername().toUpperCase());
+        role.setTokenUser(datauser.getUsername().toUpperCase());
 
         try {
             return roleMapper.roleToRoleDTO(roleRepository.save(role));

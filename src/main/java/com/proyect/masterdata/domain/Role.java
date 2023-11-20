@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -36,6 +37,11 @@ public class Role {
         @Column(name = "fecha_modificacion", nullable = false)
         @CreationTimestamp
         private Date dateUpdate;
+
+        @ManyToMany
+        @JoinTable(name = "rol_acceso", joinColumns = { @JoinColumn(name = "id_rol") }, inverseJoinColumns = {
+                        @JoinColumn(name = "id_acceso") })
+        private Set<Access> acceses;
 
         @Column(name = "usuario_token", nullable = false)
         private String tokenUser;

@@ -26,7 +26,7 @@ public class Access {
     @Column(name = "nombre", unique = true, nullable = false)
     private String name;
 
-    @Column(name = "estado", nullable = false)
+    @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
     private Boolean status;
 
     @Column(name = "fecha_registro", nullable = false)
