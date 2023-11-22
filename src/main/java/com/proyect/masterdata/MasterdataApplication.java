@@ -52,7 +52,9 @@ public class MasterdataApplication {
 					1L, "ADMINISTRATOR", true, new Date(System.currentTimeMillis()),
 					new Date(System.currentTimeMillis()),
 					accesses, "TEST"));
+
 			Set<Role> roles = new HashSet<>();
+
 			roles.add(role);
 
 			Department department = departmentRepository

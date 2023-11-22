@@ -36,11 +36,7 @@ public class UserImpl implements IUser {
     private final UserRepository userRepository;
     private final DistrictRepository districtRepository;
     private final UserTypeRepository userTypeRepository;
-    private final UserMapper userMapper;
     private final UserRepositoryCustom userRepositoryCustom;
-    private final UserTypeModuleRepository userTypeModuleRepository;
-    private final ModuleTypeRepository moduleTypeRepository;
-    private final ModuleRepository moduleRepository;
     private final RoleRepository roleRepository;
 
     @Override
@@ -66,7 +62,7 @@ public class UserImpl implements IUser {
         }
 
         if (roles.size() != requestUser.getRoles().size()) {
-            throw new BadRequestExceptions("Role no existe");
+            throw new BadRequestExceptions("Rol no existe");
         }
 
         try {
@@ -91,66 +87,6 @@ public class UserImpl implements IUser {
                     .build();
         } catch (RuntimeException e) {
             log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<RequestUser> requestUserList, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUSer;
-        List<User> userList;
-        List<District> districtList;
-        Set<Role> roles = Collections.<Role>emptySet();
-        try {
-            existsUSer = userRepository.existsByUsername(user.toUpperCase());
-            userList = userRepository.findByUsernameIn(requestUserList.stream()
-                    .map(userData -> userData.getName().toUpperCase()).collect(Collectors.toList()));
-            districtList = districtRepository.findByNameIn(requestUserList.stream()
-                    .map(userData -> userData.getDistrict().toUpperCase()).collect(Collectors.toList()));
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if (!existsUSer) {
-            throw new BadRequestExceptions("Usuario no existe");
-        }
-        if (!userList.isEmpty()) {
-            throw new BadRequestExceptions("Usuario ya existe");
-        }
-        if (districtList.size() != requestUserList.size()) {
-            throw new BadRequestExceptions("Distrito no existe");
-        }
-
-        // List<User> userSaveList = requestUserList.stream().map((userData) -> {
-        // District district =
-        // districtRepository.findByNameAndStatusTrue(userData.getDistrict().toUpperCase());
-        // return User.builder()
-        // .username(userData.getUser().toUpperCase())
-        // .name(userData.getName().toUpperCase())
-        // .surname(userData.getSurname().toUpperCase())
-        // .dni(userData.getDni())
-        // .address(userData.getAddress())
-        // .email(userData.getEmail())
-        // .mobile(userData.getMobile())
-        // .gender(userData.getGender().toUpperCase())
-        // .password(userData.getPassword())
-        // .idDistrict(district.getId())
-        // .district(district)
-        // .role(roles)
-        // .userType(userType)
-        // .dateRegistration(new Date(System.currentTimeMillis()))
-        // .status(true)
-        // .build();
-        // }).toList();
-        try {
-            userRepository.saveAll(null);
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
