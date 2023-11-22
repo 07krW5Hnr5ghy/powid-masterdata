@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -38,16 +39,16 @@ public class UserImpl implements IUser {
     private final UserTypeRepository userTypeRepository;
     private final UserRepositoryCustom userRepositoryCustom;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         District district;
-        Set<Role> roles;
+        Set<Role> roles = new HashSet<>();
         try {
             existsUser = userRepository.existsByUsername(requestUser.getUser().toUpperCase());
             district = districtRepository.findByNameAndStatusTrue(requestUser.getDistrict().toUpperCase());
-            roles = roleRepository.findByNameIn(requestUser.getRoles());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -61,10 +62,6 @@ public class UserImpl implements IUser {
             throw new BadRequestExceptions("Distrito no existe");
         }
 
-        if (roles.size() != requestUser.getRoles().size()) {
-            throw new BadRequestExceptions("Rol no existe");
-        }
-
         try {
             userRepository.save(User.builder()
                     .username(requestUser.getUser().toUpperCase())
@@ -75,7 +72,7 @@ public class UserImpl implements IUser {
                     .email(requestUser.getEmail())
                     .mobile(requestUser.getMobile())
                     .gender(requestUser.getGender().toUpperCase())
-                    .password(requestUser.getPassword())
+                    .password(passwordEncoder.encode(requestUser.getPassword()))
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .idDistrict(district.getId())
                     .roles(roles)
