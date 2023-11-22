@@ -43,11 +43,19 @@ public class UserImpl implements IUser {
 
     @Override
     public ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
+
         boolean existsUser;
+        boolean existsDni;
+        boolean existsEmail;
+        boolean existsMobile;
         District district;
         Set<Role> roles = new HashSet<>();
+
         try {
             existsUser = userRepository.existsByUsername(requestUser.getUser().toUpperCase());
+            existsDni = userRepository.existsByDni(requestUser.getDni());
+            existsEmail = userRepository.existsByEmail(requestUser.getEmail());
+            existsMobile = userRepository.existsByMobile(requestUser.getMobile());
             district = districtRepository.findByNameAndStatusTrue(requestUser.getDistrict().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -55,7 +63,19 @@ public class UserImpl implements IUser {
         }
 
         if (existsUser) {
-            throw new BadRequestExceptions("Usuario ya existe");
+            throw new BadRequestExceptions("Usuario ya fue registrado");
+        }
+
+        if (existsDni) {
+            throw new BadRequestExceptions("Dni ya fue registrado");
+        }
+
+        if (existsEmail) {
+            throw new BadRequestExceptions("Email ya fue registrado");
+        }
+
+        if (existsMobile) {
+            throw new BadRequestExceptions("Numeri movil ya fue registrado");
         }
 
         if (district == null) {
@@ -91,9 +111,11 @@ public class UserImpl implements IUser {
     @Override
     public UserDTO update(RequestUserSave requestUserSave, String user)
             throws BadRequestExceptions, InternalErrorExceptions {
+
         boolean existsUser;
         User userData;
         UserType userType;
+
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
             userData = userRepository.findByUsername(requestUserSave.getUser().toUpperCase());
@@ -102,15 +124,19 @@ public class UserImpl implements IUser {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
         if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
+
         if (userData == null) {
             throw new BadRequestExceptions("Usuario no existe");
         }
+
         if (userType == null) {
             throw new BadRequestExceptions("Tipo de usuario no existe");
         }
+
         userData.setName(requestUserSave.getName().toUpperCase());
         userData.setSurname(requestUserSave.getSurname().toUpperCase());
         userData.setDni(requestUserSave.getDni());
@@ -120,6 +146,7 @@ public class UserImpl implements IUser {
         userData.setMobile(requestUserSave.getMobile());
         userData.setPassword(requestUserSave.getPassword());
         userData.setGender(requestUserSave.getGender().toUpperCase());
+
         try {
             User updatedUser = userRepository.save(userData);
             return UserDTO.builder()

@@ -39,13 +39,13 @@ public class User {
     @Column(name = "correo", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "direccion", unique = true, nullable = false)
+    @Column(name = "direccion", nullable = false)
     private String address;
 
     @Column(name = "genero", nullable = false)
     private String gender;
 
-    @Column(name = "celular", nullable = false)
+    @Column(name = "celular", unique = true, nullable = false)
     private String mobile;
 
     @Column(name = "password", nullable = false)
