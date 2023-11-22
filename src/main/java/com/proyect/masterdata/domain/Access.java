@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
 import java.util.Date;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
