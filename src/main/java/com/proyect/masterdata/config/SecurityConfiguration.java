@@ -20,7 +20,8 @@ public class SecurityConfiguration {
 
         return http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .httpBasic().and()
                 .build();
     }
 
