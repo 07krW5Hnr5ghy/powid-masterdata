@@ -29,11 +29,17 @@ public class TokenImpl implements IToken {
 
         Instant now = Instant.now();
 
+        System.out.println(auth.getAuthorities());
+
         String scope = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(""));
+                .collect(Collectors.joining("_"));
+
+        System.out.println(scope);
 
         JwtClaimsSet claims = JwtClaimsSet.builder().issuer("self").issuedAt(now).subject(auth.getName())
-                .claim("authorities", scope).build();
+                .claim("roles", scope).build();
+
+        System.out.println(claims);
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
