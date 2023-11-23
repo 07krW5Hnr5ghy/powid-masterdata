@@ -74,7 +74,4 @@ public class User {
     @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict", insertable = false, updatable = false)
     private District district;
 
-    @Column(name = "usuario_token", nullable = false)
-    private String tokenUser;
-
 }

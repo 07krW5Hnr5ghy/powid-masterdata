@@ -70,7 +70,7 @@ public class MasterdataApplication {
 			userRepository
 					.save(new User(1L, "ADMIN1", "JEISON", "CAMACHO", "1234567819", "jca@gmail.com", "cr 12 h 34", "M",
 							"1234567819", passwordEncoder.encode("123abc+"), true, new Date(System.currentTimeMillis()),
-							new Date(System.currentTimeMillis()), district.getId(), roles, district, "TEST"));
+							new Date(System.currentTimeMillis()), district.getId(), roles, district));
 		};
 	}
 
