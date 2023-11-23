@@ -45,7 +45,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/auth/**").permitAll();
-                    auth.requestMatchers("/color/**").hasAuthority("SCOPE_ROLE_ADMINISTRATOR_GET_ALL");
+                    //auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
                     auth.anyRequest().authenticated();
                 });
 
@@ -86,7 +86,8 @@ public class SecurityConfiguration {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("AUTH_");
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;

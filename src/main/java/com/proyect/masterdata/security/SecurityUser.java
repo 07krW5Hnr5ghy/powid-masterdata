@@ -29,12 +29,12 @@ public class SecurityUser implements UserDetails {
 
         for (Role role : roles) {
 
-            authoritiesList.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+            authoritiesList.add(new SimpleGrantedAuthority("ROLE:" + role.getName()));
 
             Set<Access> accesses = role.getAccesses();
 
             for (Access access : accesses) {
-                authoritiesList.add(new SimpleGrantedAuthority(access.getName()));
+                authoritiesList.add(new SimpleGrantedAuthority("ACCESS:" + access.getName()));
             }
 
         }

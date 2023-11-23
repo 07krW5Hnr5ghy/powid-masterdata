@@ -11,12 +11,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/color")
 @AllArgsConstructor
 public class ColorController {
@@ -25,24 +26,21 @@ public class ColorController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iColor.save(name,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iColor.save(name, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/colors", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names,@RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iColor.saveAll(names,user);
+            @RequestBody() List<String> names, @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iColor.saveAll(names, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ColorDTO> update(
-            @RequestBody() RequestColor requestColor
-    ) throws BadRequestExceptions {
+            @RequestBody() RequestColor requestColor) throws BadRequestExceptions {
         ColorDTO result = iColor.update(requestColor);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -50,48 +48,45 @@ public class ColorController {
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("code") Long code,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iColor.delete(code,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseDelete result = iColor.delete(code, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-color",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/list-color", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ColorDTO>> listColor() throws BadRequestExceptions {
         List<ColorDTO> result = iColor.listColor();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('AUTH_ROLE:ADMINISTRATOR') and hasAuthority('AUTH_ACCESS:GET_ALL')")
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ColorDTO>> list(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<ColorDTO> result = iColor.list(name,user,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<ColorDTO>> listStatusFalse(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<ColorDTO> result = iColor.listStatusFalse(name,user,sort,sortColumn,pageNumber,pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<ColorDTO> result = iColor.list(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/statusFalse", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<ColorDTO>> listStatusFalse(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<ColorDTO> result = iColor.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ColorDTO> findByCode(
-            @RequestParam("code") Long code
-    ) throws BadRequestExceptions {
+            @RequestParam("code") Long code) throws BadRequestExceptions {
         ColorDTO result = iColor.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

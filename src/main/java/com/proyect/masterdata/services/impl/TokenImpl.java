@@ -32,12 +32,12 @@ public class TokenImpl implements IToken {
         System.out.println(auth.getAuthorities());
 
         String scope = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining("_"));
+                .collect(Collectors.joining(" "));
 
         System.out.println(scope);
 
         JwtClaimsSet claims = JwtClaimsSet.builder().issuer("self").issuedAt(now).subject(auth.getName())
-                .claim("roles", scope).build();
+                .claim("authorities", scope).build();
 
         System.out.println(claims);
 
