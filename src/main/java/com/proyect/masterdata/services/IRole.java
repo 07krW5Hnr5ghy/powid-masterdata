@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.dto.RoleDTO;
+import com.proyect.masterdata.dto.request.RequestAccessesToRole;
 import com.proyect.masterdata.dto.request.RequestRole;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -26,7 +27,7 @@ public interface IRole {
         Page<RoleDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws BadRequestExceptions;
 
-        ResponseSuccess addAccess(String role, String access, String user)
+        ResponseSuccess addAccessesToRole(String role, RequestAccessesToRole requestAccessesToRole, String user)
                         throws BadRequestExceptions, InternalErrorExceptions;
 
 }

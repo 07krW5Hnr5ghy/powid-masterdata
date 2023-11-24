@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.RoleDTO;
+import com.proyect.masterdata.dto.request.RequestAccessesToRole;
 import com.proyect.masterdata.dto.request.RequestRole;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -79,9 +80,9 @@ public class RoleController {
     @PostMapping(value = "/add-access", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> addAccess(
             @RequestParam(value = "role") String role,
-            @RequestParam(value = "access") String access,
+            @RequestBody() RequestAccessesToRole requestAccessesToRole,
             @RequestParam(value = "user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iRole.addAccess(role, access, user);
+        ResponseSuccess result = iRole.addAccessesToRole(role, requestAccessesToRole, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.Access;
 import com.proyect.masterdata.domain.Role;
 import com.proyect.masterdata.dto.RoleDTO;
+import com.proyect.masterdata.dto.request.RequestAccessesToRole;
 import com.proyect.masterdata.dto.request.RequestRole;
 import com.proyect.masterdata.dto.request.RequestRoleSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -65,6 +66,7 @@ public class RoleImpl implements IRole {
             roleRepository.save(Role.builder()
                     .name(name.toUpperCase())
                     .accesses(new HashSet<>())
+                    .status(true)
                     .tokenUser(datauser.getUsername().toUpperCase())
                     .build());
 
@@ -106,6 +108,7 @@ public class RoleImpl implements IRole {
                     .tokenUser(user.toUpperCase())
                     .name(data.toUpperCase())
                     .accesses(new HashSet<>())
+                    .status(true)
                     .build()).toList();
 
             roleRepository.saveAll(roleSaves);
@@ -236,17 +239,18 @@ public class RoleImpl implements IRole {
 
     @Override
     @Transactional
-    public ResponseSuccess addAccess(String role, String access, String user)
+    public ResponseSuccess addAccessesToRole(String role, RequestAccessesToRole requestAccessesToRole, String user)
             throws BadRequestExceptions, InternalErrorExceptions {
 
         boolean existsUser;
         Role roleData;
-        Access accessData;
+        List<Access> accessDataList;
 
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
             roleData = roleRepository.findByNameAndStatusTrue(role.toUpperCase());
-            accessData = accessRepository.findByNameAndStatusTrue(access.toUpperCase());
+            accessDataList = accessRepository.findByNameInAndStatusTrue(
+                    requestAccessesToRole.getAccesses().stream().map(access -> access.toUpperCase()).toList());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -260,7 +264,7 @@ public class RoleImpl implements IRole {
             throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
         }
 
-        if (accessData == null) {
+        if (accessDataList.size() != requestAccessesToRole.getAccesses().size()) {
             throw new BadRequestExceptions(Constants.ErrorAccess.toUpperCase());
         }
 
@@ -268,7 +272,10 @@ public class RoleImpl implements IRole {
 
             Set<Access> currentAccesses = new HashSet<Access>(roleData.getAccesses());
 
-            currentAccesses.add(accessData);
+            for (Access access : accessDataList) {
+                currentAccesses.add(access);
+            }
+
             roleData.setAccesses(currentAccesses);
             roleRepository.save(roleData);
 
