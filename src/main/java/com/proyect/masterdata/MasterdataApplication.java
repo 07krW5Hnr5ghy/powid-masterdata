@@ -42,8 +42,9 @@ public class MasterdataApplication {
 			ProvinceRepository provinceRepository, DepartmentRepository departmentRepository) {
 
 		return args -> {
-			Access access = accessRepository.save(new Access(1L, "GET_ALL", true, new Date(System.currentTimeMillis()),
-					new Date(System.currentTimeMillis()), "TEST"));
+			Access access = accessRepository
+					.save(new Access(1L, "USER_GET", true, new Date(System.currentTimeMillis()),
+							new Date(System.currentTimeMillis()), "TEST"));
 
 			Set<Access> accesses = new HashSet<>();
 			accesses.add(access);

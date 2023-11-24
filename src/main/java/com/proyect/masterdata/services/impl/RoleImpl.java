@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.Access;
 import com.proyect.masterdata.domain.Role;
 import com.proyect.masterdata.dto.RoleDTO;
 import com.proyect.masterdata.dto.request.RequestRole;
@@ -11,6 +12,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.RoleMapper;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.RoleRepository;
 import com.proyect.masterdata.repository.RoleRepositoryCustom;
 import com.proyect.masterdata.services.IRole;
@@ -24,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +38,7 @@ public class RoleImpl implements IRole {
     private final RoleMapper roleMapper;
     private final UserRepository userRepository;
     private final RoleRepositoryCustom roleRepositoryCustom;
+    private final AccessRepository accessRepository;
 
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
@@ -52,15 +57,16 @@ public class RoleImpl implements IRole {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if (role != null) {
-            throw new BadRequestExceptions(Constants.ErrorUserRoleExists.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorRoleExists.toUpperCase());
         }
 
         try {
 
-            roleRepository.save(roleMapper.nameToRole(RequestRoleSave.builder()
+            roleRepository.save(Role.builder()
                     .name(name.toUpperCase())
+                    .accesses(new HashSet<>())
                     .tokenUser(datauser.getUsername().toUpperCase())
-                    .build()));
+                    .build());
 
             return ResponseSuccess.builder()
                     .code(200)
@@ -91,17 +97,18 @@ public class RoleImpl implements IRole {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if (!roles.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorUserRoleList.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorRoleList.toUpperCase());
         }
 
         try {
 
-            List<RequestRoleSave> roleSaves = names.stream().map(data -> RequestRoleSave.builder()
+            List<Role> roleSaves = names.stream().map(data -> Role.builder()
                     .tokenUser(user.toUpperCase())
                     .name(data.toUpperCase())
+                    .accesses(new HashSet<>())
                     .build()).toList();
 
-            roleRepository.saveAll(roleMapper.listNameToListRole(roleSaves));
+            roleRepository.saveAll(roleSaves);
 
             return ResponseSuccess.builder()
                     .code(200)
@@ -131,7 +138,7 @@ public class RoleImpl implements IRole {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if (role == null) {
-            throw new BadRequestExceptions(Constants.ErrorUserRole.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
         }
 
         role.setName(requestRole.getName().toUpperCase());
@@ -165,7 +172,7 @@ public class RoleImpl implements IRole {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if (role == null) {
-            throw new BadRequestExceptions(Constants.ErrorUserRole.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
         }
 
         try {
@@ -180,21 +187,6 @@ public class RoleImpl implements IRole {
             log.error(e);
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
-    }
-
-    @Override
-    public List<RoleDTO> listUserRole() throws BadRequestExceptions {
-        List<Role> roles;
-        try {
-            roles = roleRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (roles.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return roleMapper.listRoleToListRoleDTO(roles);
     }
 
     @Override
@@ -240,5 +232,54 @@ public class RoleImpl implements IRole {
 
         return new PageImpl<>(roleMapper.listRoleToListRoleDTO(rolePage.getContent()),
                 rolePage.getPageable(), rolePage.getTotalElements());
+    }
+
+    @Override
+    @Transactional
+    public ResponseSuccess addAccess(String role, String access, String user)
+            throws BadRequestExceptions, InternalErrorExceptions {
+
+        boolean existsUser;
+        Role roleData;
+        Access accessData;
+
+        try {
+            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            roleData = roleRepository.findByNameAndStatusTrue(role.toUpperCase());
+            accessData = accessRepository.findByNameAndStatusTrue(access.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (!existsUser) {
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+
+        if (roleData == null) {
+            throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
+        }
+
+        if (accessData == null) {
+            throw new BadRequestExceptions(Constants.ErrorAccess.toUpperCase());
+        }
+
+        try {
+
+            Set<Access> currentAccesses = new HashSet<Access>(roleData.getAccesses());
+
+            currentAccesses.add(accessData);
+            roleData.setAccesses(currentAccesses);
+            roleRepository.save(roleData);
+
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        } catch (RuntimeException e) {
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
     }
 }

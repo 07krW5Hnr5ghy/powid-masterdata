@@ -48,7 +48,7 @@ public class Constants {
     public static final String ErrorWhileUpdating = "Error while updating";
     public static final String ErrorWhenDeleting = "Error when deleting";
 
-    public static final String ErrorUser = "the user is incorrect";
+    public static final String ErrorUser = "The user is incorrect";
     public static final String ResultsFound = "no results found";
     public static final String InternalErrorExceptions = "Internal Server Error";
     public static final String ErrorDepartment = "The department does not exist";
@@ -88,7 +88,8 @@ public class Constants {
     public static final String ErrorState = "The state does not exist";
     public static final String ErrorStateExist = "The state does exists";
     public static final String ErrorStateList = "In the list there is a state that exists";
-    public static final String ErrorUserRole = "The user role does not exist";
-    public static final String ErrorUserRoleExists = "The user role does exists";
-    public static final String ErrorUserRoleList = "In the list there is an user role that exists";
+    public static final String ErrorRole = "The role does not exist";
+    public static final String ErrorRoleExists = "The role does exists";
+    public static final String ErrorRoleList = "In the list there is an user role that exists";
+    public static final String ErrorAccess = "The access does not exist";
 }

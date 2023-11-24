@@ -10,4 +10,6 @@ public interface AccessRepository extends JpaRepository<Access, Long> {
 
     Boolean existsByName(String name);
 
+    Access findByNameAndStatusTrue(String name);
+
 }

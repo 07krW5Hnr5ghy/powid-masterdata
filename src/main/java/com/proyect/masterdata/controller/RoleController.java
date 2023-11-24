@@ -52,12 +52,6 @@ public class RoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<RoleDTO>> listUserRole() throws BadRequestExceptions {
-        List<RoleDTO> result = iRole.listUserRole();
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<RoleDTO>> list(
             @RequestParam(value = "name", required = false) String name,
@@ -70,7 +64,7 @@ public class RoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/statusFalse", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<RoleDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -79,6 +73,15 @@ public class RoleController {
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
         Page<RoleDTO> result = iRole.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/add-access", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseSuccess> addAccess(
+            @RequestParam(value = "role") String role,
+            @RequestParam(value = "access") String access,
+            @RequestParam(value = "user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iRole.addAccess(role, access, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
