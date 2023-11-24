@@ -36,7 +36,6 @@ public class UserImpl implements IUser {
 
     private final UserRepository userRepository;
     private final DistrictRepository districtRepository;
-    private final UserTypeRepository userTypeRepository;
     private final UserRepositoryCustom userRepositoryCustom;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -114,12 +113,10 @@ public class UserImpl implements IUser {
 
         boolean existsUser;
         User userData;
-        UserType userType;
 
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
             userData = userRepository.findByUsername(requestUserSave.getUser().toUpperCase());
-            userType = userTypeRepository.findByUserTypeAndStatusTrue(requestUserSave.getUserType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -131,10 +128,6 @@ public class UserImpl implements IUser {
 
         if (userData == null) {
             throw new BadRequestExceptions("Usuario no existe");
-        }
-
-        if (userType == null) {
-            throw new BadRequestExceptions("Tipo de usuario no existe");
         }
 
         userData.setName(requestUserSave.getName().toUpperCase());
