@@ -65,11 +65,6 @@ public class User {
     @Column(name = "id_distrito", updatable = false, nullable = false)
     private Long idDistrict;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "usuario_rol", joinColumns = { @JoinColumn(name = "id_usuario") }, inverseJoinColumns = {
-            @JoinColumn(name = "id_rol") })
-    private Set<Role> roles;
-
     @ManyToOne
     @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict", insertable = false, updatable = false)
     private District district;

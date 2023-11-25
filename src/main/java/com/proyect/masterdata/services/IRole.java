@@ -26,8 +26,4 @@ public interface IRole {
 
         Page<RoleDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws BadRequestExceptions;
-
-        ResponseSuccess addAccessesToRole(String role, RequestAccessesToRole requestAccessesToRole, String user)
-                        throws BadRequestExceptions, InternalErrorExceptions;
-
 }

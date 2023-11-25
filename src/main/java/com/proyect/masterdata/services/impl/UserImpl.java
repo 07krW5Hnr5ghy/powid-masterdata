@@ -94,7 +94,6 @@ public class UserImpl implements IUser {
                     .password(passwordEncoder.encode(requestUser.getPassword()))
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .idDistrict(district.getId())
-                    .roles(roles)
                     .status(true)
                     .build());
             return ResponseSuccess.builder()

@@ -65,7 +65,6 @@ public class RoleImpl implements IRole {
 
             roleRepository.save(Role.builder()
                     .name(name.toUpperCase())
-                    .accesses(new HashSet<>())
                     .status(true)
                     .tokenUser(datauser.getUsername().toUpperCase())
                     .build());
@@ -107,7 +106,6 @@ public class RoleImpl implements IRole {
             List<Role> roleSaves = names.stream().map(data -> Role.builder()
                     .tokenUser(user.toUpperCase())
                     .name(data.toUpperCase())
-                    .accesses(new HashSet<>())
                     .status(true)
                     .build()).toList();
 
@@ -237,56 +235,4 @@ public class RoleImpl implements IRole {
                 rolePage.getPageable(), rolePage.getTotalElements());
     }
 
-    @Override
-    @Transactional
-    public ResponseSuccess addAccessesToRole(String role, RequestAccessesToRole requestAccessesToRole, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-
-        boolean existsUser;
-        Role roleData;
-        List<Access> accessDataList;
-
-        try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
-            roleData = roleRepository.findByNameAndStatusTrue(role.toUpperCase());
-            accessDataList = accessRepository.findByNameInAndStatusTrue(
-                    requestAccessesToRole.getAccesses().stream().map(access -> access.toUpperCase()).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        if (roleData == null) {
-            throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
-        }
-
-        if (accessDataList.size() != requestAccessesToRole.getAccesses().size()) {
-            throw new BadRequestExceptions(Constants.ErrorAccess.toUpperCase());
-        }
-
-        try {
-
-            Set<Access> currentAccesses = new HashSet<Access>(roleData.getAccesses());
-
-            for (Access access : accessDataList) {
-                currentAccesses.add(access);
-            }
-
-            roleData.setAccesses(currentAccesses);
-            roleRepository.save(roleData);
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-    }
 }

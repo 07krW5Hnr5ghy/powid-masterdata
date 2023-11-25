@@ -76,13 +76,4 @@ public class RoleController {
         Page<RoleDTO> result = iRole.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-    @PostMapping(value = "/add-access", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> addAccess(
-            @RequestParam(value = "role") String role,
-            @RequestBody() RequestAccessesToRole requestAccessesToRole,
-            @RequestParam(value = "user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iRole.addAccessesToRole(role, requestAccessesToRole, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
 }
