@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestClientChannelSave {
+public class RequestStoreSave {
     private String name;
     private String url;
 }

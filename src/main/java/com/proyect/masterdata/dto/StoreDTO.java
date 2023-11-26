@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ClientChannelDTO {
+public class StoreDTO {
     Long code;
     String name;
     String url;

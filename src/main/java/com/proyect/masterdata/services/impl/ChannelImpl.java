@@ -34,7 +34,7 @@ public class ChannelImpl implements IChannel {
     private final PaymentTypeRepository paymentTypeRepository;
     private final ConnectionRepository connectionRepository;
     private final ChannelRepositoryCustom channelRepositoryCustom;
-    private final ClientChannelRepository clientChannelRepository;
+    private final StoreRepository clientChannelRepository;
     private final ModuleRepository moduleRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentRepository paymentRepository;
