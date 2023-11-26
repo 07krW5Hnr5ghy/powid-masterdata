@@ -14,6 +14,5 @@ public interface ClientRepositoryCustom {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize,
-            Long status
-    );
+            Boolean status);
 }

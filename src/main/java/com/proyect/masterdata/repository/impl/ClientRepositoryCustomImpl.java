@@ -21,6 +21,7 @@ public class ClientRepositoryCustomImpl implements ClientRepositoryCustom {
 
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
+
     @Override
     public Page<Client> searchForClient(
             String ruc,
@@ -30,86 +31,74 @@ public class ClientRepositoryCustomImpl implements ClientRepositoryCustom {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize,
-            Long status
-    ) {
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Client> criteriaQuery = criteriaBuilder.createQuery(Client.class);
         Root<Client> itemRoot = criteriaQuery.from(Client.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(ruc,business,user,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(ruc, business, user, status, criteriaBuilder, itemRoot);
 
-        if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
+        if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> clientList = new ArrayList<>();
-            if(sort.equalsIgnoreCase("ASC")){
-                clientList = listASC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("ASC")) {
+                clientList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
-            if(sort.equalsIgnoreCase("DESC")){
-                clientList = listDESC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("DESC")) {
+                clientList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[]{})).orderBy(clientList);
-        }else{
-            criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(clientList);
+        } else {
+            criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
         TypedQuery<Client> orderTypedQuery = entityManager.createQuery(criteriaQuery);
-        orderTypedQuery.setFirstResult(pageNumber*pageSize);
+        orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
-        Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        long count = getOrderCount(ruc,business,user,status);
-        return new PageImpl<>(orderTypedQuery.getResultList(),pageable,count);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        long count = getOrderCount(ruc, business, user, status);
+        return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             String ruc,
             String business,
             String user,
-            Long status,
+            Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<Client> itemRoot
-    ){
+            Root<Client> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
-        if(ruc!=null){
+        if (ruc != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("ruc")),ruc.toUpperCase()
-                            )
-                    )
-            );
+                                    criteriaBuilder.upper(itemRoot.get("ruc")), ruc.toUpperCase())));
         }
-        if(business!=null){
+        if (business != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("business")),business.toUpperCase()
-                            )
-                    )
-            );
+                                    criteriaBuilder.upper(itemRoot.get("business")), business.toUpperCase())));
         }
-        if(user!=null){
-            conditions.add(
-                    criteriaBuilder.and(
-                            criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("user")),user.toUpperCase()
-                            )
-                    )
-            );
+
+        if (status) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
-        if(status!=null){
-            conditions.add(criteriaBuilder.equal(itemRoot.get("status"),status));
+
+        if (!status) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
+
         return conditions;
     }
 
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<Client> itemRoot
-    ){
+            Root<Client> itemRoot) {
         List<Order> clientList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("business")){
+        if (sortColumn.equalsIgnoreCase("business")) {
             clientList.add(criteriaBuilder.asc(itemRoot.get("business")));
         }
         return clientList;
@@ -118,23 +107,22 @@ public class ClientRepositoryCustomImpl implements ClientRepositoryCustom {
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<Client> itemRoot
-    ){
+            Root<Client> itemRoot) {
         List<Order> clientList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("business")){
+        if (sortColumn.equalsIgnoreCase("business")) {
             clientList.add(criteriaBuilder.desc(itemRoot.get("business")));
         }
         return clientList;
     }
 
-    private long getOrderCount(String ruc,String business,String user,Long status){
+    private long getOrderCount(String ruc, String business, String user, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Client> itemRoot = criteriaQuery.from(Client.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(ruc,business,user,status,criteriaBuilder,itemRoot);
-        criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+        List<Predicate> conditions = predicateConditions(ruc, business, user, status, criteriaBuilder, itemRoot);
+        criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
 }

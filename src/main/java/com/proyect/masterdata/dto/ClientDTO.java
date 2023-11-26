@@ -19,5 +19,5 @@ public class ClientDTO {
     String address;
     String email;
     String district;
-    Long status;
+    Boolean status;
 }

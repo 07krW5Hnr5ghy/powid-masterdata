@@ -19,59 +19,57 @@ import java.util.Date;
 @Data
 @Table(name = Constants.tableClient, schema = Constants.schemaMaster)
 public class Client {
-    @Id
-    @GeneratedValue(generator = "sequence-client")
-    @GenericGenerator(
-            name = "sequence-client",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @Parameter(name = "sequence_name", value = "cliente_sequence"),
-                    @Parameter(name = "initial_value", value = "1"),
-                    @Parameter(name = "increment_size", value = "1")
-            }
-    )
-    @Column(name = "id_cliente", unique = true)
-    private Long idClient;
 
-    @Column(name = "nombre")
-    private String name;
+        @Id
+        @GeneratedValue(generator = "sequence-client")
+        @GenericGenerator(name = "sequence-client", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
+                        @Parameter(name = "sequence_name", value = "cliente_sequence"),
+                        @Parameter(name = "initial_value", value = "1"),
+                        @Parameter(name = "increment_size", value = "1")
+        })
+        @Column(name = "id_cliente", unique = true)
+        private Long idClient;
 
-    @Column(name = "apellidos")
-    private String surname;
+        @Column(name = "nombre", nullable = false)
+        private String name;
 
-    @Column(name = "ruc")
-    private String ruc;
+        @Column(name = "apellidos", nullable = false)
+        private String surname;
 
-    @Column(name = "dni")
-    private String dni;
+        @Column(name = "ruc", nullable = false, unique = true)
+        private String ruc;
 
-    @Column(name = "negocio")
-    private String business;
+        @Column(name = "dni", nullable = false, unique = true)
+        private String dni;
 
-    @Column(name = "celular")
-    private String mobile;
+        @Column(name = "negocio", nullable = false, unique = true)
+        private String business;
 
-    @Column(name = "direccion")
-    private String address;
+        @Column(name = "celular", nullable = false, unique = true)
+        private String mobile;
 
-    @Column(name = "correo")
-    private String email;
+        @Column(name = "direccion", nullable = false)
+        private String address;
 
-    @Column(name = "estado")
-    private Long status;
+        @Column(name = "correo", nullable = false, unique = true)
+        private String email;
 
-    @Column(name = "fecha_registro")
-    @CreationTimestamp
-    private Date dateRegistration;
+        @Column(name = "estado", nullable = false, unique = true)
+        private Boolean status;
 
-    @Column(name = "id_distrito")
-    private Long id_district;
+        @Column(name = "id_distrito", nullable = false)
+        private Long idDistrict;
 
-    @Column(name = "usuario")
-    private String user;
+        @Column(name = "fecha_registro", nullable = false)
+        @CreationTimestamp
+        private Date dateRegistration;
 
-    @ManyToOne
-    @JoinColumn(name = "id_distrito", columnDefinition = "id_district",insertable = false, updatable = false, foreignKey = @ForeignKey(name = "fk_distrito"))
-    private District district;
+        @Column(name = "fecha_modificacion")
+        @CreationTimestamp
+        private Date dateUpdate;
+
+        @ManyToOne
+        @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict", insertable = false)
+        private District district;
 
 }

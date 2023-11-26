@@ -93,5 +93,7 @@ public class Constants {
     public static final String ErrorRole = "The role does not exist";
     public static final String ErrorRoleExists = "The role does exists";
     public static final String ErrorRoleList = "In the list there is an user role that exists";
-    public static final String ErrorAccess = "The access does not exist";
+    public static final String ErrorAccess = "The access does not exists";
+    public static final String ErrorClient = "The client does not exists";
+    public static final String ErrorClientExist = "The client already exists";
 }

@@ -19,6 +19,4 @@ public class RequestClient {
     private String address;
     private String email;
     private String district;
-    private Long status;
-    private String user;
 }

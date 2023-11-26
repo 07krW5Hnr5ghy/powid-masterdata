@@ -12,6 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ClientMapper {
     ClientMapper INSTANCE = Mappers.getMapper(ClientMapper.class);
-    @Mapping(target = "district",ignore = true)
+
+    @Mapping(target = "district", ignore = true)
     ClientDTO clientToClientDTO(Client client);
 }
