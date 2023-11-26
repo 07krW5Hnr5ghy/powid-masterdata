@@ -1,6 +1,6 @@
 package com.proyect.masterdata.mapper;
 
-import com.proyect.masterdata.domain.ClientChannel;
+import com.proyect.masterdata.domain.Store;
 import com.proyect.masterdata.dto.ClientChannelDTO;
 import com.proyect.masterdata.dto.request.RequestClientChannelSave;
 import com.proyect.masterdata.dto.request.RequestModuleSave;
@@ -13,15 +13,18 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ClientChannelMapper {
     ClientChannelMapper INSTANCE = Mappers.getMapper(ClientChannelMapper.class);
-    @Mapping(target="code",source = "id")
-    @Mapping(target="name",source = "name")
-    @Mapping(target="url",source = "url")
-    ClientChannelDTO clientChannelToClientChannelDTO(ClientChannel clientChannel);
-    List<ClientChannelDTO> listClientChannelToListClientChannelDTO(List<ClientChannel> clientChannelList);
-    @Mapping(target = "id",ignore = true)
+
+    @Mapping(target = "code", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "url", source = "url")
+    ClientChannelDTO clientChannelToClientChannelDTO(Store clientChannel);
+
+    List<ClientChannelDTO> listClientChannelToListClientChannelDTO(List<Store> clientChannelList);
+
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "name", source = "requestClientChannelSave.name")
     @Mapping(target = "url", source = "requestClientChannelSave.url")
-    ClientChannel clientChannelToName(RequestClientChannelSave requestClientChannelSave);
+    Store clientChannelToName(RequestClientChannelSave requestClientChannelSave);
 
-    List<ClientChannel> listClientChannelToListName(List<RequestClientChannelSave> requestClientChannelSaveList);
+    List<Store> listClientChannelToListName(List<RequestClientChannelSave> requestClientChannelSaveList);
 }

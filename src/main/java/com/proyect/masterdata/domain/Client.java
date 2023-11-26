@@ -60,6 +60,9 @@ public class Client {
         @Column(name = "id_distrito", nullable = false)
         private Long idDistrict;
 
+        @Column(name = "id_usuario", nullable = false)
+        private Long idUser;
+
         @Column(name = "fecha_registro", nullable = false)
         @CreationTimestamp
         private Date dateRegistration;
@@ -71,5 +74,9 @@ public class Client {
         @ManyToOne
         @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict", insertable = false)
         private District district;
+
+        @OneToOne
+        @JoinColumn(name = "id_usuario", columnDefinition = "idUser", insertable = false)
+        private User user;
 
 }

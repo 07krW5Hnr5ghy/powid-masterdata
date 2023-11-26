@@ -274,7 +274,7 @@ public class ChannelImpl implements IChannel {
             return new PageImpl<>(Collections.emptyList());
         }
         List<ChannelListDTO> channelDTOList = channelPage.getContent().stream().map(channel -> {
-            ClientChannel clientChannel = clientChannelRepository.findByIdClient(channel.getId());
+            Store clientChannel = clientChannelRepository.findByIdClient(channel.getId());
             // replace with the name of success state in payment states
             List<Payment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
                     paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());
@@ -309,7 +309,7 @@ public class ChannelImpl implements IChannel {
             return new PageImpl<>(Collections.emptyList());
         }
         List<ChannelListDTO> channelDTOList = channelPage.getContent().stream().map(channel -> {
-            ClientChannel clientChannel = clientChannelRepository.findByIdClient(channel.getId());
+            Store clientChannel = clientChannelRepository.findByIdClient(channel.getId());
             // replace with the name of success state in payment states
             List<Payment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
                     paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());

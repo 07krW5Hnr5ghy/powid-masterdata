@@ -32,7 +32,7 @@ public class PaymentImpl implements IPayment {
     private final PaymentRepositoryCustom paymentRepositoryCustom;
     private final PaymentMapper paymentMapper;
     private final ClientRepository clientRepository;
-    private final ClientChannelRepository clientChannelRepository;
+    private final StoreRepository clientChannelRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentStateRepository paymentStateRepository;
 

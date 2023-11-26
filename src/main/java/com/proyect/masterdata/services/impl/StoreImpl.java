@@ -1,7 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Client;
-import com.proyect.masterdata.domain.ClientChannel;
+import com.proyect.masterdata.domain.Store;
 import com.proyect.masterdata.dto.ClientChannelDTO;
 import com.proyect.masterdata.dto.request.RequestClientChannel;
 import com.proyect.masterdata.dto.request.RequestClientChannelSave;
@@ -9,12 +9,12 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.mapper.ClientChannelMapper;
-import com.proyect.masterdata.repository.ClientChannelRepository;
-import com.proyect.masterdata.repository.ClientChannelRepositoryCustom;
+import com.proyect.masterdata.mapper.StoreMapper;
+import com.proyect.masterdata.repository.StoreRepository;
+import com.proyect.masterdata.repository.StoreRepositoryCustom;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.services.IClientChannel;
+import com.proyect.masterdata.services.IStore;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class ClientChannelImpl implements IClientChannel {
-    private final ClientChannelRepository clientChannelRepository;
-    private final ClientChannelRepositoryCustom clientChannelRepositoryCustom;
-    private final ClientChannelMapper clientChannelMapper;
+public class StoreImpl implements IStore {
+    private final StoreRepository storeRepository;
+    private final StoreRepositoryCustom storeRepositoryCustom;
+    private final StoreMapper storeMapper;
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
 
@@ -41,11 +41,11 @@ public class ClientChannelImpl implements IClientChannel {
     public ResponseSuccess save(String ruc, RequestClientChannelSave requestClientChannelSave, String user)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
-        boolean existsClientChannel;
+        boolean existsStore;
         Client client;
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            existsClientChannel = clientChannelRepository
+            existsStore = storeRepository
                     .existsByName(requestClientChannelSave.getName().toUpperCase());
             client = clientRepository.findByRuc(ruc);
         } catch (RuntimeException e) {
@@ -56,7 +56,7 @@ public class ClientChannelImpl implements IClientChannel {
         if (!existsUser) {
             throw new BadRequestExceptions("Usuario incorrecto");
         }
-        if (existsClientChannel) {
+        if (existsStore) {
             throw new BadRequestExceptions("El canal ya existe");
         }
         if (client == null) {
@@ -64,13 +64,13 @@ public class ClientChannelImpl implements IClientChannel {
         }
 
         try {
-            clientChannelRepository.save(ClientChannel.builder()
+            storeRepository.save(Store.builder()
                     .name(requestClientChannelSave.getName().toUpperCase())
                     .url(requestClientChannelSave.getUrl())
                     .idClient(client.getIdClient())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .status(true)
-                    .user(user.toUpperCase())
+                    .tokenUser(user.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -86,11 +86,11 @@ public class ClientChannelImpl implements IClientChannel {
     public ResponseSuccess saveAll(String ruc, List<RequestClientChannelSave> clientChannelList, String user)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
-        List<ClientChannel> clientChannels;
+        List<Store> stores;
         Client client;
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            clientChannels = clientChannelRepository.findByNameIn(clientChannelList.stream()
+            stores = storeRepository.findByNameIn(clientChannelList.stream()
                     .map(clientChannel -> clientChannel.getName().toUpperCase()).collect(Collectors.toList()));
             client = clientRepository.findByRuc(ruc);
         } catch (RuntimeException e) {
@@ -101,14 +101,14 @@ public class ClientChannelImpl implements IClientChannel {
         if (!existsUser) {
             throw new BadRequestExceptions("Usuario no existe");
         }
-        if (!clientChannels.isEmpty()) {
+        if (!stores.isEmpty()) {
             throw new BadRequestExceptions("El canal ya existe");
         }
         if (client == null) {
             throw new BadRequestExceptions("cliente no existe");
         }
-        List<ClientChannel> clientChannelSaveList = clientChannelList.stream()
-                .map(clientChannel -> ClientChannel.builder()
+        List<Store> clientChannelSaveList = clientChannelList.stream()
+                .map(clientChannel -> Store.builder()
                         .name(clientChannel.getName().toUpperCase())
                         .url(clientChannel.getUrl())
                         .idClient(client.getIdClient())
@@ -132,7 +132,7 @@ public class ClientChannelImpl implements IClientChannel {
     public ClientChannelDTO update(RequestClientChannel requestClientChannel)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
-        ClientChannel clientChannel;
+        Store clientChannel;
         try {
             existsUser = userRepository.existsByUsername(requestClientChannel.getUser().toUpperCase());
             clientChannel = clientChannelRepository.findById(requestClientChannel.getCode()).orElse(null);
@@ -162,7 +162,7 @@ public class ClientChannelImpl implements IClientChannel {
     @Override
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
-        ClientChannel clientChannel;
+        Store clientChannel;
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
             clientChannel = clientChannelRepository.findById(code).orElse(null);
@@ -192,7 +192,7 @@ public class ClientChannelImpl implements IClientChannel {
 
     @Override
     public List<ClientChannelDTO> listClientChannel() {
-        List<ClientChannel> clientChannels;
+        List<Store> clientChannels;
         try {
             clientChannels = clientChannelRepository.findAllByStatusTrue();
         } catch (RuntimeException e) {
@@ -208,7 +208,7 @@ public class ClientChannelImpl implements IClientChannel {
     @Override
     public Page<ClientChannelDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<ClientChannel> clientChannelPage;
+        Page<Store> clientChannelPage;
         try {
             clientChannelPage = clientChannelRepositoryCustom.searchForClientChannel(name, user, sort, sortColumn,
                     pageNumber, pageSize, true);
@@ -227,7 +227,7 @@ public class ClientChannelImpl implements IClientChannel {
     @Override
     public Page<ClientChannelDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<ClientChannel> clientChannelPage;
+        Page<Store> clientChannelPage;
         try {
             clientChannelPage = clientChannelRepositoryCustom.searchForClientChannel(name, user, sort, sortColumn,
                     pageNumber, pageSize, false);
