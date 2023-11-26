@@ -14,26 +14,22 @@ import org.hibernate.annotations.Parameter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableMembership, schema = Constants.schemaMaster)
+@Table(name = Constants.tableMembership, schema = Constants.schemaManagement)
 public class Membership {
-    @Id
-    @GeneratedValue(generator = "sequence-membership")
-    @GenericGenerator(
-            name = "sequence-membership",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @Parameter(name = "sequence_name", value = "menbresia_sequence"),
-                    @Parameter(name = "initial_value", value = "1"),
-                    @Parameter(name = "increment_size", value = "1")
-            }
-    )
-    @Column(name = "id_membresia")
-    private Long id;
+        @Id
+        @GeneratedValue(generator = "sequence-membership")
+        @GenericGenerator(name = "sequence-membership", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
+                        @Parameter(name = "sequence_name", value = "menbresia_sequence"),
+                        @Parameter(name = "initial_value", value = "1"),
+                        @Parameter(name = "increment_size", value = "1")
+        })
+        @Column(name = "id_membresia")
+        private Long id;
 
-    @Column(name = "id_modulo")
-    private Long idModule;
+        @Column(name = "id_modulo")
+        private Long idModule;
 
-    @ManyToOne
-    @JoinColumn(name = "id_modulo", columnDefinition = "idModule",insertable = false, updatable = false)
-    private Module module;
+        @ManyToOne
+        @JoinColumn(name = "id_modulo", columnDefinition = "idModule", insertable = false, updatable = false)
+        private Module module;
 }

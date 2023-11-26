@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableAccess, schema = Constants.schemaMaster)
+@Table(name = Constants.tableAccess, schema = Constants.schemaManagement)
 public class Access {
 
     @Id

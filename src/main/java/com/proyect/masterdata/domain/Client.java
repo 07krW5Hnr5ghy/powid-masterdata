@@ -17,7 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableClient, schema = Constants.schemaMaster)
+@Table(name = Constants.tableClient, schema = Constants.schemaManagement)
 public class Client {
 
         @Id
@@ -28,7 +28,7 @@ public class Client {
                         @Parameter(name = "increment_size", value = "1")
         })
         @Column(name = "id_cliente", unique = true)
-        private Long idClient;
+        private Long id;
 
         @Column(name = "nombre", nullable = false)
         private String name;

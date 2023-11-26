@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableStore, schema = Constants.schemaMaster)
+@Table(name = Constants.tableStore, schema = Constants.schemaManagement)
 public class Store {
 
         @Id

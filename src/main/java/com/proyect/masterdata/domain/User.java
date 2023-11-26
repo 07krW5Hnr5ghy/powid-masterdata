@@ -9,14 +9,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
-import java.util.Set;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableUser, schema = Constants.schemaMaster)
+@Table(name = Constants.tableUser, schema = Constants.schemaManagement)
 public class User {
 
     @Id

@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableUserRole, schema = Constants.schemaMaster)
+@Table(name = Constants.tableUserRole, schema = Constants.schemaManagement)
 public class UserRole {
 
     @Id

@@ -15,7 +15,6 @@ public class Constants {
     public static final String tableChannel = "canal";
     public static final String tableClient = "cliente";
     public static final String tableMembership = "membresia";
-    public static final String tableUserTypeModule = "tipo_usuario_modulo";
     public static final String tablePayment = "pago";
     public static final String tableModule = "modulo";
     public static final String tableDiscount = "descuento";
@@ -41,6 +40,8 @@ public class Constants {
     public static final String tableUserRole = "usuario_rol";
     public static final String tableRoleAccess = "rol_acceso";
     public static final String tableClosingChannel = "canal_cierre";
+    public static final String tableOnboarding = "onboarding";
+    public static final String tableEntryChannel = "canal_entrada";
 
     // Mensajes
     public static final String register = "registration correctly";

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableBrand, schema = Constants.schemaMaster)
+@Table(name = Constants.tableBrand, schema = Constants.schemaArticle)
 public class Brand {
     @Id
     @GeneratedValue(generator = "sequence-brand")

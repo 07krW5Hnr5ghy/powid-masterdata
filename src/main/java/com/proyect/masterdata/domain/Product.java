@@ -24,7 +24,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableProduct, schema = Constants.schemaMaster)
+@Table(name = Constants.tableProduct, schema = Constants.schemaArticle)
 public class Product {
     @Id
     @GeneratedValue(generator = "sequence-product")

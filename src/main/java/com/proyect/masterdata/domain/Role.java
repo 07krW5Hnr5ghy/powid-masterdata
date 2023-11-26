@@ -16,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableRole, schema = Constants.schemaMaster)
+@Table(name = Constants.tableRole, schema = Constants.schemaManagement)
 public class Role {
 
         @Id

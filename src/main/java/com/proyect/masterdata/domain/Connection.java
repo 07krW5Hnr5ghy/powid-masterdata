@@ -17,29 +17,25 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableConnection, schema = Constants.schemaMaster)
+@Table(name = Constants.tableConnection, schema = Constants.schemaManagement)
 public class Connection {
-    @Id
-    @GeneratedValue(generator = "sequence-connection")
-    @GenericGenerator(
-            name = "sequence-connection",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @Parameter(name = "sequence_name", value = "conexion_sequence"),
-                    @Parameter(name = "initial_value", value = "1"),
-                    @Parameter(name = "increment_size", value = "1")
-            }
-    )
-    @Column(name = "id_conexion", unique = true)
-    private Long idConnection;
+        @Id
+        @GeneratedValue(generator = "sequence-connection")
+        @GenericGenerator(name = "sequence-connection", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
+                        @Parameter(name = "sequence_name", value = "conexion_sequence"),
+                        @Parameter(name = "initial_value", value = "1"),
+                        @Parameter(name = "increment_size", value = "1")
+        })
+        @Column(name = "id_conexion", unique = true)
+        private Long idConnection;
 
-    @Column(name = "url", unique = true)
-    private String url;
+        @Column(name = "url", unique = true)
+        private String url;
 
-    @Column(name = "estado")
-    private boolean status;
+        @Column(name = "estado")
+        private boolean status;
 
-    @Column(name = "fecha_registro")
-    @CreationTimestamp
-    private Date dateRegistration;
+        @Column(name = "fecha_registro")
+        @CreationTimestamp
+        private Date dateRegistration;
 }

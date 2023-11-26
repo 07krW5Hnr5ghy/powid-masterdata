@@ -25,7 +25,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableModel, schema = Constants.schemaMaster)
+@Table(name = Constants.tableModel, schema = Constants.schemaArticle)
 public class Model {
     @Id
     @GeneratedValue(generator = "sequence-model")

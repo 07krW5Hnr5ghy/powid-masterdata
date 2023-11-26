@@ -20,23 +20,26 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableRoleAccess, schema = Constants.schemaManagement)
-public class RoleAccess {
+@Table(name = Constants.tableEntryChannel, schema = Constants.schemaMaster)
+public class EntryChannel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_rol_acceso", unique = true)
+    @Column(name = "id_canal_entrada", unique = true)
     private Long id;
 
-    @Column(name = "id_rol", nullable = false)
-    private Long roleId;
+    @Column(name = "nombre", nullable = false, unique = true)
+    private String name;
 
-    @Column(name = "id_acceso", nullable = false)
-    private Long accessId;
-
-    @Column(name = "usuario_token", nullable = false)
-    private String tokenUser;
+    @Column(name = "estado", nullable = false)
+    private Boolean status;
 
     @Column(name = "fecha_registro", nullable = false)
     private Date dateRegistration;
+
+    @Column(name = "fecha_modificacion", nullable = false)
+    private Date dateUpdate;
+
+    @Column(name = "usuario_token", nullable = false)
+    private String tokenUser;
 }
