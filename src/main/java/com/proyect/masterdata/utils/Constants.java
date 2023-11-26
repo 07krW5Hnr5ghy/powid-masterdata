@@ -40,6 +40,7 @@ public class Constants {
     public static final String tableAccess = "acceso";
     public static final String tableUserRole = "usuario_rol";
     public static final String tableRoleAccess = "rol_acceso";
+    public static final String tableClosingChannel = "canal_cierre";
 
     // Mensajes
     public static final String register = "registration correctly";
