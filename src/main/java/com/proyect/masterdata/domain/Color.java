@@ -19,30 +19,27 @@ import java.util.Date;
 @Data
 @Table(name = Constants.tableColor, schema = Constants.schemaMaster)
 public class Color {
-    @Id
-    @GeneratedValue(generator = "sequence-color")
-    @GenericGenerator(
-            name = "sequence-color",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @Parameter(name = "sequence_name", value = "colores_sequence"),
-                    @Parameter(name = "initial_value", value = "1"),
-                    @Parameter(name = "increment_size", value = "1")
-            }
-    )
-    @Column(name = "id_color", unique = true)
-    private Long id;
 
-    @Column(name="nombre", length=50, unique=true)
-    private String name;
+        @Id
+        @GeneratedValue(generator = "sequence-color")
+        @GenericGenerator(name = "sequence-color", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
+                        @Parameter(name = "sequence_name", value = "colores_sequence"),
+                        @Parameter(name = "initial_value", value = "1"),
+                        @Parameter(name = "increment_size", value = "1")
+        })
+        @Column(name = "id_color", unique = true)
+        private Long id;
 
-    @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private boolean status = true;
+        @Column(name = "nombre", length = 50, unique = true)
+        private String name;
 
-    @Column(name = "fecha_registro")
-    @CreationTimestamp
-    private Date dateRegistration;
+        @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE")
+        private boolean status;
 
-    @Column(name="usuario")
-    private String user;
+        @Column(name = "fecha_registro")
+        @CreationTimestamp
+        private Date dateRegistration;
+
+        @Column(name = "usuario")
+        private String user;
 }

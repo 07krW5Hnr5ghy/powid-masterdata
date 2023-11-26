@@ -43,6 +43,7 @@ public class Constants {
     public static final String tableOnboarding = "onboarding";
     public static final String tableEntryChannel = "canal_entrada";
     public static final String tableOnboardingChannel = "onboarding_canal";
+    public static final String tableOnboardingStore = "onboarding_tienda";
 
     // Mensajes
     public static final String register = "registration correctly";

@@ -20,26 +20,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableOnboardingStore, schema = Constants.schemaManagement)
-public class OnboardingStore {
+@Table(name = Constants.tableOnboardingChannel, schema = Constants.schemaManagement)
+public class OnboardingChannel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_onboarding_tienda", unique = true)
+    @Column(name = "id_onboarding_canal", unique = true)
     private Long id;
 
-    @Column(name = "id_onboarding", nullable = false, unique = true)
+    @Column(name = "id_onboarding", nullable = false)
     private Long onboardingId;
 
-    @Column(name = "id_store", nullable = false)
-    private Long storeId;
-
-    @OneToOne
-    @JoinColumn(name = "id_store", columnDefinition = "storeId", insertable = false)
-    private Store store;
+    @Column(name = "id_closing_channel", nullable = false)
+    private Long closingChannelId;
 
     @OneToOne
     @JoinColumn(name = "id_onboarding", columnDefinition = "onboardingId", insertable = false)
     private Onboarding onboarding;
-
 }
