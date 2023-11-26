@@ -18,54 +18,51 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/payment")
 @AllArgsConstructor
 public class PaymentController {
 
     private final IPayment iPayment;
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("channel") String channel,
-            @RequestBody()RequestPaymentSave requestPaymentSave,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iPayment.save(channel,requestPaymentSave,user);
+            @RequestBody() RequestPaymentSave requestPaymentSave,
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iPayment.save(channel, requestPaymentSave, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/payments",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/payments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestParam("channel") String channel,
             @RequestBody() List<RequestPaymentSave> requestPaymentSaveList,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iPayment.saveAll(channel,requestPaymentSaveList,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iPayment.saveAll(channel, requestPaymentSaveList, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping(consumes=MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PaymentUpdateDTO> update(
-            @RequestBody()RequestPaymentUpdate requestPaymentUpdate,
+            @RequestBody() RequestPaymentUpdate requestPaymentUpdate,
             @RequestParam("newPaymentState") String newPaymentState,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        PaymentUpdateDTO result = iPayment.update(requestPaymentUpdate,newPaymentState,user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        PaymentUpdateDTO result = iPayment.update(requestPaymentUpdate, newPaymentState, user);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<PaymentDTO>> list(
-            @RequestParam(value = "totalPayment",required = false) Double totalPayment,
-            @RequestParam(value = "month",required = false) String month,
-            @RequestParam(value = "channel",required = false) String channel,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+    public ResponseEntity<Page<Payment>> list(
+            @RequestParam(value = "totalPayment", required = false) Double totalPayment,
+            @RequestParam(value = "month", required = false) String month,
+            @RequestParam(value = "channel", required = false) String channel,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<PaymentDTO> result = iPayment.list(totalPayment,month,channel,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<Payment> result = iPayment.list(totalPayment, month, channel, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }

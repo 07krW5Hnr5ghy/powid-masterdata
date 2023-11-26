@@ -146,7 +146,7 @@ public class PaymentImpl implements IPayment {
         if (paymentState == null) {
             throw new BadRequestExceptions("Estado de pago no existe");
         }
-        
+
         if (newState == null) {
             throw new BadRequestExceptions("Nuevo estado de pago no existe");
         }
@@ -177,7 +177,7 @@ public class PaymentImpl implements IPayment {
     }
 
     @Override
-    public Page<PaymentDTO> list(Double totalPayment, String month, String channel, String sort, String sortColumn,
+    public Page<Payment> list(Double totalPayment, String month, String channel, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<Payment> paymentPage;
         Channel channelData;
@@ -197,31 +197,8 @@ public class PaymentImpl implements IPayment {
         if (paymentPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
-        List<PaymentDTO> paymentDTOList = paymentPage.getContent().stream().map(payment -> {
-            Channel channelXPayment = channelRepository.findById(payment.getIdChannel()).orElse(null);
-            Client client = clientRepository.findById(channelXPayment.getIdClient()).orElse(null);
-            ClientChannel clientChannel = clientChannelRepository.findByIdClient(client.getIdClient());
-            PaymentMethod paymentMethod = paymentMethodRepository.findById(channelXPayment.getIdPaymentMethod())
-                    .orElse(null);
-            return PaymentDTO.builder()
-                    .totalPayment(payment.getTotalPayment())
-                    .month(payment.getMonth())
-                    .discount(payment.getDiscount())
-                    .channel(payment.getChannel().getName())
-                    .invoiceUrl(payment.getUrlInvoice())
-                    .dni(client.getDni())
-                    .email(client.getEmail())
-                    .name(client.getName().toUpperCase())
-                    .surname(client.getSurname().toUpperCase())
-                    .phoneNumber(client.getMobile())
-                    .ecommerce(clientChannel.getName().toUpperCase())
-                    .user(client.getUser().toUpperCase())
-                    .paymentMethod(paymentMethod.getName())
-                    .starDate(client.getDateRegistration())
-                    .paymentDate(payment.getDateRegistration())
-                    .build();
-        }).toList();
-        return new PageImpl<>(paymentDTOList,
+
+        return new PageImpl<>(paymentPage.getContent(),
                 paymentPage.getPageable(), paymentPage.getTotalElements());
     }
 
