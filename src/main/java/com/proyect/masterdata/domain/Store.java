@@ -41,5 +41,12 @@ public class Store {
         private Date dateUpdate;
 
         @Column(name = "id_cliente", unique = true, nullable = false)
-        private Long idClient;
+        private Long clientId;
+
+        @Column(name = "id_tienda_tipo", nullable = false)
+        private Long storeTypeId;
+
+        @OneToOne
+        @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false)
+        private Client client;
 }

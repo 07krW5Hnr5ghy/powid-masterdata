@@ -44,6 +44,7 @@ public class Constants {
     public static final String tableEntryChannel = "canal_entrada";
     public static final String tableOnboardingChannel = "onboarding_canal";
     public static final String tableOnboardingStore = "onboarding_tienda";
+    public static final String tableStoreType = "tienda_tipo";
 
     // Mensajes
     public static final String register = "registration correctly";
