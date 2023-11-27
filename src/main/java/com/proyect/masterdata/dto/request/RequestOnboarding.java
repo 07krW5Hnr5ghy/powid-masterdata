@@ -1,5 +1,7 @@
 package com.proyect.masterdata.dto.request;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,9 +23,19 @@ public class RequestOnboarding {
 
     private String address;
 
-    private String phoneNumber;
+    private String mobile;
 
     private String dni;
+
+    private String category;
+
+    private Long users;
+
+    private Boolean ecommerce;
+
+    private Boolean billing;
+
+    private String comment;
 
     private String bussinesName;
 
@@ -34,5 +46,15 @@ public class RequestOnboarding {
     private String password;
 
     private String district;
+
+    private String store;
+
+    private String storeUrl;
+
+    private List<String> closingChannels;
+
+    private String entryChannel;
+
+    private Boolean demo;
 
 }
