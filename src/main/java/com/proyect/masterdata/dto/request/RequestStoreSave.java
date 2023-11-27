@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class RequestStoreSave {
     private String name;
     private String url;
+    private String clientRuc;
+    private String storeType;
 }

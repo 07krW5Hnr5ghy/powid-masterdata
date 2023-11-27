@@ -40,8 +40,11 @@ public class Store {
         @CreationTimestamp
         private Date dateUpdate;
 
-        @Column(name = "id_cliente", unique = true, nullable = false)
+        @Column(name = "id_cliente", nullable = false)
         private Long clientId;
+
+        @Column(name = "usuario_token", nullable = false)
+        private String tokenUser;
 
         @Column(name = "id_tienda_tipo", nullable = false)
         private Long storeTypeId;

@@ -10,9 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class StoreDTO {
-    Long code;
+
     String name;
     String url;
+    String client;
+    String storeType;
     String user;
-    Boolean status;
+
 }

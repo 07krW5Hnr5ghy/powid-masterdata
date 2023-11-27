@@ -101,4 +101,8 @@ public class Constants {
     public static final String ErrorAccess = "The access does not exists";
     public static final String ErrorClient = "The client does not exists";
     public static final String ErrorClientExist = "The client already exists";
+    public static final String ErrorStore = "The store does not exists";
+    public static final String ErrorStoreExist = "The store already exists";
+    public static final String ErrorStoreType = "The store type does not exists";
+    public static final String ErrorStoreTypeExists = "The store type already exists";
 }

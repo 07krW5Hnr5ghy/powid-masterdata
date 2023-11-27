@@ -2,9 +2,10 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.Store;
-import com.proyect.masterdata.dto.ClientChannelDTO;
-import com.proyect.masterdata.dto.request.RequestClientChannel;
-import com.proyect.masterdata.dto.request.RequestClientChannelSave;
+import com.proyect.masterdata.domain.StoreType;
+import com.proyect.masterdata.dto.StoreDTO;
+import com.proyect.masterdata.dto.request.RequestStore;
+import com.proyect.masterdata.dto.request.RequestStoreSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -12,6 +13,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.StoreMapper;
 import com.proyect.masterdata.repository.StoreRepository;
 import com.proyect.masterdata.repository.StoreRepositoryCustom;
+import com.proyect.masterdata.repository.StoreTypeRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IStore;
@@ -31,51 +33,69 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class StoreImpl implements IStore {
+
     private final StoreRepository storeRepository;
     private final StoreRepositoryCustom storeRepositoryCustom;
     private final StoreMapper storeMapper;
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
+    private final StoreTypeRepository storeTypeRepository;
 
     @Override
-    public ResponseSuccess save(String ruc, RequestClientChannelSave requestClientChannelSave, String user)
+    public ResponseSuccess save(RequestStoreSave requestStoreSave, String user)
             throws BadRequestExceptions, InternalErrorExceptions {
+
         boolean existsUser;
         boolean existsStore;
         Client client;
+        StoreType storeType;
+
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
             existsStore = storeRepository
-                    .existsByName(requestClientChannelSave.getName().toUpperCase());
-            client = clientRepository.findByRuc(ruc);
+                    .existsByName(requestStoreSave.getName().toUpperCase());
+            client = clientRepository.findByRuc(requestStoreSave.getClientRuc());
+            storeType = storeTypeRepository.findByNameAndStatusTrue(requestStoreSave.getStoreType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario incorrecto");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
+
         if (existsStore) {
-            throw new BadRequestExceptions("El canal ya existe");
+            throw new BadRequestExceptions(Constants.ErrorStoreExist);
         }
+
         if (client == null) {
-            throw new BadRequestExceptions("cliente no existe");
+            throw new BadRequestExceptions(Constants.ErrorClient);
+        }
+
+        if (storeType == null) {
+            throw new BadRequestExceptions(Constants.ErrorStoreType);
         }
 
         try {
+
             storeRepository.save(Store.builder()
-                    .name(requestClientChannelSave.getName().toUpperCase())
-                    .url(requestClientChannelSave.getUrl())
-                    .idClient(client.getIdClient())
+                    .name(requestStoreSave.getName().toUpperCase())
+                    .url(requestStoreSave.getUrl())
+                    .clientId(client.getId())
+                    .client(client)
+                    .storeType(storeType)
+                    .storeTypeId(storeType.getId())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .status(true)
                     .tokenUser(user.toUpperCase())
                     .build());
+
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
+
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -83,41 +103,61 @@ public class StoreImpl implements IStore {
     }
 
     @Override
-    public ResponseSuccess saveAll(String ruc, List<RequestClientChannelSave> clientChannelList, String user)
+    public ResponseSuccess saveAll(String ruc, List<RequestStoreSave> storeList, String user)
             throws BadRequestExceptions, InternalErrorExceptions {
+
         boolean existsUser;
         List<Store> stores;
+        List<StoreType> storeTypes;
         Client client;
+
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            stores = storeRepository.findByNameIn(clientChannelList.stream()
-                    .map(clientChannel -> clientChannel.getName().toUpperCase()).collect(Collectors.toList()));
+            stores = storeRepository.findByNameIn(storeList.stream()
+                    .map(store -> store.getName().toUpperCase()).collect(Collectors.toList()));
             client = clientRepository.findByRuc(ruc);
+            storeTypes = storeTypeRepository.findByNameInAndStatusTrue(
+                    storeList.stream().map(store -> store.getStoreType().toUpperCase()).toList());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
+
         if (!stores.isEmpty()) {
-            throw new BadRequestExceptions("El canal ya existe");
+            throw new BadRequestExceptions(Constants.ErrorStoreExist);
         }
+
         if (client == null) {
-            throw new BadRequestExceptions("cliente no existe");
+            throw new BadRequestExceptions(Constants.ErrorClient);
         }
-        List<Store> clientChannelSaveList = clientChannelList.stream()
-                .map(clientChannel -> Store.builder()
-                        .name(clientChannel.getName().toUpperCase())
-                        .url(clientChannel.getUrl())
-                        .idClient(client.getIdClient())
-                        .status(true)
-                        .user(user.toUpperCase())
-                        .build())
+
+        if (storeTypes.size() != storeList.size()) {
+            throw new BadRequestExceptions(Constants.ErrorStoreType);
+        }
+
+        List<Store> storeSaveList = storeList.stream()
+                .map(store -> {
+                    StoreType storeType = storeTypeRepository
+                            .findByNameAndStatusTrue(store.getStoreType().toUpperCase());
+                    return Store.builder()
+                            .name(store.getName().toUpperCase())
+                            .url(store.getUrl())
+                            .client(client)
+                            .clientId(client.getId())
+                            .storeType(storeType)
+                            .storeTypeId(storeType.getId())
+                            .status(true)
+                            .dateRegistration(new Date(System.currentTimeMillis()))
+                            .tokenUser(user.toUpperCase())
+                            .build();
+                })
                 .toList();
         try {
-            clientChannelRepository.saveAll(clientChannelSaveList);
+            storeRepository.saveAll(storeSaveList);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -129,30 +169,41 @@ public class StoreImpl implements IStore {
     }
 
     @Override
-    public ClientChannelDTO update(RequestClientChannel requestClientChannel)
+    public StoreDTO update(RequestStore requestStore)
             throws BadRequestExceptions, InternalErrorExceptions {
+
         boolean existsUser;
-        Store clientChannel;
+        Store store;
+
         try {
-            existsUser = userRepository.existsByUsername(requestClientChannel.getUser().toUpperCase());
-            clientChannel = clientChannelRepository.findById(requestClientChannel.getCode()).orElse(null);
+            existsUser = userRepository.existsByUsername(requestStore.getUser().toUpperCase());
+            store = storeRepository.findByNameAndStatus(requestStore.getName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
-        if (clientChannel == null) {
-            throw new BadRequestExceptions("Canal no existe");
+
+        if (store == null) {
+            throw new BadRequestExceptions(Constants.ErrorStore);
         }
-        clientChannel.setName(requestClientChannel.getName().toUpperCase());
-        clientChannel.setUrl(requestClientChannel.getUrl());
-        clientChannel.setStatus(requestClientChannel.isStatus());
-        clientChannel.setUser(requestClientChannel.getUser().toUpperCase());
-        clientChannel.setDateRegistration(new Date(System.currentTimeMillis()));
+
+        store.setUrl(requestStore.getUrl());
+        store.setTokenUser(requestStore.getUser().toUpperCase());
+        store.setDateUpdate(new Date(System.currentTimeMillis()));
+
         try {
-            return clientChannelMapper.clientChannelToClientChannelDTO(clientChannelRepository.save(clientChannel));
+
+            return StoreDTO.builder()
+                    .name(store.getName())
+                    .url(store.getUrl())
+                    .client(store.getClient().getBusiness())
+                    .storeType(store.getStoreType().getName())
+                    .build();
+
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -160,26 +211,35 @@ public class StoreImpl implements IStore {
     }
 
     @Override
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+
         boolean existsUser;
-        Store clientChannel;
+        Store store;
+
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            clientChannel = clientChannelRepository.findById(code).orElse(null);
+            store = storeRepository.findByNameAndStatus(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
-        if (clientChannel == null) {
-            throw new BadRequestExceptions("Canal no existe");
+
+        if (store == null) {
+            throw new BadRequestExceptions(Constants.ErrorStore);
         }
-        clientChannel.setStatus(false);
-        clientChannel.setDateRegistration(new Date(System.currentTimeMillis()));
+
+        store.setStatus(false);
+        store.setDateRegistration(new Date(System.currentTimeMillis()));
+        store.setTokenUser(user.toUpperCase());
+
         try {
-            clientChannelRepository.save(clientChannel);
+
+            storeRepository.save(store);
+
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -191,66 +251,67 @@ public class StoreImpl implements IStore {
     }
 
     @Override
-    public List<ClientChannelDTO> listClientChannel() {
-        List<Store> clientChannels;
-        try {
-            clientChannels = clientChannelRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if (clientChannels.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return clientChannelMapper.listClientChannelToListClientChannelDTO(clientChannels);
-    }
-
-    @Override
-    public Page<ClientChannelDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public Page<StoreDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<Store> clientChannelPage;
+
+        Page<Store> storePage;
+
         try {
-            clientChannelPage = clientChannelRepositoryCustom.searchForClientChannel(name, user, sort, sortColumn,
+
+            storePage = storeRepositoryCustom.searchForStore(name, user, sort, sortColumn,
                     pageNumber, pageSize, true);
+
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if (clientChannelPage.isEmpty()) {
+
+        if (storePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
+
+        List<StoreDTO> storeDTOs = storePage.getContent().stream().map(store -> StoreDTO.builder()
+                .name(store.getName())
+                .url(store.getUrl())
+                .client(store.getClient().getBusiness())
+                .storeType(store.getStoreType().getName())
+                .user(store.getTokenUser())
+                .build()).toList();
+
         return new PageImpl<>(
-                clientChannelMapper.listClientChannelToListClientChannelDTO(clientChannelPage.getContent()),
-                clientChannelPage.getPageable(), clientChannelPage.getTotalElements());
+                storeDTOs,
+                storePage.getPageable(), storePage.getTotalElements());
     }
 
     @Override
-    public Page<ClientChannelDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+    public Page<StoreDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<Store> clientChannelPage;
+
+        Page<Store> storePage;
+
         try {
-            clientChannelPage = clientChannelRepositoryCustom.searchForClientChannel(name, user, sort, sortColumn,
+            storePage = storeRepositoryCustom.searchForStore(name, user, sort, sortColumn,
                     pageNumber, pageSize, false);
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if (clientChannelPage.isEmpty()) {
+
+        if (storePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
+
+        List<StoreDTO> storeDTOs = storePage.getContent().stream().map(store -> StoreDTO.builder()
+                .name(store.getName())
+                .url(store.getUrl())
+                .client(store.getClient().getBusiness())
+                .storeType(store.getStoreType().getName())
+                .user(store.getTokenUser())
+                .build()).toList();
+
         return new PageImpl<>(
-                clientChannelMapper.listClientChannelToListClientChannelDTO(clientChannelPage.getContent()),
-                clientChannelPage.getPageable(), clientChannelPage.getTotalElements());
+                storeDTOs,
+                storePage.getPageable(), storePage.getTotalElements());
     }
 
-    @Override
-    public ClientChannelDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return clientChannelMapper
-                    .clientChannelToClientChannelDTO(clientChannelRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
 }

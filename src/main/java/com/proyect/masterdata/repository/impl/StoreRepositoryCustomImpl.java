@@ -1,7 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.ClientChannel;
-import com.proyect.masterdata.repository.ClientChannelRepositoryCustom;
+import com.proyect.masterdata.domain.Store;
+import com.proyect.masterdata.repository.StoreRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -17,47 +17,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class ClientChannelRepositoryCustomImpl implements ClientChannelRepositoryCustom {
-    @PersistenceContext(name="entityManager")
+public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
+    @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<ClientChannel> searchForClientChannel(
+    public Page<Store> searchForStore(
             String name,
             String user,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize,
-            Boolean status
-    ){
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ClientChannel> criteriaQuery = criteriaBuilder.createQuery(ClientChannel.class);
-        Root<ClientChannel> itemRoot = criteriaQuery.from(ClientChannel.class);
+        CriteriaQuery<Store> criteriaQuery = criteriaBuilder.createQuery(Store.class);
+        Root<Store> itemRoot = criteriaQuery.from(Store.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
 
-        if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
+        if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> categoryList = new ArrayList<>();
-            if(sort.equalsIgnoreCase("ASC")){
-                categoryList = listASC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("ASC")) {
+                categoryList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
-            if(sort.equalsIgnoreCase("DESC")){
-                categoryList = listDESC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("DESC")) {
+                categoryList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[]{})).orderBy(categoryList);
-        }else{
-            criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(categoryList);
+        } else {
+            criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<ClientChannel> orderTypedQuery = entityManager.createQuery(criteriaQuery);
-        orderTypedQuery.setFirstResult(pageNumber*pageSize);
+        TypedQuery<Store> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
-        Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        long count = getOrderCount(name,user,status);
-        return new PageImpl<>(orderTypedQuery.getResultList(),pageable,count);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        long count = getOrderCount(name, user, status);
+        return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
@@ -65,29 +64,28 @@ public class ClientChannelRepositoryCustomImpl implements ClientChannelRepositor
             String user,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<ClientChannel> itemRoot
-    ){
+            Root<Store> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
 
-        if(name!=null){
+        if (name != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("name")),name.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
         }
 
-        if(user!=null){
+        if (user != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("user")),user.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("user")), user.toUpperCase())));
         }
 
-        if(Boolean.TRUE.equals(status)){
+        if (Boolean.TRUE.equals(status)) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
 
-        if(Boolean.FALSE.equals(status)){
+        if (Boolean.FALSE.equals(status)) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
 
@@ -97,13 +95,12 @@ public class ClientChannelRepositoryCustomImpl implements ClientChannelRepositor
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<ClientChannel> itemRoot
-    ){
+            Root<Store> itemRoot) {
         List<Order> clientChannelList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("NAME")){
+        if (sortColumn.equalsIgnoreCase("NAME")) {
             clientChannelList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
-        if(sortColumn.equalsIgnoreCase("USER")){
+        if (sortColumn.equalsIgnoreCase("USER")) {
             clientChannelList.add(criteriaBuilder.asc(itemRoot.get("user")));
         }
         return clientChannelList;
@@ -112,26 +109,25 @@ public class ClientChannelRepositoryCustomImpl implements ClientChannelRepositor
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<ClientChannel> itemRoot
-    ){
+            Root<Store> itemRoot) {
         List<Order> clientChannelList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("NAME")){
+        if (sortColumn.equalsIgnoreCase("NAME")) {
             clientChannelList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
-        if(sortColumn.equalsIgnoreCase("USER")){
+        if (sortColumn.equalsIgnoreCase("USER")) {
             clientChannelList.add(criteriaBuilder.desc(itemRoot.get("user")));
         }
         return clientChannelList;
     }
 
-    private long getOrderCount(String name,String user,Boolean status){
+    private long getOrderCount(String name, String user, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<ClientChannel> itemRoot = criteriaQuery.from(ClientChannel.class);
+        Root<Store> itemRoot = criteriaQuery.from(Store.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
-        criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
 }
