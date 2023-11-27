@@ -56,6 +56,10 @@ public class Constants {
     public static final String ErrorWhenDeleting = "Error when deleting";
 
     public static final String ErrorUser = "The user is incorrect";
+    public static final String ErrorUserExist = "The user already exists";
+    public static final String ErrorUserDniExist = "The user dni already exists";
+    public static final String ErrorUserEmailExist = "The user email already exists";
+    public static final String ErrorUserMobileExist = "The user mobile already exists";
     public static final String ResultsFound = "no results found";
     public static final String InternalErrorExceptions = "Internal Server Error";
     public static final String ErrorDepartment = "The department does not exist";
