@@ -30,6 +30,7 @@ import com.proyect.masterdata.services.IAuthentication;
 import com.proyect.masterdata.services.IClient;
 import com.proyect.masterdata.services.IOnboard;
 import com.proyect.masterdata.services.IOnboardChannel;
+import com.proyect.masterdata.services.IOnboardStore;
 import com.proyect.masterdata.services.IStore;
 import com.proyect.masterdata.services.IToken;
 import com.proyect.masterdata.services.IUser;
@@ -55,6 +56,7 @@ public class AuthenticationImpl implements IAuthentication {
     private final IOnboardChannel iOnboardChannel;
     private final IStore iStore;
     private final StoreRepository storeRepository;
+    private final IOnboardStore iOnboardStore;
 
     public ResponseLogin loginUser(String username, String password) {
         try {
@@ -198,19 +200,25 @@ public class AuthenticationImpl implements IAuthentication {
                         .name(requestOnboarding.getStore().toUpperCase())
                         .storeType(requestOnboarding.getStoreType().toUpperCase())
                         .url(requestOnboarding.getStoreUrl())
+                        .clientRuc(requestOnboarding.getBussinesRuc())
                         .build();
 
                 iStore.save(requestStoreSave, "REGISTER");
 
                 Store store = storeRepository.findByNameAndStatusTrue(requestOnboarding.getStore().toUpperCase());
 
+                iOnboardStore.save(store, onboard);
+
             }
+
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
 
         } catch (RuntimeException e) {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'registerUser'");
     }
 }
