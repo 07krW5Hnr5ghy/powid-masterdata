@@ -44,6 +44,9 @@ public class Onboard {
     @Column(name = "comentario", nullable = false)
     private String comment;
 
+    @Column(name = "demo", nullable = false)
+    private Boolean demo;
+
     @Column(name = "id_cliente", nullable = false)
     private Long idClient;
 

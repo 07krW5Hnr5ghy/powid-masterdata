@@ -8,8 +8,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.District;
+import com.proyect.masterdata.domain.Onboard;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.request.RequestClientSave;
+import com.proyect.masterdata.dto.request.RequestOnboard;
 import com.proyect.masterdata.dto.request.RequestOnboarding;
 import com.proyect.masterdata.dto.request.RequestUser;
 import com.proyect.masterdata.dto.response.ResponseLogin;
@@ -21,6 +23,7 @@ import com.proyect.masterdata.repository.DistrictRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAuthentication;
 import com.proyect.masterdata.services.IClient;
+import com.proyect.masterdata.services.IOnboard;
 import com.proyect.masterdata.services.IToken;
 import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
@@ -40,6 +43,7 @@ public class AuthenticationImpl implements IAuthentication {
     private final IUser iUser;
     private final DistrictRepository districtRepository;
     private final IClient iClient;
+    private final IOnboard iOnboard;
 
     public ResponseLogin loginUser(String username, String password) {
         try {
@@ -155,6 +159,17 @@ public class AuthenticationImpl implements IAuthentication {
                     .build();
 
             iClient.save(requestClientSave, requestOnboarding.getUsername().toUpperCase());
+
+            Onboard onboard = iOnboard.save(RequestOnboard.builder()
+                    .businessRuc(requestOnboarding.getBussinesRuc())
+                    .billing(requestOnboarding.getBilling())
+                    .category(requestOnboarding.getCategory())
+                    .ecommerce(requestOnboarding.getEcommerce())
+                    .category(requestOnboarding.getCategory())
+                    .entryChannel(requestOnboarding.getEntryChannel())
+                    .users(requestOnboarding.getUsers())
+                    .comments(requestOnboarding.getComment())
+                    .build());
 
         } catch (RuntimeException e) {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

@@ -56,13 +56,13 @@ public class MasterdataApplication {
 					new Date(System.currentTimeMillis()), "TEST"));
 
 			Department department = departmentRepository
-					.save(new Department(1L, "AMAZONAS", true, new Date(System.currentTimeMillis()), "TEST"));
+					.save(new Department(1L, "SISTEMA", true, new Date(System.currentTimeMillis()), "TEST"));
 
-			Province province = provinceRepository.save(new Province(1L, "CHACHAPOYAS", true,
+			Province province = provinceRepository.save(new Province(1L, "SISTEMA", true,
 					new Date(System.currentTimeMillis()), department.getId(), "TEST", department));
 
 			District district = districtRepository
-					.save(new District(1L, "ASUNCION", true, new Date(System.currentTimeMillis()), province.getId(),
+					.save(new District(1L, "SISTEMA", true, new Date(System.currentTimeMillis()), province.getId(),
 							province, "TEST"));
 
 			User adminUser = userRepository

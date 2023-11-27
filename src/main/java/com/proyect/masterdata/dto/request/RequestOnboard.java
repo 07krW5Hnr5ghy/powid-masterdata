@@ -15,4 +15,7 @@ public class RequestOnboard {
     private Long users;
     private Boolean billing;
     private String comments;
+    private String entryChannel;
+    private String businessRuc;
+    private Boolean demo;
 }
