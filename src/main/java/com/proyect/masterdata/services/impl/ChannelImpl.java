@@ -82,7 +82,7 @@ public class ChannelImpl implements IChannel {
                     .name(requestChannelSave.getName().toUpperCase())
                     .months(requestChannelSave.getMonths())
                     .client(client)
-                    .idClient(client.getIdClient())
+                    .idClient(client.getId())
                     .membership(membership)
                     .idMembership(membership.getId())
                     .paymentMethod(paymentMethod)
@@ -157,7 +157,7 @@ public class ChannelImpl implements IChannel {
                         .name(channel.getName().toUpperCase())
                         .months(channel.getMonths())
                         .client(clientRepository.findByRuc(channel.getClient()))
-                        .idClient(clientRepository.findByRuc(channel.getClient()).getIdClient())
+                        .idClient(clientRepository.findByRuc(channel.getClient()).getId())
                         .membership(membership)
                         .idMembership(membership.getId())
                         .paymentMethod(paymentMethodRepository
@@ -274,7 +274,7 @@ public class ChannelImpl implements IChannel {
             return new PageImpl<>(Collections.emptyList());
         }
         List<ChannelListDTO> channelDTOList = channelPage.getContent().stream().map(channel -> {
-            Store clientChannel = clientChannelRepository.findByIdClient(channel.getId());
+            Store clientChannel = clientChannelRepository.findById(channel.getId()).orElse(null);
             // replace with the name of success state in payment states
             List<Payment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
                     paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());
@@ -309,7 +309,7 @@ public class ChannelImpl implements IChannel {
             return new PageImpl<>(Collections.emptyList());
         }
         List<ChannelListDTO> channelDTOList = channelPage.getContent().stream().map(channel -> {
-            Store clientChannel = clientChannelRepository.findByIdClient(channel.getId());
+            Store clientChannel = clientChannelRepository.findById(channel.getId()).orElse(null);
             // replace with the name of success state in payment states
             List<Payment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
                     paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());

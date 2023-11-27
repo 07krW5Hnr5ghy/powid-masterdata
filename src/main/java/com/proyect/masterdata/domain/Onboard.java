@@ -22,11 +22,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Table(name = Constants.tableOnboarding, schema = Constants.schemaManagement)
-public class Onboarding {
+public class Onboard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_onboarding", unique = true)
+    @Column(name = "id_onboard", unique = true)
     private Long id;
 
     @Column(name = "categoria", nullable = false)
@@ -51,11 +51,11 @@ public class Onboarding {
     private Long idEntryChannel;
 
     @OneToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false)
+    @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false, updatable = false)
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "id_canal_entrada", columnDefinition = "idEntryChannel", insertable = false)
+    @JoinColumn(name = "id_canal_entrada", columnDefinition = "idEntryChannel", insertable = false, updatable = false)
     private EntryChannel entryChannel;
 
 }

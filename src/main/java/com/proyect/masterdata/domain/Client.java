@@ -72,11 +72,11 @@ public class Client {
         private Date dateUpdate;
 
         @ManyToOne
-        @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict", insertable = false)
+        @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict", insertable = false, updatable = false)
         private District district;
 
         @OneToOne
-        @JoinColumn(name = "id_usuario", columnDefinition = "idUser", insertable = false)
+        @JoinColumn(name = "id_usuario", columnDefinition = "idUser", insertable = false, updatable = false)
         private User user;
 
 }

@@ -177,7 +177,7 @@ public class StoreImpl implements IStore {
 
         try {
             existsUser = userRepository.existsByUsername(requestStore.getUser().toUpperCase());
-            store = storeRepository.findByNameAndStatus(requestStore.getName().toUpperCase());
+            store = storeRepository.findByNameAndStatusTrue(requestStore.getName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -218,7 +218,7 @@ public class StoreImpl implements IStore {
 
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            store = storeRepository.findByNameAndStatus(name.toUpperCase());
+            store = storeRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

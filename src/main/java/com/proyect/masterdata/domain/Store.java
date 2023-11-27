@@ -50,10 +50,10 @@ public class Store {
         private Long storeTypeId;
 
         @OneToOne
-        @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false)
+        @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
         private Client client;
 
-        @OneToMany
-        @JoinColumn(name = "id_tienda_tipo", columnDefinition = "storeTypeId", insertable = false)
+        @ManyToOne
+        @JoinColumn(name = "id_tienda_tipo", columnDefinition = "storeTypeId", insertable = false, updatable = false)
         private StoreType storeType;
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public interface StoreRepository extends JpaRepository<Store, Long> {
     List<Store> findAllByStatusTrue();
 
-    Store findByNameAndStatus(String name);
+    Store findByNameAndStatusTrue(String name);
 
     List<Store> findByNameIn(List<String> name);
 
