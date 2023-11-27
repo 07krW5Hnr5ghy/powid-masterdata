@@ -70,6 +70,11 @@ public class MasterdataApplication {
 							"1234567819", passwordEncoder.encode("123abc+"), true, new Date(System.currentTimeMillis()),
 							new Date(System.currentTimeMillis()), district.getId(), district));
 
+			User registerUser = userRepository.save(
+					new User(2L, "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER",
+							"REGISTER", passwordEncoder.encode("321abc+"), true, new Date(System.currentTimeMillis()),
+							new Date(System.currentTimeMillis()), district.getId(), district));
+
 			userRoleRepository.save(
 					new UserRole(1L, adminUser.getId(), role.getId(), "TEST", new Date(System.currentTimeMillis())));
 

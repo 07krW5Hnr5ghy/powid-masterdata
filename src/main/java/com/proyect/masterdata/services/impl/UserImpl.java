@@ -62,23 +62,23 @@ public class UserImpl implements IUser {
         }
 
         if (existsUser) {
-            throw new BadRequestExceptions("Usuario ya fue registrado");
+            throw new BadRequestExceptions(Constants.ErrorUserExist);
         }
 
         if (existsDni) {
-            throw new BadRequestExceptions("Dni ya fue registrado");
+            throw new BadRequestExceptions(Constants.ErrorUserDniExist);
         }
 
         if (existsEmail) {
-            throw new BadRequestExceptions("Email ya fue registrado");
+            throw new BadRequestExceptions(Constants.ErrorUserEmailExist);
         }
 
         if (existsMobile) {
-            throw new BadRequestExceptions("Numeri movil ya fue registrado");
+            throw new BadRequestExceptions(Constants.ErrorUserMobileExist);
         }
 
         if (district == null) {
-            throw new BadRequestExceptions("Distrito no existe");
+            throw new BadRequestExceptions(Constants.ErrorDistrict);
         }
 
         try {

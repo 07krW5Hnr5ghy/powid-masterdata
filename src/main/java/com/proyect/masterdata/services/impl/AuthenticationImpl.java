@@ -1,19 +1,28 @@
 package com.proyect.masterdata.services.impl;
 
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
+import com.proyect.masterdata.domain.District;
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.request.RequestClientSave;
 import com.proyect.masterdata.dto.request.RequestOnboarding;
+import com.proyect.masterdata.dto.request.RequestUser;
 import com.proyect.masterdata.dto.response.ResponseLogin;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.repository.ClientRepository;
+import com.proyect.masterdata.repository.DistrictRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAuthentication;
+import com.proyect.masterdata.services.IClient;
 import com.proyect.masterdata.services.IToken;
+import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +36,10 @@ public class AuthenticationImpl implements IAuthentication {
     private final AuthenticationManager authenticationManager;
     private final IToken iToken;
     private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
+    private final IUser iUser;
+    private final DistrictRepository districtRepository;
+    private final IClient iClient;
 
     public ResponseLogin loginUser(String username, String password) {
         try {
@@ -51,34 +64,102 @@ public class AuthenticationImpl implements IAuthentication {
             throws InternalErrorExceptions, BadRequestExceptions {
 
         boolean existsUser = false;
-        boolean existsDni = false;
-        boolean existsEmail = false;
-        boolean existsByMobile = false;
+        boolean existsUserDni = false;
+        boolean existsUserEmail = false;
+        boolean existsUserMobile = false;
+        boolean existsClientRuc = false;
+        boolean existsClientDni = false;
+        boolean existsClientEmail = false;
+        boolean existsClientMobile = false;
+        District district = null;
 
         try {
             existsUser = userRepository.existsByUsername(requestOnboarding.getUsername().toUpperCase());
-            existsDni = userRepository.existsByDni(requestOnboarding.getDni());
-            existsEmail = userRepository.existsByEmail(requestOnboarding.getEmail());
-            existsByMobile = userRepository.existsByMobile(requestOnboarding.getMobile());
+            existsUserDni = userRepository.existsByDni(requestOnboarding.getDni());
+            existsUserEmail = userRepository.existsByEmail(requestOnboarding.getEmail());
+            existsUserMobile = userRepository.existsByMobile(requestOnboarding.getMobile());
+            existsClientRuc = clientRepository.existsByRuc(requestOnboarding.getBussinesRuc());
+            existsClientDni = clientRepository.existsByDni(requestOnboarding.getDni());
+            existsClientEmail = clientRepository.existsByEmail(requestOnboarding.getEmail());
+            existsClientMobile = clientRepository.existsByMobile(requestOnboarding.getMobile());
+            district = districtRepository.findByNameAndStatusTrue(requestOnboarding.getDistrict().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
         if (existsUser) {
             throw new BadRequestExceptions(Constants.ErrorUserExist);
         }
 
-        if (existsDni) {
+        if (existsUserDni) {
             throw new BadRequestExceptions(Constants.ErrorUserDniExist);
         }
 
-        if (existsEmail) {
+        if (existsUserEmail) {
             throw new BadRequestExceptions(Constants.ErrorUserEmailExist);
         }
 
-        if (existsByMobile) {
+        if (existsUserMobile) {
             throw new BadRequestExceptions(Constants.ErrorUserMobileExist);
         }
+
+        if (existsClientRuc) {
+            throw new BadRequestExceptions(Constants.ErrorClientRucExist);
+        }
+
+        if (existsClientDni) {
+            throw new BadRequestExceptions(Constants.ErrorClientDniExist);
+        }
+
+        if (existsClientEmail) {
+            throw new BadRequestExceptions(Constants.ErrorClientEmailExist);
+        }
+
+        if (existsClientMobile) {
+            throw new BadRequestExceptions(Constants.ErrorClientMobileExist);
+        }
+
+        if (district == null) {
+            throw new BadRequestExceptions(Constants.ErrorDistrict);
+        }
+
+        try {
+
+            RequestUser requestUser = RequestUser.builder()
+                    .user(requestOnboarding.getUsername().toUpperCase())
+                    .name(requestOnboarding.getName().toUpperCase())
+                    .surname(requestOnboarding.getSurname().toUpperCase())
+                    .address(requestOnboarding.getAddress().toUpperCase())
+                    .dni(requestOnboarding.getDni())
+                    .gender(requestOnboarding.getGender())
+                    .mobile(requestOnboarding.getMobile())
+                    .password(requestOnboarding.getPassword())
+                    .email(requestOnboarding.getEmail())
+                    .district(requestOnboarding.getDistrict().toUpperCase())
+                    .user("REGISTER")
+                    .build();
+
+            iUser.save(requestUser);
+
+            RequestClientSave requestClientSave = RequestClientSave.builder()
+                    .name(requestOnboarding.getName().toUpperCase())
+                    .surname(requestOnboarding.getSurname().toUpperCase())
+                    .business(requestOnboarding.getBussinesName().toUpperCase())
+                    .address(requestOnboarding.getAddress().toUpperCase())
+                    .dni(requestOnboarding.getDni())
+                    .email(requestOnboarding.getEmail())
+                    .mobile(requestOnboarding.getMobile())
+                    .district(requestOnboarding.getDistrict().toUpperCase())
+                    .ruc(requestOnboarding.getBussinesRuc())
+                    .build();
+
+            iClient.save(requestClientSave, requestOnboarding.getUsername().toUpperCase());
+
+        } catch (RuntimeException e) {
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'registerUser'");
     }
