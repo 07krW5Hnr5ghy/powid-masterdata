@@ -115,4 +115,5 @@ public class Constants {
     public static final String ErrorStoreType = "The store type does not exists";
     public static final String ErrorStoreTypeExists = "The store type already exists";
     public static final String ErrorEntryChannel = "The entry channel does not exists";
+    public static final String ErrorClosingChannel = "The closing channel does not exists";
 }

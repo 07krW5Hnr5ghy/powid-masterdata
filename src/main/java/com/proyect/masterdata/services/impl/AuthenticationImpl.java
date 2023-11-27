@@ -1,12 +1,14 @@
 package com.proyect.masterdata.services.impl;
 
-import org.apache.tomcat.util.bcel.Const;
+import java.util.List;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
+import com.proyect.masterdata.domain.ClosingChannel;
 import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Onboard;
 import com.proyect.masterdata.domain.User;
@@ -19,11 +21,14 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.ClientRepository;
+import com.proyect.masterdata.repository.ClosingChannelRepository;
 import com.proyect.masterdata.repository.DistrictRepository;
+import com.proyect.masterdata.repository.OnboardChannelRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAuthentication;
 import com.proyect.masterdata.services.IClient;
 import com.proyect.masterdata.services.IOnboard;
+import com.proyect.masterdata.services.IOnboardChannel;
 import com.proyect.masterdata.services.IToken;
 import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
@@ -44,6 +49,8 @@ public class AuthenticationImpl implements IAuthentication {
     private final DistrictRepository districtRepository;
     private final IClient iClient;
     private final IOnboard iOnboard;
+    private final ClosingChannelRepository closingChannelRepository;
+    private final IOnboardChannel iOnboardChannel;
 
     public ResponseLogin loginUser(String username, String password) {
         try {
@@ -76,6 +83,7 @@ public class AuthenticationImpl implements IAuthentication {
         boolean existsClientEmail = false;
         boolean existsClientMobile = false;
         District district = null;
+        List<ClosingChannel> closingChannels;
 
         try {
             existsUser = userRepository.existsByUsername(requestOnboarding.getUsername().toUpperCase());
@@ -87,6 +95,8 @@ public class AuthenticationImpl implements IAuthentication {
             existsClientEmail = clientRepository.existsByEmail(requestOnboarding.getEmail());
             existsClientMobile = clientRepository.existsByMobile(requestOnboarding.getMobile());
             district = districtRepository.findByNameAndStatusTrue(requestOnboarding.getDistrict().toUpperCase());
+            closingChannels = closingChannelRepository.findByNameInAndStatusTrue(
+                    requestOnboarding.getClosingChannels().stream().map(name -> name.toUpperCase()).toList());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -126,6 +136,10 @@ public class AuthenticationImpl implements IAuthentication {
 
         if (district == null) {
             throw new BadRequestExceptions(Constants.ErrorDistrict);
+        }
+
+        if (closingChannels.size() != requestOnboarding.getClosingChannels().size()) {
+            throw new BadRequestExceptions(Constants.ErrorClosingChannel);
         }
 
         try {
@@ -170,6 +184,10 @@ public class AuthenticationImpl implements IAuthentication {
                     .users(requestOnboarding.getUsers())
                     .comments(requestOnboarding.getComment())
                     .build());
+
+            for (ClosingChannel closingChannel : closingChannels) {
+                iOnboardChannel.save(onboard, closingChannel);
+            }
 
         } catch (RuntimeException e) {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
