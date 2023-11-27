@@ -51,6 +51,8 @@ public class RequestOnboarding {
 
     private String storeUrl;
 
+    private String storeType;
+
     private List<String> closingChannels;
 
     private String entryChannel;

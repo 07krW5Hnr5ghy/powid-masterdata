@@ -11,10 +11,11 @@ import org.springframework.stereotype.Service;
 import com.proyect.masterdata.domain.ClosingChannel;
 import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Onboard;
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.Store;
 import com.proyect.masterdata.dto.request.RequestClientSave;
 import com.proyect.masterdata.dto.request.RequestOnboard;
 import com.proyect.masterdata.dto.request.RequestOnboarding;
+import com.proyect.masterdata.dto.request.RequestStoreSave;
 import com.proyect.masterdata.dto.request.RequestUser;
 import com.proyect.masterdata.dto.response.ResponseLogin;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -23,12 +24,13 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.ClosingChannelRepository;
 import com.proyect.masterdata.repository.DistrictRepository;
-import com.proyect.masterdata.repository.OnboardChannelRepository;
+import com.proyect.masterdata.repository.StoreRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAuthentication;
 import com.proyect.masterdata.services.IClient;
 import com.proyect.masterdata.services.IOnboard;
 import com.proyect.masterdata.services.IOnboardChannel;
+import com.proyect.masterdata.services.IStore;
 import com.proyect.masterdata.services.IToken;
 import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
@@ -51,6 +53,8 @@ public class AuthenticationImpl implements IAuthentication {
     private final IOnboard iOnboard;
     private final ClosingChannelRepository closingChannelRepository;
     private final IOnboardChannel iOnboardChannel;
+    private final IStore iStore;
+    private final StoreRepository storeRepository;
 
     public ResponseLogin loginUser(String username, String password) {
         try {
@@ -187,6 +191,19 @@ public class AuthenticationImpl implements IAuthentication {
 
             for (ClosingChannel closingChannel : closingChannels) {
                 iOnboardChannel.save(onboard, closingChannel);
+            }
+
+            if (requestOnboarding.getEcommerce()) {
+                RequestStoreSave requestStoreSave = RequestStoreSave.builder()
+                        .name(requestOnboarding.getStore().toUpperCase())
+                        .storeType(requestOnboarding.getStoreType().toUpperCase())
+                        .url(requestOnboarding.getStoreUrl())
+                        .build();
+
+                iStore.save(requestStoreSave, "REGISTER");
+
+                Store store = storeRepository.findByNameAndStatusTrue(requestOnboarding.getStore().toUpperCase());
+
             }
 
         } catch (RuntimeException e) {
