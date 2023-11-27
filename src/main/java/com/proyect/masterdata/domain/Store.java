@@ -47,6 +47,10 @@ public class Store {
         private Long storeTypeId;
 
         @OneToOne
-        @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false)
+        @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false)
         private Client client;
+
+        @OneToMany
+        @JoinColumn(name = "id_tienda_tipo", columnDefinition = "storeTypeId", insertable = false)
+        private StoreType storeType;
 }
