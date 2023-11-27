@@ -32,10 +32,10 @@ public class Brand {
             @Parameter(name = "initial_value", value = "1"),
             @Parameter(name = "increment_size", value = "1")
     })
-    @Column(name = "id_marca", unique = true)
+    @Column(name = "id_marca")
     private Long id;
 
-    @Column(name = "nombre", unique = true)
+    @Column(name = "nombre")
     private String name;
 
     @Column(name = "estado")

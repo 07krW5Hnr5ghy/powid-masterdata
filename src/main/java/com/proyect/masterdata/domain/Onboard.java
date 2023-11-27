@@ -26,7 +26,7 @@ public class Onboard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_onboard", unique = true)
+    @Column(name = "id_onboard")
     private Long id;
 
     @Column(name = "categoria", nullable = false)
@@ -44,7 +44,7 @@ public class Onboard {
     @Column(name = "comentario", nullable = false)
     private String comment;
 
-    @Column(name = "id_cliente", nullable = false, unique = true)
+    @Column(name = "id_cliente", nullable = false)
     private Long idClient;
 
     @Column(name = "id_canal_entrada", nullable = false)

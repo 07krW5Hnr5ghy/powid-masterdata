@@ -26,10 +26,10 @@ public class Connection {
                         @Parameter(name = "initial_value", value = "1"),
                         @Parameter(name = "increment_size", value = "1")
         })
-        @Column(name = "id_conexion", unique = true)
+        @Column(name = "id_conexion")
         private Long idConnection;
 
-        @Column(name = "url", unique = true)
+        @Column(name = "url")
         private String url;
 
         @Column(name = "estado")

@@ -26,10 +26,10 @@ public class Channel {
                         @Parameter(name = "initial_value", value = "1"),
                         @Parameter(name = "increment_size", value = "1")
         })
-        @Column(name = "id_canal", unique = true)
+        @Column(name = "id_canal")
         private Long id;
 
-        @Column(name = "nombre", unique = true)
+        @Column(name = "nombre")
         private String name;
 
         @Column(name = "meses")
@@ -42,19 +42,19 @@ public class Channel {
         @CreationTimestamp
         private Date dateRegistration;
 
-        @Column(name = "usuario", unique = true)
+        @Column(name = "usuario")
         private String user;
 
-        @Column(name = "id_cliente", unique = true)
+        @Column(name = "id_cliente")
         private Long idClient;
 
-        @Column(name = "id_membresia", unique = true)
+        @Column(name = "id_membresia")
         private Long idMembership;
 
         @Column(name = "id_metodo_pago")
         private Long idPaymentMethod;
 
-        @Column(name = "id_conexion", unique = true)
+        @Column(name = "id_conexion")
         private Long idConnection;
 
         @ManyToOne

@@ -25,10 +25,10 @@ public class EntryChannel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_canal_entrada", unique = true)
+    @Column(name = "id_canal_entrada")
     private Long id;
 
-    @Column(name = "nombre", nullable = false, unique = true)
+    @Column(name = "nombre", nullable = false)
     private String name;
 
     @Column(name = "estado", nullable = false)

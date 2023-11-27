@@ -25,7 +25,7 @@ public class RoleAccess {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_rol_acceso", unique = true)
+    @Column(name = "id_rol_acceso")
     private Long id;
 
     @Column(name = "id_rol", nullable = false)

@@ -26,7 +26,7 @@ public class Discount {
                         @Parameter(name = "initial_value", value = "1"),
                         @Parameter(name = "increment_size", value = "1")
         })
-        @Column(name = "id_descuento", unique = true)
+        @Column(name = "id_descuento")
         private Long id;
 
         @Column(name = "descuento")
@@ -42,7 +42,7 @@ public class Discount {
         @Column(name = "mes")
         private int months;
 
-        @Column(name = "id_canal", unique = true)
+        @Column(name = "id_canal")
         private Long idChannel;
 
         @ManyToOne

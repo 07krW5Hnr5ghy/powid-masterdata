@@ -27,10 +27,10 @@ public class ClosingChannel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_canal_cierre", unique = true)
+    @Column(name = "id_canal_cierre")
     private Long id;
 
-    @Column(name = "nombre", unique = true, nullable = false)
+    @Column(name = "nombre", nullable = false)
     private String name;
 
     @Column(name = "estado", nullable = false)

@@ -27,10 +27,10 @@ public class StoreType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_tienda", unique = true)
+    @Column(name = "id_tienda")
     private Long id;
 
-    @Column(name = "nombre", nullable = false, unique = true)
+    @Column(name = "nombre", nullable = false)
     private String name;
 
     @Column(name = "estado", nullable = false)

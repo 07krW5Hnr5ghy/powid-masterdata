@@ -22,13 +22,13 @@ public class Access {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_acceso", unique = true)
+    @Column(name = "id_acceso")
     private Long id;
 
-    @Column(name = "nombre", unique = true, nullable = false)
+    @Column(name = "nombre", nullable = false)
     private String name;
 
-    @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
+    @Column(name = "estado", nullable = false)
     private Boolean status;
 
     @Column(name = "fecha_registro", nullable = false)

@@ -25,10 +25,10 @@ public class OnboardStore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_onboarding_tienda", unique = true)
+    @Column(name = "id_onboarding_tienda")
     private Long id;
 
-    @Column(name = "id_onboard", nullable = false, unique = true)
+    @Column(name = "id_onboard", nullable = false)
     private Long onboardId;
 
     @Column(name = "id_tienda", nullable = false)

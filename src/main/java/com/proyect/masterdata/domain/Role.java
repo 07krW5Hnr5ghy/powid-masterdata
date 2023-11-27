@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
-import java.util.Set;
 
 @Entity
 @Builder
@@ -21,13 +20,13 @@ public class Role {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_rol", unique = true)
+        @Column(name = "id_rol")
         private Long id;
 
-        @Column(name = "nombre", length = 50, unique = true, nullable = false)
+        @Column(name = "nombre", length = 50, nullable = false)
         private String name;
 
-        @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
+        @Column(name = "estado", nullable = false)
         private Boolean status;
 
         @Column(name = "fecha_registro", nullable = false)

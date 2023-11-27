@@ -30,7 +30,7 @@ public class Category {
         @Column(name = "id_categoria", unique = true)
         private Long id;
 
-        @Column(name = "nombre", length = 50, unique = true)
+        @Column(name = "nombre", length = 50)
         private String name;
 
         @Column(name = "descripcion", length = 50)

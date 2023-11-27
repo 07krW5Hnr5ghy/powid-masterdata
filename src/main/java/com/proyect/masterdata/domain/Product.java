@@ -1,14 +1,13 @@
 package com.proyect.masterdata.domain;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import com.proyect.masterdata.utils.Constants;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,43 +25,39 @@ import java.util.Date;
 @Data
 @Table(name = Constants.tableProduct, schema = Constants.schemaArticle)
 public class Product {
+
     @Id
-    @GeneratedValue(generator = "sequence-product")
-    @GenericGenerator(name = "sequence-product", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-            @Parameter(name = "sequence_name", value = "producto_sequence"),
-            @Parameter(name = "initial_value", value = "1"),
-            @Parameter(name = "increment_size", value = "1")
-    })
-    @Column(name = "id_producto", unique = true)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_producto")
     private Long id;
 
-    @Column(name = "sku")
+    @Column(name = "sku", nullable = false)
     private String sku;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "fecha_registro", nullable = false)
     @CreationTimestamp
     private Date dateRegistration;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "fecha_modificacion", nullable = false)
     @CreationTimestamp
     private Date dateUpdate;
 
-    @Column(name = "estado")
+    @Column(name = "estado", nullable = false)
     private boolean status;
 
-    @Column(name = "id_modelo")
+    @Column(name = "id_modelo", nullable = false)
     private Long idModel;
 
-    @Column(name = "id_color")
+    @Column(name = "id_color", nullable = false)
     private Long idColor;
 
-    @Column(name = "id_categoria")
+    @Column(name = "id_categoria", nullable = false)
     private Long idCategory;
 
-    @Column(name = "id_size")
+    @Column(name = "id_size", nullable = false)
     private Long idSize;
 
-    @Column(name = "usuario")
+    @Column(name = "usuario", nullable = false)
     private String user;
 
     @ManyToOne

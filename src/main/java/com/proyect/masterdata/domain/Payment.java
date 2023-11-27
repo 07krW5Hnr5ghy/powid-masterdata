@@ -26,13 +26,13 @@ public class Payment {
                         @Parameter(name = "initial_value", value = "1"),
                         @Parameter(name = "increment_size", value = "1")
         })
-        @Column(name = "id_pago", unique = true)
+        @Column(name = "id_pago", nullable = false)
         private Long id;
 
-        @Column(name = "pago_total")
+        @Column(name = "pago_total", nullable = false)
         private double totalPayment;
 
-        @Column(name = "descuento")
+        @Column(name = "descuento", nullable = false)
         private double discount;
 
         @Column(name = "mes")

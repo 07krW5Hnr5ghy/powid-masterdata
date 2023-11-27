@@ -25,7 +25,7 @@ public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_usuario_rol", unique = true)
+    @Column(name = "id_usuario_rol")
     private Long id;
 
     @Column(name = "id_usuario", nullable = false)

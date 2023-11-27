@@ -23,13 +23,13 @@ public class Store {
         @Column(name = "id_tienda", unique = true)
         private Long id;
 
-        @Column(name = "nombre", nullable = false, length = 50, unique = true)
+        @Column(name = "nombre", nullable = false, length = 50)
         private String name;
 
-        @Column(name = "url", nullable = false, unique = true)
+        @Column(name = "url", nullable = false)
         private String url;
 
-        @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
+        @Column(name = "estado", nullable = false)
         private Boolean status;
 
         @Column(name = "fecha_registro", nullable = false)

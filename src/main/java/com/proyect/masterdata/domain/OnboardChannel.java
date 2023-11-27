@@ -25,7 +25,7 @@ public class OnboardChannel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_onboarding_canal", unique = true)
+    @Column(name = "id_onboarding_canal")
     private Long id;
 
     @Column(name = "id_onboard", nullable = false)

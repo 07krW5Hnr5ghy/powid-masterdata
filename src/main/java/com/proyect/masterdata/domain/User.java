@@ -20,10 +20,10 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_usuario", unique = true)
+    @Column(name = "id_usuario")
     private Long id;
 
-    @Column(name = "usuario", unique = true, nullable = false)
+    @Column(name = "usuario", nullable = false)
     private String username;
 
     @Column(name = "nombre", nullable = false)
@@ -32,10 +32,10 @@ public class User {
     @Column(name = "apellido", nullable = false)
     private String surname;
 
-    @Column(name = "dni", unique = true, nullable = false)
+    @Column(name = "dni", nullable = false)
     private String dni;
 
-    @Column(name = "correo", unique = true, nullable = false)
+    @Column(name = "correo", nullable = false)
     private String email;
 
     @Column(name = "direccion", nullable = false)
@@ -44,7 +44,7 @@ public class User {
     @Column(name = "genero", nullable = false)
     private String gender;
 
-    @Column(name = "celular", unique = true, nullable = false)
+    @Column(name = "celular", nullable = false)
     private String mobile;
 
     @Column(name = "password", nullable = false)

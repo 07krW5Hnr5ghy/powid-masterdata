@@ -25,13 +25,13 @@ public class District {
                         @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
                         @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
         })
-        @Column(name = "id_distrito", unique = true)
+        @Column(name = "id_distrito")
         private Long id;
 
-        @Column(name = "nombre", length = 50, unique = true)
+        @Column(name = "nombre", length = 50)
         private String name;
 
-        @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE")
+        @Column(name = "estado")
         private boolean status;
 
         @Column(name = "fecha_registro")
