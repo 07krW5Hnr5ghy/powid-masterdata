@@ -8,7 +8,9 @@ import com.proyect.masterdata.domain.StoreType;
 
 public interface StoreTypeRepository extends JpaRepository<StoreType, Long> {
 
-    StoreType findByNameAndStatusTrue(String storeType);
+    StoreType findByNameAndStatusTrue(String name);
 
-    List<StoreType> findByNameInAndStatusTrue(List<String> storeTypeList);
+    List<StoreType> findByNameInAndStatusTrue(List<String> nameList);
+
+    boolean existsByName(String name);
 }
