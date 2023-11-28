@@ -34,10 +34,10 @@ public class EntryChannel {
     @Column(name = "estado", nullable = false)
     private Boolean status;
 
-    @Column(name = "fecha_registro", nullable = false)
+    @Column(name = "fecha_registro")
     private Date dateRegistration;
 
-    @Column(name = "fecha_modificacion", nullable = false)
+    @Column(name = "fecha_modificacion")
     private Date dateUpdate;
 
     @Column(name = "usuario_token", nullable = false)

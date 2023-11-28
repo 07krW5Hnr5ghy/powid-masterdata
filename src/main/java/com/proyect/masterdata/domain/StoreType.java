@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableStoreType, schema = Constants.schemaManagement)
+@Table(name = Constants.tableStoreType, schema = Constants.schemaMaster)
 public class StoreType {
 
     @Id
