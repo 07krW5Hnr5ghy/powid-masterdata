@@ -37,7 +37,7 @@ public class UserRole {
     @Column(name = "usuario_token", nullable = false)
     private String tokenUser;
 
-    @Column(name = "fecha_registro", nullable = false)
+    @Column(name = "fecha_registro")
     private Date dateRegistration;
 
 }

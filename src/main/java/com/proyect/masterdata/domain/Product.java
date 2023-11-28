@@ -34,11 +34,11 @@ public class Product {
     @Column(name = "sku", nullable = false)
     private String sku;
 
-    @Column(name = "fecha_registro", nullable = false)
+    @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date dateRegistration;
 
-    @Column(name = "fecha_modificacion", nullable = false)
+    @Column(name = "fecha_modificacion")
     @CreationTimestamp
     private Date dateUpdate;
 

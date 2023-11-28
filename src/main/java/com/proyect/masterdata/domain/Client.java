@@ -63,7 +63,7 @@ public class Client {
         @Column(name = "id_usuario", nullable = false)
         private Long idUser;
 
-        @Column(name = "fecha_registro", nullable = false)
+        @Column(name = "fecha_registro")
         @CreationTimestamp
         private Date dateRegistration;
 

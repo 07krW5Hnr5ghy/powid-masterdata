@@ -8,4 +8,6 @@ import com.proyect.masterdata.domain.EntryChannel;
 @Repository
 public interface EntryChannelRepository extends JpaRepository<EntryChannel, Long> {
     EntryChannel findByNameAndStatusTrue(String name);
+
+    boolean existsByNameAndStatusTrue(String name);
 }
