@@ -52,6 +52,7 @@ public class StoreTypeImpl implements IStoreType {
                     .name(name.toUpperCase())
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
+                    .dateUpdate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
 

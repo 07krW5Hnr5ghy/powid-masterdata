@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
+import com.proyect.masterdata.domain.Category;
 import com.proyect.masterdata.domain.ClosingChannel;
 import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Onboard;
@@ -21,6 +22,7 @@ import com.proyect.masterdata.dto.response.ResponseLogin;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.repository.CategoryRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.ClosingChannelRepository;
 import com.proyect.masterdata.repository.DistrictRepository;
@@ -57,6 +59,7 @@ public class AuthenticationImpl implements IAuthentication {
     private final IStore iStore;
     private final StoreRepository storeRepository;
     private final IOnboardStore iOnboardStore;
+    private final CategoryRepository categoryRepository;
 
     public ResponseLogin loginUser(String username, String password) {
         try {
@@ -88,6 +91,7 @@ public class AuthenticationImpl implements IAuthentication {
         boolean existsClientDni = false;
         boolean existsClientEmail = false;
         boolean existsClientMobile = false;
+        boolean category = false;
         District district = null;
         List<ClosingChannel> closingChannels;
 
@@ -103,6 +107,7 @@ public class AuthenticationImpl implements IAuthentication {
             district = districtRepository.findByNameAndStatusTrue(requestOnboarding.getDistrict().toUpperCase());
             closingChannels = closingChannelRepository.findByNameInAndStatusTrue(
                     requestOnboarding.getClosingChannels().stream().map(name -> name.toUpperCase()).toList());
+            category = categoryRepository.existsByNameAndStatusTrue(requestOnboarding.getCategory().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -148,6 +153,10 @@ public class AuthenticationImpl implements IAuthentication {
             throw new BadRequestExceptions(Constants.ErrorClosingChannel);
         }
 
+        if (!category) {
+            throw new BadRequestExceptions(Constants.ErrorCategory);
+        }
+
         try {
 
             RequestUser requestUser = RequestUser.builder()
@@ -183,9 +192,8 @@ public class AuthenticationImpl implements IAuthentication {
             Onboard onboard = iOnboard.save(RequestOnboard.builder()
                     .businessRuc(requestOnboarding.getBussinesRuc())
                     .billing(requestOnboarding.getBilling())
-                    .category(requestOnboarding.getCategory())
                     .ecommerce(requestOnboarding.getEcommerce())
-                    .category(requestOnboarding.getCategory())
+                    .category(requestOnboarding.getCategory().toUpperCase())
                     .entryChannel(requestOnboarding.getEntryChannel())
                     .users(requestOnboarding.getUsers())
                     .comments(requestOnboarding.getComment())

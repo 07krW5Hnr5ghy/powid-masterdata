@@ -29,9 +29,6 @@ public class Onboard {
     @Column(name = "id_onboard")
     private Long id;
 
-    @Column(name = "categoria", nullable = false)
-    private String category;
-
     @Column(name = "ecommerce", nullable = false)
     private Boolean ecommerce;
 
@@ -53,6 +50,9 @@ public class Onboard {
     @Column(name = "id_canal_entrada", nullable = false)
     private Long idEntryChannel;
 
+    @Column(name = "id_categoria", nullable = false)
+    private Long idCategory;
+
     @OneToOne
     @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false, updatable = false)
     private Client client;
@@ -60,5 +60,9 @@ public class Onboard {
     @ManyToOne
     @JoinColumn(name = "id_canal_entrada", columnDefinition = "idEntryChannel", insertable = false, updatable = false)
     private EntryChannel entryChannel;
+
+    @ManyToOne
+    @JoinColumn(name = "id_categoria", columnDefinition = "idCategory", insertable = false, updatable = false)
+    private Category category;
 
 }
