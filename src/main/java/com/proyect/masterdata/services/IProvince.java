@@ -11,10 +11,10 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IProvince {
-        ResponseSuccess save(String name, String user, Long codeDepartment)
+        ResponseSuccess save(String name, String user, String department)
                         throws BadRequestExceptions, InternalErrorExceptions;
 
-        ResponseSuccess saveAll(List<String> names, String user, Long codeDepartment)
+        ResponseSuccess saveAll(List<String> names, String user, String department)
                         throws BadRequestExceptions, InternalErrorExceptions;
 
         ProvinceDTO update(RequestProvince requestProvince) throws BadRequestExceptions, InternalErrorExceptions;

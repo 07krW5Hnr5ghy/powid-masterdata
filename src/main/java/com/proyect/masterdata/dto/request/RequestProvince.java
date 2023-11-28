@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RequestProvince {
-    private Long code;
     private String name;
     private boolean status;
     private String user;

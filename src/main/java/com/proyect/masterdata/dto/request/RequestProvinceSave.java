@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class RequestProvinceSave {
     private String name;
     private String user;
-    private Long codeDepártment;
+    private Long codeDepartment;
 }

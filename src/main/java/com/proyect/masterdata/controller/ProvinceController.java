@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/province")
 @AllArgsConstructor
 public class ProvinceController {
@@ -25,26 +25,23 @@ public class ProvinceController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
-            @RequestParam("codeDepartment") Long codeDepartment
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iProvince.save(name,user, codeDepartment);
+            @RequestParam("department") String department) throws BadRequestExceptions {
+        ResponseSuccess result = iProvince.save(name, user, department);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/provinces", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestParam("user") String user,
-            @RequestParam("codeDepartment") Long codeDepartment,
-            @RequestBody() List<String> names
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iProvince.saveAll(names, user, codeDepartment);
+            @RequestParam("department") String department,
+            @RequestBody() List<String> names) throws BadRequestExceptions {
+        ResponseSuccess result = iProvince.saveAll(names, user, department);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProvinceDTO> update(
-            @RequestBody() RequestProvince requestProvince
-    ) throws BadRequestExceptions {
+            @RequestBody() RequestProvince requestProvince) throws BadRequestExceptions {
         ProvinceDTO result = iProvince.update(requestProvince);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -52,8 +49,7 @@ public class ProvinceController {
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("code") Long code,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
+            @RequestParam("user") String user) throws BadRequestExceptions {
         ResponseDelete result = iProvince.delete(code, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -73,13 +69,13 @@ public class ProvinceController {
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<ProvinceDTO> result = iProvince.list(name, user, codeDepartment, nameDepartment, sort, sortColumn, pageNumber, pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<ProvinceDTO> result = iProvince.list(name, user, codeDepartment, nameDepartment, sort, sortColumn,
+                pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/statusFalse", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ProvinceDTO>> listStatusFalse(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -88,16 +84,15 @@ public class ProvinceController {
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<ProvinceDTO> result = iProvince.listStatusFalse(name, user, codeDepartment, nameDepartment, sort, sortColumn, pageNumber, pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<ProvinceDTO> result = iProvince.listStatusFalse(name, user, codeDepartment, nameDepartment, sort,
+                sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProvinceDTO> findByCode(
-            @RequestParam("code") Long code
-    ) throws BadRequestExceptions {
+            @RequestParam("code") Long code) throws BadRequestExceptions {
         ProvinceDTO result = iProvince.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

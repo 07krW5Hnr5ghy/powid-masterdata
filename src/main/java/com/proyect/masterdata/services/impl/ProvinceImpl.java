@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.Department;
 import com.proyect.masterdata.domain.Province;
 import com.proyect.masterdata.dto.ProvinceDTO;
 import com.proyect.masterdata.dto.request.RequestProvince;
@@ -20,7 +21,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,15 +37,15 @@ public class ProvinceImpl implements IProvince {
     private final UserRepository userRepository;
 
     @Override
-    public ResponseSuccess save(String name, String user, Long codeDepartment)
+    public ResponseSuccess save(String name, String user, String department)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsProvince;
-        boolean existsDepartment;
+        Department departmentData;
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
             existsProvince = provinceRepository.existsByName(name.toUpperCase());
-            existsDepartment = departmentRepository.existsById(codeDepartment);
+            departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -58,14 +59,16 @@ public class ProvinceImpl implements IProvince {
             throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
         }
 
-        if (!existsDepartment) {
+        if (departmentData == null) {
             throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
         }
 
         try {
             provinceRepository.save(Province.builder()
                     .name(name.toUpperCase())
-                    .idDepartment(codeDepartment)
+                    .department(departmentData)
+                    .idDepartment(departmentData.getId())
+                    .dateRegistration(new Date(System.currentTimeMillis()))
                     .status(true)
                     .build());
             return ResponseSuccess.builder()
@@ -79,14 +82,14 @@ public class ProvinceImpl implements IProvince {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user, Long codeDepartment)
+    public ResponseSuccess saveAll(List<String> names, String user, String department)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
-        boolean existsDepartment;
+        Department departmentData;
         List<Province> provinces;
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            existsDepartment = departmentRepository.existsById(codeDepartment);
+            departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
             provinces = provinceRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -96,16 +99,18 @@ public class ProvinceImpl implements IProvince {
         if (!existsUser) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (!existsDepartment) {
+
+        if (departmentData == null) {
             throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
         }
+
         if (!provinces.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorProvinceList.toUpperCase());
         }
 
         List<RequestProvinceSave> provinceSaves = names.stream().map(data -> RequestProvinceSave.builder()
                 .user(user.toUpperCase())
-                .codeDepártment(codeDepartment)
+                .codeDepartment(departmentData.getId())
                 .name(data.toUpperCase())
                 .build()).toList();
 

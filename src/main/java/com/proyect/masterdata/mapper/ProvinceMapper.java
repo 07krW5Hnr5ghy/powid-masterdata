@@ -1,6 +1,5 @@
 package com.proyect.masterdata.mapper;
 
-
 import com.proyect.masterdata.domain.Province;
 import com.proyect.masterdata.dto.ProvinceDTO;
 import com.proyect.masterdata.dto.request.RequestProvince;
@@ -20,10 +19,9 @@ public interface ProvinceMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "requestProvinceSave.name")
     @Mapping(target = "user", source = "requestProvinceSave.user")
-    @Mapping(target = "idDepartment", source = "requestProvinceSave.codeDepártment")
+    @Mapping(target = "idDepartment", source = "requestProvinceSave.codeDepartment")
     Province provinceToName(RequestProvinceSave requestProvinceSave);
 
-    @Mapping(target = "id", source = "code")
     @Mapping(target = "idDepartment", source = "codeDepartment")
     @Mapping(target = "dateRegistration", ignore = true)
     Province requestProvinceToProvince(RequestProvince requestProvince);
