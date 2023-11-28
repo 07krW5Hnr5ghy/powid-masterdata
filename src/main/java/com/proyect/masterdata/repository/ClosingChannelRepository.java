@@ -11,4 +11,6 @@ import com.proyect.masterdata.domain.ClosingChannel;
 public interface ClosingChannelRepository extends JpaRepository<ClosingChannel, Long> {
 
     List<ClosingChannel> findByNameInAndStatusTrue(List<String> names);
+
+    boolean existsByNameAndStatusTrue(String name);
 }
