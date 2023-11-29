@@ -70,6 +70,7 @@ public class ProvinceImpl implements IProvince {
                     .idDepartment(departmentData.getId())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .status(true)
+                    .user(user.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
