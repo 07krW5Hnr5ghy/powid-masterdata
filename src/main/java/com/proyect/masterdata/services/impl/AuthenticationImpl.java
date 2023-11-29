@@ -100,7 +100,7 @@ public class AuthenticationImpl implements IAuthentication {
             existsUserDni = userRepository.existsByDni(requestOnboarding.getDni());
             existsUserEmail = userRepository.existsByEmail(requestOnboarding.getEmail());
             existsUserMobile = userRepository.existsByMobile(requestOnboarding.getMobile());
-            existsClientRuc = clientRepository.existsByRuc(requestOnboarding.getBussinesRuc());
+            existsClientRuc = clientRepository.existsByRuc(requestOnboarding.getBusinessRuc());
             existsClientDni = clientRepository.existsByDni(requestOnboarding.getDni());
             existsClientEmail = clientRepository.existsByEmail(requestOnboarding.getEmail());
             existsClientMobile = clientRepository.existsByMobile(requestOnboarding.getMobile());
@@ -110,6 +110,7 @@ public class AuthenticationImpl implements IAuthentication {
             category = categoryRepository.existsByNameAndStatusTrue(requestOnboarding.getCategory().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
+            System.out.println("Arriba");
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
@@ -165,12 +166,12 @@ public class AuthenticationImpl implements IAuthentication {
                     .surname(requestOnboarding.getSurname().toUpperCase())
                     .address(requestOnboarding.getAddress().toUpperCase())
                     .dni(requestOnboarding.getDni())
-                    .gender(requestOnboarding.getGender())
+                    .gender(requestOnboarding.getGender().toUpperCase())
                     .mobile(requestOnboarding.getMobile())
                     .password(requestOnboarding.getPassword())
                     .email(requestOnboarding.getEmail())
                     .district(requestOnboarding.getDistrict().toUpperCase())
-                    .user("REGISTER")
+                    .tokenUser("REGISTER")
                     .build();
 
             iUser.save(requestUser);
@@ -178,25 +179,26 @@ public class AuthenticationImpl implements IAuthentication {
             RequestClientSave requestClientSave = RequestClientSave.builder()
                     .name(requestOnboarding.getName().toUpperCase())
                     .surname(requestOnboarding.getSurname().toUpperCase())
-                    .business(requestOnboarding.getBussinesName().toUpperCase())
+                    .business(requestOnboarding.getBusinessName().toUpperCase())
                     .address(requestOnboarding.getAddress().toUpperCase())
                     .dni(requestOnboarding.getDni())
                     .email(requestOnboarding.getEmail())
                     .mobile(requestOnboarding.getMobile())
                     .district(requestOnboarding.getDistrict().toUpperCase())
-                    .ruc(requestOnboarding.getBussinesRuc())
+                    .ruc(requestOnboarding.getBusinessRuc())
                     .build();
 
             iClient.save(requestClientSave, requestOnboarding.getUsername().toUpperCase());
 
             Onboard onboard = iOnboard.save(RequestOnboard.builder()
-                    .businessRuc(requestOnboarding.getBussinesRuc())
+                    .businessRuc(requestOnboarding.getBusinessRuc())
                     .billing(requestOnboarding.getBilling())
                     .ecommerce(requestOnboarding.getEcommerce())
                     .category(requestOnboarding.getCategory().toUpperCase())
                     .entryChannel(requestOnboarding.getEntryChannel())
                     .users(requestOnboarding.getUsers())
                     .comments(requestOnboarding.getComment())
+                    .demo(requestOnboarding.getDemo())
                     .build());
 
             for (ClosingChannel closingChannel : closingChannels) {
@@ -208,7 +210,7 @@ public class AuthenticationImpl implements IAuthentication {
                         .name(requestOnboarding.getStore().toUpperCase())
                         .storeType(requestOnboarding.getStoreType().toUpperCase())
                         .url(requestOnboarding.getStoreUrl())
-                        .clientRuc(requestOnboarding.getBussinesRuc())
+                        .clientRuc(requestOnboarding.getBusinessRuc())
                         .build();
 
                 iStore.save(requestStoreSave, "REGISTER");
@@ -225,6 +227,8 @@ public class AuthenticationImpl implements IAuthentication {
                     .build();
 
         } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            System.out.println("Abajo");
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 

@@ -37,9 +37,9 @@ public class RequestOnboarding {
 
     private String comment;
 
-    private String bussinesName;
+    private String businessName;
 
-    private String bussinesRuc;
+    private String businessRuc;
 
     private String gender;
 

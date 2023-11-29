@@ -64,6 +64,9 @@ public class User {
     @Column(name = "id_distrito", updatable = false, nullable = false)
     private Long idDistrict;
 
+    @Column(name = "usuario_token", nullable = false)
+    private String tokenUser;
+
     @ManyToOne
     @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict", insertable = false, updatable = false)
     private District district;

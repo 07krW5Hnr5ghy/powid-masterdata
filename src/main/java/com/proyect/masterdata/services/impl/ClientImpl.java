@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.District;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.ClientDTO;
 import com.proyect.masterdata.dto.request.RequestClient;
 import com.proyect.masterdata.dto.request.RequestClientSave;
@@ -41,12 +42,12 @@ public class ClientImpl implements IClient {
     public ResponseSuccess save(RequestClientSave requestClientSave, String user)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        boolean existsUser;
+        User userData;
         boolean existsClient;
         District district;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            userData = userRepository.findByUsername(user.toUpperCase());
             existsClient = clientRepository.existsByRuc(requestClientSave.getRuc());
             district = districtRepository.findByNameAndStatusTrue(requestClientSave.getDistrict().toUpperCase());
         } catch (RuntimeException e) {
@@ -54,7 +55,7 @@ public class ClientImpl implements IClient {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (userData == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
@@ -80,6 +81,8 @@ public class ClientImpl implements IClient {
                     .ruc(requestClientSave.getRuc())
                     .district(district)
                     .idDistrict(district.getId())
+                    .user(userData)
+                    .idUser(userData.getId())
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build());

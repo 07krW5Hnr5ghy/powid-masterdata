@@ -44,6 +44,7 @@ public class UserImpl implements IUser {
     public ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         boolean existsUser;
+        boolean existsTokenUser;
         boolean existsDni;
         boolean existsEmail;
         boolean existsMobile;
@@ -52,6 +53,7 @@ public class UserImpl implements IUser {
 
         try {
             existsUser = userRepository.existsByUsername(requestUser.getUser().toUpperCase());
+            existsTokenUser = userRepository.existsByUsername(requestUser.getTokenUser().toUpperCase());
             existsDni = userRepository.existsByDni(requestUser.getDni());
             existsEmail = userRepository.existsByEmail(requestUser.getEmail());
             existsMobile = userRepository.existsByMobile(requestUser.getMobile());
@@ -63,6 +65,10 @@ public class UserImpl implements IUser {
 
         if (existsUser) {
             throw new BadRequestExceptions(Constants.ErrorUserExist);
+        }
+
+        if (!existsTokenUser) {
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (existsDni) {
@@ -94,6 +100,7 @@ public class UserImpl implements IUser {
                     .password(passwordEncoder.encode(requestUser.getPassword()))
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .idDistrict(district.getId())
+                    .tokenUser(requestUser.getTokenUser())
                     .status(true)
                     .build());
             return ResponseSuccess.builder()

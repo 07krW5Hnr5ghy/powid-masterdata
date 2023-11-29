@@ -65,6 +65,8 @@ public class OnboardImpl implements IOnboard {
                     .idCategory(category.getId())
                     .ecommerce(requestOnboard.getEcommerce())
                     .entryChannel(entryChannel)
+                    .idEntryChannel(entryChannel.getId())
+                    .users(requestOnboard.getUsers())
                     .client(client)
                     .idClient(client.getId())
                     .demo(requestOnboard.getDemo())

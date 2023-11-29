@@ -67,13 +67,15 @@ public class MasterdataApplication {
 
 			User adminUser = userRepository
 					.save(new User(1L, "ADMIN1", "JEISON", "CAMACHO", "1234567819", "jca@gmail.com", "cr 12 h 34", "M",
-							"1234567819", passwordEncoder.encode("123abc+"), true, new Date(System.currentTimeMillis()),
-							new Date(System.currentTimeMillis()), district.getId(), district));
+							"1234567819", passwordEncoder.encode("123abc+"), true,
+							new Date(System.currentTimeMillis()),
+							new Date(System.currentTimeMillis()), district.getId(), "SYSTEM", district));
 
 			User registerUser = userRepository.save(
 					new User(2L, "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER",
-							"REGISTER", passwordEncoder.encode("321abc+"), true, new Date(System.currentTimeMillis()),
-							new Date(System.currentTimeMillis()), district.getId(), district));
+							"REGISTER", passwordEncoder.encode("321abc+"), true,
+							new Date(System.currentTimeMillis()),
+							new Date(System.currentTimeMillis()), district.getId(), "SYSTEM", district));
 
 			userRoleRepository.save(
 					new UserRole(1L, adminUser.getId(), role.getId(), "TEST", new Date(System.currentTimeMillis())));
