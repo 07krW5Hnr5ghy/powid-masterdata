@@ -69,6 +69,7 @@ public class DistrictImpl implements IDistrict {
                     .user(user.toUpperCase())
                     .province(provinceData)
                     .idProvince(provinceData.getId())
+                    .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build());
             return ResponseSuccess.builder()
