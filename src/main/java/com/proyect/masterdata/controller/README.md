@@ -41,6 +41,84 @@ Body
     "password":"123abc+"
 }
 
+### POST /auth/register
+
+- Description : register new client in the backend service
+
+- Request : 
+
+{
+  "username": "rt87",
+  "name":"rogelio",
+  "surname":"trujillo",
+  "email":"rt87@gmail.com",
+  "address":"cra 567",
+  "mobile":"123456789",
+  "dni":"12345678911",
+  "category":"tennis",
+  "users":10,
+  "ecommerce":true,
+  "billing":false,
+  "comment":"administrar pedidos",
+  "businessName":"trading company ltda",
+  "businessRuc":"12345678911",
+  "password": "123abc+",
+  "gender":"M",
+  "district": "asuncion",
+  "store": "e-shop",
+  "storeUrl": "e-shop.com",
+  "storeType": "shopify",
+  "closingChannels" : ["facebook","instagram"],
+  "entryChannel":"tiktok",
+  "demo":true,
+  "tokenUser":"REGISTER"
+}
+
+- Parameters : none
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+Url
+
+http://localhost:8080/masterdata/auth/register
+
+Body
+
+{
+  "username": "rt87",
+  "name":"rogelio",
+  "surname":"trujillo",
+  "email":"rt87@gmail.com",
+  "address":"cra 567",
+  "mobile":"123456789",
+  "dni":"12345678911",
+  "category":"tennis",
+  "users":10,
+  "ecommerce":true,
+  "billing":false,
+  "comment":"administrar pedidos",
+  "businessName":"trading company ltda",
+  "businessRuc":"12345678911",
+  "password": "123abc+",
+  "gender":"M",
+  "district": "asuncion",
+  "store": "e-shop",
+  "storeUrl": "e-shop.com",
+  "storeType": "shopify",
+  "closingChannels" : ["facebook","instagram"],
+  "entryChannel":"tiktok",
+  "demo":true,
+  "tokenUser":"REGISTER"
+}
+
 ### POST /category
 - Description : add one category to the database
 - Request: none
