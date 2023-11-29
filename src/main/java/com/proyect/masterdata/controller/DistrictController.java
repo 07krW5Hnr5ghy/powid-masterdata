@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/district")
 @AllArgsConstructor
 public class DistrictController {
@@ -27,26 +27,23 @@ public class DistrictController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
-            @RequestParam("codeDepartment") Long codeDepartment
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iDistrict.save(name,user, codeDepartment);
+            @RequestParam("province") String province) throws BadRequestExceptions {
+        ResponseSuccess result = iDistrict.save(name, user, province);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/districts", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestParam("user") String user,
-            @RequestParam("codeProvince") Long codeProvince,
-            @RequestBody() List<String> names
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iDistrict.saveAll(names, user, codeProvince);
+            @RequestParam("codeProvince") String province,
+            @RequestBody() List<String> names) throws BadRequestExceptions {
+        ResponseSuccess result = iDistrict.saveAll(names, user, province);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DistrictDTO> update(
-            @RequestBody() RequestDistrict requestDistrict
-    ) throws BadRequestExceptions {
+            @RequestBody() RequestDistrict requestDistrict) throws BadRequestExceptions {
         DistrictDTO result = iDistrict.update(requestDistrict);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -54,8 +51,7 @@ public class DistrictController {
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("code") Long code,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
+            @RequestParam("user") String user) throws BadRequestExceptions {
         ResponseDelete result = iDistrict.delete(code, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -75,13 +71,13 @@ public class DistrictController {
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<DistrictDTO> result = iDistrict.list(name, user, codeProvince, nameProvince, sort, sortColumn, pageNumber, pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<DistrictDTO> result = iDistrict.list(name, user, codeProvince, nameProvince, sort, sortColumn, pageNumber,
+                pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/statusFalse", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<DistrictDTO>> listStatusFalse(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -90,16 +86,15 @@ public class DistrictController {
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<DistrictDTO> result = iDistrict.listStatusFalse(name, user, codeProvince, nameProvince, sort, sortColumn, pageNumber, pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<DistrictDTO> result = iDistrict.listStatusFalse(name, user, codeProvince, nameProvince, sort, sortColumn,
+                pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DistrictDTO> findByCode(
-            @RequestParam("code") Long code
-    ) throws BadRequestExceptions {
+            @RequestParam("code") Long code) throws BadRequestExceptions {
         DistrictDTO result = iDistrict.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

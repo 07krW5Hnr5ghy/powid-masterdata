@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.District;
+import com.proyect.masterdata.domain.Province;
 import com.proyect.masterdata.dto.DistrictDTO;
 import com.proyect.masterdata.dto.request.RequestDistrict;
 import com.proyect.masterdata.dto.request.RequestDistrictSave;
@@ -20,7 +21,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,15 +37,15 @@ public class DistrictImpl implements IDistrict {
     private final UserRepository userRepository;
 
     @Override
-    public ResponseSuccess save(String name, String user, Long codeProvince)
+    public ResponseSuccess save(String name, String user, String province)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsDistrict;
-        boolean existsProvince;
+        Province provinceData;
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
             existsDistrict = districtRepository.existsByName(name.toUpperCase());
-            existsProvince = provinceRepository.existsById(codeProvince);
+            provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -55,18 +56,20 @@ public class DistrictImpl implements IDistrict {
         }
 
         if (existsDistrict) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorDistrictExists.toUpperCase());
         }
 
-        if (!existsProvince) {
-            throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
+        if (provinceData == null) {
+            throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
         }
 
         try {
             districtRepository.save(District.builder()
                     .name(name.toUpperCase())
                     .user(user.toUpperCase())
-                    .idProvince(codeProvince)
+                    .province(provinceData)
+                    .idProvince(provinceData.getId())
+                    .dateRegistration(new Date(System.currentTimeMillis()))
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -79,14 +82,14 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user, Long codeProvince)
+    public ResponseSuccess saveAll(List<String> names, String user, String province)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
-        boolean existsProvince;
+        Province provinceData;
         List<District> districts;
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            existsProvince = provinceRepository.existsById(codeProvince);
+            provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
             districts = districtRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -96,16 +99,17 @@ public class DistrictImpl implements IDistrict {
         if (!existsUser) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (!existsProvince) {
-            throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
+        if (provinceData == null) {
+            throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
         }
         if (!districts.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceList.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorDistrict.toUpperCase());
         }
 
         List<RequestDistrictSave> provinceSaves = names.stream().map(data -> RequestDistrictSave.builder()
                 .user(user.toUpperCase())
-                .codeProvince(codeProvince)
+                .province(provinceData)
+                .codeProvince(provinceData.getId())
                 .name(data.toUpperCase())
                 .build()).toList();
 

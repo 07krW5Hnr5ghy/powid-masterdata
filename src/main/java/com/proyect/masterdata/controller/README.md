@@ -5,6 +5,42 @@ API for powip backend
 
 ## Endpoints
 
+### POST /auth/login
+
+- Description : log the user in the backend and retrieves a token
+
+- Request : 
+
+{
+
+    "username": username,
+    "password": password
+}
+
+- Parameters : none
+
+- Response : 
+
+{
+
+    "user": ... user data,
+    "jwt": token that authenticates the user
+}
+
+- Example :
+
+Url
+
+http://localhost:8080/masterdata/auth/login
+
+Body
+
+{
+
+    "username":"admin1",
+    "password":"123abc+"
+}
+
 ### POST /category
 - Description : add one category to the database
 - Request: none
@@ -95,6 +131,29 @@ Body
 
 http://localhost:8080/masterdata/closing-channel?name=instagram&tokenUser=admin1
 
+### POST /department
+
+- Description : add one department to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the department
+2. user : username of the user who creates department
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/department?name=amazonas&user=admin1
+
 ### POST /entry-channel
 
 - Description : add one entry channel to the database
@@ -118,41 +177,29 @@ http://localhost:8080/masterdata/closing-channel?name=instagram&tokenUser=admin1
 
 http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
 
-### POST /auth/login
+### POST /province
 
-- Description : log the user in the backend and retrieves a token
+- Description : add one province to the department
 
-- Request : 
+- Request : none
 
-{
+- Parameters : 
 
-    "username": username,
-    "password": password
-}
-
-- Parameters : none
+1. name : name of the province
+2. department : name of the department 
+3. user : username of the user who creates province
 
 - Response : 
 
 {
 
-    "user": ... user data,
-    "jwt": token that authenticates the user
+    "code": 200,
+    "message": "registration correctly"
 }
 
 - Example :
 
-Url
-
-http://localhost:8080/masterdata/auth/login
-
-Body
-
-{
-
-    "username":"admin1",
-    "password":"123abc+"
-}
+http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&user=admin1
 
 ### POST /store-type
 
