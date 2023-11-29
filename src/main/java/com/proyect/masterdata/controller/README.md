@@ -154,6 +154,30 @@ http://localhost:8080/masterdata/closing-channel?name=instagram&tokenUser=admin1
 
 http://localhost:8080/masterdata/department?name=amazonas&user=admin1
 
+### POST /district
+
+- Description : add one district to a province in the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the district
+2. province : name of the province
+3. user : username of the user who creates department
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/district?name=asuncion&province=chachapoyas&user=admin1
+
 ### POST /entry-channel
 
 - Description : add one entry channel to the database
