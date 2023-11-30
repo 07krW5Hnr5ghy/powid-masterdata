@@ -19,29 +19,27 @@ import java.util.Date;
 @Data
 @Table(name = Constants.tableModule, schema = Constants.schemaMaster)
 public class Module {
+
         @Id
-        @GeneratedValue(generator = "sequence-module")
-        @GenericGenerator(name = "sequence-module", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-                        @Parameter(name = "sequence_name", value = "modulo_sequence"),
-                        @Parameter(name = "initial_value", value = "1"),
-                        @Parameter(name = "increment_size", value = "1")
-        })
+        @GeneratedValue(strategy = GenerationType.AUTO)
         @Column(name = "id_modulo")
         private Long id;
 
-        @Column(name = "nombre")
+        @Column(name = "nombre", nullable = false)
         private String name;
 
-        @Column(name = "precio")
-        private double price;
+        @Column(name = "precio_mensual", nullable = false)
+        private Double monthlyPrice;
 
-        @Column(name = "estado_modulo")
-        private int status_module;
+        @Column(name = "estado", nullable = false)
+        private Boolean status;
 
-        @Column(name = "estado", columnDefinition = "boolean default true")
-        private boolean status;
-
-        @Column(name = "fecha_registro")
+        @Column(name = "fecha_registro", nullable = false)
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
+
+        @Column(name = "fecha_modificacion", nullable = false)
+        @CreationTimestamp
+        private Date updateDate;
+
 }
