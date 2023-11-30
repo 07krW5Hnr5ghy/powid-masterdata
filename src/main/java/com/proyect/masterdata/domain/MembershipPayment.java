@@ -16,7 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 @Table(name = Constants.tablePayment, schema = Constants.schemaManagement)
-public class Payment {
+public class SubscriptionPayment {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
@@ -43,8 +43,8 @@ public class Payment {
         @CreationTimestamp
         private Date updateDate;
 
-        @Column(name = "id_subscripcion", nullable = false)
-        private Long subscriptionId;
+        @Column(name = "id_membresia", nullable = false)
+        private Long membershipId;
 
         @Column(name = "id_estado_pago", nullable = false)
         private Long paymentStateId;
@@ -52,8 +52,8 @@ public class Payment {
         @Column(name = "id_metodo_pago", nullable = false)
         private Long paymentMethodId;
 
-        @JoinColumn(name = "id_subscripcion", columnDefinition = "subscriptionId", insertable = false, updatable = false)
-        private Subscription subscription;
+        @JoinColumn(name = "id_membresia", columnDefinition = "membershipId", insertable = false, updatable = false)
+        private Membership membership;
 
         @JoinColumn(name = "id_estado_pago", columnDefinition = "paymentStateId", insertable = false, updatable = false)
         private PaymentState paymentState;
