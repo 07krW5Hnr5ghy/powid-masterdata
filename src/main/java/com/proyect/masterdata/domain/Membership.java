@@ -25,11 +25,11 @@ public class Membership {
         private Long id;
 
         @Column(name = "fecha_registro", nullable = false)
-        private Date dateRegistration;
+        private Date registrationDate;
 
         @Column(name = "fecha_modificacion")
         @CreationTimestamp
-        private Date dateUpdate;
+        private Date updateDate;
 
         @Column(name = "fecha_vencimiento")
         @CreationTimestamp
@@ -42,17 +42,17 @@ public class Membership {
         private Boolean demo;
 
         @Column(name = "id_cliente", nullable = false)
-        private Long idClient;
+        private Long clientId;
 
         @Column(name = "id_subscribcion", nullable = false)
-        private Long idSubscription;
+        private Long subscriptionId;
 
         @ManyToOne
-        @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false, updatable = false)
+        @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
         private Client client;
 
         @ManyToOne
-        @JoinColumn(name = "id_subscribcion", columnDefinition = "idSubscription", insertable = false, updatable = false)
+        @JoinColumn(name = "id_subscribcion", columnDefinition = "subscriptionId", insertable = false, updatable = false)
         private Subscription subscription;
 
 }

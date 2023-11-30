@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import java.util.Date;
 
@@ -19,39 +17,48 @@ import java.util.Date;
 @Data
 @Table(name = Constants.tablePayment, schema = Constants.schemaManagement)
 public class Payment {
+
         @Id
-        @GeneratedValue(generator = "sequence-payment")
-        @GenericGenerator(name = "sequence-payment", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-                        @Parameter(name = "sequence_name", value = "pago_sequence"),
-                        @Parameter(name = "initial_value", value = "1"),
-                        @Parameter(name = "increment_size", value = "1")
-        })
+        @GeneratedValue(strategy = GenerationType.AUTO)
         @Column(name = "id_pago", nullable = false)
         private Long id;
 
-        @Column(name = "pago_total", nullable = false)
-        private double totalPayment;
+        @Column(name = "meses", nullable = false)
+        private Integer months;
 
-        @Column(name = "descuento", nullable = false)
-        private double discount;
+        @Column(name = "monto_neto", nullable = false)
+        private Double netAmount;
 
-        @Column(name = "mes")
-        private String month;
+        @Column(name = "monto_bruto", nullable = false)
+        private Double grossAmount;
 
         @Column(name = "url_factura")
         private String urlInvoice;
 
-        @Column(name = "id_estado_pago")
-        private Long idPaymentState;
-
-        @Column(name = "fecha_registro")
+        @Column(name = "fecha_registro", nullable = false)
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
 
-        @Column(name = "id_canal")
-        private Long idChannel;
+        @Column(name = "fecha_modificacion")
+        @CreationTimestamp
+        private Date updateDate;
 
-        @ManyToOne
-        @JoinColumn(name = "id_canal", columnDefinition = "idChannel", insertable = false, updatable = false)
-        private Channel channel;
+        @Column(name = "id_subscripcion", nullable = false)
+        private Long subscriptionId;
+
+        @Column(name = "id_estado_pago", nullable = false)
+        private Long paymentStateId;
+
+        @Column(name = "id_metodo_pago", nullable = false)
+        private Long paymentMethodId;
+
+        @JoinColumn(name = "id_subscripcion", columnDefinition = "subscriptionId", insertable = false, updatable = false)
+        private Subscription subscription;
+
+        @JoinColumn(name = "id_estado_pago", columnDefinition = "paymentStateId", insertable = false, updatable = false)
+        private PaymentState paymentState;
+
+        @JoinColumn(name = "id_metodo_pago", columnDefinition = "paymentMethodId", insertable = false, updatable = false)
+        private PaymentMethod paymentMethod;
+
 }
