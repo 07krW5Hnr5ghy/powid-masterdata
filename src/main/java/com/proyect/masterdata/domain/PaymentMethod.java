@@ -29,11 +29,11 @@ public class PaymentMethod {
         @Column(name = "estado", nullable = false)
         private Boolean status;
 
-        @Column(name = "fecha_registro")
+        @Column(name = "fecha_registro", nullable = false)
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
 
-        @Column(name = "usuario", nullable = false)
-        private String user;
+        @Column(name = "usuario_token", nullable = false)
+        private String tokenUser;
 
 }

@@ -16,14 +16,14 @@ public class Constants {
     public static final String tableChannel = "canal";
     public static final String tableClient = "cliente";
     public static final String tableMembership = "membresia";
-    public static final String tablePayment = "pago";
+    public static final String tablePaymentMembership = "pago_membresia";
     public static final String tableModule = "modulo";
     public static final String tableDiscount = "descuento";
     public static final String tableEvent = "evento";
     public static final String tablePaymentType = "tipo_pago";
     public static final String tableModuleType = "modulo_tipo";
     public static final String tableConnection = "conexion";
-    public static final String tablePaymentMethod = "medio_pago";
+    public static final String tablePaymentMethod = "metodo_pago";
     public static final String tablePaymentState = "estado_pago";
     public static final String tableState = "estado";
     public static final String tableSize = "talla";

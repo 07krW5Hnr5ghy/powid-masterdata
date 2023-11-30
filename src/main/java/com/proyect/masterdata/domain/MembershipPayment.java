@@ -15,8 +15,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tablePayment, schema = Constants.schemaManagement)
-public class SubscriptionPayment {
+@Table(name = Constants.tablePaymentMembership, schema = Constants.schemaManagement)
+public class MembershipPayment {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
