@@ -64,11 +64,18 @@ public class User {
     @Column(name = "id_distrito", updatable = false, nullable = false)
     private Long idDistrict;
 
+    @Column(name = "id_cliente", nullable = false)
+    private Long idClient;
+
     @Column(name = "usuario_token", nullable = false)
     private String tokenUser;
 
     @ManyToOne
     @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict", insertable = false, updatable = false)
     private District district;
+
+    @ManyToOne
+    @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false, updatable = false)
+    private Client client;
 
 }
