@@ -44,8 +44,15 @@ public class Membership {
         @Column(name = "id_cliente", nullable = false)
         private Long idClient;
 
+        @Column(name = "id_subscribcion", nullable = false)
+        private Long idSubscription;
+
         @ManyToOne
         @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false, updatable = false)
         private Client client;
+
+        @ManyToOne
+        @JoinColumn(name = "id_subscribcion", columnDefinition = "idSubscription", insertable = false, updatable = false)
+        private Subscription subscription;
 
 }

@@ -119,4 +119,5 @@ public class Constants {
     public static final String ErrorEntryChannelExists = "The entry channel already exists";
     public static final String ErrorClosingChannel = "The closing channel does not exists";
     public static final String ErrorClosingChannelExists = "The closing channel already exists";
+    public static final String ErrorSubscription = "The subscription does not exists";
 }
