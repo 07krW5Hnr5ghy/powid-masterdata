@@ -25,9 +25,8 @@ public class ClientController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestBody() RequestClientSave requestClientSave,
-            @RequestParam() String user) throws BadRequestExceptions {
-        ResponseSuccess result = iClient.save(requestClientSave, user);
+            @RequestBody() RequestClientSave requestClientSave) throws BadRequestExceptions {
+        ResponseSuccess result = iClient.save(requestClientSave);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

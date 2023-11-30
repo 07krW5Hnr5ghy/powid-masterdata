@@ -39,24 +39,18 @@ public class ClientImpl implements IClient {
     private final ClientRepositoryCustom clientRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(RequestClientSave requestClientSave, String user)
+    public ResponseSuccess save(RequestClientSave requestClientSave)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        User userData;
         boolean existsClient;
         District district;
 
         try {
-            userData = userRepository.findByUsername(user.toUpperCase());
             existsClient = clientRepository.existsByRuc(requestClientSave.getRuc());
             district = districtRepository.findByNameAndStatusTrue(requestClientSave.getDistrict().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (userData == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (existsClient) {
@@ -81,8 +75,6 @@ public class ClientImpl implements IClient {
                     .ruc(requestClientSave.getRuc())
                     .district(district)
                     .idDistrict(district.getId())
-                    .user(userData)
-                    .idUser(userData.getId())
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build());
@@ -168,7 +160,7 @@ public class ClientImpl implements IClient {
 
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            client = clientRepository.findByRuc(requestClient.getRuc());
+            client = clientRepository.findByRucAndStatusTrue(requestClient.getRuc());
             district = districtRepository.findByNameAndStatusTrue(requestClient.getDistrict());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -211,7 +203,7 @@ public class ClientImpl implements IClient {
         Client client;
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            client = clientRepository.findByRuc(ruc);
+            client = clientRepository.findByRucAndStatusTrue(ruc);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

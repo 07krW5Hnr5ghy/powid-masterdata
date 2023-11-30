@@ -54,7 +54,7 @@ public class StoreImpl implements IStore {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
             existsStore = storeRepository
                     .existsByName(requestStoreSave.getName().toUpperCase());
-            client = clientRepository.findByRuc(requestStoreSave.getClientRuc());
+            client = clientRepository.findByRucAndStatusTrue(requestStoreSave.getClientRuc());
             storeType = storeTypeRepository.findByNameAndStatusTrue(requestStoreSave.getStoreType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -115,7 +115,7 @@ public class StoreImpl implements IStore {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
             stores = storeRepository.findByNameIn(storeList.stream()
                     .map(store -> store.getName().toUpperCase()).collect(Collectors.toList()));
-            client = clientRepository.findByRuc(ruc);
+            client = clientRepository.findByRucAndStatusTrue(ruc);
             storeTypes = storeTypeRepository.findByNameInAndStatusTrue(
                     storeList.stream().map(store -> store.getStoreType().toUpperCase()).toList());
         } catch (RuntimeException e) {

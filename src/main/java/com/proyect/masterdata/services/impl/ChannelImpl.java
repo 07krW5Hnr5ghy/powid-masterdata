@@ -55,7 +55,7 @@ public class ChannelImpl implements IChannel {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
             userData = userRepository.findByUsername(requestChannelSave.getUser().toUpperCase());
             channel = channelRepository.existsByName(requestChannelSave.getName().toUpperCase());
-            client = clientRepository.findByRuc(requestChannelSave.getClient().toUpperCase());
+            client = clientRepository.findByRucAndStatusTrue(requestChannelSave.getClient().toUpperCase());
             paymentMethod = paymentMethodRepository
                     .findByNameAndStatusTrue(requestChannelSave.getPaymentMethod().toUpperCase());
             connection = connectionRepository.findByUrl(requestChannelSave.getConnection());
@@ -156,8 +156,8 @@ public class ChannelImpl implements IChannel {
                 return Channel.builder()
                         .name(channel.getName().toUpperCase())
                         .months(channel.getMonths())
-                        .client(clientRepository.findByRuc(channel.getClient()))
-                        .idClient(clientRepository.findByRuc(channel.getClient()).getId())
+                        .client(clientRepository.findByRucAndStatusTrue(channel.getClient()))
+                        .idClient(clientRepository.findByRucAndStatusTrue(channel.getClient()).getId())
                         .membership(membership)
                         .idMembership(membership.getId())
                         .paymentMethod(paymentMethodRepository
@@ -205,7 +205,7 @@ public class ChannelImpl implements IChannel {
             throw new BadRequestExceptions("Canal no existe");
         }
         try {
-            client = clientRepository.findByRuc(channel.getClient().getRuc());
+            client = clientRepository.findByRucAndStatusTrue(channel.getClient().getRuc());
             membership = membershipRepository.findById(channel.getIdMembership()).orElse(null);
             paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(channel.getPaymentMethod().getName());
             connection = connectionRepository.findByUrl(channel.getConnection().getUrl());

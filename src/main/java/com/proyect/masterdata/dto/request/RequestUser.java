@@ -20,5 +20,6 @@ public class RequestUser {
     private String mobile;
     private String password;
     private String district;
+    private String clientRuc;
     private String tokenUser;
 }

@@ -19,9 +19,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     boolean existsByMobile(String mobile);
 
-    boolean existsByUserId(Long id);
-
-    Client findByRuc(String ruc);
+    Client findByRucAndStatusTrue(String ruc);
 
     List<Client> findByRucIn(List<String> rucList);
 }

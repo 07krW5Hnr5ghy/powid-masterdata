@@ -9,7 +9,6 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.mapper.UserMapper;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
@@ -21,13 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +35,7 @@ public class UserImpl implements IUser {
     private final UserRepositoryCustom userRepositoryCustom;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ClientRepository clientRepository;
 
     @Override
     public ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -49,7 +46,7 @@ public class UserImpl implements IUser {
         boolean existsEmail;
         boolean existsMobile;
         District district;
-        Set<Role> roles = new HashSet<>();
+        Client client;
 
         try {
             existsUser = userRepository.existsByUsername(requestUser.getUser().toUpperCase());
@@ -58,6 +55,7 @@ public class UserImpl implements IUser {
             existsEmail = userRepository.existsByEmail(requestUser.getEmail());
             existsMobile = userRepository.existsByMobile(requestUser.getMobile());
             district = districtRepository.findByNameAndStatusTrue(requestUser.getDistrict().toUpperCase());
+            client = clientRepository.findByRucAndStatusTrue(requestUser.getClientRuc());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -87,6 +85,10 @@ public class UserImpl implements IUser {
             throw new BadRequestExceptions(Constants.ErrorDistrict);
         }
 
+        if (client == null) {
+            throw new BadRequestExceptions(Constants.ErrorClient);
+        }
+
         try {
             userRepository.save(User.builder()
                     .username(requestUser.getUser().toUpperCase())
@@ -100,6 +102,9 @@ public class UserImpl implements IUser {
                     .password(passwordEncoder.encode(requestUser.getPassword()))
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .idDistrict(district.getId())
+                    .district(district)
+                    .idClient(client.getId())
+                    .client(client)
                     .tokenUser(requestUser.getTokenUser())
                     .status(true)
                     .build());

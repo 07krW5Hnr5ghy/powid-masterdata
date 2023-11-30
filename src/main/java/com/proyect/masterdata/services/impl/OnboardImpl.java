@@ -39,7 +39,7 @@ public class OnboardImpl implements IOnboard {
         try {
             entryChannel = entryChannelRepository
                     .findByNameAndStatusTrue(requestOnboard.getEntryChannel().toUpperCase());
-            client = clientRepository.findByRuc(requestOnboard.getBusinessRuc());
+            client = clientRepository.findByRucAndStatusTrue(requestOnboard.getBusinessRuc());
             category = categoryRepository.findByNameAndStatusTrue(requestOnboard.getCategory().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

@@ -8,7 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
-import com.proyect.masterdata.domain.Category;
 import com.proyect.masterdata.domain.ClosingChannel;
 import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Onboard;
@@ -160,22 +159,6 @@ public class AuthenticationImpl implements IAuthentication {
 
         try {
 
-            RequestUser requestUser = RequestUser.builder()
-                    .user(requestOnboarding.getUsername().toUpperCase())
-                    .name(requestOnboarding.getName().toUpperCase())
-                    .surname(requestOnboarding.getSurname().toUpperCase())
-                    .address(requestOnboarding.getAddress().toUpperCase())
-                    .dni(requestOnboarding.getDni())
-                    .gender(requestOnboarding.getGender().toUpperCase())
-                    .mobile(requestOnboarding.getMobile())
-                    .password(requestOnboarding.getPassword())
-                    .email(requestOnboarding.getEmail())
-                    .district(requestOnboarding.getDistrict().toUpperCase())
-                    .tokenUser("REGISTER")
-                    .build();
-
-            iUser.save(requestUser);
-
             RequestClientSave requestClientSave = RequestClientSave.builder()
                     .name(requestOnboarding.getName().toUpperCase())
                     .surname(requestOnboarding.getSurname().toUpperCase())
@@ -188,7 +171,24 @@ public class AuthenticationImpl implements IAuthentication {
                     .ruc(requestOnboarding.getBusinessRuc())
                     .build();
 
-            iClient.save(requestClientSave, requestOnboarding.getUsername().toUpperCase());
+            iClient.save(requestClientSave);
+
+            RequestUser requestUser = RequestUser.builder()
+                    .user(requestOnboarding.getUsername().toUpperCase())
+                    .name(requestOnboarding.getName().toUpperCase())
+                    .surname(requestOnboarding.getSurname().toUpperCase())
+                    .address(requestOnboarding.getAddress().toUpperCase())
+                    .dni(requestOnboarding.getDni())
+                    .gender(requestOnboarding.getGender().toUpperCase())
+                    .mobile(requestOnboarding.getMobile())
+                    .password(requestOnboarding.getPassword())
+                    .email(requestOnboarding.getEmail())
+                    .district(requestOnboarding.getDistrict().toUpperCase())
+                    .clientRuc(requestOnboarding.getBusinessRuc())
+                    .tokenUser("REGISTER")
+                    .build();
+
+            iUser.save(requestUser);
 
             Onboard onboard = iOnboard.save(RequestOnboard.builder()
                     .businessRuc(requestOnboarding.getBusinessRuc())
