@@ -6,30 +6,46 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+
+import java.util.Date;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableMembership, schema = Constants.schemaManagement)
+@Table(name = Constants.tableMembership, schema = Constants.schemaPayment)
 public class Membership {
+
         @Id
-        @GeneratedValue(generator = "sequence-membership")
-        @GenericGenerator(name = "sequence-membership", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-                        @Parameter(name = "sequence_name", value = "menbresia_sequence"),
-                        @Parameter(name = "initial_value", value = "1"),
-                        @Parameter(name = "increment_size", value = "1")
-        })
+        @GeneratedValue(strategy = GenerationType.AUTO)
         @Column(name = "id_membresia")
         private Long id;
 
-        @Column(name = "id_modulo")
-        private Long idModule;
+        @Column(name = "fecha_registro", nullable = false)
+        private Date dateRegistration;
+
+        @Column(name = "fecha_modificacion")
+        @CreationTimestamp
+        private Date dateUpdate;
+
+        @Column(name = "fecha_vencimiento")
+        @CreationTimestamp
+        private Date expirationDate;
+
+        @Column(name = "estado", nullable = false)
+        private Boolean status;
+
+        @Column(name = "demo", nullable = false)
+        private Boolean demo;
+
+        @Column(name = "id_cliente", nullable = false)
+        private Long idClient;
 
         @ManyToOne
-        @JoinColumn(name = "id_modulo", columnDefinition = "idModule", insertable = false, updatable = false)
-        private Module module;
+        @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false, updatable = false)
+        private Client client;
+
 }

@@ -5,6 +5,7 @@ public class Constants {
     public static final String schemaMaster = "master";
     public static final String schemaManagement = "management";
     public static final String schemaArticle = "article";
+    public static final String schemaPayment = "payment";
     // Tablas
     public static final String tableDepartment = "departamento";
     public static final String tableProvince = "provincia";
