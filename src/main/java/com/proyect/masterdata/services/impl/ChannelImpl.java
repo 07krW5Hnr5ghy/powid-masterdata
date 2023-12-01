@@ -31,7 +31,6 @@ public class ChannelImpl implements IChannel {
     private final ChannelRepository channelRepository;
     private final ClientRepository clientRepository;
     private final MembershipRepository membershipRepository;
-    private final PaymentTypeRepository paymentTypeRepository;
     private final ConnectionRepository connectionRepository;
     private final ChannelRepositoryCustom channelRepositoryCustom;
     private final StoreRepository clientChannelRepository;
@@ -39,7 +38,6 @@ public class ChannelImpl implements IChannel {
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentStateRepository paymentStateRepository;
-    private final ChannelMapper channelMapper;
 
     @Override
     public ResponseSuccess save(RequestChannelSave requestChannelSave, String user)
@@ -48,7 +46,6 @@ public class ChannelImpl implements IChannel {
         boolean channel;
         User userData;
         Client client;
-        Membership membership;
         PaymentMethod paymentMethod;
         Connection connection;
         try {
@@ -62,29 +59,31 @@ public class ChannelImpl implements IChannel {
         } catch (RuntimeException e) {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
         if (!existsUser) {
             throw new BadRequestExceptions("Usuario autorizado no existe");
         }
+
         if (userData == null) {
             throw new BadRequestExceptions("Usuario no existe");
         }
+
         if (channel) {
             throw new BadRequestExceptions("Canal ya existe");
         }
+
         if (client == null) {
             throw new BadRequestExceptions("Cliente no existe");
         }
-        membership = membershipRepository.save(Membership.builder()
-                .idModule(moduleRepository.findByNameAndStatusTrue("CONFIGURACIONES").getId())
-                .build());
+
         try {
             channelRepository.save(Channel.builder()
                     .name(requestChannelSave.getName().toUpperCase())
                     .months(requestChannelSave.getMonths())
                     .client(client)
                     .idClient(client.getId())
-                    .membership(membership)
-                    .idMembership(membership.getId())
+                    .membership(null)
+                    .idMembership(null)
                     .paymentMethod(paymentMethod)
                     .idPaymentMethod(paymentMethod.getId())
                     .connection(connection)
@@ -150,16 +149,13 @@ public class ChannelImpl implements IChannel {
 
         try {
             channelRepository.saveAll(requestChannelSaveList.stream().map(channel -> {
-                Membership membership = membershipRepository.save(Membership.builder()
-                        .idModule(moduleRepository.findByNameAndStatusTrue("CONFIGURACIONES").getId())
-                        .build());
                 return Channel.builder()
                         .name(channel.getName().toUpperCase())
                         .months(channel.getMonths())
                         .client(clientRepository.findByRucAndStatusTrue(channel.getClient()))
                         .idClient(clientRepository.findByRucAndStatusTrue(channel.getClient()).getId())
-                        .membership(membership)
-                        .idMembership(membership.getId())
+                        .membership(null)
+                        .idMembership(null)
                         .paymentMethod(paymentMethodRepository
                                 .findByNameAndStatusTrue(channel.getPaymentMethod().toUpperCase()))
                         .idPaymentMethod(paymentMethodRepository
@@ -276,7 +272,7 @@ public class ChannelImpl implements IChannel {
         List<ChannelListDTO> channelDTOList = channelPage.getContent().stream().map(channel -> {
             Store clientChannel = clientChannelRepository.findById(channel.getId()).orElse(null);
             // replace with the name of success state in payment states
-            List<Payment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
+            List<MembershipPayment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
                     paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());
             return ChannelListDTO.builder()
                     .name(channel.getName().toUpperCase())
@@ -311,7 +307,7 @@ public class ChannelImpl implements IChannel {
         List<ChannelListDTO> channelDTOList = channelPage.getContent().stream().map(channel -> {
             Store clientChannel = clientChannelRepository.findById(channel.getId()).orElse(null);
             // replace with the name of success state in payment states
-            List<Payment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
+            List<MembershipPayment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
                     paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());
             return ChannelListDTO.builder()
                     .name(channel.getName().toUpperCase())

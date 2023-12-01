@@ -40,4 +40,7 @@ public class Module {
         @CreationTimestamp
         private Date updateDate;
 
+        @Column(name = "usuario_token", nullable = false)
+        private String tokenUser;
+
 }

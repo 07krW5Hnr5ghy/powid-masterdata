@@ -122,4 +122,9 @@ public class Constants {
     public static final String ErrorClosingChannel = "The closing channel does not exists";
     public static final String ErrorClosingChannelExists = "The closing channel already exists";
     public static final String ErrorSubscription = "The subscription does not exists";
+    public static final String ErrorModule = "The module does not exists";
+    public static final String ErrorModuleExist = "The module already exists";
+    public static final String ErrorMembershipActive = "The client has already an active membership";
+    public static final String ErrorMembership = "The membership does not exists or is already inactive";
+    public static final String ErrorMembershipNotExpired = "The membership is not expired yet";
 }

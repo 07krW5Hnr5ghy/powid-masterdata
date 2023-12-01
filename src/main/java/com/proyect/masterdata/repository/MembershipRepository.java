@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MembershipRepository extends JpaRepository<Membership,Long> {
-    Membership findByIdAndIdModule(Long id,Long idModule);
-    List<Membership> findByIdAndIdModuleIn(Long id,List<Long> moduleList);
+public interface MembershipRepository extends JpaRepository<Membership, Long> {
+
+    Membership findByClientIdAndStatusTrue(Long clientId);
+
+    List<Membership> findByIdAndIdModuleIn(Long id, List<Long> moduleList);
 }

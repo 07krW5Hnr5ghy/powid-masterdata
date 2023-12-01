@@ -1,6 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Payment;
+import com.proyect.masterdata.domain.MembershipPayment;
 import com.proyect.masterdata.repository.PaymentRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -18,46 +18,46 @@ import java.util.List;
 
 @Repository
 public class PaymentRepositoryCustomImpl implements PaymentRepositoryCustom {
-    @PersistenceContext(name="entityManager")
+    @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<Payment> searchForPayment(
+    public Page<MembershipPayment> searchForPayment(
             Double totalPayment,
             String month,
             Long idChannel,
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize){
+            Integer pageSize) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Payment> criteriaQuery = criteriaBuilder.createQuery(Payment.class);
-        Root<Payment> itemRoot = criteriaQuery.from(Payment.class);
+        CriteriaQuery<MembershipPayment> criteriaQuery = criteriaBuilder.createQuery(MembershipPayment.class);
+        Root<MembershipPayment> itemRoot = criteriaQuery.from(MembershipPayment.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(totalPayment,month,idChannel,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(totalPayment, month, idChannel, criteriaBuilder, itemRoot);
 
-        if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
+        if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> paymentList = new ArrayList<>();
-            if(sort.equalsIgnoreCase("ASC")){
-                paymentList = listASC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("ASC")) {
+                paymentList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
-            if(sort.equalsIgnoreCase("DESC")){
-                paymentList = listDESC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("DESC")) {
+                paymentList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[]{})).orderBy(paymentList);
-        }else{
-            criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(paymentList);
+        } else {
+            criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<Payment> orderTypedQuery = entityManager.createQuery(criteriaQuery);
-        orderTypedQuery.setFirstResult(pageNumber*pageSize);
+        TypedQuery<MembershipPayment> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
-        Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        long count = getOrderCount(totalPayment,month,idChannel);
-        return new PageImpl<>(orderTypedQuery.getResultList(),pageable,count);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        long count = getOrderCount(totalPayment, month, idChannel);
+        return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
@@ -65,29 +65,28 @@ public class PaymentRepositoryCustomImpl implements PaymentRepositoryCustom {
             String month,
             Long idChannel,
             CriteriaBuilder criteriaBuilder,
-            Root<Payment> itemRoot
-    ){
+            Root<MembershipPayment> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
 
-        if(totalPayment!=null){
+        if (totalPayment != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    itemRoot.get("totalPayment"),totalPayment)));
+                                    itemRoot.get("totalPayment"), totalPayment)));
         }
 
-        if(month!=null){
+        if (month != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("month")),month.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("month")), month.toUpperCase())));
         }
 
-        if(idChannel!=null){
+        if (idChannel != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    itemRoot.get("idChannel"),idChannel)));
+                                    itemRoot.get("idChannel"), idChannel)));
         }
 
         return conditions;
@@ -96,13 +95,12 @@ public class PaymentRepositoryCustomImpl implements PaymentRepositoryCustom {
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<Payment> itemRoot
-    ){
+            Root<MembershipPayment> itemRoot) {
         List<Order> paymentList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("totalPayment")){
+        if (sortColumn.equalsIgnoreCase("totalPayment")) {
             paymentList.add(criteriaBuilder.asc(itemRoot.get("totalPayment")));
         }
-        if(sortColumn.equalsIgnoreCase("month")){
+        if (sortColumn.equalsIgnoreCase("month")) {
             paymentList.add(criteriaBuilder.asc(itemRoot.get("month")));
         }
         return paymentList;
@@ -111,26 +109,25 @@ public class PaymentRepositoryCustomImpl implements PaymentRepositoryCustom {
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<Payment> itemRoot
-    ){
+            Root<MembershipPayment> itemRoot) {
         List<Order> paymentList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("totalPayment")){
+        if (sortColumn.equalsIgnoreCase("totalPayment")) {
             paymentList.add(criteriaBuilder.desc(itemRoot.get("totalPayment")));
         }
-        if(sortColumn.equalsIgnoreCase("month")){
+        if (sortColumn.equalsIgnoreCase("month")) {
             paymentList.add(criteriaBuilder.desc(itemRoot.get("month")));
         }
         return paymentList;
     }
 
-    private long getOrderCount(Double totalPayment,String month,Long idChannel){
+    private long getOrderCount(Double totalPayment, String month, Long idChannel) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Payment> itemRoot = criteriaQuery.from(Payment.class);
+        Root<MembershipPayment> itemRoot = criteriaQuery.from(MembershipPayment.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(totalPayment,month,idChannel,criteriaBuilder,itemRoot);
-        criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+        List<Predicate> conditions = predicateConditions(totalPayment, month, idChannel, criteriaBuilder, itemRoot);
+        criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
 }

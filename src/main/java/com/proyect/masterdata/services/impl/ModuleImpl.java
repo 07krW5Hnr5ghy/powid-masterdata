@@ -3,7 +3,6 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Module;
 import com.proyect.masterdata.dto.ModuleDTO;
 import com.proyect.masterdata.dto.request.RequestModule;
-import com.proyect.masterdata.dto.request.RequestModuleSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -20,7 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,12 +34,14 @@ public class ModuleImpl implements IModule {
     private final UserRepository userRepository;
 
     @Override
-    public ResponseSuccess save(String name, double price, int moduleStatus, String user)
+    public ResponseSuccess save(String name, double price, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
+
         boolean existsUser;
         boolean existsModule;
+
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
             existsModule = moduleRepository.existsByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -48,23 +49,28 @@ public class ModuleImpl implements IModule {
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario incorrecto");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
+
         if (existsModule) {
-            throw new BadRequestExceptions("El modulo ya existe");
+            throw new BadRequestExceptions(Constants.ErrorModuleExist);
         }
 
         try {
-            moduleRepository.save(moduleMapper.moduleToName(RequestModuleSave.builder()
+
+            moduleRepository.save(Module.builder()
                     .name(name.toUpperCase())
-                    .moduleStatus(moduleStatus)
-                    .price(price)
+                    .monthlyPrice(price)
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
-                    .build()));
+                    .tokenUser(tokenUser.toUpperCase())
+                    .build());
+
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
+
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -72,36 +78,44 @@ public class ModuleImpl implements IModule {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestModuleSave> moduleList, String user)
+    public ResponseSuccess saveAll(List<RequestModule> moduleList, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
+
         boolean existsUser;
         List<Module> modules;
+
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
             modules = moduleRepository.findByNameIn(
                     moduleList.stream().map(module -> module.getName().toUpperCase()).collect(Collectors.toList()));
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
+
         if (!modules.isEmpty()) {
-            throw new BadRequestExceptions("modulo ya existente");
+            throw new BadRequestExceptions(Constants.ErrorModuleExist);
         }
-        List<RequestModuleSave> moduleSaveList = moduleList.stream().map(module -> RequestModuleSave.builder()
-                .name(module.getName().toUpperCase())
-                .price(module.getPrice())
-                .status(true)
-                .moduleStatus(module.getModuleStatus())
-                .build()).toList();
+
         try {
-            moduleRepository.saveAll(moduleMapper.listModuleToListName(moduleSaveList));
+
+            moduleRepository.saveAll(moduleList.stream().map(module -> Module.builder()
+                    .name(module.getName().toUpperCase())
+                    .monthlyPrice(module.getMontlyPrice())
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .status(true)
+                    .tokenUser(tokenUser.toUpperCase())
+                    .build()).toList());
+
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
+
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -109,26 +123,30 @@ public class ModuleImpl implements IModule {
     }
 
     @Override
-    public ModuleDTO update(RequestModule requestModule) throws BadRequestExceptions, InternalErrorExceptions {
+    public ModuleDTO update(RequestModule requestModule, String tokenUser)
+            throws BadRequestExceptions, InternalErrorExceptions {
+
         boolean existsUser;
         Module module;
+
         try {
-            existsUser = userRepository.existsByUsername(requestModule.getUser().toUpperCase());
+            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
             module = moduleRepository.findByNameAndStatusTrue(requestModule.getName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
+
         if (module == null) {
-            throw new BadRequestExceptions("Modulo no existe");
+            throw new BadRequestExceptions(Constants.ErrorModule);
         }
-        module.setPrice(requestModule.getPrice());
-        module.setStatus_module(requestModule.getStatusModule());
-        module.setStatus(requestModule.isStatus());
-        module.setDateRegistration(new Date(System.currentTimeMillis()));
+
+        module.setMonthlyPrice(requestModule.getMontlyPrice());
+        module.setUpdateDate(new Date(System.currentTimeMillis()));
 
         try {
             return moduleMapper.moduleToModuleDTO(moduleRepository.save(module));
@@ -139,30 +157,39 @@ public class ModuleImpl implements IModule {
     }
 
     @Override
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+
         boolean existsUser;
         Module module;
+
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            module = moduleRepository.findById(code).orElse(null);
+            module = moduleRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
+
         if (module == null) {
-            throw new BadRequestExceptions("Modulo no existe");
+            throw new BadRequestExceptions(Constants.ErrorModule);
         }
+
         module.setStatus(false);
-        module.setDateRegistration(new Date(System.currentTimeMillis()));
+        module.setUpdateDate(new Date(System.currentTimeMillis()));
+
         try {
+
             moduleRepository.save(module);
+
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
                     .build();
+
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

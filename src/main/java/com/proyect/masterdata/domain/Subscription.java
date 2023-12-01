@@ -30,6 +30,9 @@ public class Subscription {
     @Column(name = "id_subscribcion")
     private Long id;
 
+    @Column(name = "nombre", nullable = false, unique = true)
+    private String name;
+
     @Column(name = "meses", nullable = false)
     private Integer months;
 

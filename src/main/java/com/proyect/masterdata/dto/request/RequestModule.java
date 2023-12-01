@@ -11,8 +11,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestModule {
     private String name;
-    private double price;
-    private int statusModule;
-    private boolean status;
-    private String user;
+    private double montlyPrice;
 }
