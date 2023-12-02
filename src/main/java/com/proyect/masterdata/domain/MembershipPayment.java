@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tablePaymentMembership, schema = Constants.schemaManagement)
+@Table(name = Constants.tablePaymentMembership, schema = Constants.schemaPayment)
 public class MembershipPayment {
 
         @Id
@@ -33,7 +33,7 @@ public class MembershipPayment {
         private Double grossAmount;
 
         @Column(name = "url_factura")
-        private String urlInvoice;
+        private String invoiceUrl;
 
         @Column(name = "fecha_registro", nullable = false)
         @CreationTimestamp
@@ -42,6 +42,9 @@ public class MembershipPayment {
         @Column(name = "fecha_modificacion")
         @CreationTimestamp
         private Date updateDate;
+
+        @Column(name = "estado", nullable = false)
+        private Boolean status;
 
         @Column(name = "id_membresia", nullable = false)
         private Long membershipId;

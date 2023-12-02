@@ -127,4 +127,5 @@ public class Constants {
     public static final String ErrorMembershipActive = "The client has already an active membership";
     public static final String ErrorMembership = "The membership does not exists or is already inactive";
     public static final String ErrorMembershipNotExpired = "The membership is not expired yet";
+    public static final String ErrorMembershipPaymentExist = "Exists an active membership payment";
 }

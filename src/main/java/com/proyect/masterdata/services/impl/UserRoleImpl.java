@@ -38,7 +38,7 @@ public class UserRoleImpl implements IUserRole {
 
         try {
             existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
-            userData = userRepository.findByUsername(username.toUpperCase());
+            userData = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             roleData = roleRepository.findByNameAndStatusTrue(role.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

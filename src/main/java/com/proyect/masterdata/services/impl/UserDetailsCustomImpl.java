@@ -30,7 +30,7 @@ public class UserDetailsCustomImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByUsernameAndStatusTrue(username);
 
         SecurityUser securityUser = new SecurityUser(user, userRoleRepository, roleRepository, roleAccessRepository,
                 AccessRepository);

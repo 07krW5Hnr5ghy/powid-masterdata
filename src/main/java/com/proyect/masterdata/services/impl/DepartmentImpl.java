@@ -41,7 +41,7 @@ public class DepartmentImpl implements IDepartment {
         User datauser;
         Department department;
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             department = departmentRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -78,7 +78,7 @@ public class DepartmentImpl implements IDepartment {
         User datauser;
         List<Department> departments;
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             departments = departmentRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -114,7 +114,7 @@ public class DepartmentImpl implements IDepartment {
         User datauser;
         Department department;
         try {
-            datauser = userRepository.findByUsername(requestDepartment.getUser().toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(requestDepartment.getUser().toUpperCase());
             department = departmentRepository.findById(requestDepartment.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -146,7 +146,7 @@ public class DepartmentImpl implements IDepartment {
         User datauser;
         Department department;
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             department = departmentRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);

@@ -46,7 +46,7 @@ public class CategoryImpl implements ICategory {
         Category categoryDescription;
 
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             categoryName = categoryRepository.findByNameAndStatusTrue(name.toUpperCase());
             categoryDescription = categoryRepository.findByDescriptionAndStatusTrue(description.toUpperCase());
         } catch (RuntimeException e) {
@@ -86,7 +86,7 @@ public class CategoryImpl implements ICategory {
         List<Category> categoryListDescriptions;
 
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             categoryListNames = categoryRepository.findByNameIn(categories
                     .stream()
                     .map(category -> category.getName().toUpperCase())
@@ -133,7 +133,7 @@ public class CategoryImpl implements ICategory {
         Category category;
 
         try {
-            datauser = userRepository.findByUsername(requestCategory.getUser().toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(requestCategory.getUser().toUpperCase());
             category = categoryRepository.findById(requestCategory.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -167,7 +167,7 @@ public class CategoryImpl implements ICategory {
         User datauser;
         Category category;
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             category = categoryRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);

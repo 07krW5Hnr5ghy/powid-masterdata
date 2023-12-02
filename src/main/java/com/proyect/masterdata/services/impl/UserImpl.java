@@ -127,7 +127,7 @@ public class UserImpl implements IUser {
 
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            userData = userRepository.findByUsername(requestUserSave.getUser().toUpperCase());
+            userData = userRepository.findByUsernameAndStatusTrue(requestUserSave.getUser().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -176,7 +176,7 @@ public class UserImpl implements IUser {
     public ResponseDelete delete(String user) throws InternalErrorExceptions, BadRequestExceptions {
         User datauser;
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

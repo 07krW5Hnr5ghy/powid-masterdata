@@ -11,5 +11,5 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
 
     Membership findByClientIdAndStatusTrue(Long clientId);
 
-    List<Membership> findByIdAndIdModuleIn(Long id, List<Long> moduleList);
+    Membership findByIdAndStatusTrue(Long id);
 }

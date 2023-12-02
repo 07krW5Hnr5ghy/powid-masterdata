@@ -70,7 +70,7 @@ public class AuthenticationImpl implements IAuthentication {
 
             String token = iToken.generateJwt(auth);
 
-            return new ResponseLogin(userRepository.findByUsername(username.toUpperCase()), token);
+            return new ResponseLogin(userRepository.findByUsernameAndStatusTrue(username.toUpperCase()), token);
 
         } catch (AuthenticationException e) {
             log.error(e);

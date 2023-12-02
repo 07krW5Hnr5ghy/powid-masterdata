@@ -36,7 +36,7 @@ public class ChannelImpl implements IChannel {
     private final StoreRepository clientChannelRepository;
     private final ModuleRepository moduleRepository;
     private final PaymentMethodRepository paymentMethodRepository;
-    private final PaymentRepository paymentRepository;
+    private final MembershipPaymentRepository paymentRepository;
     private final PaymentStateRepository paymentStateRepository;
 
     @Override
@@ -50,7 +50,7 @@ public class ChannelImpl implements IChannel {
         Connection connection;
         try {
             existsUser = userRepository.existsByUsername(user.toUpperCase());
-            userData = userRepository.findByUsername(requestChannelSave.getUser().toUpperCase());
+            userData = userRepository.findByUsernameAndStatusTrue(requestChannelSave.getUser().toUpperCase());
             channel = channelRepository.existsByName(requestChannelSave.getName().toUpperCase());
             client = clientRepository.findByRucAndStatusTrue(requestChannelSave.getClient().toUpperCase());
             paymentMethod = paymentMethodRepository
@@ -205,7 +205,7 @@ public class ChannelImpl implements IChannel {
             membership = membershipRepository.findById(channel.getIdMembership()).orElse(null);
             paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(channel.getPaymentMethod().getName());
             connection = connectionRepository.findByUrl(channel.getConnection().getUrl());
-            userData = userRepository.findByUsername(channel.getUser().toUpperCase());
+            userData = userRepository.findByUsernameAndStatusTrue(channel.getUser().toUpperCase());
             channel.setMonths(months);
             channel.setDateRegistration(new Date(System.currentTimeMillis()));
             channel.setStatus(true);
@@ -272,8 +272,9 @@ public class ChannelImpl implements IChannel {
         List<ChannelListDTO> channelDTOList = channelPage.getContent().stream().map(channel -> {
             Store clientChannel = clientChannelRepository.findById(channel.getId()).orElse(null);
             // replace with the name of success state in payment states
-            List<MembershipPayment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
-                    paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());
+            // List<MembershipPayment> paymentList =
+            // paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
+            // paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());
             return ChannelListDTO.builder()
                     .name(channel.getName().toUpperCase())
                     .subscribedMonths(channel.getMonths())
@@ -283,7 +284,6 @@ public class ChannelImpl implements IChannel {
                     .paymentMethod(channel.getPaymentMethod().getName())
                     .user(channel.getUser().toUpperCase())
                     .ecommerce(clientChannel.getName())
-                    .payedMonths(paymentList.size())
                     .build();
         }).toList();
         return new PageImpl<>(channelDTOList,
@@ -307,8 +307,9 @@ public class ChannelImpl implements IChannel {
         List<ChannelListDTO> channelDTOList = channelPage.getContent().stream().map(channel -> {
             Store clientChannel = clientChannelRepository.findById(channel.getId()).orElse(null);
             // replace with the name of success state in payment states
-            List<MembershipPayment> paymentList = paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
-                    paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());
+            // List<MembershipPayment> paymentList =
+            // paymentRepository.findByIdChannelAndIdPaymentState(channel.getId(),
+            // paymentStateRepository.findByNameAndStatusTrue("ACEPTADO").getId());
             return ChannelListDTO.builder()
                     .name(channel.getName().toUpperCase())
                     .subscribedMonths(channel.getMonths())

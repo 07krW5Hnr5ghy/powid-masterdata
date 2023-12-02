@@ -1,6 +1,6 @@
 package com.proyect.masterdata.mapper;
 
-import com.proyect.masterdata.domain.Payment;
+import com.proyect.masterdata.domain.MembershipPayment;
 import com.proyect.masterdata.dto.PaymentDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

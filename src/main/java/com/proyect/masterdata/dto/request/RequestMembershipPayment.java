@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestPaymentSave {
-    private double totalPayment;
-    private double discount;
-    private String month;
+public class RequestMembershipPayment {
+    private double netAmount;
+    private double grossAmount;
+    private Integer months;
     private String invoiceUrl;
 }

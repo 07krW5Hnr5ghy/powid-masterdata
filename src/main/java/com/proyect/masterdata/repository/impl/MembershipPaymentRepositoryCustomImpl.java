@@ -1,7 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.MembershipPayment;
-import com.proyect.masterdata.repository.PaymentRepositoryCustom;
+import com.proyect.masterdata.repository.MembershipPaymentRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class PaymentRepositoryCustomImpl implements PaymentRepositoryCustom {
+public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
