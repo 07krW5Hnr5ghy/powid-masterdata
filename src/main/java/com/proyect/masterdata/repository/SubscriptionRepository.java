@@ -8,4 +8,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     Subscription findByNameAndStatusTrue(String name);
 
+    Boolean existsByNameAndStatusTrue(String name);
+
 }

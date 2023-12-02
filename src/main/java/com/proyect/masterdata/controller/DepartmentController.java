@@ -14,108 +14,117 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/department")
 @AllArgsConstructor
 public class DepartmentController {
-    private final IDepartment iDepartment;
+        private final IDepartment iDepartment;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iDepartment.save(name,user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+        @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<ResponseSuccess> save(
+                        @RequestParam("name") String name,
+                        @RequestParam("user") String user) throws BadRequestExceptions {
+                ResponseSuccess result = iDepartment.save(name, user);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+        }
 
-    @PostMapping(value = "/departments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> saveall(
-            @RequestParam("user") String user,
-            @RequestBody() List<String> names
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iDepartment.saveAll(names, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+        @PostMapping(value = "/departments", consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<ResponseSuccess> saveall(
+                        @RequestParam("user") String user,
+                        @RequestBody() List<String> names) throws BadRequestExceptions {
+                ResponseSuccess result = iDepartment.saveAll(names, user);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+        }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DepartmentDTO> update(
-            @RequestBody() RequestDepartment requestDepartment
-    ) throws BadRequestExceptions {
-        DepartmentDTO result = iDepartment.update(requestDepartment);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+        @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<DepartmentDTO> update(
+                        @RequestBody() RequestDepartment requestDepartment) throws BadRequestExceptions {
+                DepartmentDTO result = iDepartment.update(requestDepartment);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+        }
 
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iDepartment.delete(code, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+        @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<ResponseDelete> delete(
+                        @RequestParam("code") Long code,
+                        @RequestParam("user") String user) throws BadRequestExceptions {
+                ResponseDelete result = iDepartment.delete(code, user);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+        }
 
-    @GetMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<DepartmentDTO>> listDepartment() throws BadRequestExceptions {
-        List<DepartmentDTO> result = iDepartment.listDepartment();
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+        @GetMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<List<DepartmentDTO>> listDepartment() throws BadRequestExceptions {
+                List<DepartmentDTO> result = iDepartment.listDepartment();
+                return new ResponseEntity<>(result, HttpStatus.OK);
+        }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<DepartmentDTO>> list(
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "user", required = false) String user,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<DepartmentDTO> result = iDepartment.list(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+        @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<Page<DepartmentDTO>> list(
+                        @RequestParam(value = "name", required = false) String name,
+                        @RequestParam(value = "user", required = false) String user,
+                        @RequestParam(value = "sort", required = false) String sort,
+                        @RequestParam(value = "sortColumn", required = false) String sortColumn,
+                        @RequestParam("pageNumber") Integer pageNumber,
+                        @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+                Page<DepartmentDTO> result = iDepartment.list(name, user, sort, sortColumn, pageNumber, pageSize);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+        }
 
-    @GetMapping(value="/statusFalse", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<DepartmentDTO>> listStatusFalse(
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "user", required = false) String user,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<DepartmentDTO> result = iDepartment.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+        @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<Page<DepartmentDTO>> listStatusFalse(
+                        @RequestParam(value = "name", required = false) String name,
+                        @RequestParam(value = "user", required = false) String user,
+                        @RequestParam(value = "sort", required = false) String sort,
+                        @RequestParam(value = "sortColumn", required = false) String sortColumn,
+                        @RequestParam("pageNumber") Integer pageNumber,
+                        @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+                Page<DepartmentDTO> result = iDepartment.listStatusFalse(name, user, sort, sortColumn, pageNumber,
+                                pageSize);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+        }
 
-    @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DepartmentDTO> findByCode(
-            @RequestParam("code") Long code
-    ) throws BadRequestExceptions {
-        DepartmentDTO result = iDepartment.findByCode(code);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+        @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<DepartmentDTO> findByCode(
+                        @RequestParam("code") Long code) throws BadRequestExceptions {
+                DepartmentDTO result = iDepartment.findByCode(code);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+        }
 
 }
 /*
-    @Operation(summary = "Lista los departmentos",
-            description = "Lista los departamentos")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad Request",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Not Found",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
-    })
-
-}*/
+ * @Operation(summary = "Lista los departmentos",
+ * description = "Lista los departamentos")
+ * 
+ * @ApiResponses(value = {
+ * 
+ * @ApiResponse(responseCode = "200", description = "Success",
+ * content = { @Content(mediaType = "application/json", schema
+ * = @Schema(implementation = List.class))}),
+ * 
+ * @ApiResponse(responseCode = "400", description = "Bad Request",
+ * content = { @Content(mediaType = "application/json", schema
+ * = @Schema(implementation = ErrorResponse.class))}),
+ * 
+ * @ApiResponse(responseCode = "401", description = "Unauthorized",
+ * content = { @Content(mediaType = "application/json", schema
+ * = @Schema(implementation = ErrorResponse.class))}),
+ * 
+ * @ApiResponse(responseCode = "403", description = "ForbiddenForbidden",
+ * content = { @Content(mediaType = "application/json", schema
+ * = @Schema(implementation = ErrorResponse.class))}),
+ * 
+ * @ApiResponse(responseCode = "404", description = "Not Found",
+ * content = { @Content(mediaType = "application/json", schema
+ * = @Schema(implementation = ErrorResponse.class))}),
+ * 
+ * @ApiResponse(responseCode = "409", description = "Conflict",
+ * content = { @Content(mediaType = "application/json", schema
+ * = @Schema(implementation = ErrorResponse.class))}),
+ * 
+ * @ApiResponse(responseCode = "500", description = "Internal Server Error",
+ * content = { @Content(mediaType = "application/json", schema
+ * = @Schema(implementation = ErrorResponse.class))})
+ * })
+ * 
+ * }
+ */

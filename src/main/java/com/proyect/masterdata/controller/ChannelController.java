@@ -17,26 +17,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/channel")
 @AllArgsConstructor
 public class ChannelController {
     private IChannel iChannel;
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestChannelSave requestChannelSave,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iChannel.save(requestChannelSave,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iChannel.save(requestChannelSave, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/channels",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/channels", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestChannelSave> channels,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iChannel.saveAll(channels,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iChannel.saveAll(channels, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -44,44 +43,40 @@ public class ChannelController {
     public ResponseEntity<ChannelDTO> update(
             @RequestParam("name") String name,
             @RequestParam("months") Integer months,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ChannelDTO result = iChannel.update(name,months,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ChannelDTO result = iChannel.update(name, months, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iChannel.delete(name,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseDelete result = iChannel.delete(name, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ChannelListDTO>> list(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<ChannelListDTO> result = iChannel.list(name,user,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<ChannelListDTO> result = iChannel.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ChannelListDTO>> listStatusFalse(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<ChannelListDTO> result = iChannel.listStatusFalse(name,user,sort,sortColumn,pageNumber,pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<ChannelListDTO> result = iChannel.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

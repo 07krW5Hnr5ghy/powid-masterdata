@@ -16,34 +16,30 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/payment-method")
 @AllArgsConstructor
 public class PaymentMethodController {
-
 
     private final IPaymentMethod iPaymentMethod;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name,@RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iPaymentMethod.save(name,user);
+            @RequestParam("name") String name, @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iPaymentMethod.save(name, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/payment-methods",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/payment-methods", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names,@RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iPaymentMethod.saveAll(names,user);
+            @RequestBody() List<String> names, @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iPaymentMethod.saveAll(names, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PaymentMethodDTO> update(
-            @RequestBody() RequestPaymentMethod requestPaymentMethod
-    ) throws BadRequestExceptions {
+            @RequestBody() RequestPaymentMethod requestPaymentMethod) throws BadRequestExceptions {
         PaymentMethodDTO result = iPaymentMethod.update(requestPaymentMethod);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -51,13 +47,12 @@ public class PaymentMethodController {
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("code") Long code,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iPaymentMethod.delete(code,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseDelete result = iPaymentMethod.delete(code, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-payment-method",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/list-payment-method", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PaymentMethodDTO>> listPaymentMethod() throws BadRequestExceptions {
         List<PaymentMethodDTO> result = iPaymentMethod.listPaymentMethod();
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -65,34 +60,32 @@ public class PaymentMethodController {
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<PaymentMethodDTO>> list(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<PaymentMethodDTO> result = iPaymentMethod.list(name,user,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<PaymentMethodDTO>> listStatusFalse(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<PaymentMethodDTO> result = iPaymentMethod.listStatusFalse(name,user,sort,sortColumn,pageNumber,pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<PaymentMethodDTO> result = iPaymentMethod.list(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<PaymentMethodDTO>> listStatusFalse(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<PaymentMethodDTO> result = iPaymentMethod.listStatusFalse(name, user, sort, sortColumn, pageNumber,
+                pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PaymentMethodDTO> findByCode(
-            @RequestParam("code") Long code
-    ) throws BadRequestExceptions {
+            @RequestParam("code") Long code) throws BadRequestExceptions {
         PaymentMethodDTO result = iPaymentMethod.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

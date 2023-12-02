@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/payment-type")
 @AllArgsConstructor
 public class PaymentTypeController {
@@ -25,53 +25,48 @@ public class PaymentTypeController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("type") String type,
-            @RequestParam("user") String user
-            ) throws BadRequestExceptions {
-        ResponseSuccess result = iPaymentType.save(type,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iPaymentType.save(type, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/payment-types",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/payment-types", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> names,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iPaymentType.saveAll(names,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iPaymentType.saveAll(names, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("type") String type,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iPaymentType.delete(type,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseDelete result = iPaymentType.delete(type, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<PaymentTypeDTO>> list(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<PaymentTypeDTO> result = iPaymentType.list(name,user,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<PaymentTypeDTO> result = iPaymentType.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<PaymentTypeDTO>> listStatusFalse(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<PaymentTypeDTO> result = iPaymentType.listStatusFalse(name,user,sort,sortColumn,pageNumber,pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<PaymentTypeDTO> result = iPaymentType.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -72,7 +72,7 @@ public class ColorController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/statusFalse", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ColorDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

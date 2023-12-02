@@ -17,34 +17,32 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/category")
 @AllArgsConstructor
 public class CategoryController {
     private final ICategory iCategory;
+
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iCategory.save(name,description,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iCategory.save(name, description, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/categories")
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestBody() List<RequestCreateCategory> categories,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iCategory.saveAll(categories,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iCategory.saveAll(categories, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping()
     public ResponseEntity<CategoryDTO> update(
-            @RequestBody() RequestCategory requestCategory
-    ) throws BadRequestExceptions {
+            @RequestBody() RequestCategory requestCategory) throws BadRequestExceptions {
         CategoryDTO result = iCategory.update(requestCategory);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -52,9 +50,8 @@ public class CategoryController {
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("code") Long code,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iCategory.delete(code,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseDelete result = iCategory.delete(code, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -66,34 +63,31 @@ public class CategoryController {
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<CategoryDTO>> list(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<CategoryDTO> result = iCategory.list(name,user,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<CategoryDTO> result = iCategory.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<CategoryDTO>> listStatusFalse(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<CategoryDTO> result = iCategory.listStatusFalse(name,user,sort,sortColumn,pageNumber,pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<CategoryDTO> result = iCategory.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "/code")
     public ResponseEntity<CategoryDTO> findByCode(
-            @RequestParam("code") Long code
-    ) throws BadRequestExceptions {
+            @RequestParam("code") Long code) throws BadRequestExceptions {
         CategoryDTO result = iCategory.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

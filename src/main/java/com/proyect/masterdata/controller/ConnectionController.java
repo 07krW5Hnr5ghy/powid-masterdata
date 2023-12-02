@@ -15,59 +15,55 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/connection")
 @AllArgsConstructor
 public class ConnectionController {
     private final IConnection iConnection;
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("url") String url,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iConnection.save(url,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iConnection.save(url, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/connections",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/connections", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> urls,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iConnection.saveAll(urls,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iConnection.saveAll(urls, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("url") String type,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iConnection.delete(type,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseDelete result = iConnection.delete(type, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ConnectionDTO>> list(
-            @RequestParam(value = "url",required = false) String url,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "url", required = false) String url,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<ConnectionDTO> result = iConnection.list(url,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<ConnectionDTO> result = iConnection.list(url, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ConnectionDTO>> listStatusFalse(
-            @RequestParam(value = "name",required = false) String url,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "name", required = false) String url,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<ConnectionDTO> result = iConnection.listStatusFalse(url,sort,sortColumn,pageNumber,pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<ConnectionDTO> result = iConnection.listStatusFalse(url, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
