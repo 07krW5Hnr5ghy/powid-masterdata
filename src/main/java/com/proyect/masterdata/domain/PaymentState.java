@@ -33,6 +33,10 @@ public class PaymentState {
         @CreationTimestamp
         private Date registrationDate;
 
+        @Column(name = "fecha_modificacion", nullable = false)
+        @CreationTimestamp
+        private Date updateDate;
+
         @Column(name = "usuario_token", nullable = false)
         private String tokenUser;
 

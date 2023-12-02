@@ -33,6 +33,10 @@ public class PaymentMethod {
         @CreationTimestamp
         private Date registrationDate;
 
+        @Column(name = "fecha_modificacion")
+        @CreationTimestamp
+        private Date updateDate;
+
         @Column(name = "usuario_token", nullable = false)
         private String tokenUser;
 

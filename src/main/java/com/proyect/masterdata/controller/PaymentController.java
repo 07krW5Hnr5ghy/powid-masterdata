@@ -4,7 +4,7 @@ import com.proyect.masterdata.domain.MembershipPayment;
 import com.proyect.masterdata.dto.PaymentDTO;
 import com.proyect.masterdata.dto.PaymentUpdateDTO;
 import com.proyect.masterdata.dto.request.RequestMembershipPayment;
-import com.proyect.masterdata.dto.request.RequestPaymentUpdate;
+import com.proyect.masterdata.dto.request.RequestMembershipPaymentUpdate;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IMembershipPayment;
@@ -45,7 +45,7 @@ public class PaymentController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PaymentUpdateDTO> update(
-            @RequestBody() RequestPaymentUpdate requestPaymentUpdate,
+            @RequestBody() RequestMembershipPaymentUpdate requestPaymentUpdate,
             @RequestParam("newPaymentState") String newPaymentState,
             @RequestParam("user") String user) throws BadRequestExceptions {
         PaymentUpdateDTO result = iPayment.update(requestPaymentUpdate, newPaymentState, user);

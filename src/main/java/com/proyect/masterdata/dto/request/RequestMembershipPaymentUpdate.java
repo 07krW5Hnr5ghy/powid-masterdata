@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestPaymentUpdate {
-    private String channel;
-    private String month;
+public class RequestMembershipPaymentUpdate {
+    private String invoiceUrl;
+    private String paymentMethod;
     private String paymentState;
-    private String newInvoiceUrl;
 }

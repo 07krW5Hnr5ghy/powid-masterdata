@@ -43,7 +43,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         PaymentMethod paymentMethod;
 
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -76,7 +76,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         User datauser;
         List<PaymentMethod> paymentMethods;
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             paymentMethods = paymentMethodRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -115,7 +115,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         PaymentMethod paymentMethod;
 
         try {
-            datauser = userRepository.findByUsername(requestPaymentMethod.getUser().toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(requestPaymentMethod.getUser().toUpperCase());
             paymentMethod = paymentMethodRepository.findById(requestPaymentMethod.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -130,9 +130,9 @@ public class PaymentMethodImpl implements IPaymentMethod {
         }
 
         paymentMethod.setName(requestPaymentMethod.getName().toUpperCase());
-        paymentMethod.setUser(datauser.getUsername().toUpperCase());
+        paymentMethod.setTokenUser(datauser.getUsername().toUpperCase());
         paymentMethod.setStatus(requestPaymentMethod.isStatus());
-        paymentMethod.setDateRegistration(new Date(System.currentTimeMillis()));
+        paymentMethod.setUpdateDate(new Date(System.currentTimeMillis()));
 
         try {
             return paymentMethodMapper.paymentMethodToPaymentMethodDTO(paymentMethodRepository.save(paymentMethod));
@@ -149,7 +149,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
         PaymentMethod paymentMethod;
 
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             paymentMethod = paymentMethodRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -165,7 +165,7 @@ public class PaymentMethodImpl implements IPaymentMethod {
 
         try {
             paymentMethod.setStatus(false);
-            paymentMethod.setDateRegistration(new Date(System.currentTimeMillis()));
+            paymentMethod.setUpdateDate(new Date(System.currentTimeMillis()));
             paymentMethodRepository.save(paymentMethod);
             return ResponseDelete.builder()
                     .code(200)

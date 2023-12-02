@@ -43,7 +43,7 @@ public class PaymentStateImpl implements IPaymentState {
         PaymentState paymentState;
 
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             paymentState = paymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -77,7 +77,7 @@ public class PaymentStateImpl implements IPaymentState {
         List<PaymentState> paymentStates;
 
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             paymentStates = paymentStateRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -116,7 +116,7 @@ public class PaymentStateImpl implements IPaymentState {
         PaymentState paymentState;
 
         try {
-            datauser = userRepository.findByUsername(requestPaymentState.getUser().toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(requestPaymentState.getUser().toUpperCase());
             paymentState = paymentStateRepository.findById(requestPaymentState.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -131,9 +131,9 @@ public class PaymentStateImpl implements IPaymentState {
         }
 
         paymentState.setName(requestPaymentState.getName().toUpperCase());
-        paymentState.setUser(datauser.getUsername().toUpperCase());
+        paymentState.setTokenUser(datauser.getUsername().toUpperCase());
         paymentState.setStatus(requestPaymentState.isStatus());
-        paymentState.setDateRegistration(new Date(System.currentTimeMillis()));
+        paymentState.setUpdateDate(new Date(System.currentTimeMillis()));
 
         try {
             return paymentStateMapper.paymentStateToPaymentStateDTO(paymentStateRepository.save(paymentState));
@@ -150,7 +150,7 @@ public class PaymentStateImpl implements IPaymentState {
         PaymentState paymentState;
 
         try {
-            datauser = userRepository.findByUsername(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
             paymentState = paymentStateRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
@@ -166,7 +166,7 @@ public class PaymentStateImpl implements IPaymentState {
 
         try {
             paymentState.setStatus(false);
-            paymentState.setDateRegistration(new Date(System.currentTimeMillis()));
+            paymentState.setUpdateDate(new Date(System.currentTimeMillis()));
             paymentStateRepository.save(paymentState);
             return ResponseDelete.builder()
                     .code(200)
