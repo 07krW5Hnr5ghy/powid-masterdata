@@ -279,6 +279,30 @@ http://localhost:8080/masterdata/district?name=asuncion&province=chachapoyas&use
 
 http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
 
+### POST /module
+
+- Description : add one module to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the module
+2. price : price of the module service by one month
+3. tokenUser : username of the user who register the module
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/module?name=ventas&price=2.57&tokenUser=admin1
+
 ### POST /province
 
 - Description : add one province to the department

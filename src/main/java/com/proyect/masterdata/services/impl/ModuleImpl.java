@@ -197,21 +197,6 @@ public class ModuleImpl implements IModule {
     }
 
     @Override
-    public List<ModuleDTO> listModule() {
-        List<Module> modules;
-        try {
-            modules = moduleRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if (modules.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return moduleMapper.listModuleToListModuleDTO(modules);
-    }
-
-    @Override
     public Page<ModuleDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         Page<Module> modulePage;

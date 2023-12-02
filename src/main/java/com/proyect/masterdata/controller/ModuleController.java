@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/modules")
+@RequestMapping("/module")
 @AllArgsConstructor
 public class ModuleController {
     private IModule iModule;
@@ -52,12 +52,6 @@ public class ModuleController {
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseDelete result = iModule.delete(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ModuleDTO>> listModule() throws BadRequestExceptions {
-        List<ModuleDTO> result = iModule.listModule();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
