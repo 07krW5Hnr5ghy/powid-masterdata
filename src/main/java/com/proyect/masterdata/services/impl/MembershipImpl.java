@@ -89,14 +89,14 @@ public class MembershipImpl implements IMembership {
             Date expirationDate = calendar.getTime();
 
             membershipRepository.save(Membership.builder()
-                    .client(client)
-                    .clientId(client.getId())
-                    .subscription(subscription)
-                    .subscriptionId(subscription.getId())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .expirationDate(expirationDate)
-                    .status(true)
-                    .demo(demo)
+                    // .client(client)
+                    // .clientId(client.getId())
+                    // .subscription(subscription)
+                    // .subscriptionId(subscription.getId())
+                    // .registrationDate(new Date(System.currentTimeMillis()))
+                    // .expirationDate(expirationDate)
+                    // .status(true)
+                    // .demo(demo)
                     .build());
 
             return ResponseSuccess.builder()
@@ -148,22 +148,24 @@ public class MembershipImpl implements IMembership {
 
             Date currentDate = new Date(System.currentTimeMillis());
 
-            if (currentDate.after(membership.getExpirationDate())
-                    || currentDate.equals(membership.getExpirationDate())) {
+            // if (currentDate.after(membership.getExpirationDate())
+            // || currentDate.equals(membership.getExpirationDate())) {
 
-                membership.setStatus(false);
-                membership.setUpdateDate(currentDate);
+            // membership.setStatus(false);
+            // membership.setUpdateDate(currentDate);
 
-            } else {
-                throw new BadRequestExceptions(Constants.ErrorMembershipNotExpired);
-            }
+            // } else {
+            // throw new BadRequestExceptions(Constants.ErrorMembershipNotExpired);
+            // }
 
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
                     .build();
 
-        } catch (RuntimeException e) {
+        } catch (
+
+        RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

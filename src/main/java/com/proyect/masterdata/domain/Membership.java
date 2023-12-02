@@ -25,6 +25,7 @@ public class Membership {
         private Long id;
 
         @Column(name = "fecha_registro", nullable = false)
+        @CreationTimestamp
         private Date registrationDate;
 
         @Column(name = "fecha_modificacion")
@@ -44,15 +45,15 @@ public class Membership {
         @Column(name = "id_cliente", nullable = false)
         private Long clientId;
 
-        @Column(name = "id_subscribcion", nullable = false)
+        @Column(name = "id_subscripcion", nullable = false)
         private Long subscriptionId;
 
-        @ManyToOne
+        @ManyToOne()
         @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
         private Client client;
 
-        @ManyToOne
-        @JoinColumn(name = "id_subscribcion", columnDefinition = "subscriptionId", insertable = false, updatable = false)
+        @ManyToOne()
+        @JoinColumn(name = "id_subscripcion", columnDefinition = "subscriptionId", insertable = false, updatable = false)
         private Subscription subscription;
 
 }

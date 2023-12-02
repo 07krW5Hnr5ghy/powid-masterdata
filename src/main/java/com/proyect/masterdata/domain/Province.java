@@ -29,18 +29,18 @@ public class Province {
         @Column(name = "estado", nullable = false)
         private Boolean status;
 
-        @Column(name = "fecha_registro")
+        @Column(name = "fecha_registro", nullable = false)
         @CreationTimestamp
         private Date dateRegistration;
 
-        @Column(name = "id_departameto", nullable = false)
+        @Column(name = "id_departamento", nullable = false)
         private Long idDepartment;
 
         @Column(name = "usuario", nullable = false)
         private String user;
 
         @ManyToOne
-        @JoinColumn(name = "id_departameto", columnDefinition = "idDepartment", insertable = false, updatable = false)
+        @JoinColumn(name = "id_departamento", columnDefinition = "idDepartment", insertable = false, updatable = false)
         private Department department;
 
 }

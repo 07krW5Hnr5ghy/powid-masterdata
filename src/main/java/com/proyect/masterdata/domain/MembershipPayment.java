@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tablePaymentMembership, schema = Constants.schemaPayment)
+@Table(name = Constants.tableMembershipPayment, schema = Constants.schemaPayment)
 public class MembershipPayment {
 
         @Id

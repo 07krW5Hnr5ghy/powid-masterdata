@@ -16,7 +16,7 @@ public class Constants {
     public static final String tableChannel = "canal";
     public static final String tableClient = "cliente";
     public static final String tableMembership = "membresia";
-    public static final String tablePaymentMembership = "pago_membresia";
+    public static final String tableMembershipPayment = "pago_membresia";
     public static final String tableModule = "modulo";
     public static final String tableDiscount = "descuento";
     public static final String tableEvent = "evento";
