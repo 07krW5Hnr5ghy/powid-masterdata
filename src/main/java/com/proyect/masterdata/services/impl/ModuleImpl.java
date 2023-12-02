@@ -157,13 +157,13 @@ public class ModuleImpl implements IModule {
     }
 
     @Override
-    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         boolean existsUser;
         Module module;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
             module = moduleRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);

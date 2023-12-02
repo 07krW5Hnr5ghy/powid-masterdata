@@ -14,4 +14,5 @@ public class RequestMembershipPayment {
     private double grossAmount;
     private Integer months;
     private String invoiceUrl;
+    private String paymentMethod;
 }

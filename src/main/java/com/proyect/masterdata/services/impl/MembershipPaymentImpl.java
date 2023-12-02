@@ -26,12 +26,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class MembershipPaymentImpl implements IMembershipPayment {
+
     private final MembershipPaymentRepository membershipPaymentRepository;
     private final MembershipRepository membershipRepository;
     private final UserRepository userRepository;
-    private final ChannelRepository channelRepository;
     private final MembershipPaymentRepositoryCustom membershipPaymentRepositoryCustom;
-    private final MembershipPayment membershipPayment;
+    private final PaymentMethodRepository paymentMethodRepository;
+    private final PaymentStateRepository paymentStateRepository;
 
     @Override
     public ResponseSuccess save(Long membershipId, RequestMembershipPayment requestMembershipPayment, String tokenUser)
@@ -40,11 +41,16 @@ public class MembershipPaymentImpl implements IMembershipPayment {
         boolean existsUser;
         Membership membership;
         MembershipPayment membershipPayment;
+        PaymentMethod paymentMethod;
+        PaymentState paymentState;
 
         try {
             existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
             membership = membershipRepository.findByIdAndStatusTrue(membershipId);
             membershipPayment = membershipPaymentRepository.findByMembershipIdAndStatusTrue(membershipId);
+            paymentMethod = paymentMethodRepository
+                    .findByNameAndStatusTrue(requestMembershipPayment.getPaymentMethod().toUpperCase());
+            paymentState = paymentStateRepository.findByNameAndStatusTrue("CREADO");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -70,6 +76,10 @@ public class MembershipPaymentImpl implements IMembershipPayment {
                     .months(requestMembershipPayment.getMonths())
                     .invoiceUrl(requestMembershipPayment.getInvoiceUrl())
                     .registrationDate(new Date(System.currentTimeMillis()))
+                    .paymentMethod(paymentMethod)
+                    .paymentMethodId(paymentMethod.getId())
+                    .paymentState(paymentState)
+                    .paymentStateId(paymentState.getId())
                     .status(true)
                     .build());
 
