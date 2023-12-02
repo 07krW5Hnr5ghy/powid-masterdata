@@ -55,12 +55,15 @@ public class MembershipPayment {
         @Column(name = "id_metodo_pago", nullable = false)
         private Long paymentMethodId;
 
+        @ManyToOne()
         @JoinColumn(name = "id_membresia", columnDefinition = "membershipId", insertable = false, updatable = false)
         private Membership membership;
 
+        @ManyToOne()
         @JoinColumn(name = "id_estado_pago", columnDefinition = "paymentStateId", insertable = false, updatable = false)
         private PaymentState paymentState;
 
+        @ManyToOne()
         @JoinColumn(name = "id_metodo_pago", columnDefinition = "paymentMethodId", insertable = false, updatable = false)
         private PaymentMethod paymentMethod;
 
