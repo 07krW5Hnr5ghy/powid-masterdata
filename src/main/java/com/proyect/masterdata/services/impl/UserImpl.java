@@ -50,7 +50,7 @@ public class UserImpl implements IUser {
 
         try {
             existsUser = userRepository.existsByUsername(requestUser.getUser().toUpperCase());
-            existsTokenUser = userRepository.existsByUsername(requestUser.getTokenUser().toUpperCase());
+            existsTokenUser = userRepository.existsByUsernameAndStatusTrue(requestUser.getTokenUser().toUpperCase());
             existsDni = userRepository.existsByDni(requestUser.getDni());
             existsEmail = userRepository.existsByEmail(requestUser.getEmail());
             existsMobile = userRepository.existsByMobile(requestUser.getMobile());
@@ -126,7 +126,7 @@ public class UserImpl implements IUser {
         User userData;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             userData = userRepository.findByUsernameAndStatusTrue(requestUserSave.getUser().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

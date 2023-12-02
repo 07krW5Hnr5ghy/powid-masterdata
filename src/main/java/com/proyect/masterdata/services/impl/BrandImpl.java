@@ -40,7 +40,7 @@ public class BrandImpl implements IBrand {
         boolean existsBrand;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             existsBrand = brandRepository.existsByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -80,7 +80,7 @@ public class BrandImpl implements IBrand {
         List<Brand> brandList;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             brandList = brandRepository.findByNameIn(namesList);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -117,7 +117,7 @@ public class BrandImpl implements IBrand {
         boolean existsUser;
         Brand brand;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             brand = brandRepository.findByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

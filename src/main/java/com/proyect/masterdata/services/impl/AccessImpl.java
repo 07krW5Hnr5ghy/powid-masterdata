@@ -31,7 +31,7 @@ public class AccessImpl implements IAccess {
         boolean existsAccess;
 
         try {
-            existsTokenUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsTokenUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsAccess = accessRepository.existsByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

@@ -41,7 +41,7 @@ public class ModuleImpl implements IModule {
         boolean existsModule;
 
         try {
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsModule = moduleRepository.existsByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -85,7 +85,7 @@ public class ModuleImpl implements IModule {
         List<Module> modules;
 
         try {
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             modules = moduleRepository.findByNameIn(
                     moduleList.stream().map(module -> module.getName().toUpperCase()).collect(Collectors.toList()));
         } catch (RuntimeException e) {
@@ -130,7 +130,7 @@ public class ModuleImpl implements IModule {
         Module module;
 
         try {
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             module = moduleRepository.findByNameAndStatusTrue(requestModule.getName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
@@ -163,7 +163,7 @@ public class ModuleImpl implements IModule {
         Module module;
 
         try {
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             module = moduleRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);

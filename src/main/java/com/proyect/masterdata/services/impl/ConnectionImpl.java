@@ -36,7 +36,7 @@ public class ConnectionImpl implements IConnection {
         boolean existsUser;
         boolean existsUrl;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             existsUrl = connectionRepository.existsByUrl(url);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -70,7 +70,7 @@ public class ConnectionImpl implements IConnection {
         boolean existsUser;
         List<Connection> connectionList;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             connectionList = connectionRepository.findByUrlIn(urls);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -103,7 +103,7 @@ public class ConnectionImpl implements IConnection {
         boolean existsUser;
         Connection connection;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             connection = connectionRepository.findByUrl(url);
         } catch (RuntimeException e) {
             log.error(e.getMessage());

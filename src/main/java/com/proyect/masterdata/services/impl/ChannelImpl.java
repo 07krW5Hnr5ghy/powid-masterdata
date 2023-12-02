@@ -49,7 +49,7 @@ public class ChannelImpl implements IChannel {
         PaymentMethod paymentMethod;
         Connection connection;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             userData = userRepository.findByUsernameAndStatusTrue(requestChannelSave.getUser().toUpperCase());
             channel = channelRepository.existsByName(requestChannelSave.getName().toUpperCase());
             client = clientRepository.findByRucAndStatusTrue(requestChannelSave.getClient().toUpperCase());
@@ -113,7 +113,7 @@ public class ChannelImpl implements IChannel {
         List<PaymentMethod> paymentMethodList;
         List<Connection> connectionList;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             channelList = channelRepository.findByNameIn(
                     requestChannelSaveList.stream().map(channel -> channel.getName().toUpperCase()).toList());
             userList = userRepository.findByUsernameIn(
@@ -188,7 +188,7 @@ public class ChannelImpl implements IChannel {
         PaymentMethod paymentMethod;
         Connection connection;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             channel = channelRepository.findByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -230,7 +230,7 @@ public class ChannelImpl implements IChannel {
         boolean existsUser;
         Channel channel;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             channel = channelRepository.findByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

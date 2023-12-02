@@ -43,7 +43,7 @@ public class DistrictImpl implements IDistrict {
         boolean existsDistrict;
         Province provinceData;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             existsDistrict = districtRepository.existsByName(name.toUpperCase());
             provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
         } catch (RuntimeException e) {
@@ -89,7 +89,7 @@ public class DistrictImpl implements IDistrict {
         Province provinceData;
         List<District> districts;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
             districts = districtRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
@@ -131,7 +131,7 @@ public class DistrictImpl implements IDistrict {
         boolean existsprovince;
         District district;
         try {
-            existsUser = userRepository.existsByUsername(requestDistrict.getUser().toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(requestDistrict.getUser().toUpperCase());
             existsprovince = provinceRepository.existsById(requestDistrict.getCodeProvince());
             district = districtRepository.findByNameAndStatusTrue(requestDistrict.getName().toUpperCase());
         } catch (RuntimeException e) {
@@ -168,7 +168,7 @@ public class DistrictImpl implements IDistrict {
         boolean existsUser;
         District district;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             district = districtRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e.getMessage());

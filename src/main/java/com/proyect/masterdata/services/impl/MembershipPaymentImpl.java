@@ -45,7 +45,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
         PaymentState paymentState;
 
         try {
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             membership = membershipRepository.findByIdAndStatusTrue(membershipId);
             membershipPayment = membershipPaymentRepository.findByMembershipIdAndStatusTrue(membershipId);
             paymentMethod = paymentMethodRepository
@@ -103,7 +103,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
         boolean existsUser;
 
         try {
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             membershipPayment = membershipPaymentRepository.findByMembershipIdAndStatusTrue(membershipId);
         } catch (RuntimeException e) {
             log.error(e.getMessage());

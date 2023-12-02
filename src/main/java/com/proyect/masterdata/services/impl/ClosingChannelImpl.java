@@ -31,7 +31,7 @@ public class ClosingChannelImpl implements IClosingChannel {
         boolean existsClosingChannel;
 
         try {
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsClosingChannel = closingChannelRepository.existsByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

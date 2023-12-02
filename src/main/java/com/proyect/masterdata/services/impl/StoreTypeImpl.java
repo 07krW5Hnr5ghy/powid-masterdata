@@ -32,7 +32,7 @@ public class StoreTypeImpl implements IStoreType {
 
         try {
             existsStoreType = storeTypeRepository.existsByName(name.toUpperCase());
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

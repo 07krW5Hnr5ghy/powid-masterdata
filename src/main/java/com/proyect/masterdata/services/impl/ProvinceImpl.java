@@ -43,7 +43,7 @@ public class ProvinceImpl implements IProvince {
         boolean existsProvince;
         Department departmentData;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             existsProvince = provinceRepository.existsByName(name.toUpperCase());
             departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
         } catch (RuntimeException e) {
@@ -89,7 +89,7 @@ public class ProvinceImpl implements IProvince {
         Department departmentData;
         List<Province> provinces;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
             provinces = provinceRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
@@ -132,7 +132,7 @@ public class ProvinceImpl implements IProvince {
         boolean existsDepartment;
         Province province;
         try {
-            existsUser = userRepository.existsByUsername(requestProvince.getUser().toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(requestProvince.getUser().toUpperCase());
             existsDepartment = departmentRepository.existsById(requestProvince.getCodeDepartment());
             province = provinceRepository.findByNameAndStatusTrue(requestProvince.getName().toUpperCase());
         } catch (RuntimeException e) {
@@ -169,7 +169,7 @@ public class ProvinceImpl implements IProvince {
         boolean existsUser;
         Province province;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             province = provinceRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e.getMessage());

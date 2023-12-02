@@ -36,7 +36,7 @@ public class PaymentTypeImpl implements IPaymentType {
         boolean existsUser;
         boolean existsType;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             existsType = paymentTypeRepository.existsByType(type.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -71,7 +71,7 @@ public class PaymentTypeImpl implements IPaymentType {
         boolean existsUser;
         List<PaymentType> paymentTypeList;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             paymentTypeList = paymentTypeRepository.findByTypeIn(names);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -105,7 +105,7 @@ public class PaymentTypeImpl implements IPaymentType {
         boolean existsUser;
         PaymentType paymentType;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             paymentType = paymentTypeRepository.findByType(type.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

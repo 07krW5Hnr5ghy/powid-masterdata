@@ -32,7 +32,7 @@ public class EntryChannelImpl implements IEntryChannel {
         boolean existsEntryChannel;
 
         try {
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsEntryChannel = entryChannelRepository.existsByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());

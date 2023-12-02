@@ -48,7 +48,7 @@ public class MembershipImpl implements IMembership {
         try {
 
             client = clientRepository.findByRucAndStatusTrue(clientRuc);
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             subscription = subscriptionRepository.findByNameAndStatusTrue(subscriptionName.toUpperCase());
 
             if (client != null) {
@@ -120,7 +120,7 @@ public class MembershipImpl implements IMembership {
 
         try {
 
-            existsUser = userRepository.existsByUsername(tokenUser.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             client = clientRepository.findByRucAndStatusTrue(clientRuc);
 
             if (client != null) {

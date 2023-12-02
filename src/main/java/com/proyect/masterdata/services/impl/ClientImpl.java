@@ -97,7 +97,7 @@ public class ClientImpl implements IClient {
         List<District> districtList;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             clientList = clientRepository
                     .findByRucIn(requestClientSaveList.stream().map(client -> client.getRuc()).toList());
             districtList = districtRepository.findByNameIn(
@@ -159,7 +159,7 @@ public class ClientImpl implements IClient {
         District district;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             client = clientRepository.findByRucAndStatusTrue(requestClient.getRuc());
             district = districtRepository.findByNameAndStatusTrue(requestClient.getDistrict());
         } catch (RuntimeException e) {
@@ -202,7 +202,7 @@ public class ClientImpl implements IClient {
         boolean existsUser;
         Client client;
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             client = clientRepository.findByRucAndStatusTrue(ruc);
         } catch (RuntimeException e) {
             log.error(e.getMessage());

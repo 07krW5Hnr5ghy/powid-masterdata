@@ -45,7 +45,7 @@ public class SizeImpl implements ISize {
         boolean existsSizeType;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             existsSize = sizeRepository.existsByName(name.toUpperCase());
             existsSizeType = sizeTypeRepository.existsById(codeSizeType);
         } catch (RuntimeException e) {
@@ -86,7 +86,7 @@ public class SizeImpl implements ISize {
         List<Size> sizes;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             existsSizeType = sizeTypeRepository.existsById(codeSizeType);
             sizes = sizeRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
@@ -128,7 +128,7 @@ public class SizeImpl implements ISize {
         Size size;
 
         try {
-            existsUser = userRepository.existsByUsername(requestSize.getUser().toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(requestSize.getUser().toUpperCase());
             existsSizeType = sizeTypeRepository.existsById(requestSize.getCodeSizeType());
             size = sizeRepository.findById(requestSize.getCode()).orElse(null);
         } catch (RuntimeException e) {
@@ -167,7 +167,7 @@ public class SizeImpl implements ISize {
         Size size;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             size = sizeRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);

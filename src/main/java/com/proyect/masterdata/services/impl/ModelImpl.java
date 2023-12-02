@@ -46,7 +46,7 @@ public class ModelImpl implements IModel {
         Brand brandData;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             existsModel = modelRepository.existsByName(name.toUpperCase());
             brandData = brandRepository.findByName(brand.toUpperCase());
         } catch (RuntimeException e) {
@@ -95,7 +95,7 @@ public class ModelImpl implements IModel {
         List<Model> models;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             brandData = brandRepository.findByName(brand.toUpperCase());
             models = modelRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
@@ -142,7 +142,7 @@ public class ModelImpl implements IModel {
         Model modelData;
 
         try {
-            existsUser = userRepository.existsByUsername(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
             modelData = modelRepository.findByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
