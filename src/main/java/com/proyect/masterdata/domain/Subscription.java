@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.ErrorSubscription, schema = Constants.schemaPayment)
+@Table(name = Constants.tableSubscription, schema = Constants.schemaPayment)
 public class Subscription {
 
     @Id

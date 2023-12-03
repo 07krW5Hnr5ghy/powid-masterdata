@@ -48,6 +48,7 @@ public class Constants {
     public static final String tableStoreType = "tienda_tipo";
     public static final String tableMembershipModule = "membresia_modulo";
     public static final String tableMembreshipModuleRole = "membresia_modulo_rol";
+    public static final String tableSubscription = "subscripcion";
 
     // Mensajes
     public static final String register = "registration correctly";
@@ -122,6 +123,7 @@ public class Constants {
     public static final String ErrorClosingChannel = "The closing channel does not exists";
     public static final String ErrorClosingChannelExists = "The closing channel already exists";
     public static final String ErrorSubscription = "The subscription does not exists";
+    public static final String ErrorSubscriptionExists = "The subscription already exists";
     public static final String ErrorModule = "The module does not exists";
     public static final String ErrorModuleExist = "The module already exists";
     public static final String ErrorMembershipActive = "The client has already an active membership";

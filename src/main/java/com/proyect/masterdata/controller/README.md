@@ -349,3 +349,28 @@ http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&u
 - Example :
 
 http://localhost:8080/masterdata/store-type?name=shopify&tokenUser=admin1
+
+### POST /subscription
+
+- Description : add one subscription to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the subscription
+2. months : months of duration for the subscription
+3. price : price of the subscription for one month
+2. tokenUser : username of the user who creates the subscription 
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/subscription?name=semestral&months=6&discountPercent=5.00&tokenUser=admin1

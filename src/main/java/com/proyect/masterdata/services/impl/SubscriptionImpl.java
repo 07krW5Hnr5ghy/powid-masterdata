@@ -21,8 +21,8 @@ import java.util.Date;
 @Log4j2
 public class SubscriptionImpl implements ISubscription {
 
-    private SubscriptionRepository subscriptionRepository;
-    private UserRepository userRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ResponseSuccess save(String name, Integer months, Double discountPercent, String tokenUser)
@@ -43,8 +43,8 @@ public class SubscriptionImpl implements ISubscription {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if (!existsSubscription) {
-            throw new BadRequestExceptions(Constants.ErrorSubscription);
+        if (existsSubscription) {
+            throw new BadRequestExceptions(Constants.ErrorSubscriptionExists);
         }
 
         try {
@@ -58,7 +58,7 @@ public class SubscriptionImpl implements ISubscription {
 
             return ResponseSuccess.builder()
                     .code(200)
-                    .message(Constants.InternalErrorExceptions)
+                    .message(Constants.register)
                     .build();
         } catch (RuntimeException e) {
             log.error(e.getMessage());

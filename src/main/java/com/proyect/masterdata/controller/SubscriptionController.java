@@ -28,9 +28,9 @@ public class SubscriptionController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("months") Integer months,
-            @RequestParam("price") Double price,
+            @RequestParam("discountPercent") Double discountPercent,
             @RequestParam("tokenUser") String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        ResponseSuccess result = iSubscription.save(name, months, price, tokenUser);
+        ResponseSuccess result = iSubscription.save(name, months, discountPercent, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
