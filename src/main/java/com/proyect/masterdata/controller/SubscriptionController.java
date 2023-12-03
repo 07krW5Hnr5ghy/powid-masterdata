@@ -6,11 +6,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import com.proyect.masterdata.dto.PlanDTO;
 import com.proyect.masterdata.dto.SubscriptionDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -46,6 +50,12 @@ public class SubscriptionController {
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         Page<SubscriptionDTO> result = iSubscription.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "plans", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<PlanDTO>> listPlans() throws InternalErrorExceptions {
+        List<PlanDTO> result = iSubscription.listPlans();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

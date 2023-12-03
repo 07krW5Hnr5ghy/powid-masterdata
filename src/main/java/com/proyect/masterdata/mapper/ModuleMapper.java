@@ -10,6 +10,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ModuleMapper {
+
     ModuleMapper INSTANCE = Mappers.getMapper(ModuleMapper.class);
 
     @Mapping(target = "moduleName", source = "name")

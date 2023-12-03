@@ -1,7 +1,10 @@
 package com.proyect.masterdata.services;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
+import com.proyect.masterdata.dto.PlanDTO;
 import com.proyect.masterdata.dto.SubscriptionDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -13,4 +16,6 @@ public interface ISubscription {
 
     Page<SubscriptionDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+
+    List<PlanDTO> listPlans() throws InternalErrorExceptions;
 }

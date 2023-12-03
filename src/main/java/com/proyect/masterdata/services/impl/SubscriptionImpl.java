@@ -5,10 +5,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Subscription;
+import com.proyect.masterdata.domain.Module;
+import com.proyect.masterdata.dto.ModulePlanDTO;
+import com.proyect.masterdata.dto.PlanDTO;
 import com.proyect.masterdata.dto.SubscriptionDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.repository.ModuleRepository;
 import com.proyect.masterdata.repository.SubscriptionRepository;
 import com.proyect.masterdata.repository.SubscriptionRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
@@ -18,6 +22,8 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +36,7 @@ public class SubscriptionImpl implements ISubscription {
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final SubscriptionRepositoryCustom subscriptionRepositoryCustom;
+    private final ModuleRepository moduleRepository;
 
     @Override
     public ResponseSuccess save(String name, Integer months, Double discountPercent, String tokenUser)
@@ -103,6 +110,44 @@ public class SubscriptionImpl implements ISubscription {
 
         return new PageImpl<>(subscriptionDTOs, subscriptionPage.getPageable(), subscriptionPage.getTotalElements());
 
+    }
+
+    @Override
+    public List<PlanDTO> listPlans() throws InternalErrorExceptions {
+
+        try {
+            List<Module> modules = moduleRepository.findAllByStatusTrue();
+            List<Subscription> subscriptions = subscriptionRepository.findAllByStatusTrue();
+
+            List<PlanDTO> plans = subscriptions.stream().map(subscription -> {
+
+                List<ModulePlanDTO> moduleList = modules.stream().map(module -> {
+
+                    Double discount = ((module.getMonthlyPrice() * subscription.getMonths())
+                            * subscription.getDiscountPercent()) / 100;
+                    BigDecimal discountedPrice = new BigDecimal((module.getMonthlyPrice() * subscription.getMonths()) -
+                            discount).setScale(2, RoundingMode.HALF_EVEN);
+
+                    return ModulePlanDTO.builder()
+                            .moduleName(module.getName())
+                            .modulePrice(discountedPrice)
+                            .build();
+
+                }).toList();
+
+                return PlanDTO.builder()
+                        .name(subscription.getName())
+                        .months(subscription.getMonths())
+                        .discountPercentaje(subscription.getDiscountPercent())
+                        .moduleList(moduleList)
+                        .build();
+            }).toList();
+
+            return plans;
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 
 }

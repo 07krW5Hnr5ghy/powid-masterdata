@@ -496,3 +496,101 @@ http://localhost:8080/masterdata/subscription?pageNumber=0&pageSize=5&sort=ASC&s
 - Example :
 
 http://localhost:8080/masterdata/subscription?name=semestral&months=6&discountPercent=5.00&tokenUser=admin1
+
+### GET /subscription/plans
+
+- Description : list the subscriptions and all the active modules with the discounted price
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": "SEMESTRAL",
+        "months": 6,
+        "discountPercentaje": 5.0,
+        "moduleList": [
+            {
+                "moduleName": "VENTAS",
+                "modulePrice": 14.648999999999997
+            },
+            {
+                "moduleName": "FINANZAS",
+                "modulePrice": 28.557
+            },
+            {
+                "moduleName": "INVENTARIO",
+                "modulePrice": 22.743000000000002
+            },
+            {
+                "moduleName": "MARKETING",
+                "modulePrice": 57.17099999999999
+            },
+            {
+                "moduleName": "COURIER",
+                "modulePrice": 52.49700000000001
+            }
+        ]
+    },
+    {
+        "name": "ANUAL",
+        "months": 12,
+        "discountPercentaje": 10.0,
+        "moduleList": [
+            {
+                "moduleName": "VENTAS",
+                "modulePrice": 27.755999999999997
+            },
+            {
+                "moduleName": "FINANZAS",
+                "modulePrice": 54.108
+            },
+            {
+                "moduleName": "INVENTARIO",
+                "modulePrice": 43.092
+            },
+            {
+                "moduleName": "MARKETING",
+                "modulePrice": 108.32399999999998
+            },
+            {
+                "moduleName": "COURIER",
+                "modulePrice": 99.46800000000002
+            }
+        ]
+    },
+    {
+        "name": "MENSUAL",
+        "months": 1,
+        "discountPercentaje": 0.0,
+        "moduleList": [
+            {
+                "moduleName": "VENTAS",
+                "modulePrice": 2.57
+            },
+            {
+                "moduleName": "FINANZAS",
+                "modulePrice": 5.01
+            },
+            {
+                "moduleName": "INVENTARIO",
+                "modulePrice": 3.99
+            },
+            {
+                "moduleName": "MARKETING",
+                "modulePrice": 10.03
+            },
+            {
+                "moduleName": "COURIER",
+                "modulePrice": 9.21
+            }
+        ]
+    }
+]
+
+- Example :
+
+http://localhost:8080/masterdata/subscription/plans
