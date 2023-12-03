@@ -27,7 +27,7 @@ public class Subscription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_subscribcion")
+    @Column(name = "id_subscripcion")
     private Long id;
 
     @Column(name = "nombre", nullable = false, unique = true)

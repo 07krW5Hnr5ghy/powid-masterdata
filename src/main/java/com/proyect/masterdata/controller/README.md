@@ -515,23 +515,23 @@ http://localhost:8080/masterdata/subscription?name=semestral&months=6&discountPe
         "moduleList": [
             {
                 "moduleName": "VENTAS",
-                "modulePrice": 14.648999999999997
+                "modulePrice": 14.65
             },
             {
                 "moduleName": "FINANZAS",
-                "modulePrice": 28.557
+                "modulePrice": 28.56
             },
             {
                 "moduleName": "INVENTARIO",
-                "modulePrice": 22.743000000000002
+                "modulePrice": 22.74
             },
             {
                 "moduleName": "MARKETING",
-                "modulePrice": 57.17099999999999
+                "modulePrice": 57.17
             },
             {
                 "moduleName": "COURIER",
-                "modulePrice": 52.49700000000001
+                "modulePrice": 52.50
             }
         ]
     },
@@ -542,23 +542,23 @@ http://localhost:8080/masterdata/subscription?name=semestral&months=6&discountPe
         "moduleList": [
             {
                 "moduleName": "VENTAS",
-                "modulePrice": 27.755999999999997
+                "modulePrice": 27.76
             },
             {
                 "moduleName": "FINANZAS",
-                "modulePrice": 54.108
+                "modulePrice": 54.11
             },
             {
                 "moduleName": "INVENTARIO",
-                "modulePrice": 43.092
+                "modulePrice": 43.09
             },
             {
                 "moduleName": "MARKETING",
-                "modulePrice": 108.32399999999998
+                "modulePrice": 108.32
             },
             {
                 "moduleName": "COURIER",
-                "modulePrice": 99.46800000000002
+                "modulePrice": 99.47
             }
         ]
     },
