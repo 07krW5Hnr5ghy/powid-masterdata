@@ -279,6 +279,70 @@ http://localhost:8080/masterdata/district?name=asuncion&province=chachapoyas&use
 
 http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
 
+### GET /module
+
+- Description : list the modules registered in the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : filter modules by name
+2. user : filter modules by the username who registered the modules
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0)
+6. pageSize : number the records per Page
+
+- Response : 
+
+{
+    "content": [
+        {
+            "moduleName": "VENTAS",
+            "modulePrice": 2.57
+        },
+        {
+            "moduleName": "FINANZAS",
+            "modulePrice": 2.57
+        },
+        {
+            "moduleName": "INVENTARIO",
+            "modulePrice": 3.99
+        },
+        {
+            "moduleName": "MARKETING",
+            "modulePrice": 10.03
+        },
+        {
+            "moduleName": "COURIER",
+            "modulePrice": 9.21
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 5,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalElements": 5,
+    "totalPages": 1,
+    "first": true,
+    "size": 5,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 5,
+    "empty": false
+}
+
+- Example :
+
+http://localhost:8080/masterdata/module?pageNumber=0&pageSize=5&sort=ASC&sortColumn=name
+
+
 ### POST /module
 
 - Description : add one module to the database
@@ -349,6 +413,64 @@ http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&u
 - Example :
 
 http://localhost:8080/masterdata/store-type?name=shopify&tokenUser=admin1
+
+### GET /subscription
+
+- Description : list the subscriptions registered in the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : filter subscriptions by name
+2. user : filter subscriptions by the username who registered them
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0)
+6. pageSize : number the records per Page
+
+- Response : 
+
+{
+    "content": [
+        {
+            "name": "SEMESTRAL",
+            "months": 6,
+            "discountPercent": 5.0
+        },
+        {
+            "name": "ANUAL",
+            "months": 12,
+            "discountPercent": 10.0
+        },
+        {
+            "name": "MENSUAL",
+            "months": 1,
+            "discountPercent": 0.0
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 5,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 3,
+    "first": true,
+    "size": 5,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 3,
+    "empty": false
+}
+
+- Example :
+
+http://localhost:8080/masterdata/subscription?pageNumber=0&pageSize=5&sort=ASC&sortColumn=name
 
 ### POST /subscription
 

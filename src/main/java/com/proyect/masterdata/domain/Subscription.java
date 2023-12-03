@@ -50,4 +50,7 @@ public class Subscription {
     @Column(name = "estado", nullable = false)
     private Boolean status;
 
+    @Column(name = "usuario_token", nullable = false)
+    private String tokenUser;
+
 }

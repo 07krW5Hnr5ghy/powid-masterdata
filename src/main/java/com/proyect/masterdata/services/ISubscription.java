@@ -1,5 +1,8 @@
 package com.proyect.masterdata.services;
 
+import org.springframework.data.domain.Page;
+
+import com.proyect.masterdata.dto.SubscriptionDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -7,4 +10,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 public interface ISubscription {
     ResponseSuccess save(String name, Integer months, Double discountPercent, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
+
+    Page<SubscriptionDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
 }

@@ -9,12 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class StoreDTO {
-
+public class SubscriptionDTO {
     private String name;
-    private String url;
-    private String client;
-    private String storeType;
-    private String user;
-
+    private Integer months;
+    private Double discountPercent;
 }

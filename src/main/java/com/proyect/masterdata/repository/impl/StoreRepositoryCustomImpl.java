@@ -38,14 +38,14 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
         List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
-            List<Order> categoryList = new ArrayList<>();
+            List<Order> storeList = new ArrayList<>();
             if (sort.equalsIgnoreCase("ASC")) {
-                categoryList = listASC(sortColumn, criteriaBuilder, itemRoot);
+                storeList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
             if (sort.equalsIgnoreCase("DESC")) {
-                categoryList = listDESC(sortColumn, criteriaBuilder, itemRoot);
+                storeList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(categoryList);
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(storeList);
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
@@ -96,28 +96,28 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
             Root<Store> itemRoot) {
-        List<Order> clientChannelList = new ArrayList<>();
+        List<Order> storeList = new ArrayList<>();
         if (sortColumn.equalsIgnoreCase("NAME")) {
-            clientChannelList.add(criteriaBuilder.asc(itemRoot.get("name")));
+            storeList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
         if (sortColumn.equalsIgnoreCase("USER")) {
-            clientChannelList.add(criteriaBuilder.asc(itemRoot.get("user")));
+            storeList.add(criteriaBuilder.asc(itemRoot.get("user")));
         }
-        return clientChannelList;
+        return storeList;
     }
 
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
             Root<Store> itemRoot) {
-        List<Order> clientChannelList = new ArrayList<>();
+        List<Order> storeList = new ArrayList<>();
         if (sortColumn.equalsIgnoreCase("NAME")) {
-            clientChannelList.add(criteriaBuilder.desc(itemRoot.get("name")));
+            storeList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
         if (sortColumn.equalsIgnoreCase("USER")) {
-            clientChannelList.add(criteriaBuilder.desc(itemRoot.get("user")));
+            storeList.add(criteriaBuilder.desc(itemRoot.get("user")));
         }
-        return clientChannelList;
+        return storeList;
     }
 
     private long getOrderCount(String name, String user, Boolean status) {
