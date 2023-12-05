@@ -137,7 +137,7 @@ Body
 
 http://localhost:8080/masterdata/category
 
-### POST /category
+### POST /category protected
 - Description : add one category to the database
 - Request: none
 - Parameters : 
@@ -158,7 +158,7 @@ http://localhost:8080/masterdata/category
 
 http://localhost:8080/masterdata/category?name=tennis&description=zapatos%20para%20correr&user=admin1
 
-### POST /category/categories
+### POST /category/categories protected
 - Description : add multiple categories to the database
 - Request :
 
@@ -224,7 +224,7 @@ Body
 
 http://localhost:8080/masterdata/closing-channel
 
-### POST /closing-channel
+### POST /closing-channel protected
 
 - Description : add one closing channel to the database
 
@@ -268,7 +268,7 @@ http://localhost:8080/masterdata/closing-channel?name=instagram&tokenUser=admin1
 
 http://localhost:8080/masterdata/department
 
-### POST /department
+### POST /department protected
 
 - Description : add one department to the database
 
@@ -316,7 +316,7 @@ http://localhost:8080/masterdata/department?name=amazonas&user=admin1
 
 http://localhost:8080/masterdata/district/province?province=chachapoyas
 
-### POST /district
+### POST /district protected
 
 - Description : add one district to a province in the database
 
@@ -360,7 +360,7 @@ http://localhost:8080/masterdata/district?name=asuncion&province=chachapoyas&use
 
 http://localhost:8080/masterdata/entry-channel
 
-### POST /entry-channel
+### POST /entry-channel protected
 
 - Description : add one entry channel to the database
 
@@ -446,8 +446,7 @@ http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
 
 http://localhost:8080/masterdata/module?pageNumber=0&pageSize=5&sort=ASC&sortColumn=name
 
-
-### POST /module
+### POST /module protected
 
 - Description : add one module to the database
 
@@ -470,6 +469,51 @@ http://localhost:8080/masterdata/module?pageNumber=0&pageSize=5&sort=ASC&sortCol
 - Example :
 
 http://localhost:8080/masterdata/module?name=ventas&price=2.57&tokenUser=admin1
+
+### GET /onboard protected
+
+- Description : list the onboard records stored in the database
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "username": "RT87",
+        "name": "ROGELIO",
+        "surname": "TRUJILLO",
+        "email": "rt87@gmail.com",
+        "address": "CRA 567",
+        "mobile": "123456789",
+        "dni": "12345678911",
+        "category": "TENNIS",
+        "usersMinimum": 11,
+        "usersMaximum": 50,
+        "billing": false,
+        "comment": "administrar pedidos",
+        "businessName": "TRADING COMPANY LTDA",
+        "businessRuc": "12345678911",
+        "gender": "M",
+        "district": "ASUNCION",
+        "store": "E-SHOP",
+        "storeUrl": "e-shop.com",
+        "storeType": "SHOPIFY",
+        "closingChannels": [
+            "INSTAGRAM",
+            "FACEBOOK"
+        ],
+        "entryChannel": "TIKTOK",
+        "demo": true
+    }
+    ... more onboarding records
+]
+
+- Example :
+
+http://localhost:8080/masterdata/onboard
 
 ### GET /province/department
 
@@ -495,7 +539,7 @@ http://localhost:8080/masterdata/module?name=ventas&price=2.57&tokenUser=admin1
 
 http://localhost:8080/masterdata/province/department?department=amazonas
 
-### POST /province
+### POST /province protected
 
 - Description : add one province to the department
 
@@ -539,7 +583,7 @@ http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&u
 
 http://localhost:8080/masterdata/store-type
 
-### POST /store-type
+### POST /store-type protected
 
 - Description : add one store type to the database
 
@@ -620,7 +664,7 @@ http://localhost:8080/masterdata/store-type?name=shopify&tokenUser=admin1
 
 http://localhost:8080/masterdata/subscription?pageNumber=0&pageSize=5&sort=ASC&sortColumn=name
 
-### POST /subscription
+### POST /subscription protected
 
 - Description : add one subscription to the database
 

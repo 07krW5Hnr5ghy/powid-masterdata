@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import com.proyect.masterdata.domain.Onboard;
+import com.proyect.masterdata.dto.OnboardingDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IOnboard;
 
@@ -26,8 +26,8 @@ public class OnboardController {
     private IOnboard iOnboard;
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Onboard>> listOnboard() throws BadRequestExceptions {
-        List<Onboard> result = iOnboard.listOnboard();
+    public ResponseEntity<List<OnboardingDTO>> listOnboard() throws BadRequestExceptions {
+        List<OnboardingDTO> result = iOnboard.listOnboard();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

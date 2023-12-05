@@ -48,24 +48,24 @@ public class Onboard {
     private Boolean demo;
 
     @Column(name = "id_cliente", nullable = false)
-    private Long idClient;
+    private Long clientId;
 
     @Column(name = "id_canal_entrada", nullable = false)
-    private Long idEntryChannel;
+    private Long entryChannelId;
 
     @Column(name = "id_categoria", nullable = false)
-    private Long idCategory;
+    private Long categoryId;
 
     @OneToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false, updatable = false)
+    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "id_canal_entrada", columnDefinition = "idEntryChannel", insertable = false, updatable = false)
+    @JoinColumn(name = "id_canal_entrada", columnDefinition = "entryChannelId", insertable = false, updatable = false)
     private EntryChannel entryChannel;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria", columnDefinition = "idCategory", insertable = false, updatable = false)
+    @JoinColumn(name = "id_categoria", columnDefinition = "categoryId", insertable = false, updatable = false)
     private Category category;
 
 }

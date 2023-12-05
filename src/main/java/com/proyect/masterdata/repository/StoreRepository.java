@@ -15,4 +15,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     List<Store> findByNameIn(List<String> name);
 
     boolean existsByName(String name);
+
+    Store findByClientId(Long clientId);
 }

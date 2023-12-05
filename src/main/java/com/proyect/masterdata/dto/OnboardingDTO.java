@@ -29,11 +29,9 @@ public class OnboardingDTO {
 
     private String category;
 
-    private Long usersMinimum;
+    private Integer usersMinimum;
 
-    private Long usersMaximum;
-
-    private Boolean ecommerce;
+    private Integer usersMaximum;
 
     private Boolean billing;
 
@@ -44,8 +42,6 @@ public class OnboardingDTO {
     private String businessRuc;
 
     private String gender;
-
-    private String password;
 
     private String district;
 

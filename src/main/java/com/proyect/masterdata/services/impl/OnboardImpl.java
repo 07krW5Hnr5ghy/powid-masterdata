@@ -8,13 +8,20 @@ import com.proyect.masterdata.domain.Category;
 import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.EntryChannel;
 import com.proyect.masterdata.domain.Onboard;
+import com.proyect.masterdata.domain.OnboardChannel;
+import com.proyect.masterdata.domain.Store;
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.OnboardingDTO;
 import com.proyect.masterdata.dto.request.RequestOnboard;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.CategoryRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.EntryChannelRepository;
+import com.proyect.masterdata.repository.OnboardChannelRepository;
 import com.proyect.masterdata.repository.OnboardRepository;
+import com.proyect.masterdata.repository.StoreRepository;
+import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IOnboard;
 import com.proyect.masterdata.utils.Constants;
 
@@ -30,6 +37,9 @@ public class OnboardImpl implements IOnboard {
     private final ClientRepository clientRepository;
     private final EntryChannelRepository entryChannelRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final StoreRepository storeRepository;
+    private final OnboardChannelRepository onboardChannelRepository;
 
     @Override
     public Onboard save(RequestOnboard requestOnboard) throws InternalErrorExceptions, BadRequestExceptions {
@@ -68,14 +78,14 @@ public class OnboardImpl implements IOnboard {
 
             Onboard onboard = onboardRepository.save(Onboard.builder()
                     .category(category)
-                    .idCategory(category.getId())
+                    .categoryId(category.getId())
                     .ecommerce(requestOnboard.getEcommerce())
                     .entryChannel(entryChannel)
-                    .idEntryChannel(entryChannel.getId())
+                    .entryChannelId(entryChannel.getId())
                     .usersMinimum(usersMinimum)
                     .usersMaximum(usersMaximum)
                     .client(client)
-                    .idClient(client.getId())
+                    .clientId(client.getId())
                     .demo(requestOnboard.getDemo())
                     .billing(requestOnboard.getBilling())
                     .comment(requestOnboard.getComments())
@@ -90,9 +100,56 @@ public class OnboardImpl implements IOnboard {
     }
 
     @Override
-    public List<Onboard> listOnboard() throws BadRequestExceptions {
+    public List<OnboardingDTO> listOnboard() throws BadRequestExceptions {
         try {
-            return onboardRepository.findAll();
+            List<Onboard> onboards = onboardRepository.findAll();
+            List<OnboardingDTO> onboardingDTOs = onboards.stream().map(onboard -> {
+
+                OnboardingDTO onboardingDTO = OnboardingDTO.builder().build();
+
+                User user = userRepository.findByClientId(onboard.getClientId());
+
+                onboardingDTO.setUsername(user.getUsername());
+                onboardingDTO.setName(onboard.getClient().getName());
+                onboardingDTO.setSurname(onboard.getClient().getSurname());
+                onboardingDTO.setEmail(onboard.getClient().getEmail());
+                onboardingDTO.setAddress(onboard.getClient().getAddress());
+                onboardingDTO.setMobile(onboard.getClient().getMobile());
+                onboardingDTO.setDni(onboard.getClient().getDni());
+                onboardingDTO.setCategory(onboard.getCategory().getName());
+                onboardingDTO.setUsersMinimum(onboard.getUsersMinimum());
+                onboardingDTO.setUsersMaximum(onboard.getUsersMaximum());
+                onboardingDTO.setGender(user.getGender());
+                onboardingDTO.setDistrict(onboard.getClient().getDistrict().getName());
+
+                if (onboard.getEcommerce()) {
+                    Store store = storeRepository.findByClientId(onboard.getClientId());
+                    onboardingDTO.setStore(store.getName());
+                    onboardingDTO.setStoreUrl(store.getUrl());
+                    onboardingDTO.setStoreType(store.getStoreType().getName());
+                } else {
+                    onboardingDTO.setStore("NO APLICA");
+                    onboardingDTO.setStoreUrl("NO APLICA");
+                    onboardingDTO.setStoreType("NO APLICA");
+                }
+
+                onboardingDTO.setComment(onboard.getComment());
+                onboardingDTO.setBilling(onboard.getBilling());
+                onboardingDTO.setBusinessRuc(onboard.getClient().getRuc());
+                onboardingDTO.setBusinessName(onboard.getClient().getBusiness());
+
+                List<OnboardChannel> onboardChannels = onboardChannelRepository.findByOnboardId(onboard.getId());
+                List<String> closingChannels = onboardChannels.stream()
+                        .map(onboardChannel -> onboardChannel.getClosingChannel().getName()).toList();
+                onboardingDTO.setClosingChannels(closingChannels);
+
+                onboardingDTO.setEntryChannel(onboard.getEntryChannel().getName());
+
+                onboardingDTO.setDemo(onboard.getDemo());
+
+                return onboardingDTO;
+            }).toList();
+            return onboardingDTOs;
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);

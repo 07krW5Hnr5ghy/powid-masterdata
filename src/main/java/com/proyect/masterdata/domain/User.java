@@ -62,20 +62,20 @@ public class User {
     private Date dateUpdate;
 
     @Column(name = "id_distrito", updatable = false, nullable = false)
-    private Long idDistrict;
+    private Long districtId;
 
     @Column(name = "id_cliente", nullable = false)
-    private Long idClient;
+    private Long clientId;
 
     @Column(name = "usuario_token", nullable = false)
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict", insertable = false, updatable = false)
+    @JoinColumn(name = "id_distrito", columnDefinition = "districtId", insertable = false, updatable = false)
     private District district;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "idClient", insertable = false, updatable = false)
+    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
 }
