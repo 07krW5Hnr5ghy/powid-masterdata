@@ -1,5 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Category;
@@ -84,6 +86,16 @@ public class OnboardImpl implements IOnboard {
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public List<Onboard> listOnboard() throws BadRequestExceptions {
+        try {
+            return onboardRepository.findAll();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
         }
     }
 
