@@ -1,14 +1,18 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.tomcat.util.bcel.Const;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.EntryChannel;
+import com.proyect.masterdata.dto.EntryChannelDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.mapper.EntryChannelMapper;
 import com.proyect.masterdata.repository.EntryChannelRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IEntryChannel;
@@ -24,6 +28,7 @@ public class EntryChannelImpl implements IEntryChannel {
 
     private final UserRepository userRepository;
     private final EntryChannelRepository entryChannelRepository;
+    private final EntryChannelMapper entryChannelMapper;
 
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -63,6 +68,25 @@ public class EntryChannelImpl implements IEntryChannel {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public List<EntryChannelDTO> listEntryChannel() throws BadRequestExceptions {
+
+        List<EntryChannel> entryChannels;
+
+        try {
+            entryChannels = entryChannelRepository.findAllByStatusTrue();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (entryChannels.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return entryChannelMapper.listEntryChannelToListEntryChannelDTO(entryChannels);
     }
 
 }

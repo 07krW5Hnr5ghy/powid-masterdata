@@ -1,5 +1,7 @@
 package com.proyect.masterdata.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,4 +12,6 @@ public interface EntryChannelRepository extends JpaRepository<EntryChannel, Long
     EntryChannel findByNameAndStatusTrue(String name);
 
     boolean existsByNameAndStatusTrue(String name);
+
+    List<EntryChannel> findAllByStatusTrue();
 }

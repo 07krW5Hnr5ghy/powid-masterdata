@@ -1,9 +1,14 @@
 package com.proyect.masterdata.services;
 
+import java.util.List;
+
+import com.proyect.masterdata.dto.EntryChannelDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IEntryChannel {
     ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+
+    List<EntryChannelDTO> listEntryChannel() throws BadRequestExceptions;
 }
