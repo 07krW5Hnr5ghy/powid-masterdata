@@ -1,7 +1,6 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.DistrictDTO;
-import com.proyect.masterdata.dto.ProvinceDTO;
 import com.proyect.masterdata.dto.request.RequestDistrict;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -62,7 +61,7 @@ public class DistrictController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "list", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<DistrictDTO>> list(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -97,5 +96,12 @@ public class DistrictController {
             @RequestParam("code") Long code) throws BadRequestExceptions {
         DistrictDTO result = iDistrict.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "province", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<DistrictDTO>> findByProvince(
+            @RequestParam("province") String province) throws BadRequestExceptions {
+        List<DistrictDTO> result = iDistrict.listDistrictByProvince(province);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

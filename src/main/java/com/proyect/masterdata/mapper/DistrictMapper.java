@@ -19,15 +19,14 @@ public interface DistrictMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "requestDistrictSave.name")
     @Mapping(target = "user", source = "requestDistrictSave.user")
-    @Mapping(target = "idProvince", source = "requestDistrictSave.codeProvince")
+    @Mapping(target = "provinceId", source = "requestDistrictSave.codeProvince")
     District districtToName(RequestDistrictSave requestDistrictSave);
 
     @Mapping(target = "id", source = "code")
-    @Mapping(target = "idProvince", source = "codeProvince")
+    @Mapping(target = "provinceId", source = "codeProvince")
     @Mapping(target = "dateRegistration", ignore = true)
     District requestDistrictToDistrict(RequestDistrict requestDistrict);
 
-    @Mapping(target = "code", source = "id")
     @Mapping(target = "nameProvince", source = "province.name")
     DistrictDTO districtToDistrictDTO(District district);
 

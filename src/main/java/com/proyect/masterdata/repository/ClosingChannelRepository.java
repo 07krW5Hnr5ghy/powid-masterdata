@@ -13,4 +13,6 @@ public interface ClosingChannelRepository extends JpaRepository<ClosingChannel, 
     List<ClosingChannel> findByNameInAndStatusTrue(List<String> names);
 
     boolean existsByNameAndStatusTrue(String name);
+
+    List<ClosingChannel> findAllByStatusTrue();
 }

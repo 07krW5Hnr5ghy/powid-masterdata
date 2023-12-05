@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ProvinceDTO {
+public class ClosingChannelDTO {
     private String name;
-    private String nameDepartment;
 }

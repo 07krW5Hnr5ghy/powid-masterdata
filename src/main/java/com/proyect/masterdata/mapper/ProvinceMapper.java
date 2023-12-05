@@ -19,14 +19,13 @@ public interface ProvinceMapper {
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "requestProvinceSave.name")
     @Mapping(target = "user", source = "requestProvinceSave.user")
-    @Mapping(target = "idDepartment", source = "requestProvinceSave.codeDepartment")
+    @Mapping(target = "departmentId", source = "requestProvinceSave.codeDepartment")
     Province provinceToName(RequestProvinceSave requestProvinceSave);
 
-    @Mapping(target = "idDepartment", source = "codeDepartment")
+    @Mapping(target = "departmentId", source = "codeDepartment")
     @Mapping(target = "dateRegistration", ignore = true)
     Province requestProvinceToProvince(RequestProvince requestProvince);
 
-    @Mapping(target = "code", source = "id")
     @Mapping(target = "nameDepartment", source = "department.name")
     ProvinceDTO provinceToProvinceDTO(Province province);
 

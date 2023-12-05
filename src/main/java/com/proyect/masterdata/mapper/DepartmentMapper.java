@@ -8,12 +8,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import java.util.List;
 
-
 @Mapper(componentModel = "spring")
 public interface DepartmentMapper {
     DepartmentMapper INSTANCE = Mappers.getMapper(DepartmentMapper.class);
 
-    @Mapping(target = "code", source = "id")
     DepartmentDTO departmentToDepartmentDTO(Department department);
 
     List<DepartmentDTO> listDepartmentToListDepartmentDTO(List<Department> departmentList);

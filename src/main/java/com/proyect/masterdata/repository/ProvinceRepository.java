@@ -9,7 +9,12 @@ import java.util.List;
 public interface ProvinceRepository extends JpaRepository<Province, Long> {
 
     boolean existsByName(String name);
+
     List<Province> findByNameIn(List<String> name);
+
     List<Province> findAllByStatusTrue();
+
     Province findByNameAndStatusTrue(String name);
+
+    List<Province> findAllByDepartmentIdAndStatusTrue(Long departmentId);
 }

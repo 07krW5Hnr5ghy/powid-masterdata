@@ -1,13 +1,18 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.ClosingChannel;
+import com.proyect.masterdata.dto.ClosingChannelDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.mapper.ClosingChannelMapper;
 import com.proyect.masterdata.repository.ClosingChannelRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IClosingChannel;
@@ -23,6 +28,7 @@ public class ClosingChannelImpl implements IClosingChannel {
 
     private final ClosingChannelRepository closingChannelRepository;
     private final UserRepository userRepository;
+    private final ClosingChannelMapper closingChannelMapper;
 
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -63,6 +69,25 @@ public class ClosingChannelImpl implements IClosingChannel {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public List<ClosingChannelDTO> listClosingChannel() throws InternalErrorExceptions {
+
+        List<ClosingChannel> closingChannels = new ArrayList<>();
+
+        try {
+            closingChannels = closingChannelRepository.findAllByStatusTrue();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (closingChannels.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return closingChannelMapper.listClosingChannelToListClosindChannelDTO(closingChannels);
     }
 
 }

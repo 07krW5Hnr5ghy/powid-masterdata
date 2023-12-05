@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
-    @Mapping(target = "code", source = "id")
+
     CategoryDTO categoryToCategoryDTO(Category category);
 
     List<CategoryDTO> listCategoryToListCategoryDTO(List<Category> categoryList);

@@ -119,6 +119,24 @@ Body
   "tokenUser":"REGISTER"
 }
 
+### GET /category
+- Description : list all active categories
+- Request: none
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": name of the category,
+        "description": description of the category
+    }
+]
+
+- Example :
+
+http://localhost:8080/masterdata/category
+
 ### POST /category
 - Description : add one category to the database
 - Request: none
@@ -186,6 +204,26 @@ Body
     }
 ]
 
+### GET /closing-channel
+
+- Description : list all active closing channels
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": name of the closing channel
+    }
+]
+
+- Example :
+
+http://localhost:8080/masterdata/closing-channel
+
 ### POST /closing-channel
 
 - Description : add one closing channel to the database
@@ -209,6 +247,27 @@ Body
 
 http://localhost:8080/masterdata/closing-channel?name=instagram&tokenUser=admin1
 
+### GET /department
+
+- Description : list departments
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": "AMAZONAS"
+    },
+    ... other departments
+]
+
+- Example :
+
+http://localhost:8080/masterdata/department
+
 ### POST /department
 
 - Description : add one department to the database
@@ -231,6 +290,31 @@ http://localhost:8080/masterdata/closing-channel?name=instagram&tokenUser=admin1
 - Example :
 
 http://localhost:8080/masterdata/department?name=amazonas&user=admin1
+
+
+### GET /district/province
+
+- Description : lists the districts by province
+
+- Request : none
+
+- Parameters : 
+
+1. province : name of the province
+
+- Response : 
+
+[
+    {
+        "name": "ASUNCION",
+        "nameProvince": "CHACHAPOYAS"
+    },
+    ... others districts
+]
+
+- Example :
+
+http://localhost:8080/masterdata/district/province?province=chachapoyas
 
 ### POST /district
 
@@ -366,6 +450,30 @@ http://localhost:8080/masterdata/module?pageNumber=0&pageSize=5&sort=ASC&sortCol
 - Example :
 
 http://localhost:8080/masterdata/module?name=ventas&price=2.57&tokenUser=admin1
+
+### GET /province/department
+
+- Description : list provinces by department
+
+- Request : none
+
+- Parameters : 
+
+1. department : name of the department 
+
+- Response : 
+
+[
+    {
+        "name": "CHACHAPOYAS",
+        "nameDepartment": "AMAZONAS"
+    },
+    ... others provinces
+]
+
+- Example :
+
+http://localhost:8080/masterdata/province/department?department=amazonas
 
 ### POST /province
 

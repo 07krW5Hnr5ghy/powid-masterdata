@@ -31,4 +31,7 @@ public interface IProvince {
                         throws BadRequestExceptions;
 
         ProvinceDTO findByCode(Long code) throws BadRequestExceptions;
+
+        List<ProvinceDTO> listProvinceByDepartment(String department)
+                        throws InternalErrorExceptions, BadRequestExceptions;
 }

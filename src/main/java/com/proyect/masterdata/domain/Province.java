@@ -34,13 +34,13 @@ public class Province {
         private Date dateRegistration;
 
         @Column(name = "id_departamento", nullable = false)
-        private Long idDepartment;
+        private Long departmentId;
 
         @Column(name = "usuario", nullable = false)
         private String user;
 
         @ManyToOne
-        @JoinColumn(name = "id_departamento", columnDefinition = "idDepartment", insertable = false, updatable = false)
+        @JoinColumn(name = "id_departamento", columnDefinition = "departmentId", insertable = false, updatable = false)
         private Department department;
 
 }

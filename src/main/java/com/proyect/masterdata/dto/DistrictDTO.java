@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class DistrictDTO {
-    private Long code;
     private String name;
     private String nameProvince;
 }

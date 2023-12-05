@@ -55,13 +55,13 @@ public class CategoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-category")
+    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<CategoryDTO>> listCategory() throws BadRequestExceptions {
         List<CategoryDTO> result = iCategory.listCategory();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "list", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<CategoryDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

@@ -68,7 +68,7 @@ public class DistrictImpl implements IDistrict {
                     .name(name.toUpperCase())
                     .user(user.toUpperCase())
                     .province(provinceData)
-                    .idProvince(provinceData.getId())
+                    .provinceId(provinceData.getId())
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build());
@@ -156,7 +156,7 @@ public class DistrictImpl implements IDistrict {
             district.setUser(requestDistrict.getUser().toUpperCase());
             district.setDateRegistration(new Date(System.currentTimeMillis()));
             district.setStatus(requestDistrict.isStatus());
-            district.setIdProvince(requestDistrict.getCodeProvince());
+            district.setProvinceId(requestDistrict.getCodeProvince());
             return districtMapper.districtToDistrictDTO(districtRepository.save(district));
         } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
@@ -261,6 +261,33 @@ public class DistrictImpl implements IDistrict {
             return districtMapper.districtToDistrictDTO(districtRepository.findById(code).orElse(null));
         } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public List<DistrictDTO> listDistrictByProvince(String province)
+            throws InternalErrorExceptions, BadRequestExceptions {
+
+        Province provinceData;
+        List<District> districts;
+
+        try {
+            provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (provinceData == null) {
+            throw new BadRequestExceptions(Constants.ErrorProvinceNotExist);
+        }
+
+        try {
+            districts = districtRepository.findAllByProvinceIdAndStatusTrue(provinceData.getId());
+            return districtMapper.listDistrictToListDistrictDTO(districts);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 }

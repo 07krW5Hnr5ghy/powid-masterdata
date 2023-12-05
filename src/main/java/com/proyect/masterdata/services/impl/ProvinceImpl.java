@@ -67,7 +67,7 @@ public class ProvinceImpl implements IProvince {
             provinceRepository.save(Province.builder()
                     .name(name.toUpperCase())
                     .department(departmentData)
-                    .idDepartment(departmentData.getId())
+                    .departmentId(departmentData.getId())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .status(true)
                     .user(user.toUpperCase())
@@ -157,7 +157,7 @@ public class ProvinceImpl implements IProvince {
             province.setUser(requestProvince.getUser().toUpperCase());
             province.setDateRegistration(new Date(System.currentTimeMillis()));
             province.setStatus(requestProvince.isStatus());
-            province.setIdDepartment(requestProvince.getCodeDepartment());
+            province.setDepartmentId(requestProvince.getCodeDepartment());
             return provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
         } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
@@ -262,6 +262,33 @@ public class ProvinceImpl implements IProvince {
             return provinceMapper.provinceToProvinceDTO(provinceRepository.findById(code).orElse(null));
         } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+    }
+
+    @Override
+    public List<ProvinceDTO> listProvinceByDepartment(String department)
+            throws InternalErrorExceptions, BadRequestExceptions {
+
+        Department departmentData;
+        List<Province> provinces;
+
+        try {
+            departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (departmentData == null) {
+            throw new BadRequestExceptions(Constants.ErrorDepartment);
+        }
+
+        try {
+            provinces = provinceRepository.findAllByDepartmentIdAndStatusTrue(departmentData.getId());
+            return provinceMapper.listProvinceToListProvinceDTO(provinces);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 }

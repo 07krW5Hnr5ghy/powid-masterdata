@@ -39,10 +39,10 @@ public class District {
         private Date dateRegistration;
 
         @Column(name = "id_provincia")
-        private Long idProvince;
+        private Long provinceId;
 
         @ManyToOne
-        @JoinColumn(name = "id_provincia", columnDefinition = "idProvince", insertable = false, updatable = false)
+        @JoinColumn(name = "id_provincia", columnDefinition = "provinceId", insertable = false, updatable = false)
         private Province province;
 
         @Column(name = "usuario")

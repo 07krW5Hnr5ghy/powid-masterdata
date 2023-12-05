@@ -11,23 +11,25 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IDistrict {
-    ResponseSuccess save(String name, String user, String province)
-            throws BadRequestExceptions, InternalErrorExceptions;
+        ResponseSuccess save(String name, String user, String province)
+                        throws BadRequestExceptions, InternalErrorExceptions;
 
-    ResponseSuccess saveAll(List<String> names, String user, String province)
-            throws BadRequestExceptions, InternalErrorExceptions;
+        ResponseSuccess saveAll(List<String> names, String user, String province)
+                        throws BadRequestExceptions, InternalErrorExceptions;
 
-    DistrictDTO update(RequestDistrict requestDistrict) throws BadRequestExceptions, InternalErrorExceptions;
+        DistrictDTO update(RequestDistrict requestDistrict) throws BadRequestExceptions, InternalErrorExceptions;
 
-    ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions;
+        ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions;
 
-    List<DistrictDTO> listDistrict() throws BadRequestExceptions;
+        List<DistrictDTO> listDistrict() throws BadRequestExceptions;
 
-    Page<DistrictDTO> list(String name, String user, Long codeProvince, String nameProvince, String sort,
-            String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+        Page<DistrictDTO> list(String name, String user, Long codeProvince, String nameProvince, String sort,
+                        String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
 
-    Page<DistrictDTO> listStatusFalse(String name, String user, Long codeProvince, String nameProvince, String sort,
-            String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+        Page<DistrictDTO> listStatusFalse(String name, String user, Long codeProvince, String nameProvince, String sort,
+                        String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
 
-    DistrictDTO findByCode(Long code) throws BadRequestExceptions;
+        DistrictDTO findByCode(Long code) throws BadRequestExceptions;
+
+        List<DistrictDTO> listDistrictByProvince(String province) throws InternalErrorExceptions, BadRequestExceptions;
 }
