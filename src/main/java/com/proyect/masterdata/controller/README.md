@@ -56,7 +56,7 @@ Body
   "mobile":"123456789",
   "dni":"12345678911",
   "category":"tennis",
-  "users":10,
+  "users":"11-50",
   "ecommerce":true,
   "billing":false,
   "comment":"administrar pedidos",

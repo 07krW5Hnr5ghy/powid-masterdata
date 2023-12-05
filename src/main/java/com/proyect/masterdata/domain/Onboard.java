@@ -32,8 +32,11 @@ public class Onboard {
     @Column(name = "ecommerce", nullable = false)
     private Boolean ecommerce;
 
-    @Column(name = "usuarios", nullable = false)
-    private Long users;
+    @Column(name = "usuarios_minimo", nullable = false)
+    private Integer usersMinimum;
+
+    @Column(name = "usuarios_maximo", nullable = false)
+    private Integer usersMaximum;
 
     @Column(name = "facturacion", nullable = false)
     private Boolean billing;

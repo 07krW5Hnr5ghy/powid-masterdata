@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class RequestOnboard {
     private String category;
     private Boolean ecommerce;
-    private Long users;
+    private String users;
     private Boolean billing;
     private String comments;
     private String entryChannel;

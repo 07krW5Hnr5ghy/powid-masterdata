@@ -29,7 +29,7 @@ public class RequestOnboarding {
 
     private String category;
 
-    private Long users;
+    private String users;
 
     private Boolean ecommerce;
 

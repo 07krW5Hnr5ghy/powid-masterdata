@@ -60,13 +60,18 @@ public class OnboardImpl implements IOnboard {
 
         try {
 
+            String[] users = requestOnboard.getUsers().split("-");
+            Integer usersMinimum = Integer.parseInt(users[0]);
+            Integer usersMaximum = Integer.parseInt(users[1]);
+
             Onboard onboard = onboardRepository.save(Onboard.builder()
                     .category(category)
                     .idCategory(category.getId())
                     .ecommerce(requestOnboard.getEcommerce())
                     .entryChannel(entryChannel)
                     .idEntryChannel(entryChannel.getId())
-                    .users(requestOnboard.getUsers())
+                    .usersMinimum(usersMinimum)
+                    .usersMaximum(usersMaximum)
                     .client(client)
                     .idClient(client.getId())
                     .demo(requestOnboard.getDemo())
