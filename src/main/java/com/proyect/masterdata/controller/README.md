@@ -340,6 +340,26 @@ http://localhost:8080/masterdata/district/province?province=chachapoyas
 
 http://localhost:8080/masterdata/district?name=asuncion&province=chachapoyas&user=admin1
 
+### GET /closing-channel
+
+- Description : list all active entry channels
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": name of the entry channel
+    }
+]
+
+- Example :
+
+http://localhost:8080/masterdata/entry-channel
+
 ### POST /entry-channel
 
 - Description : add one entry channel to the database
