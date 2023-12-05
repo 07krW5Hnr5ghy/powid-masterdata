@@ -13,4 +13,7 @@ public interface StoreTypeRepository extends JpaRepository<StoreType, Long> {
     List<StoreType> findByNameInAndStatusTrue(List<String> nameList);
 
     boolean existsByName(String name);
+
+    List<StoreType> findAllByStatusTrue();
+
 }

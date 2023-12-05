@@ -1,13 +1,17 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.StoreType;
+import com.proyect.masterdata.dto.StoreTypeDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.mapper.StoreTypeMapper;
 import com.proyect.masterdata.repository.StoreTypeRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IStoreType;
@@ -23,6 +27,7 @@ public class StoreTypeImpl implements IStoreType {
 
     private final StoreTypeRepository storeTypeRepository;
     private final UserRepository userRepository;
+    private final StoreTypeMapper storeTypeMapper;
 
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -68,6 +73,24 @@ public class StoreTypeImpl implements IStoreType {
 
         }
 
+    }
+
+    @Override
+    public List<StoreTypeDTO> listStoreType() throws BadRequestExceptions {
+        List<StoreType> storeTypes;
+
+        try {
+            storeTypes = storeTypeRepository.findAllByStatusTrue();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (storeTypes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return storeTypeMapper.listStoreTypeToListStoreTypeDTO(storeTypes);
     }
 
 }

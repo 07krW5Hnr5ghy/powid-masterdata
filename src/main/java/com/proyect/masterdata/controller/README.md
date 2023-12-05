@@ -519,6 +519,26 @@ http://localhost:8080/masterdata/province/department?department=amazonas
 
 http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&user=admin1
 
+### GET /store-type
+
+- Description : list all active store types
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": name of the store type
+    }
+]
+
+- Example :
+
+http://localhost:8080/masterdata/store-type
+
 ### POST /store-type
 
 - Description : add one store type to the database

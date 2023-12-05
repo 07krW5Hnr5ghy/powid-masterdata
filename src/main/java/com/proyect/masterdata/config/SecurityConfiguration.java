@@ -2,11 +2,11 @@ package com.proyect.masterdata.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,8 +27,6 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.proyect.masterdata.services.impl.UserDetailsCustomImpl;
 import com.proyect.masterdata.utils.RSAKeyProperties;
 
-import lombok.RequiredArgsConstructor;
-
 @Configuration
 public class SecurityConfiguration {
 
@@ -44,8 +42,16 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/auth/**").permitAll();
-                    //auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
+                    auth.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/entry-channel/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/closing-channel/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/category/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/department/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/province/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/district/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/store-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/subscription/**").permitAll();
+                    // auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
                     auth.anyRequest().authenticated();
                 });
 
