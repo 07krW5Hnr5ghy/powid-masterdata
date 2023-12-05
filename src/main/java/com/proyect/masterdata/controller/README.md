@@ -340,7 +340,7 @@ http://localhost:8080/masterdata/district/province?province=chachapoyas
 
 http://localhost:8080/masterdata/district?name=asuncion&province=chachapoyas&user=admin1
 
-### GET /closing-channel
+### GET /entry-channel
 
 - Description : list all active entry channels
 
