@@ -2,7 +2,6 @@ package com.proyect.masterdata;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
