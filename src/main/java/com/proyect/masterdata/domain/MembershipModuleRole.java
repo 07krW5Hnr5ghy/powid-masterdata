@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = Constants.tableMembreshipModuleRole, schema = Constants.schemaManagement)
+@Table(name = Constants.tableMembershipModuleRole, schema = Constants.schemaManagement)
 public class MembershipModuleRole {
 
     @Id

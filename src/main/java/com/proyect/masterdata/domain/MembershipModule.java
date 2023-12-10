@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,11 +17,14 @@ import java.util.Date;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.proyect.masterdata.utils.Constants;
+
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Table(name = Constants.tableMembershipModule, schema = Constants.schemaManagement)
 public class MembershipModule {
 
     @Id

@@ -47,7 +47,7 @@ public class Constants {
     public static final String tableOnboardingStore = "onboarding_tienda";
     public static final String tableStoreType = "tienda_tipo";
     public static final String tableMembershipModule = "membresia_modulo";
-    public static final String tableMembreshipModuleRole = "membresia_modulo_rol";
+    public static final String tableMembershipModuleRole = "membresia_modulo_rol";
     public static final String tableSubscription = "subscripcion";
 
     // Mensajes
