@@ -132,4 +132,6 @@ public class Constants {
     public static final String ErrorMembershipPaymentExist = "Exists an active membership payment";
     public static final String ErrorBrand = "The brand does not exists";
     public static final String ErrorBrandExists = "The brand already exists";
+    public static final String ErrorModel = "The model does not exists";
+    public static final String ErrorModelExists = "The model already exists";
 }

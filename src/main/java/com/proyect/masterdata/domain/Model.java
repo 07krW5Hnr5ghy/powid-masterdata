@@ -52,12 +52,12 @@ public class Model {
     private Date dateUpdate;
 
     @Column(name = "id_marca")
-    private Long idBrand;
+    private Long brandId;
 
     @ManyToOne
-    @JoinColumn(name = "id_marca", columnDefinition = "idBrand", insertable = false, updatable = false)
+    @JoinColumn(name = "id_marca", columnDefinition = "brandId", insertable = false, updatable = false)
     private Brand brand;
 
     @Column(name = "usuario")
-    private String user;
+    private String tokenUser;
 }

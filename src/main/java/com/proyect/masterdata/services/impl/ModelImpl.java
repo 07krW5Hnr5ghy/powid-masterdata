@@ -35,10 +35,9 @@ public class ModelImpl implements IModel {
     private final UserRepository userRepository;
     private final BrandRepository brandRepository;
     private final ModelRepositoryCustom modelRepositoryCustom;
-    private final ModelMapper modelMapper;
 
     @Override
-    public ResponseSuccess save(String name, String brand, String user)
+    public ResponseSuccess save(String name, String brand, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         boolean existsUser;
@@ -46,7 +45,7 @@ public class ModelImpl implements IModel {
         Brand brandData;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsModel = modelRepository.existsByName(name.toUpperCase());
             brandData = brandRepository.findByName(brand.toUpperCase());
         } catch (RuntimeException e) {
@@ -55,25 +54,25 @@ public class ModelImpl implements IModel {
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (existsModel) {
-            throw new BadRequestExceptions("Modelo ya existe");
+            throw new BadRequestExceptions(Constants.ErrorModelExists);
         }
 
         if (brandData == null) {
-            throw new BadRequestExceptions("Marca no existe");
+            throw new BadRequestExceptions(Constants.ErrorBrand);
         }
 
         try {
             modelRepository.save(Model.builder()
                     .name(name.toUpperCase())
                     .brand(brandData)
-                    .idBrand(brandData.getId())
+                    .brandId(brandData.getId())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .status(true)
-                    .user(user.toUpperCase())
+                    .tokenUser(tokenUser.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -87,7 +86,7 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String brand, String user)
+    public ResponseSuccess saveAll(List<String> names, String brand, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         boolean existsUser;
@@ -95,7 +94,7 @@ public class ModelImpl implements IModel {
         List<Model> models;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             brandData = brandRepository.findByName(brand.toUpperCase());
             models = modelRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
@@ -104,25 +103,25 @@ public class ModelImpl implements IModel {
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (brandData == null) {
-            throw new BadRequestExceptions("Marca no existe");
+            throw new BadRequestExceptions(Constants.ErrorBrand);
         }
 
         if (!models.isEmpty()) {
-            throw new BadRequestExceptions("Modelo ya existe");
+            throw new BadRequestExceptions(Constants.ErrorModelExists);
         }
 
         try {
             modelRepository.saveAll(names.stream().map(model -> Model.builder()
                     .name(model.toUpperCase())
                     .brand(brandData)
-                    .idBrand(brandData.getId())
+                    .brandId(brandData.getId())
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .user(user.toUpperCase())
+                    .tokenUser(tokenUser.toUpperCase())
                     .build()).toList());
             return ResponseSuccess.builder()
                     .code(200)
@@ -136,13 +135,13 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public ResponseDelete delete(String name, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         boolean existsUser;
         Model modelData;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             modelData = modelRepository.findByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -150,11 +149,11 @@ public class ModelImpl implements IModel {
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (modelData == null) {
-            throw new BadRequestExceptions("Modelo no existe");
+            throw new BadRequestExceptions(Constants.ErrorModel);
         }
 
         try {
@@ -200,7 +199,7 @@ public class ModelImpl implements IModel {
         List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
                 .name(model.getName())
                 .brand(model.getBrand().getName())
-                .user(model.getUser())
+                .user(model.getTokenUser())
                 .build()).toList();
 
         return new PageImpl<>(models, pageModel.getPageable(),
@@ -236,7 +235,7 @@ public class ModelImpl implements IModel {
         List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
                 .name(model.getName())
                 .brand(model.getBrand().getName())
-                .user(model.getUser())
+                .user(model.getTokenUser())
                 .build()).toList();
 
         return new PageImpl<>(models, pageModel.getPageable(),

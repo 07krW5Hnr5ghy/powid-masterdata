@@ -119,7 +119,7 @@ Body
   "tokenUser":"REGISTER"
 }
 
-### GET /brand
+### GET /brand protected
 
 - Description : list all active brands
 - Request: none
@@ -172,43 +172,7 @@ Body
 
 http://localhost:8080/masterdata/brand?pageNumber=0&pageSize=3&sort=DESC&sortColumn=name
 
-Response 
-
-{
-    "content": [
-        {
-            "name": "REEBOK",
-            "tokenUser": "ADMIN1"
-        },
-        {
-            "name": "NIKE",
-            "tokenUser": "ADMIN1"
-        },
-        {
-            "name": "ADIDAS",
-            "tokenUser": "ADMIN1"
-        }
-    ],
-    "pageable": {
-        "sort": [],
-        "pageNumber": 0,
-        "pageSize": 3,
-        "offset": 0,
-        "unpaged": false,
-        "paged": true
-    },
-    "totalPages": 1,
-    "totalElements": 3,
-    "last": true,
-    "first": true,
-    "size": 3,
-    "number": 0,
-    "sort": [],
-    "numberOfElements": 3,
-    "empty": false
-}
-
-### POST /brand
+### POST /brand protected
 
 - Description : register one new brand
 - Request : none
@@ -229,7 +193,7 @@ Response
 
 http://localhost:8080/masterdata/brand?name=nike&tokenUser=admin1
 
-### POST /brand/brands
+### POST /brand/brands protected
 
 - Description : register two or more new brands
 - Request : Array with names of the new brands
@@ -520,7 +484,118 @@ http://localhost:8080/masterdata/entry-channel
 
 http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
 
-### GET /module
+### GET /model
+
+- Description : list the models registered in the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : filter models by name
+2. user : filter models by the username who registered the modules
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "name": "F50",
+            "brand": "NIKE",
+            "user": "ADMIN1"
+        },
+        {
+            "name": "U PRO 3000",
+            "brand": "NIKE",
+            "user": "ADMIN1"
+        },
+        {
+            "name": "K 20000",
+            "brand": "NIKE",
+            "user": "ADMIN1"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 3,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 3,
+    "size": 3,
+    "number": 0,
+    "sort": [],
+    "first": true,
+    "numberOfElements": 3,
+    "empty": false
+}
+
+- Example :
+
+http://localhost:8080/masterdata/model?pageNumber=0&pageSize=3
+
+### POST /model protected
+
+- Description : add one new model to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the model
+2. brand : name of the brand of the model
+3. tokenUser : username of the user who register the model
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/model?name=f50&brand=nike&tokenUser=admin1
+
+### POST /model/models protected
+
+- Description : add one new models to the database
+
+- Request : Array of models names
+
+- Parameters : 
+
+1. brand : name of the brand of the models
+2. tokenUser : username of the user who register the model
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/model?brand=nike&tokenUser=admin1
+
+Request Body
+
+[
+    "u pro 3000","k 20000"
+]
+
+### GET /module protected
 
 - Description : list the modules registered in the database
 
