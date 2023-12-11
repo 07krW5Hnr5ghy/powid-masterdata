@@ -46,19 +46,19 @@ public class Product {
     private boolean status;
 
     @Column(name = "id_modelo", nullable = false)
-    private Long idModel;
+    private Long modelId;
 
     @Column(name = "id_color", nullable = false)
-    private Long idColor;
+    private Long colorId;
 
     @Column(name = "id_categoria", nullable = false)
-    private Long idCategory;
+    private Long categoryId;
 
     @Column(name = "id_size", nullable = false)
-    private Long idSize;
+    private Long sizeId;
 
     @Column(name = "usuario", nullable = false)
-    private String user;
+    private String tokenUser;
 
     @ManyToOne
     @JoinColumn(name = "id_modelo", columnDefinition = "idModel", insertable = false, updatable = false)

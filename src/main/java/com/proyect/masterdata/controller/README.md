@@ -350,7 +350,7 @@ http://localhost:8080/masterdata/closing-channel?name=instagram&tokenUser=admin1
 
 ### GET /department
 
-- Description : list departments
+- Description : list all active departments
 
 - Request : none
 
@@ -395,7 +395,7 @@ http://localhost:8080/masterdata/department?name=amazonas&user=admin1
 
 ### GET /district/province
 
-- Description : lists the districts by province
+- Description : lists all the active districts by province
 
 - Request : none
 
@@ -486,7 +486,7 @@ http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
 
 ### GET /model
 
-- Description : list the models registered in the database
+- Description : list all the active models registered in the database
 
 - Request : none
 
@@ -597,7 +597,7 @@ Request Body
 
 ### GET /module protected
 
-- Description : list the modules registered in the database
+- Description : list all active modules in the database
 
 - Request : none
 
@@ -727,9 +727,122 @@ http://localhost:8080/masterdata/module?name=ventas&price=2.57&tokenUser=admin1
 
 http://localhost:8080/masterdata/onboard
 
+### GET /product protected
+
+- Description : list all active products
+
+- Request : none
+
+- Parameters : 
+
+1. sku : filter products by sku
+2. user : filter products by the username who registered them
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response : 
+
+
+
+- Example :
+
+http://localhost:8080/masterdata/product?pageNumber=0&pageSize=2
+
+
+### POST /product
+
+- Description : register one product in the database
+
+- Request : 
+
+{
+    sku : sku serial,
+    model : name of model which the product belongs,
+    color : name of the color of the product,
+    category : name of the category of the product,
+    size : name of the size of the product
+}
+
+- Params : 
+
+1. tokenUser : user who registers the product in the database
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example
+
+http://localhost:8080/masterdata/product?tokenUser=admin1
+
+Request body
+
+{
+    "sku":"Y2K9",
+    "model":"F50",
+    "color":"rojo",
+    "size":"M"
+}
+
+### POST /product/products
+
+- Description : register two or more products in the database
+
+- Request : 
+
+[
+    {
+        sku : sku serial,
+        model : name of model which the product belongs,
+        color : name of the color of the product,
+        category : name of the category of the product,
+        size : name of the size of the product
+    },
+    ... more products
+]
+
+- Params : 
+
+1. tokenUser : user who registers the products in the database
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example
+
+http://localhost:8080/masterdata/product?tokenUser=admin1
+
+Request body
+
+[
+    {
+        "sku":"Y2K9",
+        "model":"F50",
+        "color":"rojo",
+        "size":"36"
+    },
+    {
+        "sku":"E4T6",
+        "model":"K 20000",
+        "color":"verde",
+        "size":"32"
+    }
+]
+
 ### GET /province/department
 
-- Description : list provinces by department
+- Description : list all active provinces by department
 
 - Request : none
 
@@ -820,7 +933,7 @@ http://localhost:8080/masterdata/store-type?name=shopify&tokenUser=admin1
 
 ### GET /subscription
 
-- Description : list the subscriptions registered in the database
+- Description : list all the active subscriptions registered in the database
 
 - Request : none
 

@@ -10,10 +10,11 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IProduct {
 
-    ResponseSuccess save(RequestProductSave product, String user) throws InternalErrorExceptions, BadRequestExceptions;
-
-    ResponseSuccess saveAll(List<RequestProductSave> products, String user)
+    ResponseSuccess save(RequestProductSave product, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
 
-    ResponseDelete delete(String sku, String user) throws InternalErrorExceptions, BadRequestExceptions;
+    ResponseSuccess saveAll(List<RequestProductSave> products, String tokenUser)
+            throws InternalErrorExceptions, BadRequestExceptions;
+
+    ResponseDelete delete(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
 }

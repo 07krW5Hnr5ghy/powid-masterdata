@@ -134,4 +134,6 @@ public class Constants {
     public static final String ErrorBrandExists = "The brand already exists";
     public static final String ErrorModel = "The model does not exists";
     public static final String ErrorModelExists = "The model already exists";
+    public static final String ErrorProduct = "The product does not exists";
+    public static final String ErrorProductExists = "The product already exists";
 }

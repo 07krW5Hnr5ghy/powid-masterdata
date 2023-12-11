@@ -40,7 +40,7 @@ public class ProductImpl implements IProduct {
     private final ColorRepository colorRepository;
 
     @Override
-    public ResponseSuccess save(RequestProductSave product, String user)
+    public ResponseSuccess save(RequestProductSave product, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         boolean existsUser;
@@ -51,7 +51,7 @@ public class ProductImpl implements IProduct {
         Color colorData;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsProduct = productRepository.existsBySku(product.getSku().toUpperCase());
             modelData = modelRepository.findByName(product.getModel().toUpperCase());
             sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
@@ -63,41 +63,41 @@ public class ProductImpl implements IProduct {
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (existsProduct) {
-            throw new BadRequestExceptions("Producto ya existe");
+            throw new BadRequestExceptions(Constants.ErrorProductExists);
         }
 
         if (modelData == null) {
-            throw new BadRequestExceptions("Modelo no existe");
+            throw new BadRequestExceptions(Constants.ErrorModel);
         }
 
         if (sizeData == null) {
-            throw new BadRequestExceptions("Talla no existe");
+            throw new BadRequestExceptions(Constants.ErrorSize);
         }
 
         if (categoryData == null) {
-            throw new BadRequestExceptions("Categoria no existe");
+            throw new BadRequestExceptions(Constants.ErrorCategory);
         }
 
         if (colorData == null) {
-            throw new BadRequestExceptions("Color no existe");
+            throw new BadRequestExceptions(Constants.ErrorColor);
         }
 
         try {
             productRepository.save(Product.builder()
                     .sku(product.getSku().toUpperCase())
                     .model(modelData)
-                    .idModel(modelData.getId())
+                    .modelId(modelData.getId())
                     .size(sizeData)
-                    .idSize(sizeData.getId())
+                    .sizeId(sizeData.getId())
                     .category(categoryData)
-                    .idCategory(categoryData.getId())
+                    .categoryId(categoryData.getId())
                     .color(colorData)
-                    .idColor(colorData.getId())
-                    .user(user.toUpperCase())
+                    .colorId(colorData.getId())
+                    .tokenUser(tokenUser.toUpperCase())
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .build());
@@ -112,7 +112,7 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestProductSave> products, String user)
+    public ResponseSuccess saveAll(List<RequestProductSave> products, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         boolean existsUser;
@@ -124,7 +124,7 @@ public class ProductImpl implements IProduct {
 
         try {
             existsUser = userRepository
-                    .existsByUsernameAndStatusTrue(user.toUpperCase());
+                    .existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             productList = productRepository
                     .findBySkuIn(products.stream().map(product -> product.getSku().toUpperCase()).toList());
             modelList = modelRepository
@@ -141,27 +141,27 @@ public class ProductImpl implements IProduct {
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (!productList.isEmpty()) {
-            throw new BadRequestExceptions("Producto ya existe");
+            throw new BadRequestExceptions(Constants.ErrorProductExists);
         }
 
         if (modelList.size() != products.size()) {
-            throw new BadRequestExceptions("Modelo no existe");
+            throw new BadRequestExceptions(Constants.ErrorModel);
         }
 
         if (sizeList.size() != products.size()) {
-            throw new BadRequestExceptions("Talla no existe");
+            throw new BadRequestExceptions(Constants.ErrorSize);
         }
 
         if (categoryList.size() != products.size()) {
-            throw new BadRequestExceptions("Categoria no existe");
+            throw new BadRequestExceptions(Constants.ErrorCategory);
         }
 
         if (colorList.size() != products.size()) {
-            throw new BadRequestExceptions("Color no existe");
+            throw new BadRequestExceptions(Constants.ErrorColor);
         }
 
         try {
@@ -176,14 +176,14 @@ public class ProductImpl implements IProduct {
                 return Product.builder()
                         .sku(product.getSku().toUpperCase())
                         .model(model)
-                        .idModel(model.getId())
+                        .modelId(model.getId())
                         .size(size)
-                        .idSize(size.getId())
+                        .sizeId(size.getId())
                         .category(category)
-                        .idCategory(category.getId())
+                        .categoryId(category.getId())
                         .color(color)
-                        .idColor(color.getId())
-                        .user(user.toUpperCase())
+                        .colorId(color.getId())
+                        .tokenUser(tokenUser.toUpperCase())
                         .dateRegistration(new Date(System.currentTimeMillis()))
                         .status(true)
                         .build();
@@ -217,11 +217,11 @@ public class ProductImpl implements IProduct {
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (product == null) {
-            throw new BadRequestExceptions("Producto no existe");
+            throw new BadRequestExceptions(Constants.ErrorProduct);
         }
 
         try {

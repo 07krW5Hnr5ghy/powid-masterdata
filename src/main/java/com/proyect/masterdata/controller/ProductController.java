@@ -33,24 +33,24 @@ public class ProductController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestProductSave product,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iProduct.save(product, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iProduct.save(product, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "products", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestProductSave> productList,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iProduct.saveAll(productList, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iProduct.saveAll(productList, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("sku") String sku,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iProduct.delete(sku, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iProduct.delete(sku, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

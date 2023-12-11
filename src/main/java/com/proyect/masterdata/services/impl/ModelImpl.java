@@ -70,7 +70,7 @@ public class ModelImpl implements IModel {
                     .name(name.toUpperCase())
                     .brand(brandData)
                     .brandId(brandData.getId())
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
@@ -120,7 +120,7 @@ public class ModelImpl implements IModel {
                     .brand(brandData)
                     .brandId(brandData.getId())
                     .status(true)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build()).toList());
             return ResponseSuccess.builder()
@@ -158,7 +158,7 @@ public class ModelImpl implements IModel {
 
         try {
             modelData.setStatus(false);
-            modelData.setDateUpdate(new Date(System.currentTimeMillis()));
+            modelData.setUpdateDate(new Date(System.currentTimeMillis()));
             modelRepository.save(modelData);
             return ResponseDelete.builder()
                     .message(Constants.delete)

@@ -59,7 +59,7 @@ public class BrandImpl implements IBrand {
             brandRepository.save(Brand.builder()
                     .name(name.toUpperCase())
                     .status(true)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
@@ -99,7 +99,7 @@ public class BrandImpl implements IBrand {
             brandRepository.saveAll(namesList.stream().map(name -> Brand.builder()
                     .name(name.toUpperCase())
                     .status(true)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build()).toList());
             return ResponseSuccess.builder()
@@ -134,7 +134,7 @@ public class BrandImpl implements IBrand {
 
         try {
             brand.setStatus(false);
-            brand.setDateUpdate(new Date(System.currentTimeMillis()));
+            brand.setUpdateDate(new Date(System.currentTimeMillis()));
             brandRepository.save(brand);
             return ResponseDelete.builder()
                     .code(200)
