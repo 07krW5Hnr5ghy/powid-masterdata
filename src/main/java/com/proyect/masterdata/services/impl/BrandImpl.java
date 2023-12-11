@@ -35,12 +35,12 @@ public class BrandImpl implements IBrand {
     private final BrandMapper brandMapper;
 
     @Override
-    public ResponseSuccess save(String name, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         boolean existsBrand;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsBrand = brandRepository.existsByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -48,11 +48,11 @@ public class BrandImpl implements IBrand {
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existente");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (existsBrand) {
-            throw new BadRequestExceptions("Marca ya existente");
+            throw new BadRequestExceptions(Constants.ErrorBrandExists);
         }
 
         try {
@@ -60,7 +60,7 @@ public class BrandImpl implements IBrand {
                     .name(name.toUpperCase())
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .user(user.toUpperCase())
+                    .tokenUser(tokenUser.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -73,14 +73,14 @@ public class BrandImpl implements IBrand {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> namesList, String user)
+    public ResponseSuccess saveAll(List<String> namesList, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         boolean existsUser;
         List<Brand> brandList;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             brandList = brandRepository.findByNameIn(namesList);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -88,11 +88,11 @@ public class BrandImpl implements IBrand {
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (!brandList.isEmpty()) {
-            throw new BadRequestExceptions("Marca ya existente");
+            throw new BadRequestExceptions(Constants.ErrorBrandExists);
         }
 
         try {
@@ -100,7 +100,7 @@ public class BrandImpl implements IBrand {
                     .name(name.toUpperCase())
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
-                    .user(user.toUpperCase())
+                    .tokenUser(tokenUser.toUpperCase())
                     .build()).toList());
             return ResponseSuccess.builder()
                     .code(200)
@@ -113,11 +113,11 @@ public class BrandImpl implements IBrand {
     }
 
     @Override
-    public ResponseDelete delete(String name, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         boolean existsUser;
         Brand brand;
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             brand = brandRepository.findByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -125,11 +125,11 @@ public class BrandImpl implements IBrand {
         }
 
         if (!existsUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (brand == null) {
-            throw new BadRequestExceptions("Marca no existe");
+            throw new BadRequestExceptions(Constants.ErrorBrand);
         }
 
         try {
@@ -147,13 +147,14 @@ public class BrandImpl implements IBrand {
     }
 
     @Override
-    public Page<BrandDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public Page<BrandDTO> list(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
 
         Page<Brand> brandPage;
 
         try {
-            brandPage = brandRepositoryCustom.searchForBrand(name, user, sort, sortColumn, pageNumber, pageSize, true);
+            brandPage = brandRepositoryCustom.searchForBrand(name, tokenUser, sort, sortColumn, pageNumber, pageSize,
+                    true);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -163,18 +164,22 @@ public class BrandImpl implements IBrand {
             return new PageImpl<>(Collections.emptyList());
         }
 
+        System.out.println(brandPage.getContent());
+
         return new PageImpl<>(brandMapper.listBrandToListBrandDTO(brandPage.getContent()), brandPage.getPageable(),
                 brandPage.getTotalElements());
     }
 
     @Override
-    public Page<BrandDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public Page<BrandDTO> listStatusFalse(String name, String tokenUser, String sort, String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
 
         Page<Brand> brandPage;
 
         try {
-            brandPage = brandRepositoryCustom.searchForBrand(name, user, sort, sortColumn, pageNumber, pageSize, false);
+            brandPage = brandRepositoryCustom.searchForBrand(name, tokenUser, sort, sortColumn, pageNumber, pageSize,
+                    false);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);

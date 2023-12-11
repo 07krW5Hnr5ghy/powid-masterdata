@@ -3,7 +3,6 @@ package com.proyect.masterdata.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.weaver.ast.And;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +29,7 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Brand> searchForBrand(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public Page<Brand> searchForBrand(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -39,7 +38,7 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, tokenUser, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -63,13 +62,13 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
         orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, user, status);
+        long count = getOrderCount(name, tokenUser, status);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             String name,
-            String user,
+            String tokenUser,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Brand> itemRoot) {
@@ -82,10 +81,11 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
                             criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
         }
 
-        if (user != null) {
+        if (tokenUser != null) {
             conditions.add(
                     criteriaBuilder.and(
-                            criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("user")), user.toUpperCase())));
+                            criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("tokenUser")),
+                                    tokenUser.toUpperCase())));
         }
 
         if (status) {
@@ -110,8 +110,8 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
             brandList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
 
-        if (sortColumn.equalsIgnoreCase("USER")) {
-            brandList.add(criteriaBuilder.asc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("TOKENUSER")) {
+            brandList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
         }
 
         return brandList;
@@ -127,21 +127,21 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
             brandList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
 
-        if (sortColumn.equalsIgnoreCase("USER")) {
-            brandList.add(criteriaBuilder.desc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("TOKENUSER")) {
+            brandList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
         }
 
         return brandList;
     }
 
-    private long getOrderCount(String name, String user, Boolean status) {
+    private long getOrderCount(String name, String tokenUser, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Brand> itemRoot = criteriaQuery.from(Brand.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, tokenUser, status, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

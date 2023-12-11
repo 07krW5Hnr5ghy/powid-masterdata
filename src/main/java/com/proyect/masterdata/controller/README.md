@@ -119,7 +119,144 @@ Body
   "tokenUser":"REGISTER"
 }
 
+### GET /brand
+
+- Description : list all active brands
+- Request: none
+- Parameters : 
+
+1. name : filter by name of the brand (not required)
+2. user : filter by user who register or updated the brand (not required)
+3. sort : set the listing order only accepts the values ASC and DESC (not required)
+4. sortColumn : set the column which sorts the list (not required)
+5. pageNumber : select the page number to view of the list
+6. pageSize : set how many records per page have the list
+
+- Response : 
+
+{
+    "content": [
+        {
+            "name": "REEBOK",
+            "tokenUser": "ADMIN1"
+        },
+        {
+            "name": "NIKE",
+            "tokenUser": "ADMIN1"
+        },
+        {
+            "name": "ADIDAS",
+            "tokenUser": "ADMIN1"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "pageNumber": 0,
+        "pageSize": 3,
+        "offset": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "totalPages": 1,
+    "totalElements": 3,
+    "last": true,
+    "first": true,
+    "size": 3,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 3,
+    "empty": false
+}
+
+- Example :
+
+http://localhost:8080/masterdata/brand?pageNumber=0&pageSize=3&sort=DESC&sortColumn=name
+
+Response 
+
+{
+    "content": [
+        {
+            "name": "REEBOK",
+            "tokenUser": "ADMIN1"
+        },
+        {
+            "name": "NIKE",
+            "tokenUser": "ADMIN1"
+        },
+        {
+            "name": "ADIDAS",
+            "tokenUser": "ADMIN1"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "pageNumber": 0,
+        "pageSize": 3,
+        "offset": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "totalPages": 1,
+    "totalElements": 3,
+    "last": true,
+    "first": true,
+    "size": 3,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 3,
+    "empty": false
+}
+
+### POST /brand
+
+- Description : register one new brand
+- Request : none
+- Parameters : 
+
+1. name : name of the brand
+2. tokenUser : username of the user who registers the brand
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example : 
+
+http://localhost:8080/masterdata/brand?name=nike&tokenUser=admin1
+
+### POST /brand/brands
+
+- Description : register two or more new brands
+- Request : Array with names of the new brands
+- Parameters : 
+
+1. tokenUser : username of the user who registers the brands
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example : 
+
+http://localhost:8080/masterdata/brand/brands?tokenUser=admin1
+
+Body
+
+[
+    "reebok","adidas"
+]
+
 ### GET /category
+
 - Description : list all active categories
 - Request: none
 - Parameters : none
@@ -189,7 +326,7 @@ Url
 
 http://localhost:8080/masterdata/category/categories?user=admin1
 
-Body
+Response
 
 [
     {

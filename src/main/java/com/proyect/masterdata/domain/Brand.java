@@ -49,6 +49,6 @@ public class Brand {
     @CreationTimestamp
     private Date dateUpdate;
 
-    @Column(name = "usuario")
-    private String user;
+    @Column(name = "usuario_token")
+    private String tokenUser;
 }
