@@ -13,7 +13,6 @@ import java.util.List;
 public interface ColorMapper {
     ColorMapper INSTANCE = Mappers.getMapper(ColorMapper.class);
 
-    @Mapping(target = "code", source = "id")
     ColorDTO colorToColorDTO(Color color);
 
     List<ColorDTO> listColorToListColorDTO(List<Color> colorList);

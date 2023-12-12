@@ -316,6 +316,22 @@ Response
 
 - Response : 
 
+[
+    {
+        "name": "ROJO"
+    },
+    {
+        "name": "AZUL"
+    },
+    {
+        "name": "VERDE"
+    }
+]
+
+- Example :
+
+http://localhost:8080/masterdata/color
+
 ### POST /color
 
 - Description : add one new color to the database

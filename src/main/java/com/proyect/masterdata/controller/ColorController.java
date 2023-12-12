@@ -54,7 +54,7 @@ public class ColorController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "list-color")
+    @GetMapping()
     public ResponseEntity<List<ColorDTO>> listColor() throws BadRequestExceptions {
         List<ColorDTO> result = iColor.listColor();
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -62,7 +62,7 @@ public class ColorController {
 
     // @PreAuthorize("hasAuthority('AUTH_ROLE:ADMINISTRATOR') and
     // hasAuthority('AUTH_ACCESS:GET_ALL')")
-    @GetMapping()
+    @GetMapping(value = "list")
     public ResponseEntity<Page<ColorDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
