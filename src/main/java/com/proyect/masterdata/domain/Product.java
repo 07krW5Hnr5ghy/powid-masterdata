@@ -36,11 +36,11 @@ public class Product {
 
     @Column(name = "fecha_registro")
     @CreationTimestamp
-    private Date dateRegistration;
+    private Date registrationDate;
 
     @Column(name = "fecha_modificacion")
     @CreationTimestamp
-    private Date dateUpdate;
+    private Date updateDate;
 
     @Column(name = "estado", nullable = false)
     private boolean status;

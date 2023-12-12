@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import java.util.Date;
 
@@ -21,12 +19,7 @@ import java.util.Date;
 public class Color {
 
         @Id
-        @GeneratedValue(generator = "sequence-color")
-        @GenericGenerator(name = "sequence-color", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-                        @Parameter(name = "sequence_name", value = "colores_sequence"),
-                        @Parameter(name = "initial_value", value = "1"),
-                        @Parameter(name = "increment_size", value = "1")
-        })
+        @GeneratedValue(strategy = GenerationType.AUTO)
         @Column(name = "id_color")
         private Long id;
 
@@ -38,8 +31,12 @@ public class Color {
 
         @Column(name = "fecha_registro")
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
+
+        @Column(name = "fecha_modificacion")
+        @CreationTimestamp
+        private Date updateDate;
 
         @Column(name = "usuario")
-        private String user;
+        private String tokenUser;
 }

@@ -99,7 +99,7 @@ public class ProductImpl implements IProduct {
                     .colorId(colorData.getId())
                     .tokenUser(tokenUser.toUpperCase())
                     .status(true)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -184,7 +184,7 @@ public class ProductImpl implements IProduct {
                         .color(color)
                         .colorId(color.getId())
                         .tokenUser(tokenUser.toUpperCase())
-                        .dateRegistration(new Date(System.currentTimeMillis()))
+                        .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .build();
             }).toList();
@@ -226,7 +226,7 @@ public class ProductImpl implements IProduct {
 
         try {
             product.setStatus(false);
-            product.setDateUpdate(new Date(System.currentTimeMillis()));
+            product.setUpdateDate(new Date(System.currentTimeMillis()));
             productRepository.save(product);
             return ResponseDelete.builder()
                     .code(200)

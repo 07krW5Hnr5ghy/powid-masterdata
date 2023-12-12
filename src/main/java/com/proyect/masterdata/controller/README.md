@@ -260,6 +260,7 @@ http://localhost:8080/masterdata/category
 http://localhost:8080/masterdata/category?name=tennis&description=zapatos%20para%20correr&user=admin1
 
 ### POST /category/categories protected
+
 - Description : add multiple categories to the database
 - Request :
 
@@ -303,6 +304,67 @@ Response
         "name":"blusas",
         "description":"de lana sin mangas"
     }
+]
+
+### GET /color
+
+- Description : list all the active colors in the database
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+### POST /color
+
+- Description : add one new color to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the color
+2. tokenUser : username of the user who register the color
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/color?name=rojo&tokenUser=admin1
+
+### POST /color/colors
+
+- Description : add one or more new colors to the database
+
+- Request : Array with names of the colors
+
+- Parameters :
+
+1. tokenUser : username of the user who register the colors
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/color/colors?tokenUser=admin1
+
+Request body
+
+[
+    "azul","verde"
 ]
 
 ### GET /closing-channel
