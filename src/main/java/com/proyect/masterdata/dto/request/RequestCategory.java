@@ -12,6 +12,4 @@ import lombok.NoArgsConstructor;
 public class RequestCategory {
     private String name;
     private String description;
-    private String user;
-    private boolean status;
 }

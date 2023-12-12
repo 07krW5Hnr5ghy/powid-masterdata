@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RequestSize {
-    private Long code;
     private String name;
     private String user;
-    private boolean status;
-    private Long codeSizeType;
+    private String sizeType;
 }

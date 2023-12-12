@@ -37,6 +37,6 @@ public class Color {
         @CreationTimestamp
         private Date updateDate;
 
-        @Column(name = "usuario")
+        @Column(name = "usuario_token")
         private String tokenUser;
 }

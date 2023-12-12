@@ -14,14 +14,15 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface SizeTypeMapper {
     SizeTypeMapper INSTANCE = Mappers.getMapper(SizeTypeMapper.class);
-    @Mapping(target = "code", source = "id")
+
     SizeTypeDTO sizeTypeToSizeTypeDTO(SizeType sizeType);
+
     List<SizeTypeDTO> listSizeTypeToListSizeTypeDTO(List<SizeType> sizeTypeList);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
-    @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "requestSizeTypeSave.name")
-    @Mapping(target = "user", source = "requestSizeTypeSave.user")
+    @Mapping(target = "tokenUser", source = "requestSizeTypeSave.user")
     SizeType sizeTypeToName(RequestSizeTypeSave requestSizeTypeSave);
 
     List<SizeType> listSizeToListName(List<RequestSizeTypeSave> requestSizeTypeSaveList);

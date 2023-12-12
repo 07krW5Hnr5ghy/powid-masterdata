@@ -134,13 +134,14 @@ public class CategoryImpl implements ICategory {
     }
 
     @Override
-    public CategoryDTO update(RequestCategory requestCategory) throws BadRequestExceptions, InternalErrorExceptions {
+    public CategoryDTO update(RequestCategory requestCategory, String tokenUser)
+            throws BadRequestExceptions, InternalErrorExceptions {
 
         User datauser;
         Category category;
 
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestCategory.getUser().toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             category = categoryRepository.findByNameAndStatusTrue(requestCategory.getName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);

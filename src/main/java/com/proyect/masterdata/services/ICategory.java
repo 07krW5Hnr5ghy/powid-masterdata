@@ -18,7 +18,8 @@ public interface ICategory {
     ResponseSuccess saveAll(List<RequestCreateCategory> categories, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
 
-    CategoryDTO update(RequestCategory requestCategory) throws BadRequestExceptions, InternalErrorExceptions;
+    CategoryDTO update(RequestCategory requestCategory, String tokenUser)
+            throws BadRequestExceptions, InternalErrorExceptions;
 
     ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
 

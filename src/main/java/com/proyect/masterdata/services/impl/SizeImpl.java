@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Size;
+import com.proyect.masterdata.domain.SizeType;
 import com.proyect.masterdata.dto.SizeDTO;
 import com.proyect.masterdata.dto.request.RequestSize;
 import com.proyect.masterdata.dto.request.RequestSizeSave;
@@ -22,7 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,16 +39,16 @@ public class SizeImpl implements ISize {
     private final SizeRepositoryCustom sizeRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String name, String user, Long codeSizeType)
+    public ResponseSuccess save(String name, String sizeType, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsSize;
-        boolean existsSizeType;
+        SizeType sizeTypeData;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsSize = sizeRepository.existsByName(name.toUpperCase());
-            existsSizeType = sizeTypeRepository.existsById(codeSizeType);
+            sizeTypeData = sizeTypeRepository.findByName(sizeType.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -59,15 +60,19 @@ public class SizeImpl implements ISize {
         if (existsSize) {
             throw new BadRequestExceptions(Constants.ErrorSizeExists.toUpperCase());
         }
-        if (!existsSizeType) {
+        if (sizeTypeData == null) {
             throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
         }
 
         try {
-            sizeRepository.save(sizeMapper.sizeToName(RequestSizeSave.builder()
-                    .codeSizeType(codeSizeType)
+            sizeRepository.save(Size.builder()
                     .name(name.toUpperCase())
-                    .user(user.toUpperCase()).build()));
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .sizeType(sizeTypeData)
+                    .sizeTypeId(sizeTypeData.getId())
+                    .status(true)
+                    .tokenUser(tokenUser.toUpperCase())
+                    .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

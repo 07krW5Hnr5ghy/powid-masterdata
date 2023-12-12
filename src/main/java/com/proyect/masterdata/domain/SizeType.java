@@ -31,8 +31,12 @@ public class SizeType {
 
         @Column(name = "fecha_registro")
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
 
-        @Column(name = "usuario", nullable = false)
-        private String user;
+        @Column(name = "fecha_modificacion")
+        @CreationTimestamp
+        private Date updateDate;
+
+        @Column(name = "usuario_token", nullable = false)
+        private String tokenUser;
 }

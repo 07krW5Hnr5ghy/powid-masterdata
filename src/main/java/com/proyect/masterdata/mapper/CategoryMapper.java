@@ -19,7 +19,6 @@ public interface CategoryMapper {
 
     @Mapping(target = "name", source = "requestCategorySave.name")
     @Mapping(target = "description", source = "requestCategorySave.description")
-    @Mapping(target = "tokenUser", source = "requestCategorySave.user")
     Category categoryToName(RequestCategorySave requestCategorySave);
 
     List<Category> ListCategoryToListName(List<RequestCategorySave> requestCategorySaveList);

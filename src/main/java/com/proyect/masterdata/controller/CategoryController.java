@@ -41,8 +41,9 @@ public class CategoryController {
 
     @PutMapping()
     public ResponseEntity<CategoryDTO> update(
+            @RequestParam("tokenUser") String tokenUser,
             @RequestBody() RequestCategory requestCategory) throws BadRequestExceptions {
-        CategoryDTO result = iCategory.update(requestCategory);
+        CategoryDTO result = iCategory.update(requestCategory, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
