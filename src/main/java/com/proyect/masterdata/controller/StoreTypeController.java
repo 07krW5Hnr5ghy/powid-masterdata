@@ -35,7 +35,7 @@ public class StoreTypeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<List<StoreTypeDTO>> listStoreType() throws BadRequestExceptions {
         List<StoreTypeDTO> result = iStoreType.listStoreType();
         return new ResponseEntity<>(result, HttpStatus.OK);

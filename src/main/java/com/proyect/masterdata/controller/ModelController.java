@@ -56,7 +56,7 @@ public class ModelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<ModelDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
@@ -69,7 +69,7 @@ public class ModelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "status-false")
     public ResponseEntity<Page<ModelDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "name", required = false) String brand,

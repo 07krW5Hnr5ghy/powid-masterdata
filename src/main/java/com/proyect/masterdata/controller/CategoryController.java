@@ -55,13 +55,13 @@ public class CategoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<List<CategoryDTO>> listCategory() throws BadRequestExceptions {
         List<CategoryDTO> result = iCategory.listCategory();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "list", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "list")
     public ResponseEntity<Page<CategoryDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -73,7 +73,7 @@ public class CategoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false")
     public ResponseEntity<Page<CategoryDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

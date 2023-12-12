@@ -46,7 +46,7 @@ public class PaymentTypeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<PaymentTypeDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -58,7 +58,7 @@ public class PaymentTypeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false")
     public ResponseEntity<Page<PaymentTypeDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

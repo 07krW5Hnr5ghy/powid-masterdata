@@ -30,7 +30,7 @@ public class MembershipController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<MembershipDTO>> list(
             @RequestParam(value = "channel", required = false) String channel,
             @RequestParam(value = "module", required = false) String module,

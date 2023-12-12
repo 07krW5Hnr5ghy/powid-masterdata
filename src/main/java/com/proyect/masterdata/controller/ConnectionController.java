@@ -45,7 +45,7 @@ public class ConnectionController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<ConnectionDTO>> list(
             @RequestParam(value = "url", required = false) String url,
             @RequestParam(value = "sort", required = false) String sort,
@@ -56,7 +56,7 @@ public class ConnectionController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "status-false")
     public ResponseEntity<Page<ConnectionDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String url,
             @RequestParam(value = "sort", required = false) String sort,

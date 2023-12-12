@@ -25,7 +25,7 @@ public class OnboardController {
 
     private IOnboard iOnboard;
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<List<OnboardingDTO>> listOnboard() throws BadRequestExceptions {
         List<OnboardingDTO> result = iOnboard.listOnboard();
         return new ResponseEntity<>(result, HttpStatus.OK);

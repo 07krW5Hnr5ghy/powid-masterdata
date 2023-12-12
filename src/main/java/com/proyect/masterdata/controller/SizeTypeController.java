@@ -16,31 +16,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"*"})
+@CrossOrigin({ "*" })
 @RequestMapping("/size-type")
 @AllArgsConstructor
 public class SizeTypeController {
     private final ISizeType iSizeType;
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name,@RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iSizeType.save(name,user);
+            @RequestParam("name") String name, @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iSizeType.save(name, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/size-types",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/size-types", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names,@RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iSizeType.saveAll(names,user);
+            @RequestBody() List<String> names, @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseSuccess result = iSizeType.saveAll(names, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SizeTypeDTO> update(
-            @RequestBody() RequestSizeType requestSizeType
-    ) throws BadRequestExceptions {
+            @RequestBody() RequestSizeType requestSizeType) throws BadRequestExceptions {
         SizeTypeDTO result = iSizeType.update(requestSizeType);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -48,48 +46,44 @@ public class SizeTypeController {
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("code") Long code,
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iSizeType.delete(code,user);
+            @RequestParam("user") String user) throws BadRequestExceptions {
+        ResponseDelete result = iSizeType.delete(code, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-size-type",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/list-size-type")
     public ResponseEntity<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions {
         List<SizeTypeDTO> result = iSizeType.listSizeType();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<SizeTypeDTO>> list(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<SizeTypeDTO> result = iSizeType.list(name,user,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
-    }
-
-    @GetMapping(value="/statusFalse",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<SizeTypeDTO>> listStatusFalse(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "user",required = false) String user,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<SizeTypeDTO> result = iSizeType.listStatusFalse(name,user,sort,sortColumn,pageNumber,pageSize);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<SizeTypeDTO> result = iSizeType.list(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/statusFalse")
+    public ResponseEntity<Page<SizeTypeDTO>> listStatusFalse(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<SizeTypeDTO> result = iSizeType.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/code")
     public ResponseEntity<SizeTypeDTO> findByCode(
-            @RequestParam("code") Long code
-    ) throws BadRequestExceptions {
+            @RequestParam("code") Long code) throws BadRequestExceptions {
         SizeTypeDTO result = iSizeType.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

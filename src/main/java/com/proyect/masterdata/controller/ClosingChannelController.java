@@ -36,7 +36,7 @@ public class ClosingChannelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<List<ClosingChannelDTO>> listClosingChannel() throws BadRequestExceptions {
         List<ClosingChannelDTO> result = iClosingChannel.listClosingChannel();
         return new ResponseEntity<>(result, HttpStatus.OK);

@@ -53,7 +53,7 @@ public class RoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<RoleDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -65,7 +65,7 @@ public class RoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false")
     public ResponseEntity<Page<RoleDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

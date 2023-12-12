@@ -54,7 +54,7 @@ public class ClientController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<ClientDTO>> list(
             @RequestParam(value = "ruc", required = false) String ruc,
             @RequestParam(value = "business", required = false) String business,

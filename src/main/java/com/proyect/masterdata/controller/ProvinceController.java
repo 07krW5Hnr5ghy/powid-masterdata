@@ -54,13 +54,13 @@ public class ProvinceController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<List<ProvinceDTO>> listProvince() throws BadRequestExceptions {
         List<ProvinceDTO> result = iProvince.listProvince();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "list", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "list")
     public ResponseEntity<Page<ProvinceDTO>> list(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -75,7 +75,7 @@ public class ProvinceController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false")
     public ResponseEntity<Page<ProvinceDTO>> listStatusFalse(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -90,14 +90,14 @@ public class ProvinceController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/code")
     public ResponseEntity<ProvinceDTO> findByCode(
             @RequestParam("code") Long code) throws BadRequestExceptions {
         ProvinceDTO result = iProvince.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "department", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "department")
     public ResponseEntity<List<ProvinceDTO>> findByDepartment(
             @RequestParam("department") String department) throws BadRequestExceptions {
         List<ProvinceDTO> result = iProvince.listProvinceByDepartment(department);

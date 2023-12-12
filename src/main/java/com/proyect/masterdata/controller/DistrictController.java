@@ -55,13 +55,13 @@ public class DistrictController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/listdistrict", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/listdistrict")
     public ResponseEntity<List<DistrictDTO>> listProvince() throws BadRequestExceptions {
         List<DistrictDTO> result = iDistrict.listDistrict();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "list", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "list")
     public ResponseEntity<Page<DistrictDTO>> list(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -76,7 +76,7 @@ public class DistrictController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "status-false")
     public ResponseEntity<Page<DistrictDTO>> listStatusFalse(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -91,17 +91,17 @@ public class DistrictController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/code")
     public ResponseEntity<DistrictDTO> findByCode(
             @RequestParam("code") Long code) throws BadRequestExceptions {
         DistrictDTO result = iDistrict.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "province", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "province")
     public ResponseEntity<List<DistrictDTO>> findByProvince(
             @RequestParam("province") String province) throws BadRequestExceptions {
         List<DistrictDTO> result = iDistrict.listDistrictByProvince(province);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

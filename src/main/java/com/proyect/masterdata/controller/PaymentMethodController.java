@@ -52,13 +52,13 @@ public class PaymentMethodController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-payment-method", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/list-payment-method")
     public ResponseEntity<List<PaymentMethodDTO>> listPaymentMethod() throws BadRequestExceptions {
         List<PaymentMethodDTO> result = iPaymentMethod.listPaymentMethod();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<PaymentMethodDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -70,7 +70,7 @@ public class PaymentMethodController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false")
     public ResponseEntity<Page<PaymentMethodDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -83,7 +83,7 @@ public class PaymentMethodController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/code")
     public ResponseEntity<PaymentMethodDTO> findByCode(
             @RequestParam("code") Long code) throws BadRequestExceptions {
         PaymentMethodDTO result = iPaymentMethod.findByCode(code);

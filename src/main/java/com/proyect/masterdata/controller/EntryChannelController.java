@@ -35,9 +35,9 @@ public class EntryChannelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<EntryChannelDTO>> listEntryChannel() throws BadRequestExceptions{
+    @GetMapping()
+    public ResponseEntity<List<EntryChannelDTO>> listEntryChannel() throws BadRequestExceptions {
         List<EntryChannelDTO> result = iEntryChannel.listEntryChannel();
-        return new ResponseEntity<>(result,HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -55,7 +55,7 @@ public class ModuleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<ModuleDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -67,7 +67,7 @@ public class ModuleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false")
     public ResponseEntity<Page<ModuleDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -79,7 +79,7 @@ public class ModuleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/code")
     public ResponseEntity<ModuleDTO> findByCode(
             @RequestParam("code") Long code) throws BadRequestExceptions {
         ModuleDTO result = iModule.findByCode(code);

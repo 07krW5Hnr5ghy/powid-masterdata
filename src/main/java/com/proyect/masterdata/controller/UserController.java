@@ -44,7 +44,7 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<UserQueryDTO>> list(
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "status", required = false) Long status,

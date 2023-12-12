@@ -56,13 +56,13 @@ public class SizeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-size", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/list-size")
     public ResponseEntity<List<SizeDTO>> listSize() throws BadRequestExceptions {
         List<SizeDTO> result = iSize.listSize();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<SizeDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -77,7 +77,7 @@ public class SizeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false")
     public ResponseEntity<Page<SizeDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -92,21 +92,21 @@ public class SizeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/code")
     public ResponseEntity<SizeDTO> findByCode(
             @RequestParam("code") Long code) throws BadRequestExceptions {
         SizeDTO result = iSize.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/size-type/code", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/size-type/code")
     public ResponseEntity<List<SizeDTO>> findAllSizeTypeId(
             @RequestParam("codeSizeType") Long codeSizeType) throws BadRequestExceptions {
         List<SizeDTO> result = iSize.findAllSizeTypeId(codeSizeType);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/size-type/name", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/size-type/name")
     public ResponseEntity<List<SizeDTO>> findAllSizeTypeName(
             @RequestParam("nameSizeType") String nameSizeType) throws BadRequestExceptions {
         List<SizeDTO> result = iSize.findAllSizeTypeName(nameSizeType);

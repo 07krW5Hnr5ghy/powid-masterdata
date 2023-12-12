@@ -51,13 +51,13 @@ public class SaleChannelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-sale-channel", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/list-sale-channel")
     public ResponseEntity<List<SaleChannelDTO>> listSaleChannel() throws BadRequestExceptions {
         List<SaleChannelDTO> result = iSaleChannel.listSaleChannel();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<SaleChannelDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -69,7 +69,7 @@ public class SaleChannelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/status-false")
     public ResponseEntity<Page<SaleChannelDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -81,7 +81,7 @@ public class SaleChannelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/code")
     public ResponseEntity<SaleChannelDTO> findByCode(
             @RequestParam("code") Long code) throws BadRequestExceptions {
         SaleChannelDTO result = iSaleChannel.findByCode(code);
