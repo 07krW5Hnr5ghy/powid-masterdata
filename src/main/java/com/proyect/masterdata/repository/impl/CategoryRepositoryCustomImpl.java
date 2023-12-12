@@ -78,7 +78,7 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("user")), user.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("tokenUser")), user.toUpperCase())));
         }
 
         if (status) {
@@ -100,8 +100,8 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
         if (sortColumn.equalsIgnoreCase("NAME")) {
             categoryList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
-        if (sortColumn.equalsIgnoreCase("USER")) {
-            categoryList.add(criteriaBuilder.asc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("tokenUser")) {
+            categoryList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
         }
         return categoryList;
     }
@@ -114,8 +114,8 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
         if (sortColumn.equalsIgnoreCase("NAME")) {
             categoryList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
-        if (sortColumn.equalsIgnoreCase("USER")) {
-            categoryList.add(criteriaBuilder.desc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("tokenUser")) {
+            categoryList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
         }
         return categoryList;
     }

@@ -1,7 +1,6 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.ColorDTO;
-import com.proyect.masterdata.dto.request.RequestColor;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -39,18 +38,11 @@ public class ColorController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ColorDTO> update(
-            @RequestBody() RequestColor requestColor) throws BadRequestExceptions {
-        ColorDTO result = iColor.update(requestColor);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
+            @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iColor.delete(code, tokenUser);
+        ResponseDelete result = iColor.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

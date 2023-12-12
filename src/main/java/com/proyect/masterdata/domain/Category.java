@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import java.util.Date;
 
@@ -19,14 +17,9 @@ import java.util.Date;
 @Data
 @Table(name = Constants.tableCategory, schema = Constants.schemaMaster)
 public class Category {
-        @Id
-        @GeneratedValue(generator = "sequence-category")
-        @GenericGenerator(name = "sequence-category", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-                        @Parameter(name = "sequence_name", value = "categorias_sequence"),
-                        @Parameter(name = "initial_value", value = "1"),
-                        @Parameter(name = "increment_size", value = "1")
-        })
 
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
         @Column(name = "id_categoria", unique = true)
         private Long id;
 
@@ -41,8 +34,12 @@ public class Category {
 
         @Column(name = "fecha_registro")
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
 
-        @Column(name = "usuario")
-        private String user;
+        @Column(name = "fecha_modificacion")
+        @CreationTimestamp
+        private Date updateDate;
+
+        @Column(name = "usuario_token")
+        private String tokenUser;
 }

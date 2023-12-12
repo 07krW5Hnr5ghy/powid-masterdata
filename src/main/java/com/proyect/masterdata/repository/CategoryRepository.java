@@ -16,9 +16,13 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Category findByNameAndStatusTrue(String name);
 
+    Category findByName(String name);
+
     Boolean existsByNameAndStatusTrue(String name);
 
     Category findByDescriptionAndStatusTrue(String description);
+
+    Category findByDescription(String name);
 
     List<Category> findByNameIn(List<String> names);
 

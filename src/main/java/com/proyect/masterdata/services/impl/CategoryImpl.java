@@ -23,7 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,22 +33,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class CategoryImpl implements ICategory {
+
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final UserRepository userRepository;
     private final CategoryRepositoryCustom categoryRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String name, String description, String user)
+    public ResponseSuccess save(String name, String description, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
+
         User datauser;
         Category categoryName;
         Category categoryDescription;
 
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            categoryName = categoryRepository.findByNameAndStatusTrue(name.toUpperCase());
-            categoryDescription = categoryRepository.findByDescriptionAndStatusTrue(description.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            categoryName = categoryRepository.findByName(name.toUpperCase());
+            categoryDescription = categoryRepository.findByDescription(description.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -65,10 +67,11 @@ public class CategoryImpl implements ICategory {
         }
 
         try {
-            categoryRepository.save(categoryMapper.categoryToName(RequestCategorySave.builder()
+            categoryRepository.save(Category.builder()
                     .name(name.toUpperCase())
                     .description(description.toUpperCase())
-                    .user(datauser.getUsername().toUpperCase()).build()));
+                    .status(true)
+                    .tokenUser(datauser.getUsername().toUpperCase()).build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -80,13 +83,15 @@ public class CategoryImpl implements ICategory {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestCreateCategory> categories, String user) throws BadRequestExceptions {
+    public ResponseSuccess saveAll(List<RequestCreateCategory> categories, String tokenUser)
+            throws BadRequestExceptions {
+
         User datauser;
         List<Category> categoryListNames;
         List<Category> categoryListDescriptions;
 
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             categoryListNames = categoryRepository.findByNameIn(categories
                     .stream()
                     .map(category -> category.getName().toUpperCase())
@@ -111,12 +116,13 @@ public class CategoryImpl implements ICategory {
         }
 
         try {
-            List<RequestCategorySave> categorySaves = categories.stream().map(data -> RequestCategorySave.builder()
-                    .user(user.toUpperCase())
+            List<Category> categorySaves = categories.stream().map(data -> Category.builder()
+                    .tokenUser(tokenUser.toUpperCase())
                     .name(data.getName().toUpperCase())
                     .description(data.getDescription().toUpperCase())
+                    .status(true)
                     .build()).toList();
-            categoryRepository.saveAll(categoryMapper.ListCategoryToListName(categorySaves));
+            categoryRepository.saveAll(categorySaves);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -129,12 +135,13 @@ public class CategoryImpl implements ICategory {
 
     @Override
     public CategoryDTO update(RequestCategory requestCategory) throws BadRequestExceptions, InternalErrorExceptions {
+
         User datauser;
         Category category;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(requestCategory.getUser().toUpperCase());
-            category = categoryRepository.findById(requestCategory.getCode()).orElse(null);
+            category = categoryRepository.findByNameAndStatusTrue(requestCategory.getName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -147,11 +154,9 @@ public class CategoryImpl implements ICategory {
             throw new BadRequestExceptions(Constants.ErrorCategory.toUpperCase());
         }
 
-        category.setName(requestCategory.getName().toUpperCase());
         category.setDescription(requestCategory.getDescription().toUpperCase());
-        category.setUser(datauser.getUsername().toUpperCase());
-        category.setStatus(requestCategory.isStatus());
-        category.setDateRegistration(new Date(System.currentTimeMillis()));
+        category.setTokenUser(datauser.getUsername().toUpperCase());
+        category.setUpdateDate(new Date(System.currentTimeMillis()));
 
         try {
             return categoryMapper.categoryToCategoryDTO(categoryRepository.save(category));
@@ -163,12 +168,14 @@ public class CategoryImpl implements ICategory {
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+
         User datauser;
         Category category;
+
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            category = categoryRepository.findById(code).orElse(null);
+            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            category = categoryRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -177,13 +184,14 @@ public class CategoryImpl implements ICategory {
         if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+
         if (category == null) {
             throw new BadRequestExceptions(Constants.ErrorCategory.toUpperCase());
         }
 
         try {
             category.setStatus(false);
-            category.setDateRegistration(new Date(System.currentTimeMillis()));
+            category.setRegistrationDate(new Date(System.currentTimeMillis()));
             categoryRepository.save(category);
             return ResponseDelete.builder()
                     .code(200)
@@ -198,14 +206,17 @@ public class CategoryImpl implements ICategory {
     @Override
     public List<CategoryDTO> listCategory() throws BadRequestExceptions {
         List<Category> categories = new ArrayList<>();
+
         try {
             categories = categoryRepository.findAllByStatusTrue();
         } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+
         if (categories.isEmpty()) {
             return Collections.emptyList();
         }
+
         return categoryMapper.listCategoryToListCategoryDTO(categories);
     }
 
@@ -245,15 +256,6 @@ public class CategoryImpl implements ICategory {
 
         return new PageImpl<>(categoryMapper.listCategoryToListCategoryDTO(categoryPage.getContent()),
                 categoryPage.getPageable(), categoryPage.getTotalElements());
-    }
-
-    @Override
-    public CategoryDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return categoryMapper.categoryToCategoryDTO(categoryRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
     }
 
 }

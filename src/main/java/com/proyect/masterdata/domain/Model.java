@@ -1,14 +1,13 @@
 package com.proyect.masterdata.domain;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import com.proyect.masterdata.utils.Constants;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -27,13 +26,9 @@ import java.util.Date;
 @Data
 @Table(name = Constants.tableModel, schema = Constants.schemaArticle)
 public class Model {
+
     @Id
-    @GeneratedValue(generator = "sequence-model")
-    @GenericGenerator(name = "sequence-model", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-            @Parameter(name = "sequence_name", value = "modelo_sequence"),
-            @Parameter(name = "initial_value", value = "1"),
-            @Parameter(name = "increment_size", value = "1")
-    })
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_model")
     private Long id;
 
@@ -58,6 +53,6 @@ public class Model {
     @JoinColumn(name = "id_marca", columnDefinition = "brandId", insertable = false, updatable = false)
     private Brand brand;
 
-    @Column(name = "usuario")
+    @Column(name = "usuario_token")
     private String tokenUser;
 }

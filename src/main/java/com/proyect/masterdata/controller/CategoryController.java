@@ -10,7 +10,6 @@ import com.proyect.masterdata.services.ICategory;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +17,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/category")
+@RequestMapping("category")
 @AllArgsConstructor
 public class CategoryController {
     private final ICategory iCategory;
@@ -32,7 +31,7 @@ public class CategoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/categories")
+    @PostMapping(value = "categories")
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestBody() List<RequestCreateCategory> categories,
             @RequestParam("user") String user) throws BadRequestExceptions {
@@ -49,9 +48,9 @@ public class CategoryController {
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
+            @RequestParam("name") String name,
             @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iCategory.delete(code, user);
+        ResponseDelete result = iCategory.delete(name, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -73,7 +72,7 @@ public class CategoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false")
+    @GetMapping(value = "status-false")
     public ResponseEntity<Page<CategoryDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -85,10 +84,4 @@ public class CategoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code")
-    public ResponseEntity<CategoryDTO> findByCode(
-            @RequestParam("code") Long code) throws BadRequestExceptions {
-        CategoryDTO result = iCategory.findByCode(code);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
 }
