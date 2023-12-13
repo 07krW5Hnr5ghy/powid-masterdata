@@ -18,7 +18,7 @@ import java.util.List;
 
 @Repository
 public class SizeTypeRepositoryCustomImpl implements SizeTypeRepositoryCustom {
-    @PersistenceContext(name="entityManager")
+    @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
@@ -29,35 +29,35 @@ public class SizeTypeRepositoryCustomImpl implements SizeTypeRepositoryCustom {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize,
-            Boolean status){
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<SizeType> criteriaQuery = criteriaBuilder.createQuery(SizeType.class);
         Root<SizeType> itemRoot = criteriaQuery.from(SizeType.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
 
-        if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
+        if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> sizeTypeList = new ArrayList<>();
-            if(sort.equalsIgnoreCase("ASC")){
-                sizeTypeList = listASC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("ASC")) {
+                sizeTypeList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
-            if(sort.equalsIgnoreCase("DESC")){
-                sizeTypeList = listDESC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("DESC")) {
+                sizeTypeList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[]{})).orderBy(sizeTypeList);
-        }else{
-            criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(sizeTypeList);
+        } else {
+            criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
         TypedQuery<SizeType> orderTypedQuery = entityManager.createQuery(criteriaQuery);
-        orderTypedQuery.setFirstResult(pageNumber*pageSize);
+        orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
-        Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        long count = getOrderCount(name,user,status);
-        return new PageImpl<>(orderTypedQuery.getResultList(),pageable,count);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        long count = getOrderCount(name, user, status);
+        return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
@@ -65,29 +65,28 @@ public class SizeTypeRepositoryCustomImpl implements SizeTypeRepositoryCustom {
             String user,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<SizeType> itemRoot
-    ){
+            Root<SizeType> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
 
-        if(name!=null){
+        if (name != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("name")),name.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
         }
 
-        if(user!=null){
+        if (user != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("name")),user.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("tokenUser")), user.toUpperCase())));
         }
 
-        if(status){
+        if (status) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
 
-        if(!status){
+        if (!status) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
 
@@ -97,14 +96,13 @@ public class SizeTypeRepositoryCustomImpl implements SizeTypeRepositoryCustom {
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<SizeType> itemRoot
-    ){
+            Root<SizeType> itemRoot) {
         List<Order> sizeTypeList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("NAME")){
+        if (sortColumn.equalsIgnoreCase("NAME")) {
             sizeTypeList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
-        if(sortColumn.equalsIgnoreCase("USER")){
-            sizeTypeList.add(criteriaBuilder.asc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("tokenUser")) {
+            sizeTypeList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
         }
         return sizeTypeList;
     }
@@ -112,26 +110,25 @@ public class SizeTypeRepositoryCustomImpl implements SizeTypeRepositoryCustom {
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<SizeType> itemRoot
-    ){
+            Root<SizeType> itemRoot) {
         List<Order> sizeTypeList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("NAME")){
+        if (sortColumn.equalsIgnoreCase("NAME")) {
             sizeTypeList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
-        if(sortColumn.equalsIgnoreCase("USER")){
-            sizeTypeList.add(criteriaBuilder.desc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("tokenUser")) {
+            sizeTypeList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
         }
         return sizeTypeList;
     }
 
-    private long getOrderCount(String name,String user,Boolean status){
+    private long getOrderCount(String name, String user, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<SizeType> itemRoot = criteriaQuery.from(SizeType.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
-        criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
 }

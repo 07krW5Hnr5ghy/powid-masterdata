@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/size")
+@RequestMapping("size")
 @AllArgsConstructor
 public class SizeController {
 
@@ -26,87 +26,62 @@ public class SizeController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
-            @RequestParam("user") String user,
-            @RequestParam("codeSizeType") Long codeSizeType) throws BadRequestExceptions {
-        ResponseSuccess result = iSize.save(name, user, codeSizeType);
+            @RequestParam("sizeType") String sizeType,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iSize.save(name, sizeType, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/sizes", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "sizes", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestBody() List<String> names,
-            @RequestParam("user") String user,
-            @RequestParam("codeSizeType") Long codeSizeType) throws BadRequestExceptions {
-        ResponseSuccess result = iSize.saveAll(names, user, codeSizeType);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SizeDTO> update(
-            @RequestBody() RequestSize requestSize) throws BadRequestExceptions {
-        SizeDTO result = iSize.update(requestSize);
+            @RequestParam("sizeType") String sizeType,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iSize.saveAll(names, sizeType, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iSize.delete(code, user);
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iSize.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-size")
+    @GetMapping()
     public ResponseEntity<List<SizeDTO>> listSize() throws BadRequestExceptions {
         List<SizeDTO> result = iSize.listSize();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(value = "list-size")
     public ResponseEntity<Page<SizeDTO>> list(
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "user", required = false) String user,
-            @RequestParam(value = "codeSizeType", required = false) Long codeSizeType,
-            @RequestParam(value = "nameSizeType", required = false) String nameSizeType,
+            @RequestParam(value = "tokenUser", required = false) String tokenUser,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<SizeDTO> result = iSize.list(name, user, codeSizeType, nameSizeType, sort, sortColumn, pageNumber,
+        Page<SizeDTO> result = iSize.list(name, tokenUser, sort, sortColumn, pageNumber,
                 pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false")
+    @GetMapping(value = "status-false")
     public ResponseEntity<Page<SizeDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
-            @RequestParam(value = "codeSizeType", required = false) Long codeSizeType,
-            @RequestParam(value = "nameSizeType", required = false) String nameSizeType,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<SizeDTO> result = iSize.listStatusFalse(name, user, codeSizeType, nameSizeType, sort, sortColumn,
+        Page<SizeDTO> result = iSize.listStatusFalse(name, user, sort, sortColumn,
                 pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code")
-    public ResponseEntity<SizeDTO> findByCode(
-            @RequestParam("code") Long code) throws BadRequestExceptions {
-        SizeDTO result = iSize.findByCode(code);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/size-type/code")
-    public ResponseEntity<List<SizeDTO>> findAllSizeTypeId(
-            @RequestParam("codeSizeType") Long codeSizeType) throws BadRequestExceptions {
-        List<SizeDTO> result = iSize.findAllSizeTypeId(codeSizeType);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/size-type/name")
+    @GetMapping(value = "size-type")
     public ResponseEntity<List<SizeDTO>> findAllSizeTypeName(
             @RequestParam("nameSizeType") String nameSizeType) throws BadRequestExceptions {
         List<SizeDTO> result = iSize.findAllSizeTypeName(nameSizeType);

@@ -24,40 +24,35 @@ public class SizeTypeController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iSizeType.save(name, user);
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iSizeType.save(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/size-types", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iSizeType.saveAll(names, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SizeTypeDTO> update(
-            @RequestBody() RequestSizeType requestSizeType) throws BadRequestExceptions {
-        SizeTypeDTO result = iSizeType.update(requestSizeType);
+            @RequestBody() List<String> names,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iSizeType.saveAll(names, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
+            @RequestParam("name") String name,
             @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iSizeType.delete(code, user);
+        ResponseDelete result = iSizeType.delete(name, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-size-type")
+    @GetMapping()
     public ResponseEntity<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions {
         List<SizeTypeDTO> result = iSizeType.listSizeType();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(value = "list")
     public ResponseEntity<Page<SizeTypeDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -80,12 +75,4 @@ public class SizeTypeController {
         Page<SizeTypeDTO> result = iSizeType.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-    @GetMapping(value = "/code")
-    public ResponseEntity<SizeTypeDTO> findByCode(
-            @RequestParam("code") Long code) throws BadRequestExceptions {
-        SizeTypeDTO result = iSizeType.findByCode(code);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
 }
