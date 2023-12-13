@@ -1,7 +1,6 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.SizeTypeDTO;
-import com.proyect.masterdata.dto.request.RequestSizeType;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/size-type")
+@RequestMapping("size-type")
 @AllArgsConstructor
 public class SizeTypeController {
     private final ISizeType iSizeType;
@@ -30,7 +29,7 @@ public class SizeTypeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/size-types", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "size-types", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestBody() List<String> names,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -41,8 +40,8 @@ public class SizeTypeController {
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iSizeType.delete(name, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iSizeType.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

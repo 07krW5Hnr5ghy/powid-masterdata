@@ -966,6 +966,77 @@ http://localhost:8080/masterdata/province/department?department=amazonas
 
 http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&user=admin1
 
+### GET /size-type protected
+
+- Description : list all active size types
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": name of the size type
+    }
+]
+
+- Example :
+
+http://localhost:8080/masterdata/size-type
+
+### POST /size-type protected
+
+- Description : add one size type to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the size type
+2. tokenUser : username of the user who creates size type 
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/size-type?name=ropa&tokenUser=
+
+### POST /size-types protected
+
+- Description : add one or more size types to the database
+
+- Request : none
+
+- Parameters : 
+
+1. tokenUser : username of the user who creates size type 
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/size-type?tokenUser=admin1
+
+Request Body
+
+[
+    "celulares"
+]
+
 ### GET /store-type
 
 - Description : list all active store types
