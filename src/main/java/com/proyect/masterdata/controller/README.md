@@ -1007,7 +1007,7 @@ http://localhost:8080/masterdata/size-type
 
 - Example :
 
-http://localhost:8080/masterdata/size-type?name=ropa&tokenUser=
+http://localhost:8080/masterdata/size-type?name=ropa&tokenUser=admin1
 
 ### POST /size-types protected
 
@@ -1035,6 +1035,82 @@ Request Body
 
 [
     "celulares"
+]
+
+### GET /size protected
+
+- Description : list all active sizes
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": name of the size,
+        "sizeType": name of the size Type
+    },
+    ... more sizes
+]
+
+- Example :
+
+http://localhost:8080/masterdata/size
+
+### POST /size protected
+
+- Description : add one size to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the size
+2. sizeType : name of the size type of the size
+2. tokenUser : username of the user who creates size type 
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/size?name=s&sizeType=ropa&tokenUser=admin1
+
+### POST /size/sizes protected
+
+- Description : add one or more sizes to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the size
+2. sizeType : name of the size type of the size
+2. tokenUser : username of the user who creates size 
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/size/sizes?sizeType=ropa&tokenUser=admin1
+
+Request Body
+
+[
+    "m","l","xs","xl"
 ]
 
 ### GET /store-type

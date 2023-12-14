@@ -116,6 +116,7 @@ public class SizeImpl implements ISize {
                     .sizeType(sizeTypeData)
                     .sizeTypeId(sizeTypeData.getId())
                     .name(data.toUpperCase())
+                    .status(true)
                     .build()).toList();
             sizeRepository.saveAll(sizeSaves);
             return ResponseSuccess.builder()
@@ -165,23 +166,34 @@ public class SizeImpl implements ISize {
 
     @Override
     public List<SizeDTO> listSize() throws BadRequestExceptions {
+
         List<Size> sizes = new ArrayList<>();
+
         try {
             sizes = sizeRepository.findAllByStatusTrue();
         } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+
         if (sizes.isEmpty()) {
             return Collections.emptyList();
         }
-        return sizeMapper.listSizeToListSizeDTO(sizes);
+
+        List<SizeDTO> sizeDTOs = sizes.stream().map(size -> SizeDTO.builder()
+                .name(size.getName())
+                .sizeType(size.getSizeType().getName())
+                .build()).toList();
+
+        return sizeDTOs;
     }
 
     @Override
     public Page<SizeDTO> list(String name, String user, String sort,
             String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+
         Page<Size> sizePage;
+
         try {
             sizePage = sizeRepositoryCustom.searchForSize(name, user, sort, sortColumn,
                     pageNumber, pageSize, true);
@@ -193,7 +205,13 @@ public class SizeImpl implements ISize {
         if (sizePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(sizeMapper.listSizeToListSizeDTO(sizePage.getContent()),
+
+        List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
+                .name(size.getName())
+                .sizeType(size.getSizeType().getName())
+                .build()).toList();
+
+        return new PageImpl<>(sizeDTOs,
                 sizePage.getPageable(), sizePage.getTotalElements());
     }
 
@@ -213,15 +231,28 @@ public class SizeImpl implements ISize {
         if (sizePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(sizeMapper.listSizeToListSizeDTO(sizePage.getContent()),
+
+        List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
+                .name(size.getName())
+                .sizeType(size.getSizeType().getName())
+                .build()).toList();
+
+        return new PageImpl<>(sizeDTOs,
                 sizePage.getPageable(), sizePage.getTotalElements());
     }
 
     @Override
     public List<SizeDTO> findAllSizeTypeName(String nameSizeType) throws BadRequestExceptions {
         try {
-            return sizeMapper.listSizeToListSizeDTO(
-                    sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType.toUpperCase()));
+
+            List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType.toUpperCase());
+
+            List<SizeDTO> sizeDTOs = sizes.stream().map(size -> SizeDTO.builder()
+                    .name(size.getName())
+                    .sizeType(size.getSizeType().getName())
+                    .build()).toList();
+
+            return sizeDTOs;
         } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
