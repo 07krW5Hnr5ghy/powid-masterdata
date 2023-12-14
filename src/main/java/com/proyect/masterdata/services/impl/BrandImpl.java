@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Brand;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.BrandDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -36,18 +37,18 @@ public class BrandImpl implements IBrand {
 
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        boolean existsUser;
+        User user;
         boolean existsBrand;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsBrand = brandRepository.existsByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
@@ -61,6 +62,8 @@ public class BrandImpl implements IBrand {
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
+                    .client(user.getClient())
+                    .clientId(user.getClientId())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -76,18 +79,18 @@ public class BrandImpl implements IBrand {
     public ResponseSuccess saveAll(List<String> namesList, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        boolean existsUser;
+        User user;
         List<Brand> brandList;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             brandList = brandRepository.findByNameIn(namesList);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
@@ -101,6 +104,8 @@ public class BrandImpl implements IBrand {
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
+                    .client(user.getClient())
+                    .clientId(user.getClientId())
                     .build()).toList());
             return ResponseSuccess.builder()
                     .code(200)
@@ -114,17 +119,17 @@ public class BrandImpl implements IBrand {
 
     @Override
     public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        boolean existsUser;
+        User user;
         Brand brand;
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             brand = brandRepository.findByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
@@ -166,7 +171,13 @@ public class BrandImpl implements IBrand {
 
         System.out.println(brandPage.getContent());
 
-        return new PageImpl<>(brandMapper.listBrandToListBrandDTO(brandPage.getContent()), brandPage.getPageable(),
+        List<BrandDTO> brandDTOs = brandPage.getContent().stream().map(brand -> BrandDTO.builder()
+                .name(brand.getName())
+                .client(brand.getClient().getBusiness())
+                .tokenUser(brand.getTokenUser())
+                .build()).toList();
+
+        return new PageImpl<>(brandDTOs, brandPage.getPageable(),
                 brandPage.getTotalElements());
     }
 
@@ -189,7 +200,13 @@ public class BrandImpl implements IBrand {
             return new PageImpl<>(Collections.emptyList());
         }
 
-        return new PageImpl<>(brandMapper.listBrandToListBrandDTO(brandPage.getContent()), brandPage.getPageable(),
+        List<BrandDTO> brandDTOs = brandPage.getContent().stream().map(brand -> BrandDTO.builder()
+                .name(brand.getName())
+                .client(brand.getClient().getBusiness())
+                .tokenUser(brand.getTokenUser())
+                .build()).toList();
+
+        return new PageImpl<>(brandDTOs, brandPage.getPageable(),
                 brandPage.getTotalElements());
     }
 

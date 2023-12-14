@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/product")
+@RequestMapping("product")
 @AllArgsConstructor
 public class ProductController {
 

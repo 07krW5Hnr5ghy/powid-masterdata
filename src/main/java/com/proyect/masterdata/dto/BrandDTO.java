@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class BrandDTO {
     private String name;
+    private String client;
     private String tokenUser;
 }
