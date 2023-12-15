@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import com.proyect.masterdata.domain.Product;
 
 @Repository
-public interface ProductRepositoryCustom extends JpaRepository<Product, Long> {
+public interface ProductRepositoryCustom {
     public Page<Product> searchForProduct(
             String name,
             String user,
