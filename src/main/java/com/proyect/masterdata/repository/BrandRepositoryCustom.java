@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 public interface BrandRepositoryCustom {
     Page<Brand> searchForBrand(
             String name,
-            String tokenUser,
+            Long clientId,
             String sort,
             String sortColumn,
             Integer pageNumber,

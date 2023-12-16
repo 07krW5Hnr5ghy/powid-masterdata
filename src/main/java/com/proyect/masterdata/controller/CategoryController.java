@@ -26,16 +26,16 @@ public class CategoryController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iCategory.save(name, description, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iCategory.save(name, description, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "categories")
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestBody() List<RequestCreateCategory> categories,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iCategory.saveAll(categories, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iCategory.saveAll(categories, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -50,8 +50,8 @@ public class CategoryController {
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iCategory.delete(name, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iCategory.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

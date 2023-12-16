@@ -156,9 +156,11 @@ public class BrandImpl implements IBrand {
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
 
         Page<Brand> brandPage;
+        Long clientId;
 
         try {
-            brandPage = brandRepositoryCustom.searchForBrand(name, tokenUser, sort, sortColumn, pageNumber, pageSize,
+            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
+            brandPage = brandRepositoryCustom.searchForBrand(name, clientId, sort, sortColumn, pageNumber, pageSize,
                     true);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -187,9 +189,11 @@ public class BrandImpl implements IBrand {
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
 
         Page<Brand> brandPage;
+        Long clientId;
 
         try {
-            brandPage = brandRepositoryCustom.searchForBrand(name, tokenUser, sort, sortColumn, pageNumber, pageSize,
+            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
+            brandPage = brandRepositoryCustom.searchForBrand(name, clientId, sort, sortColumn, pageNumber, pageSize,
                     false);
         } catch (RuntimeException e) {
             log.error(e.getMessage());

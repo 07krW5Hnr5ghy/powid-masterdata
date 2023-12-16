@@ -155,19 +155,19 @@ public class ProductImpl implements IProduct {
             throw new BadRequestExceptions(Constants.ErrorProductExists);
         }
 
-        if (modelList.size() != products.size()) {
+        if (modelList.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorModel);
         }
 
-        if (sizeList.size() != products.size()) {
+        if (sizeList.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorSize);
         }
 
-        if (categoryList.size() != products.size()) {
+        if (categoryList.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorCategory);
         }
 
-        if (colorList.size() != products.size()) {
+        if (colorList.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorColor);
         }
 

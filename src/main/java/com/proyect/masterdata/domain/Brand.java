@@ -47,7 +47,6 @@ public class Brand {
     private Date updateDate;
 
     @Column(name = "id_cliente")
-    @CreationTimestamp
     private Long clientId;
 
     @Column(name = "usuario_token")

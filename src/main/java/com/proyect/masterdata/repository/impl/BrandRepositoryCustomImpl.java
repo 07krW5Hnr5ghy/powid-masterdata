@@ -29,7 +29,7 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Brand> searchForBrand(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
+    public Page<Brand> searchForBrand(String name, Long clientId, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -38,7 +38,7 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(name, tokenUser, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, clientId, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -62,13 +62,13 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
         orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, tokenUser, status);
+        long count = getOrderCount(name, clientId, status);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             String name,
-            String tokenUser,
+            Long clientId,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Brand> itemRoot) {
@@ -81,11 +81,8 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
                             criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
         }
 
-        if (tokenUser != null) {
-            conditions.add(
-                    criteriaBuilder.and(
-                            criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("tokenUser")),
-                                    tokenUser.toUpperCase())));
+        if (clientId != null) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
         if (status) {
@@ -110,8 +107,8 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
             brandList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
 
-        if (sortColumn.equalsIgnoreCase("TOKENUSER")) {
-            brandList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
+        if (sortColumn.equalsIgnoreCase("clientId")) {
+            brandList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
         return brandList;
@@ -127,21 +124,21 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
             brandList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
 
-        if (sortColumn.equalsIgnoreCase("TOKENUSER")) {
-            brandList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
+        if (sortColumn.equalsIgnoreCase("clientId")) {
+            brandList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
         return brandList;
     }
 
-    private long getOrderCount(String name, String tokenUser, Boolean status) {
+    private long getOrderCount(String name, Long clientId, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Brand> itemRoot = criteriaQuery.from(Brand.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, tokenUser, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, clientId, status, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
