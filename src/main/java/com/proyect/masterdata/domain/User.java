@@ -55,11 +55,11 @@ public class User {
 
     @Column(name = "fecha_registro")
     @CreationTimestamp
-    private Date dateRegistration;
+    private Date registrationDate;
 
     @Column(name = "fecha_modificacion")
     @CreationTimestamp
-    private Date dateUpdate;
+    private Date updateDate;
 
     @Column(name = "id_distrito", updatable = false, nullable = false)
     private Long districtId;

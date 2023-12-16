@@ -21,9 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -100,7 +98,7 @@ public class UserImpl implements IUser {
                     .mobile(requestUser.getMobile())
                     .gender(requestUser.getGender().toUpperCase())
                     .password(passwordEncoder.encode(requestUser.getPassword()))
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .districtId(district.getId())
                     .district(district)
                     .clientId(client.getId())
@@ -145,7 +143,7 @@ public class UserImpl implements IUser {
         userData.setSurname(requestUserSave.getSurname().toUpperCase());
         userData.setDni(requestUserSave.getDni());
         userData.setAddress(requestUserSave.getAddress());
-        userData.setDateRegistration(new Date(System.currentTimeMillis()));
+        userData.setUpdateDate(new Date(System.currentTimeMillis()));
         userData.setEmail(requestUserSave.getEmail());
         userData.setMobile(requestUserSave.getMobile());
         userData.setPassword(requestUserSave.getPassword());
@@ -187,7 +185,7 @@ public class UserImpl implements IUser {
         }
 
         try {
-            datauser.setDateRegistration(new Date(System.currentTimeMillis()));
+            datauser.setUpdateDate(new Date(System.currentTimeMillis()));
             datauser.setStatus(false);
             userRepository.save(datauser);
             return ResponseDelete.builder()

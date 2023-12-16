@@ -257,7 +257,7 @@ http://localhost:8080/masterdata/category
 
 - Example :
 
-http://localhost:8080/masterdata/category?name=tennis&description=zapatos%20para%20correr&user=admin1
+http://localhost:8080/masterdata/category?name=tennis&description=zapatos%20para%20correr&tokenUser=admin1
 
 ### POST /category/categories protected
 
@@ -289,7 +289,7 @@ http://localhost:8080/masterdata/category?name=tennis&description=zapatos%20para
 
 Url
 
-http://localhost:8080/masterdata/category/categories?user=admin1
+http://localhost:8080/masterdata/category/categories?tokenUser=admin1
 
 Response
 
@@ -1336,3 +1336,69 @@ http://localhost:8080/masterdata/subscription?name=semestral&months=6&discountPe
 - Example :
 
 http://localhost:8080/masterdata/subscription/plans
+
+### POST /unit protected
+
+- Description : add one unit to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the unit
+2. tokenUser : username of the user who creates unit
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/unit?name=unidad&tokenUser=admin1
+
+### POST /unit protected
+
+- Description : add one or more units to the database
+
+- Request : array with the name of the new units
+
+- Parameters : 
+
+1. tokenUser : username of the user who creates the units
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/unit/units?tokenUser=admin1
+
+### GET /unit protected
+
+- Description : list all active units
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": name of the unit
+    }
+    ... more units
+]
+
+- Example :
+
+http://localhost:8080/masterdata/unit

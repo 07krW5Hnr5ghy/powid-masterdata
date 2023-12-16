@@ -49,6 +49,7 @@ public class Constants {
     public static final String tableMembershipModule = "membresia_modulo";
     public static final String tableMembershipModuleRole = "membresia_modulo_rol";
     public static final String tableSubscription = "subscripcion";
+    public static final String tableUnit = "unidad";
 
     // Mensajes
     public static final String register = "registration correctly";
@@ -136,4 +137,6 @@ public class Constants {
     public static final String ErrorModelExists = "The model already exists";
     public static final String ErrorProduct = "The product does not exists";
     public static final String ErrorProductExists = "The product already exists";
+    public static final String ErrorUnit = "The unit does not exists";
+    public static final String ErrorUnitExists = "The unit already exists";
 }

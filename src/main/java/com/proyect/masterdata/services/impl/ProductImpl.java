@@ -1,15 +1,20 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Category;
+import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.Size;
+import com.proyect.masterdata.dto.ProductDTO;
 import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -19,6 +24,7 @@ import com.proyect.masterdata.repository.CategoryRepository;
 import com.proyect.masterdata.repository.ColorRepository;
 import com.proyect.masterdata.repository.ModelRepository;
 import com.proyect.masterdata.repository.ProductRepository;
+import com.proyect.masterdata.repository.ProductRepositoryCustom;
 import com.proyect.masterdata.repository.SizeRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IProduct;
@@ -38,6 +44,7 @@ public class ProductImpl implements IProduct {
     private final SizeRepository sizeRepository;
     private final CategoryRepository categoryRepository;
     private final ColorRepository colorRepository;
+    private final ProductRepositoryCustom productRepositoryCustom;
 
     @Override
     public ResponseSuccess save(RequestProductSave product, String tokenUser)
@@ -236,6 +243,38 @@ public class ProductImpl implements IProduct {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
+    }
+
+    @Override
+    public Page<ProductDTO> list(String sku, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) {
+
+        Page<Product> productPage;
+        Long clientId;
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+            productPage = productRepositoryCustom.searchForProduct(sku, clientId, sort, sortColumn, pageNumber,
+                    pageSize, true);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (productPage.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> ProductDTO.builder()
+                .sku(product.getSku())
+                .model(product.getModel().getName())
+                .category(product.getCategory().getName())
+                .color(product.getColor().getName())
+                .size(product.getSize().getName())
+                .build()).toList();
+
+        return new PageImpl<>(productDTOs, productPage.getPageable(), productPage.getTotalElements());
 
     }
 
