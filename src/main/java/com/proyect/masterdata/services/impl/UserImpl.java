@@ -31,7 +31,6 @@ public class UserImpl implements IUser {
     private final UserRepository userRepository;
     private final DistrictRepository districtRepository;
     private final UserRepositoryCustom userRepositoryCustom;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ClientRepository clientRepository;
 

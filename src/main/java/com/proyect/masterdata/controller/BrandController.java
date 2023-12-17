@@ -56,24 +56,24 @@ public class BrandController {
     @GetMapping()
     public ResponseEntity<Page<BrandDTO>> list(
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "tokenUser", required = true) String tokenUser,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<BrandDTO> result = iBrand.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        Page<BrandDTO> result = iBrand.list(name, tokenUser, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "status-false")
     public ResponseEntity<Page<BrandDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "tokenUser", required = true) String tokenUser,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<BrandDTO> result = iBrand.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        Page<BrandDTO> result = iBrand.listStatusFalse(name, tokenUser, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

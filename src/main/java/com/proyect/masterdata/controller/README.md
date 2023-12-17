@@ -126,7 +126,7 @@ Body
 - Parameters : 
 
 1. name : filter by name of the brand (not required)
-2. user : filter by user who register or updated the brand (not required)
+2. tokenUser : filter by user who register or updated the brand
 3. sort : set the listing order only accepts the values ASC and DESC (not required)
 4. sortColumn : set the column which sorts the list (not required)
 5. pageNumber : select the page number to view of the list
@@ -170,7 +170,7 @@ Body
 
 - Example :
 
-http://localhost:8080/masterdata/brand?pageNumber=0&pageSize=3&sort=DESC&sortColumn=name
+http://localhost:8080/masterdata/brand?pageNumber=0&pageSize=3&sort=DESC&sortColumn=name&tokenUser=admin1
 
 ### POST /brand protected
 

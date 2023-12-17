@@ -171,8 +171,6 @@ public class BrandImpl implements IBrand {
             return new PageImpl<>(Collections.emptyList());
         }
 
-        System.out.println(brandPage.getContent());
-
         List<BrandDTO> brandDTOs = brandPage.getContent().stream().map(brand -> BrandDTO.builder()
                 .name(brand.getName())
                 .client(brand.getClient().getBusiness())
