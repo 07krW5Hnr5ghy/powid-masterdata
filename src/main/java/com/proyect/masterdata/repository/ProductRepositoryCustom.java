@@ -9,7 +9,7 @@ import com.proyect.masterdata.domain.Product;
 public interface ProductRepositoryCustom {
     public Page<Product> searchForProduct(
             String sku,
-            Long clientId,
+            Long modelId,
             String sort,
             String sortColumn,
             Integer pageNumber,

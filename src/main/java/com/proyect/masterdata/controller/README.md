@@ -828,7 +828,7 @@ http://localhost:8080/masterdata/onboard
 - Parameters : 
 
 1. sku : filter products by sku
-2. user : filter products by the username who registered them
+2. model : filter products by model (required)
 3. sort : sort the values the only valid values are ASC and DESC, default is ASC
 4. sortColumn : select the value that sorts the list in this case name or user
 5. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -836,11 +836,38 @@ http://localhost:8080/masterdata/onboard
 
 - Response : 
 
-
+{
+    "content": [
+        {
+            "sku": "#A00004",
+            "model": "NAVY J",
+            "size": "L",
+            "category": "PANTALONES",
+            "color": "AZUL"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 3,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalElements": 1,
+    "totalPages": 1,
+    "size": 3,
+    "number": 0,
+    "sort": [],
+    "first": true,
+    "numberOfElements": 1,
+    "empty": false
+}
 
 - Example :
 
-http://localhost:8080/masterdata/product?pageNumber=0&pageSize=2
+http://localhost:8080/masterdata/product?pageNumber=0&pageSize=3&model=navy j
 
 
 ### POST /product

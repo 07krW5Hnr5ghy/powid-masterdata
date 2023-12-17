@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.dto.ProductDTO;
 import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -22,6 +21,6 @@ public interface IProduct {
 
         ResponseDelete delete(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
 
-        Page<ProductDTO> list(String sku, String user, String sort, String sortColumn, Integer pageNumber,
+        Page<ProductDTO> list(String sku, String model, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws BadRequestExceptions;
 }

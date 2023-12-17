@@ -59,13 +59,13 @@ public class ProductController {
 
     @GetMapping()
     public ResponseEntity<Page<ProductDTO>> list(
-            @RequestParam("sku") String sku,
-            @RequestParam("user") String user,
-            @RequestParam("sort") String sort,
-            @RequestParam("sortColumn") String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<ProductDTO> result = iProduct.list(sku, user, sort, sortColumn, pageNumber, pageSize);
+            @RequestParam(value = "sku", required = false) String sku,
+            @RequestParam(value = "model", required = true) String model,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) throws BadRequestExceptions {
+        Page<ProductDTO> result = iProduct.list(sku, model, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

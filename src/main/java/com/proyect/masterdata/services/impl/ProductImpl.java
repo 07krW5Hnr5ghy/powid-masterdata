@@ -247,15 +247,15 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public Page<ProductDTO> list(String sku, String user, String sort, String sortColumn, Integer pageNumber,
+    public Page<ProductDTO> list(String sku, String model, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) {
 
         Page<Product> productPage;
-        Long clientId;
+        Long modelId;
 
         try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-            productPage = productRepositoryCustom.searchForProduct(sku, clientId, sort, sortColumn, pageNumber,
+            modelId = modelRepository.findByNameAndStatusTrue(model.toUpperCase()).getId();
+            productPage = productRepositoryCustom.searchForProduct(sku, modelId, sort, sortColumn, pageNumber,
                     pageSize, true);
         } catch (RuntimeException e) {
             log.error(e.getMessage());

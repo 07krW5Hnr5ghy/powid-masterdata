@@ -61,18 +61,18 @@ public class Product {
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_modelo", columnDefinition = "idModel", insertable = false, updatable = false)
+    @JoinColumn(name = "id_modelo", columnDefinition = "modelId", insertable = false, updatable = false)
     private Model model;
 
     @ManyToOne
-    @JoinColumn(name = "id_color", columnDefinition = "idColor", insertable = false, updatable = false)
+    @JoinColumn(name = "id_color", columnDefinition = "colorId", insertable = false, updatable = false)
     private Color color;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria", columnDefinition = "idCategory", insertable = false, updatable = false)
+    @JoinColumn(name = "id_categoria", columnDefinition = "categoryId", insertable = false, updatable = false)
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "id_size", columnDefinition = "idSize", insertable = false, updatable = false)
+    @JoinColumn(name = "id_size", columnDefinition = "sizeId", insertable = false, updatable = false)
     private Size size;
 }
