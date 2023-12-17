@@ -584,11 +584,12 @@ http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
 - Parameters : 
 
 1. name : filter models by name
-2. user : filter models by the username who registered the modules
-3. sort : sort the values the only valid values are ASC and DESC, default is ASC
-4. sortColumn : select the value that sorts the list in this case name or user
-5. pageNumber : the page number to select of the list the first is page zero (0) (required)
-6. pageSize : number the records per Page (required)
+2. brand : filter models by brand
+3. user : filter models by the username who registered the modules
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
 
 - Response :
 
@@ -600,12 +601,12 @@ http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
             "user": "ADMIN1"
         },
         {
-            "name": "U PRO 3000",
+            "name": "P90",
             "brand": "NIKE",
             "user": "ADMIN1"
         },
         {
-            "name": "K 20000",
+            "name": "MERCURIAL",
             "brand": "NIKE",
             "user": "ADMIN1"
         }
@@ -613,25 +614,25 @@ http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
     "pageable": {
         "sort": [],
         "offset": 0,
-        "pageNumber": 0,
         "pageSize": 3,
-        "paged": true,
-        "unpaged": false
+        "pageNumber": 0,
+        "unpaged": false,
+        "paged": true
     },
     "last": true,
-    "totalPages": 1,
     "totalElements": 3,
-    "size": 3,
+    "totalPages": 1,
+    "first": true,
+    "size": 15,
     "number": 0,
     "sort": [],
-    "first": true,
     "numberOfElements": 3,
     "empty": false
 }
 
 - Example :
 
-http://localhost:8080/masterdata/model?pageNumber=0&pageSize=3
+http://localhost:8080/masterdata/model?pageNumber=0&pageSize=3&brand=nike
 
 ### POST /model protected
 

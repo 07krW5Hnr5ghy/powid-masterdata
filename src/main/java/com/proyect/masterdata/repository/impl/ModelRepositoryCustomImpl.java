@@ -84,7 +84,7 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
         }
 
         if (brand != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("idBrand"), brand.getId())));
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("brandId"), brand.getId())));
         }
 
         if (user != null) {
