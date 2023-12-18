@@ -6,6 +6,7 @@ public class Constants {
     public static final String schemaManagement = "management";
     public static final String schemaArticle = "article";
     public static final String schemaPayment = "payment";
+    public static final String schemaInventory = "inventory";
     // Tablas
     public static final String tableDepartment = "departamento";
     public static final String tableProvince = "provincia";
@@ -50,6 +51,7 @@ public class Constants {
     public static final String tableMembershipModuleRole = "membresia_modulo_rol";
     public static final String tableSubscription = "subscripcion";
     public static final String tableUnit = "unidad";
+    public static final String tableSupplier = "proveedor";
 
     // Mensajes
     public static final String register = "registration correctly";
