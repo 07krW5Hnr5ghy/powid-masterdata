@@ -2,8 +2,6 @@ package com.proyect.masterdata.domain;
 
 import java.util.Date;
 
-import org.hibernate.annotations.CreationTimestamp;
-
 import com.proyect.masterdata.utils.Constants;
 
 import jakarta.persistence.Column;
@@ -24,54 +22,44 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableSupplier, schema = Constants.schemaInventory)
-public class Supplier {
+@Table(name = Constants.tableStockTransaction, schema = Constants.schemaInventory)
+public class StockTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_proveedor")
+    @Column(name = "id_movimiento_inventario")
     private Long id;
 
-    @Column(name = "nombre", unique = true)
-    private String name;
-
-    @Column(name = "ruc", unique = true)
-    private String ruc;
-
-    @Column(name = "pais")
-    private String country;
-
-    @Column(name = "ubicacion")
-    private String location;
-
-    @Column(name = "nombre_corporativo")
-    private String coporateName;
-
-    @Column(name = "telefono")
-    private String phoneNumber;
-
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "fecha_registro")
-    @CreationTimestamp
-    private Date registrationDate;
-
-    @Column(name = "fecha_modificacion")
-    @CreationTimestamp
-    private Date updateDate;
-
-    @Column(name = "usuario_token")
-    private String tokenUser;
-
-    @Column(name = "id_cliente")
-    private String clientId;
+    @Column(name = "cantidad")
+    private Integer quantity;
 
     @Column(name = "estado")
     private Boolean status;
+
+    @Column(name = "fecha_regisstro")
+    private Date registrationDate;
+
+    @Column(name = "fecha_modificacion")
+    private Date updateDate;
+
+    @Column(name = "id_cliente")
+    private Long clientId;
+
+    @Column(name = "id_tipo_movimiento_inventario")
+    private Long stockTransactionTypeId;
+
+    @Column(name = "id_proveedor")
+    private Long supplierId;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
+    @ManyToOne
+    @JoinColumn(name = "id_tipo_movimiento_inventario", columnDefinition = "stockTransactionTypeId", insertable = false, updatable = false)
+    private StockTransactionType stockTransactionType;
+
+    @ManyToOne
+    @JoinColumn(name = "id_proveedor", columnDefinition = "supplierId", insertable = false, updatable = false)
+    private Supplier supplier;
 }

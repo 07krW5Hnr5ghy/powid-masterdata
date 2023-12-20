@@ -52,6 +52,9 @@ public class Constants {
     public static final String tableSubscription = "subscripcion";
     public static final String tableUnit = "unidad";
     public static final String tableSupplier = "proveedor";
+    public static final String tableStockTransaction = "movimiento_inventario";
+    public static final String tableStockTransactionType = "tipo_movimiento_inventario";
+    public static final String tableWarehouse = "almacen";
 
     // Mensajes
     public static final String register = "registration correctly";
