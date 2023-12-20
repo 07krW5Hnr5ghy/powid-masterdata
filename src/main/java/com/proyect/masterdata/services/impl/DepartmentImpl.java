@@ -58,7 +58,7 @@ public class DepartmentImpl implements IDepartment {
         try {
             departmentRepository.save(Department.builder()
                     .name(name.toUpperCase())
-                    .user(user.toUpperCase())
+                    .tokenUser(user.toUpperCase())
                     .status(true)
                     .build());
             return ResponseSuccess.builder()
@@ -129,7 +129,7 @@ public class DepartmentImpl implements IDepartment {
         }
 
         department.setName(requestDepartment.getName().toUpperCase());
-        department.setUser(datauser.getUsername());
+        department.setTokenUser(datauser.getUsername());
         department.setStatus(requestDepartment.isStatus());
         department.setDateRegistration(new Date());
 

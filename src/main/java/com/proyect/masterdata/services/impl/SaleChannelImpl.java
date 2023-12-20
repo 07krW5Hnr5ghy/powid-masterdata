@@ -128,7 +128,7 @@ public class SaleChannelImpl implements ISaleChannel {
         }
 
         saleChannel.setName(requestSaleChannel.getName().toUpperCase());
-        saleChannel.setUser(datauser.getUsername().toUpperCase());
+        saleChannel.setTokenUser(datauser.getUsername().toUpperCase());
         saleChannel.setStatus(requestSaleChannel.isStatus());
         saleChannel.setDateRegistration(new Date(System.currentTimeMillis()));
 

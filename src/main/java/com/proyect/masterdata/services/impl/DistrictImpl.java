@@ -66,7 +66,7 @@ public class DistrictImpl implements IDistrict {
         try {
             districtRepository.save(District.builder()
                     .name(name.toUpperCase())
-                    .user(user.toUpperCase())
+                    .tokenUser(user.toUpperCase())
                     .province(provinceData)
                     .provinceId(provinceData.getId())
                     .status(true)
@@ -153,7 +153,7 @@ public class DistrictImpl implements IDistrict {
 
         try {
             district.setName(requestDistrict.getName().toUpperCase());
-            district.setUser(requestDistrict.getUser().toUpperCase());
+            district.setTokenUser(requestDistrict.getUser().toUpperCase());
             district.setDateRegistration(new Date(System.currentTimeMillis()));
             district.setStatus(requestDistrict.isStatus());
             district.setProvinceId(requestDistrict.getCodeProvince());

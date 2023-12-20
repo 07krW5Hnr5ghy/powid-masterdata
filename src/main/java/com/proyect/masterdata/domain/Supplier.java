@@ -70,9 +70,6 @@ public class Supplier {
     @Column(name = "estado")
     private Boolean status;
 
-    @Column(name = "usuario_token")
-    private String tokenUser;
-
     @ManyToOne
     @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
