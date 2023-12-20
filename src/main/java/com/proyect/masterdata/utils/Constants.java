@@ -59,6 +59,7 @@ public class Constants {
     public static final String tablePurchase = "compra";
     public static final String tableShipment = "embarque";
     public static final String tableWarehouseStock = "inventario_almacen";
+    public static final String tableGeneralStock = "inventario_general";
 
     // Mensajes
     public static final String register = "registration correctly";
