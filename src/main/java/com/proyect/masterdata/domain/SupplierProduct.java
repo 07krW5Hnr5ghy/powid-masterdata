@@ -22,29 +22,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableWarehouse, schema = Constants.schemaInventory)
-public class Warehouse {
+@Table(name = Constants.tableSupplierProduct, schema = Constants.schemaInventory)
+public class SupplierProduct {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_almacen")
+    @Column(name = "id_proveedor_producto")
     private Long id;
 
-    @Column(name = "nombre")
-    private String name;
-
-    @Column(name = "ubicacion")
-    private String location;
+    @Column(name = "precio_compra")
+    private Double purchasePrice;
 
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_update")
+    @Column(name = "fecha_modificacion")
     @CreationTimestamp
     private Date updateDate;
 
     @Column(name = "estado")
     private Boolean status;
-
 }

@@ -2,6 +2,8 @@ package com.proyect.masterdata.domain;
 
 import java.util.Date;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.proyect.masterdata.utils.Constants;
 
 import jakarta.persistence.Column;
@@ -27,9 +29,11 @@ public class StockTransactionType {
     private String name;
 
     @Column(name = "fecha_registro")
+    @CreationTimestamp
     private Date registrationDate;
 
     @Column(name = "fecha_modificacion")
+    @CreationTimestamp
     private Date updateDate;
 
     @Column(name = "estado")
