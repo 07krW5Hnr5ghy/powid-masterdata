@@ -57,7 +57,7 @@ public class Product {
     @Column(name = "id_size", nullable = false)
     private Long sizeId;
 
-    @Column(name = "usuario", nullable = false)
+    @Column(name = "usuario_token", nullable = false)
     private String tokenUser;
 
     @ManyToOne

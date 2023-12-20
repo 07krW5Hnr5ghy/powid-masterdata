@@ -38,4 +38,7 @@ public class StockTransactionType {
 
     @Column(name = "estado")
     private Boolean status;
+
+    @Column(name = "usuario_token")
+    private String tokenUser;
 }

@@ -73,6 +73,9 @@ public class Shipment {
     @Column(name = "id_movimiento_inventario")
     private Long stockTransactionId;
 
+    @Column(name = "usuario_token")
+    private String tokenUser;
+
     @ManyToOne
     @JoinColumn(name = "id_proveedor", columnDefinition = "supplierId", insertable = false, updatable = false)
     private Supplier supplier;

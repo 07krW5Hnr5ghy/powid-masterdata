@@ -52,6 +52,9 @@ public class SupplierProduct {
     @Column(name = "id_producto")
     private Long productId;
 
+    @Column(name = "usuario_token")
+    private String tokenUser;
+
     @ManyToOne
     @JoinColumn(name = "id_proveedor", columnDefinition = "supplierId", insertable = false, updatable = false)
     private Supplier supplier;

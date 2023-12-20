@@ -24,24 +24,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableStockTransaction, schema = Constants.schemaInventory)
-public class StockTransaction {
+@Table(name = Constants.tableWarehouseStock, schema = Constants.schemaInventory)
+public class WarehouseStock {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_movimiento_inventario")
+    @Column(name = "id_almacen_inventario")
     private Long id;
-
-    @Column(name = "serial")
-    private String serial;
 
     @Column(name = "cantidad")
     private Integer quantity;
 
-    @Column(name = "estado")
-    private Boolean status;
-
-    @Column(name = "fecha_regisstro")
+    @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date registrationDate;
 
@@ -49,27 +43,31 @@ public class StockTransaction {
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "id_cliente")
-    private Long clientId;
+    @Column(name = "precio_compra_unitario")
+    private Double unitPurchasePrice;
 
-    @Column(name = "id_tipo_movimiento_inventario")
-    private Long stockTransactionTypeId;
+    @Column(name = "precio_compra_total")
+    private Double totalPurchasePrice;
+
+    @Column(name = "id_almacen")
+    private Long warehouseId;
 
     @Column(name = "id_proveedor_producto")
     private Long supplierProductId;
 
-    @Column(name = "usuario_token")
-    private String tokenUser;
+    @Column(name = "id_embarque")
+    private Long shipmentId;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
-    private Client client;
-
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_movimiento_inventario", columnDefinition = "stockTransactionTypeId", insertable = false, updatable = false)
-    private StockTransactionType stockTransactionType;
+    @JoinColumn(name = "id_almacen", columnDefinition = "warehouseId", insertable = false, updatable = false)
+    private Warehouse warehouse;
 
     @ManyToOne
     @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
+
+    @ManyToOne
+    @JoinColumn(name = "id_embarque", columnDefinition = "shipmentId", insertable = false, updatable = false)
+    private Shipment shipment;
+
 }
