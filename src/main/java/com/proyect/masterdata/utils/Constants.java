@@ -56,6 +56,7 @@ public class Constants {
     public static final String tableStockTransactionType = "tipo_movimiento_inventario";
     public static final String tableWarehouse = "almacen";
     public static final String tableSupplierProduct = "proveedor_producto";
+    public static final String tablePurchase = "compra";
 
     // Mensajes
     public static final String register = "registration correctly";

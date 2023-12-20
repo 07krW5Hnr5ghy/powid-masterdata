@@ -24,21 +24,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableStockTransaction, schema = Constants.schemaInventory)
-public class StockTransaction {
+@Table(name = Constants.tablePurchase, schema = Constants.schemaInventory)
+public class Purchase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_movimiento_inventario")
+    @Column(name = "id_purchase")
     private Long id;
+
+    @Column(name = "serial")
+    private String serial;
 
     @Column(name = "cantidad")
     private Integer quantity;
 
-    @Column(name = "estado")
-    private Boolean status;
-
-    @Column(name = "fecha_regisstro")
+    @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date registrationDate;
 
@@ -46,22 +46,11 @@ public class StockTransaction {
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "id_cliente")
-    private Long clientId;
-
-    @Column(name = "id_tipo_movimiento_inventario")
-    private Long stockTransactionTypeId;
+    @Column(name = "estado")
+    private Boolean status;
 
     @Column(name = "id_proveedor_producto")
     private Long supplierProductId;
-
-    @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
-    private Client client;
-
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_movimiento_inventario", columnDefinition = "stockTransactionTypeId", insertable = false, updatable = false)
-    private StockTransactionType stockTransactionType;
 
     @ManyToOne
     @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
