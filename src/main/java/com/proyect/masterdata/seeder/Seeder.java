@@ -24,7 +24,10 @@ import com.proyect.masterdata.repository.RoleAccessRepository;
 import com.proyect.masterdata.repository.RoleRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.repository.UserRoleRepository;
+import com.proyect.masterdata.services.IBrand;
+import com.proyect.masterdata.services.ICategory;
 import com.proyect.masterdata.services.IClient;
+import com.proyect.masterdata.services.IModel;
 import com.proyect.masterdata.services.IUser;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,8 +49,9 @@ public class Seeder implements CommandLineRunner {
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private final IClient iClient;
-    private final IUser iUser;
+    private final IBrand iBrand;
+    private final ICategory iCategory;
+    private final IModel iModel;
 
     @Override
     public void run(String... args) throws Exception {
@@ -120,7 +124,43 @@ public class Seeder implements CommandLineRunner {
         User user2 = userRepository.save(new User(4L, "FCASAS", "FERNANDO", "CASAS", "12345678911", "fc@gmail.com",
                 "CRA 124", "M", "123456789", passwordEncoder.encode("123abc+"), true,
                 new Date(System.currentTimeMillis()),
-                new Date(System.currentTimeMillis()), district.getId(), client1.getId(), "ADMIN1", district, client2));
+                new Date(System.currentTimeMillis()), district.getId(), client2.getId(), "ADMIN1", district, client2));
+
+        // mock categories
+        iCategory.save("camisetas", "camisetas", "admin1");
+        iCategory.save("jeans", "jeans", "admin1");
+        iCategory.save("tennis", "tennis", "admin1");
+        iCategory.save("botas", "botas", "admin1");
+        iCategory.save("blusas", "blusas", "admin1");
+
+        // mock brands
+
+        iBrand.save("nike", "gjimenez");
+        iBrand.save("levis", "gjimenez");
+        iBrand.save("gap", "gjimenez");
+        iBrand.save("adidas", "fcasas");
+        iBrand.save("kenzo", "fcasas");
+        iBrand.save("lacoste", "fcasas");
+
+        // mock models
+        iModel.save("f90", "nike", "gjimenez");
+        iModel.save("m2000", "nike", "gjimenez");
+        iModel.save("mercurial", "nike", "gjimenez");
+        iModel.save("indigo", "levis", "gjimenez");
+        iModel.save("old navy", "levis", "gjimenez");
+        iModel.save("ripper", "levis", "gjimenez");
+        iModel.save("sweater", "gap", "gjimenez");
+        iModel.save("kasper", "gap", "gjimenez");
+        iModel.save("sustra", "gap", "gjimenez");
+        iModel.save("krust", "adidas", "fcasas");
+        iModel.save("gist", "adidas", "fcasas");
+        iModel.save("thunder", "adidas", "fcasas");
+        iModel.save("yitro", "kenzo", "fcasas");
+        iModel.save("ulcast", "kenzo", "fcasas");
+        iModel.save("reinder", "kenzo", "fcasas");
+        iModel.save("realt", "lacoste", "fcasas");
+        iModel.save("brust", "lacoste", "fcasas");
+        iModel.save("frost", "lacoste", "fcasas");
 
     }
 
