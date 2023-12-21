@@ -45,6 +45,8 @@ public class Seeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        // example one role and one access
+
         Access access = accessRepository
                 .save(new Access(1L, "USER_GET", true, new Date(System.currentTimeMillis()),
                         new Date(System.currentTimeMillis()), "TEST"));
@@ -52,6 +54,8 @@ public class Seeder implements CommandLineRunner {
         Role role = roleRepository.save(new Role(
                 1L, "ADMINISTRATOR", true, new Date(System.currentTimeMillis()),
                 new Date(System.currentTimeMillis()), "TEST"));
+
+        // departament, province and district to create system user
 
         Department department = departmentRepository
                 .save(new Department(1L, "SISTEMA", true, new Date(System.currentTimeMillis()), "TEST"));
@@ -74,6 +78,14 @@ public class Seeder implements CommandLineRunner {
                         new Date(System.currentTimeMillis()), district.getId(), systemClient.getId(), "SISTEMA",
                         district, systemClient));
 
+        userRoleRepository.save(
+                new UserRole(1L, adminUser.getId(), role.getId(), "TEST", new Date(System.currentTimeMillis())));
+
+        roleAccessRepository.save(
+                new RoleAccess(1L, role.getId(), access.getId(), "TEST", new Date(System.currentTimeMillis())));
+
+        // user for register new users
+
         User registerUser = userRepository.save(
                 new User(2L, "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER",
                         "REGISTER", passwordEncoder.encode("321abc+"), true,
@@ -81,11 +93,6 @@ public class Seeder implements CommandLineRunner {
                         new Date(System.currentTimeMillis()), district.getId(), systemClient.getId(), "SISTEMA",
                         district, systemClient));
 
-        userRoleRepository.save(
-                new UserRole(1L, adminUser.getId(), role.getId(), "TEST", new Date(System.currentTimeMillis())));
-
-        roleAccessRepository.save(
-                new RoleAccess(1L, role.getId(), access.getId(), "TEST", new Date(System.currentTimeMillis())));
     }
 
 }
