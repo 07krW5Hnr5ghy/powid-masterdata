@@ -110,6 +110,18 @@ public class Seeder implements CommandLineRunner {
                 "COMPANY 2", "223456789", "CRA 124", "fc@gmail.com", true, district.getId(),
                 new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), district));
 
+        // mocks users
+
+        User user1 = userRepository.save(new User(3L, "GJIMENEZ", "GONZALO", "JIMENEZ", "12345678910", "gj@gmail.com",
+                "CRA 123", "M", "123456789", passwordEncoder.encode("123abc+"), true,
+                new Date(System.currentTimeMillis()),
+                new Date(System.currentTimeMillis()), district.getId(), client1.getId(), "ADMIN1", district, client1));
+
+        User user2 = userRepository.save(new User(4L, "FCASAS", "FERNANDO", "CASAS", "12345678911", "fc@gmail.com",
+                "CRA 124", "M", "123456789", passwordEncoder.encode("123abc+"), true,
+                new Date(System.currentTimeMillis()),
+                new Date(System.currentTimeMillis()), district.getId(), client1.getId(), "ADMIN1", district, client2));
+
     }
 
 }
