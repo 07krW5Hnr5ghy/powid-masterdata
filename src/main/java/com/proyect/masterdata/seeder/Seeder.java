@@ -14,6 +14,7 @@ import com.proyect.masterdata.domain.Role;
 import com.proyect.masterdata.domain.RoleAccess;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.UserRole;
+import com.proyect.masterdata.dto.request.RequestClientSave;
 import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.DepartmentRepository;
@@ -23,6 +24,9 @@ import com.proyect.masterdata.repository.RoleAccessRepository;
 import com.proyect.masterdata.repository.RoleRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.repository.UserRoleRepository;
+import com.proyect.masterdata.services.IClient;
+import com.proyect.masterdata.services.IUser;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.RequiredArgsConstructor;
@@ -41,6 +45,9 @@ public class Seeder implements CommandLineRunner {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final IClient iClient;
+    private final IUser iUser;
 
     @Override
     public void run(String... args) throws Exception {
@@ -92,6 +99,16 @@ public class Seeder implements CommandLineRunner {
                         new Date(System.currentTimeMillis()),
                         new Date(System.currentTimeMillis()), district.getId(), systemClient.getId(), "SISTEMA",
                         district, systemClient));
+
+        // mocks clients
+
+        Client client1 = clientRepository.save(new Client(2L, "GONZALO", "JIMENEZ", "12345678910", "12345678910",
+                "COMPANY 1", "123456789", "CRA 123", "gj@gmail.com", true, district.getId(),
+                new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), district));
+
+        Client client2 = clientRepository.save(new Client(3L, "FERNANDO", "CASAS", "12345678911", "12345678911",
+                "COMPANY 2", "223456789", "CRA 124", "fc@gmail.com", true, district.getId(),
+                new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), district));
 
     }
 
