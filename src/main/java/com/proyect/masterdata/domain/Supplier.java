@@ -33,7 +33,7 @@ public class Supplier {
     private Long id;
 
     @Column(name = "nombre", unique = true)
-    private String name;
+    private String businessName;
 
     @Column(name = "ruc", unique = true)
     private String ruc;
@@ -43,9 +43,6 @@ public class Supplier {
 
     @Column(name = "ubicacion")
     private String location;
-
-    @Column(name = "nombre_corporativo")
-    private String coporateName;
 
     @Column(name = "telefono")
     private String phoneNumber;

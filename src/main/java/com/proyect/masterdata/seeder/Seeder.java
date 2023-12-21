@@ -297,7 +297,7 @@ public class Seeder implements CommandLineRunner {
                 iProduct.save(product9, "gjimenez");
 
                 RequestProductSave product10 = new RequestProductSave().builder().build();
-                product10.setCategory("calzado");
+                product10.setCategory("botas");
                 product10.setColor("rojo");
                 product10.setModel("krust");
                 product10.setSize("40");
@@ -306,16 +306,16 @@ public class Seeder implements CommandLineRunner {
                 iProduct.save(product10, "fcasas");
 
                 RequestProductSave product11 = new RequestProductSave().builder().build();
-                product11.setCategory("calzado");
+                product11.setCategory("tennis");
                 product11.setColor("verde");
                 product11.setModel("gist");
-                product11.setSize("36");
+                product11.setSize("32");
                 product11.setSku("B00002");
 
                 iProduct.save(product11, "fcasas");
 
                 RequestProductSave product12 = new RequestProductSave().builder().build();
-                product12.setCategory("calzado");
+                product12.setCategory("tennis");
                 product12.setColor("azul");
                 product12.setModel("thunder");
                 product12.setSize("18");
