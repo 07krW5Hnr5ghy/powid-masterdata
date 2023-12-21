@@ -15,6 +15,7 @@ import com.proyect.masterdata.domain.RoleAccess;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.UserRole;
 import com.proyect.masterdata.dto.request.RequestClientSave;
+import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.DepartmentRepository;
@@ -27,7 +28,9 @@ import com.proyect.masterdata.repository.UserRoleRepository;
 import com.proyect.masterdata.services.IBrand;
 import com.proyect.masterdata.services.ICategory;
 import com.proyect.masterdata.services.IClient;
+import com.proyect.masterdata.services.IColor;
 import com.proyect.masterdata.services.IModel;
+import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.services.IUser;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,6 +55,8 @@ public class Seeder implements CommandLineRunner {
     private final IBrand iBrand;
     private final ICategory iCategory;
     private final IModel iModel;
+    private final IProduct iProduct;
+    private final IColor iColor;
 
     @Override
     public void run(String... args) throws Exception {
@@ -133,6 +138,15 @@ public class Seeder implements CommandLineRunner {
         iCategory.save("botas", "botas", "admin1");
         iCategory.save("blusas", "blusas", "admin1");
 
+        // mock color
+        iColor.save("rojo", "admin1");
+        iColor.save("verde", "admin1");
+        iColor.save("azul", "admin1");
+        iColor.save("amarillo", "admin1");
+        iColor.save("morado", "admin1");
+        iColor.save("naranja", "admin1");
+        iColor.save("negro", "admin1");
+
         // mock brands
 
         iBrand.save("nike", "gjimenez");
@@ -161,6 +175,14 @@ public class Seeder implements CommandLineRunner {
         iModel.save("realt", "lacoste", "fcasas");
         iModel.save("brust", "lacoste", "fcasas");
         iModel.save("frost", "lacoste", "fcasas");
+
+        // mock
+
+        RequestProductSave product1 = new RequestProductSave().builder().build();
+        product1.setCategory("camisetas");
+        product1.setColor(null);
+
+        iProduct.save(null, "gjimenez");
 
     }
 
