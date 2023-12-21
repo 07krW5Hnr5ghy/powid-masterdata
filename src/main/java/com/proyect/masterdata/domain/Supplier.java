@@ -62,7 +62,7 @@ public class Supplier {
     private String tokenUser;
 
     @Column(name = "id_cliente")
-    private String clientId;
+    private Long clientId;
 
     @Column(name = "estado")
     private Boolean status;

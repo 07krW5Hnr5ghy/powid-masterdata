@@ -151,4 +151,6 @@ public class Constants {
     public static final String ErrorProductExists = "The product already exists";
     public static final String ErrorUnit = "The unit does not exists";
     public static final String ErrorUnitExists = "The unit already exists";
+    public static final String ErrorSupplier = "The supplier does not exists";
+    public static final String ErrorSupplierExists = "The supplier already exists";
 }
