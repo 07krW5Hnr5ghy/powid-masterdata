@@ -31,6 +31,8 @@ import com.proyect.masterdata.services.IClient;
 import com.proyect.masterdata.services.IColor;
 import com.proyect.masterdata.services.IModel;
 import com.proyect.masterdata.services.IProduct;
+import com.proyect.masterdata.services.ISize;
+import com.proyect.masterdata.services.ISizeType;
 import com.proyect.masterdata.services.IUser;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -57,6 +59,8 @@ public class Seeder implements CommandLineRunner {
     private final IModel iModel;
     private final IProduct iProduct;
     private final IColor iColor;
+    private final ISize iSize;
+    private final ISizeType iSizeType;
 
     @Override
     public void run(String... args) throws Exception {
@@ -147,6 +151,26 @@ public class Seeder implements CommandLineRunner {
         iColor.save("naranja", "admin1");
         iColor.save("negro", "admin1");
 
+        // mock size type
+        iSizeType.save("ropa", "admin1");
+        iSizeType.save("calzado", "admin1");
+        iSizeType.save("accesorios", "admin1");
+
+        // mock size
+        iSize.save("s", "ropa", "admin1");
+        iSize.save("m", "ropa", "admin1");
+        iSize.save("l", "ropa", "admin1");
+        iSize.save("xs", "ropa", "admin1");
+        iSize.save("xm", "ropa", "admin1");
+        iSize.save("xl", "ropa", "admin1");
+
+        iSize.save("12", "calzado", "admin1");
+        iSize.save("18", "calzado", "admin1");
+        iSize.save("24", "calzado", "admin1");
+        iSize.save("28", "calzado", "admin1");
+        iSize.save("32", "calzado", "admin1");
+        iSize.save("40", "calzado", "admin1");
+
         // mock brands
 
         iBrand.save("nike", "gjimenez");
@@ -179,10 +203,166 @@ public class Seeder implements CommandLineRunner {
         // mock
 
         RequestProductSave product1 = new RequestProductSave().builder().build();
-        product1.setCategory("camisetas");
-        product1.setColor(null);
+        product1.setCategory("tennis");
+        product1.setColor("negro");
+        product1.setModel("f90");
+        product1.setSize("12");
+        product1.setSku("A00001");
 
-        iProduct.save(null, "gjimenez");
+        iProduct.save(product1, "gjimenez");
+
+        RequestProductSave product2 = new RequestProductSave().builder().build();
+        product1.setCategory("botas");
+        product1.setColor("rojo");
+        product1.setModel("m2000");
+        product1.setSize("24");
+        product1.setSku("A00002");
+
+        iProduct.save(product2, "gjimenez");
+
+        RequestProductSave product3 = new RequestProductSave().builder().build();
+        product1.setCategory("tennis");
+        product1.setColor("verde");
+        product1.setModel("mercurial");
+        product1.setSize("24");
+        product1.setSku("A00003");
+
+        iProduct.save(product3, "gjimenez");
+
+        RequestProductSave product4 = new RequestProductSave().builder().build();
+        product1.setCategory("camisetas");
+        product1.setColor("rojo");
+        product1.setModel("indigo");
+        product1.setSize("s");
+        product1.setSku("A00004");
+
+        iProduct.save(product4, "gjimenez");
+
+        RequestProductSave product5 = new RequestProductSave().builder().build();
+        product1.setCategory("jeans");
+        product1.setColor("azul");
+        product1.setModel("old navy");
+        product1.setSize("m");
+        product1.setSku("A00005");
+
+        iProduct.save(product5, "gjimenez");
+
+        RequestProductSave product6 = new RequestProductSave().builder().build();
+        product1.setCategory("blusas");
+        product1.setColor("amarillo");
+        product1.setModel("ripper");
+        product1.setSize("l");
+        product1.setSku("A00006");
+
+        iProduct.save(product6, "gjimenez");
+
+        RequestProductSave product7 = new RequestProductSave().builder().build();
+        product1.setCategory("blusas");
+        product1.setColor("morado");
+        product1.setModel("sweater");
+        product1.setSize("xs");
+        product1.setSku("A00007");
+
+        iProduct.save(product7, "gjimenez");
+
+        RequestProductSave product8 = new RequestProductSave().builder().build();
+        product1.setCategory("camisetas");
+        product1.setColor("verde");
+        product1.setModel("kasper");
+        product1.setSize("xm");
+        product1.setSku("A00008");
+
+        iProduct.save(product8, "gjimenez");
+
+        RequestProductSave product9 = new RequestProductSave().builder().build();
+        product1.setCategory("blusas");
+        product1.setColor("anaranjado");
+        product1.setModel("sustra");
+        product1.setSize("xl");
+        product1.setSku("A00009");
+
+        iProduct.save(product9, "gjimenez");
+
+        RequestProductSave product10 = new RequestProductSave().builder().build();
+        product1.setCategory("calzado");
+        product1.setColor("rojo");
+        product1.setModel("krust");
+        product1.setSize("40");
+        product1.setSku("B00001");
+
+        iProduct.save(product10, "fcasas");
+
+        RequestProductSave product11 = new RequestProductSave().builder().build();
+        product1.setCategory("calzado");
+        product1.setColor("verde");
+        product1.setModel("gist");
+        product1.setSize("36");
+        product1.setSku("B00002");
+
+        iProduct.save(product11, "fcasas");
+
+        RequestProductSave product12 = new RequestProductSave().builder().build();
+        product1.setCategory("calzado");
+        product1.setColor("azul");
+        product1.setModel("thunder");
+        product1.setSize("18");
+        product1.setSku("B00003");
+
+        iProduct.save(product12, "fcasas");
+
+        RequestProductSave product13 = new RequestProductSave().builder().build();
+        product1.setCategory("camisetas");
+        product1.setColor("negro");
+        product1.setModel("yitro");
+        product1.setSize("s");
+        product1.setSku("B00004");
+
+        iProduct.save(product13, "fcasas");
+
+        RequestProductSave product14 = new RequestProductSave().builder().build();
+        product1.setCategory("blusas");
+        product1.setColor("morado");
+        product1.setModel("ulcast");
+        product1.setSize("m");
+        product1.setSku("B00005");
+
+        iProduct.save(product14, "fcasas");
+
+        RequestProductSave product15 = new RequestProductSave().builder().build();
+        product1.setCategory("jeans");
+        product1.setColor("amarillo");
+        product1.setModel("reinder");
+        product1.setSize("l");
+        product1.setSku("B00006");
+
+        iProduct.save(product15, "fcasas");
+
+        RequestProductSave product16 = new RequestProductSave().builder().build();
+        product1.setCategory("camisetas");
+        product1.setColor("rojo");
+        product1.setModel("realt");
+        product1.setSize("xl");
+        product1.setSku("B00007");
+
+        iProduct.save(product16, "fcasas");
+
+        RequestProductSave product17 = new RequestProductSave().builder().build();
+        product1.setCategory("blusas");
+        product1.setColor("azul");
+        product1.setModel("brust");
+        product1.setSize("xs");
+        product1.setSku("B00008");
+
+        iProduct.save(product17, "fcasas");
+
+        RequestProductSave product18 = new RequestProductSave().builder().build();
+        product1.setCategory("camisetas");
+        product1.setColor("naranja");
+        product1.setModel("frost");
+        product1.setSize("m");
+        product1.setSku("B00009");
+
+        iProduct.save(product18, "fcasas");
 
     }
 
