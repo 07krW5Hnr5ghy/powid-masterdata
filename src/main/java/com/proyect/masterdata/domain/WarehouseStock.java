@@ -55,9 +55,6 @@ public class WarehouseStock {
     @Column(name = "id_proveedor_producto")
     private Long supplierProductId;
 
-    @Column(name = "id_embarque")
-    private Long shipmentId;
-
     @ManyToOne
     @JoinColumn(name = "id_almacen", columnDefinition = "warehouseId", insertable = false, updatable = false)
     private Warehouse warehouse;
@@ -65,9 +62,5 @@ public class WarehouseStock {
     @ManyToOne
     @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
-
-    @ManyToOne
-    @JoinColumn(name = "id_embarque", columnDefinition = "shipmentId", insertable = false, updatable = false)
-    private Shipment shipment;
 
 }
