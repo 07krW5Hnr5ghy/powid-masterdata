@@ -14,7 +14,6 @@ import com.proyect.masterdata.domain.Role;
 import com.proyect.masterdata.domain.RoleAccess;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.UserRole;
-import com.proyect.masterdata.dto.request.RequestClientSave;
 import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.ClientRepository;
@@ -27,13 +26,12 @@ import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.repository.UserRoleRepository;
 import com.proyect.masterdata.services.IBrand;
 import com.proyect.masterdata.services.ICategory;
-import com.proyect.masterdata.services.IClient;
 import com.proyect.masterdata.services.IColor;
 import com.proyect.masterdata.services.IModel;
 import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.services.ISizeType;
-import com.proyect.masterdata.services.IUser;
+import com.proyect.masterdata.services.ISupplier;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -61,6 +59,7 @@ public class Seeder implements CommandLineRunner {
         private final IColor iColor;
         private final ISize iSize;
         private final ISizeType iSizeType;
+        private final ISupplier iSupplier;
 
         @Override
         public void run(String... args) throws Exception {
@@ -213,7 +212,7 @@ public class Seeder implements CommandLineRunner {
                 iModel.save("brust", "lacoste", "fcasas");
                 iModel.save("frost", "lacoste", "fcasas");
 
-                // mock
+                // mock products
 
                 RequestProductSave product1 = new RequestProductSave().builder().build();
                 product1.setCategory("tennis");
@@ -376,6 +375,10 @@ public class Seeder implements CommandLineRunner {
                 product18.setSku("B00009");
 
                 iProduct.save(product18, "fcasas");
+
+                // mocks suppliers
+
+                iSupplier.save(null, null)
 
         }
 

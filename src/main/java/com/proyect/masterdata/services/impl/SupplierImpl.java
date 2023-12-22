@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Supplier;
 import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.dto.SupplierDTO;
+import com.proyect.masterdata.dto.request.RequestSupplier;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -29,7 +29,7 @@ public class SupplierImpl implements ISupplier {
     private final SupplierRepository supplierRepository;
 
     @Override
-    public ResponseSuccess save(SupplierDTO supplierData, String tokenUser)
+    public ResponseSuccess save(RequestSupplier requestSupplier, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
@@ -37,7 +37,7 @@ public class SupplierImpl implements ISupplier {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplier = supplierRepository.findByRucAndStatusTrue(supplierData.getRuc());
+            supplier = supplierRepository.findByRucAndStatusTrue(requestSupplier.getRuc());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -53,14 +53,14 @@ public class SupplierImpl implements ISupplier {
 
         try {
             supplierRepository.save(Supplier.builder()
-                    .businessName(supplierData.getBusinessName())
+                    .businessName(requestSupplier.getBusinessName())
                     .client(user.getClient())
                     .clientId(user.getClientId())
-                    .country(supplierData.getCountry())
-                    .email(supplierData.getEmail())
-                    .location(supplierData.getLocation())
-                    .phoneNumber(supplierData.getPhoneNumber())
-                    .ruc(supplierData.getRuc())
+                    .country(requestSupplier.getCountry())
+                    .email(requestSupplier.getEmail())
+                    .location(requestSupplier.getLocation())
+                    .phoneNumber(requestSupplier.getPhoneNumber())
+                    .ruc(requestSupplier.getRuc())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
                     .tokenUser(user.getName())
@@ -77,7 +77,7 @@ public class SupplierImpl implements ISupplier {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<SupplierDTO> supplierDataList, String tokenUser)
+    public ResponseSuccess saveAll(List<RequestSupplier> requestSupplierList, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
         User user;
 
@@ -86,7 +86,7 @@ public class SupplierImpl implements ISupplier {
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             suppliers = supplierRepository
-                    .findByRucInAndStatusTrue(supplierDataList.stream().map(supplier -> supplier.getRuc()).toList());
+                    .findByRucInAndStatusTrue(requestSupplierList.stream().map(supplier -> supplier.getRuc()).toList());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -101,7 +101,7 @@ public class SupplierImpl implements ISupplier {
         }
 
         try {
-            supplierRepository.saveAll(supplierDataList.stream().map(supplier -> Supplier.builder()
+            supplierRepository.saveAll(requestSupplierList.stream().map(supplier -> Supplier.builder()
                     .businessName(supplier.getBusinessName())
                     .client(user.getClient())
                     .clientId(user.getClientId())
