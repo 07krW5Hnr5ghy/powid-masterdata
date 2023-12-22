@@ -22,9 +22,9 @@ public class MasterdataApplication {
 		SpringApplication.run(MasterdataApplication.class, args);
 	}
 
-	@Bean
-	CommandLineRunner executeSeeder() {
-		return args -> seeder.run(args);
-	}
+	// @Bean
+	// CommandLineRunner executeSeeder() {
+	// return args -> seeder.run(args);
+	// }
 
 }

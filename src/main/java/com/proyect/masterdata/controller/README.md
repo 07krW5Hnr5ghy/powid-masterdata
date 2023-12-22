@@ -1050,7 +1050,7 @@ http://localhost:8080/masterdata/size-type
 
 http://localhost:8080/masterdata/size-type?name=ropa&tokenUser=admin1
 
-### POST /size-types protected
+### POST /size-type/size-types protected
 
 - Description : add one or more size types to the database
 
@@ -1209,8 +1209,8 @@ http://localhost:8080/masterdata/store-type?name=shopify&tokenUser=admin1
 2. user : filter subscriptions by the username who registered them
 3. sort : sort the values the only valid values are ASC and DESC, default is ASC
 4. sortColumn : select the value that sorts the list in this case name or user
-5. pageNumber : the page number to select of the list the first is page zero (0)
-6. pageSize : number the records per Page
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
 
 - Response : 
 
@@ -1266,7 +1266,7 @@ http://localhost:8080/masterdata/subscription?pageNumber=0&pageSize=5&sort=ASC&s
 1. name : name of the subscription
 2. months : months of duration for the subscription
 3. price : price of the subscription for one month
-2. tokenUser : username of the user who creates the subscription 
+4. tokenUser : username of the user who creates the subscription 
 
 - Response : 
 
@@ -1401,7 +1401,7 @@ http://localhost:8080/masterdata/subscription/plans
 
 http://localhost:8080/masterdata/unit?name=unidad&tokenUser=admin1
 
-### POST /unit protected
+### POST /unit/units protected
 
 - Description : add one or more units to the database
 
@@ -1443,3 +1443,155 @@ http://localhost:8080/masterdata/unit/units?tokenUser=admin1
 - Example :
 
 http://localhost:8080/masterdata/unit
+
+### GET /supplier protected
+
+- Description : list all active suppliers
+
+- Request : none
+
+- Paramenters : 
+
+1. name : filter suppliers by name
+2. user : filter suppliers by the client of the user (required)
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response : 
+
+{
+    "content": [
+        {
+            "businessName": "BURGENVILLIA .CORP",
+            "ruc": "12345678922",
+            "country": "PERU",
+            "location": "LIMA, STREET 123",
+            "phoneNumber": "323456789",
+            "email": "bg@gmail.com"
+        },
+        {
+            "businessName": "COLTRAN LTD",
+            "ruc": "12345678924",
+            "country": "INDIA",
+            "location": "MUMBAI, AV 345",
+            "phoneNumber": "333456789",
+            "email": "coltran@gmail.com"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 2,
+        "paged": true,
+        "unpaged": false
+    },
+    "totalPages": 1,
+    "totalElements": 2,
+    "last": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 2,
+    "first": true,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/supplier?pageNumber=0&pageSize=2&user=gjimenez
+
+### POST /supplier protected
+
+- Description : add one supplier to the database
+
+- Request : 
+
+{
+    "businessName": supplier business name,
+    "ruc": business id number,
+    "country": country of the supplier,
+    "location": location of the supplier,
+    "phoneNumber": phone number of the supplier,
+    "email": email of the supplier
+}
+
+- Parameters : 
+
+1. tokenUser : username of the user who creates the supplier
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/supplier?tokenUser=gjimenez
+
+{
+    "businessName": "BURGENVILLIA .CORP",
+    "ruc": "12345678922",
+    "country": "PERU",
+    "location": "LIMA, STREET 123",
+    "phoneNumber": "323456789",
+    "email": "bg@gmail.com"
+}
+
+### POST /supplier/suppliers protected
+
+- Description : add one or more supplier to the database
+
+- Request : 
+
+[
+    {
+        "businessName": supplier business name,
+        "ruc": business id number,
+        "country": country of the supplier,
+        "location": location of the supplier,
+        "phoneNumber": phone number of the supplier,
+        "email": email of the supplier
+    },
+    ... more suppliers
+]
+
+- Parameters : 
+
+1. tokenUser : username of the user who creates the supplier
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/supplier?tokenUser=gjimenez
+
+[
+    {
+        "businessName": "BURGENVILLIA .CORP",
+        "ruc": "12345678922",
+        "country": "PERU",
+        "location": "LIMA, STREET 123",
+        "phoneNumber": "323456789",
+        "email": "bg@gmail.com"
+    },
+    {
+        "businessName": "COLTRAN LTD",
+        "ruc": "12345678924",
+        "country": "INDIA",
+        "location": "MUMBAI, AV 345",
+        "phoneNumber": "333456789",
+        "email": "coltran@gmail.com"
+    }
+]
