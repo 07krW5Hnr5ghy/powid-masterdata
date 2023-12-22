@@ -53,17 +53,17 @@ public class SupplierImpl implements ISupplier {
 
         try {
             supplierRepository.save(Supplier.builder()
-                    .businessName(requestSupplier.getBusinessName())
+                    .businessName(requestSupplier.getBusinessName().toUpperCase())
                     .client(user.getClient())
                     .clientId(user.getClientId())
-                    .country(requestSupplier.getCountry())
+                    .country(requestSupplier.getCountry().toUpperCase())
                     .email(requestSupplier.getEmail())
-                    .location(requestSupplier.getLocation())
+                    .location(requestSupplier.getLocation().toUpperCase())
                     .phoneNumber(requestSupplier.getPhoneNumber())
                     .ruc(requestSupplier.getRuc())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
-                    .tokenUser(user.getName())
+                    .tokenUser(user.getUsername().toUpperCase())
                     .build());
 
             return ResponseSuccess.builder()

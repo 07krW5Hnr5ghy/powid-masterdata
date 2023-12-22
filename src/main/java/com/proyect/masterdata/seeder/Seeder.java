@@ -15,6 +15,7 @@ import com.proyect.masterdata.domain.RoleAccess;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.UserRole;
 import com.proyect.masterdata.dto.request.RequestProductSave;
+import com.proyect.masterdata.dto.request.RequestSupplier;
 import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.DepartmentRepository;
@@ -378,7 +379,45 @@ public class Seeder implements CommandLineRunner {
 
                 // mocks suppliers
 
-                iSupplier.save(null, null)
+                RequestSupplier supplier1 = RequestSupplier.builder().build();
+                supplier1.setBusinessName("burgenvillia .corp");
+                supplier1.setRuc("12345678922");
+                supplier1.setCountry("Peru");
+                supplier1.setEmail("bg@gmail.com");
+                supplier1.setLocation("Lima, Street 123");
+                supplier1.setPhoneNumber("323456789");
+
+                iSupplier.save(supplier1, "gjimenez");
+
+                RequestSupplier supplier2 = RequestSupplier.builder().build();
+                supplier2.setBusinessName("coltran ltd");
+                supplier2.setRuc("12345678924");
+                supplier2.setCountry("India");
+                supplier2.setEmail("coltran@gmail.com");
+                supplier2.setLocation("Mumbai, Av 345");
+                supplier2.setPhoneNumber("333456789");
+
+                iSupplier.save(supplier2, "gjimenez");
+
+                RequestSupplier supplier3 = RequestSupplier.builder().build();
+                supplier3.setBusinessName("xincheng ptd");
+                supplier3.setRuc("12345678925");
+                supplier3.setCountry("China");
+                supplier3.setEmail("xincheng@gmail.com");
+                supplier3.setLocation("Shanghai, st 777");
+                supplier3.setPhoneNumber("343456789");
+
+                iSupplier.save(supplier3, "fcasas");
+
+                RequestSupplier supplier4 = RequestSupplier.builder().build();
+                supplier4.setBusinessName("tejidos sa");
+                supplier4.setRuc("12345678926");
+                supplier4.setCountry("España");
+                supplier4.setEmail("tejidos@gmail.com");
+                supplier4.setLocation("Valencia, tranv 843");
+                supplier4.setPhoneNumber("353456789");
+
+                iSupplier.save(supplier4,"fcasas");
 
         }
 
