@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import com.proyect.masterdata.dto.SupplierDTO;
+import com.proyect.masterdata.dto.request.RequestSupplier;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -32,17 +33,17 @@ public class SupplierController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestBody() SupplierDTO supplierData,
+            @RequestBody() RequestSupplier requestSupplier,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iSupplier.save(supplierData, tokenUser);
+        ResponseSuccess result = iSupplier.save(requestSupplier, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "suppliers", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<SupplierDTO> supplierList,
+            @RequestBody() List<RequestSupplier> requestSupplierList,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iSupplier.saveAll(supplierList, tokenUser);
+        ResponseSuccess result = iSupplier.saveAll(requestSupplierList, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
