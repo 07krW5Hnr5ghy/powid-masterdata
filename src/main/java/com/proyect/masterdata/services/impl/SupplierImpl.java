@@ -1,18 +1,23 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Supplier;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.SupplierDTO;
 import com.proyect.masterdata.dto.request.RequestSupplier;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.SupplierRepository;
+import com.proyect.masterdata.repository.SupplierRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.ISupplier;
 import com.proyect.masterdata.utils.Constants;
@@ -27,6 +32,7 @@ public class SupplierImpl implements ISupplier {
 
     private final UserRepository userRepository;
     private final SupplierRepository supplierRepository;
+    private final SupplierRepositoryCustom supplierRepositoryCustom;
 
     @Override
     public ResponseSuccess save(RequestSupplier requestSupplier, String tokenUser)
@@ -159,6 +165,40 @@ public class SupplierImpl implements ISupplier {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<SupplierDTO> list(String name, String ruc, String user, String sort, String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
+
+        Page<Supplier> supplierPage;
+        Long clientId;
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            supplierPage = supplierRepositoryCustom.searchForSupplier(name, ruc, clientId, sort, sortColumn, pageNumber,
+                    pageSize, true);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (supplierPage.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<SupplierDTO> supplierDTOs = supplierPage.getContent().stream().map(supplier -> SupplierDTO.builder()
+                .businessName(supplier.getBusinessName())
+                .country(supplier.getCountry())
+                .email(supplier.getEmail())
+                .location(supplier.getLocation())
+                .phoneNumber(supplier.getPhoneNumber())
+                .ruc(supplier.getRuc())
+                .build()).toList();
+
+        return new PageImpl<>(supplierDTOs, supplierPage.getPageable(), supplierPage.getTotalElements());
+
     }
 
 }

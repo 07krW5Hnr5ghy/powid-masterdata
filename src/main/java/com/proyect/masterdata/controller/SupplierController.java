@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +54,19 @@ public class SupplierController {
             @RequestParam("ruc") String ruc,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseDelete result = iSupplier.delete(ruc, tokenUser);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<Page<SupplierDTO>> list(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "ruc", required = false) String ruc,
+            @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
+        Page<SupplierDTO> result = iSupplier.list(name, ruc, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
