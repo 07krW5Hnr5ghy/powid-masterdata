@@ -39,7 +39,7 @@ public class SupplierProductController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "supplier-products", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestSupplierProduct> requestSupplierProductsList,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {

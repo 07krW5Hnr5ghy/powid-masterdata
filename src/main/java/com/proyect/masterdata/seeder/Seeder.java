@@ -16,6 +16,7 @@ import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.UserRole;
 import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.dto.request.RequestSupplier;
+import com.proyect.masterdata.dto.request.RequestSupplierProduct;
 import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.DepartmentRepository;
@@ -33,6 +34,7 @@ import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.services.ISizeType;
 import com.proyect.masterdata.services.ISupplier;
+import com.proyect.masterdata.services.ISupplierProduct;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -61,6 +63,7 @@ public class Seeder implements CommandLineRunner {
         private final ISize iSize;
         private final ISizeType iSizeType;
         private final ISupplier iSupplier;
+        private final ISupplierProduct iSupplierProduct;
 
         @Override
         public void run(String... args) throws Exception {
@@ -417,7 +420,333 @@ public class Seeder implements CommandLineRunner {
                 supplier4.setLocation("Valencia, tranv 843");
                 supplier4.setPhoneNumber("353456789");
 
-                iSupplier.save(supplier4,"fcasas");
+                iSupplier.save(supplier4, "fcasas");
+
+                // mock supplier products
+
+                RequestSupplierProduct requestSupplierProduct1 = RequestSupplierProduct.builder()
+                                .productSku("A00001")
+                                .purchasePrice(5.24)
+                                .serial("A00001A")
+                                .supplierRuc("12345678922")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct1, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct2 = RequestSupplierProduct.builder()
+                                .productSku("A00001")
+                                .purchasePrice(2.10)
+                                .serial("A00001B")
+                                .supplierRuc("12345678924")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct2, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct3 = RequestSupplierProduct.builder()
+                                .productSku("A00002")
+                                .purchasePrice(10.47)
+                                .serial("A00002A")
+                                .supplierRuc("12345678922")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct3, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct4 = RequestSupplierProduct.builder()
+                                .productSku("A00002")
+                                .purchasePrice(13.09)
+                                .serial("A00002B")
+                                .supplierRuc("12345678924")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct4, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct5 = RequestSupplierProduct.builder()
+                                .productSku("A00003")
+                                .purchasePrice(20.15)
+                                .serial("A00003A")
+                                .supplierRuc("12345678922")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct5, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct6 = RequestSupplierProduct.builder()
+                                .productSku("A00003")
+                                .purchasePrice(17.45)
+                                .serial("A00003B")
+                                .supplierRuc("12345678924")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct6, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct7 = RequestSupplierProduct.builder()
+                                .productSku("A00004")
+                                .purchasePrice(23.76)
+                                .serial("A00004A")
+                                .supplierRuc("12345678922")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct7, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct8 = RequestSupplierProduct.builder()
+                                .productSku("A00004")
+                                .purchasePrice(35.02)
+                                .serial("A00004B")
+                                .supplierRuc("12345678924")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct8, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct9 = RequestSupplierProduct.builder()
+                                .productSku("A00005")
+                                .purchasePrice(7.90)
+                                .serial("A00005A")
+                                .supplierRuc("12345678922")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct9, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct10 = RequestSupplierProduct.builder()
+                                .productSku("A00005")
+                                .purchasePrice(3.22)
+                                .serial("A00005B")
+                                .supplierRuc("12345678924")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct10, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct11 = RequestSupplierProduct.builder()
+                                .productSku("A00006")
+                                .purchasePrice(5.34)
+                                .serial("A00006A")
+                                .supplierRuc("12345678922")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct11, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct12 = RequestSupplierProduct.builder()
+                                .productSku("A00006")
+                                .purchasePrice(2.66)
+                                .serial("A00006B")
+                                .supplierRuc("12345678924")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct12, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct13 = RequestSupplierProduct.builder()
+                                .productSku("A00007")
+                                .purchasePrice(4.50)
+                                .serial("A00007A")
+                                .supplierRuc("12345678922")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct13, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct14 = RequestSupplierProduct.builder()
+                                .productSku("A00007")
+                                .purchasePrice(11.37)
+                                .serial("A00007B")
+                                .supplierRuc("12345678924")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct14, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct15 = RequestSupplierProduct.builder()
+                                .productSku("A00008")
+                                .purchasePrice(9.11)
+                                .serial("A00008A")
+                                .supplierRuc("12345678922")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct15, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct16 = RequestSupplierProduct.builder()
+                                .productSku("A00008")
+                                .purchasePrice(2.73)
+                                .serial("A00008B")
+                                .supplierRuc("12345678924")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct16, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct17 = RequestSupplierProduct.builder()
+                                .productSku("A00009")
+                                .purchasePrice(6.41)
+                                .serial("A00009A")
+                                .supplierRuc("12345678922")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct17, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct18 = RequestSupplierProduct.builder()
+                                .productSku("A00009")
+                                .purchasePrice(12.30)
+                                .serial("A00009B")
+                                .supplierRuc("12345678924")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct18, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct19 = RequestSupplierProduct.builder()
+                                .productSku("B00001")
+                                .purchasePrice(3.01)
+                                .serial("B00001A")
+                                .supplierRuc("12345678925")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct19, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct20 = RequestSupplierProduct.builder()
+                                .productSku("B00001")
+                                .purchasePrice(1.05)
+                                .serial("B00001B")
+                                .supplierRuc("12345678926")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct20, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct21 = RequestSupplierProduct.builder()
+                                .productSku("B00002")
+                                .purchasePrice(7.20)
+                                .serial("B00002A")
+                                .supplierRuc("12345678925")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct21, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct22 = RequestSupplierProduct.builder()
+                                .productSku("B00002")
+                                .purchasePrice(5.68)
+                                .serial("B00002B")
+                                .supplierRuc("12345678926")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct22, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct23 = RequestSupplierProduct.builder()
+                                .productSku("B00003")
+                                .purchasePrice(36.49)
+                                .serial("B00003A")
+                                .supplierRuc("12345678925")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct23, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct24 = RequestSupplierProduct.builder()
+                                .productSku("B00003")
+                                .purchasePrice(45.27)
+                                .serial("B00003B")
+                                .supplierRuc("12345678926")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct24, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct25 = RequestSupplierProduct.builder()
+                                .productSku("B00004")
+                                .purchasePrice(22.38)
+                                .serial("B00004A")
+                                .supplierRuc("12345678925")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct25, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct26 = RequestSupplierProduct.builder()
+                                .productSku("B00004")
+                                .purchasePrice(15.07)
+                                .serial("B00004B")
+                                .supplierRuc("12345678926")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct26, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct27 = RequestSupplierProduct.builder()
+                                .productSku("B00005")
+                                .purchasePrice(73.02)
+                                .serial("B00005A")
+                                .supplierRuc("12345678925")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct27, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct28 = RequestSupplierProduct.builder()
+                                .productSku("B00005")
+                                .purchasePrice(82.17)
+                                .serial("B00005B")
+                                .supplierRuc("12345678926")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct28, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct29 = RequestSupplierProduct.builder()
+                                .productSku("B00006")
+                                .purchasePrice(13.77)
+                                .serial("B00006A")
+                                .supplierRuc("12345678925")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct29, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct30 = RequestSupplierProduct.builder()
+                                .productSku("B00006")
+                                .purchasePrice(24.93)
+                                .serial("B00006B")
+                                .supplierRuc("12345678926")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct30, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct31 = RequestSupplierProduct.builder()
+                                .productSku("B00007")
+                                .purchasePrice(64.57)
+                                .serial("B00007A")
+                                .supplierRuc("12345678925")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct31, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct32 = RequestSupplierProduct.builder()
+                                .productSku("B00007")
+                                .purchasePrice(23.89)
+                                .serial("B00007B")
+                                .supplierRuc("12345678926")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct32, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct33 = RequestSupplierProduct.builder()
+                                .productSku("B00008")
+                                .purchasePrice(17.94)
+                                .serial("B00008A")
+                                .supplierRuc("12345678925")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct33, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct34 = RequestSupplierProduct.builder()
+                                .productSku("B00008")
+                                .purchasePrice(33.29)
+                                .serial("B00008B")
+                                .supplierRuc("12345678926")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct34, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct35 = RequestSupplierProduct.builder()
+                                .productSku("B00009")
+                                .purchasePrice(95.22)
+                                .serial("B00009A")
+                                .supplierRuc("12345678925")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct35, "gjimenez");
+
+                RequestSupplierProduct requestSupplierProduct36 = RequestSupplierProduct.builder()
+                                .productSku("B00009")
+                                .purchasePrice(83.19)
+                                .serial("B00009B")
+                                .supplierRuc("12345678926")
+                                .build();
+
+                iSupplierProduct.save(requestSupplierProduct36, "gjimenez");
 
         }
 
