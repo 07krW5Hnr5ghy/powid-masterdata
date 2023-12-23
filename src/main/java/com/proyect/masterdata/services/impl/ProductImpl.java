@@ -59,7 +59,7 @@ public class ProductImpl implements IProduct {
 
         try {
             existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            existsProduct = productRepository.existsBySku(product.getSku().toUpperCase());
+            existsProduct = productRepository.existsBySkuAndStatusTrue(product.getSku().toUpperCase());
             modelData = modelRepository.findByName(product.getModel().toUpperCase());
             sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
             categoryData = categoryRepository.findByNameAndStatusTrue(product.getCategory().toUpperCase());
@@ -155,30 +155,33 @@ public class ProductImpl implements IProduct {
             throw new BadRequestExceptions(Constants.ErrorProductExists);
         }
 
-        if (modelList.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorModel);
-        }
-
-        if (sizeList.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorSize);
-        }
-
-        if (categoryList.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorCategory);
-        }
-
-        if (colorList.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorColor);
-        }
-
         try {
 
             List<Product> newProducts = products.stream().map(product -> {
 
-                Model model = modelRepository.findByName(product.getModel().toUpperCase());
+                Model model = modelRepository.findByNameAndStatusTrue(product.getModel().toUpperCase());
+
+                if (model == null) {
+                    throw new BadRequestExceptions(Constants.ErrorModel);
+                }
+
                 Size size = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
+
+                if (size == null) {
+                    throw new BadRequestExceptions(Constants.ErrorSize);
+                }
+
                 Category category = categoryRepository.findByNameAndStatusTrue(product.getCategory().toUpperCase());
+
+                if (category == null) {
+                    throw new BadRequestExceptions(Constants.ErrorSize);
+                }
+
                 Color color = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
+
+                if (color == null) {
+                    throw new BadRequestExceptions(Constants.ErrorColor);
+                }
 
                 return Product.builder()
                         .sku(product.getSku().toUpperCase())
@@ -217,7 +220,7 @@ public class ProductImpl implements IProduct {
 
         try {
             existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            product = productRepository.findBySku(sku.toUpperCase());
+            product = productRepository.findBySkuAndStatusTrue(sku.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

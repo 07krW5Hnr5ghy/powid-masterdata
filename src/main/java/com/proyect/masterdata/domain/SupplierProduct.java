@@ -32,6 +32,9 @@ public class SupplierProduct {
     @Column(name = "id_proveedor_producto")
     private Long id;
 
+    @Column(name = "serial")
+    private String serial;
+
     @Column(name = "precio_compra")
     private Double purchasePrice;
 
