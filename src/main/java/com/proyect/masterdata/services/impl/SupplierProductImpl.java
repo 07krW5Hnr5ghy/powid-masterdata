@@ -1,14 +1,18 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.Supplier;
 import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.SupplierProductDTO;
 import com.proyect.masterdata.dto.request.RequestSupplierProduct;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -16,6 +20,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.ProductRepository;
 import com.proyect.masterdata.repository.SupplierProductRepository;
+import com.proyect.masterdata.repository.SupplierProductRepositoryCustom;
 import com.proyect.masterdata.repository.SupplierRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.ISupplierProduct;
@@ -33,6 +38,7 @@ public class SupplierProductImpl implements ISupplierProduct {
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
     private final SupplierProductRepository supplierProductRepository;
+    private final SupplierProductRepositoryCustom supplierProductRepositoryCustom;
 
     @Override
     public ResponseSuccess save(RequestSupplierProduct requestSupplierProduct, String tokenUser)
@@ -71,6 +77,8 @@ public class SupplierProductImpl implements ISupplierProduct {
 
         try {
             supplierProductRepository.save(SupplierProduct.builder()
+                    .client(user.getClient())
+                    .clientId(user.getClientId())
                     .product(product)
                     .productId(product.getId())
                     .purchasePrice(requestSupplierProduct.getPurchasePrice())
@@ -135,6 +143,8 @@ public class SupplierProductImpl implements ISupplierProduct {
                 return SupplierProduct.builder()
                         .product(product)
                         .productId(product.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .purchasePrice(supplierProduct.getPurchasePrice())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .serial(supplierProduct.getSerial())
@@ -192,6 +202,39 @@ public class SupplierProductImpl implements ISupplierProduct {
         } catch (RuntimeException e) {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<SupplierProductDTO> list(String serial, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
+
+        Page<SupplierProduct> supplierProductPage;
+        Long clientId;
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, sort,
+                    sortColumn, pageNumber, pageSize, true);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (supplierProductPage.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
+                .map(supplierProduct -> SupplierProductDTO.builder()
+                        .productSku(supplierProduct.getProduct().getSku())
+                        .purchasePrice(supplierProduct.getPurchasePrice())
+                        .serial(supplierProduct.getSerial())
+                        .supplierRuc(supplierProduct.getSupplier().getBusinessName())
+                        .build())
+                .toList();
+
+        return new PageImpl<>(supplierProductDTOs, supplierProductPage.getPageable(),
+                supplierProductPage.getTotalElements());
     }
 
 }

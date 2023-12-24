@@ -55,6 +55,9 @@ public class SupplierProduct {
     @Column(name = "id_producto")
     private Long productId;
 
+    @Column(name = "id_cliente")
+    private Long clientId;
+
     @Column(name = "usuario_token")
     private String tokenUser;
 
@@ -65,4 +68,8 @@ public class SupplierProduct {
     @ManyToOne
     @JoinColumn(name = "id_producto", columnDefinition = "productId", insertable = false, updatable = false)
     private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    private Client client;
 }

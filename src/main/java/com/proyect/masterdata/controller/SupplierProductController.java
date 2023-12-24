@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.proyect.masterdata.dto.SupplierProductDTO;
 import com.proyect.masterdata.dto.request.RequestSupplierProduct;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -53,6 +55,21 @@ public class SupplierProductController {
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseDelete result = iSupplierProduct.delete(serial, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<Page<SupplierProductDTO>> list(
+            @RequestParam("serial") String serial,
+            @RequestParam("user") String user,
+            @RequestParam("sort") String sort,
+            @RequestParam("sortColumn") String sortColumn,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+
+        Page<SupplierProductDTO> result = iSupplierProduct.list(serial, user, sort, sortColumn, pageNumber, pageSize);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+
     }
 
 }
