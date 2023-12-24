@@ -1595,3 +1595,136 @@ http://localhost:8080/masterdata/supplier?tokenUser=gjimenez
         "email": "coltran@gmail.com"
     }
 ]
+
+### GET /supplier-product protected
+
+- Description : list all active supplier products
+
+- Request : none
+
+- Paramenters : 
+
+1. serial : filter supplier product by serial
+2. user : filter supplier products by the client of the user (required)
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response : 
+
+{
+    "content": [
+        {
+            "serial": "A00001A",
+            "productSku": "A00001",
+            "supplierRuc": "BURGENVILLIA .CORP",
+            "purchasePrice": 5.24
+        },
+        {
+            "serial": "A00001B",
+            "productSku": "A00001",
+            "supplierRuc": "COLTRAN LTD",
+            "purchasePrice": 2.1
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 2,
+        "pageNumber": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": false,
+    "totalElements": 36,
+    "totalPages": 18,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "first": true,
+    "numberOfElements": 2,
+    "empty": false
+}
+
+- Example : 
+
+http://localhost:8080/masterdata/supplier-product?user=gjimenez&pageNumber=0&pageSize=2
+
+### POST /supplier-product protected
+
+- Description : add one supplier product to the database
+
+- Request : 
+
+{
+    "serial": serial number of the supplier product,
+    "productSku": sku of the product,
+    "supplierRuc": ruc of the supplier,
+    "purchasePrice": price of purchase per unit
+}
+
+- Parameters : 
+
+1. tokenUser : username of the user who creates the supplier
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/supplier-product?tokenUser=gjimenez
+
+{
+    "serial":"A00001A",
+    "productSku": "A00001",
+    "supplierRuc": "12345678922",
+    "purchasePrice": 5.24
+}
+
+### POST /supplier-product/supplier-products protected
+
+- Description : add one or more supplier product to the database
+
+- Request : 
+
+[
+    {
+        "serial": serial number of the supplier product,
+        "productSku": sku of the product,
+        "supplierRuc": ruc of the supplier,
+        "purchasePrice": price of purchase per unit
+    },
+    ... more suppliers
+]
+
+- Parameters : 
+
+1. tokenUser : username of the user who creates the supplier
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/supplier-product/supplier-products?tokenUser=gjimenez
+
+[
+    {
+        "serial":"A00001A",
+        "productSku": "A00001",
+        "supplierRuc": "12345678922",
+        "purchasePrice": 5.24
+    },
+    ...
+]

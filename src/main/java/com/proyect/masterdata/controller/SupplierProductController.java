@@ -59,12 +59,12 @@ public class SupplierProductController {
 
     @GetMapping()
     public ResponseEntity<Page<SupplierProductDTO>> list(
-            @RequestParam("serial") String serial,
-            @RequestParam("user") String user,
-            @RequestParam("sort") String sort,
-            @RequestParam("sortColumn") String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
+            @RequestParam(value = "serial", required = false) String serial,
+            @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
 
         Page<SupplierProductDTO> result = iSupplierProduct.list(serial, user, sort, sortColumn, pageNumber, pageSize);
 
