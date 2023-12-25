@@ -17,6 +17,7 @@ public interface IUser {
 
     ResponseDelete delete(String user) throws BadRequestExceptions, InternalErrorExceptions;
 
-    Page<UserQueryDTO> list(String user, Long status, String sort, String sortColumn, Integer pageNumber,
+    Page<UserQueryDTO> list(String user, String clientRuc, String sort, String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
 }

@@ -1728,3 +1728,108 @@ http://localhost:8080/masterdata/supplier-product/supplier-products?tokenUser=gj
     },
     ...
 ]
+
+### GET /user protected
+
+- Description : list all active users
+
+- Request : none
+
+- Paramenters : 
+
+1. user : filter supplier product by serial
+2. clientId : filter supplier products by the client of the user (required)
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response : 
+
+{
+    "content": [
+        {
+            "dni": "12345678910",
+            "user": "GJIMENEZ",
+            "name": "GONZALO",
+            "surname": "JIMENEZ",
+            "email": "gj@gmail.com",
+            "district": "SISTEMA",
+            "address": "CRA 123",
+            "mobile": "123456789",
+            "gender": "M",
+            "status": null
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 2,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalElements": 1,
+    "totalPages": 1,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "first": true,
+    "numberOfElements": 1,
+    "empty": false
+}
+
+- Example : 
+
+http://localhost:8080/masterdata/user?pageNumber=0&pageSize=2&clientRuc=12345678910
+
+### POST /user protected
+
+- Description : add one user to the database
+
+- Request : 
+
+{
+    "user":"username of the user",
+    "name":"name of the user",
+    "surname":"surname of the user",
+    "dni":"dni of the user",
+    "email":"email address of the user",
+    "address":"phisical adress of the user",
+    "gender" : "gender of the user",
+    "mobile" : "mobile number",
+    "password" : "password of the user",
+    "district" : "origin district of the user",
+    "clientRuc" : "ruc of the client who belongs the user",
+    "tokenUser" : "username of who registered the user"
+}
+
+- Parameters : none
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/user
+
+{
+    "user":"gjimenez",
+    "name":"gonzalo",
+    "surname":"jimenez",
+    "dni":"12345678910",
+    "email":"gj@gmail.com",
+    "address":"cra 123",
+    "gender" : "M",
+    "mobile" : "123456789",
+    "password" : "123abc+",
+    "district" : "sistema",
+    "clientRuc" : "12345678910",
+    "tokenUser" : "admin1"
+}

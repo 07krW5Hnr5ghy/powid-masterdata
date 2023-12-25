@@ -198,11 +198,14 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public Page<UserQueryDTO> list(String user, Long status, String sort, String sortColumn, Integer pageNumber,
+    public Page<UserQueryDTO> list(String user, String clientRuc, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         Page<User> userPage;
+        Long clientId;
         try {
-            userPage = userRepositoryCustom.searchForUser(user, sort, sortColumn, pageNumber, pageSize, status);
+            clientId = clientRepository.findByRucAndStatusTrue(clientRuc).getId();
+            userPage = userRepositoryCustom.searchForUser(user, clientId, sort, sortColumn, pageNumber,
+                    pageSize, true);
         } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -212,6 +215,15 @@ public class UserImpl implements IUser {
         }
         List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
             return UserQueryDTO.builder()
+                    .address(userData.getAddress())
+                    .district(userData.getDistrict().getName())
+                    .dni(userData.getDni())
+                    .email(userData.getEmail())
+                    .gender(userData.getGender())
+                    .mobile(userData.getMobile())
+                    .name(userData.getName())
+                    .surname(userData.getSurname())
+                    .user(userData.getUsername())
                     .build();
         }).toList();
         return new PageImpl<>(userDTOList,
