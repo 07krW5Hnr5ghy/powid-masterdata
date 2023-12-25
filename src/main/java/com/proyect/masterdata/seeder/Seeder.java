@@ -28,11 +28,14 @@ import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.repository.UserRoleRepository;
 import com.proyect.masterdata.services.IBrand;
 import com.proyect.masterdata.services.ICategory;
+import com.proyect.masterdata.services.IClosingChannel;
 import com.proyect.masterdata.services.IColor;
+import com.proyect.masterdata.services.IEntryChannel;
 import com.proyect.masterdata.services.IModel;
 import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.services.ISizeType;
+import com.proyect.masterdata.services.IStoreType;
 import com.proyect.masterdata.services.ISupplier;
 import com.proyect.masterdata.services.ISupplierProduct;
 
@@ -64,6 +67,9 @@ public class Seeder implements CommandLineRunner {
         private final ISizeType iSizeType;
         private final ISupplier iSupplier;
         private final ISupplierProduct iSupplierProduct;
+        private final IClosingChannel iClosingChannel;
+        private final IEntryChannel iEntryChannel;
+        private final IStoreType iStoreType;
 
         @Override
         public void run(String... args) throws Exception {
@@ -157,6 +163,34 @@ public class Seeder implements CommandLineRunner {
                 iCategory.save("tennis", "tennis", "admin1");
                 iCategory.save("botas", "botas", "admin1");
                 iCategory.save("blusas", "blusas", "admin1");
+
+                // mock closing channels
+                iClosingChannel.save("whatsapp", "admin1");
+                iClosingChannel.save("instagram", "admin1");
+                iClosingChannel.save("facebook", "admin1");
+                iClosingChannel.save("twitter", "admin1");
+                iClosingChannel.save("web", "admin1");
+                iClosingChannel.save("marketplace", "admin1");
+                iClosingChannel.save("tiktok", "admin1");
+                iClosingChannel.save("otro", "admin1");
+
+                // mock entry channels
+                iEntryChannel.save("tiktok", "admin1");
+                iEntryChannel.save("whatsapp", "admin1");
+                iEntryChannel.save("instagram", "admin1");
+                iEntryChannel.save("facebook", "admin1");
+                iEntryChannel.save("twitter", "admin1");
+                iEntryChannel.save("web", "admin1");
+                iEntryChannel.save("otro", "admin1");
+
+                // mock store types
+                iStoreType.save("shopify", "admin1");
+                iStoreType.save("woocommerce", "admin1");
+                iStoreType.save("tiendada", "admin1");
+                iStoreType.save("ninguna", "admin1");
+                iStoreType.save("otro", "admin1");
+                iStoreType.save("wix", "admin1");
+                iStoreType.save("prestashop", "admin1");
 
                 // mock color
                 iColor.save("rojo", "admin1");
