@@ -51,8 +51,8 @@ public class Product {
     @Column(name = "id_color", nullable = false)
     private Long colorId;
 
-    @Column(name = "id_categoria", nullable = false)
-    private Long categoryId;
+    @Column(name = "id_categoria_producto", nullable = false)
+    private Long categoryProductId;
 
     @Column(name = "id_size", nullable = false)
     private Long sizeId;
@@ -69,8 +69,8 @@ public class Product {
     private Color color;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria", columnDefinition = "categoryId", insertable = false, updatable = false)
-    private Category category;
+    @JoinColumn(name = "id_categoria_producto", columnDefinition = "categoryId", insertable = false, updatable = false)
+    private CategoryProduct categoryProduct;
 
     @ManyToOne
     @JoinColumn(name = "id_size", columnDefinition = "sizeId", insertable = false, updatable = false)

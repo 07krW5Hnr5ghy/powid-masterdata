@@ -252,6 +252,7 @@ Body
 http://localhost:8080/masterdata/category
 
 ### POST /category protected
+
 - Description : add one category to the database
 - Request: none
 - Parameters : 
@@ -303,6 +304,124 @@ http://localhost:8080/masterdata/category?name=tennis&description=zapatos%20para
 Url
 
 http://localhost:8080/masterdata/category/categories?tokenUser=admin1
+
+Request :
+
+[
+    {
+
+        "name":"camisetas",
+        "description":"manga corta sin cuello"
+    },
+    {
+
+        "name":"blusas",
+        "description":"de lana sin mangas"
+    }
+]
+
+### GET /category-product protected
+
+- Description : list all active category products
+- Request: none
+- Parameters : 
+
+1. serial : filter category product by serial
+2. user : filter category products by the client of the user
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response : 
+
+{
+    "content": [
+        {
+            "name": "CAMISETAS",
+            "description": "CAMISETAS"
+        },
+        {
+            "name": "JEANS",
+            "description": "JEANS"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 2,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": false,
+    "totalElements": 5,
+    "totalPages": 3,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "first": true,
+    "numberOfElements": 2,
+    "empty": false
+}
+
+- Example :
+
+http://localhost:8080/masterdata/category-product
+
+### POST /category-product protected
+
+- Description : add one category product to the database
+- Request: none
+- Parameters : 
+
+1. name : name of category product
+2. description : description of the category product
+3. user : username of the user who creates category category product
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/category-product?name=tennis&description=zapatos%20para%20correr&tokenUser=admin1
+
+### POST /category/category-products protected
+
+- Description : add multiple category products to the database
+- Request :
+
+[
+
+    {
+        "name":"name of the category product",
+        "description:"description of the category product"
+    },
+    ...
+]
+
+- Parameters : 
+
+1. user : username of the user who creates categories
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+Url
+
+http://localhost:8080/masterdata/category/category-products?tokenUser=admin1
 
 Response
 

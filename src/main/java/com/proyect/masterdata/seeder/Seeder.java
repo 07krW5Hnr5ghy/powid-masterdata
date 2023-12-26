@@ -28,6 +28,7 @@ import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.repository.UserRoleRepository;
 import com.proyect.masterdata.services.IBrand;
 import com.proyect.masterdata.services.ICategory;
+import com.proyect.masterdata.services.ICategoryProduct;
 import com.proyect.masterdata.services.IClosingChannel;
 import com.proyect.masterdata.services.IColor;
 import com.proyect.masterdata.services.IEntryChannel;
@@ -70,6 +71,7 @@ public class Seeder implements CommandLineRunner {
         private final IClosingChannel iClosingChannel;
         private final IEntryChannel iEntryChannel;
         private final IStoreType iStoreType;
+        private final ICategoryProduct iCategoryProduct;
 
         @Override
         public void run(String... args) throws Exception {
@@ -158,11 +160,18 @@ public class Seeder implements CommandLineRunner {
                                                 "ADMIN1", district, client2));
 
                 // mock categories
-                iCategory.save("camisetas", "camisetas", "admin1");
-                iCategory.save("jeans", "jeans", "admin1");
-                iCategory.save("tennis", "tennis", "admin1");
-                iCategory.save("botas", "botas", "admin1");
-                iCategory.save("blusas", "blusas", "admin1");
+                iCategory.save("Joyas y bisuteria", "Joyas y bisuteria", "admin1");
+                iCategory.save("Moda", "Moda", "admin1");
+                iCategory.save("Tecnologia", "Tecnologia", "admin1");
+                iCategory.save("Cosmeticos", "Cosmeticos", "admin1");
+                iCategory.save("Otro", "Otro", "admin1");
+
+                // mock category products
+                iCategoryProduct.save("camisetas", "camisetas", "admin1");
+                iCategoryProduct.save("jeans", "jeans", "admin1");
+                iCategoryProduct.save("tennis", "tennis", "admin1");
+                iCategoryProduct.save("botas", "botas", "admin1");
+                iCategoryProduct.save("blusas", "blusas", "admin1");
 
                 // mock closing channels
                 iClosingChannel.save("whatsapp", "admin1");

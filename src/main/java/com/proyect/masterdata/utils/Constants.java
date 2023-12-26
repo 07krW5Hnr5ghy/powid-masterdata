@@ -62,6 +62,7 @@ public class Constants {
     public static final String tableGeneralStock = "inventario_general";
     public static final String tableStockReplenishment = "reposicion_inventario";
     public static final String tableProductPrice = "precio_producto";
+    public static final String tableCategoryProduct = "categoria_producto";
 
     // Mensajes
     public static final String register = "registration correctly";
@@ -155,4 +156,6 @@ public class Constants {
     public static final String ErrorSupplierExists = "The supplier already exists";
     public static final String ErrorSupplierProduct = "The supplier product does not exists";
     public static final String ErrorSupplierProductExists = "The supplier product already exists";
+    public static final String ErrorCategoryProduct = "The product category does not exists";
+    public static final String ErrorCategoryProductExists = "The product category already exists";
 }

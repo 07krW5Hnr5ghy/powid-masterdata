@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Category;
+import com.proyect.masterdata.domain.CategoryProduct;
 import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.domain.Model;
@@ -20,6 +21,7 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.repository.CategoryProductRepository;
 import com.proyect.masterdata.repository.CategoryRepository;
 import com.proyect.masterdata.repository.ColorRepository;
 import com.proyect.masterdata.repository.ModelRepository;
@@ -43,6 +45,7 @@ public class ProductImpl implements IProduct {
     private final ModelRepository modelRepository;
     private final SizeRepository sizeRepository;
     private final CategoryRepository categoryRepository;
+    private final CategoryProductRepository categoryProductRepository;
     private final ColorRepository colorRepository;
     private final ProductRepositoryCustom productRepositoryCustom;
 
@@ -54,7 +57,7 @@ public class ProductImpl implements IProduct {
         boolean existsProduct;
         Model modelData;
         Size sizeData;
-        Category categoryData;
+        CategoryProduct categoryProductData;
         Color colorData;
 
         try {
@@ -62,7 +65,8 @@ public class ProductImpl implements IProduct {
             existsProduct = productRepository.existsBySkuAndStatusTrue(product.getSku().toUpperCase());
             modelData = modelRepository.findByName(product.getModel().toUpperCase());
             sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
-            categoryData = categoryRepository.findByNameAndStatusTrue(product.getCategory().toUpperCase());
+            categoryProductData = categoryProductRepository
+                    .findByNameAndStatusTrue(product.getCategory().toUpperCase());
             colorData = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -85,7 +89,7 @@ public class ProductImpl implements IProduct {
             throw new BadRequestExceptions(Constants.ErrorSize);
         }
 
-        if (categoryData == null) {
+        if (categoryProductData == null) {
             throw new BadRequestExceptions(Constants.ErrorCategory);
         }
 
@@ -100,8 +104,8 @@ public class ProductImpl implements IProduct {
                     .modelId(modelData.getId())
                     .size(sizeData)
                     .sizeId(sizeData.getId())
-                    .category(categoryData)
-                    .categoryId(categoryData.getId())
+                    .categoryProduct(categoryProductData)
+                    .categoryProductId(categoryProductData.getId())
                     .color(colorData)
                     .colorId(colorData.getId())
                     .tokenUser(tokenUser.toUpperCase())
@@ -171,10 +175,11 @@ public class ProductImpl implements IProduct {
                     throw new BadRequestExceptions(Constants.ErrorSize);
                 }
 
-                Category category = categoryRepository.findByNameAndStatusTrue(product.getCategory().toUpperCase());
+                CategoryProduct categoryProduct = categoryProductRepository
+                        .findByNameAndStatusTrue(product.getCategory().toUpperCase());
 
-                if (category == null) {
-                    throw new BadRequestExceptions(Constants.ErrorSize);
+                if (categoryProduct == null) {
+                    throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
                 }
 
                 Color color = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
@@ -189,8 +194,8 @@ public class ProductImpl implements IProduct {
                         .modelId(model.getId())
                         .size(size)
                         .sizeId(size.getId())
-                        .category(category)
-                        .categoryId(category.getId())
+                        .categoryProduct(categoryProduct)
+                        .categoryProductId(categoryProduct.getId())
                         .color(color)
                         .colorId(color.getId())
                         .tokenUser(tokenUser.toUpperCase())
@@ -272,7 +277,7 @@ public class ProductImpl implements IProduct {
         List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> ProductDTO.builder()
                 .sku(product.getSku())
                 .model(product.getModel().getName())
-                .category(product.getCategory().getName())
+                .category(product.getCategoryProduct().getName())
                 .color(product.getColor().getName())
                 .size(product.getSize().getName())
                 .build()).toList();
