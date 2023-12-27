@@ -1,6 +1,7 @@
 package com.proyect.masterdata.seeder;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import com.proyect.masterdata.domain.Role;
 import com.proyect.masterdata.domain.RoleAccess;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.UserRole;
+import com.proyect.masterdata.dto.LocationDTO;
 import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.dto.request.RequestSupplier;
 import com.proyect.masterdata.dto.request.RequestSupplierProduct;
@@ -31,7 +33,9 @@ import com.proyect.masterdata.services.ICategory;
 import com.proyect.masterdata.services.ICategoryProduct;
 import com.proyect.masterdata.services.IClosingChannel;
 import com.proyect.masterdata.services.IColor;
+import com.proyect.masterdata.services.IDepartment;
 import com.proyect.masterdata.services.IEntryChannel;
+import com.proyect.masterdata.services.IJsonFileReader;
 import com.proyect.masterdata.services.IModel;
 import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.services.ISize;
@@ -72,6 +76,8 @@ public class Seeder implements CommandLineRunner {
         private final IEntryChannel iEntryChannel;
         private final IStoreType iStoreType;
         private final ICategoryProduct iCategoryProduct;
+        private final IJsonFileReader iJsonFileReader;
+        private final IDepartment iDepartment;
 
         @Override
         public void run(String... args) throws Exception {
@@ -158,6 +164,13 @@ public class Seeder implements CommandLineRunner {
                                                 new Date(System.currentTimeMillis()),
                                                 new Date(System.currentTimeMillis()), district.getId(), client2.getId(),
                                                 "ADMIN1", district, client2));
+
+                // mock departments peru
+                List<LocationDTO> listDepartment = iJsonFileReader.filterDepartment();
+
+                for (LocationDTO location : listDepartment) {
+                        iDepartment.save(location.getDepartment(), "ADMIN1");
+                }
 
                 // mock categories
                 iCategory.save("Joyas y bisuteria", "Joyas y bisuteria", "admin1");
