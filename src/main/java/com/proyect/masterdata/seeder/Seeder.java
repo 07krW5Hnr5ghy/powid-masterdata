@@ -34,10 +34,12 @@ import com.proyect.masterdata.services.ICategoryProduct;
 import com.proyect.masterdata.services.IClosingChannel;
 import com.proyect.masterdata.services.IColor;
 import com.proyect.masterdata.services.IDepartment;
+import com.proyect.masterdata.services.IDistrict;
 import com.proyect.masterdata.services.IEntryChannel;
 import com.proyect.masterdata.services.IJsonFileReader;
 import com.proyect.masterdata.services.IModel;
 import com.proyect.masterdata.services.IProduct;
+import com.proyect.masterdata.services.IProvince;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.services.ISizeType;
 import com.proyect.masterdata.services.IStoreType;
@@ -78,6 +80,8 @@ public class Seeder implements CommandLineRunner {
         private final ICategoryProduct iCategoryProduct;
         private final IJsonFileReader iJsonFileReader;
         private final IDepartment iDepartment;
+        private final IProvince iProvince;
+        private final IDistrict iDistrict;
 
         @Override
         public void run(String... args) throws Exception {
@@ -168,8 +172,20 @@ public class Seeder implements CommandLineRunner {
                 // mock departments peru
                 List<LocationDTO> listDepartment = iJsonFileReader.filterDepartment();
 
-                for (LocationDTO location : listDepartment) {
-                        iDepartment.save(location.getDepartment(), "ADMIN1");
+                for (LocationDTO locationDepartment : listDepartment) {
+                        iDepartment.save(locationDepartment.getDepartment(), "ADMIN1");
+                }
+
+                List<LocationDTO> listProvince = iJsonFileReader.filterProvince();
+
+                for (LocationDTO locationProvince : listProvince) {
+                        iProvince.save(locationProvince.getProvince(), "ADMIN1", locationProvince.getDepartment());
+                }
+
+                List<LocationDTO> listDistrict = iJsonFileReader.filterDistrict();
+
+                for (LocationDTO locationDistrict : listDistrict) {
+                        iDistrict.save(locationDistrict.getDistrict(), "ADMIN1", locationDistrict.getProvince());
                 }
 
                 // mock categories

@@ -44,7 +44,9 @@ public class JsonFileReaderImpl implements IJsonFileReader {
 
     @Override
     public List<LocationDTO> filterDepartment() {
+
         List<LocationDTO> filteredDepartments = new ArrayList<>();
+
         try {
             Resource resource = resourceLoader.getResource("classpath:peru.json");
             File file = resource.getFile();
@@ -53,6 +55,7 @@ public class JsonFileReaderImpl implements IJsonFileReader {
             List<LocationDTO> locations = mapper.readValue(file,
                     new TypeReference<List<LocationDTO>>() {
                     });
+
             filteredDepartments = locations.stream().collect(
                     Collectors.toMap(LocationDTO::getDepartment, obj -> obj, (existing, replacement) -> existing))
                     .values().stream().collect(Collectors.toList());
@@ -60,6 +63,55 @@ public class JsonFileReaderImpl implements IJsonFileReader {
             e.printStackTrace();
         }
         return filteredDepartments;
+    }
+
+    @Override
+    public List<LocationDTO> filterProvince() {
+
+        List<LocationDTO> filteredProvinces = new ArrayList<>();
+
+        try {
+            Resource resource = resourceLoader.getResource("classpath:peru.json");
+            File file = resource.getFile();
+            ObjectMapper mapper = new ObjectMapper();
+
+            List<LocationDTO> locations = mapper.readValue(file,
+                    new TypeReference<List<LocationDTO>>() {
+                    });
+
+            filteredProvinces = locations.stream().collect(
+                    Collectors.toMap(LocationDTO::getProvince, obj -> obj, (existing, replacement) -> existing))
+                    .values().stream().collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return filteredProvinces;
+    }
+
+    @Override
+    public List<LocationDTO> filterDistrict() {
+
+        List<LocationDTO> filteredDistrict = new ArrayList<>();
+
+        try {
+
+            Resource resource = resourceLoader.getResource("classpath:peru.json");
+            File file = resource.getFile();
+            ObjectMapper mapper = new ObjectMapper();
+
+            List<LocationDTO> locations = mapper.readValue(file,
+                    new TypeReference<List<LocationDTO>>() {
+                    });
+
+            filteredDistrict = locations.stream().collect(
+                    Collectors.toMap(LocationDTO::getDistrict, obj -> obj, (existing, replacement) -> existing))
+                    .values().stream().collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return filteredDistrict;
     }
 
 }

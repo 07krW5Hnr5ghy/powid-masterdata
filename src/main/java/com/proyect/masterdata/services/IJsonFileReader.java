@@ -9,4 +9,8 @@ public interface IJsonFileReader {
     public String readJsonFile() throws IOException;
 
     public List<LocationDTO> filterDepartment();
+
+    public List<LocationDTO> filterProvince();
+
+    public List<LocationDTO> filterDistrict();
 }
