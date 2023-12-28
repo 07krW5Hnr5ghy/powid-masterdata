@@ -42,6 +42,7 @@ import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.services.IProvince;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.services.ISizeType;
+import com.proyect.masterdata.services.IStockTransactionType;
 import com.proyect.masterdata.services.IStoreType;
 import com.proyect.masterdata.services.ISupplier;
 import com.proyect.masterdata.services.ISupplierProduct;
@@ -82,6 +83,7 @@ public class Seeder implements CommandLineRunner {
         private final IDepartment iDepartment;
         private final IProvince iProvince;
         private final IDistrict iDistrict;
+        private final IStockTransactionType iStockTransactionType;
 
         @Override
         public void run(String... args) throws Exception {
@@ -819,6 +821,11 @@ public class Seeder implements CommandLineRunner {
                                 .build();
 
                 iSupplierProduct.save(requestSupplierProduct36, "gjimenez");
+
+                // stock transaction types mocks
+                iStockTransactionType.save("entrada", "admin1");
+                iStockTransactionType.save("salida", "admin1");
+                iStockTransactionType.save("transferencia", "admin1");
 
         }
 

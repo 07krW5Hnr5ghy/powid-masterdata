@@ -64,9 +64,6 @@ public class Shipment {
     @Column(name = "id_cliente")
     private Long clientId;
 
-    @Column(name = "id_producto")
-    private Long productId;
-
     @Column(name = "id_compra")
     private Long compraId;
 
@@ -77,16 +74,12 @@ public class Shipment {
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_proveedor", columnDefinition = "supplierId", insertable = false, updatable = false)
-    private Supplier supplier;
-
-    @ManyToOne
     @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
     @ManyToOne
     @JoinColumn(name = "id_producto", columnDefinition = "productId", insertable = false, updatable = false)
-    private Product product;
+    private SupplierProduct supplierProduct;
 
     @ManyToOne
     @JoinColumn(name = "id_compra", columnDefinition = "compraId", insertable = false, updatable = false)

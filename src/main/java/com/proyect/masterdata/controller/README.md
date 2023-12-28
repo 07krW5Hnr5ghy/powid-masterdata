@@ -1497,72 +1497,6 @@ http://localhost:8080/masterdata/subscription?name=semestral&months=6&discountPe
 
 http://localhost:8080/masterdata/subscription/plans
 
-### POST /unit protected
-
-- Description : add one unit to the database
-
-- Request : none
-
-- Parameters : 
-
-1. name : name of the unit
-2. tokenUser : username of the user who creates unit
-
-- Response : 
-
-{
-
-    "code": 200,
-    "message": "registration correctly"
-}
-
-- Example :
-
-http://localhost:8080/masterdata/unit?name=unidad&tokenUser=admin1
-
-### POST /unit/units protected
-
-- Description : add one or more units to the database
-
-- Request : array with the name of the new units
-
-- Parameters : 
-
-1. tokenUser : username of the user who creates the units
-
-- Response : 
-
-{
-
-    "code": 200,
-    "message": "registration correctly"
-}
-
-- Example :
-
-http://localhost:8080/masterdata/unit/units?tokenUser=admin1
-
-### GET /unit protected
-
-- Description : list all active units
-
-- Request : none
-
-- Parameters : none
-
-- Response : 
-
-[
-    {
-        "name": name of the unit
-    }
-    ... more units
-]
-
-- Example :
-
-http://localhost:8080/masterdata/unit
-
 ### GET /supplier protected
 
 - Description : list all active suppliers
@@ -1848,6 +1782,98 @@ http://localhost:8080/masterdata/supplier-product/supplier-products?tokenUser=gj
     ...
 ]
 
+### GET /stock-transaction-type protected
+
+- Description : list all active stock transaction types
+
+- Request : none
+
+- Paramenters : none
+
+- Response : 
+
+{
+    "content": [
+        {
+            "name":"entrada"
+        },
+        {
+            "name":"salida"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 2,
+        "pageNumber": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": false,
+    "totalElements": 2,
+    "totalPages": 1,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "first": true,
+    "numberOfElements": 2,
+    "empty": false
+}
+
+- Example : 
+
+http://localhost:8080/masterdata/stock-transaction-type
+
+### POST /stock-transaction-type protected
+
+- Description : add one stock transaction type to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the new stock transaction type
+2. tokenUser : username of the user who creates the supplier
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/stock-transaction-type?name=entrada&tokenUser=admin1
+
+### POST /stock-transaction-type/stock-transaction-types protected
+
+- Description : add one or more stock transaction types to the database
+
+- Request : array with names of the stock transaction types.
+
+- Parameters : 
+
+1. tokenUser : username of the user who creates the supplier
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/supplier?tokenUser=admin1
+
+[
+    "entrada","salida"
+]
+
+
 ### GET /user protected
 
 - Description : list all active users
@@ -1952,3 +1978,69 @@ http://localhost:8080/masterdata/user
     "clientRuc" : "12345678910",
     "tokenUser" : "admin1"
 }
+
+### POST /unit protected
+
+- Description : add one unit to the database
+
+- Request : none
+
+- Parameters : 
+
+1. name : name of the unit
+2. tokenUser : username of the user who creates unit
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/unit?name=unidad&tokenUser=admin1
+
+### POST /unit/units protected
+
+- Description : add one or more units to the database
+
+- Request : array with the name of the new units
+
+- Parameters : 
+
+1. tokenUser : username of the user who creates the units
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/unit/units?tokenUser=admin1
+
+### GET /unit protected
+
+- Description : list all active units
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": name of the unit
+    }
+    ... more units
+]
+
+- Example :
+
+http://localhost:8080/masterdata/unit
