@@ -32,22 +32,12 @@ public class StockTransaction {
     @Column(name = "id_movimiento_inventario")
     private Long id;
 
-    @Column(name = "serial")
-    private String serial;
-
     @Column(name = "cantidad")
     private Integer quantity;
-
-    @Column(name = "estado")
-    private Boolean status;
 
     @Column(name = "fecha_regisstro")
     @CreationTimestamp
     private Date registrationDate;
-
-    @Column(name = "fecha_modificacion")
-    @CreationTimestamp
-    private Date updateDate;
 
     @Column(name = "id_cliente")
     private Long clientId;

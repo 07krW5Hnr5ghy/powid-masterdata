@@ -1979,6 +1979,27 @@ http://localhost:8080/masterdata/user
     "tokenUser" : "admin1"
 }
 
+### GET /unit protected
+
+- Description : list all active units
+
+- Request : none
+
+- Parameters : none
+
+- Response : 
+
+[
+    {
+        "name": name of the unit
+    }
+    ... more units
+]
+
+- Example :
+
+http://localhost:8080/masterdata/unit
+
 ### POST /unit protected
 
 - Description : add one unit to the database
@@ -2024,23 +2045,119 @@ http://localhost:8080/masterdata/unit?name=unidad&tokenUser=admin1
 
 http://localhost:8080/masterdata/unit/units?tokenUser=admin1
 
-### GET /unit protected
+### GET /warehouse protected
 
-- Description : list all active units
+- Description : list all active warehouses
 
 - Request : none
 
-- Parameters : none
+- Paramenters : 
+
+1. name : filter warehouses by name
+2. user : filter warehouses by the client of the user (required)
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
 
 - Response : 
 
-[
-    {
-        "name": name of the unit
-    }
-    ... more units
-]
+{
+    "content": [
+        {
+            "name": "LUMINOUS",
+            "location": "CUSCO CALLE 123"
+        },
+        {
+            "name": "OIKAS",
+            "location": "LIMA AVENIDA 234"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 2,
+        "pageNumber": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 2,
+    "first": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 2,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/supplier?pageNumber=0&pageSize=1&user=gjimenez
+
+### POST /warehouse protected
+
+- Description : add one warehouse to the database
+
+- Request : 
+{
+    "name":"name of the warehouse",
+    "location":"location of the warehouse"
+}
+
+- Parameters : 
+
+1. tokenUser : username of the user who creates warehouse
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
 
 - Example :
 
-http://localhost:8080/masterdata/unit
+http://localhost:8080/masterdata/warehouse?tokenUser=gjimenez
+
+{
+    "name":"luminous",
+    "location":"Cusco calle 123"
+}
+
+### POST /warehouse/warehouses protected
+
+- Description : add one or more warehouses to the database
+
+- Request : 
+[
+    {
+        "name":"name of the warehouse",
+        "location":"location of the warehouse"
+    }
+]
+
+- Parameters : 
+
+1. tokenUser : username of the user who creates the warehouses
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/warehouse/warehouses?tokenUser=gjimenez
+
+[
+    {
+        "name":"luminous",
+        "location":"Cusco calle 123"
+    }
+]

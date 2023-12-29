@@ -160,4 +160,6 @@ public class Constants {
     public static final String ErrorCategoryProductExists = "The product category already exists";
     public static final String ErrorStockTransactionType = "The stock transaction type does not exists";
     public static final String ErrorStockTransactionTypeExists = "The stock transaction type already exists";
+    public static final String ErrorWarehouse = "The warehouse does not exists";
+    public static final String ErrorWarehouseExists = "The warehouse already exists";
 }

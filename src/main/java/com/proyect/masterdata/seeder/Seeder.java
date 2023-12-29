@@ -19,6 +19,7 @@ import com.proyect.masterdata.dto.LocationDTO;
 import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.dto.request.RequestSupplier;
 import com.proyect.masterdata.dto.request.RequestSupplierProduct;
+import com.proyect.masterdata.dto.request.RequestWarehouse;
 import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.DepartmentRepository;
@@ -46,6 +47,7 @@ import com.proyect.masterdata.services.IStockTransactionType;
 import com.proyect.masterdata.services.IStoreType;
 import com.proyect.masterdata.services.ISupplier;
 import com.proyect.masterdata.services.ISupplierProduct;
+import com.proyect.masterdata.services.IWarehouse;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -84,6 +86,7 @@ public class Seeder implements CommandLineRunner {
         private final IProvince iProvince;
         private final IDistrict iDistrict;
         private final IStockTransactionType iStockTransactionType;
+        private final IWarehouse iWarehouse;
 
         @Override
         public void run(String... args) throws Exception {
@@ -826,6 +829,35 @@ public class Seeder implements CommandLineRunner {
                 iStockTransactionType.save("entrada", "admin1");
                 iStockTransactionType.save("salida", "admin1");
                 iStockTransactionType.save("transferencia", "admin1");
+
+                // warehouse mocks
+                RequestWarehouse warehouse1 = RequestWarehouse.builder()
+                                .location("Cusco calle 123")
+                                .name("luminous")
+                                .build();
+
+                iWarehouse.save(warehouse1, "gjimenez");
+
+                RequestWarehouse warehouse2 = RequestWarehouse.builder()
+                                .location("Lima Avenida 234")
+                                .name("oikas")
+                                .build();
+
+                iWarehouse.save(warehouse2, "gjimenez");
+
+                RequestWarehouse warehouse3 = RequestWarehouse.builder()
+                                .location("Arequipa Calle 765")
+                                .name("villalobos")
+                                .build();
+
+                iWarehouse.save(warehouse3, "fcasas");
+
+                RequestWarehouse warehouse4 = RequestWarehouse.builder()
+                                .location("Nazca calle 89")
+                                .name("alcazar")
+                                .build();
+
+                iWarehouse.save(warehouse4, "fcasas");
 
         }
 
