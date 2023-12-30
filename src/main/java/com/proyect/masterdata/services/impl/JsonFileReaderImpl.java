@@ -48,8 +48,7 @@ public class JsonFileReaderImpl implements IJsonFileReader {
         List<LocationDTO> filteredDepartments = new ArrayList<>();
 
         try {
-            Resource resource = resourceLoader.getResource("classpath:peru.json");
-            File file = resource.getFile();
+            File file = new File("src/main/peru.json");
             ObjectMapper mapper = new ObjectMapper();
 
             List<LocationDTO> locations = mapper.readValue(file,
@@ -71,8 +70,7 @@ public class JsonFileReaderImpl implements IJsonFileReader {
         List<LocationDTO> filteredProvinces = new ArrayList<>();
 
         try {
-            Resource resource = resourceLoader.getResource("classpath:peru.json");
-            File file = resource.getFile();
+            File file = new File("src/main/peru.json");
             ObjectMapper mapper = new ObjectMapper();
 
             List<LocationDTO> locations = mapper.readValue(file,
@@ -96,8 +94,7 @@ public class JsonFileReaderImpl implements IJsonFileReader {
 
         try {
 
-            Resource resource = resourceLoader.getResource("classpath:peru.json");
-            File file = resource.getFile();
+            File file = new File("src/main/peru.json");
             ObjectMapper mapper = new ObjectMapper();
 
             List<LocationDTO> locations = mapper.readValue(file,
