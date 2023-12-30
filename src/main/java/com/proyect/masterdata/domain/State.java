@@ -33,6 +33,6 @@ public class State {
         @CreationTimestamp
         private Date dateRegistration;
 
-        @Column(name = "usuario", nullable = false)
-        private String user;
+        @Column(name = "usuario_token", nullable = false)
+        private String tokenUser;
 }

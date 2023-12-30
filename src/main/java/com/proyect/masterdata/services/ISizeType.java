@@ -11,12 +11,17 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface ISizeType {
-    ResponseSuccess save(String name, String user) throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseSuccess saveAll(List<String> name,String user) throws BadRequestExceptions,InternalErrorExceptions;
-    SizeTypeDTO update(RequestSizeType requestSizeType) throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
+    ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+
+    ResponseSuccess saveAll(List<String> name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+
+    ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+
     List<SizeTypeDTO> listSizeType() throws BadRequestExceptions;
-    Page<SizeTypeDTO> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
-    Page<SizeTypeDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
-    SizeTypeDTO findByCode(Long code) throws BadRequestExceptions;
+
+    Page<SizeTypeDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions;
+
+    Page<SizeTypeDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions;
 }

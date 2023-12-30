@@ -18,7 +18,7 @@ import java.util.List;
 
 @Repository
 public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
-    @PersistenceContext(name="entityManager")
+    @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
@@ -29,35 +29,35 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize,
-            Boolean status){
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Color> criteriaQuery = criteriaBuilder.createQuery(Color.class);
         Root<Color> itemRoot = criteriaQuery.from(Color.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
 
-        if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
+        if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> colorList = new ArrayList<>();
-            if(sort.equalsIgnoreCase("ASC")){
-                colorList = listASC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("ASC")) {
+                colorList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
-            if(sort.equalsIgnoreCase("DESC")){
-                colorList = listDESC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("DESC")) {
+                colorList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[]{})).orderBy(colorList);
-        }else{
-            criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(colorList);
+        } else {
+            criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
         TypedQuery<Color> orderTypedQuery = entityManager.createQuery(criteriaQuery);
-        orderTypedQuery.setFirstResult(pageNumber*pageSize);
+        orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
-        Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        long count = getOrderCount(name,user,status);
-        return new PageImpl<>(orderTypedQuery.getResultList(),pageable,count);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        long count = getOrderCount(name, user, status);
+        return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
@@ -65,29 +65,28 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
             String user,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<Color> itemRoot
-    ){
+            Root<Color> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
 
-        if(name!=null){
+        if (name != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("name")),name.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
         }
 
-        if(user!=null){
+        if (user != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("name")),user.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("tokenUser")), user.toUpperCase())));
         }
 
-        if(status){
+        if (status) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
 
-        if(!status){
+        if (!status) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
 
@@ -97,14 +96,13 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<Color> itemRoot
-    ){
+            Root<Color> itemRoot) {
         List<Order> colorList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("NAME")){
+        if (sortColumn.equalsIgnoreCase("NAME")) {
             colorList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
-        if(sortColumn.equalsIgnoreCase("USER")){
-            colorList.add(criteriaBuilder.asc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("tokenUser")) {
+            colorList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
         }
         return colorList;
     }
@@ -112,26 +110,25 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<Color> itemRoot
-    ){
+            Root<Color> itemRoot) {
         List<Order> colorList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("NAME")){
+        if (sortColumn.equalsIgnoreCase("NAME")) {
             colorList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
-        if(sortColumn.equalsIgnoreCase("USER")){
-            colorList.add(criteriaBuilder.desc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("tokenUser")) {
+            colorList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
         }
         return colorList;
     }
 
-    private long getOrderCount(String name,String user,Boolean status){
+    private long getOrderCount(String name, String user, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Color> itemRoot = criteriaQuery.from(Color.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
-        criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
 }

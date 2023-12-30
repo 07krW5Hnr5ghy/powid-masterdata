@@ -58,7 +58,7 @@ public class ClientImpl implements IClient {
         }
 
         if (district == null) {
-            throw new BadRequestExceptions(Constants.ErrorClient);
+            throw new BadRequestExceptions(Constants.ErrorDistrict);
         }
 
         try {

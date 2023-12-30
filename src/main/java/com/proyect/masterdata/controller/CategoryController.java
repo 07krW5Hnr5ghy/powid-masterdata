@@ -10,7 +10,6 @@ import com.proyect.masterdata.services.ICategory;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +17,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/category")
+@RequestMapping("category")
 @AllArgsConstructor
 public class CategoryController {
     private final ICategory iCategory;
@@ -27,31 +26,32 @@ public class CategoryController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iCategory.save(name, description, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iCategory.save(name, description, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/categories")
+    @PostMapping(value = "categories")
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestBody() List<RequestCreateCategory> categories,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iCategory.saveAll(categories, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iCategory.saveAll(categories, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping()
     public ResponseEntity<CategoryDTO> update(
+            @RequestParam("tokenUser") String tokenUser,
             @RequestBody() RequestCategory requestCategory) throws BadRequestExceptions {
-        CategoryDTO result = iCategory.update(requestCategory);
+        CategoryDTO result = iCategory.update(requestCategory, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iCategory.delete(code, user);
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iCategory.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -73,7 +73,7 @@ public class CategoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false")
+    @GetMapping(value = "status-false")
     public ResponseEntity<Page<CategoryDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -85,10 +85,4 @@ public class CategoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/code")
-    public ResponseEntity<CategoryDTO> findByCode(
-            @RequestParam("code") Long code) throws BadRequestExceptions {
-        CategoryDTO result = iCategory.findByCode(code);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
 }

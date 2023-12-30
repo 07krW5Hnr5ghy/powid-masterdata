@@ -21,9 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +31,6 @@ public class UserImpl implements IUser {
     private final UserRepository userRepository;
     private final DistrictRepository districtRepository;
     private final UserRepositoryCustom userRepositoryCustom;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ClientRepository clientRepository;
 
@@ -100,7 +97,7 @@ public class UserImpl implements IUser {
                     .mobile(requestUser.getMobile())
                     .gender(requestUser.getGender().toUpperCase())
                     .password(passwordEncoder.encode(requestUser.getPassword()))
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .districtId(district.getId())
                     .district(district)
                     .clientId(client.getId())
@@ -145,7 +142,7 @@ public class UserImpl implements IUser {
         userData.setSurname(requestUserSave.getSurname().toUpperCase());
         userData.setDni(requestUserSave.getDni());
         userData.setAddress(requestUserSave.getAddress());
-        userData.setDateRegistration(new Date(System.currentTimeMillis()));
+        userData.setUpdateDate(new Date(System.currentTimeMillis()));
         userData.setEmail(requestUserSave.getEmail());
         userData.setMobile(requestUserSave.getMobile());
         userData.setPassword(requestUserSave.getPassword());
@@ -187,7 +184,7 @@ public class UserImpl implements IUser {
         }
 
         try {
-            datauser.setDateRegistration(new Date(System.currentTimeMillis()));
+            datauser.setUpdateDate(new Date(System.currentTimeMillis()));
             datauser.setStatus(false);
             userRepository.save(datauser);
             return ResponseDelete.builder()
@@ -201,11 +198,14 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public Page<UserQueryDTO> list(String user, Long status, String sort, String sortColumn, Integer pageNumber,
+    public Page<UserQueryDTO> list(String user, String clientRuc, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         Page<User> userPage;
+        Long clientId;
         try {
-            userPage = userRepositoryCustom.searchForUser(user, sort, sortColumn, pageNumber, pageSize, status);
+            clientId = clientRepository.findByRucAndStatusTrue(clientRuc).getId();
+            userPage = userRepositoryCustom.searchForUser(user, clientId, sort, sortColumn, pageNumber,
+                    pageSize, true);
         } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -215,6 +215,15 @@ public class UserImpl implements IUser {
         }
         List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
             return UserQueryDTO.builder()
+                    .address(userData.getAddress())
+                    .district(userData.getDistrict().getName())
+                    .dni(userData.getDni())
+                    .email(userData.getEmail())
+                    .gender(userData.getGender())
+                    .mobile(userData.getMobile())
+                    .name(userData.getName())
+                    .surname(userData.getSurname())
+                    .user(userData.getUsername())
                     .build();
         }).toList();
         return new PageImpl<>(userDTOList,

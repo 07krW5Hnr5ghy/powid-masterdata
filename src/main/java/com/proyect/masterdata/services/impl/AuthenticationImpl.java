@@ -12,6 +12,7 @@ import com.proyect.masterdata.domain.ClosingChannel;
 import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Onboard;
 import com.proyect.masterdata.domain.Store;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.request.RequestClientSave;
 import com.proyect.masterdata.dto.request.RequestOnboard;
 import com.proyect.masterdata.dto.request.RequestOnboarding;
@@ -63,8 +64,14 @@ public class AuthenticationImpl implements IAuthentication {
     public ResponseLogin loginUser(String username, String password) {
         try {
 
-            System.out.println(password);
-            System.out.println(username);
+            User user;
+
+            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username.toUpperCase(), password));
 

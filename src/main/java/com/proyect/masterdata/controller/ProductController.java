@@ -3,6 +3,7 @@ package com.proyect.masterdata.controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import com.proyect.masterdata.dto.ProductDTO;
 import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -24,7 +27,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/product")
+@RequestMapping("product")
 @AllArgsConstructor
 public class ProductController {
 
@@ -33,25 +36,36 @@ public class ProductController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestProductSave product,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iProduct.save(product, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iProduct.save(product, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "products", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestProductSave> productList,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iProduct.saveAll(productList, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iProduct.saveAll(productList, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("sku") String sku,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iProduct.delete(sku, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iProduct.delete(sku, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping()
+    public ResponseEntity<Page<ProductDTO>> list(
+            @RequestParam(value = "sku", required = false) String sku,
+            @RequestParam(value = "model", required = true) String model,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) throws BadRequestExceptions {
+        Page<ProductDTO> result = iProduct.list(sku, model, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

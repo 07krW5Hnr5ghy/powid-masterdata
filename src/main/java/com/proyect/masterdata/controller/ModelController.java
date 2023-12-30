@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/model")
+@RequestMapping("model")
 @AllArgsConstructor
 public class ModelController {
 
@@ -34,8 +34,8 @@ public class ModelController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("brand") String brand,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iModel.save(name, brand, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iModel.save(name, brand, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -43,16 +43,16 @@ public class ModelController {
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> names,
             @RequestParam("brand") String brand,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iModel.saveAll(names, brand, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iModel.saveAll(names, brand, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iModel.delete(name, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iModel.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

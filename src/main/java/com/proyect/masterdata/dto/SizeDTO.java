@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class SizeDTO {
-    private Long code;
     private String name;
+    private String sizeType;
 }

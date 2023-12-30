@@ -29,7 +29,7 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     public ResponseEntity<UserDTO> update(
             @RequestBody() RequestUserSave requestUserSave,
             @RequestParam("user") String user) throws BadRequestExceptions {
@@ -37,7 +37,7 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("user") String user) throws BadRequestExceptions {
         ResponseDelete result = iUser.delete(user);
@@ -47,12 +47,12 @@ public class UserController {
     @GetMapping()
     public ResponseEntity<Page<UserQueryDTO>> list(
             @RequestParam(value = "user", required = false) String user,
-            @RequestParam(value = "status", required = false) Long status,
+            @RequestParam(value = "clientRuc", required = true) String clientRuc,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<UserQueryDTO> result = iUser.list(user, status, sort, sortColumn, pageNumber, pageSize);
+        Page<UserQueryDTO> result = iUser.list(user, clientRuc, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

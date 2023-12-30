@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
 
@@ -19,12 +18,7 @@ import java.util.Date;
 @Table(name = Constants.tableDistrict, schema = Constants.schemaMaster)
 public class District {
         @Id
-        @GeneratedValue(generator = "sequence-district")
-        @GenericGenerator(name = "sequence-district", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-                        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "distritos_sequence"),
-                        @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
-                        @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
-        })
+        @GeneratedValue(strategy = GenerationType.AUTO)
         @Column(name = "id_distrito")
         private Long id;
 
@@ -45,7 +39,7 @@ public class District {
         @JoinColumn(name = "id_provincia", columnDefinition = "provinceId", insertable = false, updatable = false)
         private Province province;
 
-        @Column(name = "usuario")
-        private String user;
+        @Column(name = "usuario_token")
+        private String tokenUser;
 
 }

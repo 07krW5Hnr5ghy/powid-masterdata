@@ -31,15 +31,19 @@ public class Size {
 
         @Column(name = "fecha_registro")
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
+
+        @Column(name = "fecha_modificacion")
+        @CreationTimestamp
+        private Date updateDate;
 
         @Column(name = "id_tipo_talla", nullable = false)
-        private Long idSizeType;
+        private Long sizeTypeId;
 
         @ManyToOne
-        @JoinColumn(name = "id_tipo_talla", columnDefinition = "idSizeType", insertable = false, updatable = false)
+        @JoinColumn(name = "id_tipo_talla", columnDefinition = "sizeTypeId", insertable = false, updatable = false)
         private SizeType sizeType;
 
-        @Column(name = "usuario", nullable = false)
-        private String user;
+        @Column(name = "usuario_token", nullable = false)
+        private String tokenUser;
 }

@@ -70,7 +70,7 @@ public class ProvinceImpl implements IProvince {
                     .departmentId(departmentData.getId())
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .status(true)
-                    .user(user.toUpperCase())
+                    .tokenUser(user.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -154,7 +154,7 @@ public class ProvinceImpl implements IProvince {
 
         try {
             province.setName(requestProvince.getName().toUpperCase());
-            province.setUser(requestProvince.getUser().toUpperCase());
+            province.setTokenUser(requestProvince.getUser().toUpperCase());
             province.setDateRegistration(new Date(System.currentTimeMillis()));
             province.setStatus(requestProvince.isStatus());
             province.setDepartmentId(requestProvince.getCodeDepartment());

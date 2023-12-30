@@ -1,9 +1,8 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Size;
+import com.proyect.masterdata.domain.SizeType;
 import com.proyect.masterdata.dto.SizeDTO;
-import com.proyect.masterdata.dto.request.RequestSize;
-import com.proyect.masterdata.dto.request.RequestSizeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -22,7 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class SizeImpl implements ISize {
+
     private final SizeRepository sizeRepository;
     private final SizeMapper sizeMapper;
     private final UserRepository userRepository;
@@ -38,16 +38,16 @@ public class SizeImpl implements ISize {
     private final SizeRepositoryCustom sizeRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String name, String user, Long codeSizeType)
+    public ResponseSuccess save(String name, String sizeType, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         boolean existsSize;
-        boolean existsSizeType;
+        SizeType sizeTypeData;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsSize = sizeRepository.existsByName(name.toUpperCase());
-            existsSizeType = sizeTypeRepository.existsById(codeSizeType);
+            sizeTypeData = sizeTypeRepository.findByName(sizeType.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -56,18 +56,24 @@ public class SizeImpl implements ISize {
         if (!existsUser) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
+
         if (existsSize) {
             throw new BadRequestExceptions(Constants.ErrorSizeExists.toUpperCase());
         }
-        if (!existsSizeType) {
+
+        if (sizeTypeData == null) {
             throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
         }
 
         try {
-            sizeRepository.save(sizeMapper.sizeToName(RequestSizeSave.builder()
-                    .codeSizeType(codeSizeType)
+            sizeRepository.save(Size.builder()
                     .name(name.toUpperCase())
-                    .user(user.toUpperCase()).build()));
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .sizeType(sizeTypeData)
+                    .sizeTypeId(sizeTypeData.getId())
+                    .status(true)
+                    .tokenUser(tokenUser.toUpperCase())
+                    .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -79,15 +85,15 @@ public class SizeImpl implements ISize {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user, Long codeSizeType)
+    public ResponseSuccess saveAll(List<String> names, String sizeType, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
-        boolean existsSizeType;
+        SizeType sizeTypeData;
         List<Size> sizes;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            existsSizeType = sizeTypeRepository.existsById(codeSizeType);
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            sizeTypeData = sizeTypeRepository.findByNameAndStatusTrue(sizeType.toUpperCase());
             sizes = sizeRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -97,7 +103,7 @@ public class SizeImpl implements ISize {
         if (!existsUser) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (!existsSizeType) {
+        if (sizeTypeData == null) {
             throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
         }
         if (!sizes.isEmpty()) {
@@ -105,12 +111,14 @@ public class SizeImpl implements ISize {
         }
 
         try {
-            List<RequestSizeSave> sizeSaves = names.stream().map(data -> RequestSizeSave.builder()
-                    .user(user.toUpperCase())
-                    .codeSizeType(codeSizeType)
+            List<Size> sizeSaves = names.stream().map(data -> Size.builder()
+                    .tokenUser(tokenUser.toUpperCase())
+                    .sizeType(sizeTypeData)
+                    .sizeTypeId(sizeTypeData.getId())
                     .name(data.toUpperCase())
+                    .status(true)
                     .build()).toList();
-            sizeRepository.saveAll(sizeMapper.listSizeToListName(sizeSaves));
+            sizeRepository.saveAll(sizeSaves);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -122,53 +130,14 @@ public class SizeImpl implements ISize {
     }
 
     @Override
-    public SizeDTO update(RequestSize requestSize) throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
-        boolean existsSizeType;
-        Size size;
-
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(requestSize.getUser().toUpperCase());
-            existsSizeType = sizeTypeRepository.existsById(requestSize.getCodeSizeType());
-            size = sizeRepository.findById(requestSize.getCode()).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (size == null) {
-            throw new BadRequestExceptions(Constants.ErrorSize.toUpperCase());
-        }
-        if (!existsSizeType) {
-            throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
-        }
-
-        size.setName(requestSize.getName().toUpperCase());
-        size.setIdSizeType(requestSize.getCodeSizeType());
-        size.setStatus(requestSize.isStatus());
-        size.setUser(requestSize.getUser().toUpperCase());
-        size.setDateRegistration(new Date(System.currentTimeMillis()));
-
-        try {
-            return sizeMapper.sizeToSizeDTO(sizeRepository.save(size));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
     @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         Size size;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            size = sizeRepository.findById(code).orElse(null);
+            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            size = sizeRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -183,7 +152,7 @@ public class SizeImpl implements ISize {
 
         try {
             size.setStatus(false);
-            size.setDateRegistration(new Date(System.currentTimeMillis()));
+            size.setUpdateDate(new Date(System.currentTimeMillis()));
             sizeRepository.save(size);
             return ResponseDelete.builder()
                     .code(200)
@@ -197,25 +166,36 @@ public class SizeImpl implements ISize {
 
     @Override
     public List<SizeDTO> listSize() throws BadRequestExceptions {
+
         List<Size> sizes = new ArrayList<>();
+
         try {
             sizes = sizeRepository.findAllByStatusTrue();
         } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+
         if (sizes.isEmpty()) {
             return Collections.emptyList();
         }
-        return sizeMapper.listSizeToListSizeDTO(sizes);
+
+        List<SizeDTO> sizeDTOs = sizes.stream().map(size -> SizeDTO.builder()
+                .name(size.getName())
+                .sizeType(size.getSizeType().getName())
+                .build()).toList();
+
+        return sizeDTOs;
     }
 
     @Override
-    public Page<SizeDTO> list(String name, String user, Long codeSizeType, String nameSizeType, String sort,
+    public Page<SizeDTO> list(String name, String user, String sort,
             String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+
         Page<Size> sizePage;
+
         try {
-            sizePage = sizeRepositoryCustom.searchForSize(name, user, codeSizeType, nameSizeType, sort, sortColumn,
+            sizePage = sizeRepositoryCustom.searchForSize(name, user, sort, sortColumn,
                     pageNumber, pageSize, true);
         } catch (RuntimeException e) {
             log.error(e);
@@ -225,15 +205,23 @@ public class SizeImpl implements ISize {
         if (sizePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(sizeMapper.listSizeToListSizeDTO(sizePage.getContent()),
+
+        List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
+                .name(size.getName())
+                .sizeType(size.getSizeType().getName())
+                .build()).toList();
+
+        return new PageImpl<>(sizeDTOs,
                 sizePage.getPageable(), sizePage.getTotalElements());
     }
 
-    public Page<SizeDTO> listStatusFalse(String name, String user, Long codeSizeType, String nameSizeType, String sort,
+    public Page<SizeDTO> listStatusFalse(String name, String user, String sort,
             String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+
         Page<Size> sizePage;
+
         try {
-            sizePage = sizeRepositoryCustom.searchForSize(name, user, codeSizeType, nameSizeType, sort, sortColumn,
+            sizePage = sizeRepositoryCustom.searchForSize(name, user, sort, sortColumn,
                     pageNumber, pageSize, false);
         } catch (RuntimeException e) {
             log.error(e);
@@ -243,33 +231,28 @@ public class SizeImpl implements ISize {
         if (sizePage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
-        return new PageImpl<>(sizeMapper.listSizeToListSizeDTO(sizePage.getContent()),
+
+        List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
+                .name(size.getName())
+                .sizeType(size.getSizeType().getName())
+                .build()).toList();
+
+        return new PageImpl<>(sizeDTOs,
                 sizePage.getPageable(), sizePage.getTotalElements());
-    }
-
-    @Override
-    public SizeDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return sizeMapper.sizeToSizeDTO(sizeRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
-
-    @Override
-    public List<SizeDTO> findAllSizeTypeId(Long codeSizeType) throws BadRequestExceptions {
-        try {
-            return sizeMapper.listSizeToListSizeDTO(sizeRepository.findAllByStatusTrueAndSizeTypeId(codeSizeType));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
     }
 
     @Override
     public List<SizeDTO> findAllSizeTypeName(String nameSizeType) throws BadRequestExceptions {
         try {
-            return sizeMapper.listSizeToListSizeDTO(
-                    sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType.toUpperCase()));
+
+            List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType.toUpperCase());
+
+            List<SizeDTO> sizeDTOs = sizes.stream().map(size -> SizeDTO.builder()
+                    .name(size.getName())
+                    .sizeType(size.getSizeType().getName())
+                    .build()).toList();
+
+            return sizeDTOs;
         } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }

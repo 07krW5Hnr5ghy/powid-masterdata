@@ -6,6 +6,7 @@ public class Constants {
     public static final String schemaManagement = "management";
     public static final String schemaArticle = "article";
     public static final String schemaPayment = "payment";
+    public static final String schemaInventory = "inventory";
     // Tablas
     public static final String tableDepartment = "departamento";
     public static final String tableProvince = "provincia";
@@ -49,6 +50,19 @@ public class Constants {
     public static final String tableMembershipModule = "membresia_modulo";
     public static final String tableMembershipModuleRole = "membresia_modulo_rol";
     public static final String tableSubscription = "subscripcion";
+    public static final String tableUnit = "unidad";
+    public static final String tableSupplier = "proveedor";
+    public static final String tableStockTransaction = "movimiento_inventario";
+    public static final String tableStockTransactionType = "tipo_movimiento_inventario";
+    public static final String tableWarehouse = "almacen";
+    public static final String tableSupplierProduct = "proveedor_producto";
+    public static final String tablePurchase = "compra";
+    public static final String tableShipment = "embarque";
+    public static final String tableWarehouseStock = "inventario_almacen";
+    public static final String tableGeneralStock = "inventario_general";
+    public static final String tableStockReplenishment = "reposicion_inventario";
+    public static final String tableProductPrice = "precio_producto";
+    public static final String tableCategoryProduct = "categoria_producto";
 
     // Mensajes
     public static final String register = "registration correctly";
@@ -130,4 +144,22 @@ public class Constants {
     public static final String ErrorMembership = "The membership does not exists or is already inactive";
     public static final String ErrorMembershipNotExpired = "The membership is not expired yet";
     public static final String ErrorMembershipPaymentExist = "Exists an active membership payment";
+    public static final String ErrorBrand = "The brand does not exists";
+    public static final String ErrorBrandExists = "The brand already exists";
+    public static final String ErrorModel = "The model does not exists";
+    public static final String ErrorModelExists = "The model already exists";
+    public static final String ErrorProduct = "The product does not exists";
+    public static final String ErrorProductExists = "The product already exists";
+    public static final String ErrorUnit = "The unit does not exists";
+    public static final String ErrorUnitExists = "The unit already exists";
+    public static final String ErrorSupplier = "The supplier does not exists";
+    public static final String ErrorSupplierExists = "The supplier already exists";
+    public static final String ErrorSupplierProduct = "The supplier product does not exists";
+    public static final String ErrorSupplierProductExists = "The supplier product already exists";
+    public static final String ErrorCategoryProduct = "The product category does not exists";
+    public static final String ErrorCategoryProductExists = "The product category already exists";
+    public static final String ErrorStockTransactionType = "The stock transaction type does not exists";
+    public static final String ErrorStockTransactionTypeExists = "The stock transaction type already exists";
+    public static final String ErrorWarehouse = "The warehouse does not exists";
+    public static final String ErrorWarehouseExists = "The warehouse already exists";
 }

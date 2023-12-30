@@ -129,7 +129,7 @@ public class StateImpl implements IState {
         state.setName(requestState.getName().toUpperCase());
         state.setStatus(requestState.isStatus());
         state.setDateRegistration(new Date(System.currentTimeMillis()));
-        state.setUser(datauser.getUsername().toUpperCase());
+        state.setTokenUser(datauser.getUsername().toUpperCase());
 
         try {
             return stateMapper.stateToStateDTO(stateRepository.save(state));

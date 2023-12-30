@@ -16,5 +16,9 @@ public interface SizeTypeRepository extends JpaRepository<SizeType, Long> {
 
     SizeType findByNameAndStatusTrue(String name);
 
+    SizeType findByName(String name);
+
+    boolean existsByName(String name);
+
     List<SizeType> findByNameIn(List<String> names);
 }

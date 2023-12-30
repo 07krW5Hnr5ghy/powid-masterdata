@@ -17,12 +17,8 @@ public class UserQueryDTO {
     String name;
     String surname;
     String email;
-    String password;
     String district;
     String address;
     String mobile;
-    String userType;
     String gender;
-    Boolean status;
-    List<String> modules;
 }

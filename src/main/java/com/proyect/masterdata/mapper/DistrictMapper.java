@@ -18,7 +18,7 @@ public interface DistrictMapper {
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "requestDistrictSave.name")
-    @Mapping(target = "user", source = "requestDistrictSave.user")
+    @Mapping(target = "tokenUser", source = "requestDistrictSave.user")
     @Mapping(target = "provinceId", source = "requestDistrictSave.codeProvince")
     District districtToName(RequestDistrictSave requestDistrictSave);
 

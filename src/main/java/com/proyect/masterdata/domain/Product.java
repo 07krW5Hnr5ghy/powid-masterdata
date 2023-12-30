@@ -36,43 +36,43 @@ public class Product {
 
     @Column(name = "fecha_registro")
     @CreationTimestamp
-    private Date dateRegistration;
+    private Date registrationDate;
 
     @Column(name = "fecha_modificacion")
     @CreationTimestamp
-    private Date dateUpdate;
+    private Date updateDate;
 
     @Column(name = "estado", nullable = false)
     private boolean status;
 
     @Column(name = "id_modelo", nullable = false)
-    private Long idModel;
+    private Long modelId;
 
     @Column(name = "id_color", nullable = false)
-    private Long idColor;
+    private Long colorId;
 
-    @Column(name = "id_categoria", nullable = false)
-    private Long idCategory;
+    @Column(name = "id_categoria_producto", nullable = false)
+    private Long categoryProductId;
 
     @Column(name = "id_size", nullable = false)
-    private Long idSize;
+    private Long sizeId;
 
-    @Column(name = "usuario", nullable = false)
-    private String user;
+    @Column(name = "usuario_token", nullable = false)
+    private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_modelo", columnDefinition = "idModel", insertable = false, updatable = false)
+    @JoinColumn(name = "id_modelo", columnDefinition = "modelId", insertable = false, updatable = false)
     private Model model;
 
     @ManyToOne
-    @JoinColumn(name = "id_color", columnDefinition = "idColor", insertable = false, updatable = false)
+    @JoinColumn(name = "id_color", columnDefinition = "colorId", insertable = false, updatable = false)
     private Color color;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria", columnDefinition = "idCategory", insertable = false, updatable = false)
-    private Category category;
+    @JoinColumn(name = "id_categoria_producto", columnDefinition = "categoryId", insertable = false, updatable = false)
+    private CategoryProduct categoryProduct;
 
     @ManyToOne
-    @JoinColumn(name = "id_size", columnDefinition = "idSize", insertable = false, updatable = false)
+    @JoinColumn(name = "id_size", columnDefinition = "sizeId", insertable = false, updatable = false)
     private Size size;
 }

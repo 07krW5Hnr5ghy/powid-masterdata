@@ -11,12 +11,19 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IColor {
-    ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions;
-    ColorDTO update(RequestColor requestColor) throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
-    List<ColorDTO> listColor() throws BadRequestExceptions;
-    Page<ColorDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    Page<ColorDTO> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
-    ColorDTO findByCode(Long code) throws BadRequestExceptions;
+        ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+
+        ResponseSuccess saveAll(List<String> names, String tokenUser)
+                        throws BadRequestExceptions, InternalErrorExceptions;
+
+        ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+
+        List<ColorDTO> listColor() throws BadRequestExceptions;
+
+        Page<ColorDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+                        Integer pageSize)
+                        throws BadRequestExceptions;
+
+        Page<ColorDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+                        Integer pageSize) throws BadRequestExceptions;
 }

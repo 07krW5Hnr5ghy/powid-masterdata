@@ -84,12 +84,12 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
         }
 
         if (brand != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("idBrand"), brand.getId())));
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("brandId"), brand.getId())));
         }
 
         if (user != null) {
             conditions.add(criteriaBuilder.and(
-                    criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("user")), user.toUpperCase())));
+                    criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("tokenUser")), user.toUpperCase())));
         }
 
         if (status) {
@@ -114,12 +114,12 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
             modelList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
 
-        if (sortColumn.equalsIgnoreCase("USER")) {
-            modelList.add(criteriaBuilder.asc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("tokenUser")) {
+            modelList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
         }
 
-        if (sortColumn.equalsIgnoreCase("idBrand")) {
-            modelList.add(criteriaBuilder.asc(itemRoot.get("idBrand")));
+        if (sortColumn.equalsIgnoreCase("brandId")) {
+            modelList.add(criteriaBuilder.asc(itemRoot.get("brandId")));
         }
 
         return modelList;
@@ -135,12 +135,12 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
             modelList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
 
-        if (sortColumn.equalsIgnoreCase("USER")) {
-            modelList.add(criteriaBuilder.desc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("tokenUser")) {
+            modelList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
         }
 
-        if (sortColumn.equalsIgnoreCase("idBrand")) {
-            modelList.add(criteriaBuilder.asc(itemRoot.get("idBrand")));
+        if (sortColumn.equalsIgnoreCase("brandId")) {
+            modelList.add(criteriaBuilder.asc(itemRoot.get("brandId")));
         }
 
         return modelList;

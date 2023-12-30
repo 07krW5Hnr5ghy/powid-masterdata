@@ -3,9 +3,6 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.ColorDTO;
-import com.proyect.masterdata.dto.DepartmentDTO;
-import com.proyect.masterdata.dto.request.RequestColor;
-import com.proyect.masterdata.dto.request.RequestColorSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -23,7 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,18 +29,19 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class ColorImpl implements IColor {
+
     private final ColorRepository colorRepository;
     private final ColorMapper colorMapper;
     private final UserRepository userRepository;
     private final ColorRepositoryCustom colorRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         Color color;
 
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             color = colorRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -58,8 +56,14 @@ public class ColorImpl implements IColor {
         }
 
         try {
-            colorRepository.save(colorMapper.colorToName(RequestColorSave
-                    .builder().name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
+
+            colorRepository.save(Color.builder()
+                    .name(name.toUpperCase())
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .status(true)
+                    .tokenUser(tokenUser.toUpperCase())
+                    .build());
+
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -71,14 +75,14 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user)
+    public ResponseSuccess saveAll(List<String> names, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
 
         User datauser;
         List<Color> colors;
 
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             colors = colorRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
@@ -93,11 +97,16 @@ public class ColorImpl implements IColor {
         }
 
         try {
-            List<RequestColorSave> colorSaves = names.stream().map(data -> RequestColorSave.builder()
-                    .user(user.toUpperCase())
+
+            List<Color> colorSaves = names.stream().map(data -> Color.builder()
+                    .tokenUser(tokenUser.toUpperCase())
                     .name(data.toUpperCase())
+                    .status(true)
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .build()).toList();
-            colorRepository.saveAll(colorMapper.listColorToListName(colorSaves));
+
+            colorRepository.saveAll(colorSaves);
+
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -109,47 +118,15 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public ColorDTO update(RequestColor requestColor) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        Color color;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestColor.getUser().toUpperCase());
-            color = colorRepository.findById(requestColor.getCode()).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (color == null) {
-            throw new BadRequestExceptions(Constants.ErrorColor.toUpperCase());
-        }
-
-        color.setName(requestColor.getName().toUpperCase());
-        color.setUser(datauser.getUsername().toUpperCase());
-        color.setStatus(requestColor.isStatus());
-        color.setDateRegistration(new Date(System.currentTimeMillis()));
-
-        try {
-            return colorMapper.colorToColorDTO(colorRepository.save(color));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
     @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
 
         User datauser;
         Color color;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            color = colorRepository.findById(code).orElse(null);
+            color = colorRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -164,7 +141,7 @@ public class ColorImpl implements IColor {
 
         try {
             color.setStatus(false);
-            color.setDateRegistration(new Date(System.currentTimeMillis()));
+            color.setUpdateDate(new Date(System.currentTimeMillis()));
             colorRepository.save(color);
             return ResponseDelete.builder()
                     .code(200)
@@ -225,14 +202,5 @@ public class ColorImpl implements IColor {
 
         return new PageImpl<>(colorMapper.listColorToListColorDTO(colorPage.getContent()),
                 colorPage.getPageable(), colorPage.getTotalElements());
-    }
-
-    @Override
-    public ColorDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return colorMapper.colorToColorDTO(colorRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
     }
 }

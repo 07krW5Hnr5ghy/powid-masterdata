@@ -12,6 +12,4 @@ import com.proyect.masterdata.dto.BrandDTO;
 public interface BrandMapper {
 
     BrandMapper INSTANCE = Mappers.getMapper(BrandMapper.class);
-
-    List<BrandDTO> listBrandToListBrandDTO(List<Brand> brandList);
 }

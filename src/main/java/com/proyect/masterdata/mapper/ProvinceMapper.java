@@ -18,7 +18,7 @@ public interface ProvinceMapper {
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "requestProvinceSave.name")
-    @Mapping(target = "user", source = "requestProvinceSave.user")
+    @Mapping(target = "tokenUser", source = "requestProvinceSave.user")
     @Mapping(target = "departmentId", source = "requestProvinceSave.codeDepartment")
     Province provinceToName(RequestProvinceSave requestProvinceSave);
 
