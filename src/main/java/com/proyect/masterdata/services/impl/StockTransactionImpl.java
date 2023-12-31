@@ -18,6 +18,7 @@ import com.proyect.masterdata.repository.StockTransactionRepository;
 import com.proyect.masterdata.repository.StockTransactionTypeRepository;
 import com.proyect.masterdata.repository.SupplierProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.WarehouseRepository;
 import com.proyect.masterdata.services.IStockTransaction;
 import com.proyect.masterdata.utils.Constants;
 
@@ -33,23 +34,16 @@ public class StockTransactionImpl implements IStockTransaction {
     private final StockTransactionRepository stockTransactionRepository;
     private final StockTransactionTypeRepository stockTransactionTypeRepository;
     private final SupplierProductRepository supplierProductRepository;
+    private final WarehouseRepository warehouseRepository;
 
     @Override
-    public ResponseSuccess save(RequestStockTransaction stockTransactionData, String tokenUser)
+    public ResponseSuccess save(List<RequestStockTransaction> stockTransactionDataList, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
-        StockTransactionType stockTransactionType;
-        SupplierProduct supplierProduct;
-        Warehouse warehouse;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            stockTransactionType = stockTransactionTypeRepository
-                    .findByNameAndStatusTrue(stockTransactionData.getStockTransactionType().toUpperCase());
-            supplierProduct = supplierProductRepository
-                    .findBySerialAndStatusTrue(stockTransactionData.getSupplierProductSerial());
-
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -60,17 +54,41 @@ public class StockTransactionImpl implements IStockTransaction {
         }
 
         try {
-            stockTransactionRepository.save(StockTransaction.builder()
-                    .client(user.getClient())
-                    .clientId(user.getClientId())
-                    .quantity(stockTransactionData.getQuantity())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .stockTransactionType(stockTransactionType)
-                    .stockTransactionTypeId(stockTransactionType.getId())
-                    .supplierProduct(supplierProduct)
-                    .supplierProductId(supplierProduct.getId())
-                    .tokenUser(user.getUsername())
-                    .build());
+            stockTransactionRepository.saveAll(stockTransactionDataList.stream().map(stockTransaction -> {
+
+                StockTransactionType stockTransactionType = stockTransactionTypeRepository
+                        .findByNameAndStatusTrue(stockTransaction.getStockTransactionType().toUpperCase());
+
+                if (stockTransactionType == null) {
+                    throw new BadRequestExceptions(Constants.ErrorStockTransactionType);
+                }
+
+                SupplierProduct supplierProduct = supplierProductRepository
+                        .findBySerialAndStatusTrue(stockTransaction.getSupplierProductSerial());
+
+                if (supplierProduct == null) {
+                    throw new BadRequestExceptions(Constants.ErrorSupplier);
+                }
+
+                Warehouse warehouse = warehouseRepository
+                        .findByNameAndStatusTrue(stockTransaction.getWarehouse().toUpperCase());
+
+                if (warehouse == null) {
+                    throw new BadRequestExceptions(Constants.ErrorWarehouse);
+                }
+
+                return StockTransaction.builder()
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .quantity(stockTransaction.getQuantity())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .stockTransactionType(stockTransactionType)
+                        .stockTransactionTypeId(stockTransactionType.getId())
+                        .supplierProduct(supplierProduct)
+                        .supplierProductId(supplierProduct.getId())
+                        .tokenUser(user.getUsername())
+                        .build();
+            }).toList());
 
             return ResponseSuccess.builder()
                     .message(Constants.register)
@@ -81,12 +99,4 @@ public class StockTransactionImpl implements IStockTransaction {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
-
-    @Override
-    public ResponseSuccess saveAll(List<RequestStockTransaction> stockTransactionDataList, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
-    }
-
 }
