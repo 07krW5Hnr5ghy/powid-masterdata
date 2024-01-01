@@ -1273,6 +1273,61 @@ Request Body
     "m","l","xs","xl"
 ]
 
+### GET /stock-transaction
+
+- Description : list stock transactions per client
+
+- Request : none
+
+- Parameter :
+
+1. user : name of the user who is listing the stock transactions (required)
+2. warehouse : name of the warehouse involved in the transactions
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response : 
+
+{
+    "content": [
+        {
+            "quantity": 10,
+            "warehouse": "LUMINOUS",
+            "stockTransactionType": "ENTRADA",
+            "supplierProductSerial": "A00001A"
+        },
+        {
+            "quantity": 20,
+            "warehouse": "LUMINOUS",
+            "stockTransactionType": "ENTRADA",
+            "supplierProductSerial": "A00003A"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 4,
+        "pageNumber": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalElements": 2,
+    "totalPages": 1,
+    "first": true,
+    "size": 4,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 2,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/stock-transaction?user=gjimenez&pageNumber=0&pageSize=4&warehouse=luminous
+
 ### GET /store-type
 
 - Description : list all active store types

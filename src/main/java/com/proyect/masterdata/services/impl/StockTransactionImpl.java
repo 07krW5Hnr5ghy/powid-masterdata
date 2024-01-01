@@ -115,9 +115,14 @@ public class StockTransactionImpl implements IStockTransaction {
         Long warehouseId;
         Page<StockTransaction> stockTransactionPage;
 
+        if (warehouse != null) {
+            warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+        } else {
+            warehouseId = null;
+        }
+
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
             stockTransactionPage = stockTransactionRepositoryCustom.searchForStockTransaction(clientId, warehouseId,
                     sort, sortColumn, pageNumber, pageSize);
         } catch (RuntimeException e) {
