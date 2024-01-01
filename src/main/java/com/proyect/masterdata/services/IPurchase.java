@@ -9,6 +9,6 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IPurchase {
 
-    public ResponseSuccess save(String serial, List<RequestPurchase> items, String tokenUser)
+    public ResponseSuccess save(String serial, String warehouse, List<RequestPurchase> items, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
 }

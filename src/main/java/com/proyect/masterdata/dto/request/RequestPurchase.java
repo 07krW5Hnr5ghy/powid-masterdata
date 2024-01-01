@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RequestPurchase {
+    private String serial;
     private Integer quantity;
     private String supplierProductSerial;
 }
