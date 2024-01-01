@@ -6,7 +6,6 @@ import java.util.List;
 import com.proyect.masterdata.dto.LocationDTO;
 
 public interface IJsonFileReader {
-    public String readJsonFile() throws IOException;
 
     public List<LocationDTO> filterDepartment();
 

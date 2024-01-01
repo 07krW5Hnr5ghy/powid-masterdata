@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class StockTransactionDTO {
-    private Long quantity;
+    private Integer quantity;
     private String warehouse;
     private String stockTransactionType;
     private String supplierProductSerial;

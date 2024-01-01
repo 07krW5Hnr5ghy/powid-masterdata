@@ -48,6 +48,9 @@ public class StockTransaction {
     @Column(name = "id_proveedor_producto")
     private Long supplierProductId;
 
+    @Column(name = "id_almacen")
+    private Long warehouseId;
+
     @Column(name = "usuario_token")
     private String tokenUser;
 
@@ -62,4 +65,8 @@ public class StockTransaction {
     @ManyToOne
     @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
+
+    @ManyToOne
+    @JoinColumn(name = "id_almacen", columnDefinition = "warehouseId", insertable = false, updatable = false)
+    private Warehouse warehouse;
 }

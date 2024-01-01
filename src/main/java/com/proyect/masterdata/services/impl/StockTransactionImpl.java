@@ -1,8 +1,11 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.StockTransactionType;
@@ -10,11 +13,13 @@ import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.domain.StockTransaction;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.Warehouse;
+import com.proyect.masterdata.dto.StockTransactionDTO;
 import com.proyect.masterdata.dto.request.RequestStockTransaction;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.StockTransactionRepository;
+import com.proyect.masterdata.repository.StockTransactionRepositoryCustom;
 import com.proyect.masterdata.repository.StockTransactionTypeRepository;
 import com.proyect.masterdata.repository.SupplierProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
@@ -35,6 +40,7 @@ public class StockTransactionImpl implements IStockTransaction {
     private final StockTransactionTypeRepository stockTransactionTypeRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final WarehouseRepository warehouseRepository;
+    private final StockTransactionRepositoryCustom stockTransactionRepositoryCustom;
 
     @Override
     public ResponseSuccess save(List<RequestStockTransaction> stockTransactionDataList, String tokenUser)
@@ -86,6 +92,8 @@ public class StockTransactionImpl implements IStockTransaction {
                         .stockTransactionTypeId(stockTransactionType.getId())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
+                        .warehouse(warehouse)
+                        .warehouseId(warehouse.getId())
                         .tokenUser(user.getUsername())
                         .build();
             }).toList());
@@ -98,5 +106,39 @@ public class StockTransactionImpl implements IStockTransaction {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<StockTransactionDTO> list(String user, String warehouse, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        Long clientId;
+        Long warehouseId;
+        Page<StockTransaction> stockTransactionPage;
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+            stockTransactionPage = stockTransactionRepositoryCustom.searchForStockTransaction(clientId, warehouseId,
+                    sort, sortColumn, pageNumber, pageSize);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (stockTransactionPage.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<StockTransactionDTO> stockTransactionDTOs = stockTransactionPage.getContent().stream()
+                .map(stockTransaction -> StockTransactionDTO.builder()
+                        .quantity(stockTransaction.getQuantity())
+                        .warehouse(stockTransaction.getWarehouse().getName())
+                        .supplierProductSerial(stockTransaction.getSupplierProduct().getSerial())
+                        .stockTransactionType(stockTransaction.getStockTransactionType().getName())
+                        .build())
+                .toList();
+
+        return new PageImpl<>(stockTransactionDTOs, stockTransactionPage.getPageable(),
+                stockTransactionPage.getTotalElements());
     }
 }

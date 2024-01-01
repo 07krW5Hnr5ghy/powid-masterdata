@@ -28,27 +28,15 @@ public class JsonFileReaderImpl implements IJsonFileReader {
     private final ResourceLoader resourceLoader;
 
     @Override
-    public String readJsonFile() throws IOException {
-        Resource resource = resourceLoader.getResource("classpath:peru.json");
-
-        try {
-            Scanner scanner = new Scanner(resource.getInputStream(), StandardCharset.UTF_8.name());
-
-            return scanner.useDelimiter("\\A").next();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-        }
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'readJsonFile'");
-    }
-
-    @Override
     public List<LocationDTO> filterDepartment() {
 
         List<LocationDTO> filteredDepartments = new ArrayList<>();
 
         try {
-            File file = new File("src/main/peru.json");
+            // uncomment for deployment
+            // File file = new File("src/main/peru.json");
+            File file = new File(
+                    "C:\\Users\\jryn1\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\peru.json");
             ObjectMapper mapper = new ObjectMapper();
 
             List<LocationDTO> locations = mapper.readValue(file,
@@ -70,7 +58,10 @@ public class JsonFileReaderImpl implements IJsonFileReader {
         List<LocationDTO> filteredProvinces = new ArrayList<>();
 
         try {
-            File file = new File("src/main/peru.json");
+            // uncomment for deployment
+            // File file = new File("src/main/peru.json");
+            File file = new File(
+                    "C:\\Users\\jryn1\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\peru.json");
             ObjectMapper mapper = new ObjectMapper();
 
             List<LocationDTO> locations = mapper.readValue(file,
@@ -94,7 +85,10 @@ public class JsonFileReaderImpl implements IJsonFileReader {
 
         try {
 
-            File file = new File("src/main/peru.json");
+            // uncomment for deployment
+            // File file = new File("src/main/peru.json");
+            File file = new File(
+                    "C:\\Users\\jryn1\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\peru.json");
             ObjectMapper mapper = new ObjectMapper();
 
             List<LocationDTO> locations = mapper.readValue(file,

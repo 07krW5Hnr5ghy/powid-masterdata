@@ -1,5 +1,6 @@
 package com.proyect.masterdata.seeder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.UserRole;
 import com.proyect.masterdata.dto.LocationDTO;
 import com.proyect.masterdata.dto.request.RequestProductSave;
+import com.proyect.masterdata.dto.request.RequestStockTransaction;
 import com.proyect.masterdata.dto.request.RequestSupplier;
 import com.proyect.masterdata.dto.request.RequestSupplierProduct;
 import com.proyect.masterdata.dto.request.RequestWarehouse;
@@ -43,6 +45,7 @@ import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.services.IProvince;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.services.ISizeType;
+import com.proyect.masterdata.services.IStockTransaction;
 import com.proyect.masterdata.services.IStockTransactionType;
 import com.proyect.masterdata.services.IStoreType;
 import com.proyect.masterdata.services.ISupplier;
@@ -87,6 +90,7 @@ public class Seeder implements CommandLineRunner {
         private final IDistrict iDistrict;
         private final IStockTransactionType iStockTransactionType;
         private final IWarehouse iWarehouse;
+        private final IStockTransaction iStockTransaction;
 
         @Override
         public void run(String... args) throws Exception {
@@ -295,7 +299,7 @@ public class Seeder implements CommandLineRunner {
 
                 // mock products
 
-                RequestProductSave product1 = new RequestProductSave().builder().build();
+                RequestProductSave product1 = RequestProductSave.builder().build();
                 product1.setCategory("tennis");
                 product1.setColor("negro");
                 product1.setModel("f90");
@@ -304,7 +308,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product1, "gjimenez");
 
-                RequestProductSave product2 = new RequestProductSave().builder().build();
+                RequestProductSave product2 = RequestProductSave.builder().build();
                 product2.setCategory("botas");
                 product2.setColor("rojo");
                 product2.setModel("m2000");
@@ -313,7 +317,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product2, "gjimenez");
 
-                RequestProductSave product3 = new RequestProductSave().builder().build();
+                RequestProductSave product3 = RequestProductSave.builder().build();
                 product3.setCategory("tennis");
                 product3.setColor("verde");
                 product3.setModel("mercurial");
@@ -322,7 +326,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product3, "gjimenez");
 
-                RequestProductSave product4 = new RequestProductSave().builder().build();
+                RequestProductSave product4 = RequestProductSave.builder().build();
                 product4.setCategory("camisetas");
                 product4.setColor("rojo");
                 product4.setModel("indigo");
@@ -331,7 +335,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product4, "gjimenez");
 
-                RequestProductSave product5 = new RequestProductSave().builder().build();
+                RequestProductSave product5 = RequestProductSave.builder().build();
                 product5.setCategory("jeans");
                 product5.setColor("azul");
                 product5.setModel("old navy");
@@ -340,7 +344,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product5, "gjimenez");
 
-                RequestProductSave product6 = new RequestProductSave().builder().build();
+                RequestProductSave product6 = RequestProductSave.builder().build();
                 product6.setCategory("blusas");
                 product6.setColor("amarillo");
                 product6.setModel("ripper");
@@ -349,7 +353,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product6, "gjimenez");
 
-                RequestProductSave product7 = new RequestProductSave().builder().build();
+                RequestProductSave product7 = RequestProductSave.builder().build();
                 product7.setCategory("blusas");
                 product7.setColor("morado");
                 product7.setModel("sweater");
@@ -358,7 +362,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product7, "gjimenez");
 
-                RequestProductSave product8 = new RequestProductSave().builder().build();
+                RequestProductSave product8 = RequestProductSave.builder().build();
                 product8.setCategory("camisetas");
                 product8.setColor("verde");
                 product8.setModel("kasper");
@@ -367,7 +371,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product8, "gjimenez");
 
-                RequestProductSave product9 = new RequestProductSave().builder().build();
+                RequestProductSave product9 = RequestProductSave.builder().build();
                 product9.setCategory("blusas");
                 product9.setColor("naranja");
                 product9.setModel("sustra");
@@ -376,7 +380,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product9, "gjimenez");
 
-                RequestProductSave product10 = new RequestProductSave().builder().build();
+                RequestProductSave product10 = RequestProductSave.builder().build();
                 product10.setCategory("botas");
                 product10.setColor("rojo");
                 product10.setModel("krust");
@@ -385,7 +389,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product10, "fcasas");
 
-                RequestProductSave product11 = new RequestProductSave().builder().build();
+                RequestProductSave product11 = RequestProductSave.builder().build();
                 product11.setCategory("tennis");
                 product11.setColor("verde");
                 product11.setModel("gist");
@@ -394,7 +398,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product11, "fcasas");
 
-                RequestProductSave product12 = new RequestProductSave().builder().build();
+                RequestProductSave product12 = RequestProductSave.builder().build();
                 product12.setCategory("tennis");
                 product12.setColor("azul");
                 product12.setModel("thunder");
@@ -403,7 +407,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product12, "fcasas");
 
-                RequestProductSave product13 = new RequestProductSave().builder().build();
+                RequestProductSave product13 = RequestProductSave.builder().build();
                 product13.setCategory("camisetas");
                 product13.setColor("negro");
                 product13.setModel("yitro");
@@ -412,7 +416,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product13, "fcasas");
 
-                RequestProductSave product14 = new RequestProductSave().builder().build();
+                RequestProductSave product14 = RequestProductSave.builder().build();
                 product14.setCategory("blusas");
                 product14.setColor("morado");
                 product14.setModel("ulcast");
@@ -421,7 +425,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product14, "fcasas");
 
-                RequestProductSave product15 = new RequestProductSave().builder().build();
+                RequestProductSave product15 = RequestProductSave.builder().build();
                 product15.setCategory("jeans");
                 product15.setColor("amarillo");
                 product15.setModel("reinder");
@@ -430,7 +434,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product15, "fcasas");
 
-                RequestProductSave product16 = new RequestProductSave().builder().build();
+                RequestProductSave product16 = RequestProductSave.builder().build();
                 product16.setCategory("camisetas");
                 product16.setColor("rojo");
                 product16.setModel("realt");
@@ -439,7 +443,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product16, "fcasas");
 
-                RequestProductSave product17 = new RequestProductSave().builder().build();
+                RequestProductSave product17 = RequestProductSave.builder().build();
                 product17.setCategory("blusas");
                 product17.setColor("azul");
                 product17.setModel("brust");
@@ -448,7 +452,7 @@ public class Seeder implements CommandLineRunner {
 
                 iProduct.save(product17, "fcasas");
 
-                RequestProductSave product18 = new RequestProductSave().builder().build();
+                RequestProductSave product18 = RequestProductSave.builder().build();
                 product18.setCategory("camisetas");
                 product18.setColor("naranja");
                 product18.setModel("frost");
@@ -858,6 +862,35 @@ public class Seeder implements CommandLineRunner {
                                 .build();
 
                 iWarehouse.save(warehouse4, "fcasas");
+
+                RequestStockTransaction stockTransaction1 = RequestStockTransaction.builder()
+                                .quantity(10)
+                                .stockTransactionType("entrada")
+                                .supplierProductSerial("A00001A")
+                                .warehouse("luminous")
+                                .build();
+
+                RequestStockTransaction stockTransaction2 = RequestStockTransaction.builder()
+                                .quantity(15)
+                                .stockTransactionType("entrada")
+                                .supplierProductSerial("A00002B")
+                                .warehouse("oikas")
+                                .build();
+
+                RequestStockTransaction stockTransaction3 = RequestStockTransaction.builder()
+                                .quantity(20)
+                                .stockTransactionType("entrada")
+                                .supplierProductSerial("A00003A")
+                                .warehouse("luminous")
+                                .build();
+
+                List<RequestStockTransaction> stockTransactionList = new ArrayList<>();
+
+                stockTransactionList.add(stockTransaction1);
+                stockTransactionList.add(stockTransaction2);
+                stockTransactionList.add(stockTransaction3);
+
+                iStockTransaction.save(stockTransactionList, "gjimenez");
 
         }
 
