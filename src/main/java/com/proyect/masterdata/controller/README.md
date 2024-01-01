@@ -1296,31 +1296,40 @@ Request Body
             "quantity": 10,
             "warehouse": "LUMINOUS",
             "stockTransactionType": "ENTRADA",
-            "supplierProductSerial": "A00001A"
+            "supplierProductSerial": "A00001A",
+            "date": "2024-01-01T04:53:53.326+00:00"
+        },
+        {
+            "quantity": 15,
+            "warehouse": "OIKAS",
+            "stockTransactionType": "ENTRADA",
+            "supplierProductSerial": "A00002B",
+            "date": "2024-01-01T04:53:53.326+00:00"
         },
         {
             "quantity": 20,
             "warehouse": "LUMINOUS",
             "stockTransactionType": "ENTRADA",
-            "supplierProductSerial": "A00003A"
+            "supplierProductSerial": "A00003A",
+            "date": "2024-01-01T04:53:53.326+00:00"
         }
     ],
     "pageable": {
         "sort": [],
         "offset": 0,
-        "pageSize": 4,
         "pageNumber": 0,
-        "paged": true,
-        "unpaged": false
+        "pageSize": 3,
+        "unpaged": false,
+        "paged": true
     },
     "last": true,
-    "totalElements": 2,
+    "totalElements": 3,
     "totalPages": 1,
     "first": true,
-    "size": 4,
+    "size": 3,
     "number": 0,
     "sort": [],
-    "numberOfElements": 2,
+    "numberOfElements": 3,
     "empty": false
 }
 
