@@ -10,6 +10,7 @@ import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.Warehouse;
 import com.proyect.masterdata.dto.request.RequestPurchase;
+import com.proyect.masterdata.dto.request.RequestStockTransaction;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;

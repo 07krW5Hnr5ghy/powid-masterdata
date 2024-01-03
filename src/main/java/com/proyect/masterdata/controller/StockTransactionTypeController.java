@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 @CrossOrigin({ "*" })
 @RequestMapping("stock-transaction-type")
 @AllArgsConstructor
-public class StockTransactionType {
+public class StockTransactionTypeController {
 
     private final IStockTransactionType iStockTransactionType;
 

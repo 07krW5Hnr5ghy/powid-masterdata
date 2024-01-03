@@ -58,14 +58,14 @@ public class Shipment {
     @Column(name = "estado")
     private Boolean status;
 
-    @Column(name = "id_proveedor")
-    private Long supplierId;
+    @Column(name = "id_proveedor_producto")
+    private Long supplierProductId;
 
     @Column(name = "id_cliente")
     private Long clientId;
 
     @Column(name = "id_compra")
-    private Long compraId;
+    private Long purchaseId;
 
     @Column(name = "id_movimiento_inventario")
     private Long stockTransactionId;
@@ -78,11 +78,11 @@ public class Shipment {
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto", columnDefinition = "productId", insertable = false, updatable = false)
+    @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
 
     @ManyToOne
-    @JoinColumn(name = "id_compra", columnDefinition = "compraId", insertable = false, updatable = false)
+    @JoinColumn(name = "id_compra", columnDefinition = "purchaseId", insertable = false, updatable = false)
     private Purchase purchase;
 
     @ManyToOne

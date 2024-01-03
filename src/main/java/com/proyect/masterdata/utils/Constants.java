@@ -164,4 +164,6 @@ public class Constants {
     public static final String ErrorWarehouseExists = "The warehouse already exists";
     public static final String ErrorPurchase = "The purchase does not exists";
     public static final String ErrorPurchaseExists = "The purchase already exists";
+    public static final String ErrorShipment = "The shipment does not exists";
+    public static final String ErrorShipmentExists = "The shipment already exists";
 }
