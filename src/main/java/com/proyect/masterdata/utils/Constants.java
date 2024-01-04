@@ -63,6 +63,7 @@ public class Constants {
     public static final String tableStockReplenishment = "reposicion_inventario";
     public static final String tableProductPrice = "precio_producto";
     public static final String tableCategoryProduct = "categoria_producto";
+    public static final String tableOnboardingModule = "onboarding_modulo";
 
     // Mensajes
     public static final String register = "registration correctly";

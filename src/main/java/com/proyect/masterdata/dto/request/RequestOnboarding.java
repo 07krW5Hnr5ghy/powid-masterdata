@@ -55,6 +55,8 @@ public class RequestOnboarding {
 
     private List<String> closingChannels;
 
+    private List<String> modules;
+
     private String entryChannel;
 
     private Boolean demo;

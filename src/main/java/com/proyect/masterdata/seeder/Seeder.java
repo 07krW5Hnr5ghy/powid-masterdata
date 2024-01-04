@@ -41,6 +41,7 @@ import com.proyect.masterdata.services.IDistrict;
 import com.proyect.masterdata.services.IEntryChannel;
 import com.proyect.masterdata.services.IJsonFileReader;
 import com.proyect.masterdata.services.IModel;
+import com.proyect.masterdata.services.IModule;
 import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.services.IProvince;
 import com.proyect.masterdata.services.ISize;
@@ -48,6 +49,7 @@ import com.proyect.masterdata.services.ISizeType;
 import com.proyect.masterdata.services.IStockTransaction;
 import com.proyect.masterdata.services.IStockTransactionType;
 import com.proyect.masterdata.services.IStoreType;
+import com.proyect.masterdata.services.ISubscription;
 import com.proyect.masterdata.services.ISupplier;
 import com.proyect.masterdata.services.ISupplierProduct;
 import com.proyect.masterdata.services.IWarehouse;
@@ -91,6 +93,8 @@ public class Seeder implements CommandLineRunner {
         private final IStockTransactionType iStockTransactionType;
         private final IWarehouse iWarehouse;
         private final IStockTransaction iStockTransaction;
+        private final IModule iModule;
+        private final ISubscription iSubscription;
 
         @Override
         public void run(String... args) throws Exception {
@@ -196,6 +200,24 @@ public class Seeder implements CommandLineRunner {
                 for (LocationDTO locationDistrict : listDistrict) {
                         iDistrict.save(locationDistrict.getDistrict(), "ADMIN1", locationDistrict.getProvince());
                 }
+
+                // mock modules
+                iModule.save("Módulo de Ventas", 3.00, "ADMIN1");
+                iModule.save("Módulo de Gestión", 5.00, "ADMIN1");
+                iModule.save("Analítica de Ventas", 3.00, "ADMIN1");
+                iModule.save("Integracion con Shopify", 5.00, "ADMIN1");
+                iModule.save("Módulo de Almacén", 5.00, "ADMIN1");
+                iModule.save("Facturación Electronica", 15.00, "ADMIN1");
+                iModule.save("Módulo de Remarketing", 8.00, "ADMIN1");
+                iModule.save("Integracion con Marketplace", 10.00, "ADMIN1");
+                iModule.save("Integracion Tienda Virtual", 10.00, "ADMIN1");
+                iModule.save("Modulo de Courier", 5.00, "ADMIN1");
+                iModule.save("Modulo de Finanzas", 5.00, "ADMIN1");
+
+                // mock subscriptions
+                iSubscription.save("mensual", 1, 0.00, "ADMIN1");
+                iSubscription.save("semestral", 6, 10.00, "ADMIN1");
+                iSubscription.save("anual", 12, 20.00, "ADMIN1");
 
                 // mock categories
                 iCategory.save("Joyas y bisuteria", "Joyas y bisuteria", "admin1");

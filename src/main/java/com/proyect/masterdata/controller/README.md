@@ -53,15 +53,15 @@ Body
   "surname":"trujillo",
   "email":"rt87@gmail.com",
   "address":"cra 567",
-  "mobile":"123456789",
-  "dni":"12345678911",
-  "category":"tennis",
+  "mobile":"123456720",
+  "dni":"12345678920",
+  "category":"moda",
   "users":"11-50",
   "ecommerce":true,
   "billing":false,
   "comment":"administrar pedidos",
   "businessName":"trading company ltda",
-  "businessRuc":"12345678911",
+  "businessRuc":"12345678920",
   "password": "123abc+",
   "gender":"M",
   "district": "asuncion",
@@ -69,6 +69,7 @@ Body
   "storeUrl": "e-shop.com",
   "storeType": "shopify",
   "closingChannels" : ["facebook","instagram"],
+  "modules": ["Módulo de Gestión","Módulo de Almacén"],
   "entryChannel":"tiktok",
   "demo":true,
   "tokenUser":"REGISTER"
@@ -812,62 +813,28 @@ Request Body
 
 - Request : none
 
-- Parameters : 
-
-1. name : filter modules by name
-2. user : filter modules by the username who registered the modules
-3. sort : sort the values the only valid values are ASC and DESC, default is ASC
-4. sortColumn : select the value that sorts the list in this case name or user
-5. pageNumber : the page number to select of the list the first is page zero (0)
-6. pageSize : number the records per Page
+- Parameters : none
 
 - Response : 
 
-{
-    "content": [
-        {
-            "moduleName": "VENTAS",
-            "modulePrice": 2.57
-        },
-        {
-            "moduleName": "FINANZAS",
-            "modulePrice": 2.57
-        },
-        {
-            "moduleName": "INVENTARIO",
-            "modulePrice": 3.99
-        },
-        {
-            "moduleName": "MARKETING",
-            "modulePrice": 10.03
-        },
-        {
-            "moduleName": "COURIER",
-            "modulePrice": 9.21
-        }
-    ],
-    "pageable": {
-        "sort": [],
-        "offset": 0,
-        "pageNumber": 0,
-        "pageSize": 5,
-        "paged": true,
-        "unpaged": false
+[
+    {
+        "moduleName": "MÓDULO DE VENTAS",
+        "modulePrice": 3.0
     },
-    "last": true,
-    "totalElements": 5,
-    "totalPages": 1,
-    "first": true,
-    "size": 5,
-    "number": 0,
-    "sort": [],
-    "numberOfElements": 5,
-    "empty": false
-}
+    {
+        "moduleName": "MÓDULO DE GESTIÓN",
+        "modulePrice": 5.0
+    },
+    {
+        "moduleName": "ANALÍTICA DE VENTAS",
+        "modulePrice": 3.0
+    }
+]
 
 - Example :
 
-http://localhost:8080/masterdata/module?pageNumber=0&pageSize=5&sort=ASC&sortColumn=name
+http://localhost:8080/masterdata/module
 
 ### POST /module protected
 
@@ -910,15 +877,15 @@ http://localhost:8080/masterdata/module?name=ventas&price=2.57&tokenUser=admin1
         "surname": "TRUJILLO",
         "email": "rt87@gmail.com",
         "address": "CRA 567",
-        "mobile": "123456789",
-        "dni": "12345678911",
-        "category": "TENNIS",
+        "mobile": "123456720",
+        "dni": "12345678920",
+        "category": "MODA",
         "usersMinimum": 11,
         "usersMaximum": 50,
         "billing": false,
         "comment": "administrar pedidos",
         "businessName": "TRADING COMPANY LTDA",
-        "businessRuc": "12345678911",
+        "businessRuc": "12345678920",
         "gender": "M",
         "district": "ASUNCION",
         "store": "E-SHOP",
@@ -927,6 +894,10 @@ http://localhost:8080/masterdata/module?name=ventas&price=2.57&tokenUser=admin1
         "closingChannels": [
             "INSTAGRAM",
             "FACEBOOK"
+        ],
+        "modules": [
+            "MÓDULO DE GESTIÓN",
+            "MÓDULO DE ALMACÉN"
         ],
         "entryChannel": "TIKTOK",
         "demo": true

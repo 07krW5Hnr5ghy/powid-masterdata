@@ -22,6 +22,8 @@ public interface IModule {
 
         ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
 
+        List<ModuleDTO> listModule() throws BadRequestExceptions;
+
         Page<ModuleDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize)
                         throws BadRequestExceptions;

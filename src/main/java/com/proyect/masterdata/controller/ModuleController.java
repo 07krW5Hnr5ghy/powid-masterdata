@@ -56,6 +56,12 @@ public class ModuleController {
     }
 
     @GetMapping()
+    public ResponseEntity<List<ModuleDTO>> listModule() throws BadRequestExceptions {
+        List<ModuleDTO> result = iModule.listModule();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "list")
     public ResponseEntity<Page<ModuleDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

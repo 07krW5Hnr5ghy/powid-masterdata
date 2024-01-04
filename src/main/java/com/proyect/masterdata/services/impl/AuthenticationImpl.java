@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.ClosingChannel;
 import com.proyect.masterdata.domain.District;
+import com.proyect.masterdata.domain.Module;
 import com.proyect.masterdata.domain.Onboard;
 import com.proyect.masterdata.domain.Store;
 import com.proyect.masterdata.domain.User;
@@ -26,12 +27,14 @@ import com.proyect.masterdata.repository.CategoryRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.ClosingChannelRepository;
 import com.proyect.masterdata.repository.DistrictRepository;
+import com.proyect.masterdata.repository.ModuleRepository;
 import com.proyect.masterdata.repository.StoreRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAuthentication;
 import com.proyect.masterdata.services.IClient;
 import com.proyect.masterdata.services.IOnboard;
 import com.proyect.masterdata.services.IOnboardChannel;
+import com.proyect.masterdata.services.IOnboardModule;
 import com.proyect.masterdata.services.IOnboardStore;
 import com.proyect.masterdata.services.IStore;
 import com.proyect.masterdata.services.IToken;
@@ -60,6 +63,8 @@ public class AuthenticationImpl implements IAuthentication {
     private final StoreRepository storeRepository;
     private final IOnboardStore iOnboardStore;
     private final CategoryRepository categoryRepository;
+    private final ModuleRepository moduleRepository;
+    private final IOnboardModule iOnboardModule;
 
     public ResponseLogin loginUser(String username, String password) {
         try {
@@ -100,6 +105,7 @@ public class AuthenticationImpl implements IAuthentication {
         boolean category = false;
         District district = null;
         List<ClosingChannel> closingChannels;
+        List<Module> modules;
 
         try {
             existsUser = userRepository.existsByUsername(requestOnboarding.getUsername().toUpperCase());
@@ -114,6 +120,8 @@ public class AuthenticationImpl implements IAuthentication {
             closingChannels = closingChannelRepository.findByNameInAndStatusTrue(
                     requestOnboarding.getClosingChannels().stream().map(name -> name.toUpperCase()).toList());
             category = categoryRepository.existsByNameAndStatusTrue(requestOnboarding.getCategory().toUpperCase());
+            modules = moduleRepository
+                    .findByNameIn(requestOnboarding.getModules().stream().map(module -> module.toUpperCase()).toList());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             System.out.println("Arriba");
@@ -157,6 +165,10 @@ public class AuthenticationImpl implements IAuthentication {
         }
 
         if (closingChannels.size() != requestOnboarding.getClosingChannels().size()) {
+            throw new BadRequestExceptions(Constants.ErrorClosingChannel);
+        }
+
+        if (modules.size() != requestOnboarding.getModules().size()) {
             throw new BadRequestExceptions(Constants.ErrorClosingChannel);
         }
 
@@ -210,6 +222,10 @@ public class AuthenticationImpl implements IAuthentication {
 
             for (ClosingChannel closingChannel : closingChannels) {
                 iOnboardChannel.save(onboard, closingChannel);
+            }
+
+            for (Module module : modules) {
+                iOnboardModule.save(onboard, module);
             }
 
             if (requestOnboarding.getEcommerce()) {

@@ -9,6 +9,7 @@ import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.EntryChannel;
 import com.proyect.masterdata.domain.Onboard;
 import com.proyect.masterdata.domain.OnboardChannel;
+import com.proyect.masterdata.domain.OnboardModule;
 import com.proyect.masterdata.domain.Store;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.OnboardingDTO;
@@ -19,6 +20,7 @@ import com.proyect.masterdata.repository.CategoryRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.EntryChannelRepository;
 import com.proyect.masterdata.repository.OnboardChannelRepository;
+import com.proyect.masterdata.repository.OnboardModuleRepository;
 import com.proyect.masterdata.repository.OnboardRepository;
 import com.proyect.masterdata.repository.StoreRepository;
 import com.proyect.masterdata.repository.UserRepository;
@@ -40,6 +42,7 @@ public class OnboardImpl implements IOnboard {
     private final UserRepository userRepository;
     private final StoreRepository storeRepository;
     private final OnboardChannelRepository onboardChannelRepository;
+    private final OnboardModuleRepository onboardModuleRepository;
 
     @Override
     public Onboard save(RequestOnboard requestOnboard) throws InternalErrorExceptions, BadRequestExceptions {
@@ -142,6 +145,11 @@ public class OnboardImpl implements IOnboard {
                 List<String> closingChannels = onboardChannels.stream()
                         .map(onboardChannel -> onboardChannel.getClosingChannel().getName()).toList();
                 onboardingDTO.setClosingChannels(closingChannels);
+
+                List<OnboardModule> onboardModules = onboardModuleRepository.findByOnboardId(onboard.getId());
+                List<String> modules = onboardModules.stream().map(onboardModule -> onboardModule.getModule().getName())
+                        .toList();
+                onboardingDTO.setModules(modules);
 
                 onboardingDTO.setEntryChannel(onboard.getEntryChannel().getName());
 

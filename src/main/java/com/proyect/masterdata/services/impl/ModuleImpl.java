@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -240,5 +241,22 @@ public class ModuleImpl implements IModule {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
+    }
+
+    @Override
+    public List<ModuleDTO> listModule() throws BadRequestExceptions {
+        List<Module> modules = new ArrayList<>();
+
+        try {
+            modules = moduleRepository.findAllByStatusTrue();
+        } catch (RuntimeException e) {
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (modules.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return moduleMapper.listModuleToListModuleDTO(modules);
     }
 }
