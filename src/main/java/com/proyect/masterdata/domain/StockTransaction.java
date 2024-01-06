@@ -35,6 +35,9 @@ public class StockTransaction {
     @Column(name = "cantidad")
     private Integer quantity;
 
+    @Column(name = "serial")
+    private String serial;
+
     @Column(name = "fecha_regisstro")
     @CreationTimestamp
     private Date registrationDate;

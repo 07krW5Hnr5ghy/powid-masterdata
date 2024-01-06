@@ -52,6 +52,9 @@ public class Purchase {
     @Column(name = "id_proveedor_producto")
     private Long supplierProductId;
 
+    @Column(name = "precio_unitario")
+    private Double unitPrice;
+
     @Column(name = "id_cliente")
     private Long clientId;
 

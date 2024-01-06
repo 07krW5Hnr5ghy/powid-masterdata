@@ -230,7 +230,9 @@ public class ClientImpl implements IClient {
     @Override
     public Page<ClientDTO> list(String ruc, String business, String user, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+
         Page<Client> clientPage;
+
         try {
             clientPage = clientRepositoryCustom.searchForClient(ruc, business, user, sort, sortColumn, pageNumber,
                     pageSize, true);
@@ -238,9 +240,11 @@ public class ClientImpl implements IClient {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
         if (clientPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
+
         List<ClientDTO> clientDTOList = clientPage.getContent().stream().map(client -> ClientDTO.builder()
                 .name(client.getName().toUpperCase())
                 .surname(client.getSurname().toUpperCase())
@@ -254,6 +258,7 @@ public class ClientImpl implements IClient {
                 .district(client.getDistrict().getName())
                 .status(client.getStatus())
                 .build()).toList();
+
         return new PageImpl<>(clientDTOList,
                 clientPage.getPageable(), clientPage.getTotalElements());
     }

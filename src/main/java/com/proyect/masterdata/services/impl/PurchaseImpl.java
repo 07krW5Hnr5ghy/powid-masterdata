@@ -39,12 +39,10 @@ public class PurchaseImpl implements IPurchase {
             throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
-        Purchase purchase;
         Warehouse warehouseData;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            purchase = purchaseRepository.findBySerial(serial.toUpperCase());
             warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -59,24 +57,33 @@ public class PurchaseImpl implements IPurchase {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
-        if (purchase != null) {
-            throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
-        }
-
         try {
             purchaseRepository.saveAll(items.stream().map(purchaseItem -> {
+
                 SupplierProduct supplierProduct = supplierProductRepository
                         .findBySerialAndStatusTrue(purchaseItem.getSupplierProductSerial());
+
+                if (supplierProduct == null) {
+                    throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                }
+
+                Purchase purchase = purchaseRepository.findBySerialAndSupplierProductId(serial.toUpperCase(),
+                        supplierProduct.getId());
+
+                if (purchase != null) {
+                    throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
+                }
 
                 return Purchase.builder()
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .quantity(purchaseItem.getQuantity())
                         .registrationDate(new Date(System.currentTimeMillis()))
-                        .serial(purchaseItem.getSerial().toUpperCase())
+                        .serial(serial.toUpperCase())
                         .status(true)
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
+                        .unitPrice(purchaseItem.getUnitPrice())
                         .tokenUser(user.getName())
                         .build();
             }).toList());

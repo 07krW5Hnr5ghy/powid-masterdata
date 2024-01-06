@@ -55,9 +55,10 @@ public class ShipmentImpl implements IShipment {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
             shipment = shipmentRepository.findBySerial(serial.toUpperCase());
-            stockTransactionType = stockTransactionTypeRepository.findByNameAndStatusTrue("entrada");
+            stockTransactionType = stockTransactionTypeRepository.findByNameAndStatusTrue("ENTRADA");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
@@ -69,6 +70,10 @@ public class ShipmentImpl implements IShipment {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
+        if (warehouseData.getClientId() != user.getClientId()) {
+            throw new BadRequestExceptions(Constants.ErrorWarehouse);
+        }
+
         if (shipment != null) {
             throw new BadRequestExceptions(Constants.ErrorShipmentExists);
         }
@@ -76,17 +81,27 @@ public class ShipmentImpl implements IShipment {
         try {
 
             for (RequestShipment requestShipment : requestShipmentList) {
-                Purchase purchase = purchaseRepository.findBySerial(requestShipment.getSerial());
-
-                if (purchase == null) {
-                    throw new BadRequestExceptions(Constants.ErrorPurchase);
-                }
 
                 SupplierProduct supplierProduct = supplierProductRepository
-                        .findBySerialAndStatusTrue(requestShipment.getSerial());
+                        .findBySerialAndStatusTrue(requestShipment.getSupplierProductSerial());
 
                 if (supplierProduct == null) {
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                }
+
+                StockTransaction existentStockTransaction = stockTransactionRepository.findBySerialAndSupplierProductId(
+                        serial,
+                        supplierProduct.getId());
+
+                if (existentStockTransaction != null) {
+                    throw new BadRequestExceptions(Constants.ErrorStockTransactionExists);
+                }
+
+                Purchase purchase = purchaseRepository
+                        .findBySerialAndSupplierProductId(requestShipment.getPurchaseSerial(), supplierProduct.getId());
+
+                if (purchase == null) {
+                    throw new BadRequestExceptions(Constants.ErrorPurchase);
                 }
 
                 StockTransaction stockTransaction = stockTransactionRepository.save(StockTransaction.builder()
@@ -94,6 +109,7 @@ public class ShipmentImpl implements IShipment {
                         .clientId(user.getClientId())
                         .quantity(requestShipment.getQuantity())
                         .registrationDate(new Date(System.currentTimeMillis()))
+                        .serial(serial.toUpperCase())
                         .stockTransactionType(stockTransactionType)
                         .stockTransactionTypeId(stockTransactionType.getId())
                         .supplierProduct(supplierProduct)
@@ -111,15 +127,13 @@ public class ShipmentImpl implements IShipment {
                         .purchaseId(purchase.getId())
                         .quantity(requestShipment.getQuantity())
                         .registrationDate(new Date(System.currentTimeMillis()))
-                        .serial(requestShipment.getSerial())
+                        .serial(serial.toUpperCase())
                         .status(true)
                         .stockTransaction(stockTransaction)
                         .stockTransactionId(stockTransaction.getId())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
                         .tokenUser(user.getName())
-                        .totalPurchasePrice(requestShipment.getTotalPurchasePrice())
-                        .unitPurchasePrice(requestShipment.getUnitPurchasePrice())
                         .build());
             }
 
@@ -130,6 +144,7 @@ public class ShipmentImpl implements IShipment {
 
         } catch (RuntimeException e) {
             log.error(e.getMessage());
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }

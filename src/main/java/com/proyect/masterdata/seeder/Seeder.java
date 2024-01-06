@@ -18,6 +18,8 @@ import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.UserRole;
 import com.proyect.masterdata.dto.LocationDTO;
 import com.proyect.masterdata.dto.request.RequestProductSave;
+import com.proyect.masterdata.dto.request.RequestPurchase;
+import com.proyect.masterdata.dto.request.RequestShipment;
 import com.proyect.masterdata.dto.request.RequestStockTransaction;
 import com.proyect.masterdata.dto.request.RequestSupplier;
 import com.proyect.masterdata.dto.request.RequestSupplierProduct;
@@ -44,6 +46,8 @@ import com.proyect.masterdata.services.IModel;
 import com.proyect.masterdata.services.IModule;
 import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.services.IProvince;
+import com.proyect.masterdata.services.IPurchase;
+import com.proyect.masterdata.services.IShipment;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.services.ISizeType;
 import com.proyect.masterdata.services.IStockTransaction;
@@ -95,6 +99,8 @@ public class Seeder implements CommandLineRunner {
         private final IStockTransaction iStockTransaction;
         private final IModule iModule;
         private final ISubscription iSubscription;
+        private final IShipment iShipment;
+        private final IPurchase iPurchase;
 
         @Override
         public void run(String... args) throws Exception {
@@ -885,34 +891,223 @@ public class Seeder implements CommandLineRunner {
 
                 iWarehouse.save(warehouse4, "fcasas");
 
-                RequestStockTransaction stockTransaction1 = RequestStockTransaction.builder()
-                                .quantity(10)
-                                .stockTransactionType("entrada")
-                                .supplierProductSerial("A00001A")
-                                .warehouse("luminous")
-                                .build();
+                List<RequestPurchase> requestPurchaseList1 = new ArrayList<>();
 
-                RequestStockTransaction stockTransaction2 = RequestStockTransaction.builder()
+                RequestPurchase requestPurchase1 = RequestPurchase.builder()
                                 .quantity(15)
-                                .stockTransactionType("entrada")
-                                .supplierProductSerial("A00002B")
-                                .warehouse("oikas")
+                                .supplierProductSerial("A00001A")
+                                .unitPrice(3.40)
                                 .build();
 
-                RequestStockTransaction stockTransaction3 = RequestStockTransaction.builder()
+                requestPurchaseList1.add(requestPurchase1);
+
+                RequestPurchase requestPurchase2 = RequestPurchase.builder()
+                                .quantity(4)
+                                .supplierProductSerial("A00001B")
+                                .unitPrice(7.8)
+                                .build();
+
+                requestPurchaseList1.add(requestPurchase2);
+
+                RequestPurchase requestPurchase3 = RequestPurchase.builder()
                                 .quantity(20)
-                                .stockTransactionType("entrada")
-                                .supplierProductSerial("A00003A")
-                                .warehouse("luminous")
+                                .supplierProductSerial("A00002A")
+                                .unitPrice(12.45)
                                 .build();
 
-                List<RequestStockTransaction> stockTransactionList = new ArrayList<>();
+                requestPurchaseList1.add(requestPurchase3);
 
-                stockTransactionList.add(stockTransaction1);
-                stockTransactionList.add(stockTransaction2);
-                stockTransactionList.add(stockTransaction3);
+                RequestPurchase requestPurchase4 = RequestPurchase.builder()
+                                .quantity(25)
+                                .supplierProductSerial("A00002B")
+                                .unitPrice(20.03)
+                                .build();
 
-                iStockTransaction.save(stockTransactionList, "gjimenez");
+                requestPurchaseList1.add(requestPurchase4);
+
+                RequestPurchase requestPurchase5 = RequestPurchase.builder()
+                                .quantity(7)
+                                .supplierProductSerial("A00003A")
+                                .unitPrice(14.76)
+                                .build();
+
+                requestPurchaseList1.add(requestPurchase5);
+
+                RequestPurchase requestPurchase6 = RequestPurchase.builder()
+                                .quantity(15)
+                                .supplierProductSerial("A00003B")
+                                .unitPrice(2.91)
+                                .build();
+
+                requestPurchaseList1.add(requestPurchase6);
+
+                List<RequestPurchase> requestPurchaseList2 = new ArrayList<>();
+
+                RequestPurchase requestPurchase7 = RequestPurchase.builder()
+                                .quantity(9)
+                                .supplierProductSerial("B00001A")
+                                .unitPrice(23.77)
+                                .build();
+
+                requestPurchaseList2.add(requestPurchase7);
+
+                RequestPurchase requestPurchase8 = RequestPurchase.builder()
+                                .quantity(15)
+                                .supplierProductSerial("B00001B")
+                                .unitPrice(13.91)
+                                .build();
+
+                requestPurchaseList2.add(requestPurchase8);
+
+                RequestPurchase requestPurchase9 = RequestPurchase.builder()
+                                .quantity(36)
+                                .supplierProductSerial("B00002A")
+                                .unitPrice(5.19)
+                                .build();
+
+                requestPurchaseList2.add(requestPurchase9);
+
+                RequestPurchase requestPurchase10 = RequestPurchase.builder()
+                                .quantity(13)
+                                .supplierProductSerial("B00002B")
+                                .unitPrice(2.72)
+                                .build();
+
+                requestPurchaseList2.add(requestPurchase10);
+
+                RequestPurchase requestPurchase11 = RequestPurchase.builder()
+                                .quantity(20)
+                                .supplierProductSerial("B00003B")
+                                .unitPrice(17.40)
+                                .build();
+
+                requestPurchaseList2.add(requestPurchase11);
+
+                RequestPurchase requestPurchase12 = RequestPurchase.builder()
+                                .quantity(27)
+                                .supplierProductSerial("B00003A")
+                                .unitPrice(10.99)
+                                .build();
+
+                requestPurchaseList2.add(requestPurchase12);
+
+                iPurchase.save("AA00001", "luminous", requestPurchaseList1, "gjimenez");
+                iPurchase.save("BB00001", "alcazar", requestPurchaseList2, "fcasas");
+
+                List<RequestShipment> requestShipmentList1 = new ArrayList<>();
+
+                RequestShipment requestShipment1 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("AA00001")
+                                .quantity(15)
+                                .supplierProductSerial("A00001A")
+                                .build();
+
+                requestShipmentList1.add(requestShipment1);
+
+                RequestShipment requestShipment2 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("AA00001")
+                                .quantity(4)
+                                .supplierProductSerial("A00001B")
+                                .build();
+
+                requestShipmentList1.add(requestShipment2);
+
+                RequestShipment requestShipment3 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("AA00001")
+                                .quantity(20)
+                                .supplierProductSerial("A00002A")
+                                .build();
+
+                requestShipmentList1.add(requestShipment3);
+
+                RequestShipment requestShipment4 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("AA00001")
+                                .quantity(25)
+                                .supplierProductSerial("A00002B")
+                                .build();
+
+                requestShipmentList1.add(requestShipment4);
+
+                RequestShipment requestShipment5 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("AA00001")
+                                .quantity(7)
+                                .supplierProductSerial("A00003A")
+                                .build();
+
+                requestShipmentList1.add(requestShipment5);
+
+                RequestShipment requestShipment6 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("AA00001")
+                                .quantity(15)
+                                .supplierProductSerial("A00003B")
+                                .build();
+
+                requestShipmentList1.add(requestShipment6);
+
+                List<RequestShipment> requestShipmentList2 = new ArrayList<>();
+
+                RequestShipment requestShipment7 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("BB00001")
+                                .quantity(9)
+                                .supplierProductSerial("B00001A")
+                                .build();
+
+                requestShipmentList2.add(requestShipment7);
+
+                RequestShipment requestShipment8 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("BB00001")
+                                .quantity(15)
+                                .supplierProductSerial("B00001B")
+                                .build();
+
+                requestShipmentList2.add(requestShipment8);
+
+                RequestShipment requestShipment9 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("BB00001")
+                                .quantity(36)
+                                .supplierProductSerial("B00002A")
+                                .build();
+
+                requestShipmentList2.add(requestShipment9);
+
+                RequestShipment requestShipment10 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("BB00001")
+                                .quantity(13)
+                                .supplierProductSerial("B00002B")
+                                .build();
+
+                requestShipmentList2.add(requestShipment10);
+
+                RequestShipment requestShipment11 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("BB00001")
+                                .quantity(20)
+                                .supplierProductSerial("B00003A")
+                                .build();
+
+                requestShipmentList2.add(requestShipment11);
+
+                RequestShipment requestShipment12 = RequestShipment.builder()
+                                .observations("no aplica")
+                                .purchaseSerial("BB00001")
+                                .quantity(27)
+                                .supplierProductSerial("B00003B")
+                                .build();
+
+                requestShipmentList2.add(requestShipment12);
+
+                iShipment.save("SA00001", "luminous", requestShipmentList1, "gjimenez");
+                iShipment.save("SB00001", "alcazar", requestShipmentList2, "fcasas");
 
         }
 
