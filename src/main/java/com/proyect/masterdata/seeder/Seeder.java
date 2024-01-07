@@ -991,8 +991,8 @@ public class Seeder implements CommandLineRunner {
 
                 requestPurchaseList2.add(requestPurchase12);
 
-                iPurchase.save("AA00001", "luminous", requestPurchaseList1, "gjimenez");
-                iPurchase.save("BB00001", "alcazar", requestPurchaseList2, "fcasas");
+                iPurchase.save("AA00001", requestPurchaseList1, "gjimenez");
+                iPurchase.save("BB00001", requestPurchaseList2, "fcasas");
 
                 List<RequestShipment> requestShipmentList1 = new ArrayList<>();
 

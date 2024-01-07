@@ -1,20 +1,25 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.Warehouse;
+import com.proyect.masterdata.dto.PurchaseDTO;
 import com.proyect.masterdata.dto.request.RequestPurchase;
 import com.proyect.masterdata.dto.request.RequestStockTransaction;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.PurchaseRepository;
+import com.proyect.masterdata.repository.PurchaseRepositoryCustom;
 import com.proyect.masterdata.repository.SupplierProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.repository.WarehouseRepository;
@@ -33,17 +38,16 @@ public class PurchaseImpl implements IPurchase {
     private final PurchaseRepository purchaseRepository;
     private final WarehouseRepository warehouseRepository;
     private final SupplierProductRepository supplierProductRepository;
+    private final PurchaseRepositoryCustom purchaseRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String serial, String warehouse, List<RequestPurchase> items, String tokenUser)
+    public ResponseSuccess save(String serial, List<RequestPurchase> items, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
-        Warehouse warehouseData;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -51,10 +55,6 @@ public class PurchaseImpl implements IPurchase {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (warehouseData == null) {
-            throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
         try {
@@ -84,7 +84,7 @@ public class PurchaseImpl implements IPurchase {
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
                         .unitPrice(purchaseItem.getUnitPrice())
-                        .tokenUser(user.getName())
+                        .tokenUser(user.getUsername())
                         .build();
             }).toList());
 
@@ -95,6 +95,37 @@ public class PurchaseImpl implements IPurchase {
         } catch (RuntimeException e) {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<PurchaseDTO> list(String serial, String user, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+
+        Page<Purchase> pagePurchase;
+        Long clientId;
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            pagePurchase = purchaseRepositoryCustom.searchForPurchase(clientId, serial, sort, sortColumn,
+                    pageNumber, pageSize, true);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.ResultsFound);
+        }
+
+        if (pagePurchase.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<PurchaseDTO> purchaseDTOs = pagePurchase.getContent().stream().map(purchase -> PurchaseDTO.builder()
+                .date(purchase.getRegistrationDate())
+                .quantity(purchase.getQuantity())
+                .serial(purchase.getSerial())
+                .supplierProductSerial(purchase.getSupplierProduct().getSerial())
+                .unitPrice(purchase.getUnitPrice())
+                .build()).toList();
+
+        return new PageImpl<>(purchaseDTOs, pagePurchase.getPageable(), pagePurchase.getTotalElements());
     }
 
 }

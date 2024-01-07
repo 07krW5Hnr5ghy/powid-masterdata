@@ -1,8 +1,11 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Purchase;
@@ -12,12 +15,14 @@ import com.proyect.masterdata.domain.StockTransactionType;
 import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.Warehouse;
+import com.proyect.masterdata.dto.ShipmentDTO;
 import com.proyect.masterdata.dto.request.RequestShipment;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.PurchaseRepository;
 import com.proyect.masterdata.repository.ShipmentRepository;
+import com.proyect.masterdata.repository.ShipmentRepositoryCustom;
 import com.proyect.masterdata.repository.StockTransactionRepository;
 import com.proyect.masterdata.repository.StockTransactionTypeRepository;
 import com.proyect.masterdata.repository.SupplierProductRepository;
@@ -41,6 +46,7 @@ public class ShipmentImpl implements IShipment {
     private final StockTransactionRepository stockTransactionRepository;
     private final StockTransactionTypeRepository stockTransactionTypeRepository;
     private final SupplierProductRepository supplierProductRepository;
+    private final ShipmentRepositoryCustom shipmentRepositoryCustom;
 
     @Override
     public ResponseSuccess save(String serial, String warehouse, List<RequestShipment> requestShipmentList,
@@ -114,7 +120,7 @@ public class ShipmentImpl implements IShipment {
                         .stockTransactionTypeId(stockTransactionType.getId())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
-                        .tokenUser(user.getName())
+                        .tokenUser(user.getUsername())
                         .warehouse(warehouseData)
                         .warehouseId(warehouseData.getId())
                         .build());
@@ -133,7 +139,9 @@ public class ShipmentImpl implements IShipment {
                         .stockTransactionId(stockTransaction.getId())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
-                        .tokenUser(user.getName())
+                        .tokenUser(user.getUsername())
+                        .warehouse(warehouseData)
+                        .warehouseId(warehouseData.getId())
                         .build());
             }
 
@@ -147,6 +155,44 @@ public class ShipmentImpl implements IShipment {
             e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<ShipmentDTO> list(String serial, String user, String warehouse, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+        Page<Shipment> pageShipment;
+        Long clientId;
+        Long warehouseId;
+
+        if (warehouse != null) {
+            warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+        } else {
+            warehouseId = null;
+        }
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            pageShipment = shipmentRepositoryCustom.searchForShipment(clientId, serial, warehouseId, sort, sortColumn,
+                    pageNumber, pageSize);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.ResultsFound);
+        }
+
+        if (pageShipment.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<ShipmentDTO> shipmentDTOs = pageShipment.getContent().stream().map(shipment -> ShipmentDTO.builder()
+                .purchaseSerial(shipment.getPurchase().getSerial())
+                .quantity(shipment.getQuantity())
+                .serial(shipment.getSerial())
+                .supplierProductSerial(shipment.getSupplierProduct().getSerial())
+                .warehouse(shipment.getWarehouse().getName())
+                .date(shipment.getRegistrationDate())
+                .build()).toList();
+
+        return new PageImpl<>(shipmentDTOs, pageShipment.getPageable(), pageShipment.getTotalElements());
     }
 
 }

@@ -64,6 +64,9 @@ public class Shipment {
     @Column(name = "id_movimiento_inventario")
     private Long stockTransactionId;
 
+    @Column(name = "id_warehouse")
+    private Long warehouseId;
+
     @Column(name = "usuario_token")
     private String tokenUser;
 
@@ -82,4 +85,8 @@ public class Shipment {
     @ManyToOne
     @JoinColumn(name = "id_movimiento_inventario", columnDefinition = "stockTransactionId", insertable = false, updatable = false)
     private StockTransaction stockTransaction;
+
+    @ManyToOne
+    @JoinColumn(name = "id_warehouse", columnDefinition = "warehouseId", insertable = false, updatable = false)
+    private Warehouse warehouse;
 }

@@ -1097,6 +1097,207 @@ http://localhost:8080/masterdata/province/department?department=amazonas
 
 http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&user=admin1
 
+### GET /purchase protected
+
+- Description : list all active purchases
+
+- Request : none
+
+- Paramenters : 
+
+1. serial : filter purchases by serial
+2. user : filter purchases by the client of the user (required)
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response : 
+
+{
+    "content": [
+        {
+            "serial": "AA00001",
+            "quantity": 15,
+            "supplierProductSerial": "A00001A",
+            "unitPrice": 3.4,
+            "date": "2024-01-07T04:07:28.998+00:00"
+        },
+        {
+            "serial": "AA00001",
+            "quantity": 4,
+            "supplierProductSerial": "A00001B",
+            "unitPrice": 7.8,
+            "date": "2024-01-07T04:07:28.998+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 2,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": false,
+    "totalPages": 3,
+    "totalElements": 6,
+    "first": true,
+    "numberOfElements": 2,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "empty": false
+}
+
+- Example : 
+
+http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2
+
+### POST /purchase protected
+
+- Description : add one purchase to the database
+
+- Request : 
+
+[
+    {
+        "quantity": number of purchased units,
+        "supplierProductSerial": serial of the provider product,
+        "unitPrice": unit price of the product
+    }
+]
+
+- Parameters : 
+
+1. serial : serial of the purchase order
+2. tokenUser : username of the user who creates the purchase
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/purchase?serial=AA00001&tokenUser=gjimenez
+
+[
+    {
+        "quantity": 15,
+        "supplierProductSerial": "A00001A",
+        "unitPrice": 4.70
+    }
+    ... more items
+]
+
+### GET /shipment protected
+
+- Description : list all shipments
+
+- Request : none
+
+- Paramenters : 
+
+1. serial : filter purchases by serial
+2. warehouse : filter by warehouse
+3. user : filter purchases by the client of the user (required)
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
+
+- Response : 
+
+{
+    "content": [
+        {
+            "serial": "SA00001",
+            "warehouse": "LUMINOUS",
+            "quantity": 15,
+            "supplierProductSerial": "A00001A",
+            "purchaseSerial": "AA00001",
+            "date": "2024-01-07T02:27:06.523+00:00"
+        },
+        {
+            "serial": "SA00001",
+            "warehouse": "LUMINOUS",
+            "quantity": 4,
+            "supplierProductSerial": "A00001B",
+            "purchaseSerial": "AA00001",
+            "date": "2024-01-07T02:27:06.539+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 2,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": false,
+    "totalElements": 6,
+    "totalPages": 3,
+    "first": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 2,
+    "empty": false
+}
+
+- Example : 
+
+http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous
+
+### POST /shipment protected
+
+- Description : add one shipment to the database
+
+- Request : 
+
+[
+    {
+        "quantity": number of units,
+        "observations": observation of the state of the goods,
+        "supplierProductSerial": serial of the provider product,
+        "purchaseSerial": serial of the purchase order of the goods
+    }
+    ... more items
+]
+
+- Parameters : 
+
+1. serial : serial of the purchase order
+2. warehouse : name of the warehouse where arrive the shipment
+3. tokenUser : username of the user who creates the purchase
+
+- Response : 
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/shipment?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
+
+[
+    {
+        "quantity": 15,
+        "observations":"en buen estado",
+        "supplierProductSerial": "A00001A",
+        "purchaseSerial": "AA00001"
+    }
+    ... more items
+]
+
 ### GET /size-type protected
 
 - Description : list all active size types
