@@ -4,18 +4,16 @@ import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
+import com.proyect.masterdata.domain.GeneralStock;
 import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.Warehouse;
-import com.proyect.masterdata.domain.WarehouseStock;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.repository.GeneralStockRepository;
 import com.proyect.masterdata.repository.SupplierProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.repository.WarehouseRepository;
-import com.proyect.masterdata.repository.WarehouseStockRepository;
-import com.proyect.masterdata.services.IWarehouseStock;
+import com.proyect.masterdata.services.IGeneralStock;
 import com.proyect.masterdata.utils.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -24,26 +22,21 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class WarehouseStockImpl implements IWarehouseStock {
+public class GeneralStockImpl implements IGeneralStock {
 
-    private final WarehouseStockRepository warehouseStockRepository;
     private final UserRepository userRepository;
     private final SupplierProductRepository supplierProductRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final GeneralStockRepository generalStockRepository;
 
     @Override
-    public ResponseSuccess in(String warehouse, String supplierProductSerial, Integer quantity, String tokenUser)
+    public ResponseSuccess in(String supplierProductSerial, Integer quantity, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
-
         User user;
         SupplierProduct supplierProduct;
-        Warehouse warehouseData;
-        WarehouseStock warehouseStock;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-            warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -57,30 +50,21 @@ public class WarehouseStockImpl implements IWarehouseStock {
             throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
         }
 
-        if (warehouseData == null) {
-            throw new BadRequestExceptions(Constants.ErrorWarehouse);
-        }
-
-        if (warehouseData.getClientId() != user.getClientId()) {
-            throw new BadRequestExceptions(Constants.ErrorWarehouse);
-        }
-
         try {
-            warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouseData.getId(),
+            GeneralStock generalStock = generalStockRepository.findByClientIdAndSupplierProductId(user.getClientId(),
                     supplierProduct.getId());
-
-            if (warehouseStock != null) {
-                warehouseStock.setQuantity(warehouseStock.getQuantity() + quantity);
-                warehouseStock.setUpdateDate(new Date(System.currentTimeMillis()));
-                warehouseStockRepository.save(warehouseStock);
+            if (generalStock != null) {
+                generalStock.setQuantity(generalStock.getQuantity() + quantity);
+                generalStock.setUpdateDate(new Date(System.currentTimeMillis()));
+                generalStockRepository.save(generalStock);
             } else {
-                warehouseStockRepository.save(WarehouseStock.builder()
+                generalStockRepository.save(GeneralStock.builder()
                         .quantity(quantity)
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
-                        .warehouse(warehouseData)
-                        .warehouseId(warehouseData.getId())
                         .build());
             }
 
@@ -95,18 +79,15 @@ public class WarehouseStockImpl implements IWarehouseStock {
     }
 
     @Override
-    public ResponseSuccess out(String warehouse, String supplierProductSerial, Integer quantity, String tokenUser)
+    public ResponseSuccess out(String supplierProductSerial, Integer quantity, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         SupplierProduct supplierProduct;
-        Warehouse warehouseData;
-        WarehouseStock warehouseStock;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-            warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -120,37 +101,29 @@ public class WarehouseStockImpl implements IWarehouseStock {
             throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
         }
 
-        if (warehouseData == null) {
-            throw new BadRequestExceptions(Constants.ErrorWarehouse);
-        }
-
-        if (warehouseData.getClientId() != user.getClientId()) {
-            throw new BadRequestExceptions(Constants.ErrorWarehouse);
-        }
-
         try {
-            warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouseData.getId(),
+            GeneralStock generalStock = generalStockRepository.findByClientIdAndSupplierProductId(user.getClientId(),
                     supplierProduct.getId());
 
-            if (warehouseStock == null) {
-                throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
+            if (generalStock == null) {
+                throw new BadRequestExceptions(Constants.ErrorGeneralStock);
             }
 
-            if (quantity > warehouseStock.getQuantity()) {
-                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
+            if (quantity > generalStock.getQuantity()) {
+                throw new BadRequestExceptions(Constants.ErrorGeneralStockLess);
             }
 
-            warehouseStock.setQuantity(warehouseStock.getQuantity() - quantity);
+            generalStock.setQuantity(generalStock.getQuantity() - quantity);
 
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+
     }
 
 }

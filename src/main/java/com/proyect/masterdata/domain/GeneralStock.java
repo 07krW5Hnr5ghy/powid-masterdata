@@ -35,12 +35,6 @@ public class GeneralStock {
     @Column(name = "cantidad")
     private Integer quantity;
 
-    @Column(name = "precio_compra_unitario")
-    private Double unitPurchasePrice;
-
-    @Column(name = "precio_compra_total")
-    private Double totalPurchasePrice;
-
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date registrationDate;

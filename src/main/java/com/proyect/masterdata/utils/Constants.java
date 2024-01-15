@@ -172,5 +172,8 @@ public class Constants {
     public static final String ErrorShipmentExists = "The shipment already exists";
     public static final String ErrorWarehouseStock = "The warehouse stock does not exist";
     public static final String ErrorWarehouseStockExists = "The warehouse stock already exists";
-    public static final String ErrorWarehouseLess = "the quantity is greater than the actual stock";
+    public static final String ErrorWarehouseStockLess = "the quantity is greater than the actual stock";
+    public static final String ErrorGeneralStock = "The general stock does not exists";
+    public static final String ErrorGeneralStockExists = "The general stock already exists";
+    public static final String ErrorGeneralStockLess = "The quantity is greater than the actual stock";
 }

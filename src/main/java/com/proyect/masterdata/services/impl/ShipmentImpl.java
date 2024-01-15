@@ -28,6 +28,7 @@ import com.proyect.masterdata.repository.StockTransactionTypeRepository;
 import com.proyect.masterdata.repository.SupplierProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.repository.WarehouseRepository;
+import com.proyect.masterdata.services.IGeneralStock;
 import com.proyect.masterdata.services.IShipment;
 import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
@@ -49,6 +50,7 @@ public class ShipmentImpl implements IShipment {
     private final SupplierProductRepository supplierProductRepository;
     private final ShipmentRepositoryCustom shipmentRepositoryCustom;
     private final IWarehouseStock iWarehouseStock;
+    private final IGeneralStock iGeneralStock;
 
     @Override
     public ResponseSuccess save(String serial, String warehouse, List<RequestShipment> requestShipmentList,
@@ -96,9 +98,6 @@ public class ShipmentImpl implements IShipment {
                 if (supplierProduct == null) {
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                 }
-
-                iWarehouseStock.in(warehouse, requestShipment.getSupplierProductSerial(), requestShipment.getQuantity(),
-                        tokenUser);
 
                 StockTransaction existentStockTransaction = stockTransactionRepository.findBySerialAndSupplierProductId(
                         serial,
@@ -148,6 +147,12 @@ public class ShipmentImpl implements IShipment {
                         .warehouse(warehouseData)
                         .warehouseId(warehouseData.getId())
                         .build());
+
+                iWarehouseStock.in(warehouse, requestShipment.getSupplierProductSerial(), requestShipment.getQuantity(),
+                        tokenUser);
+
+                iGeneralStock.in(requestShipment.getSupplierProductSerial(), requestShipment.getQuantity(), tokenUser);
+
             }
 
             return ResponseSuccess.builder()
