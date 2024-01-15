@@ -29,6 +29,7 @@ import com.proyect.masterdata.repository.SupplierProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.repository.WarehouseRepository;
 import com.proyect.masterdata.services.IShipment;
+import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class ShipmentImpl implements IShipment {
     private final StockTransactionTypeRepository stockTransactionTypeRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final ShipmentRepositoryCustom shipmentRepositoryCustom;
+    private final IWarehouseStock iWarehouseStock;
 
     @Override
     public ResponseSuccess save(String serial, String warehouse, List<RequestShipment> requestShipmentList,
@@ -94,6 +96,9 @@ public class ShipmentImpl implements IShipment {
                 if (supplierProduct == null) {
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                 }
+
+                iWarehouseStock.in(warehouse, requestShipment.getSupplierProductSerial(), requestShipment.getQuantity(),
+                        tokenUser);
 
                 StockTransaction existentStockTransaction = stockTransactionRepository.findBySerialAndSupplierProductId(
                         serial,

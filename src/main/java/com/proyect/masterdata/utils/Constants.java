@@ -64,6 +64,7 @@ public class Constants {
     public static final String tableProductPrice = "precio_producto";
     public static final String tableCategoryProduct = "categoria_producto";
     public static final String tableOnboardingModule = "onboarding_modulo";
+    public static final String tableReturn = "devolucion";
 
     // Mensajes
     public static final String register = "registration correctly";
@@ -169,4 +170,7 @@ public class Constants {
     public static final String ErrorPurchaseExists = "The purchase already exists";
     public static final String ErrorShipment = "The shipment does not exists";
     public static final String ErrorShipmentExists = "The shipment already exists";
+    public static final String ErrorWarehouseStock = "The warehouse stock does not exist";
+    public static final String ErrorWarehouseStockExists = "The warehouse stock already exists";
+    public static final String ErrorWarehouseLess = "the quantity is greater than the actual stock";
 }

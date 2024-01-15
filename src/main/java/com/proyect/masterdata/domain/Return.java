@@ -1,8 +1,6 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
-
-import org.hibernate.annotations.CreationTimestamp;
+import java.sql.Date;
 
 import com.proyect.masterdata.utils.Constants;
 
@@ -21,40 +19,51 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
-@Table(name = Constants.tableWarehouseStock, schema = Constants.schemaInventory)
-public class WarehouseStock {
+@Table(name = Constants.tableReturn, schema = Constants.schemaInventory)
+public class Return {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_almacen_inventario")
+    @Column(name = "id_devolucion")
     private Long id;
 
     @Column(name = "cantidad")
     private Integer quantity;
 
     @Column(name = "fecha_registro")
-    @CreationTimestamp
     private Date registrationDate;
 
     @Column(name = "fecha_modificacion")
-    @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "id_almacen")
-    private Long warehouseId;
+    @Column(name = "estado")
+    private Boolean status;
 
     @Column(name = "id_proveedor_producto")
     private Long supplierProductId;
 
-    @ManyToOne
-    @JoinColumn(name = "id_almacen", columnDefinition = "warehouseId", insertable = false, updatable = false)
-    private Warehouse warehouse;
+    @Column(name = "id_compra")
+    private Long purchaseId;
+
+    @Column(name = "id_cliente")
+    private Long clientId;
+
+    @Column(name = "usuarioToken")
+    private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
+    @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProduct", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
+
+    @ManyToOne
+    @JoinColumn(name = "id_compra", columnDefinition = "purchaseId", insertable = false, updatable = false)
+    private Purchase purchase;
+
+    @ManyToOne
+    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    private Client client;
 
 }
