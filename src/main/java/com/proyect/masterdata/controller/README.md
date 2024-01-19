@@ -695,6 +695,60 @@ http://localhost:8080/masterdata/entry-channel
 
 http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
 
+### GET /general-stock protected
+
+- Description : list general stock
+
+- Request : none
+
+- Paramenters : 
+
+1. user : filter warehouses by the client of the user (required)
+2. sort : sort the values the only valid values are ASC and DESC, default is ASC
+3. sortColumn : select the value that sorts the list in this case name or user
+4. pageNumber : the page number to select of the list the first is page zero (0) (required)
+5. pageSize : number the records per Page (required)
+
+- Response : 
+
+{
+    "content": [
+        {
+            "supplierProductSerial": "A00001A",
+            "quantity": 15,
+            "registrationDate": "2024-01-19T03:53:33.360+00:00",
+            "updateDate": "2024-01-19T03:53:33.360+00:00"
+        },
+        {
+            "supplierProductSerial": "A00001B",
+            "quantity": 4,
+            "registrationDate": "2024-01-19T03:53:33.390+00:00",
+            "updateDate": "2024-01-19T03:53:33.390+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 2,
+        "pageNumber": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": false,
+    "totalElements": 6,
+    "totalPages": 3,
+    "first": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 2,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/general-stock?pageNumber=0&pageSize=2&user=gjimenez
+
 ### GET /model
 
 - Description : list all the active models registered in the database
@@ -2330,7 +2384,7 @@ http://localhost:8080/masterdata/unit/units?tokenUser=admin1
 
 - example :
 
-http://localhost:8080/masterdata/supplier?pageNumber=0&pageSize=1&user=gjimenez
+http://localhost:8080/masterdata/warehouse?pageNumber=0&pageSize=1&user=gjimenez
 
 ### POST /warehouse protected
 
@@ -2397,3 +2451,60 @@ http://localhost:8080/masterdata/warehouse/warehouses?tokenUser=gjimenez
         "location":"Cusco calle 123"
     }
 ]
+
+### GET /warehouse-stock protected
+
+- Description : list warehouse stock from an warehouse
+
+- Request : none
+
+- Paramenters : 
+
+1. wareshouse : filter warehouse stock by warehouse (required)
+2. user : filter warehouses by the client of the user (required)
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response : 
+
+{
+    "content": [
+        {
+            "warehouse": "LUMINOUS",
+            "supplierProductSerial": "A00001A",
+            "quantity": 15,
+            "registrationDate": "2024-01-19T03:53:33.210+00:00",
+            "updateDate": "2024-01-19T03:53:33.210+00:00"
+        },
+        {
+            "warehouse": "LUMINOUS",
+            "supplierProductSerial": "A00001B",
+            "quantity": 4,
+            "registrationDate": "2024-01-19T03:53:33.385+00:00",
+            "updateDate": "2024-01-19T03:53:33.385+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 2,
+        "pageNumber": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": false,
+    "totalElements": 6,
+    "totalPages": 3,
+    "first": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 2,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/warehouse-stock?warehouse=luminous&pageNumber=0&pageSize=2&user=gjimenez

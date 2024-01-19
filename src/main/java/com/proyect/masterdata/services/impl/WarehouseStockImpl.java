@@ -89,6 +89,9 @@ public class WarehouseStockImpl implements IWarehouseStock {
                         .supplierProductId(supplierProduct.getId())
                         .warehouse(warehouseData)
                         .warehouseId(warehouseData.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .tokenUser(user.getUsername())
                         .build());
             }
 
@@ -172,7 +175,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
             warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
-            warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(warehouseId, clientId, sort,
+            warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(clientId, warehouseId, sort,
                     sortColumn,
                     pageNumber,
                     pageSize);

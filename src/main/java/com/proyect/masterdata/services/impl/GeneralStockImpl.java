@@ -72,6 +72,7 @@ public class GeneralStockImpl implements IGeneralStock {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
+                        .tokenUser(user.getUsername())
                         .build());
             }
 

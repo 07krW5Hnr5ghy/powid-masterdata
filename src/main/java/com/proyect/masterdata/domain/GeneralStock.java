@@ -49,6 +49,9 @@ public class GeneralStock {
     @Column(name = "id_cliente")
     private Long clientId;
 
+    @Column(name = "usuario_token")
+    private String tokenUser;
+
     @ManyToOne
     @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;

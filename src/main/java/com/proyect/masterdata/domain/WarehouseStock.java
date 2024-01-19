@@ -49,6 +49,12 @@ public class WarehouseStock {
     @Column(name = "id_proveedor_producto")
     private Long supplierProductId;
 
+    @Column(name = "id_cliente")
+    private Long clientId;
+
+    @Column(name = "usuario_token")
+    private String tokenUser;
+
     @ManyToOne
     @JoinColumn(name = "id_almacen", columnDefinition = "warehouseId", insertable = false, updatable = false)
     private Warehouse warehouse;
@@ -56,5 +62,9 @@ public class WarehouseStock {
     @ManyToOne
     @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
+
+    @ManyToOne
+    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    private Client client;
 
 }
