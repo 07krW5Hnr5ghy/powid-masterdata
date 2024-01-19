@@ -1,16 +1,22 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.GeneralStock;
 import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.GeneralStockDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.GeneralStockRepository;
+import com.proyect.masterdata.repository.GeneralStockRepositoryCustom;
 import com.proyect.masterdata.repository.SupplierProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IGeneralStock;
@@ -27,6 +33,7 @@ public class GeneralStockImpl implements IGeneralStock {
     private final UserRepository userRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final GeneralStockRepository generalStockRepository;
+    private final GeneralStockRepositoryCustom generalStockRepositoryCustom;
 
     @Override
     public ResponseSuccess in(String supplierProductSerial, Integer quantity, String tokenUser)
@@ -124,6 +131,40 @@ public class GeneralStockImpl implements IGeneralStock {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
+    }
+
+    @Override
+    public Page<GeneralStockDTO> list(String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize)
+            throws InternalErrorExceptions {
+        Page<GeneralStock> generalStockPage;
+        Long clientId;
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            generalStockPage = generalStockRepositoryCustom.searchForGeneralStock(clientId, sort,
+                    sortColumn,
+                    pageNumber,
+                    pageSize);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (generalStockPage.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<GeneralStockDTO> generalStockDTOs = generalStockPage.getContent().stream()
+                .map(generalStock -> GeneralStockDTO.builder()
+                        .quantity(generalStock.getQuantity())
+                        .supplierProductSerial(generalStock.getSupplierProduct().getSerial())
+                        .registrationDate(generalStock.getRegistrationDate())
+                        .updateDate(generalStock.getUpdateDate())
+                        .build())
+                .toList();
+
+        return new PageImpl<>(generalStockDTOs, generalStockPage.getPageable(),
+                generalStockPage.getTotalElements());
     }
 
 }
