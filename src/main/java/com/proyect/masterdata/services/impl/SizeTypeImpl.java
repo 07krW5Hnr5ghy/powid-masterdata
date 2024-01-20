@@ -3,8 +3,6 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.SizeType;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.SizeTypeDTO;
-import com.proyect.masterdata.dto.request.RequestSizeType;
-import com.proyect.masterdata.dto.request.RequestSizeTypeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;

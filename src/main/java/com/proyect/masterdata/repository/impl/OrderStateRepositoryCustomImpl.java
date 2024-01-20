@@ -1,7 +1,9 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.State;
-import com.proyect.masterdata.repository.StateRepositoryCustom;
+import com.proyect.masterdata.domain.OrderState;
+import com.proyect.masterdata.repository.OrderStateRepository;
+import com.proyect.masterdata.repository.OrderStateRepositoryCustom;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -15,48 +17,49 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Repository
-public class StateRepositoryCustomImpl implements StateRepositoryCustom {
-    @PersistenceContext(name="entityManager")
+public class OrderStateRepositoryCustomImpl implements OrderStateRepositoryCustom {
+    @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<State> searchForState(
+    public Page<OrderState> searchForOrderState(
             String name,
             String user,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize,
-            Boolean status){
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<State> criteriaQuery = criteriaBuilder.createQuery(State.class);
-        Root<State> itemRoot = criteriaQuery.from(State.class);
+        CriteriaQuery<OrderState> criteriaQuery = criteriaBuilder.createQuery(OrderState.class);
+        Root<OrderState> itemRoot = criteriaQuery.from(OrderState.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
 
-        if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
+        if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> stateList = new ArrayList<>();
-            if(sort.equalsIgnoreCase("ASC")){
-                stateList = listASC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("ASC")) {
+                stateList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
-            if(sort.equalsIgnoreCase("DESC")){
-                stateList = listDESC(sortColumn,criteriaBuilder,itemRoot);
+            if (sort.equalsIgnoreCase("DESC")) {
+                stateList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[]{})).orderBy(stateList);
-        }else{
-            criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(stateList);
+        } else {
+            criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<State> orderTypedQuery = entityManager.createQuery(criteriaQuery);
-        orderTypedQuery.setFirstResult(pageNumber*pageSize);
+        TypedQuery<OrderState> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
-        Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        long count = getOrderCount(name,user,status);
-        return new PageImpl<>(orderTypedQuery.getResultList(),pageable,count);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        long count = getOrderCount(name, user, status);
+        return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
@@ -64,29 +67,28 @@ public class StateRepositoryCustomImpl implements StateRepositoryCustom {
             String user,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<State> itemRoot
-    ){
+            Root<OrderState> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
 
-        if(name!=null){
+        if (name != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("name")),name.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
         }
 
-        if(user!=null){
+        if (user != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("user")),user.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("user")), user.toUpperCase())));
         }
 
-        if(status){
+        if (status) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
 
-        if(!status){
+        if (!status) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
 
@@ -96,13 +98,12 @@ public class StateRepositoryCustomImpl implements StateRepositoryCustom {
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<State> itemRoot
-    ){
+            Root<OrderState> itemRoot) {
         List<Order> stateList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("NAME")){
+        if (sortColumn.equalsIgnoreCase("NAME")) {
             stateList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
-        if(sortColumn.equalsIgnoreCase("USER")){
+        if (sortColumn.equalsIgnoreCase("USER")) {
             stateList.add(criteriaBuilder.asc(itemRoot.get("user")));
         }
         return stateList;
@@ -111,26 +112,25 @@ public class StateRepositoryCustomImpl implements StateRepositoryCustom {
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<State> itemRoot
-    ){
+            Root<OrderState> itemRoot) {
         List<Order> stateList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("NAME")){
+        if (sortColumn.equalsIgnoreCase("NAME")) {
             stateList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
-        if(sortColumn.equalsIgnoreCase("USER")){
+        if (sortColumn.equalsIgnoreCase("USER")) {
             stateList.add(criteriaBuilder.desc(itemRoot.get("user")));
         }
         return stateList;
     }
 
-    private long getOrderCount(String name,String user,Boolean status){
+    private long getOrderCount(String name, String user, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<State> itemRoot = criteriaQuery.from(State.class);
+        Root<OrderState> itemRoot = criteriaQuery.from(OrderState.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
-        criteriaQuery.where(conditions.toArray(new Predicate[]{}));
+        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
 }

@@ -16,7 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 @Table(name = Constants.tableState, schema = Constants.schemaMaster)
-public class State {
+public class OrderState {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,6 +32,10 @@ public class State {
         @Column(name = "fecha_registro")
         @CreationTimestamp
         private Date dateRegistration;
+
+        @Column(name = "fecha_modificacion")
+        @CreationTimestamp
+        private Date dateUpdate;
 
         @Column(name = "usuario_token", nullable = false)
         private String tokenUser;

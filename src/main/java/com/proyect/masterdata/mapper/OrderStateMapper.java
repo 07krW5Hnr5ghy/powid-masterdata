@@ -1,6 +1,6 @@
 package com.proyect.masterdata.mapper;
 
-import com.proyect.masterdata.domain.State;
+import com.proyect.masterdata.domain.OrderState;
 import com.proyect.masterdata.dto.StateDTO;
 import com.proyect.masterdata.dto.request.RequestStateSave;
 import org.mapstruct.Mapper;
@@ -10,21 +10,21 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface StateMapper {
-    StateMapper INSTANCE = Mappers.getMapper(StateMapper.class);
+public interface OrderStateMapper {
+    OrderStateMapper INSTANCE = Mappers.getMapper(OrderStateMapper.class);
 
     @Mapping(target = "code", source = "id")
-    StateDTO stateToStateDTO(State state);
+    StateDTO stateToStateDTO(OrderState state);
 
-    List<StateDTO> listStateToListStateDTO(List<State> stateList);
+    List<StateDTO> listStateToListStateDTO(List<OrderState> stateList);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "dateRegistration", ignore = true)
     @Mapping(target = "name", source = "requestStateSave.name")
     @Mapping(target = "tokenUser", source = "requestStateSave.user")
-    State stateToName(RequestStateSave requestStateSave);
+    OrderState stateToName(RequestStateSave requestStateSave);
 
-    List<State> listStateToListName(List<RequestStateSave> requestStateSaveList);
+    List<OrderState> listStateToListName(List<RequestStateSave> requestStateSaveList);
 
 }

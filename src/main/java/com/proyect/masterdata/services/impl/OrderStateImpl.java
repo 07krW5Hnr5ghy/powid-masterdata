@@ -1,6 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.State;
+import com.proyect.masterdata.domain.OrderState;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.StateDTO;
 import com.proyect.masterdata.dto.request.RequestState;
@@ -9,11 +9,12 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.mapper.StateMapper;
-import com.proyect.masterdata.repository.StateRepository;
-import com.proyect.masterdata.repository.StateRepositoryCustom;
+import com.proyect.masterdata.mapper.OrderStateMapper;
+import com.proyect.masterdata.repository.OrderStateRepository;
+import com.proyect.masterdata.repository.OrderStateRepositoryCustom;
+import com.proyect.masterdata.repository.OrderStateRepository;
 import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.services.IState;
+import com.proyect.masterdata.services.IOrderState;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,16 +31,16 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class StateImpl implements IState {
-    private final StateRepository stateRepository;
-    private final StateMapper stateMapper;
+public class OrderStateImpl implements IOrderState {
+    private final OrderStateRepository stateRepository;
+    private final OrderStateMapper stateMapper;
     private final UserRepository userRepository;
-    private final StateRepositoryCustom stateRepositoryCustom;
+    private final OrderStateRepositoryCustom orderStateRepositoryCustom;
 
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
-        State state;
+        OrderState state;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
@@ -73,7 +74,7 @@ public class StateImpl implements IState {
     public ResponseSuccess saveAll(List<String> names, String user)
             throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
-        List<State> states;
+        List<OrderState> states;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
@@ -109,7 +110,7 @@ public class StateImpl implements IState {
     @Override
     public StateDTO update(RequestState requestState) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
-        State state;
+        OrderState state;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(requestState.getUser().toUpperCase());
@@ -143,7 +144,7 @@ public class StateImpl implements IState {
     @Transactional
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
-        State state;
+        OrderState state;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
@@ -176,7 +177,7 @@ public class StateImpl implements IState {
 
     @Override
     public List<StateDTO> listState() throws BadRequestExceptions {
-        List<State> states = new ArrayList<>();
+        List<OrderState> states = new ArrayList<>();
         try {
             states = stateRepository.findAllByStatusTrue();
         } catch (RuntimeException e) {
@@ -192,9 +193,10 @@ public class StateImpl implements IState {
     @Override
     public Page<StateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<State> statePage;
+        Page<OrderState> statePage;
         try {
-            statePage = stateRepositoryCustom.searchForState(name, user, sort, sortColumn, pageNumber, pageSize, true);
+            statePage = orderStateRepositoryCustom.searchForOrderState(name, user, sort, sortColumn, pageNumber,
+                    pageSize, true);
         } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -209,9 +211,10 @@ public class StateImpl implements IState {
     @Override
     public Page<StateDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<State> statePage;
+        Page<OrderState> statePage;
         try {
-            statePage = stateRepositoryCustom.searchForState(name, user, sort, sortColumn, pageNumber, pageSize, false);
+            statePage = orderStateRepositoryCustom.searchForOrderState(name, user, sort, sortColumn, pageNumber,
+                    pageSize, false);
         } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);

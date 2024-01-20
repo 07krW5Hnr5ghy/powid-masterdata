@@ -5,7 +5,7 @@ import com.proyect.masterdata.dto.request.RequestState;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.services.IState;
+import com.proyect.masterdata.services.IOrderState;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class StateController {
 
-    private final IState iState;
+    private final IOrderState iState;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
