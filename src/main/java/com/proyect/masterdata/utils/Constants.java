@@ -7,6 +7,7 @@ public class Constants {
     public static final String schemaArticle = "article";
     public static final String schemaPayment = "payment";
     public static final String schemaInventory = "inventory";
+    public static final String schemaOrder = "sale";
     // Tablas
     public static final String tableDepartment = "departamento";
     public static final String tableProvince = "provincia";
@@ -65,6 +66,13 @@ public class Constants {
     public static final String tableCategoryProduct = "categoria_producto";
     public static final String tableOnboardingModule = "onboarding_modulo";
     public static final String tableReturn = "devolucion";
+    public static final String tableOrder = "pedido";
+    public static final String tableSale = "venta";
+    public static final String tableManagementType = "tipo_gestion";
+    public static final String tableItem = "item";
+    public static final String tableCustomer = "comprador";
+    public static final String tableCancellationReason = "razon_cancelacion";
+    public static final String tableCancelledOrder = "orden_cancelada";
 
     // Mensajes
     public static final String register = "registration correctly";

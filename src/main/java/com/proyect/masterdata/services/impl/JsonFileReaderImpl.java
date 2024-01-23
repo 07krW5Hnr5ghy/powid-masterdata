@@ -36,7 +36,7 @@ public class JsonFileReaderImpl implements IJsonFileReader {
             // uncomment for deployment
             // File file = new File("src/main/peru.json");
             File file = new File(
-                    "C:\\Users\\jryn1\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\peru.json");
+                    "C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\peru.json");
             ObjectMapper mapper = new ObjectMapper();
 
             List<LocationDTO> locations = mapper.readValue(file,
@@ -61,7 +61,7 @@ public class JsonFileReaderImpl implements IJsonFileReader {
             // uncomment for deployment
             // File file = new File("src/main/peru.json");
             File file = new File(
-                    "C:\\Users\\jryn1\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\peru.json");
+                    "C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\peru.json");
             ObjectMapper mapper = new ObjectMapper();
 
             List<LocationDTO> locations = mapper.readValue(file,
@@ -88,7 +88,7 @@ public class JsonFileReaderImpl implements IJsonFileReader {
             // uncomment for deployment
             // File file = new File("src/main/peru.json");
             File file = new File(
-                    "C:\\Users\\jryn1\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\peru.json");
+                    "C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\peru.json");
             ObjectMapper mapper = new ObjectMapper();
 
             List<LocationDTO> locations = mapper.readValue(file,
