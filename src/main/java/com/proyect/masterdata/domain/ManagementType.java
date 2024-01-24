@@ -2,6 +2,7 @@ package com.proyect.masterdata.domain;
 
 import java.util.Date;
 
+import lombok.Builder;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.proyect.masterdata.utils.Constants;
@@ -16,7 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -41,5 +42,8 @@ public class ManagementType {
     @Column(name = "fecha_modificacion")
     @CreationTimestamp
     private Date updateDate;
+
+    @Column(name = "usuario_token")
+    private String tokenUser;
 
 }

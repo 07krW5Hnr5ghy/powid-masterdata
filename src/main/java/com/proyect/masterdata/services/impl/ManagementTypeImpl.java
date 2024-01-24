@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -31,6 +33,28 @@ public class ManagementTypeImpl implements IManagementType {
         }catch (RuntimeException e){
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        return null;
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(managementType != null){
+            throw new BadRequestExceptions(Constants.ErrorManagementTypeExists);
+        }
+
+        try{
+            managementTypeRepository.save(ManagementType.builder()
+                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .status(true)
+                            .name(name.toUpperCase())
+                            .tokenUser(user.getUsername())
+                    .build());
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        }catch (RuntimeException e){
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 }

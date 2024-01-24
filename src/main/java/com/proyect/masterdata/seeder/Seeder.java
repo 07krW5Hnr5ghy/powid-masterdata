@@ -73,6 +73,7 @@ public class Seeder implements CommandLineRunner {
         private final IOrderState iOrderState;
         private final IPaymentState iPaymentState;
         private final ISaleChannel iSaleChannel;
+        private final IManagementType iManagementType;
 
         @Override
         public void run(String... args) throws Exception {
@@ -292,8 +293,15 @@ public class Seeder implements CommandLineRunner {
                 // sale channel
                 iSaleChannel.save("tienda online","admin1");
                 iSaleChannel.save("almacen de cadena","admin1");
-                // mock brands
 
+                // management type
+                iManagementType.save("canje","admin1");
+                iManagementType.save("venta", "admin1");
+                iManagementType.save("reserva","admin1");
+                iManagementType.save("cambio","admin1");
+                iManagementType.save("preventa","admin1");
+                iManagementType.save("recupero","admin1");
+                // mock brands
                 iBrand.save("nike", "gjimenez");
                 iBrand.save("levis", "gjimenez");
                 iBrand.save("gap", "gjimenez");
