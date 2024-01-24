@@ -2,7 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.OrderState;
 import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.dto.StateDTO;
+import com.proyect.masterdata.dto.OrderStateDTO;
 import com.proyect.masterdata.dto.request.RequestState;
 import com.proyect.masterdata.dto.request.RequestStateSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -12,7 +12,6 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.OrderStateMapper;
 import com.proyect.masterdata.repository.OrderStateRepository;
 import com.proyect.masterdata.repository.OrderStateRepositoryCustom;
-import com.proyect.masterdata.repository.OrderStateRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IOrderState;
 import com.proyect.masterdata.utils.Constants;
@@ -108,7 +107,7 @@ public class OrderStateImpl implements IOrderState {
     }
 
     @Override
-    public StateDTO update(RequestState requestState) throws BadRequestExceptions, InternalErrorExceptions {
+    public OrderStateDTO update(RequestState requestState) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         OrderState state;
 
@@ -176,7 +175,7 @@ public class OrderStateImpl implements IOrderState {
     }
 
     @Override
-    public List<StateDTO> listState() throws BadRequestExceptions {
+    public List<OrderStateDTO> listState() throws BadRequestExceptions {
         List<OrderState> states = new ArrayList<>();
         try {
             states = stateRepository.findAllByStatusTrue();
@@ -191,8 +190,8 @@ public class OrderStateImpl implements IOrderState {
     }
 
     @Override
-    public Page<StateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+    public Page<OrderStateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+                                    Integer pageSize) throws BadRequestExceptions {
         Page<OrderState> statePage;
         try {
             statePage = orderStateRepositoryCustom.searchForOrderState(name, user, sort, sortColumn, pageNumber,
@@ -209,8 +208,8 @@ public class OrderStateImpl implements IOrderState {
     }
 
     @Override
-    public Page<StateDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+    public Page<OrderStateDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+                                               Integer pageSize) throws BadRequestExceptions {
         Page<OrderState> statePage;
         try {
             statePage = orderStateRepositoryCustom.searchForOrderState(name, user, sort, sortColumn, pageNumber,
@@ -227,7 +226,7 @@ public class OrderStateImpl implements IOrderState {
     }
 
     @Override
-    public StateDTO findByCode(Long code) throws BadRequestExceptions {
+    public OrderStateDTO findByCode(Long code) throws BadRequestExceptions {
         try {
             return stateMapper.stateToStateDTO(stateRepository.findByIdAndStatusTrue(code));
         } catch (RuntimeException e) {

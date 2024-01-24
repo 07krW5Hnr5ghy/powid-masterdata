@@ -1,6 +1,6 @@
 package com.proyect.masterdata.services;
 
-import com.proyect.masterdata.dto.StateDTO;
+import com.proyect.masterdata.dto.OrderStateDTO;
 import com.proyect.masterdata.dto.request.RequestState;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -15,17 +15,17 @@ public interface IOrderState {
 
     ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions, InternalErrorExceptions;
 
-    StateDTO update(RequestState requestState) throws BadRequestExceptions, InternalErrorExceptions;
+    OrderStateDTO update(RequestState requestState) throws BadRequestExceptions, InternalErrorExceptions;
 
     ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions;
 
-    List<StateDTO> listState() throws BadRequestExceptions;
+    List<OrderStateDTO> listState() throws BadRequestExceptions;
 
-    Page<StateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize)
+    Page<OrderStateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize)
             throws BadRequestExceptions;
 
-    Page<StateDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
+    Page<OrderStateDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+                                        Integer pageSize) throws BadRequestExceptions;
 
-    StateDTO findByCode(Long code) throws BadRequestExceptions;
+    OrderStateDTO findByCode(Long code) throws BadRequestExceptions;
 }

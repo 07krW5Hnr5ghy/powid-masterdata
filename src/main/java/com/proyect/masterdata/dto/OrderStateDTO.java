@@ -1,7 +1,5 @@
 package com.proyect.masterdata.dto;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ModulePlanDTO {
-    private String moduleName;
-    private BigDecimal modulePrice;
+public class OrderStateDTO {
+    private Long code;
+    private String name;
 }

@@ -10,16 +10,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class UserDTO {
-    String dni;
-    String username;
-    String name;
-    String surname;
-    String email;
-    String password;
-    String district;
-    String address;
-    String mobile;
-    String userType;
-    String gender;
-    Boolean status;
+    private String dni;
+    private String username;
+    private String name;
+    private String surname;
+    private String email;
+    private String password;
+    private String district;
+    private String address;
+    private String mobile;
+    private String userType;
+    private String gender;
+    private Boolean status;
 }

@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ClientDTO {
-    String name;
-    String surname;
-    String ruc;
-    String dni;
-    String business;
-    String mobile;
-    String address;
-    String email;
-    String district;
-    Boolean status;
+    private String name;
+    private String surname;
+    private String ruc;
+    private String dni;
+    private String business;
+    private String mobile;
+    private String address;
+    private String email;
+    private String district;
+    private Boolean status;
 }

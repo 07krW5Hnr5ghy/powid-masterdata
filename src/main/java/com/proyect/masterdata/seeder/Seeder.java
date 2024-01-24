@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -24,39 +26,6 @@ import com.proyect.masterdata.dto.request.RequestStockTransaction;
 import com.proyect.masterdata.dto.request.RequestSupplier;
 import com.proyect.masterdata.dto.request.RequestSupplierProduct;
 import com.proyect.masterdata.dto.request.RequestWarehouse;
-import com.proyect.masterdata.repository.AccessRepository;
-import com.proyect.masterdata.repository.ClientRepository;
-import com.proyect.masterdata.repository.DepartmentRepository;
-import com.proyect.masterdata.repository.DistrictRepository;
-import com.proyect.masterdata.repository.ProvinceRepository;
-import com.proyect.masterdata.repository.RoleAccessRepository;
-import com.proyect.masterdata.repository.RoleRepository;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.repository.UserRoleRepository;
-import com.proyect.masterdata.services.IBrand;
-import com.proyect.masterdata.services.ICategory;
-import com.proyect.masterdata.services.ICategoryProduct;
-import com.proyect.masterdata.services.IClosingChannel;
-import com.proyect.masterdata.services.IColor;
-import com.proyect.masterdata.services.IDepartment;
-import com.proyect.masterdata.services.IDistrict;
-import com.proyect.masterdata.services.IEntryChannel;
-import com.proyect.masterdata.services.IJsonFileReader;
-import com.proyect.masterdata.services.IModel;
-import com.proyect.masterdata.services.IModule;
-import com.proyect.masterdata.services.IProduct;
-import com.proyect.masterdata.services.IProvince;
-import com.proyect.masterdata.services.IPurchase;
-import com.proyect.masterdata.services.IShipment;
-import com.proyect.masterdata.services.ISize;
-import com.proyect.masterdata.services.ISizeType;
-import com.proyect.masterdata.services.IStockTransaction;
-import com.proyect.masterdata.services.IStockTransactionType;
-import com.proyect.masterdata.services.IStoreType;
-import com.proyect.masterdata.services.ISubscription;
-import com.proyect.masterdata.services.ISupplier;
-import com.proyect.masterdata.services.ISupplierProduct;
-import com.proyect.masterdata.services.IWarehouse;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -101,6 +70,9 @@ public class Seeder implements CommandLineRunner {
         private final ISubscription iSubscription;
         private final IShipment iShipment;
         private final IPurchase iPurchase;
+        private final IOrderState iOrderState;
+        private final IPaymentState iPaymentState;
+        private final ISaleChannel iSaleChannel;
 
         @Override
         public void run(String... args) throws Exception {
@@ -296,6 +268,30 @@ public class Seeder implements CommandLineRunner {
                 iSize.save("32", "calzado", "admin1");
                 iSize.save("40", "calzado", "admin1");
 
+                // order state
+                iOrderState.save("pendiente","admin1");
+                iOrderState.save("entregado", "admin1");
+                iOrderState.save("preparado", "admin1");
+                iOrderState.save("pendiente de stock","admin1");
+                iOrderState.save("pagado","admin1");
+                iOrderState.save("reservado", "admin1");
+                iOrderState.save("fallido","admin1");
+                iOrderState.save("por recoger","admin1");
+                iOrderState.save("no hay stock","admin1");
+                iOrderState.save("llamar","admin1");
+                iOrderState.save("devolucion", "admin1");
+                iOrderState.save("agendado","admin1");
+                iOrderState.save("en ruta","admin1");
+                iOrderState.save("llamado","admin1");
+
+                // payment state
+                iPaymentState.save("por recaudar","admin1");
+                iPaymentState.save("recaudado","admin1");
+                iPaymentState.save("perdida","admin1");
+
+                // sale channel
+                iSaleChannel.save("tienda online","admin1");
+                iSaleChannel.save("almacen de cadena","admin1");
                 // mock brands
 
                 iBrand.save("nike", "gjimenez");

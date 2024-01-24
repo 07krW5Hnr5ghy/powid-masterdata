@@ -1,7 +1,7 @@
 package com.proyect.masterdata.mapper;
 
 import com.proyect.masterdata.domain.OrderState;
-import com.proyect.masterdata.dto.StateDTO;
+import com.proyect.masterdata.dto.OrderStateDTO;
 import com.proyect.masterdata.dto.request.RequestStateSave;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,9 +14,9 @@ public interface OrderStateMapper {
     OrderStateMapper INSTANCE = Mappers.getMapper(OrderStateMapper.class);
 
     @Mapping(target = "code", source = "id")
-    StateDTO stateToStateDTO(OrderState state);
+    OrderStateDTO stateToStateDTO(OrderState state);
 
-    List<StateDTO> listStateToListStateDTO(List<OrderState> stateList);
+    List<OrderStateDTO> listStateToListStateDTO(List<OrderState> stateList);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")

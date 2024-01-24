@@ -12,13 +12,13 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class UserQueryDTO {
-    String dni;
-    String user;
-    String name;
-    String surname;
-    String email;
-    String district;
-    String address;
-    String mobile;
-    String gender;
+    private String dni;
+    private String user;
+    private String name;
+    private String surname;
+    private String email;
+    private String district;
+    private String address;
+    private String mobile;
+    private String gender;
 }
