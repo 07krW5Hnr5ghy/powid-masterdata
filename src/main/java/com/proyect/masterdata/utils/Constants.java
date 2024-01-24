@@ -73,6 +73,8 @@ public class Constants {
     public static final String tableCustomer = "comprador";
     public static final String tableCancellationReason = "razon_cancelacion";
     public static final String tableCancelledOrder = "orden_cancelada";
+    public static final String tableRestock = "reposicion_inventario";
+    public static final String tableOrderStock = "inventario_pedido";
 
     // Mensajes
     public static final String register = "registration correctly";
