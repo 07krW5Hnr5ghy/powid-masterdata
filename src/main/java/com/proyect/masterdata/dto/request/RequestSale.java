@@ -1,5 +1,6 @@
 package com.proyect.masterdata.dto.request;
 
+import com.proyect.masterdata.domain.Order;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestSale {
 
-    private String salesman;
+    private Order order;
+
+    private String seller;
 
     private String observations;
 

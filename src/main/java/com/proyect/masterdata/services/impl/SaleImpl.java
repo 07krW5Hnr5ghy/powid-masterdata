@@ -1,17 +1,11 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.PaymentMethod;
-import com.proyect.masterdata.domain.PaymentState;
-import com.proyect.masterdata.domain.SaleChannel;
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.request.RequestSale;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.PaymentMethodRepository;
-import com.proyect.masterdata.repository.PaymentStateRepository;
-import com.proyect.masterdata.repository.SaleChannelRepository;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.ISale;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -27,18 +21,22 @@ public class SaleImpl implements ISale {
     private final PaymentStateRepository paymentStateRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final SaleChannelRepository saleChannelRepository;
+    private final ManagementTypeRepository managementTypeRepository;
+    private final SaleRepository saleRepository;
     @Override
     public ResponseSuccess save(RequestSale requestSale, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         PaymentState paymentState;
         PaymentMethod paymentMethod;
         SaleChannel saleChannel;
+        ManagementType managementType;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             paymentState = paymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
             paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestSale.getPaymentMethod().toUpperCase());
             saleChannel = saleChannelRepository.findByNameAndStatusTrue(requestSale.getSaleChannel().toUpperCase());
+            managementType = managementTypeRepository.findByNameAndStatusTrue(requestSale.getManagementType().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -55,6 +53,44 @@ public class SaleImpl implements ISale {
         if(saleChannel == null){
             throw new BadRequestExceptions(Constants.ErrorSaleChannel);
         }
-        return null;
+
+        if(managementType == null){
+            throw new BadRequestExceptions(Constants.ErrorManagementType);
+        }
+        
+        try{
+            saleRepository.save(Sale.builder()
+                            .tokenUser(user.getUsername())
+                            .advancePayment(requestSale.getAdvancedPayment())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
+                            .deliveryAddress(requestSale.getDeliveryAddress())
+                            .order(requestSale.getOrder())
+                            .orderId(requestSale.getOrder().getId())
+                            .duePayment(requestSale.getSaleAmount() + requestSale.getDeliveryAmount() - requestSale.getAdvancedPayment())
+                            .managementType(managementType)
+                            .managementTypeId(managementType.getId())
+                            .observations(requestSale.getObservations())
+                            .paymentMethod(paymentMethod)
+                            .paymentMethodId(paymentMethod.getId())
+                            .saleAmount(requestSale.getSaleAmount())
+                            .deliveryAmount(requestSale.getDeliveryAmount())
+                            .paymentReceipt(requestSale.getPaymentReceipt())
+                            .paymentState(paymentState)
+                            .paymentStateId(paymentState.getId())
+                            .saleChannel(saleChannel)
+                            .saleChannelId(saleChannel.getId())
+                            .seller(requestSale.getSeller())
+                            .deliveryAddress(requestSale.getDeliveryAddress())
+                            .tokenUser(user.getUsername())
+                    .build());
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 }

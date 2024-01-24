@@ -44,7 +44,7 @@ public class OrderImpl implements IOrder {
         }
 
         try{
-            orderRepository.save(Order.builder()
+            Order order = orderRepository.save(Order.builder()
                             .cancellation(false)
                             .orderState(orderState)
                             .orderStateId(orderState.getId())
