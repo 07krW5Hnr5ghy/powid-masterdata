@@ -11,10 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RequestItem {
-
     private Integer quantity;
     private Double discount;
     private String productSku;
-    private Order order;
-
 }

@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RequestCustomer {
-    private Order order;
     private String name;
     private String type;
     private String instagram;

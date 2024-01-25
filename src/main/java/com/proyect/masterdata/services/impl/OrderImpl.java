@@ -2,10 +2,11 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Order;
 import com.proyect.masterdata.domain.OrderState;
+import com.proyect.masterdata.domain.Sale;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.request.RequestCustomer;
 import com.proyect.masterdata.dto.request.RequestItem;
-import com.proyect.masterdata.dto.request.RequestOrder;
+import com.proyect.masterdata.dto.request.RequestOrderSave;
 import com.proyect.masterdata.dto.request.RequestSale;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -37,7 +38,7 @@ public class OrderImpl implements IOrder {
     private final IItem iItem;
 
     @Override
-    public ResponseSuccess save(RequestOrder requestOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         OrderState orderState;
@@ -62,21 +63,50 @@ public class OrderImpl implements IOrder {
                             .orderStateId(orderState.getId())
                             .client(user.getClient())
                             .clientId(user.getClientId())
-                            .deliveryMan(requestOrder.getDeliveryMan())
-                            .deliveryPhone(requestOrder.getDeliveryManPhone())
+                            .deliveryMan(requestOrderSave.getDeliveryMan())
+                            .deliveryPhone(requestOrderSave.getDeliveryManPhone())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
                     .build());
 
-            iSale.save(requestOrder.getRequestSale(),tokenUser);
-            iCustomer.save(requestOrder.getRequestCustomer(),tokenUser);
-            for(RequestItem requestItem : requestOrder.getRequestItems()){
-                iItem.save(requestItem,tokenUser);
+            RequestSale requestSale = RequestSale.builder()
+                    .saleChannel(requestOrderSave.getSaleChannel())
+                    .seller(requestOrderSave.getSeller())
+                    .paymentState(requestOrderSave.getPaymentState())
+                    .paymentReceipt(requestOrderSave.getPaymentReceipt())
+                    .paymentMethod(requestOrderSave.getPaymentMethod())
+                    .observations(requestOrderSave.getObservations())
+                    .managementType(requestOrderSave.getManagementType())
+                    .deliveryAmount(requestOrderSave.getDeliveryAmount())
+                    .deliveryAddress(requestOrderSave.getDeliveryAddress())
+                    .saleAmount(requestOrderSave.getSaleAmount())
+                    .build();
+
+            iSale.save(order,requestSale,tokenUser);
+
+            RequestCustomer requestCustomer = RequestCustomer.builder()
+                    .phone(requestOrderSave.getCustomerPhone())
+                    .name(requestOrderSave.getCustomerName())
+                    .type(requestOrderSave.getCustomerType())
+                    .district(requestOrderSave.getCustomerDistrict())
+                    .province(requestOrderSave.getCustomerProvince())
+                    .department(requestOrderSave.getCustomerDepartment())
+                    .instagram(requestOrderSave.getInstagram())
+                    .reference(requestOrderSave.getCustomerReference())
+                    .address(requestOrderSave.getCustomerAddress())
+                    .build();
+            
+            iCustomer.save(order,requestCustomer,tokenUser);
+
+            for(RequestItem requestItem : requestOrderSave.getRequestItems()){
+                iItem.save(order,requestItem,tokenUser);
             }
+
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
+
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.dto.request.*;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
 import org.springframework.boot.CommandLineRunner;
@@ -19,13 +20,6 @@ import com.proyect.masterdata.domain.RoleAccess;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.UserRole;
 import com.proyect.masterdata.dto.LocationDTO;
-import com.proyect.masterdata.dto.request.RequestProductSave;
-import com.proyect.masterdata.dto.request.RequestPurchase;
-import com.proyect.masterdata.dto.request.RequestShipment;
-import com.proyect.masterdata.dto.request.RequestStockTransaction;
-import com.proyect.masterdata.dto.request.RequestSupplier;
-import com.proyect.masterdata.dto.request.RequestSupplierProduct;
-import com.proyect.masterdata.dto.request.RequestWarehouse;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -74,6 +68,7 @@ public class Seeder implements CommandLineRunner {
         private final IPaymentState iPaymentState;
         private final ISaleChannel iSaleChannel;
         private final IManagementType iManagementType;
+        private final IOrder iOrder;
 
         @Override
         public void run(String... args) throws Exception {
@@ -1113,6 +1108,22 @@ public class Seeder implements CommandLineRunner {
                 iShipment.save("SA00001", "luminous", requestShipmentList1, "gjimenez");
                 iShipment.save("SB00001", "alcazar", requestShipmentList2, "fcasas");
 
+                RequestCustomer requestCustomer1 = RequestCustomer.builder()
+                        .name("Emilio Gomez")
+                        .address("807 IQUIQUE")
+                        .phone("123456789")
+                        .type("tradicional")
+                        .reference("")
+                        .instagram("")
+                        .department("LIMA")
+                        .province("LIMA")
+                        .district("BREÑA")
+                        .build();
+
+                RequestOrderSave requestOrderSave1 = RequestOrderSave.builder()
+                        .deliveryMan("Rappi")
+                        .deliveryManPhone("123456789")
+                        .build();
         }
 
 }

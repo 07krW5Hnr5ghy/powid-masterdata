@@ -1,6 +1,6 @@
 package com.proyect.masterdata.dto.request;
 
-import com.proyect.masterdata.domain.Order;
+import com.proyect.masterdata.domain.Item;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestSale {
+public class RequestOrderSave {
+
+    private String deliveryMan;
+
+    private String deliveryManPhone;
 
     private String seller;
 
@@ -33,4 +37,25 @@ public class RequestSale {
     private String paymentMethod;
 
     private String managementType;
+
+    private RequestItem[] requestItems;
+
+    private String customerName;
+
+    private String customerType;
+
+    private String instagram;
+
+    private String customerPhone;
+
+    private String customerAddress;
+
+    private String customerDistrict;
+
+    private String customerProvince;
+
+    private String customerDepartment;
+
+    private String customerReference;
+
 }
