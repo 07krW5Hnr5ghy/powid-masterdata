@@ -59,6 +59,8 @@ public class SaleImpl implements ISale {
         }
         
         try{
+            System.out.println(requestSale.getAdvancedPayment());
+            Double duePayment = (requestSale.getSaleAmount() + requestSale.getDeliveryAmount()) - requestSale.getAdvancedPayment();
             saleRepository.save(Sale.builder()
                             .tokenUser(user.getUsername())
                             .advancePayment(requestSale.getAdvancedPayment())
@@ -67,7 +69,7 @@ public class SaleImpl implements ISale {
                             .deliveryAddress(requestSale.getDeliveryAddress().toUpperCase())
                             .order(order)
                             .orderId(order.getId())
-                            .duePayment(requestSale.getSaleAmount() + requestSale.getDeliveryAmount() - requestSale.getAdvancedPayment())
+                            .duePayment(duePayment)
                             .managementType(managementType)
                             .managementTypeId(managementType.getId())
                             .observations(requestSale.getObservations().toUpperCase())
@@ -88,6 +90,7 @@ public class SaleImpl implements ISale {
                     .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

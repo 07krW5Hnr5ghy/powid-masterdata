@@ -22,7 +22,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,8 +58,12 @@ public class PaymentMethodImpl implements IPaymentMethod {
         }
 
         try {
-            paymentMethodRepository.save(paymentMethodMapper.paymentMethodToName(RequestPaymentMethodSave.builder()
-                    .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
+            paymentMethodRepository.save(PaymentMethod.builder()
+                            .tokenUser(user.toUpperCase())
+                            .status(true)
+                            .name(name.toUpperCase())
+                            .registrationDate(new Date(System.currentTimeMillis()))
+                    .build());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

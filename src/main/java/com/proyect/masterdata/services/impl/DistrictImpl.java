@@ -144,11 +144,11 @@ public class DistrictImpl implements IDistrict {
         }
 
         if (district == null) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceNotExist.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorDistrict.toUpperCase());
         }
 
         if (!existsprovince) {
-            throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorProvince.toUpperCase());
         }
 
         try {
@@ -180,7 +180,7 @@ public class DistrictImpl implements IDistrict {
         }
 
         if (district == null) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceNotExist.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorDistrict.toUpperCase());
         }
 
         try {
@@ -254,7 +254,7 @@ public class DistrictImpl implements IDistrict {
         }
 
         if (!exists) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceNotExist);
+            throw new BadRequestExceptions(Constants.ErrorDistrict);
         }
 
         try {
@@ -279,7 +279,7 @@ public class DistrictImpl implements IDistrict {
         }
 
         if (provinceData == null) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceNotExist);
+            throw new BadRequestExceptions(Constants.ErrorProvince);
         }
 
         try {

@@ -145,7 +145,7 @@ public class ProvinceImpl implements IProvince {
         }
 
         if (province == null) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceNotExist.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorProvince.toUpperCase());
         }
 
         if (!existsDepartment) {
@@ -181,7 +181,7 @@ public class ProvinceImpl implements IProvince {
         }
 
         if (province == null) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceNotExist.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorProvince.toUpperCase());
         }
 
         try {
@@ -255,7 +255,7 @@ public class ProvinceImpl implements IProvince {
         }
 
         if (!exists) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceNotExist);
+            throw new BadRequestExceptions(Constants.ErrorProvince);
         }
 
         try {

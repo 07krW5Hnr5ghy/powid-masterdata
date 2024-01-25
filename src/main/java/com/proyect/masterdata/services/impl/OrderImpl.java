@@ -72,7 +72,6 @@ public class OrderImpl implements IOrder {
             RequestSale requestSale = RequestSale.builder()
                     .saleChannel(requestOrderSave.getSaleChannel())
                     .seller(requestOrderSave.getSeller())
-                    .paymentState(requestOrderSave.getPaymentState())
                     .paymentReceipt(requestOrderSave.getPaymentReceipt())
                     .paymentMethod(requestOrderSave.getPaymentMethod())
                     .observations(requestOrderSave.getObservations())
@@ -80,6 +79,7 @@ public class OrderImpl implements IOrder {
                     .deliveryAmount(requestOrderSave.getDeliveryAmount())
                     .deliveryAddress(requestOrderSave.getDeliveryAddress())
                     .saleAmount(requestOrderSave.getSaleAmount())
+                    .advancedPayment(requestOrderSave.getAdvancedPayment())
                     .build();
 
             iSale.save(order,requestSale,tokenUser);
@@ -95,7 +95,7 @@ public class OrderImpl implements IOrder {
                     .reference(requestOrderSave.getCustomerReference())
                     .address(requestOrderSave.getCustomerAddress())
                     .build();
-            
+
             iCustomer.save(order,requestCustomer,tokenUser);
 
             for(RequestItem requestItem : requestOrderSave.getRequestItems()){
@@ -108,6 +108,7 @@ public class OrderImpl implements IOrder {
                     .build();
 
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

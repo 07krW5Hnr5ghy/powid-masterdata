@@ -68,6 +68,7 @@ public class Seeder implements CommandLineRunner {
         private final IPaymentState iPaymentState;
         private final ISaleChannel iSaleChannel;
         private final IManagementType iManagementType;
+        private final IPaymentMethod iPaymentMethod;
         private final IOrder iOrder;
 
         @Override
@@ -296,6 +297,20 @@ public class Seeder implements CommandLineRunner {
                 iManagementType.save("cambio","admin1");
                 iManagementType.save("preventa","admin1");
                 iManagementType.save("recupero","admin1");
+
+                // payment type
+                iPaymentMethod.save("yape","admin1");
+                iPaymentMethod.save("pos","admin1");
+                iPaymentMethod.save("efectivo","admin1");
+                iPaymentMethod.save("link","admin1");
+                iPaymentMethod.save("cambio","admin1");
+                iPaymentMethod.save("plin","admin1");
+                iPaymentMethod.save("plataforma mp/web","admin1");
+                iPaymentMethod.save("bcp","admin1");
+                iPaymentMethod.save("contraentrega","admin1");
+                iPaymentMethod.save("canje","admin1");
+                iPaymentMethod.save("interbank","admin1");
+                iPaymentMethod.save("banco de la nacion","admin1");
                 // mock brands
                 iBrand.save("nike", "gjimenez");
                 iBrand.save("levis", "gjimenez");
@@ -1108,22 +1123,49 @@ public class Seeder implements CommandLineRunner {
                 iShipment.save("SA00001", "luminous", requestShipmentList1, "gjimenez");
                 iShipment.save("SB00001", "alcazar", requestShipmentList2, "fcasas");
 
-                RequestCustomer requestCustomer1 = RequestCustomer.builder()
-                        .name("Emilio Gomez")
-                        .address("807 IQUIQUE")
-                        .phone("123456789")
-                        .type("tradicional")
-                        .reference("")
-                        .instagram("")
-                        .department("LIMA")
-                        .province("LIMA")
-                        .district("BREÑA")
+                RequestItem requestItem1 = RequestItem.builder()
+                        .productSku("A00001")
+                        .discount(0.00)
+                        .quantity(2)
                         .build();
+
+                RequestItem requestItem2 = RequestItem.builder()
+                        .quantity(1)
+                        .discount(3.00)
+                        .productSku("A00002")
+                        .build();
+
+                ArrayList<RequestItem> requestItems1 = new ArrayList<>();
+
+                requestItems1.add(requestItem1);
+                requestItems1.add(requestItem2);
 
                 RequestOrderSave requestOrderSave1 = RequestOrderSave.builder()
                         .deliveryMan("Rappi")
                         .deliveryManPhone("123456789")
+                        .advancedPayment(0.00)
+                        .customerAddress("807 IQUIQUE")
+                        .customerDepartment("LIMA")
+                        .customerProvince("LIMA")
+                        .customerDistrict("BREÑA")
+                        .customerName("Emilio Gomez")
+                        .customerPhone("940544828")
+                        .customerReference("")
+                        .customerType("Tradicional")
+                        .deliveryAddress("807 IQUIQUE")
+                        .deliveryAmount(0.00)
+                        .managementType("venta")
+                        .instagram("")
+                        .observations("")
+                        .paymentMethod("yape")
+                        .paymentReceipt("")
+                        .saleAmount(48.70)
+                        .seller("oscar mendez")
+                        .saleChannel("tienda online")
+                        .requestItems(requestItems1)
                         .build();
+
+                iOrder.save(requestOrderSave1,"gjimenez");
         }
 
 }

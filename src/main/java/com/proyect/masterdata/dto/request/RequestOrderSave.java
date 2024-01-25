@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,15 +32,13 @@ public class RequestOrderSave {
 
     private Double advancedPayment;
 
-    private String paymentState;
-
     private String saleChannel;
 
     private String paymentMethod;
 
     private String managementType;
 
-    private RequestItem[] requestItems;
+    private List<RequestItem> requestItems;
 
     private String customerName;
 
