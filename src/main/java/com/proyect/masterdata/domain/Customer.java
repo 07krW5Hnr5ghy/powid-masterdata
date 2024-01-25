@@ -3,10 +3,12 @@ package com.proyect.masterdata.domain;
 import com.proyect.masterdata.utils.Constants;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -57,6 +59,10 @@ public class Customer {
     @ManyToOne
     @JoinColumn(name = "id_orden", columnDefinition = "orderId", insertable = false, updatable = false)
     private Order order;
+
+    @ManyToOne
+    @JoinColumn(name = "id_departamento",columnDefinition = "departmentId",insertable = false,updatable = false)
+    private Department department;
 
     @ManyToOne
     @JoinColumn(name = "id_distrito", columnDefinition = "districtId", insertable = false, updatable = false)

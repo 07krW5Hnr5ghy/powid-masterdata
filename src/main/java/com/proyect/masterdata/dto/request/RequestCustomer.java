@@ -1,5 +1,6 @@
 package com.proyect.masterdata.dto.request;
 
+import com.proyect.masterdata.domain.Order;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RequestCustomer {
+    private Order order;
     private String name;
     private String type;
     private String instagram;

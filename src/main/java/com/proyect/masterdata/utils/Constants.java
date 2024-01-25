@@ -98,8 +98,8 @@ public class Constants {
 
     public static final String ErrorProvinceList = "In the list there is a province that exists";
 
-    public static final String ErrorProvinceExist = "Exit province";
-    public static final String ErrorProvinceNotExist = "Exit The province does not exist";
+    public static final String ErrorProvince = "The province does not exist";
+    public static final String ErrorProvinceExist = "The province already exists";
     public static final String ErrorCategory = "The category does not exist";
     public static final String ErrorCategoryExists = "The category does exist";
     public static final String ErrorCategoryDescriptionExists = "The category description does exist";
