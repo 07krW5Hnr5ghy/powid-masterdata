@@ -17,29 +17,9 @@ public class RequestOrder {
 
     private String deliveryManPhone;
 
-    private String salesman;
+    private RequestSale requestSale;
 
-    private String observations;
+    private RequestItem[] requestItems;
 
-    private String paymentReceipt;
-
-    private String deliveryAddress;
-
-    private Double saleAmount;
-
-    private Double deliveryAmount;
-
-    private Double advancedPayment;
-
-    private String paymentState;
-
-    private String saleChannel;
-
-    private String paymentMethod;
-
-    private String managementType;
-
-    private Item[] items;
-
-    private Customer customer;
+    private RequestCustomer requestCustomer;
 }
