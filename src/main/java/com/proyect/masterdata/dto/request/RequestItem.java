@@ -1,5 +1,6 @@
 package com.proyect.masterdata.dto.request;
 
+import com.proyect.masterdata.domain.Order;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +12,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestItem {
 
-    private String quantity;
+    private Integer quantity;
     private Double discount;
-    private String productSerial;
+    private String productSku;
+    private Order order;
 
 }
