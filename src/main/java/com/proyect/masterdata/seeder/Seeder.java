@@ -1166,6 +1166,138 @@ public class Seeder implements CommandLineRunner {
                         .build();
 
                 iOrder.save(requestOrderSave1,"gjimenez");
+
+                RequestItem requestItem3 = RequestItem.builder()
+                        .productSku("A00003")
+                        .quantity(3)
+                        .discount(0.00)
+                        .build();
+
+                RequestItem requestItem4 = RequestItem.builder()
+                        .productSku("A00004")
+                        .quantity(1)
+                        .discount(2.00)
+                        .build();
+
+                ArrayList<RequestItem> requestItems2 = new ArrayList<>();
+
+                requestItems2.add(requestItem3);
+                requestItems2.add(requestItem4);
+
+                RequestOrderSave requestOrderSave2 = RequestOrderSave.builder()
+                        .deliveryMan("indriver")
+                        .deliveryManPhone("999999999")
+                        .advancedPayment(4.00)
+                        .customerAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
+                        .customerDepartment("LIMA")
+                        .customerProvince("LIMA")
+                        .customerDistrict("INDEPENDENCIA")
+                        .customerName("Consuelo Rojas")
+                        .customerPhone("956701333")
+                        .customerReference("")
+                        .customerType("Tradicional")
+                        .deliveryAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
+                        .deliveryAmount(3.00)
+                        .managementType("venta")
+                        .instagram("")
+                        .observations("")
+                        .paymentMethod("plin")
+                        .paymentReceipt("")
+                        .saleAmount(32.10)
+                        .seller("gerardo contreras")
+                        .saleChannel("tienda online")
+                        .requestItems(requestItems2)
+                        .build();
+
+                iOrder.save(requestOrderSave2,"gjimenez");
+
+                RequestItem requestItem5 = RequestItem.builder()
+                        .productSku("B00001")
+                        .discount(0.00)
+                        .quantity(1)
+                        .build();
+
+                RequestItem requestItem6 = RequestItem.builder()
+                        .quantity(3)
+                        .discount(5.00)
+                        .productSku("B00002")
+                        .build();
+
+                List<RequestItem> requestItems3 = new ArrayList<>();
+
+                requestItems3.add(requestItem5);
+                requestItems3.add(requestItem6);
+
+                RequestOrderSave requestOrderSave3 = RequestOrderSave.builder()
+                        .deliveryMan("mavisur")
+                        .deliveryManPhone("111111111")
+                        .advancedPayment(0.00)
+                        .customerAddress("AV MARAÑÓN 776")
+                        .customerDepartment("LIMA")
+                        .customerProvince("LIMA")
+                        .customerDistrict("ATE")
+                        .customerName("Ulises Trujillo")
+                        .customerPhone("944214925")
+                        .customerReference("")
+                        .customerType("Tradicional")
+                        .deliveryAddress("AV MARAÑÓN 776")
+                        .deliveryAmount(6.25)
+                        .managementType("venta")
+                        .instagram("")
+                        .observations("")
+                        .paymentMethod("efectivo")
+                        .paymentReceipt("")
+                        .saleAmount(18.30)
+                        .seller("jeison acosta")
+                        .saleChannel("tienda online")
+                        .requestItems(requestItems3)
+                        .build();
+
+                iOrder.save(requestOrderSave3,"fcasas");
+
+                RequestItem requestItem7 = RequestItem.builder()
+                        .productSku("B00003")
+                        .discount(7.00)
+                        .quantity(5)
+                        .build();
+
+                RequestItem requestItem8 = RequestItem.builder()
+                        .quantity(2)
+                        .discount(0.00)
+                        .productSku("B00004")
+                        .build();
+
+                List<RequestItem> requestItems4 = new ArrayList<>();
+
+                requestItems4.add(requestItem7);
+                requestItems4.add(requestItem8);
+
+                RequestOrderSave requestOrderSave4 = RequestOrderSave.builder()
+                        .deliveryMan("shalom")
+                        .deliveryManPhone("222222222")
+                        .advancedPayment(0.00)
+                        .customerAddress("URB. CAPILLA 130")
+                        .customerDepartment("LIMA")
+                        .customerProvince("LIMA")
+                        .customerDistrict("CHORRILLOS")
+                        .customerName("Roberto Padilla")
+                        .customerPhone("989538516")
+                        .customerReference("")
+                        .customerType("Tradicional")
+                        .deliveryAddress("URB. CAPILLA 130")
+                        .deliveryAmount(10.15)
+                        .managementType("venta")
+                        .instagram("")
+                        .observations("URB. LA CAPILLA 130, CALLE SARAGOZA- LA MOLINA")
+                        .paymentMethod("efectivo")
+                        .paymentReceipt("")
+                        .saleAmount(49.23)
+                        .seller("Lucio Jimenez")
+                        .saleChannel("tienda online")
+                        .requestItems(requestItems4)
+                        .build();
+
+                iOrder.save(requestOrderSave4,"fcasas");
         }
 
 }
