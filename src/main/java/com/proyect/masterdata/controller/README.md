@@ -128,7 +128,7 @@ Body
 
 1. name : filter by name of the brand (not required)
 2. tokenUser : filter by user who register or updated the brand
-3. sort : set the listing order only accepts the values ASC and DESC (not required)
+3. sort : set the listing ordering only accepts the values ASC and DESC (not required)
 4. sortColumn : set the column which sorts the list (not required)
 5. pageNumber : select the page number to view of the list
 6. pageSize : set how many records per page have the list
@@ -1224,7 +1224,7 @@ http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2
 
 - Parameters : 
 
-1. serial : serial of the purchase order
+1. serial : serial of the purchase ordering
 2. tokenUser : username of the user who creates the purchase
 
 - Response : 
@@ -1319,14 +1319,14 @@ http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&
         "quantity": number of units,
         "observations": observation of the state of the goods,
         "supplierProductSerial": serial of the provider product,
-        "purchaseSerial": serial of the purchase order of the goods
+        "purchaseSerial": serial of the purchase ordering of the goods
     }
     ... more items
 ]
 
 - Parameters : 
 
-1. serial : serial of the purchase order
+1. serial : serial of the purchase ordering
 2. warehouse : name of the warehouse where arrive the shipment
 3. tokenUser : username of the user who creates the purchase
 

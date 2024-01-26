@@ -69,7 +69,7 @@ public class Seeder implements CommandLineRunner {
         private final ISaleChannel iSaleChannel;
         private final IManagementType iManagementType;
         private final IPaymentMethod iPaymentMethod;
-        private final IOrder iOrder;
+        private final IOrdering iOrdering;
 
         @Override
         public void run(String... args) throws Exception {
@@ -1165,7 +1165,7 @@ public class Seeder implements CommandLineRunner {
                         .requestItems(requestItems1)
                         .build();
 
-                iOrder.save(requestOrderSave1,"gjimenez");
+                iOrdering.save(requestOrderSave1,"gjimenez");
 
                 RequestItem requestItem3 = RequestItem.builder()
                         .productSku("A00003")
@@ -1209,7 +1209,7 @@ public class Seeder implements CommandLineRunner {
                         .requestItems(requestItems2)
                         .build();
 
-                iOrder.save(requestOrderSave2,"gjimenez");
+                iOrdering.save(requestOrderSave2,"gjimenez");
 
                 RequestItem requestItem5 = RequestItem.builder()
                         .productSku("B00001")
@@ -1253,7 +1253,7 @@ public class Seeder implements CommandLineRunner {
                         .requestItems(requestItems3)
                         .build();
 
-                iOrder.save(requestOrderSave3,"fcasas");
+                iOrdering.save(requestOrderSave3,"fcasas");
 
                 RequestItem requestItem7 = RequestItem.builder()
                         .productSku("B00003")
@@ -1297,7 +1297,7 @@ public class Seeder implements CommandLineRunner {
                         .requestItems(requestItems4)
                         .build();
 
-                iOrder.save(requestOrderSave4,"fcasas");
+                iOrdering.save(requestOrderSave4,"fcasas");
         }
 
 }

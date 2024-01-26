@@ -1,7 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Item;
-import com.proyect.masterdata.domain.Order;
+import com.proyect.masterdata.domain.Ordering;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.request.RequestItem;
@@ -27,7 +27,7 @@ public class ItemImpl implements IItem {
     private final ProductRepository productRepository;
 
     @Override
-    public ResponseSuccess save(Order order,RequestItem requestItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(Ordering ordering, RequestItem requestItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         Product product;
@@ -51,8 +51,8 @@ public class ItemImpl implements IItem {
         try{
             itemRepository.save(Item.builder()
                             .discount(requestItem.getDiscount())
-                            .order(order)
-                            .orderId(order.getId())
+                            .ordering(ordering)
+                            .orderId(ordering.getId())
                             .quantity(requestItem.getQuantity())
                             .client(user.getClient())
                             .clientId(user.getClientId())

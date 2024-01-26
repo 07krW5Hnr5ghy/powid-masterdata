@@ -43,7 +43,7 @@ public class CancelledOrder {
 
     @ManyToOne
     @JoinColumn(name = "id_orden",columnDefinition = "orderId", insertable = false,updatable = false)
-    private Order order;
+    private Ordering ordering;
 
     @ManyToOne
     @JoinColumn(name = "id_razon_cancelacion", columnDefinition = "cancellationReasonId", insertable = false,updatable = false)

@@ -1,9 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Order;
-import com.proyect.masterdata.domain.OrderState;
-import com.proyect.masterdata.domain.Sale;
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.OrderDTO;
 import com.proyect.masterdata.dto.request.RequestCustomer;
 import com.proyect.masterdata.dto.request.RequestItem;
 import com.proyect.masterdata.dto.request.RequestOrderSave;
@@ -11,32 +9,36 @@ import com.proyect.masterdata.dto.request.RequestSale;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.OrderRepository;
-import com.proyect.masterdata.repository.OrderStateRepository;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.ICustomer;
 import com.proyect.masterdata.services.IItem;
-import com.proyect.masterdata.services.IOrder;
+import com.proyect.masterdata.services.IOrdering;
 import com.proyect.masterdata.services.ISale;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 @Log4j2
-public class OrderImpl implements IOrder {
+public class OrderingImpl implements IOrdering {
 
     private final UserRepository userRepository;
-    private final OrderRepository orderRepository;
+    private final OrderingRepository orderingRepository;
     private final OrderStateRepository orderStateRepository;
     private final ISale iSale;
     private final ICustomer iCustomer;
     private final IItem iItem;
-
+    private final OrderingRepositoryCustom orderingRepositoryCustom;
+    private final SaleRepository saleRepository;
+    private final CustomerRepository customerRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -57,7 +59,7 @@ public class OrderImpl implements IOrder {
 
         try{
 
-            Order order = orderRepository.save(Order.builder()
+            Ordering ordering = orderingRepository.save(Ordering.builder()
                             .cancellation(false)
                             .orderState(orderState)
                             .orderStateId(orderState.getId())
@@ -82,7 +84,7 @@ public class OrderImpl implements IOrder {
                     .advancedPayment(requestOrderSave.getAdvancedPayment())
                     .build();
 
-            iSale.save(order,requestSale,tokenUser);
+            iSale.save(ordering,requestSale,tokenUser);
 
             RequestCustomer requestCustomer = RequestCustomer.builder()
                     .phone(requestOrderSave.getCustomerPhone())
@@ -96,10 +98,10 @@ public class OrderImpl implements IOrder {
                     .address(requestOrderSave.getCustomerAddress())
                     .build();
 
-            iCustomer.save(order,requestCustomer,tokenUser);
+            iCustomer.save(ordering,requestCustomer,tokenUser);
 
             for(RequestItem requestItem : requestOrderSave.getRequestItems()){
-                iItem.save(order,requestItem,tokenUser);
+                iItem.save(ordering,requestItem,tokenUser);
             }
 
             return ResponseSuccess.builder()
@@ -112,5 +114,47 @@ public class OrderImpl implements IOrder {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<OrderDTO> list(Long id,String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+
+        Page<Ordering> pageOrdering;
+        User userdata;
+
+        if (user != null) {
+            userdata = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+        } else {
+            userdata = null;
+        }
+
+        try{
+            pageOrdering = orderingRepositoryCustom.searchForOrdering(id,userdata,sort,sortColumn,pageNumber,pageSize);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(pageOrdering.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<OrderDTO> orderDTOS = pageOrdering.getContent().stream().map(order -> {
+            Sale sale = saleRepository.findByOrderId(order.getId());
+            Customer customer = customerRepository.findByOrderId(order.getId());
+
+            return OrderDTO.builder()
+                    .id(order.getId())
+                    .advancedPayment(sale.getAdvancePayment())
+                    .customerName(customer.getName())
+                    .customerPhone(customer.getPhone())
+                    .customerType(customer.getType())
+                    .deliveryPhone(order.getDeliveryPhone())
+                    .deliveryMan(order.getDeliveryMan())
+                    .orderStatus(order.getOrderState().getName())
+                    .build();
+        }).toList();
+
+        return new PageImpl<>(orderDTOS,pageOrdering.getPageable(),pageOrdering.getTotalElements());
     }
 }

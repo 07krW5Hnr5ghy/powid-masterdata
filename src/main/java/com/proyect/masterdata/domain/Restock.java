@@ -53,7 +53,7 @@ public class Restock {
 
     @ManyToOne
     @JoinColumn(name = "id_pedido", columnDefinition = "orderId", insertable = false,updatable = false)
-    private Order order;
+    private Ordering ordering;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)

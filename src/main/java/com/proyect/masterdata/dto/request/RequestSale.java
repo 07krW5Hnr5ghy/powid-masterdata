@@ -1,6 +1,5 @@
 package com.proyect.masterdata.dto.request;
 
-import com.proyect.masterdata.domain.Order;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

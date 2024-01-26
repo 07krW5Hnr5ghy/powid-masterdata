@@ -24,7 +24,7 @@ public class SaleImpl implements ISale {
     private final ManagementTypeRepository managementTypeRepository;
     private final SaleRepository saleRepository;
     @Override
-    public ResponseSuccess save(Order order,RequestSale requestSale, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(Ordering ordering, RequestSale requestSale, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         PaymentState paymentState;
         PaymentMethod paymentMethod;
@@ -59,7 +59,6 @@ public class SaleImpl implements ISale {
         }
         
         try{
-            System.out.println(requestSale.getAdvancedPayment());
             Double duePayment = (requestSale.getSaleAmount() + requestSale.getDeliveryAmount()) - requestSale.getAdvancedPayment();
             saleRepository.save(Sale.builder()
                             .tokenUser(user.getUsername())
@@ -67,8 +66,8 @@ public class SaleImpl implements ISale {
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .deliveryAddress(requestSale.getDeliveryAddress().toUpperCase())
-                            .order(order)
-                            .orderId(order.getId())
+                            .ordering(ordering)
+                            .orderId(ordering.getId())
                             .duePayment(duePayment)
                             .managementType(managementType)
                             .managementTypeId(managementType.getId())

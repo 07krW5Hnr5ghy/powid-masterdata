@@ -23,7 +23,7 @@ public class CustomerImpl implements ICustomer {
     private final ProvinceRepository provinceRepository;
     private final DistrictRepository districtRepository;
     @Override
-    public ResponseSuccess save(Order order,RequestCustomer requestCustomer, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(Ordering ordering, RequestCustomer requestCustomer, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Department department;
         Province province;
@@ -62,8 +62,8 @@ public class CustomerImpl implements ICustomer {
                             .phone(requestCustomer.getPhone())
                             .client(user.getClient())
                             .clientId(user.getClientId())
-                            .order(order)
-                            .orderId(order.getId())
+                            .ordering(ordering)
+                            .orderId(ordering.getId())
                             .type(requestCustomer.getType())
                             .department(department)
                             .departmentId(department.getId())

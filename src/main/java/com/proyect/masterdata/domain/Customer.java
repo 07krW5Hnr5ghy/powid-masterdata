@@ -58,7 +58,7 @@ public class Customer {
 
     @ManyToOne
     @JoinColumn(name = "id_orden", columnDefinition = "orderId", insertable = false, updatable = false)
-    private Order order;
+    private Ordering ordering;
 
     @ManyToOne
     @JoinColumn(name = "id_departamento",columnDefinition = "departmentId",insertable = false,updatable = false)

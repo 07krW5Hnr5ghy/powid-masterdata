@@ -75,7 +75,7 @@ public class Sale {
 
     @ManyToOne
     @JoinColumn(name = "id_orden", columnDefinition = "orderId", insertable = false,updatable = false)
-    private Order order;
+    private Ordering ordering;
 
     @ManyToOne
     @JoinColumn(name = "id_canal_venta", columnDefinition = "saleChannelId", insertable = false, updatable = false)

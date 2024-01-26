@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Table(name = Constants.tableOrder, schema = Constants.schemaOrder)
-public class Order {
+public class Ordering {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

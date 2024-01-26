@@ -1,0 +1,117 @@
+package com.proyect.masterdata.repository.impl;
+
+import com.proyect.masterdata.domain.Ordering;
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.repository.OrderingRepositoryCustom;
+import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
+
+    @PersistenceContext(name = "entityManager")
+    private EntityManager entityManager;
+    @Override
+    public Page<Ordering> searchForOrdering(Long id, User user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Ordering> criteriaQuery = criteriaBuilder.createQuery(Ordering.class);
+        Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);
+
+        criteriaQuery.select(itemRoot);
+        List<Predicate> conditions = predicateConditions(id,user,criteriaBuilder,itemRoot);
+        if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
+
+            List<Order> orderingList = new ArrayList<>();
+
+            if (sort.equalsIgnoreCase("ASC")) {
+                orderingList = listASC(sortColumn, criteriaBuilder, itemRoot);
+            }
+
+            if (sort.equalsIgnoreCase("DESC")) {
+                orderingList = listDESC(sortColumn, criteriaBuilder, itemRoot);
+            }
+
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(orderingList);
+
+        } else {
+            criteriaQuery.where(conditions.toArray(new Predicate[] {}));
+        }
+
+        TypedQuery<Ordering> orderingTypedQuery = entityManager.createQuery(criteriaQuery);
+        orderingTypedQuery.setFirstResult(pageNumber * pageSize);
+        orderingTypedQuery.setMaxResults(pageSize);
+
+        Pageable pageable = PageRequest.of(pageNumber,pageSize);
+        Long count = getOrderCount(id,user);
+        return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
+    }
+
+    List<Predicate> predicateConditions(Long id, User user, CriteriaBuilder criteriaBuilder,Root<Ordering> itemRoot){
+        List<Predicate> conditions = new ArrayList<>();
+
+        if(id != null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("id"),id)));
+        }
+
+        if(user != null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"),user.getClientId())));
+        }
+
+        return conditions;
+    }
+
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Ordering> itemRoot){
+
+        List<Order> orderingList = new ArrayList<>();
+
+        if(sortColumn.equals("id")){
+            orderingList.add(criteriaBuilder.asc(itemRoot.get("id")));
+        }
+
+        if(sortColumn.equals("clientId")){
+            orderingList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
+        }
+
+        return orderingList;
+
+    }
+
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Ordering> itemRoot){
+
+        List<Order> orderingList = new ArrayList<>();
+
+        if(sortColumn.equals("id")){
+            orderingList.add(criteriaBuilder.desc(itemRoot.get("id")));
+        }
+
+        if(sortColumn.equals("clientId")){
+            orderingList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
+        }
+
+        return orderingList;
+
+    }
+
+    private Long getOrderCount(Long id,User user){
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);
+
+        criteriaQuery.select(criteriaBuilder.count(itemRoot));
+        List<Predicate> conditions = predicateConditions(id,user,criteriaBuilder,itemRoot);
+        criteriaQuery.where(conditions.toArray(new Predicate[] {}));
+        return entityManager.createQuery(criteriaQuery).getSingleResult();
+    }
+}
