@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.ItemDTO;
 import com.proyect.masterdata.dto.OrderDTO;
+import com.proyect.masterdata.dto.ProductDTO;
 import com.proyect.masterdata.dto.request.RequestCustomer;
 import com.proyect.masterdata.dto.request.RequestItem;
 import com.proyect.masterdata.dto.request.RequestOrderSave;
@@ -146,7 +147,13 @@ public class OrderingImpl implements IOrdering {
             Customer customer = customerRepository.findByOrderId(order.getId());
 
             List<ItemDTO> itemDTOS = itemRepository.findAllByOrderId(order.getId()).stream().map(item -> ItemDTO.builder()
-                    .product(item.getProduct())
+                    .product(ProductDTO.builder()
+                            .sku(item.getProduct().getSku())
+                            .model(item.getProduct().getModel().getName())
+                            .color(item.getProduct().getColor().getName())
+                            .size(item.getProduct().getSize().getName())
+                            .category(item.getProduct().getCategoryProduct().getName())
+                            .build())
                     .quantity(item.getQuantity())
                     .build()).toList();
 
