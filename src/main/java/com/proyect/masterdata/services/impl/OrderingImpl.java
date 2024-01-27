@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.ItemDTO;
 import com.proyect.masterdata.dto.OrderDTO;
 import com.proyect.masterdata.dto.request.RequestCustomer;
 import com.proyect.masterdata.dto.request.RequestItem;
@@ -39,6 +40,7 @@ public class OrderingImpl implements IOrdering {
     private final OrderingRepositoryCustom orderingRepositoryCustom;
     private final SaleRepository saleRepository;
     private final CustomerRepository customerRepository;
+    private final ItemRepository itemRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -143,6 +145,11 @@ public class OrderingImpl implements IOrdering {
             Sale sale = saleRepository.findByOrderId(order.getId());
             Customer customer = customerRepository.findByOrderId(order.getId());
 
+            List<ItemDTO> itemDTOS = itemRepository.findAllByOrderId(order.getId()).stream().map(item -> ItemDTO.builder()
+                    .product(item.getProduct())
+                    .quantity(item.getQuantity())
+                    .build()).toList();
+
             return OrderDTO.builder()
                     .id(order.getId())
                     .advancedPayment(sale.getAdvancePayment())
@@ -152,6 +159,24 @@ public class OrderingImpl implements IOrdering {
                     .deliveryPhone(order.getDeliveryPhone())
                     .deliveryMan(order.getDeliveryMan())
                     .orderStatus(order.getOrderState().getName())
+                    .department(customer.getDepartment().getName())
+                    .province(customer.getProvince().getName())
+                    .district(customer.getDistrict().getName())
+                    .address(customer.getAddress())
+                    .instagram(customer.getInstagram())
+                    .saleAmount(sale.getSaleAmount())
+                    .deliveryAmount(sale.getSaleAmount())
+                    .advancedPayment(sale.getAdvancePayment())
+                    .managementType(sale.getManagementType().getName())
+                    .reference(customer.getReference())
+                    .duePayment((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment())
+                    .saleChannel(sale.getSaleChannel().getName())
+                    .paymentReceipt(sale.getPaymentReceipt())
+                    .sellerName(sale.getSeller())
+                    .registrationDate(order.getRegistrationDate())
+                    .paymentType(sale.getPaymentMethod().getName())
+                    .deliveryAddress(sale.getDeliveryAddress())
+                    .items(itemDTOS)
                     .build();
         }).toList();
 

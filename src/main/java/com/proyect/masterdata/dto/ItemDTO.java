@@ -1,5 +1,6 @@
 package com.proyect.masterdata.dto;
 
+import com.proyect.masterdata.domain.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,12 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ItemDTO {
-    private String brand;
-    private String category;
-    private String color;
-    private String model;
-    private String sku;
-    private String size;
+    private Product product;
     private Integer quantity;
     private Double unitPrice;
     private Double totalPrice;
