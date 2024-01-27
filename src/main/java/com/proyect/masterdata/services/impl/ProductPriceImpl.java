@@ -1,40 +1,38 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Item;
-import com.proyect.masterdata.domain.Ordering;
 import com.proyect.masterdata.domain.Product;
+import com.proyect.masterdata.domain.ProductPrice;
 import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.dto.request.RequestItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.ItemRepository;
+import com.proyect.masterdata.repository.ProductPriceRepository;
 import com.proyect.masterdata.repository.ProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.services.IItem;
+import com.proyect.masterdata.services.IProductPrice;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class ItemImpl implements IItem {
-
+public class ProductPriceImpl implements IProductPrice {
     private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
     private final ProductRepository productRepository;
-
+    private final ProductPriceRepository productPriceRepository;
     @Override
-    public ResponseSuccess save(Ordering ordering, RequestItem requestItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String productSku,Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         Product product;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(requestItem.getProductSku());
+            product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -44,22 +42,18 @@ public class ItemImpl implements IItem {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if (product == null){
+        if(product == null){
             throw new BadRequestExceptions(Constants.ErrorProduct);
         }
 
-        try{
-            itemRepository.save(Item.builder()
-                            .discount(requestItem.getDiscount())
-                            .ordering(ordering)
-                            .orderId(ordering.getId())
-                            .quantity(requestItem.getQuantity())
-                            .client(user.getClient())
-                            .clientId(user.getClientId())
+        try {
+            productPriceRepository.save(ProductPrice.builder()
                             .product(product)
                             .productId(product.getId())
-                            .observations(requestItem.getObservations())
-                            .tokenUser(user.getUsername())
+                            .unitSalePrice(unitPrice)
+                            .status(true)
+                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .tokenUser(tokenUser.toUpperCase())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)

@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IProductPrice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -21,14 +23,6 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.CategoryProductRepository;
-import com.proyect.masterdata.repository.CategoryRepository;
-import com.proyect.masterdata.repository.ColorRepository;
-import com.proyect.masterdata.repository.ModelRepository;
-import com.proyect.masterdata.repository.ProductRepository;
-import com.proyect.masterdata.repository.ProductRepositoryCustom;
-import com.proyect.masterdata.repository.SizeRepository;
-import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.utils.Constants;
 
@@ -48,6 +42,7 @@ public class ProductImpl implements IProduct {
     private final CategoryProductRepository categoryProductRepository;
     private final ColorRepository colorRepository;
     private final ProductRepositoryCustom productRepositoryCustom;
+    private final IProductPrice iProductPrice;
 
     @Override
     public ResponseSuccess save(RequestProductSave product, String tokenUser)
@@ -98,7 +93,7 @@ public class ProductImpl implements IProduct {
         }
 
         try {
-            productRepository.save(Product.builder()
+            Product productData = productRepository.save(Product.builder()
                     .sku(product.getSku().toUpperCase())
                     .model(modelData)
                     .modelId(modelData.getId())
@@ -112,6 +107,7 @@ public class ProductImpl implements IProduct {
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
+            iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

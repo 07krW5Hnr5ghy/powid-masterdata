@@ -27,6 +27,9 @@ public class Item {
     @Column(name = "descuento")
     private Double discount;
 
+    @Column(name = "observaciones")
+    private String observations;
+
     @Column(name = "id_producto")
     private Long productId;
 

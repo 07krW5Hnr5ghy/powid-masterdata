@@ -42,6 +42,8 @@ public class OrderingImpl implements IOrdering {
     private final SaleRepository saleRepository;
     private final CustomerRepository customerRepository;
     private final ItemRepository itemRepository;
+    private final ProductPriceRepository productPriceRepository;
+    private final ProductRepository productRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -71,8 +73,18 @@ public class OrderingImpl implements IOrdering {
                             .deliveryMan(requestOrderSave.getDeliveryMan())
                             .deliveryPhone(requestOrderSave.getDeliveryManPhone())
                             .registrationDate(new Date(System.currentTimeMillis()))
+                            .updateDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
                     .build());
+
+            Double saleAmount = 0.00;
+
+            for(RequestItem requestItem : requestOrderSave.getRequestItems()){
+                iItem.save(ordering,requestItem,tokenUser);
+                Product product = productRepository.findBySkuAndStatusTrue(requestItem.getProductSku().toUpperCase());
+                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                saleAmount += (productPrice.getUnitSalePrice() * requestItem.getQuantity());
+            }
 
             RequestSale requestSale = RequestSale.builder()
                     .saleChannel(requestOrderSave.getSaleChannel())
@@ -83,7 +95,7 @@ public class OrderingImpl implements IOrdering {
                     .managementType(requestOrderSave.getManagementType())
                     .deliveryAmount(requestOrderSave.getDeliveryAmount())
                     .deliveryAddress(requestOrderSave.getDeliveryAddress())
-                    .saleAmount(requestOrderSave.getSaleAmount())
+                    .saleAmount(saleAmount)
                     .advancedPayment(requestOrderSave.getAdvancedPayment())
                     .build();
 
@@ -102,10 +114,6 @@ public class OrderingImpl implements IOrdering {
                     .build();
 
             iCustomer.save(ordering,requestCustomer,tokenUser);
-
-            for(RequestItem requestItem : requestOrderSave.getRequestItems()){
-                iItem.save(ordering,requestItem,tokenUser);
-            }
 
             return ResponseSuccess.builder()
                     .code(200)
@@ -146,20 +154,26 @@ public class OrderingImpl implements IOrdering {
             Sale sale = saleRepository.findByOrderId(order.getId());
             Customer customer = customerRepository.findByOrderId(order.getId());
 
-            List<ItemDTO> itemDTOS = itemRepository.findAllByOrderId(order.getId()).stream().map(item -> ItemDTO.builder()
-                    .product(ProductDTO.builder()
-                            .sku(item.getProduct().getSku())
-                            .model(item.getProduct().getModel().getName())
-                            .color(item.getProduct().getColor().getName())
-                            .size(item.getProduct().getSize().getName())
-                            .category(item.getProduct().getCategoryProduct().getName())
-                            .build())
-                    .quantity(item.getQuantity())
-                    .build()).toList();
+            List<ItemDTO> itemDTOS = itemRepository.findAllByOrderId(order.getId()).stream().map(item -> {
+                ProductPrice productPrice = productPriceRepository.findByProductId(item.getProductId());
+                Double totalPrice = productPrice.getUnitSalePrice() * item.getQuantity();
+                return ItemDTO.builder()
+                        .product(ProductDTO.builder()
+                                .sku(item.getProduct().getSku())
+                                .model(item.getProduct().getModel().getName())
+                                .color(item.getProduct().getColor().getName())
+                                .size(item.getProduct().getSize().getName())
+                                .category(item.getProduct().getCategoryProduct().getName())
+                                .build())
+                        .quantity(item.getQuantity())
+                        .unitPrice(productPrice.getUnitSalePrice())
+                        .totalPrice(totalPrice)
+                        .observations(item.getObservations())
+                        .build();
+            }).toList();
 
             return OrderDTO.builder()
                     .id(order.getId())
-                    .advancedPayment(sale.getAdvancePayment())
                     .customerName(customer.getName())
                     .customerPhone(customer.getPhone())
                     .customerType(customer.getType())
@@ -171,7 +185,6 @@ public class OrderingImpl implements IOrdering {
                     .district(customer.getDistrict().getName())
                     .address(customer.getAddress())
                     .instagram(customer.getInstagram())
-                    .saleAmount(sale.getSaleAmount())
                     .deliveryAmount(sale.getSaleAmount())
                     .advancedPayment(sale.getAdvancePayment())
                     .managementType(sale.getManagementType().getName())
@@ -181,9 +194,11 @@ public class OrderingImpl implements IOrdering {
                     .paymentReceipt(sale.getPaymentReceipt())
                     .sellerName(sale.getSeller())
                     .registrationDate(order.getRegistrationDate())
+                    .updateDate(order.getUpdateDate())
                     .paymentType(sale.getPaymentMethod().getName())
                     .deliveryAddress(sale.getDeliveryAddress())
                     .items(itemDTOS)
+                    .saleAmount(sale.getSaleAmount())
                     .build();
         }).toList();
 

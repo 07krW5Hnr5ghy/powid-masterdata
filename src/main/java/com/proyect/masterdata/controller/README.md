@@ -963,6 +963,206 @@ http://localhost:8080/masterdata/module?name=ventas&price=2.57&tokenUser=admin1
 
 http://localhost:8080/masterdata/onboard
 
+### POST /ordering protected
+
+- Description : add one order to the database
+
+- Request : 
+
+{
+    "deliveryMan":"name of the courier",
+    "deliveryManPhone":"phone of the courier",
+    "seller":"name of the seller",
+    "observations":"observations of the seller",
+    "paymentReceipt":"url of the paymentReceipt",
+    "deliveryAddress":"address of the delivery for the order",
+    "deliveryAmount":"amount of delivery fee with two decimals",
+    "advancedPayment":"prepaid amount for the order",
+    "saleChannel":"name of the channel of sale",
+    "paymentMethod":"name of the payment method",
+    "managementType":"name of the management type",
+    "requestItems":"array of request items",
+    "customerName" : "name of the customer",
+    "customerType" : "type of the customer",
+    "instagram" : "name of the instagram account",
+    "customerPhone": "phone number of the customer",
+    "customerAddress" : "address of the customer",
+    "customerDistrict" : "district name of the customer", 
+    "customerProvince" : "province name of the customer",
+    "customerDepartment" : "department of the customer",
+    "customerReference" : "reference with additional information of the customer location"
+}
+
+- Parameters :
+
+1. tokenUser : username of the user who register the order
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/ordering?tokenUser=admin1
+
+### GET /ordering protected
+
+- Description : list orders
+
+- Request : none
+
+- Parameters :
+
+1. user : filter orders by the client of the user (required)
+2. orderId : filter orders by id 
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+"content": [
+    {
+        "id": 1,
+        "sellerName": "OSCAR MENDEZ",
+        "customerName": "EMILIO GOMEZ",
+        "customerType": "Tradicional",
+        "customerPhone": "940544828",
+        "instagram": "",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "BREÑA",
+        "address": "807 IQUIQUE",
+        "managementType": "VENTA",
+        "paymentType": "YAPE",
+        "saleChannel": "TIENDA ONLINE",
+        "reference": "",
+        "paymentReceipt": "",
+        "saleAmount": 10.01,
+        "deliveryAmount": 10.01,
+        "advancedPayment": 0.0,
+        "duePayment": 10.01,
+        "registrationDate": "2024-01-27T05:51:50.602+00:00",
+        "updateDate": "2024-01-27T05:51:50.602+00:00",
+        "deliveryAddress": "807 IQUIQUE",
+        "deliveryMan": "Rappi",
+        "deliveryPhone": "123456789",
+        "items": [
+            {
+                "product": {
+                    "sku": "A00001",
+                    "model": "F90",
+                    "size": "12",
+                    "category": "TENNIS",
+                    "color": "NEGRO"
+                },
+                "quantity": 2,
+                "unitPrice": 2.3,
+                "totalPrice": 4.6,
+                "observations": ""
+                },
+                {
+                "product": {
+                    "sku": "A00002",
+                    "model": "M2000",
+                    "size": "24",
+                    "category": "BOTAS",
+                    "color": "ROJO"
+                },
+                "quantity": 1,
+                "unitPrice": 5.41,
+                "totalPrice": 5.41,
+                "observations": ""
+            }
+        ],
+        "orderStatus": "PENDIENTE"
+    },
+    {
+        "id": 2,
+        "sellerName": "GERARDO CONTRERAS",
+        "customerName": "CONSUELO ROJAS",
+        "customerType": "Tradicional",
+        "customerPhone": "956701333",
+        "instagram": "",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "INDEPENDENCIA",
+        "address": "AV. JORGE CHAVEZ 420, OFICN LIMA",
+        "managementType": "VENTA",
+        "paymentType": "PLIN",
+        "saleChannel": "TIENDA ONLINE",
+        "reference": "",
+        "paymentReceipt": "",
+        "saleAmount": 17.0,
+        "deliveryAmount": 17.0,
+        "advancedPayment": 4.0,
+        "duePayment": 16.0,
+        "registrationDate": "2024-01-27T05:51:50.664+00:00",
+        "updateDate": "2024-01-27T05:51:50.664+00:00",
+        "deliveryAddress": "AV. JORGE CHAVEZ 420, OFICN LIMA",
+        "deliveryMan": "indriver",
+        "deliveryPhone": "999999999",
+        "items": [
+            {
+            "product": {
+                "sku": "A00003",
+                "model": "MERCURIAL",
+                "size": "24",
+                "category": "TENNIS",
+                "color": "VERDE"
+            },
+            "quantity": 3,
+            "unitPrice": 3.33,
+            "totalPrice": 9.99,
+            "observations": ""
+            },
+            {
+            "product": {
+                "sku": "A00004",
+                "model": "INDIGO",
+                "size": "S",
+                "category": "CAMISETAS",
+                "color": "ROJO"
+            },
+            "quantity": 1,
+            "unitPrice": 7.01,
+            "totalPrice": 7.01,
+            "observations": ""
+            }
+        ],
+        "orderStatus": "PENDIENTE"
+    }
+    ],
+    "pageable": {
+    "sort": [],
+    "offset": 0,
+    "pageSize": 2,
+    "pageNumber": 0,
+    "unpaged": false,
+    "paged": true
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 2,
+    "first": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 2,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/ordering?pageNumber=0&pageSize=2&user=gjimenez
+
+
 ### GET /product protected
 
 - Description : list all active products

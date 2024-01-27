@@ -33,6 +33,7 @@ public class OrderDTO {
     private Double advancedPayment;
     private Double duePayment;
     private Date registrationDate;
+    private Date updateDate;
     private String deliveryAddress;
     private String deliveryMan;
     private String deliveryPhone;

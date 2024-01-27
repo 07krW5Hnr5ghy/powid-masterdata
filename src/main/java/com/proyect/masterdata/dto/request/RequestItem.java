@@ -13,4 +13,5 @@ public class RequestItem {
     private Integer quantity;
     private Double discount;
     private String productSku;
+    private String observations;
 }

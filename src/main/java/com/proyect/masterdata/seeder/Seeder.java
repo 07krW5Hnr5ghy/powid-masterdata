@@ -347,6 +347,7 @@ public class Seeder implements CommandLineRunner {
                 product1.setModel("f90");
                 product1.setSize("12");
                 product1.setSku("A00001");
+                product1.setPrice(2.30);
 
                 iProduct.save(product1, "gjimenez");
 
@@ -356,6 +357,7 @@ public class Seeder implements CommandLineRunner {
                 product2.setModel("m2000");
                 product2.setSize("24");
                 product2.setSku("A00002");
+                product2.setPrice(5.41);
 
                 iProduct.save(product2, "gjimenez");
 
@@ -365,6 +367,7 @@ public class Seeder implements CommandLineRunner {
                 product3.setModel("mercurial");
                 product3.setSize("24");
                 product3.setSku("A00003");
+                product3.setPrice(3.33);
 
                 iProduct.save(product3, "gjimenez");
 
@@ -374,6 +377,7 @@ public class Seeder implements CommandLineRunner {
                 product4.setModel("indigo");
                 product4.setSize("s");
                 product4.setSku("A00004");
+                product4.setPrice(7.01);
 
                 iProduct.save(product4, "gjimenez");
 
@@ -383,6 +387,7 @@ public class Seeder implements CommandLineRunner {
                 product5.setModel("old navy");
                 product5.setSize("m");
                 product5.setSku("A00005");
+                product5.setPrice(4.76);
 
                 iProduct.save(product5, "gjimenez");
 
@@ -392,6 +397,7 @@ public class Seeder implements CommandLineRunner {
                 product6.setModel("ripper");
                 product6.setSize("l");
                 product6.setSku("A00006");
+                product6.setPrice(1.34);
 
                 iProduct.save(product6, "gjimenez");
 
@@ -401,6 +407,7 @@ public class Seeder implements CommandLineRunner {
                 product7.setModel("sweater");
                 product7.setSize("xs");
                 product7.setSku("A00007");
+                product7.setPrice(8.23);
 
                 iProduct.save(product7, "gjimenez");
 
@@ -410,6 +417,7 @@ public class Seeder implements CommandLineRunner {
                 product8.setModel("kasper");
                 product8.setSize("xm");
                 product8.setSku("A00008");
+                product8.setPrice(6.27);
 
                 iProduct.save(product8, "gjimenez");
 
@@ -419,6 +427,7 @@ public class Seeder implements CommandLineRunner {
                 product9.setModel("sustra");
                 product9.setSize("xl");
                 product9.setSku("A00009");
+                product9.setPrice(9.05);
 
                 iProduct.save(product9, "gjimenez");
 
@@ -428,6 +437,7 @@ public class Seeder implements CommandLineRunner {
                 product10.setModel("krust");
                 product10.setSize("40");
                 product10.setSku("B00001");
+                product10.setPrice(7.11);
 
                 iProduct.save(product10, "fcasas");
 
@@ -437,6 +447,7 @@ public class Seeder implements CommandLineRunner {
                 product11.setModel("gist");
                 product11.setSize("32");
                 product11.setSku("B00002");
+                product11.setPrice(4.65);
 
                 iProduct.save(product11, "fcasas");
 
@@ -446,6 +457,7 @@ public class Seeder implements CommandLineRunner {
                 product12.setModel("thunder");
                 product12.setSize("18");
                 product12.setSku("B00003");
+                product12.setPrice(8.38);
 
                 iProduct.save(product12, "fcasas");
 
@@ -455,6 +467,7 @@ public class Seeder implements CommandLineRunner {
                 product13.setModel("yitro");
                 product13.setSize("s");
                 product13.setSku("B00004");
+                product13.setPrice(4.02);
 
                 iProduct.save(product13, "fcasas");
 
@@ -464,6 +477,7 @@ public class Seeder implements CommandLineRunner {
                 product14.setModel("ulcast");
                 product14.setSize("m");
                 product14.setSku("B00005");
+                product14.setPrice(1.99);
 
                 iProduct.save(product14, "fcasas");
 
@@ -473,6 +487,7 @@ public class Seeder implements CommandLineRunner {
                 product15.setModel("reinder");
                 product15.setSize("l");
                 product15.setSku("B00006");
+                product15.setPrice(6.37);
 
                 iProduct.save(product15, "fcasas");
 
@@ -482,6 +497,7 @@ public class Seeder implements CommandLineRunner {
                 product16.setModel("realt");
                 product16.setSize("xl");
                 product16.setSku("B00007");
+                product16.setPrice(2.97);
 
                 iProduct.save(product16, "fcasas");
 
@@ -491,6 +507,7 @@ public class Seeder implements CommandLineRunner {
                 product17.setModel("brust");
                 product17.setSize("xs");
                 product17.setSku("B00008");
+                product17.setPrice(5.21);
 
                 iProduct.save(product17, "fcasas");
 
@@ -500,6 +517,7 @@ public class Seeder implements CommandLineRunner {
                 product18.setModel("frost");
                 product18.setSize("m");
                 product18.setSku("B00009");
+                product18.setPrice(3.53);
 
                 iProduct.save(product18, "fcasas");
 
@@ -1127,12 +1145,14 @@ public class Seeder implements CommandLineRunner {
                         .productSku("A00001")
                         .discount(0.00)
                         .quantity(2)
+                        .observations("")
                         .build();
 
                 RequestItem requestItem2 = RequestItem.builder()
                         .quantity(1)
                         .discount(3.00)
                         .productSku("A00002")
+                        .observations("")
                         .build();
 
                 ArrayList<RequestItem> requestItems1 = new ArrayList<>();
@@ -1159,7 +1179,6 @@ public class Seeder implements CommandLineRunner {
                         .observations("")
                         .paymentMethod("yape")
                         .paymentReceipt("")
-                        .saleAmount(48.70)
                         .seller("oscar mendez")
                         .saleChannel("tienda online")
                         .requestItems(requestItems1)
@@ -1171,12 +1190,14 @@ public class Seeder implements CommandLineRunner {
                         .productSku("A00003")
                         .quantity(3)
                         .discount(0.00)
+                        .observations("")
                         .build();
 
                 RequestItem requestItem4 = RequestItem.builder()
                         .productSku("A00004")
                         .quantity(1)
                         .discount(2.00)
+                        .observations("")
                         .build();
 
                 ArrayList<RequestItem> requestItems2 = new ArrayList<>();
@@ -1203,7 +1224,6 @@ public class Seeder implements CommandLineRunner {
                         .observations("")
                         .paymentMethod("plin")
                         .paymentReceipt("")
-                        .saleAmount(32.10)
                         .seller("gerardo contreras")
                         .saleChannel("tienda online")
                         .requestItems(requestItems2)
@@ -1215,12 +1235,14 @@ public class Seeder implements CommandLineRunner {
                         .productSku("B00001")
                         .discount(0.00)
                         .quantity(1)
+                        .observations("")
                         .build();
 
                 RequestItem requestItem6 = RequestItem.builder()
                         .quantity(3)
                         .discount(5.00)
                         .productSku("B00002")
+                        .observations("")
                         .build();
 
                 List<RequestItem> requestItems3 = new ArrayList<>();
@@ -1247,7 +1269,6 @@ public class Seeder implements CommandLineRunner {
                         .observations("")
                         .paymentMethod("efectivo")
                         .paymentReceipt("")
-                        .saleAmount(18.30)
                         .seller("jeison acosta")
                         .saleChannel("tienda online")
                         .requestItems(requestItems3)
@@ -1259,12 +1280,14 @@ public class Seeder implements CommandLineRunner {
                         .productSku("B00003")
                         .discount(7.00)
                         .quantity(5)
+                        .observations("")
                         .build();
 
                 RequestItem requestItem8 = RequestItem.builder()
                         .quantity(2)
                         .discount(0.00)
                         .productSku("B00004")
+                        .observations("")
                         .build();
 
                 List<RequestItem> requestItems4 = new ArrayList<>();
@@ -1291,7 +1314,6 @@ public class Seeder implements CommandLineRunner {
                         .observations("URB. LA CAPILLA 130, CALLE SARAGOZA- LA MOLINA")
                         .paymentMethod("efectivo")
                         .paymentReceipt("")
-                        .saleAmount(49.23)
                         .seller("Lucio Jimenez")
                         .saleChannel("tienda online")
                         .requestItems(requestItems4)

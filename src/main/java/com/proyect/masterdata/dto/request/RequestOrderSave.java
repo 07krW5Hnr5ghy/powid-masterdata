@@ -26,8 +26,6 @@ public class RequestOrderSave {
 
     private String deliveryAddress;
 
-    private Double saleAmount;
-
     private Double deliveryAmount;
 
     private Double advancedPayment;
