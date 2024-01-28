@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<Item,Long> {
     List<Item> findAllByOrderId(Long orderId);
+    Item findByIdAndOrderId(Long itemId,Long orderId);
 }

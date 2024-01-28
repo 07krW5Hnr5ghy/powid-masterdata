@@ -86,7 +86,7 @@ public class OrderingImpl implements IOrdering {
 
             RequestSale requestSale = RequestSale.builder()
                     .saleChannel(requestOrderSave.getSaleChannel())
-                    .seller(user.getName() + user.getUsername())
+                    .seller(user.getName() + " " + user.getSurname())
                     .paymentReceipt(requestOrderSave.getPaymentReceipt())
                     .paymentMethod(requestOrderSave.getPaymentMethod())
                     .observations(requestOrderSave.getObservations())

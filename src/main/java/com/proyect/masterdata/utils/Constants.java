@@ -188,4 +188,5 @@ public class Constants {
     public static final String ErrorGeneralStockLess = "The quantity is greater than the actual stock";
     public static final String ErrorManagementType = "The management does not exists";
     public static final String ErrorManagementTypeExists = "The management already exists";
+    public static final String ErrorOrdering = "The ordering does not exists";
 }

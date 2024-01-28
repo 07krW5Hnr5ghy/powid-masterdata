@@ -970,8 +970,6 @@ http://localhost:8080/masterdata/onboard
 - Request : 
 
 {
-    "deliveryMan":"name of the courier",
-    "deliveryManPhone":"phone of the courier",
     "seller":"name of the seller",
     "observations":"observations of the seller",
     "paymentReceipt":"url of the paymentReceipt",
@@ -1030,7 +1028,7 @@ http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
 "content": [
     {
         "id": 1,
-        "sellerName": "OSCAR MENDEZ",
+        "sellerName": "GONZALO JIMENEZ",
         "customerName": "EMILIO GOMEZ",
         "customerType": "Tradicional",
         "customerPhone": "940544828",
@@ -1048,44 +1046,42 @@ http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
         "deliveryAmount": 10.01,
         "advancedPayment": 0.0,
         "duePayment": 10.01,
-        "registrationDate": "2024-01-27T05:51:50.602+00:00",
-        "updateDate": "2024-01-27T05:51:50.602+00:00",
+        "registrationDate": "2024-01-28T00:57:17.554+00:00",
+        "updateDate": "2024-01-28T00:57:17.554+00:00",
         "deliveryAddress": "807 IQUIQUE",
-        "deliveryMan": "Rappi",
-        "deliveryPhone": "123456789",
         "items": [
-            {
-                "product": {
-                    "sku": "A00001",
-                    "model": "F90",
-                    "size": "12",
-                    "category": "TENNIS",
-                    "color": "NEGRO"
-                },
-                "quantity": 2,
-                "unitPrice": 2.3,
-                "totalPrice": 4.6,
-                "observations": ""
-                },
-                {
-                "product": {
-                    "sku": "A00002",
-                    "model": "M2000",
-                    "size": "24",
-                    "category": "BOTAS",
-                    "color": "ROJO"
-                },
-                "quantity": 1,
-                "unitPrice": 5.41,
-                "totalPrice": 5.41,
-                "observations": ""
-            }
+        {
+        "product": {
+        "sku": "A00001",
+        "model": "F90",
+        "size": "12",
+        "category": "TENNIS",
+        "color": "NEGRO"
+        },
+        "quantity": 2,
+        "unitPrice": 2.3,
+        "totalPrice": 4.6,
+        "observations": ""
+        },
+        {
+        "product": {
+        "sku": "A00002",
+        "model": "M2000",
+        "size": "24",
+        "category": "BOTAS",
+        "color": "ROJO"
+        },
+        "quantity": 1,
+        "unitPrice": 5.41,
+        "totalPrice": 5.41,
+        "observations": ""
+        }
         ],
         "orderStatus": "PENDIENTE"
     },
     {
         "id": 2,
-        "sellerName": "GERARDO CONTRERAS",
+        "sellerName": "GONZALO JIMENEZ",
         "customerName": "CONSUELO ROJAS",
         "customerType": "Tradicional",
         "customerPhone": "956701333",
@@ -1103,59 +1099,57 @@ http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
         "deliveryAmount": 17.0,
         "advancedPayment": 4.0,
         "duePayment": 16.0,
-        "registrationDate": "2024-01-27T05:51:50.664+00:00",
-        "updateDate": "2024-01-27T05:51:50.664+00:00",
+        "registrationDate": "2024-01-28T00:57:17.604+00:00",
+        "updateDate": "2024-01-28T00:57:17.604+00:00",
         "deliveryAddress": "AV. JORGE CHAVEZ 420, OFICN LIMA",
-        "deliveryMan": "indriver",
-        "deliveryPhone": "999999999",
         "items": [
-            {
-            "product": {
-                "sku": "A00003",
-                "model": "MERCURIAL",
-                "size": "24",
-                "category": "TENNIS",
-                "color": "VERDE"
-            },
-            "quantity": 3,
-            "unitPrice": 3.33,
-            "totalPrice": 9.99,
-            "observations": ""
-            },
-            {
-            "product": {
-                "sku": "A00004",
-                "model": "INDIGO",
-                "size": "S",
-                "category": "CAMISETAS",
-                "color": "ROJO"
-            },
-            "quantity": 1,
-            "unitPrice": 7.01,
-            "totalPrice": 7.01,
-            "observations": ""
-            }
+        {
+        "product": {
+        "sku": "A00003",
+        "model": "MERCURIAL",
+        "size": "24",
+        "category": "TENNIS",
+        "color": "VERDE"
+        },
+        "quantity": 3,
+        "unitPrice": 3.33,
+        "totalPrice": 9.99,
+        "observations": ""
+        },
+        {
+        "product": {
+        "sku": "A00004",
+        "model": "INDIGO",
+        "size": "S",
+        "category": "CAMISETAS",
+        "color": "ROJO"
+        },
+        "quantity": 1,
+        "unitPrice": 7.01,
+        "totalPrice": 7.01,
+        "observations": ""
+        }
         ],
         "orderStatus": "PENDIENTE"
     }
-    ],
-    "pageable": {
-    "sort": [],
-    "offset": 0,
-    "pageSize": 2,
-    "pageNumber": 0,
-    "unpaged": false,
-    "paged": true
-    },
-    "last": true,
-    "totalPages": 1,
-    "totalElements": 2,
-    "first": true,
-    "size": 2,
-    "number": 0,
-    "sort": [],
-    "numberOfElements": 2,
-    "empty": false
+],
+"pageable": {
+"sort": [],
+"offset": 0,
+"pageNumber": 0,
+"pageSize": 2,
+"unpaged": false,
+"paged": true
+},
+"totalElements": 2,
+"totalPages": 1,
+"last": true,
+"size": 2,
+"number": 0,
+"sort": [],
+"numberOfElements": 2,
+"first": true,
+"empty": false
 }
 
 - example :
