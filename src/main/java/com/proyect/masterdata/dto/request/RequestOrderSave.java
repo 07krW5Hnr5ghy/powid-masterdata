@@ -14,10 +14,6 @@ import java.util.List;
 @Data
 public class RequestOrderSave {
 
-    private String deliveryMan;
-
-    private String deliveryManPhone;
-
     private String seller;
 
     private String observations;

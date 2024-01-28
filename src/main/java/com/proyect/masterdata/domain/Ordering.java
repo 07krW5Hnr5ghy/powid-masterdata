@@ -43,12 +43,6 @@ public class Ordering {
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "repartidor")
-    private String deliveryMan;
-
-    @Column(name = "telefono_repartidor")
-    private String deliveryPhone;
-
     @Column(name = "id_estado_pedido")
     private Long orderStateId;
 

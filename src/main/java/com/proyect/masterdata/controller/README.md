@@ -1007,7 +1007,7 @@ http://localhost:8080/masterdata/onboard
 
 - Example :
 
-http://localhost:8080/masterdata/ordering?tokenUser=admin1
+http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
 
 ### GET /ordering protected
 

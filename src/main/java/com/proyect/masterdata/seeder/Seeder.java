@@ -1161,8 +1161,6 @@ public class Seeder implements CommandLineRunner {
                 requestItems1.add(requestItem2);
 
                 RequestOrderSave requestOrderSave1 = RequestOrderSave.builder()
-                        .deliveryMan("Rappi")
-                        .deliveryManPhone("123456789")
                         .advancedPayment(0.00)
                         .customerAddress("807 IQUIQUE")
                         .customerDepartment("LIMA")
@@ -1206,8 +1204,6 @@ public class Seeder implements CommandLineRunner {
                 requestItems2.add(requestItem4);
 
                 RequestOrderSave requestOrderSave2 = RequestOrderSave.builder()
-                        .deliveryMan("indriver")
-                        .deliveryManPhone("999999999")
                         .advancedPayment(4.00)
                         .customerAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
                         .customerDepartment("LIMA")
@@ -1251,8 +1247,6 @@ public class Seeder implements CommandLineRunner {
                 requestItems3.add(requestItem6);
 
                 RequestOrderSave requestOrderSave3 = RequestOrderSave.builder()
-                        .deliveryMan("mavisur")
-                        .deliveryManPhone("111111111")
                         .advancedPayment(0.00)
                         .customerAddress("AV MARAÑÓN 776")
                         .customerDepartment("LIMA")
@@ -1296,8 +1290,6 @@ public class Seeder implements CommandLineRunner {
                 requestItems4.add(requestItem8);
 
                 RequestOrderSave requestOrderSave4 = RequestOrderSave.builder()
-                        .deliveryMan("shalom")
-                        .deliveryManPhone("222222222")
                         .advancedPayment(0.00)
                         .customerAddress("URB. CAPILLA 130")
                         .customerDepartment("LIMA")
