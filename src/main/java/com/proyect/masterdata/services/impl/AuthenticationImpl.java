@@ -86,8 +86,8 @@ public class AuthenticationImpl implements IAuthentication {
 
         } catch (AuthenticationException e) {
             log.error(e);
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
-        return null;
     }
 
     @Override
