@@ -74,7 +74,7 @@ public class AuthenticationImpl implements IAuthentication {
             user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
 
             if (user == null) {
-                throw new BadRequestExceptions(Constants.ErrorUser);
+                throw new BadRequestExceptions(Constants.ErrorAuthentication);
             }
 
             Authentication auth = authenticationManager.authenticate(
@@ -86,7 +86,7 @@ public class AuthenticationImpl implements IAuthentication {
 
         } catch (AuthenticationException e) {
             log.error(e);
-            throw new BadRequestExceptions(Constants.ErrorUser);
+            throw new BadRequestExceptions(Constants.ErrorAuthentication);
         }
     }
 

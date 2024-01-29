@@ -189,4 +189,5 @@ public class Constants {
     public static final String ErrorManagementType = "The management does not exists";
     public static final String ErrorManagementTypeExists = "The management already exists";
     public static final String ErrorOrdering = "The ordering does not exists";
+    public static final String ErrorAuthentication = "Wrong username or password";
 }
