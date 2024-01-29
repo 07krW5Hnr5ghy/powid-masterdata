@@ -37,7 +37,7 @@ public class OrderStock {
     @Column(name = "id_item")
     private Long itemId;
 
-    @Column(name = "id_proveedor_product")
+    @Column(name = "id_proveedor_producto")
     private Long supplierProductId;
 
     @Column(name = "id_pedido")
@@ -45,6 +45,9 @@ public class OrderStock {
 
     @Column(name = "id_cliente")
     private Long clientId;
+
+    @Column(name = "id_warehouse")
+    private Long warehouseId;
 
     @Column(name = "usuario_token")
     private String tokenUser;
@@ -54,11 +57,19 @@ public class OrderStock {
     private Item item;
 
     @ManyToOne
+    @JoinColumn(name = "id_warehouse",columnDefinition = "warehouseId",insertable = false,updatable = false)
+    private Warehouse warehouse;
+
+    @ManyToOne
     @JoinColumn(name = "id_pedido", columnDefinition = "orderId", insertable = false, updatable = false)
     private Ordering ordering;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "id_proveedor_producto",columnDefinition = "supplierProduct",insertable = false,updatable = false)
+    private SupplierProduct supplierProduct;
 
 }

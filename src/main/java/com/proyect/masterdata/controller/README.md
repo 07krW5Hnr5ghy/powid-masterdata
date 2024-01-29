@@ -2652,9 +2652,9 @@ http://localhost:8080/masterdata/warehouse/warehouses?tokenUser=gjimenez
 
 - Request : none
 
-- Paramenters : 
+- Parameters : 
 
-1. wareshouse : filter warehouse stock by warehouse (required)
+1. warehouse : filter warehouse stock by warehouse (required)
 2. user : filter warehouses by the client of the user (required)
 3. sort : sort the values the only valid values are ASC and DESC, default is ASC
 4. sortColumn : select the value that sorts the list in this case name or user

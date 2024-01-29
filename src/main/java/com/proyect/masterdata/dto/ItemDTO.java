@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ItemDTO {
+    private Long id;
     private ProductDTO product;
     private Integer quantity;
     private Double unitPrice;

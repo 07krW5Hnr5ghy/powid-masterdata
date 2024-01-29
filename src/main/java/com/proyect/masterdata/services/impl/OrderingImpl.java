@@ -156,6 +156,7 @@ public class OrderingImpl implements IOrdering {
                 ProductPrice productPrice = productPriceRepository.findByProductId(item.getProductId());
                 Double totalPrice = productPrice.getUnitSalePrice() * item.getQuantity();
                 return ItemDTO.builder()
+                        .id(item.getId())
                         .product(ProductDTO.builder()
                                 .sku(item.getProduct().getSku())
                                 .model(item.getProduct().getModel().getName())

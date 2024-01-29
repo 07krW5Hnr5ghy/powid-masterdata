@@ -13,4 +13,5 @@ public class RequestOrderStock {
     private Integer quantity;
     private String supplierProductSerial;
     private Long itemId;
+    private String warehouse;
 }

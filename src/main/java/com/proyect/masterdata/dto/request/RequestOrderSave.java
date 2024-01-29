@@ -14,8 +14,6 @@ import java.util.List;
 @Data
 public class RequestOrderSave {
 
-    private String seller;
-
     private String observations;
 
     private String paymentReceipt;

@@ -70,6 +70,7 @@ public class Seeder implements CommandLineRunner {
         private final IManagementType iManagementType;
         private final IPaymentMethod iPaymentMethod;
         private final IOrdering iOrdering;
+        private final IOrderStock iOrderStock;
 
         @Override
         public void run(String... args) throws Exception {
@@ -923,6 +924,8 @@ public class Seeder implements CommandLineRunner {
 
                 iWarehouse.save(warehouse4, "fcasas");
 
+                // purchase mocks
+
                 List<RequestPurchase> requestPurchaseList1 = new ArrayList<>();
 
                 RequestPurchase requestPurchase1 = RequestPurchase.builder()
@@ -1025,6 +1028,8 @@ public class Seeder implements CommandLineRunner {
 
                 iPurchase.save("AA00001", requestPurchaseList1, "gjimenez");
                 iPurchase.save("BB00001", requestPurchaseList2, "fcasas");
+
+                // shipments
 
                 List<RequestShipment> requestShipmentList1 = new ArrayList<>();
 
@@ -1141,6 +1146,8 @@ public class Seeder implements CommandLineRunner {
                 iShipment.save("SA00001", "luminous", requestShipmentList1, "gjimenez");
                 iShipment.save("SB00001", "alcazar", requestShipmentList2, "fcasas");
 
+                // orders mocks
+
                 RequestItem requestItem1 = RequestItem.builder()
                         .productSku("A00001")
                         .discount(0.00)
@@ -1177,7 +1184,6 @@ public class Seeder implements CommandLineRunner {
                         .observations("")
                         .paymentMethod("yape")
                         .paymentReceipt("")
-                        .seller("oscar mendez")
                         .saleChannel("tienda online")
                         .requestItems(requestItems1)
                         .build();
@@ -1192,7 +1198,7 @@ public class Seeder implements CommandLineRunner {
                         .build();
 
                 RequestItem requestItem4 = RequestItem.builder()
-                        .productSku("A00004")
+                        .productSku("A00001")
                         .quantity(1)
                         .discount(2.00)
                         .observations("")
@@ -1220,7 +1226,6 @@ public class Seeder implements CommandLineRunner {
                         .observations("")
                         .paymentMethod("plin")
                         .paymentReceipt("")
-                        .seller("gerardo contreras")
                         .saleChannel("tienda online")
                         .requestItems(requestItems2)
                         .build();
@@ -1263,7 +1268,6 @@ public class Seeder implements CommandLineRunner {
                         .observations("")
                         .paymentMethod("efectivo")
                         .paymentReceipt("")
-                        .seller("jeison acosta")
                         .saleChannel("tienda online")
                         .requestItems(requestItems3)
                         .build();
@@ -1271,7 +1275,7 @@ public class Seeder implements CommandLineRunner {
                 iOrdering.save(requestOrderSave3,"fcasas");
 
                 RequestItem requestItem7 = RequestItem.builder()
-                        .productSku("B00003")
+                        .productSku("B00002")
                         .discount(7.00)
                         .quantity(5)
                         .observations("")
@@ -1280,7 +1284,7 @@ public class Seeder implements CommandLineRunner {
                 RequestItem requestItem8 = RequestItem.builder()
                         .quantity(2)
                         .discount(0.00)
-                        .productSku("B00004")
+                        .productSku("B00003")
                         .observations("")
                         .build();
 
@@ -1306,12 +1310,93 @@ public class Seeder implements CommandLineRunner {
                         .observations("URB. LA CAPILLA 130, CALLE SARAGOZA- LA MOLINA")
                         .paymentMethod("efectivo")
                         .paymentReceipt("")
-                        .seller("Lucio Jimenez")
                         .saleChannel("tienda online")
                         .requestItems(requestItems4)
                         .build();
 
                 iOrdering.save(requestOrderSave4,"fcasas");
+
+                // order stock mocks
+
+                RequestOrderStock requestOrderStock1 = RequestOrderStock.builder()
+                        .supplierProductSerial("A00001A")
+                        .quantity(2)
+                        .warehouse("LUMINOUS")
+                        .itemId(1L)
+                        .build();
+
+                RequestOrderStock requestOrderStock2 = RequestOrderStock.builder()
+                        .supplierProductSerial("A00002A")
+                        .quantity(1)
+                        .warehouse("LUMINOUS")
+                        .itemId(2L)
+                        .build();
+
+                List<RequestOrderStock> requestOrderStockList1 = new ArrayList<>();
+                requestOrderStockList1.add(requestOrderStock1);
+                requestOrderStockList1.add(requestOrderStock2);
+
+                iOrderStock.save(1L,requestOrderStockList1,"gjimenez");
+
+                RequestOrderStock requestOrderStock3 = RequestOrderStock.builder()
+                        .supplierProductSerial("A00003A")
+                        .quantity(2)
+                        .warehouse("LUMINOUS")
+                        .itemId(3L)
+                        .build();
+
+                RequestOrderStock requestOrderStock4 = RequestOrderStock.builder()
+                        .supplierProductSerial("A00002A")
+                        .quantity(1)
+                        .warehouse("LUMINOUS")
+                        .itemId(4L)
+                        .build();
+
+                List<RequestOrderStock> requestOrderStockList2 = new ArrayList<>();
+                requestOrderStockList2.add(requestOrderStock3);
+                requestOrderStockList2.add(requestOrderStock4);
+
+                iOrderStock.save(2L,requestOrderStockList2,"gjimenez");
+
+                RequestOrderStock requestOrderStock5 = RequestOrderStock.builder()
+                        .supplierProductSerial("B00001A")
+                        .quantity(1)
+                        .warehouse("ALCAZAR")
+                        .itemId(5L)
+                        .build();
+
+                RequestOrderStock requestOrderStock6 = RequestOrderStock.builder()
+                        .supplierProductSerial("B00002A")
+                        .quantity(3)
+                        .warehouse("ALCAZAR")
+                        .itemId(6L)
+                        .build();
+
+                List<RequestOrderStock> requestOrderStockList3 = new ArrayList<>();
+                requestOrderStockList3.add(requestOrderStock5);
+                requestOrderStockList3.add(requestOrderStock6);
+
+                iOrderStock.save(3L,requestOrderStockList3,"fcasas");
+
+                RequestOrderStock requestOrderStock7 = RequestOrderStock.builder()
+                        .supplierProductSerial("B00002A")
+                        .quantity(5)
+                        .warehouse("ALCAZAR")
+                        .itemId(7L)
+                        .build();
+
+                RequestOrderStock requestOrderStock8 = RequestOrderStock.builder()
+                        .supplierProductSerial("B00003A")
+                        .quantity(2)
+                        .warehouse("ALCAZAR")
+                        .itemId(8L)
+                        .build();
+
+                List<RequestOrderStock> requestOrderStockList4 = new ArrayList<>();
+                requestOrderStockList4.add(requestOrderStock7);
+                requestOrderStockList4.add(requestOrderStock8);
+
+                iOrderStock.save(4L,requestOrderStockList4,"fcasas");
         }
 
 }
