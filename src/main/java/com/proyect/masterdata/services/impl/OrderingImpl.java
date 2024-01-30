@@ -4,10 +4,7 @@ import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.ItemDTO;
 import com.proyect.masterdata.dto.OrderDTO;
 import com.proyect.masterdata.dto.ProductDTO;
-import com.proyect.masterdata.dto.request.RequestCustomer;
-import com.proyect.masterdata.dto.request.RequestItem;
-import com.proyect.masterdata.dto.request.RequestOrderSave;
-import com.proyect.masterdata.dto.request.RequestSale;
+import com.proyect.masterdata.dto.request.*;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -26,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -44,6 +42,8 @@ public class OrderingImpl implements IOrdering {
     private final ItemRepository itemRepository;
     private final ProductPriceRepository productPriceRepository;
     private final ProductRepository productRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
+    private final PaymentStateRepository paymentStateRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -200,5 +200,64 @@ public class OrderingImpl implements IOrdering {
         }).toList();
 
         return new PageImpl<>(orderDTOS,pageOrdering.getPageable(),pageOrdering.getTotalElements());
+    }
+
+    @Override
+    public ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        Ordering ordering;
+        OrderState orderState;
+        Sale sale;
+        Customer customer;
+        PaymentMethod paymentMethod;
+        PaymentState paymentState;
+
+        try{
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            ordering = orderingRepository.findById(orderId).orElse(null);
+            orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
+            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
+            paymentState = paymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(ordering == null){
+            throw new BadRequestExceptions(Constants.ErrorOrdering);
+        }else {
+            sale = saleRepository.findByOrderId(ordering.getId());
+            customer = customerRepository.findByOrderId(ordering.getId());
+        }
+
+        try{
+
+            if(!Objects.equals(orderState.getName(), ordering.getOrderState().getName())){
+                ordering.setOrderState(orderState);
+                ordering.setOrderStateId(orderState.getId());
+            }
+
+            if(!Objects.equals(paymentMethod.getName(), sale.getPaymentMethod().getName())){
+                sale.setPaymentMethod(paymentMethod);
+                sale.setPaymentMethodId(paymentMethod.getId());
+            }
+
+            if(!Objects.equals(paymentState.getName(),sale.getPaymentState().getName())){
+                sale.setPaymentState(paymentState);
+                sale.setPaymentMethodId(paymentState.getId());
+            }
+
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.update)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 }

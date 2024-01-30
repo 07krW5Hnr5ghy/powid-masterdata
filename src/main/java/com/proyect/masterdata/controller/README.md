@@ -970,7 +970,6 @@ http://localhost:8080/masterdata/onboard
 - Request : 
 
 {
-    "seller":"name of the seller",
     "observations":"observations of the seller",
     "paymentReceipt":"url of the paymentReceipt",
     "deliveryAddress":"address of the delivery for the order",
@@ -1155,6 +1154,98 @@ http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
 - example :
 
 http://localhost:8080/masterdata/ordering?pageNumber=0&pageSize=2&user=gjimenez
+
+### POST /order-stock protected
+
+- Description : add a list of order stocks to the database
+
+- Request :
+
+{
+    "quantity":quantity of stock to cover the order item,
+    "supplierProductSerial": serial of the supplier product,
+    "itemId": id of the item of the order,
+    "warehouse" : name of the warehouse 
+}
+
+- Parameters :
+
+1. orderId : id of the order that will be stocked
+2. tokenUser : username of the user who register the order
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/order-stock?orderId=1&tokenUser=gjimenez
+
+### GET /order-stock protected
+
+- Description : list order stocks
+
+- Request : none
+
+- Parameters :
+
+1. warehouse : filter order stocks by warehouse
+2. orderId : filter order stocks by order
+3. user : filter orders by the client of the user (required)
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+"content": [
+    {
+        "orderId": 1,
+        "itemId": 1,
+        "warehouse": "LUMINOUS",
+        "serialSupplierProduct": "A00001A",
+        "quantity": 2,
+        "registrationDate": "2024-01-29T23:31:25.533+00:00",
+        "updateDate": "2024-01-29T23:31:25.533+00:00"
+    },
+    {
+        "orderId": 1,
+        "itemId": 2,
+        "warehouse": "LUMINOUS",
+        "serialSupplierProduct": "A00002A",
+        "quantity": 1,
+        "registrationDate": "2024-01-29T23:31:25.545+00:00",
+        "updateDate": "2024-01-29T23:31:25.545+00:00"
+    }
+],
+"pageable": {
+"sort": [],
+"offset": 0,
+"pageSize": 2,
+"pageNumber": 0,
+"paged": true,
+"unpaged": false
+},
+"totalPages": 2,
+"last": false,
+"totalElements": 4,
+"size": 2,
+"number": 0,
+"sort": [],
+"first": true,
+"numberOfElements": 2,
+"empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/order-stock?pageNumber=0&pageSize=2&user=gjimenez
 
 
 ### GET /product protected
@@ -1351,7 +1442,7 @@ http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&u
 
 - Request : none
 
-- Paramenters : 
+- Parameters : 
 
 1. serial : filter purchases by serial
 2. user : filter purchases by the client of the user (required)
@@ -1448,7 +1539,7 @@ http://localhost:8080/masterdata/purchase?serial=AA00001&tokenUser=gjimenez
 
 - Request : none
 
-- Paramenters : 
+- Parameters : 
 
 1. serial : filter purchases by serial
 2. warehouse : filter by warehouse
@@ -1987,7 +2078,7 @@ http://localhost:8080/masterdata/subscription/plans
 
 - Request : none
 
-- Paramenters : 
+- Parameters : 
 
 1. name : filter suppliers by name
 2. user : filter suppliers by the client of the user (required)
@@ -2364,7 +2455,7 @@ http://localhost:8080/masterdata/supplier?tokenUser=admin1
 
 - Request : none
 
-- Paramenters : 
+- Parameters : 
 
 1. user : filter supplier product by serial
 2. clientId : filter supplier products by the client of the user (required)
@@ -2535,7 +2626,7 @@ http://localhost:8080/masterdata/unit/units?tokenUser=admin1
 
 - Request : none
 
-- Paramenters : 
+- Parameters : 
 
 1. name : filter warehouses by name
 2. user : filter warehouses by the client of the user (required)
