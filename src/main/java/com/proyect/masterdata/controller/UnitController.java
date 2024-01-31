@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.request.RequestUnit;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,17 +34,18 @@ public class UnitController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name,
+            @RequestBody() RequestUnit requestUnit,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iUnit.save(name, tokenUser);
+        ResponseSuccess result = iUnit.save(requestUnit, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "units", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> names,
+            @RequestParam("unitType") String unitType,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iUnit.saveAll(names, tokenUser);
+        ResponseSuccess result = iUnit.saveAll(names,unitType, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

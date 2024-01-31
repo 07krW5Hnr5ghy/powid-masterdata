@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.domain.UnitType;
+import com.proyect.masterdata.dto.request.RequestUnit;
+import com.proyect.masterdata.repository.UnitTypeRepository;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Unit;
@@ -28,16 +31,19 @@ public class UnitImpl implements IUnit {
 
     private final UserRepository userRepository;
     private final UnitRepository unitRepository;
+    private final UnitTypeRepository unitTypeRepository;
 
     @Override
-    public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(RequestUnit requestUnit, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         Unit unit;
+        UnitType unitType;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            unit = unitRepository.findByNameAndStatusTrue(name.toUpperCase());
+            unit = unitRepository.findByNameAndStatusTrue(requestUnit.getName().toUpperCase());
+            unitType = unitTypeRepository.findByNameAndStatusTrue(requestUnit.getUnitType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -51,9 +57,15 @@ public class UnitImpl implements IUnit {
             throw new BadRequestExceptions(Constants.ErrorUnitExists);
         }
 
+        if(unitType == null){
+            throw new BadRequestExceptions(Constants.ErrorUnitType);
+        }
+
         try {
             unitRepository.save(Unit.builder()
-                    .name(name.toUpperCase())
+                    .name(requestUnit.getName().toUpperCase())
+                            .unitType(unitType)
+                            .unitTypeId(unitType.getId())
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
@@ -71,14 +83,16 @@ public class UnitImpl implements IUnit {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String tokenUser)
+    public ResponseSuccess saveAll(List<String> names,String unitType, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         List<Unit> units;
+        UnitType unitTypeData;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            units = unitRepository.findByNameInAndStatusTrue(names.stream().map(unit -> unit.toUpperCase()).toList());
+            units = unitRepository.findByNameInAndStatusTrue(names.stream().map(String::toUpperCase).toList());
+            unitTypeData = unitTypeRepository.findByNameAndStatusTrue(unitType.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -92,9 +106,15 @@ public class UnitImpl implements IUnit {
             throw new BadRequestExceptions(Constants.ErrorUnitExists);
         }
 
+        if(unitTypeData == null){
+            throw new BadRequestExceptions(Constants.ErrorUnitType);
+        }
+
         try {
             unitRepository.saveAll(names.stream().map(name -> Unit.builder()
                     .name(name.toUpperCase())
+                    .unitType(unitTypeData)
+                    .unitTypeId(unitTypeData.getId())
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser)
@@ -165,6 +185,7 @@ public class UnitImpl implements IUnit {
 
         return units.stream().map(unit -> UnitDTO.builder()
                 .name(unit.getName())
+                .unitType(unit.getUnitType().getName())
                 .build()).toList();
     }
 

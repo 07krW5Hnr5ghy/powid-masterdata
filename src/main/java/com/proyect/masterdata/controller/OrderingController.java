@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.OrderDTO;
 import com.proyect.masterdata.dto.request.RequestOrderSave;
+import com.proyect.masterdata.dto.request.RequestOrderUpdate;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -42,6 +43,16 @@ public class OrderingController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) throws BadRequestExceptions{
         Page<OrderDTO> result = iOrdering.list(orderId,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @PutMapping()
+    public ResponseEntity<ResponseSuccess> update(
+            @RequestParam("orderId") Long orderId,
+            @RequestBody()RequestOrderUpdate requestOrderUpdate,
+            @RequestParam("tokenUser") String tokenUser
+            ) throws BadRequestExceptions{
+        ResponseSuccess result = iOrdering.update(orderId,requestOrderUpdate,tokenUser);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

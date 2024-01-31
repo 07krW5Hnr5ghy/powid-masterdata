@@ -71,7 +71,8 @@ public class Seeder implements CommandLineRunner {
         private final IPaymentMethod iPaymentMethod;
         private final IOrdering iOrdering;
         private final IOrderStock iOrderStock;
-
+        private final IUnitType iUnitType;
+        private final IUnit iUnit;
         @Override
         public void run(String... args) throws Exception {
 
@@ -85,7 +86,7 @@ public class Seeder implements CommandLineRunner {
                                 1L, "ADMINISTRATOR", true, new Date(System.currentTimeMillis()),
                                 new Date(System.currentTimeMillis()), "TEST"));
 
-                // departament, province and district to create system user
+                // department, province and district to create system user
 
                 Department department = departmentRepository
                                 .save(new Department(1L, "SISTEMA", true, new Date(System.currentTimeMillis()),
@@ -312,6 +313,26 @@ public class Seeder implements CommandLineRunner {
                 iPaymentMethod.save("canje","admin1");
                 iPaymentMethod.save("interbank","admin1");
                 iPaymentMethod.save("banco de la nacion","admin1");
+
+                //unit type
+                iUnitType.save("ropa","admin1");
+                iUnitType.save("calzado","admin1");
+
+                // unit
+                RequestUnit requestUnit1 = RequestUnit.builder()
+                        .name("prenda")
+                        .unitType("ropa")
+                        .build();
+
+                iUnit.save(requestUnit1,"admin1");
+
+                RequestUnit requestUnit2 = RequestUnit.builder()
+                        .name("par")
+                        .unitType("calzado")
+                        .build();
+
+                iUnit.save(requestUnit2,"admin1");
+
                 // mock brands
                 iBrand.save("nike", "gjimenez");
                 iBrand.save("levis", "gjimenez");

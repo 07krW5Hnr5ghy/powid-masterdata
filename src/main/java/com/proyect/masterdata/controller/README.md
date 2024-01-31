@@ -2566,7 +2566,8 @@ http://localhost:8080/masterdata/user
 
 [
     {
-        "name": name of the unit
+        "name": name of the unit,
+        "unitType": name of the unitType
     }
     ... more units
 ]
@@ -2579,12 +2580,16 @@ http://localhost:8080/masterdata/unit
 
 - Description : add one unit to the database
 
-- Request : none
+- Request : 
+
+{
+    "name":name of the unit,
+    "unitType":name of the unit type
+}
 
 - Parameters : 
 
-1. name : name of the unit
-2. tokenUser : username of the user who creates unit
+1. tokenUser : username of the user who creates unit
 
 - Response : 
 
@@ -2596,7 +2601,7 @@ http://localhost:8080/masterdata/unit
 
 - Example :
 
-http://localhost:8080/masterdata/unit?name=unidad&tokenUser=admin1
+http://localhost:8080/masterdata/unit?tokenUser=admin1
 
 ### POST /unit/units protected
 
@@ -2606,7 +2611,8 @@ http://localhost:8080/masterdata/unit?name=unidad&tokenUser=admin1
 
 - Parameters : 
 
-1. tokenUser : username of the user who creates the units
+1. unit type : name of the unit type of the units
+2. tokenUser : username of the user who creates the units
 
 - Response : 
 
@@ -2619,6 +2625,72 @@ http://localhost:8080/masterdata/unit?name=unidad&tokenUser=admin1
 - Example :
 
 http://localhost:8080/masterdata/unit/units?tokenUser=admin1
+
+### GET /unit-type protected
+
+- Description : list all active unit types
+
+- Request : none
+
+- Parameters : none
+
+- Response :
+
+[
+{
+"name": name of the unit type
+}
+... more unit types
+]
+
+- Example :
+
+http://localhost:8080/masterdata/unit-type
+
+### POST /unit-type protected
+
+- Description : add one unit type to the database
+
+- Request : none
+
+- Parameters :
+
+1. name : name of the unit type
+2. tokenUser : username of the user who creates unit type
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/unit-type?name=ropa&tokenUser=admin1
+
+### POST /unit/units protected
+
+- Description : add one or more unit types to the database
+
+- Request : array with the name of the new unit types
+
+- Parameters :
+
+1. tokenUser : username of the user who creates the unit type
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/unit-type/unit-types?tokenUser=admin1
 
 ### GET /warehouse protected
 

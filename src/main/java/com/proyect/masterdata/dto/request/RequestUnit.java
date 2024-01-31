@@ -1,4 +1,4 @@
-package com.proyect.masterdata.dto;
+package com.proyect.masterdata.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class UnitDTO {
+public class RequestUnit {
     private String name;
     private String unitType;
 }

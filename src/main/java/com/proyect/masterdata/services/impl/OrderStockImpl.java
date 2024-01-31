@@ -122,7 +122,7 @@ public class OrderStockImpl implements IOrderStock {
                     .orderId(orderStock.getOrderId())
                     .warehouse(orderStockWarehouse.getName())
                     .itemId(orderStock.getItemId())
-                    .serialProduct(orderStock.getSupplierProduct().getSerial())
+                    .serialSupplierProduct(orderStock.getSupplierProduct().getSerial())
                     .quantity(orderStock.getQuantity())
                     .registrationDate(orderStock.getRegistrationDate())
                     .updateDate(orderStock.getUpdateDate())

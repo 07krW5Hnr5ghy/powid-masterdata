@@ -1,29 +1,28 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
-
 import com.proyect.masterdata.utils.Constants;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableUnit, schema = Constants.schemaMaster)
-public class Unit {
+@Table(name = Constants.tableUnitType,schema = Constants.schemaMaster)
+public class UnitType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_unidad")
+    @Column(name = "id_tipo_unidad")
     private Long id;
 
-    @Column(name = "nombre", unique = true)
+    @Column(name = "nombre")
     private String name;
 
     @Column(name = "estado")
@@ -37,11 +36,4 @@ public class Unit {
 
     @Column(name = "usuario_token")
     private String tokenUser;
-
-    @Column(name = "id_tipo_unidad")
-    private Long unitTypeId;
-
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_unidad",columnDefinition = "unitTypeId",insertable = false,updatable = false)
-    private UnitType unitType;
 }

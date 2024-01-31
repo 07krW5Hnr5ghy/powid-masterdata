@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class UnitDTO {
+public class UnitTypeDTO {
     private String name;
-    private String unitType;
 }

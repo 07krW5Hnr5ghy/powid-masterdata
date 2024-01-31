@@ -47,7 +47,7 @@ public class Constants {
     public static final String tableEntryChannel = "canal_entrada";
     public static final String tableOnboardingChannel = "onboarding_canal";
     public static final String tableOnboardingStore = "onboarding_tienda";
-    public static final String tableStoreType = "tienda_tipo";
+    public static final String tableStoreType = "tipo_tienda";
     public static final String tableMembershipModule = "membresia_modulo";
     public static final String tableMembershipModuleRole = "membresia_modulo_rol";
     public static final String tableSubscription = "subscripcion";
@@ -75,6 +75,7 @@ public class Constants {
     public static final String tableCancelledOrder = "orden_cancelada";
     public static final String tableRestock = "reposicion_inventario";
     public static final String tableOrderStock = "inventario_pedido";
+    public static final String tableUnitType = "tipo_talla";
 
     // Mensajes
     public static final String register = "registration correctly";
@@ -190,4 +191,6 @@ public class Constants {
     public static final String ErrorManagementTypeExists = "The management already exists";
     public static final String ErrorOrdering = "The order does not exists";
     public static final String ErrorAuthentication = "Wrong username or password";
+    public static final String ErrorUnitType = "Unit Type does not exist";
+    public static final String ErrorUnitTypeExists = "Unit Type already exists";
 }
