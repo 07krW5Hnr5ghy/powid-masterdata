@@ -3,6 +3,7 @@ package com.proyect.masterdata.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.proyect.masterdata.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +31,7 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
 
     @Override
     public Page<Brand> searchForBrand(String name, Long clientId, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize, Boolean status) {
+                                      Integer pageSize, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Brand> criteriaQuery = criteriaBuilder.createQuery(Brand.class);

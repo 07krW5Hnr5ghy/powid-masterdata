@@ -32,7 +32,7 @@ public class UnitTypeImpl implements IUnitType {
         UnitType unitType;
 
         try{
-            user = userRepository.findByUsernameAndStatusTrue(name.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             unitType = unitTypeRepository.findByName(name.toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());

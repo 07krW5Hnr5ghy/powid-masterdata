@@ -57,6 +57,12 @@ public class Product {
     @Column(name = "id_size", nullable = false)
     private Long sizeId;
 
+    @Column(name = "id_unidad")
+    private Long unitId;
+
+    @Column(name = "id_cliente")
+    private Long clientId;
+
     @Column(name = "usuario_token", nullable = false)
     private String tokenUser;
 
@@ -75,4 +81,12 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "id_size", columnDefinition = "sizeId", insertable = false, updatable = false)
     private Size size;
+
+    @ManyToOne
+    @JoinColumn(name = "id_unidad",columnDefinition = "unitId",insertable = false,updatable = false)
+    private Unit unit;
+
+    @ManyToOne
+    @JoinColumn(name = "id_cliente", columnDefinition = "clientId",insertable = false,updatable = false)
+    private Client client;
 }

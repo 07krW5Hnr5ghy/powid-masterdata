@@ -1,5 +1,6 @@
 package com.proyect.masterdata.repository;
 
+import com.proyect.masterdata.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ public interface ModelRepositoryCustom {
     Page<Model> searchForModel(
             String name,
             Brand Brand,
-            String user,
+            Long clientId,
             String sort,
             String sortColumn,
             Integer pageNumber,

@@ -171,12 +171,13 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public Page<ModelDTO> list(String name, String brand, String user, String sort, String columnSort,
+    public Page<ModelDTO> list(String name, String brand, String tokenUser, String sort, String columnSort,
             Integer pageNumber,
             Integer pageSize) {
 
         Page<Model> pageModel;
         Brand brandData;
+        Long clientId;
 
         if (brand != null) {
             brandData = brandRepository.findByName(brand.toUpperCase());
@@ -185,7 +186,8 @@ public class ModelImpl implements IModel {
         }
 
         try {
-            pageModel = modelRepositoryCustom.searchForModel(name, brandData, user, sort, columnSort, pageNumber,
+            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
+            pageModel = modelRepositoryCustom.searchForModel(name, brandData, clientId, sort, columnSort, pageNumber,
                     pageSize, true);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -207,12 +209,13 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public Page<ModelDTO> listStatusFalse(String name, String brand, String user, String sort, String columnSort,
+    public Page<ModelDTO> listStatusFalse(String name, String brand, String tokenUser, String sort, String columnSort,
             Integer pageNumber,
             Integer pageSize) {
 
         Page<Model> pageModel;
         Brand brandData;
+        Long clientId;
 
         if (brand != null) {
             brandData = brandRepository.findByName(brand.toUpperCase());
@@ -221,7 +224,8 @@ public class ModelImpl implements IModel {
         }
 
         try {
-            pageModel = modelRepositoryCustom.searchForModel(name, brandData, user, sort, columnSort, pageNumber,
+            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
+            pageModel = modelRepositoryCustom.searchForModel(name, brandData, clientId, sort, columnSort, pageNumber,
                     pageSize, false);
         } catch (RuntimeException e) {
             log.error(e.getMessage());

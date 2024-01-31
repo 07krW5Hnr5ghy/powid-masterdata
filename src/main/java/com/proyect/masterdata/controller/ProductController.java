@@ -60,12 +60,26 @@ public class ProductController {
     @GetMapping()
     public ResponseEntity<Page<ProductDTO>> list(
             @RequestParam(value = "sku", required = false) String sku,
-            @RequestParam(value = "model", required = true) String model,
+            @RequestParam(value = "model", required = false) String model,
+            @RequestParam(value = "user") String user,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize) throws BadRequestExceptions {
-        Page<ProductDTO> result = iProduct.list(sku, model, sort, sortColumn, pageNumber, pageSize);
+            @RequestParam(value = "pageNumber") Integer pageNumber,
+            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<ProductDTO> result = iProduct.list(sku, model,user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "list-false")
+    public ResponseEntity<Page<ProductDTO>> listFalse(
+            @RequestParam(value = "sku", required = false) String sku,
+            @RequestParam(value = "model", required = false) String model,
+            @RequestParam(value = "user") String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber") Integer pageNumber,
+            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions {
+        Page<ProductDTO> result = iProduct.listFalse(sku, model,user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -3,6 +3,7 @@ package com.proyect.masterdata.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.proyect.masterdata.domain.Model;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
@@ -30,8 +31,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Product> searchForProduct(String sku, Long modelId, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize, Boolean status) {
+    public Page<Product> searchForProduct(String sku, Model model, Long clientId, String sort, String sortColumn, Integer pageNumber,
+                                          Integer pageSize, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> criteriaQuery = criteriaBuilder.createQuery(Product.class);
@@ -40,7 +41,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(sku, modelId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(sku, model,clientId, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -66,11 +67,11 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(sku, modelId, status);
+        Long count = getOrderCount(sku, model,clientId, status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
-    private List<Predicate> predicateConditions(String sku, Long modelId, Boolean status,
+    private List<Predicate> predicateConditions(String sku, Model model,Long clientId, Boolean status,
             CriteriaBuilder criteriaBuilder, Root<Product> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
@@ -80,8 +81,12 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                     .and(criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("sku")), sku.toUpperCase())));
         }
 
-        if (modelId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("modelId"), modelId)));
+        if (model != null) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("modelId"), model.getId())));
+        }
+
+        if (clientId != null) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
         if (status) {
@@ -107,6 +112,10 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             productList.add(criteriaBuilder.asc(itemRoot.get("modelId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("clientId")) {
+            productList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
+        }
+
         return productList;
     }
 
@@ -122,16 +131,20 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             productList.add(criteriaBuilder.desc(itemRoot.get("modelId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("clientId")) {
+            productList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
+        }
+
         return productList;
     }
 
-    private Long getOrderCount(String sku, Long modelId, Boolean status) {
+    private Long getOrderCount(String sku, Model model,Long clientId, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Product> itemRoot = criteriaQuery.from(Product.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(sku, modelId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(sku, model,clientId, status, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

@@ -4,19 +4,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IProductPrice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import com.proyect.masterdata.domain.Category;
-import com.proyect.masterdata.domain.CategoryProduct;
-import com.proyect.masterdata.domain.Client;
-import com.proyect.masterdata.domain.Color;
-import com.proyect.masterdata.domain.Model;
-import com.proyect.masterdata.domain.Product;
-import com.proyect.masterdata.domain.Size;
 import com.proyect.masterdata.dto.ProductDTO;
 import com.proyect.masterdata.dto.request.RequestProductSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -43,32 +37,35 @@ public class ProductImpl implements IProduct {
     private final ColorRepository colorRepository;
     private final ProductRepositoryCustom productRepositoryCustom;
     private final IProductPrice iProductPrice;
-
+    private final UnitRepository unitRepository;
+    private final ProductPriceRepository productPriceRepository;
     @Override
     public ResponseSuccess save(RequestProductSave product, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        boolean existsUser;
+        User user;
         boolean existsProduct;
         Model modelData;
         Size sizeData;
         CategoryProduct categoryProductData;
         Color colorData;
+        Unit unit;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsProduct = productRepository.existsBySkuAndStatusTrue(product.getSku().toUpperCase());
             modelData = modelRepository.findByName(product.getModel().toUpperCase());
             sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
             categoryProductData = categoryProductRepository
                     .findByNameAndStatusTrue(product.getCategory().toUpperCase());
             colorData = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
+            unit = unitRepository.findByNameAndStatusTrue(product.getUnit().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
@@ -92,6 +89,10 @@ public class ProductImpl implements IProduct {
             throw new BadRequestExceptions(Constants.ErrorColor);
         }
 
+        if(unit == null){
+            throw new BadRequestExceptions(Constants.ErrorUnit);
+        }
+
         try {
             Product productData = productRepository.save(Product.builder()
                     .sku(product.getSku().toUpperCase())
@@ -103,6 +104,10 @@ public class ProductImpl implements IProduct {
                     .categoryProductId(categoryProductData.getId())
                     .color(colorData)
                     .colorId(colorData.getId())
+                            .unit(unit)
+                            .unitId(unit.getId())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                     .tokenUser(tokenUser.toUpperCase())
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
@@ -122,32 +127,20 @@ public class ProductImpl implements IProduct {
     public ResponseSuccess saveAll(List<RequestProductSave> products, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        boolean existsUser;
+        User user;
         List<Product> productList;
-        List<Model> modelList;
-        List<Size> sizeList;
-        List<Category> categoryList;
-        List<Color> colorList;
 
         try {
-            existsUser = userRepository
-                    .existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository
+                    .findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             productList = productRepository
                     .findBySkuIn(products.stream().map(product -> product.getSku().toUpperCase()).toList());
-            modelList = modelRepository
-                    .findByNameIn(products.stream().map(product -> product.getModel().toUpperCase()).toList());
-            sizeList = sizeRepository
-                    .findByNameIn(products.stream().map(product -> product.getSize().toUpperCase()).toList());
-            categoryList = categoryRepository
-                    .findByNameIn(products.stream().map(product -> product.getCategory().toUpperCase()).toList());
-            colorList = colorRepository
-                    .findByNameIn(products.stream().map(product -> product.getColor().toUpperCase()).toList());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
@@ -184,7 +177,13 @@ public class ProductImpl implements IProduct {
                     throw new BadRequestExceptions(Constants.ErrorColor);
                 }
 
-                return Product.builder()
+                Unit unit = unitRepository.findByNameAndStatusTrue(product.getUnit().toUpperCase());
+
+                if(unit == null){
+                    throw new BadRequestExceptions(Constants.ErrorUnit);
+                }
+
+                Product productData = Product.builder()
                         .sku(product.getSku().toUpperCase())
                         .model(model)
                         .modelId(model.getId())
@@ -194,10 +193,16 @@ public class ProductImpl implements IProduct {
                         .categoryProductId(categoryProduct.getId())
                         .color(color)
                         .colorId(color.getId())
-                        .tokenUser(tokenUser.toUpperCase())
+                        .unit(unit)
+                        .unitId(unit.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .tokenUser(user.getUsername())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .build();
+                iProductPrice.save(productData.getSku(), product.getPrice(), user.getUsername());
+                return productData;
             }).toList();
 
             productRepository.saveAll(newProducts);
@@ -251,16 +256,24 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public Page<ProductDTO> list(String sku, String model, String sort, String sortColumn, Integer pageNumber,
+    public Page<ProductDTO> list(String sku, String model,String tokenUser, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) {
 
         Page<Product> productPage;
-        Long modelId;
+        Model modelData;
+        Long clientId;
+
+        if(model != null){
+            modelData = modelRepository.findByNameAndStatusTrue(model.toUpperCase());
+        }else {
+            modelData = null;
+        }
 
         try {
-            modelId = modelRepository.findByNameAndStatusTrue(model.toUpperCase()).getId();
-            productPage = productRepositoryCustom.searchForProduct(sku, modelId, sort, sortColumn, pageNumber,
+            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
+            productPage = productRepositoryCustom.searchForProduct(sku, modelData,clientId, sort, sortColumn, pageNumber,
                     pageSize, true);
+
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -270,16 +283,63 @@ public class ProductImpl implements IProduct {
             return new PageImpl<>(Collections.emptyList());
         }
 
-        List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> ProductDTO.builder()
-                .sku(product.getSku())
-                .model(product.getModel().getName())
-                .category(product.getCategoryProduct().getName())
-                .color(product.getColor().getName())
-                .size(product.getSize().getName())
-                .build()).toList();
+        List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
+            ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+            return ProductDTO.builder()
+                    .sku(product.getSku())
+                    .model(product.getModel().getName())
+                    .category(product.getCategoryProduct().getName())
+                    .color(product.getColor().getName())
+                    .size(product.getSize().getName())
+                    .unit(product.getUnit().getName())
+                    .price(productPrice.getUnitSalePrice())
+                    .build();
+        }).toList();
 
         return new PageImpl<>(productDTOs, productPage.getPageable(), productPage.getTotalElements());
 
+    }
+
+    @Override
+    public Page<ProductDTO> listFalse(String sku, String model, String tokenUser, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+
+        Page<Product> productPage;
+        Model modelData;
+        Long clientId;
+
+        if(model != null){
+            modelData = modelRepository.findByNameAndStatusTrue(model.toUpperCase());
+        }else {
+            modelData = null;
+        }
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
+            productPage = productRepositoryCustom.searchForProduct(sku, modelData,clientId, sort, sortColumn, pageNumber,
+                    pageSize, false);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (productPage.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
+            ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+            return ProductDTO.builder()
+                    .sku(product.getSku())
+                    .model(product.getModel().getName())
+                    .category(product.getCategoryProduct().getName())
+                    .color(product.getColor().getName())
+                    .size(product.getSize().getName())
+                    .unit(product.getUnit().getName())
+                    .price(productPrice.getUnitSalePrice())
+                    .build();
+        }).toList();
+
+        return new PageImpl<>(productDTOs, productPage.getPageable(), productPage.getTotalElements());
     }
 
 }

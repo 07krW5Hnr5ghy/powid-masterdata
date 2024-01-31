@@ -3,6 +3,7 @@ package com.proyect.masterdata.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.proyect.masterdata.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,16 +31,16 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Model> searchForModel(String name, Brand brand, String user, String sort, String sortColumn,
-            Integer pageNumber,
-            Integer pageSize, Boolean status) {
+    public Page<Model> searchForModel(String name, Brand brand, Long clientId, String sort, String sortColumn,
+                                      Integer pageNumber,
+                                      Integer pageSize, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Model> criteriaQuery = criteriaBuilder.createQuery(Model.class);
         Root<Model> itemRoot = criteriaQuery.from(Model.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name, brand, user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, brand, clientId, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -64,14 +65,14 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
         orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, brand, user, status);
+        long count = getOrderCount(name, brand, clientId, status);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             String name,
             Brand brand,
-            String user,
+            Long clientId,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Model> itemRoot) {
@@ -87,9 +88,8 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("brandId"), brand.getId())));
         }
 
-        if (user != null) {
-            conditions.add(criteriaBuilder.and(
-                    criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("tokenUser")), user.toUpperCase())));
+        if (clientId != null) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
         if (status) {
@@ -114,8 +114,8 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
             modelList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
 
-        if (sortColumn.equalsIgnoreCase("tokenUser")) {
-            modelList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
+        if (sortColumn.equalsIgnoreCase("clientId")) {
+            modelList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
         if (sortColumn.equalsIgnoreCase("brandId")) {
@@ -135,8 +135,8 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
             modelList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
 
-        if (sortColumn.equalsIgnoreCase("tokenUser")) {
-            modelList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
+        if (sortColumn.equalsIgnoreCase("clientId")) {
+            modelList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
         if (sortColumn.equalsIgnoreCase("brandId")) {
@@ -146,14 +146,14 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
         return modelList;
     }
 
-    private long getOrderCount(String name, Brand brand, String user, Boolean status) {
+    private long getOrderCount(String name, Brand brand, Long clientId, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Model> itemRoot = criteriaQuery.from(Model.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, brand, user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, brand, clientId, status, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

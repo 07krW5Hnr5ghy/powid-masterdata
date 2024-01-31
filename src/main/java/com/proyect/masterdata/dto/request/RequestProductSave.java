@@ -15,5 +15,6 @@ public class RequestProductSave {
     private String color;
     private String category;
     private String size;
+    private String unit;
     private Double price;
 }

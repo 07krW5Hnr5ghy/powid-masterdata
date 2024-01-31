@@ -1257,46 +1257,58 @@ http://localhost:8080/masterdata/order-stock?pageNumber=0&pageSize=2&user=gjimen
 - Parameters : 
 
 1. sku : filter products by sku
-2. model : filter products by model (required)
-3. sort : sort the values the only valid values are ASC and DESC, default is ASC
-4. sortColumn : select the value that sorts the list in this case name or user
-5. pageNumber : the page number to select of the list the first is page zero (0) (required)
-6. pageSize : number the records per Page (required)
+2. model : filter products by model
+3. user : filter orders by the client of the user (required)
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
 
 - Response : 
 
 {
     "content": [
         {
-            "sku": "#A00004",
-            "model": "NAVY J",
-            "size": "L",
-            "category": "PANTALONES",
-            "color": "AZUL"
+            "sku": "A00001",
+            "model": "F90",
+            "size": "12",
+            "category": "TENNIS",
+            "color": "NEGRO",
+            "unit": "PAR",
+            "price": 2.3
+        },
+        {
+            "sku": "A00002",
+            "model": "M2000",
+            "size": "24",
+            "category": "BOTAS",
+            "color": "ROJO",
+            "unit": "PAR",
+            "price": 5.41
         }
     ],
     "pageable": {
-        "sort": [],
-        "offset": 0,
-        "pageNumber": 0,
-        "pageSize": 3,
-        "paged": true,
-        "unpaged": false
+    "sort": [],
+    "offset": 0,
+    "pageSize": 2,
+    "pageNumber": 0,
+    "paged": true,
+    "unpaged": false
     },
-    "last": true,
-    "totalElements": 1,
-    "totalPages": 1,
-    "size": 3,
+    "totalPages": 5,
+    "totalElements": 9,
+    "last": false,
+    "size": 2,
     "number": 0,
     "sort": [],
+    "numberOfElements": 2,
     "first": true,
-    "numberOfElements": 1,
     "empty": false
 }
 
 - Example :
 
-http://localhost:8080/masterdata/product?pageNumber=0&pageSize=3&model=navy j
+http://localhost:8080/masterdata/product?pageNumber=0&pageSize=3&user=gjimenez
 
 
 ### POST /product
@@ -1310,7 +1322,8 @@ http://localhost:8080/masterdata/product?pageNumber=0&pageSize=3&model=navy j
     model : name of model which the product belongs,
     color : name of the color of the product,
     category : name of the category of the product,
-    size : name of the size of the product
+    size : name of the size of the product,
+    unit : name of the unit of the product
 }
 
 - Params : 
@@ -1335,7 +1348,9 @@ Request body
     "sku":"Y2K9",
     "model":"F50",
     "color":"rojo",
-    "size":"M"
+    "size":"M",
+    "category":"tennis",
+    "unit":"par"
 }
 
 ### POST /product/products
@@ -1350,7 +1365,8 @@ Request body
         model : name of model which the product belongs,
         color : name of the color of the product,
         category : name of the category of the product,
-        size : name of the size of the product
+        size : name of the size of the product,
+        unit : name of the unit of the product
     },
     ... more products
 ]
@@ -2230,7 +2246,7 @@ http://localhost:8080/masterdata/supplier?tokenUser=gjimenez
 
 - Request : none
 
-- Paramenters : 
+- Parameters : 
 
 1. serial : filter supplier product by serial
 2. user : filter supplier products by the client of the user (required)

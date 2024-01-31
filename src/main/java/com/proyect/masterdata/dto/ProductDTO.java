@@ -15,4 +15,6 @@ public class ProductDTO {
     private String size;
     private String category;
     private String color;
+    private String unit;
+    private Double price;
 }
