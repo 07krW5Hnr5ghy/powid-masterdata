@@ -49,6 +49,9 @@ public class Ordering {
     @Column(name = "id_cliente")
     private Long clientId;
 
+    @Column(name = "id_courier")
+    private Long courierId;
+
     @Column(name = "usuario_token")
     private String tokenUser;
 
@@ -59,5 +62,9 @@ public class Ordering {
     @ManyToOne
     @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false,updatable = false)
     private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "id_courier",columnDefinition = "courierId",insertable = false,updatable = false)
+    private Courier courier;
 
 }

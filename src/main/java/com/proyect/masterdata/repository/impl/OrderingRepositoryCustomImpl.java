@@ -23,14 +23,14 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Ordering> searchForOrdering(Long id, User user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<Ordering> searchForOrdering(Long id, Long clientId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Ordering> criteriaQuery = criteriaBuilder.createQuery(Ordering.class);
         Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(id,user,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(id,clientId,criteriaBuilder,itemRoot);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
             List<Order> orderingList = new ArrayList<>();
@@ -54,19 +54,19 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
         orderingTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        Long count = getOrderCount(id,user);
+        Long count = getOrderCount(id,clientId);
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
     }
 
-    List<Predicate> predicateConditions(Long id, User user, CriteriaBuilder criteriaBuilder,Root<Ordering> itemRoot){
+    List<Predicate> predicateConditions(Long id, Long clientId, CriteriaBuilder criteriaBuilder,Root<Ordering> itemRoot){
         List<Predicate> conditions = new ArrayList<>();
 
         if(id != null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("id"),id)));
         }
 
-        if(user != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"),user.getClientId())));
+        if(clientId != null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"),clientId)));
         }
 
         return conditions;
@@ -104,13 +104,13 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
 
     }
 
-    private Long getOrderCount(Long id,User user){
+    private Long getOrderCount(Long id,Long clientId){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(id,user,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(id,clientId,criteriaBuilder,itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

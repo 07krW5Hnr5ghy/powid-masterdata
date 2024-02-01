@@ -1025,129 +1025,143 @@ http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
 
 {
 "content": [
-    {
-        "id": 1,
-        "sellerName": "GONZALO JIMENEZ",
-        "customerName": "EMILIO GOMEZ",
-        "customerType": "Tradicional",
-        "customerPhone": "940544828",
-        "instagram": "",
-        "department": "LIMA",
-        "province": "LIMA",
-        "district": "BREÑA",
-        "address": "807 IQUIQUE",
-        "managementType": "VENTA",
-        "paymentType": "YAPE",
-        "saleChannel": "TIENDA ONLINE",
-        "reference": "",
-        "paymentReceipt": "",
-        "saleAmount": 10.01,
-        "deliveryAmount": 10.01,
-        "advancedPayment": 0.0,
-        "duePayment": 10.01,
-        "registrationDate": "2024-01-28T00:57:17.554+00:00",
-        "updateDate": "2024-01-28T00:57:17.554+00:00",
-        "deliveryAddress": "807 IQUIQUE",
-        "items": [
-        {
-        "product": {
-        "sku": "A00001",
-        "model": "F90",
-        "size": "12",
-        "category": "TENNIS",
-        "color": "NEGRO"
-        },
-        "quantity": 2,
-        "unitPrice": 2.3,
-        "totalPrice": 4.6,
-        "observations": ""
-        },
-        {
-        "product": {
-        "sku": "A00002",
-        "model": "M2000",
-        "size": "24",
-        "category": "BOTAS",
-        "color": "ROJO"
-        },
-        "quantity": 1,
-        "unitPrice": 5.41,
-        "totalPrice": 5.41,
-        "observations": ""
-        }
-        ],
-        "orderStatus": "PENDIENTE"
-    },
-    {
-        "id": 2,
-        "sellerName": "GONZALO JIMENEZ",
-        "customerName": "CONSUELO ROJAS",
-        "customerType": "Tradicional",
-        "customerPhone": "956701333",
-        "instagram": "",
-        "department": "LIMA",
-        "province": "LIMA",
-        "district": "INDEPENDENCIA",
-        "address": "AV. JORGE CHAVEZ 420, OFICN LIMA",
-        "managementType": "VENTA",
-        "paymentType": "PLIN",
-        "saleChannel": "TIENDA ONLINE",
-        "reference": "",
-        "paymentReceipt": "",
-        "saleAmount": 17.0,
-        "deliveryAmount": 17.0,
-        "advancedPayment": 4.0,
-        "duePayment": 16.0,
-        "registrationDate": "2024-01-28T00:57:17.604+00:00",
-        "updateDate": "2024-01-28T00:57:17.604+00:00",
-        "deliveryAddress": "AV. JORGE CHAVEZ 420, OFICN LIMA",
-        "items": [
-        {
-        "product": {
-        "sku": "A00003",
-        "model": "MERCURIAL",
-        "size": "24",
-        "category": "TENNIS",
-        "color": "VERDE"
-        },
-        "quantity": 3,
-        "unitPrice": 3.33,
-        "totalPrice": 9.99,
-        "observations": ""
-        },
-        {
-        "product": {
-        "sku": "A00004",
-        "model": "INDIGO",
-        "size": "S",
-        "category": "CAMISETAS",
-        "color": "ROJO"
-        },
-        "quantity": 1,
-        "unitPrice": 7.01,
-        "totalPrice": 7.01,
-        "observations": ""
-        }
-        ],
-        "orderStatus": "PENDIENTE"
-    }
+{
+"id": 1,
+"sellerName": "GONZALO JIMENEZ",
+"customerName": "EMILIO GOMEZ",
+"customerType": "Tradicional",
+"customerPhone": "940544828",
+"instagram": "",
+"department": "LIMA",
+"province": "LIMA",
+"district": "BREÑA",
+"address": "807 IQUIQUE",
+"managementType": "VENTA",
+"paymentType": "YAPE",
+"saleChannel": "TIENDA ONLINE",
+"reference": "",
+"paymentReceipt": "",
+"saleAmount": 10.01,
+"deliveryAmount": 10.01,
+"advancedPayment": 0.0,
+"duePayment": 10.01,
+"registrationDate": "2024-02-01T05:14:56.088+00:00",
+"updateDate": "2024-02-01T05:14:56.088+00:00",
+"deliveryAddress": "807 IQUIQUE",
+"courier": "MARVISUR",
+"items": [
+{
+"id": 1,
+"product": {
+"sku": "A00001",
+"model": "F90",
+"size": "12",
+"category": "TENNIS",
+"color": "NEGRO",
+"unit": "PAR",
+"price": 2.3
+},
+"quantity": 2,
+"unitPrice": 2.3,
+"totalPrice": 4.6,
+"observations": ""
+},
+{
+"id": 2,
+"product": {
+"sku": "A00002",
+"model": "M2000",
+"size": "24",
+"category": "BOTAS",
+"color": "ROJO",
+"unit": "PAR",
+"price": 5.41
+},
+"quantity": 1,
+"unitPrice": 5.41,
+"totalPrice": 5.41,
+"observations": ""
+}
+],
+"orderStatus": "PENDIENTE"
+},
+{
+"id": 2,
+"sellerName": "GONZALO JIMENEZ",
+"customerName": "CONSUELO ROJAS",
+"customerType": "Tradicional",
+"customerPhone": "956701333",
+"instagram": "",
+"department": "LIMA",
+"province": "LIMA",
+"district": "INDEPENDENCIA",
+"address": "AV. JORGE CHAVEZ 420, OFICN LIMA",
+"managementType": "VENTA",
+"paymentType": "PLIN",
+"saleChannel": "TIENDA ONLINE",
+"reference": "",
+"paymentReceipt": "",
+"saleAmount": 12.29,
+"deliveryAmount": 12.29,
+"advancedPayment": 4.0,
+"duePayment": 11.29,
+"registrationDate": "2024-02-01T05:14:56.139+00:00",
+"updateDate": "2024-02-01T05:14:56.139+00:00",
+"deliveryAddress": "AV. JORGE CHAVEZ 420, OFICN LIMA",
+"courier": "RAPPI",
+"items": [
+{
+"id": 3,
+"product": {
+"sku": "A00003",
+"model": "MERCURIAL",
+"size": "24",
+"category": "TENNIS",
+"color": "VERDE",
+"unit": "PAR",
+"price": 3.33
+},
+"quantity": 3,
+"unitPrice": 3.33,
+"totalPrice": 9.99,
+"observations": ""
+},
+{
+"id": 4,
+"product": {
+"sku": "A00001",
+"model": "F90",
+"size": "12",
+"category": "TENNIS",
+"color": "NEGRO",
+"unit": "PAR",
+"price": 2.3
+},
+"quantity": 1,
+"unitPrice": 2.3,
+"totalPrice": 2.3,
+"observations": ""
+}
+],
+"orderStatus": "PENDIENTE"
+}
 ],
 "pageable": {
 "sort": [],
-"offset": 0,
 "pageNumber": 0,
 "pageSize": 2,
-"unpaged": false,
-"paged": true
+"offset": 0,
+"paged": true,
+"unpaged": false
 },
-"totalElements": 2,
 "totalPages": 1,
 "last": true,
+"totalElements": 2,
+"first": true,
 "size": 2,
 "number": 0,
 "sort": [],
 "numberOfElements": 2,
-"first": true,
 "empty": false
 }
 

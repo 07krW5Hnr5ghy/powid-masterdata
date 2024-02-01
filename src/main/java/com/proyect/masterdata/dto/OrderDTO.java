@@ -35,6 +35,7 @@ public class OrderDTO {
     private Date registrationDate;
     private Date updateDate;
     private String deliveryAddress;
+    private String courier;
     private List<ItemDTO> items;
     private String orderStatus;
 }

@@ -44,15 +44,18 @@ public class OrderingImpl implements IOrdering {
     private final ProductRepository productRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentStateRepository paymentStateRepository;
+    private final CourierRepository courierRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         OrderState orderState;
+        Courier courier;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
+            courier = courierRepository.findByNameAndStatusTrue(requestOrderSave.getCourier().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -60,6 +63,10 @@ public class OrderingImpl implements IOrdering {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(courier == null){
+            throw new BadRequestExceptions(Constants.ErrorCourier);
         }
 
         try{
@@ -70,6 +77,8 @@ public class OrderingImpl implements IOrdering {
                             .orderStateId(orderState.getId())
                             .client(user.getClient())
                             .clientId(user.getClientId())
+                            .courier(courier)
+                            .courierId(courier.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
@@ -129,16 +138,11 @@ public class OrderingImpl implements IOrdering {
     public Page<OrderDTO> list(Long id,String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
 
         Page<Ordering> pageOrdering;
-        User userdata;
-
-        if (user != null) {
-            userdata = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-        } else {
-            userdata = null;
-        }
+        Long clientId;
 
         try{
-            pageOrdering = orderingRepositoryCustom.searchForOrdering(id,userdata,sort,sortColumn,pageNumber,pageSize);
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+            pageOrdering = orderingRepositoryCustom.searchForOrdering(id,clientId,sort,sortColumn,pageNumber,pageSize);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -163,6 +167,8 @@ public class OrderingImpl implements IOrdering {
                                 .color(item.getProduct().getColor().getName())
                                 .size(item.getProduct().getSize().getName())
                                 .category(item.getProduct().getCategoryProduct().getName())
+                                .price(productPrice.getUnitSalePrice())
+                                .unit(item.getProduct().getUnit().getName())
                                 .build())
                         .quantity(item.getQuantity())
                         .unitPrice(productPrice.getUnitSalePrice())
@@ -194,6 +200,7 @@ public class OrderingImpl implements IOrdering {
                     .updateDate(order.getUpdateDate())
                     .paymentType(sale.getPaymentMethod().getName())
                     .deliveryAddress(sale.getDeliveryAddress())
+                    .courier(order.getCourier().getName())
                     .items(itemDTOS)
                     .saleAmount(sale.getSaleAmount())
                     .build();

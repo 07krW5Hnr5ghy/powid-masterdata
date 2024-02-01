@@ -13,41 +13,23 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class RequestOrderSave {
-
     private String observations;
-
     private String paymentReceipt;
-
     private String deliveryAddress;
-
     private Double deliveryAmount;
-
+    private String courier;
     private Double advancedPayment;
-
     private String saleChannel;
-
     private String paymentMethod;
-
     private String managementType;
-
     private List<RequestItem> requestItems;
-
     private String customerName;
-
     private String customerType;
-
     private String instagram;
-
     private String customerPhone;
-
     private String customerAddress;
-
     private String customerDistrict;
-
     private String customerProvince;
-
     private String customerDepartment;
-
     private String customerReference;
-
 }

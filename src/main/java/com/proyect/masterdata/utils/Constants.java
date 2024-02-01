@@ -76,6 +76,7 @@ public class Constants {
     public static final String tableRestock = "reposicion_inventario";
     public static final String tableOrderStock = "inventario_pedido";
     public static final String tableUnitType = "tipo_unidad";
+    public static final String tableCourier = "courier";
 
     // Mensajes
     public static final String register = "registration correctly";
@@ -193,4 +194,6 @@ public class Constants {
     public static final String ErrorAuthentication = "Wrong username or password";
     public static final String ErrorUnitType = "Unit Type does not exist";
     public static final String ErrorUnitTypeExists = "Unit Type already exists";
+    public static final String ErrorCourier = "Courier does not exist";
+    public static final String ErrorCourierExists = "Courier already exists";
 }
