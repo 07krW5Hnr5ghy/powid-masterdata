@@ -196,4 +196,6 @@ public class Constants {
     public static final String ErrorUnitTypeExists = "Unit Type already exists";
     public static final String ErrorCourier = "Courier does not exist";
     public static final String ErrorCourierExists = "Courier already exists";
+    public static final String ErrorCancellationReason = "Cancellation reason does not exist";
+    public static final String ErrorCancellationReasonExists = "Cancellation reason already exists";
 }

@@ -516,6 +516,88 @@ Request body
     "azul","verde"
 ]
 
+### GET /courier
+
+- Description : list all the active courier registered in the database
+
+- Request : none
+
+- Parameters :
+
+1. name : filter couriers by name
+2. user : filter models by the username who registered the couriers
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "courier": "MARVISUR",
+            "phoneNumber": "123456789"
+        },
+        {
+            "courier": "RAPPI",
+            "phoneNumber": "111111111"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 2,
+        "pageNumber": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "totalPages": 1,
+    "totalElements": 2,
+    "last": true,
+    "numberOfElements": 2,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "first": true,
+    "empty": false
+}
+
+- Example :
+
+http://localhost:8080/masterdata/courier?pageNumber=0&pageSize=2&user=gjimenez
+
+### POST /courier
+
+- Description : add one new courier to the database
+
+- Request : 
+{
+ "name":"name of the courier",
+ "phoneNumber":"phone number of the courier"
+}
+
+- Parameters :
+
+1. tokenUser : username of the user who register the courier
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/courier?tokenUser=admin1
+
+{
+    "name":"mavisur",
+    "phoneNumber":"123456789"
+}
+
 ### GET /closing-channel
 
 - Description : list all active closing channels

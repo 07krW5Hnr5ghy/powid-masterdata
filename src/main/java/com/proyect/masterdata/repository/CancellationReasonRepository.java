@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CancellationReasonRepository extends JpaRepository<CancellationReason,Long> {
+    CancellationReason findByName(String name);
+    CancellationReason findByNameAndStatusTrue(String name);
 }

@@ -49,7 +49,7 @@ public class CourierImpl implements ICourier {
         }
 
         if(courier != null){
-            throw new BadRequestExceptions(Constants.ErrorCategoryExists);
+            throw new BadRequestExceptions(Constants.ErrorCourierExists);
         }
 
         try {
