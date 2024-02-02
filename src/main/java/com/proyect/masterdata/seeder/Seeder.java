@@ -1470,6 +1470,16 @@ public class Seeder implements CommandLineRunner {
                 requestOrderStockList4.add(requestOrderStock8);
 
                 iOrderStock.save(4L,requestOrderStockList4,"fcasas");
+
+                RequestOrderUpdate requestOrderUpdate1 = RequestOrderUpdate.builder()
+                        .observations("")
+                        .orderState("ENTREGADO")
+                        .paymentMethod("LINK")
+                        .paymentState("RECAUDADO")
+                        .saleChannel("tienda online")
+                        .build();
+
+                iOrdering.update(1L,requestOrderUpdate1,"gjimenez");
         }
 
 }

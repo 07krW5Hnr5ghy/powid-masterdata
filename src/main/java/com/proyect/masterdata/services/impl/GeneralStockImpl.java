@@ -122,6 +122,7 @@ public class GeneralStockImpl implements IGeneralStock {
             }
 
             generalStock.setQuantity(generalStock.getQuantity() - quantity);
+            generalStockRepository.save(generalStock);
 
             return ResponseSuccess.builder()
                     .code(200)

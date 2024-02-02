@@ -9,10 +9,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.ICustomer;
-import com.proyect.masterdata.services.IItem;
-import com.proyect.masterdata.services.IOrdering;
-import com.proyect.masterdata.services.ISale;
+import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -45,6 +42,9 @@ public class OrderingImpl implements IOrdering {
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentStateRepository paymentStateRepository;
     private final CourierRepository courierRepository;
+    private final OrderStockRepository orderStockRepository;
+    private final IWarehouseStock iWarehouseStock;
+    private final IGeneralStock iGeneralStock;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -215,7 +215,6 @@ public class OrderingImpl implements IOrdering {
         Ordering ordering;
         OrderState orderState;
         Sale sale;
-        Customer customer;
         PaymentMethod paymentMethod;
         PaymentState paymentState;
 
@@ -226,6 +225,7 @@ public class OrderingImpl implements IOrdering {
             paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
             paymentState = paymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -238,7 +238,6 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }else {
             sale = saleRepository.findByOrderId(ordering.getId());
-            customer = customerRepository.findByOrderId(ordering.getId());
         }
 
         try{
@@ -246,6 +245,22 @@ public class OrderingImpl implements IOrdering {
             if(!Objects.equals(orderState.getName(), ordering.getOrderState().getName())){
                 ordering.setOrderState(orderState);
                 ordering.setOrderStateId(orderState.getId());
+            }
+
+            if(!Objects.equals(requestOrderUpdate.getObservations(),sale.getObservations()))
+            {
+                sale.setObservations(requestOrderUpdate.getObservations());
+            }
+
+            if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
+                List<Item> orderItems = itemRepository.findAllByOrderId(ordering.getId());
+                for(Item item : orderItems){
+                    List<OrderStock> orderStockList = orderStockRepository.findByOrderIdAndItemId(ordering.getId(),item.getId());
+                    for(OrderStock orderStock : orderStockList){
+                        iWarehouseStock.out(orderStock.getWarehouse().getName(),orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
+                        iGeneralStock.out(orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
+                    }
+                }
             }
 
             if(!Objects.equals(paymentMethod.getName(), sale.getPaymentMethod().getName())){

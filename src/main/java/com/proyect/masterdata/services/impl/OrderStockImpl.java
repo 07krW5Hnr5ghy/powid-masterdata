@@ -117,6 +117,9 @@ public class OrderStockImpl implements IOrderStock {
 
         List<OrderStockDTO> orderStockDTOList = pageOrderStock.getContent().stream().map(orderStock -> {
             Warehouse orderStockWarehouse = warehouseRepository.findById(orderStock.getWarehouseId()).orElse(null);
+            if(orderStockWarehouse == null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouse);
+            }
             Item item = itemRepository.findByIdAndOrderId(orderStock.getItemId(),orderStock.getOrderId());
             return OrderStockDTO.builder()
                     .orderId(orderStock.getOrderId())
@@ -163,6 +166,9 @@ public class OrderStockImpl implements IOrderStock {
 
         List<OrderStockDTO> orderStockDTOList = pageOrderStock.getContent().stream().map(orderStock -> {
             Warehouse orderStockWarehouse = warehouseRepository.findById(orderStock.getWarehouseId()).orElse(null);
+            if(orderStockWarehouse == null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouse);
+            }
             return OrderStockDTO.builder()
                     .orderId(orderStock.getOrderId())
                     .warehouse(orderStockWarehouse.getName())

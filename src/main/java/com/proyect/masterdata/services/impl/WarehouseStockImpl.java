@@ -152,6 +152,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
             }
 
             warehouseStock.setQuantity(warehouseStock.getQuantity() - quantity);
+            warehouseStockRepository.save(warehouseStock);
 
             return ResponseSuccess.builder()
                     .code(200)

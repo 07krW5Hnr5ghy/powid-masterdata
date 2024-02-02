@@ -15,5 +15,4 @@ public class RequestOrderUpdate {
     public String observations;
     public String orderState;
     public String paymentState;
-    public Boolean cancellation;
 }
