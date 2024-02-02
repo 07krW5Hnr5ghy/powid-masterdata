@@ -3,6 +3,7 @@ package com.proyect.masterdata.domain;
 import com.proyect.masterdata.utils.Constants;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.util.Date;
 
 @Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -30,7 +32,7 @@ public class CancelledOrder {
     private Date updateDate;
 
     @Column(name = "id_orden")
-    private Long orderId;
+    private Long orderingId;
 
     @Column(name = "id_razon_cancelacion")
     private Long cancellationReasonId;

@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CancelledOrderRepository extends JpaRepository<CancelledOrder,Long> {
+    CancelledOrder findByOrderingIdAndClientId(Long orderId,Long clientId);
+    CancelledOrder findByOrderingId(Long orderId);
 }

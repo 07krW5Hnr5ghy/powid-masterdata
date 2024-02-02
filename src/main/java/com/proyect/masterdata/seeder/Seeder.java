@@ -75,6 +75,7 @@ public class Seeder implements CommandLineRunner {
         private final IUnit iUnit;
         private final ICourier iCourier;
         private final ICancellationReason iCancellationReason;
+        private final ICancelledOrder iCancelledOrder;
         @Override
         public void run(String... args) throws Exception {
 
@@ -284,6 +285,7 @@ public class Seeder implements CommandLineRunner {
                 iOrderState.save("agendado","admin1");
                 iOrderState.save("en ruta","admin1");
                 iOrderState.save("llamado","admin1");
+                iOrderState.save("cancelado","admin1");
 
                 // payment state
                 iPaymentState.save("por recaudar","admin1");
@@ -1493,6 +1495,13 @@ public class Seeder implements CommandLineRunner {
                         .build();
 
                 iOrdering.update(1L,requestOrderUpdate1,"gjimenez");
+
+                RequestCancelledOrder requestCancelledOrder1 = RequestCancelledOrder.builder()
+                        .cancellationReason("Demora en entrega")
+                        .orderId(2L)
+                        .build();
+
+                iCancelledOrder.save(requestCancelledOrder1,"gjimenez");
         }
 
 }

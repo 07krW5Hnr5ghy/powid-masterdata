@@ -277,7 +277,79 @@ http://localhost:8080/masterdata/cancellation-reason
 
 - Example :
 
-http://localhost:8080/masterdata/cancellation-reason?name=marvisur&tokenUser=admin1
+http://localhost:8080/masterdata/cancelled-order?tokenUser=admin1
+
+### GET /cancelled-order protected
+
+- Description : list all active cancelled orders
+
+- Request : none
+
+- Parameters :
+
+1. orderId : filter cancelled orders by orderId
+2. user : filter suppliers by the client of the user (required)
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "orderId": 2,
+            "cancellationReason": "DEMORA EN ENTREGA",
+            "registrationDate": "2024-02-02T17:02:46.385+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 2,
+        "paged": true,
+        "unpaged": false
+    },
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "first": true,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/cancelled-order?pageNumber=0&pageSize=2&user=gjimenez
+
+### POST /cancelled-order protected
+
+- Description : add one cancelled order to the database and modify the data of the order
+- Request: 
+{
+    orderId:"id number of the order to be cancelled",
+    cancellationReason:"reason of the cancellation of the order"
+}
+- Parameters :
+
+1. tokenUser : username of the user who cancels the order
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/cancelled-order?tokenUser=admin1
 
 ### GET /category
 

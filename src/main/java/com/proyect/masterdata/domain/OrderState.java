@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableState, schema = Constants.schemaMaster)
+@Table(name = Constants.tableOrderState, schema = Constants.schemaMaster)
 public class OrderState {
 
         @Id

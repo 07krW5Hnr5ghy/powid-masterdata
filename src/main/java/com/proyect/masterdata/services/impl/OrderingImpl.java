@@ -273,6 +273,9 @@ public class OrderingImpl implements IOrdering {
                 sale.setPaymentMethodId(paymentState.getId());
             }
 
+            orderingRepository.save(ordering);
+            saleRepository.save(sale);
+
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.update)

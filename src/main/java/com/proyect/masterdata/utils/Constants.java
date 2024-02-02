@@ -27,7 +27,7 @@ public class Constants {
     public static final String tableConnection = "conexion";
     public static final String tablePaymentMethod = "metodo_pago";
     public static final String tablePaymentState = "estado_pago";
-    public static final String tableState = "estado";
+    public static final String tableOrderState = "estado_pedido";
     public static final String tableSize = "talla";
     public static final String tableColor = "color";
     public static final String tableSaleChannel = "canal_venta";
@@ -198,4 +198,6 @@ public class Constants {
     public static final String ErrorCourierExists = "Courier already exists";
     public static final String ErrorCancellationReason = "Cancellation reason does not exist";
     public static final String ErrorCancellationReasonExists = "Cancellation reason already exists";
+    public static final String ErrorCancelledOrder = "Cancelled order not exists";
+    public static final String ErrorCancelledOrderExists = "Cancelled order already exists";
 }
