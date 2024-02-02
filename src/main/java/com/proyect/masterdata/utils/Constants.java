@@ -72,7 +72,7 @@ public class Constants {
     public static final String tableItem = "item";
     public static final String tableCustomer = "comprador";
     public static final String tableCancellationReason = "razon_cancelacion";
-    public static final String tableCancelledOrder = "orden_cancelada";
+    public static final String tableCancelledOrder = "pedido_cancelado";
     public static final String tableRestock = "reposicion_inventario";
     public static final String tableOrderStock = "inventario_pedido";
     public static final String tableUnitType = "tipo_unidad";
