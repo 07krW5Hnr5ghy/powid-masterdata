@@ -13,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +43,8 @@ public class CancellationReasonImpl implements ICancellationReason {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if(cancellationReason == null){
-            throw new BadRequestExceptions(Constants.ErrorCancellationReason);
+        if(cancellationReason != null){
+            throw new BadRequestExceptions(Constants.ErrorCancellationReasonExists);
         }
 
         try{
@@ -62,5 +65,22 @@ public class CancellationReasonImpl implements ICancellationReason {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public List<String> list() throws BadRequestExceptions {
+        List<CancellationReason> cancellationReasonList = new ArrayList<>();
+
+        try{
+            cancellationReasonList = cancellationReasonRepository.findAllByStatusTrue();
+        }catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(cancellationReasonList.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return cancellationReasonList.stream().map(CancellationReason::getName).toList();
     }
 }

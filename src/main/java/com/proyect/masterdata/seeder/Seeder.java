@@ -74,6 +74,7 @@ public class Seeder implements CommandLineRunner {
         private final IUnitType iUnitType;
         private final IUnit iUnit;
         private final ICourier iCourier;
+        private final ICancellationReason iCancellationReason;
         @Override
         public void run(String... args) throws Exception {
 
@@ -333,6 +334,18 @@ public class Seeder implements CommandLineRunner {
                         .build();
 
                 iUnit.save(requestUnit2,"admin1");
+
+                // cancellation reason
+                iCancellationReason.save("No hay stock","admin1");
+                iCancellationReason.save("Demora en entrega","admin1");
+                iCancellationReason.save("Mala calidad","admin1");
+                iCancellationReason.save("Se le daño el producto - 30 dias","admin1");
+                iCancellationReason.save("Otros motivos","admin1");
+                iCancellationReason.save("Muy caro el envio","admin1");
+                iCancellationReason.save("Zona peligrosa","admin1");
+                iCancellationReason.save("Cliente no confiable para contraentrega","admin1");
+                iCancellationReason.save("Robo por motorizado","admin1");
+                iCancellationReason.save("No le gusto producto","admin1");
 
                 // mock brands
                 iBrand.save("nike", "gjimenez");

@@ -4,6 +4,9 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
+import java.util.List;
+
 public interface ICancellationReason {
     ResponseSuccess save(String name,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    List<String> list() throws BadRequestExceptions;
 }

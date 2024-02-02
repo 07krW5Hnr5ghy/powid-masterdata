@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin({"*"})
 @RequestMapping("cancellation-reason")
@@ -24,6 +26,12 @@ public class CancellationReasonController {
     ) throws BadRequestExceptions{
         ResponseSuccess result = iCancellationReason.save(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<String>> list() throws BadRequestExceptions{
+        List<String> result = iCancellationReason.list();
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }

@@ -233,6 +233,52 @@ Body
     "reebok","adidas"
 ]
 
+### GET /cancellation-reason protected
+
+- Description : list all active cancellation reasons
+- Request: none
+- Parameters : none
+
+- Response :
+
+[
+    "NO HAY STOCK",
+    "DEMORA EN ENTREGA",
+    "MALA CALIDAD",
+    "SE LE DAÑO EL PRODUCTO - 30 DIAS",
+    "OTROS MOTIVOS",
+    "MUY CARO EL ENVIO",
+    "ZONA PELIGROSA",
+    "CLIENTE NO CONFIABLE PARA CONTRAENTREGA",
+    "ROBO POR MOTORIZADO",
+    "NO LE GUSTO PRODUCTO"
+]
+
+- Example :
+
+http://localhost:8080/masterdata/cancellation-reason
+
+### POST /cancellation-reason protected
+
+- Description : add one cancellation reason to the database
+- Request: none
+- Parameters :
+
+1. name : name of the cancellation reason
+2. tokenUser : username of the user who creates category
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/cancellation-reason?name=marvisur&tokenUser=admin1
+
 ### GET /category
 
 - Description : list all active categories
@@ -260,7 +306,7 @@ http://localhost:8080/masterdata/category
 
 1. name : name of category
 2. description : description of the category
-3. user : username of the user who creates category
+3. tokenUser : username of the user who creates category
 
 - Response : 
 
