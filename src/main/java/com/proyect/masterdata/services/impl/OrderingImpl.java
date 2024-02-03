@@ -55,7 +55,7 @@ public class OrderingImpl implements IOrdering {
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
-            courier = courierRepository.findByNameAndStatusTrue(requestOrderSave.getCourier().toUpperCase());
+            courier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -63,10 +63,6 @@ public class OrderingImpl implements IOrdering {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if(courier == null){
-            throw new BadRequestExceptions(Constants.ErrorCourier);
         }
 
         try{

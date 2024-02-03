@@ -1008,6 +1008,13 @@ public class Seeder implements CommandLineRunner {
 
                 iCourier.save(requestCourier4,"fcasas");
 
+                RequestCourier requestCourier5 = RequestCourier.builder()
+                        .courier("Sin courier")
+                        .phoneNumber("000000000")
+                        .build();
+
+                iCourier.save(requestCourier5,"admin1");
+
                 // purchase mocks
 
                 List<RequestPurchase> requestPurchaseList1 = new ArrayList<>();
@@ -1269,7 +1276,6 @@ public class Seeder implements CommandLineRunner {
                         .paymentMethod("yape")
                         .paymentReceipt("")
                         .saleChannel("tienda online")
-                        .courier("Marvisur")
                         .requestItems(requestItems1)
                         .build();
 
@@ -1312,7 +1318,6 @@ public class Seeder implements CommandLineRunner {
                         .paymentMethod("plin")
                         .paymentReceipt("")
                         .saleChannel("tienda online")
-                        .courier("Rappi")
                         .requestItems(requestItems2)
                         .build();
 
@@ -1355,7 +1360,6 @@ public class Seeder implements CommandLineRunner {
                         .paymentMethod("efectivo")
                         .paymentReceipt("")
                         .saleChannel("tienda online")
-                        .courier("Shalom")
                         .requestItems(requestItems3)
                         .build();
 
@@ -1398,7 +1402,6 @@ public class Seeder implements CommandLineRunner {
                         .paymentMethod("efectivo")
                         .paymentReceipt("")
                         .saleChannel("tienda online")
-                        .courier("Indriver")
                         .requestItems(requestItems4)
                         .build();
 

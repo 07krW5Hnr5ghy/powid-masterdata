@@ -17,7 +17,6 @@ public class RequestOrderSave {
     private String paymentReceipt;
     private String deliveryAddress;
     private Double deliveryAmount;
-    private String courier;
     private Double advancedPayment;
     private String saleChannel;
     private String paymentMethod;
