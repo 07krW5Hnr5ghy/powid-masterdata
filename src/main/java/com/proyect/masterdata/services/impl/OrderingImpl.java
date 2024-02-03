@@ -84,13 +84,20 @@ public class OrderingImpl implements IOrdering {
                             .tokenUser(user.getUsername())
                     .build());
 
-            Double saleAmount = 0.00;
+            double saleAmount = 0.00;
 
             for(RequestItem requestItem : requestOrderSave.getRequestItems()){
-                iItem.save(ordering,requestItem,tokenUser);
+
                 Product product = productRepository.findBySkuAndStatusTrue(requestItem.getProductSku().toUpperCase());
+
+                if(product == null){
+                    throw new BadRequestExceptions(Constants.ErrorProduct);
+                }
+
                 ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+
                 saleAmount += (productPrice.getUnitSalePrice() * requestItem.getQuantity());
+                iItem.save(ordering,requestItem,tokenUser);
             }
 
             RequestSale requestSale = RequestSale.builder()

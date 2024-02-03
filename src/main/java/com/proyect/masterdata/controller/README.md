@@ -557,6 +557,38 @@ Response
     }
 ]
 
+### GET /item protected
+
+- Description : check the stock of one item for the database
+- Request: none
+- Parameters :
+
+1. productSku : sku of the product 
+2. quantity : quantity of the product to check
+3. tokenUser : username of the user who checks the product
+
+- Response :
+
+{
+    "pendingStock": false,
+    "pendingQuantity": 0,
+    "itemStockList": [
+        {
+            "warehouse": "ALCAZAR",
+            "stockQuantity": 36
+        },
+        {
+            "warehouse": "ALCAZAR",
+            "stockQuantity": 13
+        }
+    ]
+}
+
+- Example :
+
+http://localhost:8080/masterdata/item?productSku=B00002&quantity=5&tokenUser=fcasas
+
+
 ### GET /color
 
 - Description : list all the active colors in the database

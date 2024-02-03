@@ -14,4 +14,5 @@ public interface SupplierProductRepository extends JpaRepository<SupplierProduct
     SupplierProduct findBySerialAndStatusTrue(String serial);
 
     List<SupplierProduct> findBySerialIn(List<String> serials);
+    List<SupplierProduct> findAllByProductIdAndStatusTrue(Long id);
 }

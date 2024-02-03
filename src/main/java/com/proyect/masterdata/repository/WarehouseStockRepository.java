@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import com.proyect.masterdata.domain.WarehouseStock;
 
+import java.util.List;
+
 @Repository
 public interface WarehouseStockRepository extends JpaRepository<WarehouseStock, Long> {
     WarehouseStock findByWarehouseIdAndSupplierProductId(Long warehouseId, Long supplierProductId);
+    List<WarehouseStock> findAllBySupplierProductId(Long supplierProductId);
 }
