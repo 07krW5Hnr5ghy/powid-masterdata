@@ -62,6 +62,7 @@ public class SecurityConfiguration {
                     auth.requestMatchers(HttpMethod.GET, "/store-type/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/subscription/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/module").permitAll();
+                    auth.requestMatchers("/file/**").permitAll();
                     // auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
                     auth.anyRequest().authenticated();
                 });
