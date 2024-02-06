@@ -17,10 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -45,6 +42,7 @@ public class OrderingImpl implements IOrdering {
     private final OrderStockRepository orderStockRepository;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
+    private final IOrderPaymentReceipt iOrderPaymentReceipt;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -80,6 +78,8 @@ public class OrderingImpl implements IOrdering {
                             .tokenUser(user.getUsername())
                     .build());
 
+            iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
+
             double saleAmount = 0.00;
 
             for(RequestItem requestItem : requestOrderSave.getRequestItems()){
@@ -99,7 +99,6 @@ public class OrderingImpl implements IOrdering {
             RequestSale requestSale = RequestSale.builder()
                     .saleChannel(requestOrderSave.getSaleChannel())
                     .seller(user.getName() + " " + user.getSurname())
-                    .paymentReceipt(requestOrderSave.getPaymentReceipt())
                     .paymentMethod(requestOrderSave.getPaymentMethod())
                     .observations(requestOrderSave.getObservations())
                     .managementType(requestOrderSave.getManagementType())
@@ -197,7 +196,6 @@ public class OrderingImpl implements IOrdering {
                     .reference(customer.getReference())
                     .duePayment((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment())
                     .saleChannel(sale.getSaleChannel().getName())
-                    .paymentReceipt(sale.getPaymentReceipt())
                     .sellerName(sale.getSeller())
                     .registrationDate(order.getRegistrationDate())
                     .updateDate(order.getUpdateDate())

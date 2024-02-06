@@ -15,8 +15,6 @@ public class RequestSale {
 
     private String observations;
 
-    private String paymentReceipt;
-
     private String deliveryAddress;
 
     private Double saleAmount;

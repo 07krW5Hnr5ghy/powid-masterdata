@@ -76,7 +76,6 @@ public class SaleImpl implements ISale {
                             .paymentMethodId(paymentMethod.getId())
                             .saleAmount(requestSale.getSaleAmount())
                             .deliveryAmount(requestSale.getDeliveryAmount())
-                            .paymentReceipt(requestSale.getPaymentReceipt())
                             .paymentState(paymentState)
                             .paymentStateId(paymentState.getId())
                             .saleChannel(saleChannel)

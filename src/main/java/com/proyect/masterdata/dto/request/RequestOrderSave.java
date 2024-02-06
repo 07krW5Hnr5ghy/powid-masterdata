@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @Data
 public class RequestOrderSave {
     private String observations;
-    private String paymentReceipt;
+    private List<MultipartFile> receipts;
     private String deliveryAddress;
     private Double deliveryAmount;
     private Double advancedPayment;

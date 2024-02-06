@@ -31,9 +31,6 @@ public class Sale {
     @Column(name = "vendedor")
     private String seller;
 
-    @Column(name = "comprobante_pago")
-    private String paymentReceipt;
-
     @Column(name = "observaciones")
     private String observations;
 
