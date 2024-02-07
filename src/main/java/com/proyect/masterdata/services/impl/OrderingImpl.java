@@ -222,6 +222,7 @@ public class OrderingImpl implements IOrdering {
         Sale sale;
         PaymentMethod paymentMethod;
         PaymentState paymentState;
+        Courier courier;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -229,6 +230,7 @@ public class OrderingImpl implements IOrdering {
             orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
             paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
             paymentState = paymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
+            courier = courierRepository.findByNameAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase());
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -237,6 +239,10 @@ public class OrderingImpl implements IOrdering {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(courier == null){
+            throw new BadRequestExceptions(Constants.ErrorCourier);
         }
 
         if(ordering == null){
@@ -278,8 +284,14 @@ public class OrderingImpl implements IOrdering {
                 sale.setPaymentMethodId(paymentState.getId());
             }
 
+            if(!Objects.equals(courier.getName(),ordering.getCourier().getName())){
+                ordering.setCourier(courier);
+                ordering.setCourierId(courier.getId());
+            }
+
             orderingRepository.save(ordering);
             saleRepository.save(sale);
+            iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
 
             return ResponseSuccess.builder()
                     .code(200)
