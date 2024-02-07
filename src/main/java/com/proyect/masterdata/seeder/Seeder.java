@@ -383,7 +383,36 @@ public class Seeder implements CommandLineRunner {
                         iModel.save("frost", "lacoste", "fcasas");
 
                         // mock products
-
+                        List<MultipartFile> productImages1 = new ArrayList<>();
+                        File image1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\test_pics\\bill.jpg");
+                        // uncomment for deployment
+                        // File image1 = new File("src/main/test_pics/bill.jpg");
+                        FileInputStream imageInputStream1 = new FileInputStream(image1);
+                        byte[] imageBytes1 = new byte[(int) image1.length()];
+                        imageInputStream1.read(imageBytes1);
+                        imageInputStream1.close();
+                        MockMultipartFile multipartImage1 = new MockMultipartFile(
+                                "file",
+                                image1.getName(),
+                                "image/jpeg",
+                                imageBytes1
+                        );
+                        productImages1.add(multipartImage1);
+                        List<MultipartFile> productImages2 = new ArrayList<>();
+                        File image2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\test_pics\\invoice1.jpg");
+                        // uncomment for deployment
+                        // File image2 = new File("src/main/test_pics/bill.jpg");
+                        FileInputStream imageInputStream2 = new FileInputStream(image2);
+                        byte[] imageBytes2 = new byte[(int) image2.length()];
+                        imageInputStream2.read(imageBytes2);
+                        imageInputStream2.close();
+                        MockMultipartFile multipartImage2 = new MockMultipartFile(
+                                "file",
+                                image2.getName(),
+                                "image/jpeg",
+                                imageBytes2
+                        );
+                        productImages2.add(multipartImage2);
                         RequestProductSave product1 = RequestProductSave.builder().build();
                         product1.setCategory("tennis");
                         product1.setColor("negro");
@@ -392,6 +421,7 @@ public class Seeder implements CommandLineRunner {
                         product1.setSku("A00001");
                         product1.setPrice(2.30);
                         product1.setUnit("par");
+                        product1.setPictures(productImages1);
 
                         iProduct.save(product1, "gjimenez");
 
@@ -403,6 +433,7 @@ public class Seeder implements CommandLineRunner {
                         product2.setSku("A00002");
                         product2.setPrice(5.41);
                         product2.setUnit("par");
+                        product2.setPictures(productImages2);
 
                         iProduct.save(product2, "gjimenez");
 
@@ -414,6 +445,7 @@ public class Seeder implements CommandLineRunner {
                         product3.setSku("A00003");
                         product3.setPrice(3.33);
                         product3.setUnit("par");
+                        product3.setPictures(productImages1);
 
                         iProduct.save(product3, "gjimenez");
 
@@ -425,6 +457,7 @@ public class Seeder implements CommandLineRunner {
                         product4.setSku("A00004");
                         product4.setPrice(7.01);
                         product4.setUnit("prenda");
+                        product4.setPictures(productImages2);
 
                         iProduct.save(product4, "gjimenez");
 
@@ -436,6 +469,7 @@ public class Seeder implements CommandLineRunner {
                         product5.setSku("A00005");
                         product5.setPrice(4.76);
                         product5.setUnit("prenda");
+                        product5.setPictures(productImages1);
 
                         iProduct.save(product5, "gjimenez");
 
@@ -447,6 +481,7 @@ public class Seeder implements CommandLineRunner {
                         product6.setSku("A00006");
                         product6.setPrice(1.34);
                         product6.setUnit("prenda");
+                        product6.setPictures(productImages2);
 
                         iProduct.save(product6, "gjimenez");
 
@@ -458,6 +493,7 @@ public class Seeder implements CommandLineRunner {
                         product7.setSku("A00007");
                         product7.setPrice(8.23);
                         product7.setUnit("prenda");
+                        product7.setPictures(productImages1);
 
                         iProduct.save(product7, "gjimenez");
 
@@ -469,6 +505,7 @@ public class Seeder implements CommandLineRunner {
                         product8.setSku("A00008");
                         product8.setPrice(6.27);
                         product8.setUnit("prenda");
+                        product8.setPictures(productImages2);
 
                         iProduct.save(product8, "gjimenez");
 
@@ -480,6 +517,7 @@ public class Seeder implements CommandLineRunner {
                         product9.setSku("A00009");
                         product9.setPrice(9.05);
                         product9.setUnit("prenda");
+                        product9.setPictures(productImages1);
 
                         iProduct.save(product9, "gjimenez");
 
@@ -491,6 +529,7 @@ public class Seeder implements CommandLineRunner {
                         product10.setSku("B00001");
                         product10.setPrice(7.11);
                         product10.setUnit("par");
+                        product10.setPictures(productImages2);
 
                         iProduct.save(product10, "fcasas");
 
@@ -502,6 +541,7 @@ public class Seeder implements CommandLineRunner {
                         product11.setSku("B00002");
                         product11.setPrice(4.65);
                         product11.setUnit("par");
+                        product11.setPictures(productImages1);
 
                         iProduct.save(product11, "fcasas");
 
@@ -513,6 +553,7 @@ public class Seeder implements CommandLineRunner {
                         product12.setSku("B00003");
                         product12.setPrice(8.38);
                         product12.setUnit("par");
+                        product12.setPictures(productImages2);
 
                         iProduct.save(product12, "fcasas");
 
@@ -524,6 +565,7 @@ public class Seeder implements CommandLineRunner {
                         product13.setSku("B00004");
                         product13.setPrice(4.02);
                         product13.setUnit("prenda");
+                        product13.setPictures(productImages1);
 
                         iProduct.save(product13, "fcasas");
 
@@ -535,6 +577,7 @@ public class Seeder implements CommandLineRunner {
                         product14.setSku("B00005");
                         product14.setPrice(1.99);
                         product14.setUnit("prenda");
+                        product14.setPictures(productImages2);
 
                         iProduct.save(product14, "fcasas");
 
@@ -546,6 +589,7 @@ public class Seeder implements CommandLineRunner {
                         product15.setSku("B00006");
                         product15.setPrice(6.37);
                         product15.setUnit("prenda");
+                        product15.setPictures(productImages1);
 
                         iProduct.save(product15, "fcasas");
 
@@ -557,6 +601,7 @@ public class Seeder implements CommandLineRunner {
                         product16.setSku("B00007");
                         product16.setPrice(2.97);
                         product16.setUnit("prenda");
+                        product16.setPictures(productImages2);
 
                         iProduct.save(product16, "fcasas");
 
@@ -568,6 +613,7 @@ public class Seeder implements CommandLineRunner {
                         product17.setSku("B00008");
                         product17.setPrice(5.21);
                         product17.setUnit("prenda");
+                        product17.setPictures(productImages1);
 
                         iProduct.save(product17, "fcasas");
 
@@ -579,6 +625,7 @@ public class Seeder implements CommandLineRunner {
                         product18.setSku("B00009");
                         product18.setPrice(3.53);
                         product18.setUnit("prenda");
+                        product18.setPictures(productImages2);
 
                         iProduct.save(product18, "fcasas");
 
@@ -1562,6 +1609,7 @@ public class Seeder implements CommandLineRunner {
                         iCancelledOrder.save(requestCancelledOrder1,"gjimenez");
                 }catch (RuntimeException e){
                         e.printStackTrace();
+                        throw new RuntimeException(e.getMessage());
                 }
         }
 

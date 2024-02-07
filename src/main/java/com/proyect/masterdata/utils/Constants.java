@@ -78,6 +78,7 @@ public class Constants {
     public static final String tableUnitType = "tipo_unidad";
     public static final String tableCourier = "courier";
     public static final String tableOrderPaymentReceipt = "pedido_comprobante_pago";
+    public static final String tableProductPicture = "producto_imagen";
 
     // Mensajes
     public static final String register = "registration correctly";

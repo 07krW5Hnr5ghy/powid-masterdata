@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -17,4 +20,5 @@ public class RequestProductSave {
     private String size;
     private String unit;
     private Double price;
+    private List<MultipartFile> pictures;
 }

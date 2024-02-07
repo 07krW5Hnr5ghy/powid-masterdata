@@ -1203,7 +1203,7 @@ http://localhost:8080/masterdata/onboard
 
 {
     "observations":"observations of the seller",
-    "paymentReceipt":"url of the paymentReceipt",
+    "receipts":"array with multipart image files of the receipts",
     "deliveryAddress":"address of the delivery for the order",
     "deliveryAmount":"amount of delivery fee with two decimals",
     "advancedPayment":"prepaid amount for the order",
@@ -1518,48 +1518,54 @@ http://localhost:8080/masterdata/order-stock?pageNumber=0&pageSize=2&user=gjimen
 - Response : 
 
 {
-    "content": [
-        {
-            "sku": "A00001",
-            "model": "F90",
-            "size": "12",
-            "category": "TENNIS",
-            "color": "NEGRO",
-            "unit": "PAR",
-            "price": 2.3
-        },
-        {
-            "sku": "A00002",
-            "model": "M2000",
-            "size": "24",
-            "category": "BOTAS",
-            "color": "ROJO",
-            "unit": "PAR",
-            "price": 5.41
-        }
-    ],
-    "pageable": {
-    "sort": [],
-    "offset": 0,
-    "pageSize": 2,
-    "pageNumber": 0,
-    "paged": true,
-    "unpaged": false
-    },
-    "totalPages": 5,
-    "totalElements": 9,
-    "last": false,
-    "size": 2,
-    "number": 0,
-    "sort": [],
-    "numberOfElements": 2,
-    "first": true,
-    "empty": false
+"content": [
+{
+"sku": "A00001",
+"model": "F90",
+"size": "12",
+"category": "TENNIS",
+"color": "NEGRO",
+"unit": "PAR",
+"price": 2.3,
+"pictures": [
+"http://res.cloudinary.com/dqzvbdf9r/image/upload/v1707281503/COMPANY_1_PRODUCTOS/PRODUCTO_A00001_GJIMENEZ_2024-02-06_23-51-43_IMAGEN_1.jpg"
+]
+},
+{
+"sku": "A00002",
+"model": "M2000",
+"size": "24",
+"category": "BOTAS",
+"color": "ROJO",
+"unit": "PAR",
+"price": 5.41,
+"pictures": [
+"http://res.cloudinary.com/dqzvbdf9r/image/upload/v1707281504/COMPANY_1_PRODUCTOS/PRODUCTO_A00002_GJIMENEZ_2024-02-06_23-51-44_IMAGEN_1.jpg"
+]
 }
+],
+"pageable": {
+"sort": [],
+"offset": 0,
+"pageSize": 2,
+"pageNumber": 0,
+"paged": true,
+"unpaged": false
+},
+"totalPages": 5,
+"totalElements": 9,
+"last": false,
+"size": 2,
+"number": 0,
+"sort": [],
+"numberOfElements": 2,
+"first": true,
+"empty": false
+}}
 
 - Example :
 
-http://localhost:8080/masterdata/product?pageNumber=0&pageSize=3&user=gjimenez
+http://localhost:8080/masterdata/product?pageNumber=0&pageSize=2&user=gjimenez
 
 
 ### POST /product
@@ -1574,7 +1580,8 @@ http://localhost:8080/masterdata/product?pageNumber=0&pageSize=3&user=gjimenez
     color : name of the color of the product,
     category : name of the category of the product,
     size : name of the size of the product,
-    unit : name of the unit of the product
+    unit : name of the unit of the product,
+    pictures : multipart image files of the product in an array
 }
 
 - Params : 
@@ -1601,7 +1608,8 @@ Request body
     "color":"rojo",
     "size":"M",
     "category":"tennis",
-    "unit":"par"
+    "unit":"par",
+    "pictures":[image files...] 
 }
 
 ### POST /product/products

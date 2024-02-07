@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IProductPicture;
 import com.proyect.masterdata.services.IProductPrice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,6 +40,8 @@ public class ProductImpl implements IProduct {
     private final IProductPrice iProductPrice;
     private final UnitRepository unitRepository;
     private final ProductPriceRepository productPriceRepository;
+    private final IProductPicture iProductPicture;
+    private final ProductPictureRepository productPictureRepository;
     @Override
     public ResponseSuccess save(RequestProductSave product, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -113,6 +116,7 @@ public class ProductImpl implements IProduct {
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
             iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
+            iProductPicture.uploadPicture(product.getPictures(),productData.getId(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -201,6 +205,7 @@ public class ProductImpl implements IProduct {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .build();
+                iProductPicture.uploadPicture(product.getPictures(),productData.getId(),user.getUsername());
                 iProductPrice.save(productData.getSku(), product.getPrice(), user.getUsername());
                 return productData;
             }).toList();
@@ -285,6 +290,7 @@ public class ProductImpl implements IProduct {
 
         List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
             ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+            List<String> productImages = productPictureRepository.findAllByProductId(product.getId()).stream().map(ProductPicture::getProductPictureUrl).toList();
             return ProductDTO.builder()
                     .sku(product.getSku())
                     .model(product.getModel().getName())
@@ -293,6 +299,7 @@ public class ProductImpl implements IProduct {
                     .size(product.getSize().getName())
                     .unit(product.getUnit().getName())
                     .price(productPrice.getUnitSalePrice())
+                    .pictures(productImages)
                     .build();
         }).toList();
 

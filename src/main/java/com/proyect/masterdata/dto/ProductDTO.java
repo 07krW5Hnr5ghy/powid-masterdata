@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,4 +19,5 @@ public class ProductDTO {
     private String color;
     private String unit;
     private Double price;
+    private List<String> pictures;
 }
