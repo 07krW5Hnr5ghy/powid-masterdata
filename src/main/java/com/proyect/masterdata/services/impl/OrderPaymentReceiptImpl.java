@@ -51,17 +51,19 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
 
         try{
 
+            String folder = (user.getClient().getBusiness() + "_PEDIDOS").replace(" ","_");
             Date currentDate = new Date(System.currentTimeMillis());
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
             String dateString = dateFormat.format(currentDate);
             String formattedString = dateString.replace(" ", "_");
-            String filename = "PEDIDO" + "_" + orderId.toString() + "_" + user.getUsername() + "_" + formattedString;
+            String filename = "PEDIDO_" + orderId.toString() + "_" + user.getUsername() + "_" + formattedString;
+            String folderPath = folder + "/" + filename;
             int receiptNumber = 1;
             if(receipts.isEmpty()){
                 return Collections.emptyList();
             }
             for(MultipartFile receipt : receipts){
-                String url = iFile.uploadFile(receipt,filename + "_" + "COMPROBANTE_" + Integer.toString(receiptNumber));
+                String url = iFile.uploadFile(receipt,folderPath + "_COMPROBANTE_" + Integer.toString(receiptNumber));
                 orderPaymentReceiptRepository.save(OrderPaymentReceipt.builder()
                                 .paymentReceiptUrl(url)
                                 .client(user.getClient())

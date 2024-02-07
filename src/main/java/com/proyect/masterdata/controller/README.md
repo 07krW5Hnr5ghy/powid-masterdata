@@ -1195,7 +1195,7 @@ http://localhost:8080/masterdata/module?name=ventas&price=2.57&tokenUser=admin1
 
 http://localhost:8080/masterdata/onboard
 
-### POST /ordering protected
+### POST /order protected
 
 - Description : add one order to the database
 
@@ -1238,7 +1238,7 @@ http://localhost:8080/masterdata/onboard
 
 http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
 
-### GET /ordering protected
+### GET /order protected
 
 - Description : list orders
 
@@ -1269,18 +1269,20 @@ http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
 "district": "BREÑA",
 "address": "807 IQUIQUE",
 "managementType": "VENTA",
-"paymentType": "YAPE",
+"paymentType": "POS",
 "saleChannel": "TIENDA ONLINE",
 "reference": "",
-"paymentReceipt": "",
+"paymentReceipts": [
+"http://res.cloudinary.com/dqzvbdf9r/image/upload/v1707259931/PEDIDO_1_GJIMENEZ_2024-02-06_17-52-11_COMPROBANTE_1.jpg"
+],
 "saleAmount": 10.01,
 "deliveryAmount": 10.01,
 "advancedPayment": 0.0,
 "duePayment": 10.01,
-"registrationDate": "2024-02-01T05:14:56.088+00:00",
-"updateDate": "2024-02-01T05:14:56.088+00:00",
+"registrationDate": "2024-02-06T22:52:11.016+00:00",
+"updateDate": "2024-02-06T22:52:11.016+00:00",
 "deliveryAddress": "807 IQUIQUE",
-"courier": "MARVISUR",
+"courier": "SIN COURIER",
 "items": [
 {
 "id": 1,
@@ -1315,7 +1317,7 @@ http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
 "observations": ""
 }
 ],
-"orderStatus": "PENDIENTE"
+"orderStatus": "ENTREGADO"
 },
 {
 "id": 2,
@@ -1332,15 +1334,18 @@ http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
 "paymentType": "PLIN",
 "saleChannel": "TIENDA ONLINE",
 "reference": "",
-"paymentReceipt": "",
+"paymentReceipts": [
+"http://res.cloudinary.com/dqzvbdf9r/image/upload/v1707259933/PEDIDO_2_GJIMENEZ_2024-02-06_17-52-12_COMPROBANTE_1.jpg",
+"http://res.cloudinary.com/dqzvbdf9r/image/upload/v1707259933/PEDIDO_2_GJIMENEZ_2024-02-06_17-52-12_COMPROBANTE_2.jpg"
+],
 "saleAmount": 12.29,
 "deliveryAmount": 12.29,
 "advancedPayment": 4.0,
 "duePayment": 11.29,
-"registrationDate": "2024-02-01T05:14:56.139+00:00",
-"updateDate": "2024-02-01T05:14:56.139+00:00",
+"registrationDate": "2024-02-06T22:52:12.754+00:00",
+"updateDate": "2024-02-06T22:52:12.754+00:00",
 "deliveryAddress": "AV. JORGE CHAVEZ 420, OFICN LIMA",
-"courier": "RAPPI",
+"courier": "SIN COURIER",
 "items": [
 {
 "id": 3,
@@ -1375,24 +1380,24 @@ http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
 "observations": ""
 }
 ],
-"orderStatus": "PENDIENTE"
+"orderStatus": "CANCELADO"
 }
 ],
 "pageable": {
 "sort": [],
+"offset": 0,
 "pageNumber": 0,
 "pageSize": 2,
-"offset": 0,
-"paged": true,
-"unpaged": false
+"unpaged": false,
+"paged": true
 },
 "totalPages": 1,
-"last": true,
 "totalElements": 2,
-"first": true,
+"last": true,
 "size": 2,
 "number": 0,
 "sort": [],
+"first": true,
 "numberOfElements": 2,
 "empty": false
 }

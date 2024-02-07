@@ -43,6 +43,7 @@ public class OrderingImpl implements IOrdering {
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
     private final IOrderPaymentReceipt iOrderPaymentReceipt;
+    private final OrderPaymentReceiptRepository orderPaymentReceiptRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -179,6 +180,8 @@ public class OrderingImpl implements IOrdering {
                         .build();
             }).toList();
 
+            List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
+
             return OrderDTO.builder()
                     .id(order.getId())
                     .customerName(customer.getName())
@@ -202,6 +205,7 @@ public class OrderingImpl implements IOrdering {
                     .paymentType(sale.getPaymentMethod().getName())
                     .deliveryAddress(sale.getDeliveryAddress())
                     .courier(order.getCourier().getName())
+                    .paymentReceipts(paymentReceipts)
                     .items(itemDTOS)
                     .saleAmount(sale.getSaleAmount())
                     .build();

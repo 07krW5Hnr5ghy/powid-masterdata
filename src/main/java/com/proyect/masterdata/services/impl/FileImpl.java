@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.services.IFile;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,12 @@ public class FileImpl implements IFile {
 
     private final Cloudinary cloudinary;
     @Override
-    public String uploadFile(MultipartFile multipartFile, String filename) throws IOException {
+    public String uploadFile(MultipartFile multipartFile, String filePath) throws IOException {
         try{
             return cloudinary.uploader()
                     .upload(multipartFile.getBytes(), Map.of(
-                            "public_id", filename
+                            "public_id", filePath,
+                            "transformation",new Transformation<>().quality("auto")
                     ))
                     .get("url")
                     .toString();

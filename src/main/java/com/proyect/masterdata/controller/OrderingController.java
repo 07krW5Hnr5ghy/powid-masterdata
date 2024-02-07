@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("ordering")
+@RequestMapping("order")
 @AllArgsConstructor
 public class OrderingController {
 
