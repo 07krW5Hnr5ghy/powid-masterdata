@@ -1591,12 +1591,18 @@ public class Seeder implements CommandLineRunner {
 
                         iOrderStock.save(4L,requestOrderStockList4,"fcasas");
 
+                        List<MultipartFile> paymentReceipts = new ArrayList<MultipartFile>();
+                        List<MultipartFile> courierPictures = new ArrayList<MultipartFile>();
+
                         RequestOrderUpdate requestOrderUpdate1 = RequestOrderUpdate.builder()
                                 .observations("")
                                 .orderState("ENTREGADO")
                                 .paymentMethod("LINK")
                                 .paymentState("RECAUDADO")
                                 .saleChannel("tienda online")
+                                .receipts(paymentReceipts)
+                                .courier("MARVISUR")
+                                .pictures(courierPictures)
                                 .build();
 
                         iOrdering.update(1L,requestOrderUpdate1,"gjimenez");
@@ -1607,6 +1613,32 @@ public class Seeder implements CommandLineRunner {
                                 .build();
 
                         iCancelledOrder.save(requestCancelledOrder1,"gjimenez");
+
+                        // mock products
+                        List<MultipartFile> courierImages1 = new ArrayList<>();
+                        File courierImage1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\test_pics\\bill.jpg");
+                        // uncomment for deployment
+                        // File courierImage1 = new File("src/main/test_pics/bill.jpg");
+                        FileInputStream courierImageInputStream1 = new FileInputStream(courierImage1);
+                        byte[] courierImageBytes1 = new byte[(int) courierImage1.length()];
+                        courierImageInputStream1.read(courierImageBytes1);
+                        courierImageInputStream1.close();
+                        MockMultipartFile multipartCourierImage1 = new MockMultipartFile(
+                                "file",
+                                courierImage1.getName(),
+                                "image/jpeg",
+                                courierImageBytes1
+                        );
+                        courierImages1.add(multipartCourierImage1);
+
+                        RequestCourierOrder requestCourierOrder1 = RequestCourierOrder.builder()
+                                .orderPictures(courierImages1)
+                                .orderState("ENTREGADO")
+                                .paymentMethod("LINK")
+                                .build();
+
+                        iCourier.updateOrder(1L,requestCourierOrder1,"gjimenez");
+
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());

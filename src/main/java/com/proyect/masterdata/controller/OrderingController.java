@@ -46,7 +46,7 @@ public class OrderingController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @PutMapping()
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> update(
             @RequestParam("orderId") Long orderId,
             @RequestBody()RequestOrderUpdate requestOrderUpdate,

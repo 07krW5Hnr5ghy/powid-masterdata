@@ -12,13 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestOrderUpdate {
+public class RequestCourierOrder {
     public String paymentMethod;
-    public String saleChannel;
-    public String observations;
     public String orderState;
-    public String paymentState;
-    public String courier;
-    public List<MultipartFile> receipts;
-    public List<MultipartFile> pictures;
+    public List<MultipartFile> orderPictures;
 }

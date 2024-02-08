@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.CourierDTO;
 import com.proyect.masterdata.dto.request.RequestCourier;
+import com.proyect.masterdata.dto.request.RequestCourierOrder;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -9,6 +10,7 @@ import com.proyect.masterdata.services.ICourier;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +22,22 @@ public class CourierController {
 
     private final ICourier iCourier;
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody()RequestCourier requestCourier,
             @RequestParam("tokenUser") String tokenUser
             ) throws BadRequestExceptions{
         ResponseSuccess result = iCourier.save(requestCourier,tokenUser);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "order",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseSuccess> updateOrder(
+            @RequestParam("orderId") Long orderId,
+            @RequestBody() RequestCourierOrder requestCourierOrder,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions{
+        ResponseSuccess result = iCourier.updateOrder(orderId,requestCourierOrder,tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

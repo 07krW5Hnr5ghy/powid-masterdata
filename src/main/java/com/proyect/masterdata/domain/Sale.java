@@ -14,6 +14,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.Date;
 
 @Entity
 @Builder
@@ -48,6 +51,14 @@ public class Sale {
 
     @Column(name = "pago_pendiente")
     private Double duePayment;
+
+    @Column(name = "fecha_registro")
+    @CreationTimestamp
+    private Date registratioDate;
+
+    @Column(name = "fecha_modificacion")
+    @CreationTimestamp
+    private Date updateDate;
 
     @Column(name = "id_canal_venta")
     private Long saleChannelId;

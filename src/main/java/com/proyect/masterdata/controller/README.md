@@ -748,6 +748,41 @@ http://localhost:8080/masterdata/courier?tokenUser=admin1
     "phoneNumber":"123456789"
 }
 
+### POST /courier/order
+
+- Description : update the order data
+
+- Request :
+
+{
+    "paymentMethod":"name of the paymentMethod",
+    "orderState":"name of the order state",
+    "orderPictures":"array of files for courier pictures"
+}
+
+- Parameters :
+
+1. orderId : id number of the order to update
+2. tokenUser : username of the user who register the courier
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/courier?tokenUser=admin1
+
+{
+    "paymentMethod":"Link",
+    "orderState":"entregado",
+    "orderPictures":[...image files]
+}
+
 ### GET /closing-channel
 
 - Description : list all active closing channels
@@ -1236,7 +1271,50 @@ http://localhost:8080/masterdata/onboard
 
 - Example :
 
-http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
+http://localhost:8080/masterdata/order?tokenUser=gjimenez
+
+### PUT /order protected
+
+- Description : update an order of the database
+
+- Request :
+
+{
+"orderState":"name of the state of the order",
+"observations":"observations about the order",
+"paymentMethod":"name of the payment method",
+"saleChannel" : "channel of sale",
+"receipts":"array of receipts pictures",
+"courier":"name of the courier",
+"pictures":"array of courier pictures"
+}
+
+- Parameters :
+
+1. orderId : id of the order to update
+2. tokenUser : username of the user who update the order
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
+
+{
+"orderState":"entregado",
+"observations":"",
+"paymentMethod":"link",
+"saleChannel" : "tienda online",
+"receipts":[...receipt pictures],
+"courier":"marvisur",
+"pictures":[...courier pictures]
+}
 
 ### GET /order protected
 
@@ -1404,7 +1482,7 @@ http://localhost:8080/masterdata/ordering?tokenUser=gjimenez
 
 - example :
 
-http://localhost:8080/masterdata/ordering?pageNumber=0&pageSize=2&user=gjimenez
+http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez
 
 ### POST /order-stock protected
 

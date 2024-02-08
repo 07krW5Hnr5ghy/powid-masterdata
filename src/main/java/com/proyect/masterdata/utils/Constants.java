@@ -79,6 +79,7 @@ public class Constants {
     public static final String tableCourier = "courier";
     public static final String tableOrderPaymentReceipt = "pedido_comprobante_pago";
     public static final String tableProductPicture = "producto_imagen";
+    public static final String tableCourierPicture = "courier_imagen";
 
     // Mensajes
     public static final String register = "registration correctly";

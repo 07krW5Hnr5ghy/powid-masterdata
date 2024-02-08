@@ -44,6 +44,7 @@ public class OrderingImpl implements IOrdering {
     private final IGeneralStock iGeneralStock;
     private final IOrderPaymentReceipt iOrderPaymentReceipt;
     private final OrderPaymentReceiptRepository orderPaymentReceiptRepository;
+    private final ICourierPicture iCourierPicture;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -274,17 +275,17 @@ public class OrderingImpl implements IOrdering {
                 }
             }
 
-            if(!Objects.equals(paymentMethod.getName(), sale.getPaymentMethod().getName())){
+            if(!Objects.equals(paymentMethod.getId(), sale.getPaymentMethod().getId())){
                 sale.setPaymentMethod(paymentMethod);
                 sale.setPaymentMethodId(paymentMethod.getId());
             }
 
-            if(!Objects.equals(paymentState.getName(),sale.getPaymentState().getName())){
+            if(!Objects.equals(paymentState.getId(),sale.getPaymentState().getId())){
                 sale.setPaymentState(paymentState);
                 sale.setPaymentMethodId(paymentState.getId());
             }
 
-            if(!Objects.equals(courier.getName(),ordering.getCourier().getName())){
+            if(!Objects.equals(courier.getId(),ordering.getCourier().getId())){
                 ordering.setCourier(courier);
                 ordering.setCourierId(courier.getId());
             }
@@ -292,6 +293,7 @@ public class OrderingImpl implements IOrdering {
             orderingRepository.save(ordering);
             saleRepository.save(sale);
             iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
+            iCourierPicture.uploadPicture(requestOrderUpdate.getPictures(),ordering.getId(),user.getUsername());
 
             return ResponseSuccess.builder()
                     .code(200)
