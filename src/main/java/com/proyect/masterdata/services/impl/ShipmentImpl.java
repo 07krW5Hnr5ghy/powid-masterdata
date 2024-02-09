@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -80,7 +81,7 @@ public class ShipmentImpl implements IShipment {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
-        if (warehouseData.getClientId() != user.getClientId()) {
+        if (!Objects.equals(warehouseData.getClientId(), user.getClientId())) {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 

@@ -45,6 +45,7 @@ public class OrderingImpl implements IOrdering {
     private final IOrderPaymentReceipt iOrderPaymentReceipt;
     private final OrderPaymentReceiptRepository orderPaymentReceiptRepository;
     private final ICourierPicture iCourierPicture;
+    private final IStockTransaction iStockTransaction;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -268,10 +269,19 @@ public class OrderingImpl implements IOrdering {
                 List<Item> orderItems = itemRepository.findAllByOrderId(ordering.getId());
                 for(Item item : orderItems){
                     List<OrderStock> orderStockList = orderStockRepository.findByOrderIdAndItemId(ordering.getId(),item.getId());
+                    List<RequestStockTransaction> stockTransactionList = new ArrayList<>();
                     for(OrderStock orderStock : orderStockList){
+                        stockTransactionList.add(RequestStockTransaction.builder()
+                                        .serial("O"+orderId)
+                                        .warehouse(orderStock.getWarehouse().getName())
+                                        .supplierProductSerial(orderStock.getSupplierProduct().getSerial())
+                                        .stockTransactionType("SALIDA")
+                                        .quantity(orderStock.getQuantity())
+                                .build());
                         iWarehouseStock.out(orderStock.getWarehouse().getName(),orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
                         iGeneralStock.out(orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
                     }
+                    iStockTransaction.save(stockTransactionList,user.getUsername());
                 }
             }
 

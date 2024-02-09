@@ -3,11 +3,15 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CancelledOrderDTO;
 import com.proyect.masterdata.dto.request.RequestCancelledOrder;
+import com.proyect.masterdata.dto.request.RequestStockTransaction;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.ICancelledOrder;
+import com.proyect.masterdata.services.IGeneralStock;
+import com.proyect.masterdata.services.IStockTransaction;
+import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -15,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +34,11 @@ public class CancelledOrderImpl implements ICancelledOrder {
     private final CancellationReasonRepository cancellationReasonRepository;
     private final CancelledOrderRepositoryCustom cancelledOrderRepositoryCustom;
     private final OrderStateRepository orderStateRepository;
+    private final IStockTransaction iStockTransaction;
+    private final ItemRepository itemRepository;
+    private final OrderStockRepository orderStockRepository;
+    private final IWarehouseStock iWarehouseStock;
+    private final IGeneralStock iGeneralStock;
     @Override
     public ResponseSuccess save(RequestCancelledOrder requestCancelledOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -36,6 +46,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
         Ordering ordering;
         CancellationReason cancellationReason;
         OrderState orderState;
+        List<Item> itemList;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -66,6 +77,26 @@ public class CancelledOrderImpl implements ICancelledOrder {
         }
 
         try {
+            if(ordering.getOrderState().getName().equals("ENTREGADO")){
+                System.out.println("ENTREGADO");
+                itemList = itemRepository.findAllByOrderId(ordering.getId());
+                for(Item item : itemList){
+                    List<OrderStock> orderStockList = orderStockRepository.findByOrderIdAndItemId(ordering.getId(),item.getId());
+                    List<RequestStockTransaction> stockTransactionList = new ArrayList<>();
+                    for(OrderStock orderStock : orderStockList){
+                        stockTransactionList.add(RequestStockTransaction.builder()
+                                .serial("C"+ordering.getId())
+                                .warehouse(orderStock.getWarehouse().getName())
+                                .supplierProductSerial(orderStock.getSupplierProduct().getSerial())
+                                .stockTransactionType("DEVOLUCION-COMPRADOR")
+                                .quantity(orderStock.getQuantity())
+                                .build());
+                        iWarehouseStock.in(orderStock.getWarehouse().getName(),orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
+                        iGeneralStock.in(orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
+                    }
+                    iStockTransaction.save(stockTransactionList,user.getUsername());
+                }
+            }
             cancelledOrderRepository.save(CancelledOrder.builder()
                             .ordering(ordering)
                             .orderingId(ordering.getId())

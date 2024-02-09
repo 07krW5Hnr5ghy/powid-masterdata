@@ -84,6 +84,7 @@ public class StockTransactionImpl implements IStockTransaction {
                 }
 
                 return StockTransaction.builder()
+                        .serial(stockTransaction.getSerial().toUpperCase())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .quantity(stockTransaction.getQuantity())

@@ -1001,6 +1001,8 @@ public class Seeder implements CommandLineRunner {
                         iStockTransactionType.save("entrada", "admin1");
                         iStockTransactionType.save("salida", "admin1");
                         iStockTransactionType.save("transferencia", "admin1");
+                        iStockTransactionType.save("devolucion-comprador","admin1");
+                        iStockTransactionType.save("devolucion-proveedor","admin1");
 
                         // warehouse mocks
                         RequestWarehouse warehouse1 = RequestWarehouse.builder()
