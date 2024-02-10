@@ -2,6 +2,7 @@ package com.proyect.masterdata.services;
 
 import java.util.List;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.dto.PurchaseDTO;
@@ -17,4 +18,6 @@ public interface IPurchase {
 
     Page<PurchaseDTO> list(String serial, String user, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+
+    public ResponseDelete delete(String serial,String serialSupplierProduct,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
 }

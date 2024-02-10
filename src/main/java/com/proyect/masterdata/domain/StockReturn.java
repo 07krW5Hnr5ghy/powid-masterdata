@@ -1,6 +1,6 @@
 package com.proyect.masterdata.domain;
 
-import java.sql.Date;
+import java.util.Date;
 
 import com.proyect.masterdata.utils.Constants;
 
@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = Constants.tableReturn, schema = Constants.schemaInventory)
-public class Return {
+@Table(name = Constants.tableStockReturn, schema = Constants.schemaInventory)
+public class StockReturn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,6 +32,9 @@ public class Return {
 
     @Column(name = "cantidad")
     private Integer quantity;
+
+    @Column(name = "observaciones")
+    private String observations;
 
     @Column(name = "fecha_registro")
     private Date registrationDate;

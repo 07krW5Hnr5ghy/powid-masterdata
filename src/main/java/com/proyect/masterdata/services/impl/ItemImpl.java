@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CheckStockItemDTO;
 import com.proyect.masterdata.dto.request.RequestItem;
 import com.proyect.masterdata.dto.response.ResponseCheckStockItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -15,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -60,6 +62,8 @@ public class ItemImpl implements IItem {
                             .product(product)
                             .productId(product.getId())
                             .observations(requestItem.getObservations())
+                            .status(true)
+                            .registrationDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
                     .build());
             return ResponseSuccess.builder()
@@ -133,5 +137,40 @@ public class ItemImpl implements IItem {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
+    }
+
+    @Override
+    public ResponseDelete delete(Long orderId, Long itemId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        Item item;
+        try{
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            item = itemRepository.findByIdAndOrderId(itemId,orderId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(item == null){
+            throw new InternalErrorExceptions(Constants.ErrorItem);
+        }
+
+        try{
+            item.setStatus(false);
+            item.setUpdateDate(new Date(System.currentTimeMillis()));
+            item.setTokenUser(user.getUsername());
+            itemRepository.save(item);
+            return ResponseDelete.builder()
+                    .message(Constants.delete)
+                    .code(200)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 }

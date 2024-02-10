@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -126,6 +127,44 @@ public class PurchaseImpl implements IPurchase {
                 .build()).toList();
 
         return new PageImpl<>(purchaseDTOs, pagePurchase.getPageable(), pagePurchase.getTotalElements());
+    }
+
+    @Override
+    public ResponseDelete delete(String serial, String serialSupplierProduct, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+
+        User user;
+        SupplierProduct supplierProduct;
+        Purchase purchase;
+
+        try{
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(serialSupplierProduct.toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(supplierProduct == null){
+            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        }
+
+        try{
+            purchase = purchaseRepository.findBySerialAndSupplierProductId(serial,supplierProduct.getId());
+            purchase.setStatus(false);
+            purchase.setUpdateDate(new Date(System.currentTimeMillis()));
+            purchaseRepository.save(purchase);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 
 }

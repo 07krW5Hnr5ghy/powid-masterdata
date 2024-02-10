@@ -65,7 +65,7 @@ public class Constants {
     public static final String tableProductPrice = "precio_producto";
     public static final String tableCategoryProduct = "categoria_producto";
     public static final String tableOnboardingModule = "onboarding_modulo";
-    public static final String tableReturn = "devolucion";
+    public static final String tableStockReturn = "devolucion";
     public static final String tableOrder = "pedido";
     public static final String tableSale = "venta";
     public static final String tableManagementType = "tipo_gestion";
@@ -203,4 +203,7 @@ public class Constants {
     public static final String ErrorCancellationReasonExists = "Cancellation reason already exists";
     public static final String ErrorCancelledOrder = "Cancelled order not exists";
     public static final String ErrorCancelledOrderExists = "Cancelled order already exists";
+    public static final String ErrorItem = "Item does not exists";
+    public static final String ErrorStockReturnExists = "Stock return already exists";
+    public static final String ErrorStockReturnQuantity = "Can't return more stock than the purchase";
 }

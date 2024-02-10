@@ -80,6 +80,7 @@ public class Seeder implements CommandLineRunner {
         private final ICourier iCourier;
         private final ICancellationReason iCancellationReason;
         private final ICancelledOrder iCancelledOrder;
+        private final IStockReturn iStockReturn;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1641,6 +1642,26 @@ public class Seeder implements CommandLineRunner {
 
                         iCourier.updateOrder(1L,requestCourierOrder1,"gjimenez");
 
+                        List<RequestStockReturn> requestStockReturnList = new ArrayList<RequestStockReturn>();
+                        RequestStockReturn requestStockReturn1 = RequestStockReturn.builder()
+                                .observations("unidades dañadas por agua")
+                                .quantity(4)
+                                .supplierProductSerial("A00001A")
+                                .build();
+                        requestStockReturnList.add(requestStockReturn1);
+                        RequestStockReturn requestStockReturn2 = RequestStockReturn.builder()
+                                .observations("unidades defectuosas")
+                                .quantity(2)
+                                .supplierProductSerial("A00002A")
+                                .build();
+                        requestStockReturnList.add(requestStockReturn2);
+                        RequestStockReturn requestStockReturn3 = RequestStockReturn.builder()
+                                .observations("mercancia incorrecta")
+                                .quantity(3)
+                                .supplierProductSerial("A00003A")
+                                .build();
+                        requestStockReturnList.add(requestStockReturn3);
+                        iStockReturn.save(requestStockReturnList,"AA00001","gjimenez");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());

@@ -38,7 +38,7 @@ public class StockTransaction {
     @Column(name = "serial")
     private String serial;
 
-    @Column(name = "fecha_regisstro")
+    @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date registrationDate;
 

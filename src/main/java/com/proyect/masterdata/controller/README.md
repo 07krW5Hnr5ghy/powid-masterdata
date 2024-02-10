@@ -2137,6 +2137,44 @@ Request Body
     "m","l","xs","xl"
 ]
 
+### POST /stock-return protected
+
+- Description : add one stock return to the database
+
+  - Request : 
+  [
+      {
+        "supplierProductSerial" : "serial of the stocked product from supplier",
+        "quantity" : "quantity of the returned units",
+        "observations" : "observations about the units to return"
+      }
+  ]
+
+- Parameters :
+
+1. purchaseSerial : serial of the purchase of the returned stock
+2. tokenUser : username of the user who register the return
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/stock-return?purchaseSerial=AA00001&tokenUser=admin1
+
+[
+    {
+        "supplierProductSerial" : "A00001A",
+        "quantity" : 4,
+        "observations" : "unidades dañadas por agua"
+    }
+]
+
 ### GET /stock-transaction
 
 - Description : list stock transactions per client

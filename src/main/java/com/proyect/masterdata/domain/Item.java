@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.Date;
 
 @Entity
 @Builder
@@ -41,6 +44,16 @@ public class Item {
 
     @Column(name = "usuario_token")
     private String tokenUser;
+
+    @Column(name = "estado")
+    private Boolean status;
+
+    @Column(name = "fecha_registro")
+    @CreationTimestamp
+    private Date registrationDate;
+
+    @Column(name = "fecha_modificacion")
+    private Date updateDate;
 
     @ManyToOne
     @JoinColumn(name = "id_producto", columnDefinition = "productId", insertable = false,updatable = false)
