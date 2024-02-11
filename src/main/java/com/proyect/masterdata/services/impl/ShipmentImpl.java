@@ -5,23 +5,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import com.proyect.masterdata.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import com.proyect.masterdata.domain.Purchase;
-import com.proyect.masterdata.domain.Shipment;
-import com.proyect.masterdata.domain.StockTransaction;
-import com.proyect.masterdata.domain.StockTransactionType;
-import com.proyect.masterdata.domain.SupplierProduct;
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.Warehouse;
+import com.proyect.masterdata.domain.PurchaseItem;
 import com.proyect.masterdata.dto.ShipmentDTO;
 import com.proyect.masterdata.dto.request.RequestShipment;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.PurchaseRepository;
+import com.proyect.masterdata.repository.PurchaseItemRepository;
 import com.proyect.masterdata.repository.ShipmentRepository;
 import com.proyect.masterdata.repository.ShipmentRepositoryCustom;
 import com.proyect.masterdata.repository.StockTransactionRepository;
@@ -45,7 +40,7 @@ public class ShipmentImpl implements IShipment {
     private final UserRepository userRepository;
     private final ShipmentRepository shipmentRepository;
     private final WarehouseRepository warehouseRepository;
-    private final PurchaseRepository purchaseRepository;
+    private final PurchaseItemRepository purchaseItemRepository;
     private final StockTransactionRepository stockTransactionRepository;
     private final StockTransactionTypeRepository stockTransactionTypeRepository;
     private final SupplierProductRepository supplierProductRepository;
@@ -108,10 +103,10 @@ public class ShipmentImpl implements IShipment {
                     throw new BadRequestExceptions(Constants.ErrorStockTransactionExists);
                 }
 
-                Purchase purchase = purchaseRepository
-                        .findBySerialAndSupplierProductId(requestShipment.getPurchaseSerial(), supplierProduct.getId());
+                PurchaseItem purchaseItem = purchaseItemRepository
+                        .findByPurchaseIdAndSupplierProductId(requestShipment.getPurchaseSerial(), supplierProduct.getId());
 
-                if (purchase == null) {
+                if (purchaseItem == null) {
                     throw new BadRequestExceptions(Constants.ErrorPurchase);
                 }
 
@@ -134,8 +129,8 @@ public class ShipmentImpl implements IShipment {
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .observations(requestShipment.getObservations())
-                        .purchase(purchase)
-                        .purchaseId(purchase.getId())
+                        .purchaseItem(purchaseItem)
+                        .purchaseId(purchaseItem.getId())
                         .quantity(requestShipment.getQuantity())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .serial(serial.toUpperCase())
@@ -195,7 +190,7 @@ public class ShipmentImpl implements IShipment {
         }
 
         List<ShipmentDTO> shipmentDTOs = pageShipment.getContent().stream().map(shipment -> ShipmentDTO.builder()
-                .purchaseSerial(shipment.getPurchase().getSerial())
+                .purchaseSerial(shipment.getPurchaseItem().getSerial())
                 .quantity(shipment.getQuantity())
                 .serial(shipment.getSerial())
                 .supplierProductSerial(shipment.getSupplierProduct().getSerial())

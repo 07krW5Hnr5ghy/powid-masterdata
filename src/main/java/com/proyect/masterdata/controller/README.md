@@ -1789,7 +1789,7 @@ http://localhost:8080/masterdata/province/department?department=amazonas
 
 http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&user=admin1
 
-### GET /purchase protected
+### GET /purchaseItem protected
 
 - Description : list all active purchases
 
@@ -1844,11 +1844,11 @@ http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&u
 
 - Example : 
 
-http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2
+http://localhost:8080/masterdata/purchaseItem?user=gjimenez&pageNumber=0&pageSize=2
 
-### POST /purchase protected
+### POST /purchaseItem protected
 
-- Description : add one purchase to the database
+- Description : add one purchaseItem to the database
 
 - Request : 
 
@@ -1862,8 +1862,8 @@ http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2
 
 - Parameters : 
 
-1. serial : serial of the purchase ordering
-2. tokenUser : username of the user who creates the purchase
+1. serial : serial of the purchaseItem ordering
+2. tokenUser : username of the user who creates the purchaseItem
 
 - Response : 
 
@@ -1875,7 +1875,7 @@ http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2
 
 - Example :
 
-http://localhost:8080/masterdata/purchase?serial=AA00001&tokenUser=gjimenez
+http://localhost:8080/masterdata/purchaseItem?serial=AA00001&tokenUser=gjimenez
 
 [
     {
@@ -1957,16 +1957,16 @@ http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&
         "quantity": number of units,
         "observations": observation of the state of the goods,
         "supplierProductSerial": serial of the provider product,
-        "purchaseSerial": serial of the purchase ordering of the goods
+        "purchaseSerial": serial of the purchaseItem ordering of the goods
     }
     ... more items
 ]
 
 - Parameters : 
 
-1. serial : serial of the purchase ordering
+1. serial : serial of the purchaseItem ordering
 2. warehouse : name of the warehouse where arrive the shipment
-3. tokenUser : username of the user who creates the purchase
+3. tokenUser : username of the user who creates the purchaseItem
 
 - Response : 
 
@@ -2137,6 +2137,70 @@ Request Body
     "m","l","xs","xl"
 ]
 
+### GET /stock-return
+
+- Description : list active stock return per client
+
+- Request : none
+
+- Parameter :
+
+1. user : name of the user who is listing the stock return (required)
+2. purchaseSerial : serial purchaseItem of the return stock
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+"content": [
+{
+"quantity": 10,
+"warehouse": "LUMINOUS",
+"stockTransactionType": "ENTRADA",
+"supplierProductSerial": "A00001A",
+"date": "2024-01-01T04:53:53.326+00:00"
+},
+{
+"quantity": 15,
+"warehouse": "OIKAS",
+"stockTransactionType": "ENTRADA",
+"supplierProductSerial": "A00002B",
+"date": "2024-01-01T04:53:53.326+00:00"
+},
+{
+"quantity": 20,
+"warehouse": "LUMINOUS",
+"stockTransactionType": "ENTRADA",
+"supplierProductSerial": "A00003A",
+"date": "2024-01-01T04:53:53.326+00:00"
+}
+],
+"pageable": {
+"sort": [],
+"offset": 0,
+"pageNumber": 0,
+"pageSize": 3,
+"unpaged": false,
+"paged": true
+},
+"last": true,
+"totalElements": 3,
+"totalPages": 1,
+"first": true,
+"size": 3,
+"number": 0,
+"sort": [],
+"numberOfElements": 3,
+"empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/stock-transaction?user=gjimenez&pageNumber=0&pageSize=4&warehouse=luminous
+
 ### POST /stock-return protected
 
 - Description : add one stock return to the database
@@ -2152,7 +2216,7 @@ Request Body
 
 - Parameters :
 
-1. purchaseSerial : serial of the purchase of the returned stock
+1. purchaseSerial : serial of the purchaseItem of the returned stock
 2. tokenUser : username of the user who register the return
 
 - Response :
@@ -2680,7 +2744,7 @@ http://localhost:8080/masterdata/supplier-product?user=gjimenez&pageNumber=0&pag
     "serial": serial number of the supplier product,
     "productSku": sku of the product,
     "supplierRuc": ruc of the supplier,
-    "purchasePrice": price of purchase per unit
+    "purchasePrice": price of purchaseItem per unit
 }
 
 - Parameters : 
@@ -2717,7 +2781,7 @@ http://localhost:8080/masterdata/supplier-product?tokenUser=gjimenez
         "serial": serial number of the supplier product,
         "productSku": sku of the product,
         "supplierRuc": ruc of the supplier,
-        "purchasePrice": price of purchase per unit
+        "purchasePrice": price of purchaseItem per unit
     },
     ... more suppliers
 ]

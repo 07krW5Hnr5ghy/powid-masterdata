@@ -1,20 +1,21 @@
 package com.proyect.masterdata.dto;
 
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PurchaseDTO {
-    private String serial;
-    private Integer quantity;
+public class StockReturnDTO {
+    private String purchaseSerial;
     private String supplierProductSerial;
-    private Double unitPrice;
-    private Date date;
+    private Integer quantity;
+    private String observations;
+    private Date registrationDate;
+    private Date updateDate;
 }

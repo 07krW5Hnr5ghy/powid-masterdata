@@ -1,23 +1,14 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
-
-import org.hibernate.annotations.CreationTimestamp;
-
 import com.proyect.masterdata.utils.Constants;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.Date;
 
 @Entity
 @Builder
@@ -35,9 +26,6 @@ public class Purchase {
     @Column(name = "serial")
     private String serial;
 
-    @Column(name = "cantidad")
-    private Integer quantity;
-
     @Column(name = "fecha_registro")
     @CreationTimestamp
     private Date registrationDate;
@@ -49,12 +37,6 @@ public class Purchase {
     @Column(name = "estado")
     private Boolean status;
 
-    @Column(name = "id_proveedor_producto")
-    private Long supplierProductId;
-
-    @Column(name = "precio_unitario")
-    private Double unitPrice;
-
     @Column(name = "id_cliente")
     private Long clientId;
 
@@ -62,11 +44,6 @@ public class Purchase {
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
-    private SupplierProduct supplierProduct;
-
-    @ManyToOne
     @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
-
 }

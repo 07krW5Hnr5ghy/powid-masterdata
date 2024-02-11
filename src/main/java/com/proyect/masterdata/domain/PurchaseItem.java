@@ -2,6 +2,8 @@ package com.proyect.masterdata.domain;
 
 import java.util.Date;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.proyect.masterdata.utils.Constants;
 
 import jakarta.persistence.Column;
@@ -19,27 +21,26 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
-@Table(name = Constants.tableStockReturn, schema = Constants.schemaInventory)
-public class StockReturn {
+@Table(name = Constants.tablePurchaseItem, schema = Constants.schemaInventory)
+public class PurchaseItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_devolucion")
+    @Column(name = "id_purchase_item")
     private Long id;
 
     @Column(name = "cantidad")
     private Integer quantity;
 
-    @Column(name = "observaciones")
-    private String observations;
-
     @Column(name = "fecha_registro")
+    @CreationTimestamp
     private Date registrationDate;
 
     @Column(name = "fecha_modificacion")
+    @CreationTimestamp
     private Date updateDate;
 
     @Column(name = "estado")
@@ -48,22 +49,25 @@ public class StockReturn {
     @Column(name = "id_proveedor_producto")
     private Long supplierProductId;
 
+    @Column(name = "precio_unitario")
+    private Double unitPrice;
+
     @Column(name = "id_compra")
     private Long purchaseId;
 
     @Column(name = "id_cliente")
     private Long clientId;
 
-    @Column(name = "usuarioToken")
+    @Column(name = "usuario_token")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProduct", insertable = false, updatable = false)
+    @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
 
     @ManyToOne
-    @JoinColumn(name = "id_compra", columnDefinition = "purchaseId", insertable = false, updatable = false)
-    private PurchaseItem purchaseItem;
+    @JoinColumn(name = "id_compra", columnDefinition = "purchaseId",insertable = false,updatable = false)
+    private Purchase purchase;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)

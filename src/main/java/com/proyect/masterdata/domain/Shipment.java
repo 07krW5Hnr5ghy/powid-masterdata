@@ -80,7 +80,7 @@ public class Shipment {
 
     @ManyToOne
     @JoinColumn(name = "id_compra", columnDefinition = "purchaseId", insertable = false, updatable = false)
-    private Purchase purchase;
+    private PurchaseItem purchaseItem;
 
     @ManyToOne
     @JoinColumn(name = "id_movimiento_inventario", columnDefinition = "stockTransactionId", insertable = false, updatable = false)

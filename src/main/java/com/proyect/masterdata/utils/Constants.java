@@ -58,6 +58,7 @@ public class Constants {
     public static final String tableWarehouse = "almacen";
     public static final String tableSupplierProduct = "proveedor_producto";
     public static final String tablePurchase = "compra";
+    public static final String tablePurchaseItem = "compra_item";
     public static final String tableShipment = "embarque";
     public static final String tableWarehouseStock = "inventario_almacen";
     public static final String tableGeneralStock = "inventario_general";
@@ -183,6 +184,8 @@ public class Constants {
     public static final String ErrorWarehouseExists = "The warehouse already exists";
     public static final String ErrorPurchase = "The purchase does not exists";
     public static final String ErrorPurchaseExists = "The purchase already exists";
+    public static final String ErrorPurchaseItem = "The purchase item does not exists";
+    public static final String ErrorPurchaseItemExists = "The purchase item already exists";
     public static final String ErrorShipment = "The shipment does not exists";
     public static final String ErrorShipmentExists = "The shipment already exists";
     public static final String ErrorWarehouseStock = "The warehouse stock does not exist";
