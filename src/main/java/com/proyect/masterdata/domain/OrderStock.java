@@ -19,57 +19,57 @@ public class OrderStock {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_inventario_pedido")
+    @Column(name = "order_stock_id")
     private Long id;
 
-    @Column(name = "cantidad")
+    @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     private Date updateDate;
 
-    @Column(name = "estado")
+    @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "id_item")
+    @Column(name = "item_id")
     private Long itemId;
 
-    @Column(name = "id_proveedor_producto")
+    @Column(name = "supplier_product_id")
     private Long supplierProductId;
 
-    @Column(name = "id_pedido")
+    @Column(name = "order_id")
     private Long orderId;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "id_warehouse")
+    @Column(name = "warehouse_id")
     private Long warehouseId;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_item", columnDefinition = "itemId", insertable = false, updatable = false)
+    @JoinColumn(name = "item_id", columnDefinition = "itemId", insertable = false, updatable = false)
     private Item item;
 
     @ManyToOne
-    @JoinColumn(name = "id_warehouse",columnDefinition = "warehouseId",insertable = false,updatable = false)
+    @JoinColumn(name = "warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)
     private Warehouse warehouse;
 
     @ManyToOne
-    @JoinColumn(name = "id_pedido", columnDefinition = "orderId", insertable = false, updatable = false)
+    @JoinColumn(name = "order_id", columnDefinition = "orderId", insertable = false, updatable = false)
     private Ordering ordering;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "id_proveedor_producto",columnDefinition = "supplierProduct",insertable = false,updatable = false)
+    @JoinColumn(name = "supplier_product_id",columnDefinition = "supplierProduct",insertable = false,updatable = false)
     private SupplierProduct supplierProduct;
 
 }

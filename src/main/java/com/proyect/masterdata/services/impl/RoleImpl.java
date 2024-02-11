@@ -144,7 +144,7 @@ public class RoleImpl implements IRole {
 
         role.setName(requestRole.getName().toUpperCase());
         role.setStatus(requestRole.isStatus());
-        role.setDateRegistration(new Date(System.currentTimeMillis()));
+        role.setRegistrationDate(new Date(System.currentTimeMillis()));
         role.setTokenUser(datauser.getUsername().toUpperCase());
 
         try {
@@ -178,7 +178,7 @@ public class RoleImpl implements IRole {
 
         try {
             role.setStatus(false);
-            role.setDateRegistration(new Date(System.currentTimeMillis()));
+            role.setRegistrationDate(new Date(System.currentTimeMillis()));
             roleRepository.save(role);
             return ResponseDelete.builder()
                     .code(200)

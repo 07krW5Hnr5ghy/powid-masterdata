@@ -28,65 +28,65 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_producto")
+    @Column(name = "product_id")
     private Long id;
 
     @Column(name = "sku", nullable = false)
     private String sku;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "estado", nullable = false)
+    @Column(name = "status", nullable = false)
     private boolean status;
 
-    @Column(name = "id_modelo", nullable = false)
+    @Column(name = "model_id", nullable = false)
     private Long modelId;
 
-    @Column(name = "id_color", nullable = false)
+    @Column(name = "color_id", nullable = false)
     private Long colorId;
 
-    @Column(name = "id_categoria_producto", nullable = false)
+    @Column(name = "category_product_id", nullable = false)
     private Long categoryProductId;
 
-    @Column(name = "id_size", nullable = false)
+    @Column(name = "size_id", nullable = false)
     private Long sizeId;
 
-    @Column(name = "id_unidad")
+    @Column(name = "unit_id")
     private Long unitId;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "usuario_token", nullable = false)
+    @Column(name = "token_user", nullable = false)
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_modelo", columnDefinition = "modelId", insertable = false, updatable = false)
+    @JoinColumn(name = "model_id", columnDefinition = "modelId", insertable = false, updatable = false)
     private Model model;
 
     @ManyToOne
-    @JoinColumn(name = "id_color", columnDefinition = "colorId", insertable = false, updatable = false)
+    @JoinColumn(name = "color_id", columnDefinition = "colorId", insertable = false, updatable = false)
     private Color color;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria_producto", columnDefinition = "categoryId", insertable = false, updatable = false)
+    @JoinColumn(name = "category_product_id", columnDefinition = "categoryId", insertable = false, updatable = false)
     private CategoryProduct categoryProduct;
 
     @ManyToOne
-    @JoinColumn(name = "id_size", columnDefinition = "sizeId", insertable = false, updatable = false)
+    @JoinColumn(name = "size_id", columnDefinition = "sizeId", insertable = false, updatable = false)
     private Size size;
 
     @ManyToOne
-    @JoinColumn(name = "id_unidad",columnDefinition = "unitId",insertable = false,updatable = false)
+    @JoinColumn(name = "unit_id",columnDefinition = "unitId",insertable = false,updatable = false)
     private Unit unit;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId",insertable = false,updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
 }

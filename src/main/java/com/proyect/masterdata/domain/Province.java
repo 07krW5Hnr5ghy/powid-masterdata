@@ -20,27 +20,27 @@ public class Province {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_provincia")
+        @Column(name = "province_id")
         private Long id;
 
-        @Column(name = "nombre", length = 50, nullable = false)
+        @Column(name = "name", length = 50, nullable = false)
         private String name;
 
-        @Column(name = "estado", nullable = false)
+        @Column(name = "status", nullable = false)
         private Boolean status;
 
-        @Column(name = "fecha_registro", nullable = false)
+        @Column(name = "registration_date", nullable = false)
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
 
-        @Column(name = "id_departamento", nullable = false)
+        @Column(name = "department_id", nullable = false)
         private Long departmentId;
 
-        @Column(name = "usuario_token", nullable = false)
+        @Column(name = "token_user", nullable = false)
         private String tokenUser;
 
         @ManyToOne
-        @JoinColumn(name = "id_departamento", columnDefinition = "departmentId", insertable = false, updatable = false)
+        @JoinColumn(name = "department_id", columnDefinition = "departmentId", insertable = false, updatable = false)
         private Department department;
 
 }

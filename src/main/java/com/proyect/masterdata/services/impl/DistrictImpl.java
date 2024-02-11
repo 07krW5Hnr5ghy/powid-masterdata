@@ -70,7 +70,7 @@ public class DistrictImpl implements IDistrict {
                     .province(provinceData)
                     .provinceId(provinceData.getId())
                     .status(true)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -154,7 +154,7 @@ public class DistrictImpl implements IDistrict {
         try {
             district.setName(requestDistrict.getName().toUpperCase());
             district.setTokenUser(requestDistrict.getUser().toUpperCase());
-            district.setDateRegistration(new Date(System.currentTimeMillis()));
+            district.setRegistrationDate(new Date(System.currentTimeMillis()));
             district.setStatus(requestDistrict.isStatus());
             district.setProvinceId(requestDistrict.getCodeProvince());
             return districtMapper.districtToDistrictDTO(districtRepository.save(district));
@@ -184,7 +184,7 @@ public class DistrictImpl implements IDistrict {
         }
 
         try {
-            district.setDateRegistration(new Date(System.currentTimeMillis()));
+            district.setRegistrationDate(new Date(System.currentTimeMillis()));
             district.setStatus(false);
             districtMapper.districtToDistrictDTO(districtRepository.save(district));
             return ResponseDelete.builder()

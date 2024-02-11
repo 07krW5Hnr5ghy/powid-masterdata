@@ -86,7 +86,7 @@ public class StoreImpl implements IStore {
                     .client(client)
                     .storeType(storeType)
                     .storeTypeId(storeType.getId())
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
                     .tokenUser(user.toUpperCase())
                     .build());
@@ -151,7 +151,7 @@ public class StoreImpl implements IStore {
                             .storeType(storeType)
                             .storeTypeId(storeType.getId())
                             .status(true)
-                            .dateRegistration(new Date(System.currentTimeMillis()))
+                            .registrationDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.toUpperCase())
                             .build();
                 })
@@ -193,7 +193,7 @@ public class StoreImpl implements IStore {
 
         store.setUrl(requestStore.getUrl());
         store.setTokenUser(requestStore.getUser().toUpperCase());
-        store.setDateUpdate(new Date(System.currentTimeMillis()));
+        store.setUpdateDate(new Date(System.currentTimeMillis()));
 
         try {
 
@@ -233,7 +233,7 @@ public class StoreImpl implements IStore {
         }
 
         store.setStatus(false);
-        store.setDateRegistration(new Date(System.currentTimeMillis()));
+        store.setRegistrationDate(new Date(System.currentTimeMillis()));
         store.setTokenUser(user.toUpperCase());
 
         try {

@@ -20,62 +20,62 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_usuario")
+    @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "usuario", nullable = false)
+    @Column(name = "user", nullable = false)
     private String username;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "apellido", nullable = false)
+    @Column(name = "surname", nullable = false)
     private String surname;
 
     @Column(name = "dni", nullable = false)
     private String dni;
 
-    @Column(name = "correo", nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "direccion", nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "genero", nullable = false)
+    @Column(name = "gender", nullable = false)
     private String gender;
 
-    @Column(name = "celular", nullable = false)
+    @Column(name = "mobile", nullable = false)
     private String mobile;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "estado", nullable = false)
+    @Column(name = "status", nullable = false)
     private Boolean status;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "id_distrito", updatable = false, nullable = false)
+    @Column(name = "district_id", updatable = false, nullable = false)
     private Long districtId;
 
-    @Column(name = "id_cliente", nullable = false)
+    @Column(name = "client_id", nullable = false)
     private Long clientId;
 
-    @Column(name = "usuario_token", nullable = false)
+    @Column(name = "token_user", nullable = false)
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_distrito", columnDefinition = "districtId", insertable = false, updatable = false)
+    @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)
     private District district;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
 }

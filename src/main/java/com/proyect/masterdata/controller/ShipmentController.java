@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.proyect.masterdata.dto.ShipmentDTO;
-import com.proyect.masterdata.dto.request.RequestShipment;
+import com.proyect.masterdata.dto.ShipmentItemDTO;
+import com.proyect.masterdata.dto.request.RequestShipmentItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.services.IShipment;
+import com.proyect.masterdata.services.IShipmentItem;
 
 import lombok.AllArgsConstructor;
 
@@ -28,20 +28,20 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ShipmentController {
 
-    private final IShipment iShipment;
+    private final IShipmentItem iShipmentItem;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("serial") String serial,
             @RequestParam("warehouse") String warehouse,
-            @RequestBody() List<RequestShipment> requestShipmentList,
+            @RequestBody() List<RequestShipmentItem> requestShipmentItemList,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iShipment.save(serial, warehouse, requestShipmentList, tokenUser);
+        ResponseSuccess result = iShipmentItem.save(serial, warehouse, requestShipmentItemList, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
-    public ResponseEntity<Page<ShipmentDTO>> list(
+    public ResponseEntity<Page<ShipmentItemDTO>> list(
             @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "warehouse", required = false) String warehouse,
@@ -49,7 +49,7 @@ public class ShipmentController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<ShipmentDTO> result = iShipment.list(serial, user, warehouse, sort, sortColumn, pageNumber, pageSize);
+        Page<ShipmentItemDTO> result = iShipmentItem.list(serial, user, warehouse, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

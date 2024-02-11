@@ -29,42 +29,42 @@ public class Ordering {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_pedido")
+    @Column(name = "order_id")
     private Long id;
 
-    @Column(name = "cancelacion")
+    @Column(name = "cancellation")
     private Boolean cancellation;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "id_estado_pedido")
+    @Column(name = "order_state_id")
     private Long orderStateId;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "id_courier")
+    @Column(name = "courier_id")
     private Long courierId;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_estado_pedido", columnDefinition = "orderStateId", insertable = false, updatable = false)
+    @JoinColumn(name = "order_state_id", columnDefinition = "orderStateId", insertable = false, updatable = false)
     private OrderState orderState;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false,updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false,updatable = false)
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "id_courier",columnDefinition = "courierId",insertable = false,updatable = false)
+    @JoinColumn(name = "courier_id",columnDefinition = "courierId",insertable = false,updatable = false)
     private Courier courier;
 
 }

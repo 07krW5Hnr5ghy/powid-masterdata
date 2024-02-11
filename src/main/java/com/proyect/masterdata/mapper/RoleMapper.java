@@ -20,7 +20,7 @@ public interface RoleMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
-    @Mapping(target = "dateRegistration", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
     @Mapping(target = "name", source = "requestUserRoleSave.name")
     @Mapping(target = "tokenUser", source = "requestUserRoleSave.tokenUser")
     Role nameToRole(RequestRoleSave requestUserRoleSave);

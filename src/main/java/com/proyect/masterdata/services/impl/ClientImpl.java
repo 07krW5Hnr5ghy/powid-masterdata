@@ -74,9 +74,9 @@ public class ClientImpl implements IClient {
                     .mobile(requestClientSave.getMobile())
                     .ruc(requestClientSave.getRuc())
                     .district(district)
-                    .idDistrict(district.getId())
+                    .districtId(district.getId())
                     .status(true)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -134,10 +134,10 @@ public class ClientImpl implements IClient {
                         .address(client.getAddress().toUpperCase())
                         .mobile(client.getMobile())
                         .ruc(client.getRuc())
-                        .idDistrict(district.getId())
+                        .districtId(district.getId())
                         .district(district)
                         .status(true)
-                        .dateRegistration(new Date(System.currentTimeMillis()))
+                        .registrationDate(new Date(System.currentTimeMillis()))
                         .build();
             }).toList());
             return ResponseSuccess.builder()
@@ -180,12 +180,12 @@ public class ClientImpl implements IClient {
             client.setName(requestClient.getName().toUpperCase());
             client.setSurname(requestClient.getSurname().toUpperCase());
             client.setDni(requestClient.getDni());
-            client.setDateRegistration(new Date(System.currentTimeMillis()));
+            client.setRegistrationDate(new Date(System.currentTimeMillis()));
             client.setMobile(requestClient.getMobile());
             client.setAddress(requestClient.getAddress().toUpperCase());
             client.setEmail(requestClient.getEmail());
             client.setDistrict(district);
-            client.setIdDistrict(district.getId());
+            client.setDistrictId(district.getId());
             clientRepository.save(client);
             ClientDTO clientDTO = clientMapper.clientToClientDTO(client);
             clientDTO.setDistrict(district.getName());

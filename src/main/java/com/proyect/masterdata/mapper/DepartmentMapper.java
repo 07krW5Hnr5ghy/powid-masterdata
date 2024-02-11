@@ -18,7 +18,7 @@ public interface DepartmentMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
-    @Mapping(target = "dateRegistration", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
     @Mapping(target = "name", source = "requestDepartmentSave.name")
     @Mapping(target = "tokenUser", source = "requestDepartmentSave.user")
     Department departmentToName(RequestDepartmentSave requestDepartmentSave);

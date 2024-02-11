@@ -29,48 +29,48 @@ public class PurchaseItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_purchase_item")
+    @Column(name = "purchase_item_id")
     private Long id;
 
-    @Column(name = "cantidad")
+    @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "estado")
+    @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "id_proveedor_producto")
+    @Column(name = "supplier_product_id")
     private Long supplierProductId;
 
-    @Column(name = "precio_unitario")
+    @Column(name = "unit_price")
     private Double unitPrice;
 
-    @Column(name = "id_compra")
+    @Column(name = "purchase_id")
     private Long purchaseId;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
+    @JoinColumn(name = "supplier_product_id", columnDefinition = "supplierProductId", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
 
     @ManyToOne
-    @JoinColumn(name = "id_compra", columnDefinition = "purchaseId",insertable = false,updatable = false)
+    @JoinColumn(name = "purchase_id", columnDefinition = "purchaseId",insertable = false,updatable = false)
     private Purchase purchase;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
 }

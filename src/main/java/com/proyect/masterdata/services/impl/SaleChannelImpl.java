@@ -130,7 +130,7 @@ public class SaleChannelImpl implements ISaleChannel {
         saleChannel.setName(requestSaleChannel.getName().toUpperCase());
         saleChannel.setTokenUser(datauser.getUsername().toUpperCase());
         saleChannel.setStatus(requestSaleChannel.isStatus());
-        saleChannel.setDateRegistration(new Date(System.currentTimeMillis()));
+        saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
 
         try {
             return saleChannelMapper.saleChannelToSaleChannelDTO(saleChannelRepository.save(saleChannel));
@@ -163,7 +163,7 @@ public class SaleChannelImpl implements ISaleChannel {
 
         try {
             saleChannel.setStatus(false);
-            saleChannel.setDateRegistration(new Date(System.currentTimeMillis()));
+            saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
             saleChannelRepository.save(saleChannel);
             return ResponseDelete.builder()
                     .code(200)

@@ -25,21 +25,21 @@ public class EntryChannel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_canal_entrada")
+    @Column(name = "entry_channel_id")
     private Long id;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "estado", nullable = false)
+    @Column(name = "status", nullable = false)
     private Boolean status;
 
-    @Column(name = "fecha_registro")
-    private Date dateRegistration;
+    @Column(name = "registration_date")
+    private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
-    private Date dateUpdate;
+    @Column(name = "update_date")
+    private Date updateDate;
 
-    @Column(name = "usuario_token", nullable = false)
+    @Column(name = "token_user", nullable = false)
     private String tokenUser;
 }

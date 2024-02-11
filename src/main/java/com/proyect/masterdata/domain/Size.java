@@ -20,30 +20,30 @@ public class Size {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_talla")
+        @Column(name = "size_id")
         private Long id;
 
-        @Column(name = "nombre", length = 50, nullable = false)
+        @Column(name = "name", length = 50, nullable = false)
         private String name;
 
-        @Column(name = "estado", nullable = false)
+        @Column(name = "status", nullable = false)
         private Boolean status;
 
-        @Column(name = "fecha_registro")
+        @Column(name = "registration_date")
         @CreationTimestamp
         private Date registrationDate;
 
-        @Column(name = "fecha_modificacion")
+        @Column(name = "update_date")
         @CreationTimestamp
         private Date updateDate;
 
-        @Column(name = "id_tipo_talla", nullable = false)
+        @Column(name = "size_type_id", nullable = false)
         private Long sizeTypeId;
 
         @ManyToOne
-        @JoinColumn(name = "id_tipo_talla", columnDefinition = "sizeTypeId", insertable = false, updatable = false)
+        @JoinColumn(name = "size_type_id", columnDefinition = "sizeTypeId", insertable = false, updatable = false)
         private SizeType sizeType;
 
-        @Column(name = "usuario_token", nullable = false)
+        @Column(name = "token_user", nullable = false)
         private String tokenUser;
 }

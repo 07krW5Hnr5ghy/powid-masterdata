@@ -20,26 +20,26 @@ public class Category {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_categoria", unique = true)
+        @Column(name = "category_id", unique = true)
         private Long id;
 
-        @Column(name = "nombre", length = 50)
+        @Column(name = "name", length = 50)
         private String name;
 
-        @Column(name = "descripcion", length = 50)
+        @Column(name = "description", length = 50)
         private String description;
 
-        @Column(name = "estado", columnDefinition = "BOOLEAN DEFAULT TRUE")
+        @Column(name = "status", columnDefinition = "BOOLEAN DEFAULT TRUE")
         private Boolean status;
 
-        @Column(name = "fecha_registro")
+        @Column(name = "registration_date")
         @CreationTimestamp
         private Date registrationDate;
 
-        @Column(name = "fecha_modificacion")
+        @Column(name = "update_date")
         @CreationTimestamp
         private Date updateDate;
 
-        @Column(name = "usuario_token")
+        @Column(name = "token_user")
         private String tokenUser;
 }

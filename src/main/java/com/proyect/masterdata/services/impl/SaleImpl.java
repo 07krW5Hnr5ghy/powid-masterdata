@@ -82,7 +82,7 @@ public class SaleImpl implements ISale {
                             .paymentStateId(paymentState.getId())
                             .saleChannel(saleChannel)
                             .saleChannelId(saleChannel.getId())
-                            .registratioDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .seller(requestSale.getSeller().toUpperCase())
                             .tokenUser(user.getUsername())

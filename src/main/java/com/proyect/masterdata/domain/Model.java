@@ -29,30 +29,30 @@ public class Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_model")
+    @Column(name = "model_id")
     private Long id;
 
-    @Column(name = "nombre")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "estado")
+    @Column(name = "status")
     private boolean status;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "id_marca")
+    @Column(name = "brand_id")
     private Long brandId;
 
     @ManyToOne
-    @JoinColumn(name = "id_marca", columnDefinition = "brandId", insertable = false, updatable = false)
+    @JoinColumn(name = "brand_id", columnDefinition = "brandId", insertable = false, updatable = false)
     private Brand brand;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 }

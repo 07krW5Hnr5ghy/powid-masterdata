@@ -17,63 +17,63 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_comprador")
+    @Column(name = "customer_id")
     private Long id;
 
-    @Column(name = "nombre")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "tipo")
+    @Column(name = "type")
     private String type;
 
     @Column(name = "instagram")
     private String instagram;
 
-    @Column(name = "telefono")
+    @Column(name = "phone")
     private String phone;
 
-    @Column(name = "direccion")
+    @Column(name = "address")
     private String address;
 
-    @Column(name = "referencia")
+    @Column(name = "reference")
     private String reference;
 
-    @Column(name = "id_orden")
+    @Column(name = "order_id")
     private Long orderId;
 
-    @Column(name = "id_distrito")
+    @Column(name = "district_id")
     private Long districtId;
 
-    @Column(name = "id_provincia")
+    @Column(name = "province_id")
     private Long provinceId;
 
-    @Column(name = "id_departamento")
+    @Column(name = "department_id")
     private Long departmentId;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_orden", columnDefinition = "orderId", insertable = false, updatable = false)
+    @JoinColumn(name = "order_id", columnDefinition = "orderId", insertable = false, updatable = false)
     private Ordering ordering;
 
     @ManyToOne
-    @JoinColumn(name = "id_departamento",columnDefinition = "departmentId",insertable = false,updatable = false)
+    @JoinColumn(name = "department_id",columnDefinition = "departmentId",insertable = false,updatable = false)
     private Department department;
 
     @ManyToOne
-    @JoinColumn(name = "id_distrito", columnDefinition = "districtId", insertable = false, updatable = false)
+    @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)
     private District district;
 
     @ManyToOne
-    @JoinColumn(name = "id_provincia", columnDefinition = "provinceId", insertable = false, updatable = false)
+    @JoinColumn(name = "province_id", columnDefinition = "provinceId", insertable = false, updatable = false)
     private Province province;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
 }

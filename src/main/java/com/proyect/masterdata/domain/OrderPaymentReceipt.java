@@ -19,30 +19,30 @@ import java.util.Date;
 public class OrderPaymentReceipt {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_comprobante_pago")
+    @Column(name = "order_payment_receipt")
     private Long id;
 
-    @Column(name = "id_pedido")
+    @Column(name = "id_order")
     private Long orderId;
 
-    @Column(name = "url_recibo_pago")
+    @Column(name = "payment_receipt_url")
     private String paymentReceiptUrl;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
     @ManyToOne
-    @JoinColumn(name = "id_pedido",columnDefinition = "orderId",insertable = false,updatable = false)
+    @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
     private Ordering ordering;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente",columnDefinition = "clientId",insertable = false,updatable = false)
+    @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
 }

@@ -21,19 +21,14 @@ import java.util.Date;
 public class Client {
 
         @Id
-        @GeneratedValue(generator = "sequence-client")
-        @GenericGenerator(name = "sequence-client", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-                        @Parameter(name = "sequence_name", value = "cliente_sequence"),
-                        @Parameter(name = "initial_value", value = "1"),
-                        @Parameter(name = "increment_size", value = "1")
-        })
-        @Column(name = "id_cliente")
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        @Column(name = "client_id")
         private Long id;
 
-        @Column(name = "nombre", nullable = false)
+        @Column(name = "name", nullable = false)
         private String name;
 
-        @Column(name = "apellidos", nullable = false)
+        @Column(name = "surname", nullable = false)
         private String surname;
 
         @Column(name = "ruc", nullable = false)
@@ -42,34 +37,34 @@ public class Client {
         @Column(name = "dni", nullable = false)
         private String dni;
 
-        @Column(name = "negocio", nullable = false)
+        @Column(name = "business", nullable = false)
         private String business;
 
-        @Column(name = "celular", nullable = false)
+        @Column(name = "mobile", nullable = false)
         private String mobile;
 
-        @Column(name = "direccion", nullable = false)
+        @Column(name = "address", nullable = false)
         private String address;
 
-        @Column(name = "correo", nullable = false)
+        @Column(name = "email", nullable = false)
         private String email;
 
-        @Column(name = "estado", nullable = false)
+        @Column(name = "status", nullable = false)
         private Boolean status;
 
-        @Column(name = "id_distrito", nullable = false)
-        private Long idDistrict;
+        @Column(name = "district_id", nullable = false)
+        private Long districtId;
 
-        @Column(name = "fecha_registro")
+        @Column(name = "registration_date")
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
 
-        @Column(name = "fecha_modificacion")
+        @Column(name = "update_date")
         @CreationTimestamp
-        private Date dateUpdate;
+        private Date updateDate;
 
         @ManyToOne
-        @JoinColumn(name = "id_distrito", columnDefinition = "idDistrict", insertable = false, updatable = false)
+        @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)
         private District district;
 
 }

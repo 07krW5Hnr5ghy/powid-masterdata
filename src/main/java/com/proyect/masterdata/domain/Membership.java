@@ -21,39 +21,39 @@ public class Membership {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_membresia")
+        @Column(name = "membership_id")
         private Long id;
 
-        @Column(name = "fecha_registro", nullable = false)
+        @Column(name = "registration_date", nullable = false)
         @CreationTimestamp
         private Date registrationDate;
 
-        @Column(name = "fecha_modificacion")
+        @Column(name = "update_date")
         @CreationTimestamp
         private Date updateDate;
 
-        @Column(name = "fecha_vencimiento")
+        @Column(name = "expiration_date")
         @CreationTimestamp
         private Date expirationDate;
 
-        @Column(name = "estado", nullable = false)
+        @Column(name = "status", nullable = false)
         private Boolean status;
 
         @Column(name = "demo", nullable = false)
         private Boolean demo;
 
-        @Column(name = "id_cliente", nullable = false)
+        @Column(name = "client_id", nullable = false)
         private Long clientId;
 
-        @Column(name = "id_subscripcion", nullable = false)
+        @Column(name = "subscription_id", nullable = false)
         private Long subscriptionId;
 
         @ManyToOne()
-        @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+        @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
         private Client client;
 
         @ManyToOne()
-        @JoinColumn(name = "id_subscripcion", columnDefinition = "subscriptionId", insertable = false, updatable = false)
+        @JoinColumn(name = "subscription_id", columnDefinition = "subscriptionId", insertable = false, updatable = false)
         private Subscription subscription;
 
 }

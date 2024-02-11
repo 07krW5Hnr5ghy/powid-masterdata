@@ -131,7 +131,7 @@ public class DepartmentImpl implements IDepartment {
         department.setName(requestDepartment.getName().toUpperCase());
         department.setTokenUser(datauser.getUsername());
         department.setStatus(requestDepartment.isStatus());
-        department.setDateRegistration(new Date());
+        department.setRegistrationDate(new Date());
 
         try {
             return departmentMapper.departmentToDepartmentDTO(departmentRepository.save(department));

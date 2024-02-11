@@ -20,38 +20,38 @@ public class CancelledOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_orden_cancelada")
+    @Column(name = "cancelled_order_id")
     private Long id;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "id_orden")
+    @Column(name = "order_id")
     private Long orderingId;
 
-    @Column(name = "id_razon_cancelacion")
+    @Column(name = "cancellation_reason_id")
     private Long cancellationReasonId;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_orden",columnDefinition = "orderId", insertable = false,updatable = false)
+    @JoinColumn(name = "order_id",columnDefinition = "orderId", insertable = false,updatable = false)
     private Ordering ordering;
 
     @ManyToOne
-    @JoinColumn(name = "id_razon_cancelacion", columnDefinition = "cancellationReasonId", insertable = false,updatable = false)
+    @JoinColumn(name = "cancellation_reason_id", columnDefinition = "cancellationReasonId", insertable = false,updatable = false)
     private CancellationReason cancellationReason;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente",columnDefinition = "clientId",insertable = false,updatable = false)
+    @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
 }

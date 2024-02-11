@@ -21,50 +21,50 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_item")
+    @Column(name = "item_id")
     private Long id;
 
-    @Column(name = "cantidad")
+    @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "descuento")
+    @Column(name = "discount")
     private Double discount;
 
-    @Column(name = "observaciones")
+    @Column(name = "observations")
     private String observations;
 
-    @Column(name = "id_producto")
+    @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "id_orden")
+    @Column(name = "order_id")
     private Long orderId;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
-    @Column(name = "estado")
+    @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     private Date updateDate;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto", columnDefinition = "productId", insertable = false,updatable = false)
+    @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false,updatable = false)
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "id_orden", columnDefinition = "orderId", insertable = false, updatable = false)
+    @JoinColumn(name = "order_id", columnDefinition = "orderId", insertable = false, updatable = false)
     private Ordering ordering;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
 }

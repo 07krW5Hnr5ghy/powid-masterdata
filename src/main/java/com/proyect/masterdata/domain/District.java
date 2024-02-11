@@ -19,27 +19,27 @@ import java.util.Date;
 public class District {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_distrito")
+        @Column(name = "district_id")
         private Long id;
 
-        @Column(name = "nombre", length = 50)
+        @Column(name = "name", length = 50)
         private String name;
 
-        @Column(name = "estado")
+        @Column(name = "status")
         private boolean status;
 
-        @Column(name = "fecha_registro")
+        @Column(name = "registration_date")
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
 
-        @Column(name = "id_provincia")
+        @Column(name = "province_id")
         private Long provinceId;
 
         @ManyToOne
-        @JoinColumn(name = "id_provincia", columnDefinition = "provinceId", insertable = false, updatable = false)
+        @JoinColumn(name = "province_id", columnDefinition = "provinceId", insertable = false, updatable = false)
         private Province province;
 
-        @Column(name = "usuario_token")
+        @Column(name = "token_user")
         private String tokenUser;
 
 }

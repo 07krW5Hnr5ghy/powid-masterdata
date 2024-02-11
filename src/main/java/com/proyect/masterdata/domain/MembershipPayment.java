@@ -20,51 +20,51 @@ public class MembershipPayment {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_pago", nullable = false)
+        @Column(name = "membership_payment_id", nullable = false)
         private Long id;
 
-        @Column(name = "meses", nullable = false)
+        @Column(name = "months", nullable = false)
         private Integer months;
 
-        @Column(name = "monto_neto", nullable = false)
+        @Column(name = "net_amount", nullable = false)
         private Double netAmount;
 
-        @Column(name = "monto_bruto", nullable = false)
+        @Column(name = "gross_amount", nullable = false)
         private Double grossAmount;
 
-        @Column(name = "url_factura")
+        @Column(name = "invoice_url")
         private String invoiceUrl;
 
-        @Column(name = "fecha_registro", nullable = false)
+        @Column(name = "registration_date", nullable = false)
         @CreationTimestamp
         private Date registrationDate;
 
-        @Column(name = "fecha_modificacion")
+        @Column(name = "update_date")
         @CreationTimestamp
         private Date updateDate;
 
-        @Column(name = "estado", nullable = false)
+        @Column(name = "status", nullable = false)
         private Boolean status;
 
-        @Column(name = "id_membresia", nullable = false)
+        @Column(name = "membership_id", nullable = false)
         private Long membershipId;
 
-        @Column(name = "id_estado_pago", nullable = false)
+        @Column(name = "payment_state_id", nullable = false)
         private Long paymentStateId;
 
-        @Column(name = "id_metodo_pago", nullable = false)
+        @Column(name = "payment_method_id", nullable = false)
         private Long paymentMethodId;
 
         @ManyToOne()
-        @JoinColumn(name = "id_membresia", columnDefinition = "membershipId", insertable = false, updatable = false)
+        @JoinColumn(name = "membership_id", columnDefinition = "membershipId", insertable = false, updatable = false)
         private Membership membership;
 
         @ManyToOne()
-        @JoinColumn(name = "id_estado_pago", columnDefinition = "paymentStateId", insertable = false, updatable = false)
+        @JoinColumn(name = "payment_state_id", columnDefinition = "paymentStateId", insertable = false, updatable = false)
         private PaymentState paymentState;
 
         @ManyToOne()
-        @JoinColumn(name = "id_metodo_pago", columnDefinition = "paymentMethodId", insertable = false, updatable = false)
+        @JoinColumn(name = "payment_method_id", columnDefinition = "paymentMethodId", insertable = false, updatable = false)
         private PaymentMethod paymentMethod;
 
 }

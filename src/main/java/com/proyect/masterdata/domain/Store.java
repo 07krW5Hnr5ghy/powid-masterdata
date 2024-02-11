@@ -20,40 +20,40 @@ public class Store {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_tienda", unique = true)
+        @Column(name = "store_id", unique = true)
         private Long id;
 
-        @Column(name = "nombre", nullable = false, length = 50)
+        @Column(name = "name", nullable = false, length = 50)
         private String name;
 
         @Column(name = "url", nullable = false)
         private String url;
 
-        @Column(name = "estado", nullable = false)
+        @Column(name = "status", nullable = false)
         private Boolean status;
 
-        @Column(name = "fecha_registro")
+        @Column(name = "registration_date")
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
 
-        @Column(name = "fecha_modificacion")
+        @Column(name = "update_date")
         @CreationTimestamp
-        private Date dateUpdate;
+        private Date updateDate;
 
-        @Column(name = "id_cliente", nullable = false)
+        @Column(name = "client_id", nullable = false)
         private Long clientId;
 
-        @Column(name = "usuario_token", nullable = false)
+        @Column(name = "token_user", nullable = false)
         private String tokenUser;
 
-        @Column(name = "id_tienda_tipo", nullable = false)
+        @Column(name = "store_type_id", nullable = false)
         private Long storeTypeId;
 
         @OneToOne
-        @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+        @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
         private Client client;
 
         @ManyToOne
-        @JoinColumn(name = "id_tienda_tipo", columnDefinition = "storeTypeId", insertable = false, updatable = false)
+        @JoinColumn(name = "store_type_id", columnDefinition = "storeTypeId", insertable = false, updatable = false)
         private StoreType storeType;
 }

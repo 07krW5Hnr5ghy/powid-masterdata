@@ -27,30 +27,30 @@ public class Subscription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_subscripcion")
+    @Column(name = "subscription_id")
     private Long id;
 
-    @Column(name = "nombre", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "meses", nullable = false)
+    @Column(name = "months", nullable = false)
     private Integer months;
 
-    @Column(name = "porcentaje_descuento", nullable = false)
+    @Column(name = "discount_percent", nullable = false)
     private Double discountPercent;
 
-    @Column(name = "fecha_registro", nullable = false)
+    @Column(name = "registration_date", nullable = false)
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "estado", nullable = false)
+    @Column(name = "status", nullable = false)
     private Boolean status;
 
-    @Column(name = "usuario_token", nullable = false)
+    @Column(name = "token_user", nullable = false)
     private String tokenUser;
 
 }

@@ -20,28 +20,28 @@ public class Unit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_unidad")
+    @Column(name = "unit_id")
     private Long id;
 
-    @Column(name = "nombre", unique = true)
+    @Column(name = "name", unique = true)
     private String name;
 
-    @Column(name = "estado")
+    @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     private Date updateDate;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
-    @Column(name = "id_tipo_unidad")
+    @Column(name = "unit_type_id")
     private Long unitTypeId;
 
     @ManyToOne
-    @JoinColumn(name = "id_tipo_unidad",columnDefinition = "unitTypeId",insertable = false,updatable = false)
+    @JoinColumn(name = "unit_type_id",columnDefinition = "unitTypeId",insertable = false,updatable = false)
     private UnitType unitType;
 }

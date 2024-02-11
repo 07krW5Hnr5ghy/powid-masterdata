@@ -27,28 +27,28 @@ public class ProductPrice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_precio_producto")
+    @Column(name = "product_price_id")
     private Long id;
 
-    @Column(name = "precio_venta_unitario")
+    @Column(name = "unit_sale_price")
     private Double unitSalePrice;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     private Date updateDate;
 
-    @Column(name = "estado")
+    @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "id_producto")
+    @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto", columnDefinition = "productId", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false, updatable = false)
     private Product product;
 }

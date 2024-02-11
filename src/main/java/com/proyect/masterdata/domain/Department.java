@@ -20,20 +20,20 @@ public class Department {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_departamento")
+        @Column(name = "department_id")
         private Long id;
 
-        @Column(name = "nombre", length = 50)
+        @Column(name = "name", length = 50)
         private String name;
 
-        @Column(name = "estado")
+        @Column(name = "status")
         private Boolean status;
 
-        @Column(name = "fecha_registro")
+        @Column(name = "registration_date")
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
 
-        @Column(name = "usuario_token")
+        @Column(name = "token_user")
         private String tokenUser;
 
 }

@@ -25,20 +25,20 @@ public class OnboardModule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_onboarding_modulo")
+    @Column(name = "onboard_module_id")
     private Long id;
 
-    @Column(name = "id_onboarding")
+    @Column(name = "onboard_id")
     private Long onboardId;
 
-    @Column(name = "id_modulo")
+    @Column(name = "module_id")
     private Long moduleId;
 
     @ManyToOne
-    @JoinColumn(name = "id_onboarding", columnDefinition = "onboardId", insertable = false, updatable = false)
+    @JoinColumn(name = "onboard_id", columnDefinition = "onboardId", insertable = false, updatable = false)
     private Onboard onboard;
 
     @ManyToOne
-    @JoinColumn(name = "id_modulo", columnDefinition = "moduleId", insertable = false, updatable = false)
+    @JoinColumn(name = "module_id", columnDefinition = "moduleId", insertable = false, updatable = false)
     private Module module;
 }

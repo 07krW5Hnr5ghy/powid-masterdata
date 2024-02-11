@@ -66,7 +66,7 @@ public class Seeder implements CommandLineRunner {
         private final IStockTransaction iStockTransaction;
         private final IModule iModule;
         private final ISubscription iSubscription;
-        private final IShipment iShipment;
+        private final IShipmentItem iShipmentItem;
         private final IPurchase iPurchase;
         private final IOrderState iOrderState;
         private final IPaymentState iPaymentState;
@@ -1177,120 +1177,120 @@ public class Seeder implements CommandLineRunner {
 
                         // shipments
 
-                        List<RequestShipment> requestShipmentList1 = new ArrayList<>();
+                        List<RequestShipmentItem> requestShipmentItemList1 = new ArrayList<>();
 
-                        RequestShipment requestShipment1 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem1 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("AA00001")
                                 .quantity(15)
                                 .supplierProductSerial("A00001A")
                                 .build();
 
-                        requestShipmentList1.add(requestShipment1);
+                        requestShipmentItemList1.add(requestShipmentItem1);
 
-                        RequestShipment requestShipment2 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem2 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("AA00001")
                                 .quantity(4)
                                 .supplierProductSerial("A00001B")
                                 .build();
 
-                        requestShipmentList1.add(requestShipment2);
+                        requestShipmentItemList1.add(requestShipmentItem2);
 
-                        RequestShipment requestShipment3 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem3 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("AA00001")
                                 .quantity(20)
                                 .supplierProductSerial("A00002A")
                                 .build();
 
-                        requestShipmentList1.add(requestShipment3);
+                        requestShipmentItemList1.add(requestShipmentItem3);
 
-                        RequestShipment requestShipment4 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem4 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("AA00001")
                                 .quantity(25)
                                 .supplierProductSerial("A00002B")
                                 .build();
 
-                        requestShipmentList1.add(requestShipment4);
+                        requestShipmentItemList1.add(requestShipmentItem4);
 
-                        RequestShipment requestShipment5 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem5 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("AA00001")
                                 .quantity(7)
                                 .supplierProductSerial("A00003A")
                                 .build();
 
-                        requestShipmentList1.add(requestShipment5);
+                        requestShipmentItemList1.add(requestShipmentItem5);
 
-                        RequestShipment requestShipment6 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem6 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("AA00001")
                                 .quantity(15)
                                 .supplierProductSerial("A00003B")
                                 .build();
 
-                        requestShipmentList1.add(requestShipment6);
+                        requestShipmentItemList1.add(requestShipmentItem6);
 
-                        List<RequestShipment> requestShipmentList2 = new ArrayList<>();
+                        List<RequestShipmentItem> requestShipmentItemList2 = new ArrayList<>();
 
-                        RequestShipment requestShipment7 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem7 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("BB00001")
                                 .quantity(9)
                                 .supplierProductSerial("B00001A")
                                 .build();
 
-                        requestShipmentList2.add(requestShipment7);
+                        requestShipmentItemList2.add(requestShipmentItem7);
 
-                        RequestShipment requestShipment8 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem8 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("BB00001")
                                 .quantity(15)
                                 .supplierProductSerial("B00001B")
                                 .build();
 
-                        requestShipmentList2.add(requestShipment8);
+                        requestShipmentItemList2.add(requestShipmentItem8);
 
-                        RequestShipment requestShipment9 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem9 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("BB00001")
                                 .quantity(36)
                                 .supplierProductSerial("B00002A")
                                 .build();
 
-                        requestShipmentList2.add(requestShipment9);
+                        requestShipmentItemList2.add(requestShipmentItem9);
 
-                        RequestShipment requestShipment10 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem10 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("BB00001")
                                 .quantity(13)
                                 .supplierProductSerial("B00002B")
                                 .build();
 
-                        requestShipmentList2.add(requestShipment10);
+                        requestShipmentItemList2.add(requestShipmentItem10);
 
-                        RequestShipment requestShipment11 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem11 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("BB00001")
                                 .quantity(20)
                                 .supplierProductSerial("B00003A")
                                 .build();
 
-                        requestShipmentList2.add(requestShipment11);
+                        requestShipmentItemList2.add(requestShipmentItem11);
 
-                        RequestShipment requestShipment12 = RequestShipment.builder()
+                        RequestShipmentItem requestShipmentItem12 = RequestShipmentItem.builder()
                                 .observations("no aplica")
                                 .purchaseSerial("BB00001")
                                 .quantity(27)
                                 .supplierProductSerial("B00003B")
                                 .build();
 
-                        requestShipmentList2.add(requestShipment12);
+                        requestShipmentItemList2.add(requestShipmentItem12);
 
-                        iShipment.save("SA00001", "luminous", requestShipmentList1, "gjimenez");
-                        iShipment.save("SB00001", "alcazar", requestShipmentList2, "fcasas");
+                        iShipmentItem.save("SA00001", "luminous", requestShipmentItemList1, "gjimenez");
+                        iShipmentItem.save("SB00001", "alcazar", requestShipmentItemList2, "fcasas");
 
                         // orders mocks
                         List<MultipartFile> receipts1 = new ArrayList<>();

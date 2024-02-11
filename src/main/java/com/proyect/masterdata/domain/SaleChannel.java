@@ -19,19 +19,19 @@ import java.util.Date;
 public class SaleChannel {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_canal_venta")
+        @Column(name = "sale_channel_id")
         private Long id;
 
-        @Column(name = "nombre", length = 50, nullable = false)
+        @Column(name = "name", length = 50, nullable = false)
         private String name;
 
-        @Column(name = "estado", nullable = false)
+        @Column(name = "status", nullable = false)
         private Boolean status;
 
-        @Column(name = "fecha_registro")
+        @Column(name = "registration_date")
         @CreationTimestamp
-        private Date dateRegistration;
+        private Date registrationDate;
 
-        @Column(name = "usuario_token", nullable = false)
+        @Column(name = "token_user", nullable = false)
         private String tokenUser;
 }

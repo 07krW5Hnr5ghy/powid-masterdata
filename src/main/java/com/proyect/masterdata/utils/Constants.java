@@ -60,6 +60,7 @@ public class Constants {
     public static final String tablePurchase = "compra";
     public static final String tablePurchaseItem = "compra_item";
     public static final String tableShipment = "embarque";
+    public static final String tableShipmentItem = "embarque_item";
     public static final String tableWarehouseStock = "inventario_almacen";
     public static final String tableGeneralStock = "inventario_general";
     public static final String tableStockReplenishment = "reposicion_inventario";

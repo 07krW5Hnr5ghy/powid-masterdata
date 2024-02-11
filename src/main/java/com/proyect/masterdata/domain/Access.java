@@ -22,23 +22,23 @@ public class Access {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_acceso")
+    @Column(name = "access_id")
     private Long id;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "estado", nullable = false)
+    @Column(name = "status", nullable = false)
     private Boolean status;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date dateRegistration;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date dateUpDate;
 
-    @Column(name = "usuario_token", nullable = false)
+    @Column(name = "token_user", nullable = false)
     private String tokenUser;
 }

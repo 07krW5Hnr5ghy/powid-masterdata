@@ -29,42 +29,42 @@ public class WarehouseStock {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_almacen_inventario")
+    @Column(name = "warehouse_stock_id")
     private Long id;
 
-    @Column(name = "cantidad")
+    @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registrationDate")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "updateDate")
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "id_almacen")
+    @Column(name = "warehouse_id")
     private Long warehouseId;
 
-    @Column(name = "id_proveedor_producto")
+    @Column(name = "supplier_product_id")
     private Long supplierProductId;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_almacen", columnDefinition = "warehouseId", insertable = false, updatable = false)
+    @JoinColumn(name = "warehouse_id", columnDefinition = "warehouseId", insertable = false, updatable = false)
     private Warehouse warehouse;
 
     @ManyToOne
-    @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProductId", insertable = false, updatable = false)
+    @JoinColumn(name = "supplier_product_id", columnDefinition = "supplierProductId", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
 }

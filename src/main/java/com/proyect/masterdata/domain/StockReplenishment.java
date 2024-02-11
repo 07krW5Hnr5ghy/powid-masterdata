@@ -27,23 +27,23 @@ public class StockReplenishment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_reposicion_inventario")
+    @Column(name = "stock_replenishment_id")
     private Long id;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     private Date updateDate;
 
-    @Column(name = "estado")
+    @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "id_producto")
+    @Column(name = "product_id")
     private Long productId;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto", columnDefinition = "productId", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false, updatable = false)
     private Product product;
 
 }

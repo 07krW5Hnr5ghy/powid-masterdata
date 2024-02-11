@@ -25,21 +25,21 @@ public class OnboardStore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_onboarding_tienda")
+    @Column(name = "onboard_store_id")
     private Long id;
 
-    @Column(name = "id_onboard", nullable = false)
+    @Column(name = "onboard_id", nullable = false)
     private Long onboardId;
 
-    @Column(name = "id_tienda", nullable = false)
+    @Column(name = "store_id", nullable = false)
     private Long storeId;
 
     @OneToOne
-    @JoinColumn(name = "id_tienda", columnDefinition = "storeId", insertable = false, updatable = false)
+    @JoinColumn(name = "store_id", columnDefinition = "storeId", insertable = false, updatable = false)
     private Store store;
 
     @OneToOne
-    @JoinColumn(name = "id_onboard", columnDefinition = "onboardId", insertable = false, updatable = false)
+    @JoinColumn(name = "onboard_id", columnDefinition = "onboardId", insertable = false, updatable = false)
     private Onboard onboard;
 
 }

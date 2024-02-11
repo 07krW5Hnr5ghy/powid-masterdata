@@ -20,27 +20,27 @@ public class Module {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "id_modulo")
+        @Column(name = "module_id")
         private Long id;
 
-        @Column(name = "nombre", nullable = false)
+        @Column(name = "name", nullable = false)
         private String name;
 
-        @Column(name = "precio_mensual", nullable = false)
+        @Column(name = "monthly_price", nullable = false)
         private Double monthlyPrice;
 
-        @Column(name = "estado", nullable = false)
+        @Column(name = "status", nullable = false)
         private Boolean status;
 
-        @Column(name = "fecha_registro", nullable = false)
+        @Column(name = "registration_date", nullable = false)
         @CreationTimestamp
         private Date registrationDate;
 
-        @Column(name = "fecha_modificacion", nullable = false)
+        @Column(name = "update_date", nullable = false)
         @CreationTimestamp
         private Date updateDate;
 
-        @Column(name = "usuario_token", nullable = false)
+        @Column(name = "token_user", nullable = false)
         private String tokenUser;
 
 }

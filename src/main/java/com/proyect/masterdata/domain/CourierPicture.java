@@ -20,30 +20,30 @@ public class CourierPicture {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_imagen_courier")
+    @Column(name = "courier_picture_id")
     private Long id;
 
-    @Column(name = "id_pedido")
+    @Column(name = "order_id")
     private Long orderId;
 
-    @Column(name = "url_imagen")
+    @Column(name = "picture_url")
     private String pictureUrl;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
     @ManyToOne
-    @JoinColumn(name = "id_pedido",columnDefinition = "orderId",insertable = false,updatable = false)
+    @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
     private Ordering ordering;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente",columnDefinition = "clientId",insertable = false,updatable = false)
+    @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
 }

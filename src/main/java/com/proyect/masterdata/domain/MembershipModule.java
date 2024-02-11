@@ -29,32 +29,32 @@ public class MembershipModule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_membresia_modulo")
+    @Column(name = "membership_module_id")
     private Long id;
 
-    @Column(name = "id_membership", nullable = false)
+    @Column(name = "membership_id", nullable = false)
     private Long membershipId;
 
-    @Column(name = "id_modulo", nullable = false)
+    @Column(name = "module_id", nullable = false)
     private Long moduleId;
 
-    @Column(name = "fecha_registro", nullable = false)
+    @Column(name = "registration_date", nullable = false)
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion", nullable = false)
+    @Column(name = "update_date", nullable = false)
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "estado", nullable = false)
+    @Column(name = "status", nullable = false)
     private Boolean status;
 
     @ManyToOne
-    @JoinColumn(name = "id_membership", columnDefinition = "membershipId", insertable = false, updatable = false)
+    @JoinColumn(name = "membership_id", columnDefinition = "membershipId", insertable = false, updatable = false)
     private Membership membership;
 
     @ManyToOne
-    @JoinColumn(name = "id_modulo", columnDefinition = "moduleId", insertable = false, updatable = false)
+    @JoinColumn(name = "module_id", columnDefinition = "moduleId", insertable = false, updatable = false)
     private Module module;
 
 }

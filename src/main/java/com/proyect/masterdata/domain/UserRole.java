@@ -25,19 +25,19 @@ public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_usuario_rol")
+    @Column(name = "user_role_id")
     private Long id;
 
-    @Column(name = "id_usuario", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "id_rol", nullable = false)
+    @Column(name = "role_id", nullable = false)
     private Long roleId;
 
-    @Column(name = "usuario_token", nullable = false)
+    @Column(name = "token_user", nullable = false)
     private String tokenUser;
 
-    @Column(name = "fecha_registro")
-    private Date dateRegistration;
+    @Column(name = "registration_date")
+    private Date registrationDate;
 
 }

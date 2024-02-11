@@ -25,20 +25,20 @@ public class OnboardChannel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_onboarding_canal")
+    @Column(name = "onboard_channel_id")
     private Long id;
 
-    @Column(name = "id_onboard", nullable = false)
+    @Column(name = "onboard_id", nullable = false)
     private Long onboardId;
 
-    @Column(name = "id_canal_cierre", nullable = false)
+    @Column(name = "closing_channel_id", nullable = false)
     private Long closingChannelId;
 
     @OneToOne
-    @JoinColumn(name = "id_onboard", columnDefinition = "onboardId", insertable = false, updatable = false)
+    @JoinColumn(name = "onboard_id", columnDefinition = "onboardId", insertable = false, updatable = false)
     private Onboard onboard;
 
     @OneToOne
-    @JoinColumn(name = "id_canal_cierre", columnDefinition = "closingChannelId", insertable = false, updatable = false)
+    @JoinColumn(name = "closing_channel_id", columnDefinition = "closingChannelId", insertable = false, updatable = false)
     private ClosingChannel closingChannel;
 }

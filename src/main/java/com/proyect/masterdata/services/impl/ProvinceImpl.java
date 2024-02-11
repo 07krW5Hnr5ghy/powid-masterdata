@@ -68,7 +68,7 @@ public class ProvinceImpl implements IProvince {
                     .name(name.toUpperCase())
                     .department(departmentData)
                     .departmentId(departmentData.getId())
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
                     .tokenUser(user.toUpperCase())
                     .build());
@@ -155,7 +155,7 @@ public class ProvinceImpl implements IProvince {
         try {
             province.setName(requestProvince.getName().toUpperCase());
             province.setTokenUser(requestProvince.getUser().toUpperCase());
-            province.setDateRegistration(new Date(System.currentTimeMillis()));
+            province.setRegistrationDate(new Date(System.currentTimeMillis()));
             province.setStatus(requestProvince.isStatus());
             province.setDepartmentId(requestProvince.getCodeDepartment());
             return provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
@@ -185,7 +185,7 @@ public class ProvinceImpl implements IProvince {
         }
 
         try {
-            province.setDateRegistration(new Date(System.currentTimeMillis()));
+            province.setRegistrationDate(new Date(System.currentTimeMillis()));
             province.setStatus(false);
             provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
             return ResponseDelete.builder()

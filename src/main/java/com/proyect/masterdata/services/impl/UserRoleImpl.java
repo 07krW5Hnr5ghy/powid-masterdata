@@ -62,7 +62,7 @@ public class UserRoleImpl implements IUserRole {
             userRoleRepository.save(UserRole.builder()
                     .userId(userData.getId())
                     .roleId(roleData.getId())
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
 

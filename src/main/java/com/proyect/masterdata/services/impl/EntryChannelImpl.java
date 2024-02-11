@@ -55,7 +55,7 @@ public class EntryChannelImpl implements IEntryChannel {
             entryChannelRepository.save(EntryChannel.builder()
                     .name(name.toUpperCase())
                     .status(true)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
 

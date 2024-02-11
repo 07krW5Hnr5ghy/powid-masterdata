@@ -28,81 +28,81 @@ public class Sale {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_venta")
+    @Column(name = "sale_id")
     private Long id;
 
-    @Column(name = "vendedor")
+    @Column(name = "seller")
     private String seller;
 
-    @Column(name = "observaciones")
+    @Column(name = "observations")
     private String observations;
 
-    @Column(name = "direccion_entrega")
+    @Column(name = "delivery_address")
     private String deliveryAddress;
 
-    @Column(name = "monto_venta")
+    @Column(name = "sale_amount")
     private Double saleAmount;
 
-    @Column(name = "monto_envio")
+    @Column(name = "delivery_amount")
     private Double deliveryAmount;
 
-    @Column(name = "pago_adelantado")
+    @Column(name = "advance_payment")
     private Double advancePayment;
 
-    @Column(name = "pago_pendiente")
+    @Column(name = "due_payment")
     private Double duePayment;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registratioDate;
+    private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "id_canal_venta")
+    @Column(name = "sale_channel_id")
     private Long saleChannelId;
 
-    @Column(name = "id_estado_pago")
+    @Column(name = "payment_state_id")
     private Long paymentStateId;
 
-    @Column(name = "id_metodo_pago")
+    @Column(name = "payment_method_id")
     private Long paymentMethodId;
 
-    @Column(name = "id_tipo_gestion")
+    @Column(name = "management_type_id")
     private Long managementTypeId;
 
-    @Column(name = "id_orden")
+    @Column(name = "order_id")
     private Long orderId;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_orden", columnDefinition = "orderId", insertable = false,updatable = false)
+    @JoinColumn(name = "order_id", columnDefinition = "orderId", insertable = false,updatable = false)
     private Ordering ordering;
 
     @ManyToOne
-    @JoinColumn(name = "id_canal_venta", columnDefinition = "saleChannelId", insertable = false, updatable = false)
+    @JoinColumn(name = "sale_channel_id", columnDefinition = "saleChannelId", insertable = false, updatable = false)
     private SaleChannel saleChannel;
 
     @ManyToOne
-    @JoinColumn(name = "id_estado_pago", columnDefinition = "paymentStateId", insertable = false, updatable = false)
+    @JoinColumn(name = "payment_state_id", columnDefinition = "paymentStateId", insertable = false, updatable = false)
     private PaymentState paymentState;
 
     @ManyToOne
-    @JoinColumn(name = "id_metodo_pago", columnDefinition = "paymentMethodId", insertable = false, updatable = false)
+    @JoinColumn(name = "payment_method_id", columnDefinition = "paymentMethodId", insertable = false, updatable = false)
     private PaymentMethod paymentMethod;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "id_tipo_gestion", columnDefinition = "managementTypeId", insertable = false, updatable = false)
+    @JoinColumn(name = "management_type_id", columnDefinition = "managementTypeId", insertable = false, updatable = false)
     private ManagementType managementType;
 
 }

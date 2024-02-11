@@ -27,46 +27,46 @@ public class StockReturn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_devolucion")
+    @Column(name = "stock_return_id")
     private Long id;
 
-    @Column(name = "cantidad")
+    @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "observaciones")
+    @Column(name = "observations")
     private String observations;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     private Date updateDate;
 
-    @Column(name = "estado")
+    @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "id_proveedor_producto")
+    @Column(name = "supplier_product_id")
     private Long supplierProductId;
 
-    @Column(name = "id_compra")
+    @Column(name = "purchase_id")
     private Long purchaseId;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "usuarioToken")
+    @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "id_proveedor_producto", columnDefinition = "supplierProduct", insertable = false, updatable = false)
+    @JoinColumn(name = "supplier_product_id", columnDefinition = "supplierProduct", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
 
     @ManyToOne
-    @JoinColumn(name = "id_compra", columnDefinition = "purchaseId", insertable = false, updatable = false)
+    @JoinColumn(name = "purchase_id", columnDefinition = "purchaseId", insertable = false, updatable = false)
     private PurchaseItem purchaseItem;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
 }

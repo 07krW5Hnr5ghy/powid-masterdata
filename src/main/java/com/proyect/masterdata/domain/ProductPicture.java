@@ -20,30 +20,30 @@ public class ProductPicture {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_producto_imagen")
+    @Column(name = "product_picture_id")
     private Long id;
 
-    @Column(name = "id_producto")
+    @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "url_producto_imagen")
+    @Column(name = "product_picture_url")
     private String productPictureUrl;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto",columnDefinition = "productId",insertable = false,updatable = false)
+    @JoinColumn(name = "product_id",columnDefinition = "productId",insertable = false,updatable = false)
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente",columnDefinition = "clientId",insertable = false,updatable = false)
+    @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ShipmentDTO {
+public class ShipmentItemDTO {
     private String serial;
     private String warehouse;
     private Integer quantity;

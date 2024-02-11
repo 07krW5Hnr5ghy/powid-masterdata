@@ -128,7 +128,7 @@ public class OrderStateImpl implements IOrderState {
 
         state.setName(requestState.getName().toUpperCase());
         state.setStatus(requestState.isStatus());
-        state.setDateRegistration(new Date(System.currentTimeMillis()));
+        state.setRegistrationDate(new Date(System.currentTimeMillis()));
         state.setTokenUser(datauser.getUsername().toUpperCase());
 
         try {
@@ -162,7 +162,7 @@ public class OrderStateImpl implements IOrderState {
 
         try {
             state.setStatus(false);
-            state.setDateRegistration(new Date(System.currentTimeMillis()));
+            state.setRegistrationDate(new Date(System.currentTimeMillis()));
             stateRepository.save(state);
             return ResponseDelete.builder()
                     .code(200)

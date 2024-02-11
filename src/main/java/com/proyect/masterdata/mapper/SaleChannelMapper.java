@@ -21,7 +21,7 @@ public interface SaleChannelMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
-    @Mapping(target = "dateRegistration", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
     @Mapping(target = "name", source = "requestSaleChannelSave.name")
     @Mapping(target = "tokenUser", source = "requestSaleChannelSave.user")
     SaleChannel saleChannelToName(RequestSaleChannelSave requestSaleChannelSave);

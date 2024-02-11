@@ -26,46 +26,46 @@ public class Onboard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_onboard")
+    @Column(name = "onboard_id")
     private Long id;
 
     @Column(name = "ecommerce", nullable = false)
     private Boolean ecommerce;
 
-    @Column(name = "usuarios_minimo", nullable = false)
+    @Column(name = "users_minimum", nullable = false)
     private Integer usersMinimum;
 
-    @Column(name = "usuarios_maximo", nullable = false)
+    @Column(name = "users_maximum", nullable = false)
     private Integer usersMaximum;
 
-    @Column(name = "facturacion", nullable = false)
+    @Column(name = "billing", nullable = false)
     private Boolean billing;
 
-    @Column(name = "comentario", nullable = false)
+    @Column(name = "comment", nullable = false)
     private String comment;
 
     @Column(name = "demo", nullable = false)
     private Boolean demo;
 
-    @Column(name = "id_cliente", nullable = false)
+    @Column(name = "client_id", nullable = false)
     private Long clientId;
 
-    @Column(name = "id_canal_entrada", nullable = false)
+    @Column(name = "entry_channel_id", nullable = false)
     private Long entryChannelId;
 
-    @Column(name = "id_categoria", nullable = false)
+    @Column(name = "category_id", nullable = false)
     private Long categoryId;
 
     @OneToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "id_canal_entrada", columnDefinition = "entryChannelId", insertable = false, updatable = false)
+    @JoinColumn(name = "entry_channel_id", columnDefinition = "entryChannelId", insertable = false, updatable = false)
     private EntryChannel entryChannel;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria", columnDefinition = "categoryId", insertable = false, updatable = false)
+    @JoinColumn(name = "category_id", columnDefinition = "categoryId", insertable = false, updatable = false)
     private Category category;
 
 }

@@ -16,7 +16,7 @@ public interface DistrictMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
-    @Mapping(target = "dateRegistration", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
     @Mapping(target = "name", source = "requestDistrictSave.name")
     @Mapping(target = "tokenUser", source = "requestDistrictSave.user")
     @Mapping(target = "provinceId", source = "requestDistrictSave.codeProvince")
@@ -24,7 +24,7 @@ public interface DistrictMapper {
 
     @Mapping(target = "id", source = "code")
     @Mapping(target = "provinceId", source = "codeProvince")
-    @Mapping(target = "dateRegistration", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
     District requestDistrictToDistrict(RequestDistrict requestDistrict);
 
     @Mapping(target = "nameProvince", source = "province.name")

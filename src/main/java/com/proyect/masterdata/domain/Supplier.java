@@ -29,46 +29,46 @@ public class Supplier {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_proveedor")
+    @Column(name = "supplier_id")
     private Long id;
 
-    @Column(name = "nombre", unique = true)
+    @Column(name = "business_name", unique = true)
     private String businessName;
 
     @Column(name = "ruc", unique = true)
     private String ruc;
 
-    @Column(name = "pais")
+    @Column(name = "country")
     private String country;
 
-    @Column(name = "ubicacion")
+    @Column(name = "location")
     private String location;
 
-    @Column(name = "telefono")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "email")
     private String email;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "fecha_modificacion")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "usuario_token")
+    @Column(name = "token_user")
     private String tokenUser;
 
-    @Column(name = "id_cliente")
+    @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "estado")
+    @Column(name = "status")
     private Boolean status;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", columnDefinition = "clientId", insertable = false, updatable = false)
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
 }

@@ -1,13 +1,12 @@
 package com.proyect.masterdata.repository;
 
+import com.proyect.masterdata.domain.ShipmentItem;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
-import com.proyect.masterdata.domain.Shipment;
-
 @Repository
-public interface ShipmentRepositoryCustom {
-    Page<Shipment> searchForShipment(
+public interface ShipmentItemRepositoryCustom {
+    Page<ShipmentItem> searchForShipment(
             Long clientId,
             String serial,
             Long warehouseId,

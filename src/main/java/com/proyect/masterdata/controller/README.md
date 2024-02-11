@@ -1886,7 +1886,7 @@ http://localhost:8080/masterdata/purchaseItem?serial=AA00001&tokenUser=gjimenez
     ... more items
 ]
 
-### GET /shipment protected
+### GET /shipmentItem protected
 
 - Description : list all shipments
 
@@ -1944,11 +1944,11 @@ http://localhost:8080/masterdata/purchaseItem?serial=AA00001&tokenUser=gjimenez
 
 - Example : 
 
-http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous
+http://localhost:8080/masterdata/shipmentItem?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous
 
-### POST /shipment protected
+### POST /shipmentItem protected
 
-- Description : add one shipment to the database
+- Description : add one shipmentItem to the database
 
 - Request : 
 
@@ -1965,7 +1965,7 @@ http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&
 - Parameters : 
 
 1. serial : serial of the purchaseItem ordering
-2. warehouse : name of the warehouse where arrive the shipment
+2. warehouse : name of the warehouse where arrive the shipmentItem
 3. tokenUser : username of the user who creates the purchaseItem
 
 - Response : 
@@ -1978,7 +1978,7 @@ http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&
 
 - Example :
 
-http://localhost:8080/masterdata/shipment?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
+http://localhost:8080/masterdata/shipmentItem?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
 
 [
     {
