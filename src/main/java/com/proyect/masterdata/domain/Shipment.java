@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableShipment, schema = Constants.schemaInventory)
+@Table(name = Constants.tableShipment, schema = Constants.schemaStock)
 public class Shipment {
 
     @Id

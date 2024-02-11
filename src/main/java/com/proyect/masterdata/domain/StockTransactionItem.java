@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableStockTransaction, schema = Constants.schemaInventory)
+@Table(name = Constants.tableStockTransaction, schema = Constants.schemaStock)
 public class StockTransactionItem {
 
     @Id

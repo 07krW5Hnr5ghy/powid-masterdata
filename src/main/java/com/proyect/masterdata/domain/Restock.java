@@ -13,7 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableRestock,schema = Constants.schemaInventory)
+@Table(name = Constants.tableRestock,schema = Constants.schemaStock)
 public class Restock {
 
     @Id
