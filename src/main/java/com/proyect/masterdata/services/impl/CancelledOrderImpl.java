@@ -3,14 +3,14 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CancelledOrderDTO;
 import com.proyect.masterdata.dto.request.RequestCancelledOrder;
-import com.proyect.masterdata.dto.request.RequestStockTransaction;
+import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.ICancelledOrder;
 import com.proyect.masterdata.services.IGeneralStock;
-import com.proyect.masterdata.services.IStockTransaction;
+import com.proyect.masterdata.services.IStockTransactionItem;
 import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
     private final CancellationReasonRepository cancellationReasonRepository;
     private final CancelledOrderRepositoryCustom cancelledOrderRepositoryCustom;
     private final OrderStateRepository orderStateRepository;
-    private final IStockTransaction iStockTransaction;
+    private final IStockTransactionItem iStockTransactionItem;
     private final ItemRepository itemRepository;
     private final OrderStockRepository orderStockRepository;
     private final IWarehouseStock iWarehouseStock;
@@ -82,9 +82,9 @@ public class CancelledOrderImpl implements ICancelledOrder {
                 itemList = itemRepository.findAllByOrderId(ordering.getId());
                 for(Item item : itemList){
                     List<OrderStock> orderStockList = orderStockRepository.findByOrderIdAndItemId(ordering.getId(),item.getId());
-                    List<RequestStockTransaction> stockTransactionList = new ArrayList<>();
+                    List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                     for(OrderStock orderStock : orderStockList){
-                        stockTransactionList.add(RequestStockTransaction.builder()
+                        stockTransactionList.add(RequestStockTransactionItem.builder()
                                 .serial("C"+ordering.getId())
                                 .warehouse(orderStock.getWarehouse().getName())
                                 .supplierProductSerial(orderStock.getSupplierProduct().getSerial())
@@ -94,7 +94,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
                         iWarehouseStock.in(orderStock.getWarehouse().getName(),orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
                         iGeneralStock.in(orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
                     }
-                    iStockTransaction.save(stockTransactionList,user.getUsername());
+                    iStockTransactionItem.save(stockTransactionList,user.getUsername());
                 }
             }
             cancelledOrderRepository.save(CancelledOrder.builder()

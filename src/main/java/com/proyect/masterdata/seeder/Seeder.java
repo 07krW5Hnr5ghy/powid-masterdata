@@ -63,7 +63,7 @@ public class Seeder implements CommandLineRunner {
         private final IDistrict iDistrict;
         private final IStockTransactionType iStockTransactionType;
         private final IWarehouse iWarehouse;
-        private final IStockTransaction iStockTransaction;
+        private final IStockTransactionItem iStockTransactionItem;
         private final IModule iModule;
         private final ISubscription iSubscription;
         private final IShipmentItem iShipmentItem;

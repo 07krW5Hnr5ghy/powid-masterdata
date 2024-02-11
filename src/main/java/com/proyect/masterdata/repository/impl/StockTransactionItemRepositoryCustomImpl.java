@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.proyect.masterdata.domain.StockTransaction;
+import com.proyect.masterdata.domain.StockTransactionItem;
 import com.proyect.masterdata.repository.StockTransactionRepositoryCustom;
 
 import jakarta.persistence.EntityManager;
@@ -23,19 +23,19 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Order;
 
 @Repository
-public class StockTransactionRepositoryCustomImpl implements StockTransactionRepositoryCustom {
+public class StockTransactionItemRepositoryCustomImpl implements StockTransactionRepositoryCustom {
 
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<StockTransaction> searchForStockTransaction(Long clientId, Long warehouseId, String sort,
-            String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<StockTransactionItem> searchForStockTransaction(Long clientId, Long warehouseId, String sort,
+                                                                String sortColumn, Integer pageNumber, Integer pageSize) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<StockTransaction> criteriaQuery = criteriaBuilder.createQuery(StockTransaction.class);
+        CriteriaQuery<StockTransactionItem> criteriaQuery = criteriaBuilder.createQuery(StockTransactionItem.class);
 
-        Root<StockTransaction> itemRoot = criteriaQuery.from(StockTransaction.class);
+        Root<StockTransactionItem> itemRoot = criteriaQuery.from(StockTransactionItem.class);
 
         criteriaQuery.select(itemRoot);
 
@@ -58,7 +58,7 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<StockTransaction> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<StockTransactionItem> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
@@ -68,7 +68,7 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
     }
 
     private List<Predicate> predicate(Long clientId, Long warehouseId, CriteriaBuilder criteriaBuilder,
-            Root<StockTransaction> itemRoot) {
+            Root<StockTransactionItem> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -84,7 +84,7 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
 
     }
 
-    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<StockTransaction> itemRoot) {
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<StockTransactionItem> itemRoot) {
 
         List<Order> stockTransactionList = new ArrayList<>();
 
@@ -99,7 +99,7 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
         return stockTransactionList;
     }
 
-    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<StockTransaction> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<StockTransactionItem> itemRoot) {
 
         List<Order> stockTransactionList = new ArrayList<>();
 
@@ -117,7 +117,7 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
     private Long getOrderCount(Long clientId, Long warehouseId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<StockTransaction> itemRoot = criteriaQuery.from(StockTransaction.class);
+        Root<StockTransactionItem> itemRoot = criteriaQuery.from(StockTransactionItem.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(clientId, warehouseId, criteriaBuilder, itemRoot);

@@ -19,7 +19,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.PurchaseItemRepository;
 import com.proyect.masterdata.repository.ShipmentItemRepository;
 import com.proyect.masterdata.repository.ShipmentItemRepositoryCustom;
-import com.proyect.masterdata.repository.StockTransactionRepository;
+import com.proyect.masterdata.repository.StockTransactionItemRepository;
 import com.proyect.masterdata.repository.StockTransactionTypeRepository;
 import com.proyect.masterdata.repository.SupplierProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
@@ -41,7 +41,7 @@ public class ShipmentImplItem implements IShipmentItem {
     private final ShipmentItemRepository shipmentItemRepository;
     private final WarehouseRepository warehouseRepository;
     private final PurchaseItemRepository purchaseItemRepository;
-    private final StockTransactionRepository stockTransactionRepository;
+    private final StockTransactionItemRepository stockTransactionItemRepository;
     private final StockTransactionTypeRepository stockTransactionTypeRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final ShipmentItemRepositoryCustom shipmentItemRepositoryCustom;
@@ -95,11 +95,11 @@ public class ShipmentImplItem implements IShipmentItem {
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                 }
 
-                StockTransaction existentStockTransaction = stockTransactionRepository.findBySerialAndSupplierProductId(
+                StockTransactionItem existentStockTransactionItem = stockTransactionItemRepository.findBySerialAndSupplierProductId(
                         serial,
                         supplierProduct.getId());
 
-                if (existentStockTransaction != null) {
+                if (existentStockTransactionItem != null) {
                     throw new BadRequestExceptions(Constants.ErrorStockTransactionExists);
                 }
 
@@ -110,7 +110,7 @@ public class ShipmentImplItem implements IShipmentItem {
                     throw new BadRequestExceptions(Constants.ErrorPurchase);
                 }
 
-                StockTransaction stockTransaction = stockTransactionRepository.save(StockTransaction.builder()
+                StockTransactionItem stockTransactionItem = stockTransactionItemRepository.save(StockTransactionItem.builder()
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .quantity(requestShipmentItem.getQuantity())
@@ -135,8 +135,8 @@ public class ShipmentImplItem implements IShipmentItem {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .serial(serial.toUpperCase())
                         .status(true)
-                        .stockTransaction(stockTransaction)
-                        .stockTransactionId(stockTransaction.getId())
+                        .stockTransaction(stockTransactionItem)
+                        .stockTransactionId(stockTransactionItem.getId())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
                         .tokenUser(user.getUsername())

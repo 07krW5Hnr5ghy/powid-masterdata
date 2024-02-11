@@ -1,6 +1,4 @@
-package com.proyect.masterdata.dto;
-
-import java.util.Date;
+package com.proyect.masterdata.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class StockTransactionDTO {
+public class RequestStockTransactionItem {
+    private String serial;
     private Integer quantity;
-    private String warehouse;
     private String stockTransactionType;
+    private String warehouse;
     private String supplierProductSerial;
-    private Date date;
 }

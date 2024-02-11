@@ -45,7 +45,7 @@ public class OrderingImpl implements IOrdering {
     private final IOrderPaymentReceipt iOrderPaymentReceipt;
     private final OrderPaymentReceiptRepository orderPaymentReceiptRepository;
     private final ICourierPicture iCourierPicture;
-    private final IStockTransaction iStockTransaction;
+    private final IStockTransactionItem iStockTransactionItem;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -269,9 +269,9 @@ public class OrderingImpl implements IOrdering {
                 List<Item> orderItems = itemRepository.findAllByOrderId(ordering.getId());
                 for(Item item : orderItems){
                     List<OrderStock> orderStockList = orderStockRepository.findByOrderIdAndItemId(ordering.getId(),item.getId());
-                    List<RequestStockTransaction> stockTransactionList = new ArrayList<>();
+                    List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                     for(OrderStock orderStock : orderStockList){
-                        stockTransactionList.add(RequestStockTransaction.builder()
+                        stockTransactionList.add(RequestStockTransactionItem.builder()
                                         .serial("O"+orderId)
                                         .warehouse(orderStock.getWarehouse().getName())
                                         .supplierProductSerial(orderStock.getSupplierProduct().getSerial())
@@ -281,7 +281,7 @@ public class OrderingImpl implements IOrdering {
                         iWarehouseStock.out(orderStock.getWarehouse().getName(),orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
                         iGeneralStock.out(orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
                     }
-                    iStockTransaction.save(stockTransactionList,user.getUsername());
+                    iStockTransactionItem.save(stockTransactionList,user.getUsername());
                 }
             }
 

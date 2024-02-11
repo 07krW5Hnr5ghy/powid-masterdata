@@ -3,11 +3,11 @@ package com.proyect.masterdata.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
-import com.proyect.masterdata.domain.StockTransaction;
+import com.proyect.masterdata.domain.StockTransactionItem;
 
 @Repository
 public interface StockTransactionRepositoryCustom {
-    public Page<StockTransaction> searchForStockTransaction(
+    public Page<StockTransactionItem> searchForStockTransaction(
             Long clientId,
             Long warehouseId,
             String sort,
