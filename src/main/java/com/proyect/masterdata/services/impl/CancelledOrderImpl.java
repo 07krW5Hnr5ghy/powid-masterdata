@@ -8,10 +8,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.ICancelledOrder;
-import com.proyect.masterdata.services.IGeneralStock;
-import com.proyect.masterdata.services.IStockTransactionItem;
-import com.proyect.masterdata.services.IWarehouseStock;
+import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -34,8 +31,10 @@ public class CancelledOrderImpl implements ICancelledOrder {
     private final CancellationReasonRepository cancellationReasonRepository;
     private final CancelledOrderRepositoryCustom cancelledOrderRepositoryCustom;
     private final OrderStateRepository orderStateRepository;
-    private final IStockTransactionItem iStockTransactionItem;
+    private final IStockTransaction iStockTransaction;
     private final ItemRepository itemRepository;
+    private final OrderStockItemRepository orderStockItemRepository;
+    private final WarehouseRepository warehouseRepository;
     private final OrderStockRepository orderStockRepository;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
@@ -46,12 +45,15 @@ public class CancelledOrderImpl implements ICancelledOrder {
         Ordering ordering;
         CancellationReason cancellationReason;
         OrderState orderState;
+        Warehouse warehouseData;
         List<Item> itemList;
+        OrderStock orderStock;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             ordering = orderingRepository.findById(requestCancelledOrder.getOrderId()).orElse(null);
             cancellationReason = cancellationReasonRepository.findByNameAndStatusTrue(requestCancelledOrder.getCancellationReason().toUpperCase());
+            warehouseData = warehouseRepository.findByNameAndStatusTrue(requestCancelledOrder.getWarehouse().toUpperCase());
             orderState = orderStateRepository.findByNameAndStatusTrue("CANCELADO");
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -70,6 +72,12 @@ public class CancelledOrderImpl implements ICancelledOrder {
 
         if(ordering == null){
             throw new BadRequestExceptions(Constants.ErrorOrdering);
+        }else {
+            orderStock = orderStockRepository.findByOrderId(ordering.getId());
+        }
+
+        if(warehouseData == null){
+            throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
         if(cancellationReason == null){
@@ -78,24 +86,18 @@ public class CancelledOrderImpl implements ICancelledOrder {
 
         try {
             if(ordering.getOrderState().getName().equals("ENTREGADO")){
-                System.out.println("ENTREGADO");
                 itemList = itemRepository.findAllByOrderId(ordering.getId());
+                List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 for(Item item : itemList){
-                    List<OrderStock> orderStockList = orderStockRepository.findByOrderIdAndItemId(ordering.getId(),item.getId());
-                    List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
-                    for(OrderStock orderStock : orderStockList){
+                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndItemId(orderStock.getId(),item.getId());
+                    for(OrderStockItem orderStockItem : orderStockItemList){
                         stockTransactionList.add(RequestStockTransactionItem.builder()
-                                .serial("C"+ordering.getId())
-                                .warehouse(orderStock.getWarehouse().getName())
-                                .supplierProductSerial(orderStock.getSupplierProduct().getSerial())
-                                .stockTransactionType("DEVOLUCION-COMPRADOR")
-                                .quantity(orderStock.getQuantity())
+                                .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                                .quantity(orderStockItem.getQuantity())
                                 .build());
-                        iWarehouseStock.in(orderStock.getWarehouse().getName(),orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
-                        iGeneralStock.in(orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
                     }
-                    iStockTransactionItem.save(stockTransactionList,user.getUsername());
                 }
+                iStockTransaction.save("C"+ordering.getId(),warehouseData.getName(),stockTransactionList,"DEVOLUCION-COMPRADOR",user.getUsername());
             }
             cancelledOrderRepository.save(CancelledOrder.builder()
                             .ordering(ordering)

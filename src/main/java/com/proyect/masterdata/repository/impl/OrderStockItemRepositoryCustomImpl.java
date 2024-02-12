@@ -1,9 +1,9 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.OrderStock;
+import com.proyect.masterdata.domain.OrderStockItem;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.Warehouse;
-import com.proyect.masterdata.repository.OrderStockRepositoryCustom;
+import com.proyect.masterdata.repository.OrderStockItemRepositoryCustom;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -19,16 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCustom {
+public class OrderStockItemRepositoryCustomImpl implements OrderStockItemRepositoryCustom {
 
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<OrderStock> searchForOrderStock(Warehouse warehouse, Long orderId, User user, Boolean status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<OrderStockItem> searchForOrderStock(Warehouse warehouse, Long orderId, User user, Boolean status, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<OrderStock> criteriaQuery = criteriaBuilder.createQuery(OrderStock.class);
-        Root<OrderStock> itemRoot = criteriaQuery.from(OrderStock.class);
+        CriteriaQuery<OrderStockItem> criteriaQuery = criteriaBuilder.createQuery(OrderStockItem.class);
+        Root<OrderStockItem> itemRoot = criteriaQuery.from(OrderStockItem.class);
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(warehouse,orderId,user,status,criteriaBuilder,itemRoot);
@@ -50,7 +50,7 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<OrderStock> orderingTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<OrderStockItem> orderingTypedQuery = entityManager.createQuery(criteriaQuery);
         orderingTypedQuery.setFirstResult(pageNumber * pageSize);
         orderingTypedQuery.setMaxResults(pageSize);
 
@@ -59,7 +59,7 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
     }
 
-    List<Predicate> predicateConditions(Warehouse warehouse,Long orderId,User user,Boolean status,CriteriaBuilder criteriaBuilder,Root<OrderStock> itemRoot){
+    List<Predicate> predicateConditions(Warehouse warehouse,Long orderId,User user,Boolean status,CriteriaBuilder criteriaBuilder,Root<OrderStockItem> itemRoot){
         List<Predicate> conditions = new ArrayList<>();
 
         if(warehouse != null){
@@ -85,7 +85,7 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
         return conditions;
     }
 
-    private List<Order> listASC(String sortColumn,CriteriaBuilder criteriaBuilder,Root<OrderStock> itemRoot){
+    private List<Order> listASC(String sortColumn,CriteriaBuilder criteriaBuilder,Root<OrderStockItem> itemRoot){
         List<Order> orderStockList = new ArrayList<>();
 
         if(sortColumn.equals("warehouseId")){
@@ -103,7 +103,7 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
         return orderStockList;
     }
 
-    private List<Order> listDESC(String sortColumn,CriteriaBuilder criteriaBuilder,Root<OrderStock> itemRoot){
+    private List<Order> listDESC(String sortColumn,CriteriaBuilder criteriaBuilder,Root<OrderStockItem> itemRoot){
         List<Order> orderStockList = new ArrayList<>();
 
         if(sortColumn.equals("warehouseId")){
@@ -124,7 +124,7 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
     private Long getOrderCount(Warehouse warehouse,Long orderId,User user,Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<OrderStock> itemRoot = criteriaQuery.from(OrderStock.class);
+        Root<OrderStockItem> itemRoot = criteriaQuery.from(OrderStockItem.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(warehouse,orderId,user,status,criteriaBuilder,itemRoot);

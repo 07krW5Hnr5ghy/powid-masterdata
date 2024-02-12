@@ -43,8 +43,8 @@ public class PurchaseImpl implements IPurchase {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if(purchase == null){
-            throw new BadRequestExceptions(Constants.ErrorPurchase);
+        if(purchase != null){
+            throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
         }
 
         try{

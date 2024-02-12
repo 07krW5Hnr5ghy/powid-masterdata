@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableCourier,schema = Constants.schemaInventory)
+@Table(name = Constants.tableCourier,schema = Constants.schemaStock)
 public class Courier {
 
     @Id

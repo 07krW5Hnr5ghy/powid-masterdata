@@ -22,7 +22,7 @@ public class OrderPaymentReceipt {
     @Column(name = "order_payment_receipt")
     private Long id;
 
-    @Column(name = "id_order")
+    @Column(name = "order_id")
     private Long orderId;
 
     @Column(name = "payment_receipt_url")

@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestOrderStock {
+public class RequestOrderStockItem {
     private Integer quantity;
     private String supplierProductSerial;
     private Long itemId;
-    private String warehouse;
 }

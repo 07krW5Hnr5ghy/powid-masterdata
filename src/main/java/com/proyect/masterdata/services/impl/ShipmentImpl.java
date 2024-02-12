@@ -78,8 +78,6 @@ public class ShipmentImpl implements IShipment {
               List<RequestStockTransactionItem> requestStockTransactionItemList = requestShipmentItemList.stream().map(shipmentItem -> RequestStockTransactionItem.builder()
                       .quantity(shipmentItem.getQuantity())
                       .supplierProductSerial(shipmentItem.getSupplierProductSerial().toUpperCase())
-                      .serial(serial.toUpperCase())
-                      .warehouse(warehouseData.getName())
                       .build()).toList();
               StockTransaction newStockTransaction = iStockTransaction.save(serial.toUpperCase(),warehouseData.getName(),requestStockTransactionItemList,"ENTRADA",user.getUsername());
               for(RequestShipmentItem requestShipmentItem : requestShipmentItemList){

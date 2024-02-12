@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class OrderStockDTO {
+public class OrderStockItemDTO {
     private Long orderId;
     private Long itemId;
     private String warehouse;

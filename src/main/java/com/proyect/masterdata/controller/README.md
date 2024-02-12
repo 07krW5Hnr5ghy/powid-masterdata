@@ -333,7 +333,8 @@ http://localhost:8080/masterdata/cancelled-order?pageNumber=0&pageSize=2&user=gj
 - Request: 
 {
     orderId:"id number of the order to be cancelled",
-    cancellationReason:"reason of the cancellation of the order"
+    cancellationReason:"reason of the cancellation of the order",
+    warehouse:"name of the warehouse to return the stock"
 }
 - Parameters :
 

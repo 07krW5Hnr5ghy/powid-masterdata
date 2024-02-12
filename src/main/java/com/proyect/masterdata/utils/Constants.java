@@ -7,13 +7,13 @@ public class Constants {
     public static final String schemaArticle = "article";
     public static final String schemaPayment = "payment";
     public static final String schemaStock = "stock";
-    public static final String schemaOrder = "order";
+    public static final String schemaOrder = "ordering";
     // tables
     public static final String tableDepartment = "department";
     public static final String tableProvince = "province";
     public static final String tableDistrict = "district";
     public static final String tableLogin = "session";
-    public static final String tableUser = "user";
+    public static final String tableUser = "user_data";
     public static final String tableUserType = "user_type";
     public static final String tableChannel = "channel";
     public static final String tableClient = "client";
@@ -78,6 +78,7 @@ public class Constants {
     public static final String tableCancelledOrder = "cancelled_order";
     public static final String tableRestock = "restock";
     public static final String tableOrderStock = "order_stock";
+    public static final String tableOrderStockItem = "order_stock_item";
     public static final String tableUnitType = "unit_type";
     public static final String tableCourier = "courier";
     public static final String tableOrderPaymentReceipt = "order_payment_receipt";
@@ -211,4 +212,5 @@ public class Constants {
     public static final String ErrorItem = "Item does not exists";
     public static final String ErrorStockReturnExists = "Stock return already exists";
     public static final String ErrorStockReturnQuantity = "Can't return more stock than the purchase";
+    public static final String ErrorOrderStockQuantity = "There is not enough stock in the warehouse for the order";
 }

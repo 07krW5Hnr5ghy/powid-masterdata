@@ -39,13 +39,14 @@ public class OrderingImpl implements IOrdering {
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentStateRepository paymentStateRepository;
     private final CourierRepository courierRepository;
-    private final OrderStockRepository orderStockRepository;
+    private final OrderStockItemRepository orderStockItemRepository;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
     private final IOrderPaymentReceipt iOrderPaymentReceipt;
     private final OrderPaymentReceiptRepository orderPaymentReceiptRepository;
     private final ICourierPicture iCourierPicture;
-    private final IStockTransactionItem iStockTransactionItem;
+    private final IStockTransaction iStockTransaction;
+    private final OrderStockRepository orderStockRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -225,6 +226,7 @@ public class OrderingImpl implements IOrdering {
         PaymentMethod paymentMethod;
         PaymentState paymentState;
         Courier courier;
+        OrderStock orderStock;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -251,6 +253,7 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }else {
             sale = saleRepository.findByOrderId(ordering.getId());
+            orderStock = orderStockRepository.findByOrderId(ordering.getId());
         }
 
         try{
@@ -268,20 +271,17 @@ public class OrderingImpl implements IOrdering {
             if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
                 List<Item> orderItems = itemRepository.findAllByOrderId(ordering.getId());
                 for(Item item : orderItems){
-                    List<OrderStock> orderStockList = orderStockRepository.findByOrderIdAndItemId(ordering.getId(),item.getId());
+                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndItemId(orderStock.getId(),item.getId());
                     List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
-                    for(OrderStock orderStock : orderStockList){
+                    for(OrderStockItem orderStockItem : orderStockItemList){
                         stockTransactionList.add(RequestStockTransactionItem.builder()
-                                        .serial("O"+orderId)
-                                        .warehouse(orderStock.getWarehouse().getName())
-                                        .supplierProductSerial(orderStock.getSupplierProduct().getSerial())
-                                        .stockTransactionType("SALIDA")
-                                        .quantity(orderStock.getQuantity())
+                                        .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                                        .quantity(orderStockItem.getQuantity())
                                 .build());
-                        iWarehouseStock.out(orderStock.getWarehouse().getName(),orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
-                        iGeneralStock.out(orderStock.getSupplierProduct().getSerial(),orderStock.getQuantity(),user.getUsername());
+                        iWarehouseStock.out(orderStockItem.getOrderStock().getWarehouse().getName(), orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
+                        iGeneralStock.out(orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
                     }
-                    iStockTransactionItem.save(stockTransactionList,user.getUsername());
+                    iStockTransaction.save("O"+orderId,orderStock.getWarehouse().getName(),stockTransactionList,"SALIDA",user.getUsername());
                 }
             }
 

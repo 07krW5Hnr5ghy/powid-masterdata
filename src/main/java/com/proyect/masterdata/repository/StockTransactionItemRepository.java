@@ -7,5 +7,5 @@ import com.proyect.masterdata.domain.StockTransactionItem;
 
 @Repository
 public interface StockTransactionItemRepository extends JpaRepository<StockTransactionItem, Long> {
-    StockTransactionItem findBySerialAndSupplierProductId(String serial, Long supplierProductId);
+    StockTransactionItem findByStockTransactionIdAndSupplierProductId(Long stockTransactionId, Long supplierProductId);
 }

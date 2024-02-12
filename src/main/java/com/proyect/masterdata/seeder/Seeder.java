@@ -66,7 +66,7 @@ public class Seeder implements CommandLineRunner {
         private final IStockTransactionItem iStockTransactionItem;
         private final IModule iModule;
         private final ISubscription iSubscription;
-        private final IShipmentItem iShipmentItem;
+        private final IShipment iShipment;
         private final IPurchase iPurchase;
         private final IOrderState iOrderState;
         private final IPaymentState iPaymentState;
@@ -1289,8 +1289,8 @@ public class Seeder implements CommandLineRunner {
 
                         requestShipmentItemList2.add(requestShipmentItem12);
 
-                        iShipmentItem.save("SA00001", "luminous", requestShipmentItemList1, "gjimenez");
-                        iShipmentItem.save("SB00001", "alcazar", requestShipmentItemList2, "fcasas");
+                        iShipment.save("SA00001", "luminous", requestShipmentItemList1, "gjimenez");
+                        iShipment.save("SB00001", "alcazar", requestShipmentItemList2, "fcasas");
 
                         // orders mocks
                         List<MultipartFile> receipts1 = new ArrayList<>();
@@ -1514,85 +1514,77 @@ public class Seeder implements CommandLineRunner {
 
                         // order stock mocks
 
-                        RequestOrderStock requestOrderStock1 = RequestOrderStock.builder()
+                        RequestOrderStockItem requestOrderStockItem1 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("A00001A")
                                 .quantity(2)
-                                .warehouse("LUMINOUS")
                                 .itemId(1L)
                                 .build();
 
-                        RequestOrderStock requestOrderStock2 = RequestOrderStock.builder()
+                        RequestOrderStockItem requestOrderStockItem2 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("A00002A")
                                 .quantity(1)
-                                .warehouse("LUMINOUS")
                                 .itemId(2L)
                                 .build();
 
-                        List<RequestOrderStock> requestOrderStockList1 = new ArrayList<>();
-                        requestOrderStockList1.add(requestOrderStock1);
-                        requestOrderStockList1.add(requestOrderStock2);
+                        List<RequestOrderStockItem> requestOrderStockItemList1 = new ArrayList<>();
+                        requestOrderStockItemList1.add(requestOrderStockItem1);
+                        requestOrderStockItemList1.add(requestOrderStockItem2);
 
-                        iOrderStock.save(1L,requestOrderStockList1,"gjimenez");
+                        iOrderStock.save(1L,"luminous", requestOrderStockItemList1,"gjimenez");
 
-                        RequestOrderStock requestOrderStock3 = RequestOrderStock.builder()
+                        RequestOrderStockItem requestOrderStockItem3 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("A00003A")
                                 .quantity(2)
-                                .warehouse("LUMINOUS")
                                 .itemId(3L)
                                 .build();
 
-                        RequestOrderStock requestOrderStock4 = RequestOrderStock.builder()
+                        RequestOrderStockItem requestOrderStockItem4 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("A00002A")
                                 .quantity(1)
-                                .warehouse("LUMINOUS")
                                 .itemId(4L)
                                 .build();
 
-                        List<RequestOrderStock> requestOrderStockList2 = new ArrayList<>();
-                        requestOrderStockList2.add(requestOrderStock3);
-                        requestOrderStockList2.add(requestOrderStock4);
+                        List<RequestOrderStockItem> requestOrderStockItemList2 = new ArrayList<>();
+                        requestOrderStockItemList2.add(requestOrderStockItem3);
+                        requestOrderStockItemList2.add(requestOrderStockItem4);
 
-                        iOrderStock.save(2L,requestOrderStockList2,"gjimenez");
+                        iOrderStock.save(2L,"luminous", requestOrderStockItemList2,"gjimenez");
 
-                        RequestOrderStock requestOrderStock5 = RequestOrderStock.builder()
+                        RequestOrderStockItem requestOrderStockItem5 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("B00001A")
                                 .quantity(1)
-                                .warehouse("ALCAZAR")
                                 .itemId(5L)
                                 .build();
 
-                        RequestOrderStock requestOrderStock6 = RequestOrderStock.builder()
+                        RequestOrderStockItem requestOrderStockItem6 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("B00002A")
                                 .quantity(3)
-                                .warehouse("ALCAZAR")
                                 .itemId(6L)
                                 .build();
 
-                        List<RequestOrderStock> requestOrderStockList3 = new ArrayList<>();
-                        requestOrderStockList3.add(requestOrderStock5);
-                        requestOrderStockList3.add(requestOrderStock6);
+                        List<RequestOrderStockItem> requestOrderStockItemList3 = new ArrayList<>();
+                        requestOrderStockItemList3.add(requestOrderStockItem5);
+                        requestOrderStockItemList3.add(requestOrderStockItem6);
 
-                        iOrderStock.save(3L,requestOrderStockList3,"fcasas");
+                        iOrderStock.save(3L,"alcazar", requestOrderStockItemList3,"fcasas");
 
-                        RequestOrderStock requestOrderStock7 = RequestOrderStock.builder()
+                        RequestOrderStockItem requestOrderStockItem7 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("B00002A")
                                 .quantity(5)
-                                .warehouse("ALCAZAR")
                                 .itemId(7L)
                                 .build();
 
-                        RequestOrderStock requestOrderStock8 = RequestOrderStock.builder()
+                        RequestOrderStockItem requestOrderStockItem8 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("B00003A")
                                 .quantity(2)
-                                .warehouse("ALCAZAR")
                                 .itemId(8L)
                                 .build();
 
-                        List<RequestOrderStock> requestOrderStockList4 = new ArrayList<>();
-                        requestOrderStockList4.add(requestOrderStock7);
-                        requestOrderStockList4.add(requestOrderStock8);
+                        List<RequestOrderStockItem> requestOrderStockItemList4 = new ArrayList<>();
+                        requestOrderStockItemList4.add(requestOrderStockItem7);
+                        requestOrderStockItemList4.add(requestOrderStockItem8);
 
-                        iOrderStock.save(4L,requestOrderStockList4,"fcasas");
+                        iOrderStock.save(4L, "alcazar",requestOrderStockItemList4,"fcasas");
 
                         List<MultipartFile> paymentReceipts = new ArrayList<MultipartFile>();
                         List<MultipartFile> courierPictures = new ArrayList<MultipartFile>();
@@ -1613,6 +1605,7 @@ public class Seeder implements CommandLineRunner {
                         RequestCancelledOrder requestCancelledOrder1 = RequestCancelledOrder.builder()
                                 .cancellationReason("Demora en entrega")
                                 .orderId(2L)
+                                .warehouse("luminous")
                                 .build();
 
                         iCancelledOrder.save(requestCancelledOrder1,"gjimenez");

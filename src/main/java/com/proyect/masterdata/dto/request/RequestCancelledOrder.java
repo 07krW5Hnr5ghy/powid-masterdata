@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestCancelledOrder {
     public String cancellationReason;
+    public String warehouse;
     public Long orderId;
 }

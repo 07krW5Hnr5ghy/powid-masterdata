@@ -1,6 +1,5 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Channel;
 import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.Membership;
 import com.proyect.masterdata.dto.MembershipDTO;
@@ -175,7 +174,6 @@ public class MembershipImpl implements IMembership {
     public Page<MembershipDTO> list(String channel, String module, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         Page<Membership> membershipPage = null;
-        Channel channelData;
         Module moduleData;
         try {
             moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());

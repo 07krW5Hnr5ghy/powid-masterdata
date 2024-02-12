@@ -11,4 +11,5 @@ import java.util.List;
 public interface WarehouseStockRepository extends JpaRepository<WarehouseStock, Long> {
     WarehouseStock findByWarehouseIdAndSupplierProductId(Long warehouseId, Long supplierProductId);
     List<WarehouseStock> findAllBySupplierProductId(Long supplierProductId);
+
 }
