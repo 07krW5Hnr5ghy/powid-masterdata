@@ -2,6 +2,9 @@ package com.proyect.masterdata.services;
 
 import java.util.List;
 
+import com.proyect.masterdata.domain.Purchase;
+import com.proyect.masterdata.domain.Shipment;
+import com.proyect.masterdata.domain.ShipmentItem;
 import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.dto.ShipmentItemDTO;
@@ -11,7 +14,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IShipmentItem {
-    ResponseSuccess save(String serial, String warehouse, List<RequestShipmentItem> requestShipmentItemList, String tokenUser)
+    ShipmentItem save(Shipment shipment, Purchase purchase, String warehouse, RequestShipmentItem requestShipmentItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
 
     Page<ShipmentItemDTO> list(String serial, String user, String warehouse, String sort, String sortColumn,

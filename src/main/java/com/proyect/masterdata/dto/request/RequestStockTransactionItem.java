@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class RequestStockTransactionItem {
     private String serial;
     private Integer quantity;
-    private String stockTransactionType;
     private String warehouse;
     private String supplierProductSerial;
 }

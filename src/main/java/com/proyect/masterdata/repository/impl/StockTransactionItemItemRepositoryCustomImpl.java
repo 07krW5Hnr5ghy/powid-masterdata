@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.proyect.masterdata.domain.StockTransactionItem;
-import com.proyect.masterdata.repository.StockTransactionRepositoryCustom;
+import com.proyect.masterdata.repository.StockTransactionItemRepositoryCustom;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -23,7 +23,7 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Order;
 
 @Repository
-public class StockTransactionItemRepositoryCustomImpl implements StockTransactionRepositoryCustom {
+public class StockTransactionItemItemRepositoryCustomImpl implements StockTransactionItemRepositoryCustom {
 
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;

@@ -32,9 +32,6 @@ public class ShipmentItem {
     @Column(name = "shipment_item_id")
     private Long id;
 
-    @Column(name = "serial")
-    private String serial;
-
     @Column(name = "quantity")
     private Integer quantity;
 
@@ -58,14 +55,11 @@ public class ShipmentItem {
     @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "purchase_id")
-    private Long purchaseId;
+    @Column(name = "shipment_id")
+    private Long shipmentId;
 
-    @Column(name = "stock_transaction_id")
-    private Long stockTransactionId;
-
-    @Column(name = "warehouse_id")
-    private Long warehouseId;
+    @Column(name = "purchase_item_id")
+    private Long purchaseItemId;
 
     @Column(name = "token_user")
     private String tokenUser;
@@ -79,14 +73,11 @@ public class ShipmentItem {
     private SupplierProduct supplierProduct;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id", columnDefinition = "purchaseId", insertable = false, updatable = false)
-    private Purchase purchase;
+    @JoinColumn(name = "shipment_id",columnDefinition = "shipmentId",insertable = false,updatable = false)
+    private Shipment shipment;
 
     @ManyToOne
-    @JoinColumn(name = "stock_transaction_id", columnDefinition = "stockTransactionId", insertable = false, updatable = false)
-    private StockTransactionItem stockTransactionItem;
+    @JoinColumn(name = "purchase_item_id",columnDefinition = "purchaseItemId",insertable = false,updatable = false)
+    private PurchaseItem purchaseItem;
 
-    @ManyToOne
-    @JoinColumn(name = "warehouse_id", columnDefinition = "warehouseId", insertable = false, updatable = false)
-    private Warehouse warehouse;
 }

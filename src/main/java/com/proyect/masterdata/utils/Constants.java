@@ -54,6 +54,7 @@ public class Constants {
     public static final String tableUnit = "unit";
     public static final String tableSupplier = "supplier";
     public static final String tableStockTransaction = "stock_transaction";
+    public static final String tableStockTransactionItem = "stock_transaction_item";
     public static final String tableStockTransactionType = "stock_transaction_type";
     public static final String tableWarehouse = "warehouse";
     public static final String tableSupplierProduct = "supplier_product";

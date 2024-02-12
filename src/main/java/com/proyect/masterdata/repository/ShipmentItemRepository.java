@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.proyect.masterdata.domain.ShipmentItem;
 
 public interface ShipmentItemRepository extends JpaRepository<ShipmentItem, Long> {
-    ShipmentItem findBySerial(String serial);
+    ShipmentItem findByShipmentIdAndSupplierProductId(Long shipmentId,Long supplierProductId);
 }

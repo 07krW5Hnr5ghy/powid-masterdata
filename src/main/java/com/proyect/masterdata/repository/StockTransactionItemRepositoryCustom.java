@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.proyect.masterdata.domain.StockTransactionItem;
 
 @Repository
-public interface StockTransactionRepositoryCustom {
+public interface StockTransactionItemRepositoryCustom {
     public Page<StockTransactionItem> searchForStockTransaction(
             Long clientId,
             Long warehouseId,

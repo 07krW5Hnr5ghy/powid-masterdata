@@ -4,22 +4,18 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import com.proyect.masterdata.domain.StockTransactionType;
-import com.proyect.masterdata.domain.SupplierProduct;
-import com.proyect.masterdata.domain.StockTransactionItem;
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.Warehouse;
 import com.proyect.masterdata.dto.StockTransactionItemDTO;
 import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.StockTransactionItemRepository;
-import com.proyect.masterdata.repository.StockTransactionRepositoryCustom;
+import com.proyect.masterdata.repository.StockTransactionItemRepositoryCustom;
 import com.proyect.masterdata.repository.StockTransactionTypeRepository;
 import com.proyect.masterdata.repository.SupplierProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
@@ -40,16 +36,18 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     private final StockTransactionTypeRepository stockTransactionTypeRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final WarehouseRepository warehouseRepository;
-    private final StockTransactionRepositoryCustom stockTransactionRepositoryCustom;
+    private final StockTransactionItemRepositoryCustom stockTransactionItemRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(List<RequestStockTransactionItem> stockTransactionDataList, String tokenUser)
+    public ResponseSuccess save(StockTransaction stockTransaction,RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
+        SupplierProduct supplierProduct;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransactionItem.getSupplierProductSerial().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -59,45 +57,22 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
+        if(supplierProduct == null){
+            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        }
+
         try {
-            stockTransactionItemRepository.saveAll(stockTransactionDataList.stream().map(stockTransaction -> {
-
-                StockTransactionType stockTransactionType = stockTransactionTypeRepository
-                        .findByNameAndStatusTrue(stockTransaction.getStockTransactionType().toUpperCase());
-
-                if (stockTransactionType == null) {
-                    throw new BadRequestExceptions(Constants.ErrorStockTransactionType);
-                }
-
-                SupplierProduct supplierProduct = supplierProductRepository
-                        .findBySerialAndStatusTrue(stockTransaction.getSupplierProductSerial());
-
-                if (supplierProduct == null) {
-                    throw new BadRequestExceptions(Constants.ErrorSupplier);
-                }
-
-                Warehouse warehouse = warehouseRepository
-                        .findByNameAndStatusTrue(stockTransaction.getWarehouse().toUpperCase());
-
-                if (warehouse == null) {
-                    throw new BadRequestExceptions(Constants.ErrorWarehouse);
-                }
-
-                return StockTransactionItem.builder()
-                        .serial(stockTransaction.getSerial().toUpperCase())
-                        .client(user.getClient())
-                        .clientId(user.getClientId())
-                        .quantity(stockTransaction.getQuantity())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .stockTransactionType(stockTransactionType)
-                        .stockTransactionTypeId(stockTransactionType.getId())
-                        .supplierProduct(supplierProduct)
-                        .supplierProductId(supplierProduct.getId())
-                        .warehouse(warehouse)
-                        .warehouseId(warehouse.getId())
-                        .tokenUser(user.getUsername())
-                        .build();
-            }).toList());
+            stockTransactionItemRepository.save(StockTransactionItem.builder()
+                            .stockTransaction(stockTransaction)
+                            .stockTransactionId(stockTransaction.getId())
+                            .supplierProduct(supplierProduct)
+                            .supplierProductId(supplierProduct.getId())
+                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
+                            .quantity(requestStockTransactionItem.getQuantity())
+                            .tokenUser(user.getUsername())
+                    .build());
 
             return ResponseSuccess.builder()
                     .message(Constants.register)
@@ -124,7 +99,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
 
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            stockTransactionPage = stockTransactionRepositoryCustom.searchForStockTransaction(clientId, warehouseId,
+            stockTransactionPage = stockTransactionItemRepositoryCustom.searchForStockTransaction(clientId, warehouseId,
                     sort, sortColumn, pageNumber, pageSize);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -136,12 +111,12 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
         }
 
         List<StockTransactionItemDTO> stockTransactionItemDTOS = stockTransactionPage.getContent().stream()
-                .map(stockTransaction -> StockTransactionItemDTO.builder()
-                        .quantity(stockTransaction.getQuantity())
-                        .warehouse(stockTransaction.getWarehouse().getName())
-                        .supplierProductSerial(stockTransaction.getSupplierProduct().getSerial())
-                        .stockTransactionType(stockTransaction.getStockTransactionType().getName())
-                        .date(stockTransaction.getRegistrationDate())
+                .map(stockTransactionItem -> StockTransactionItemDTO.builder()
+                        .quantity(stockTransactionItem.getQuantity())
+                        .warehouse(stockTransactionItem.getStockTransaction().getWarehouse().getName())
+                        .supplierProductSerial(stockTransactionItem.getSupplierProduct().getSerial())
+                        .stockTransactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
+                        .date(stockTransactionItem.getRegistrationDate())
                         .build())
                 .toList();
 
