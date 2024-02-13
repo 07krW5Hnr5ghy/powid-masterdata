@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.request.RequestShipment;
 import com.proyect.masterdata.dto.request.RequestShipmentItem;
 import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -30,20 +31,23 @@ public class ShipmentImpl implements IShipment {
     private final IShipmentItem iShipmentItem;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
+    private final ShipmentTypeRepository shipmentTypeRepository;
 
     @Override
-    public ResponseSuccess save(String serial, String warehouse, List<RequestShipmentItem> requestShipmentItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
-        Warehouse warehouseData;
+        Warehouse warehouse;
         Shipment shipment;
         Purchase purchase;
+        ShipmentType shipmentType;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
-            shipment = shipmentRepository.findBySerial(serial.toUpperCase());
-            purchase = purchaseRepository.findBySerialAndStatusTrue(serial.toUpperCase());
+            warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipment.getWarehouse().toUpperCase());
+            shipment = shipmentRepository.findBySerial(requestShipment.getSerial().toUpperCase());
+            purchase = purchaseRepository.findBySerialAndStatusTrue(requestShipment.getSerial().toUpperCase());
+            shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -53,11 +57,11 @@ public class ShipmentImpl implements IShipment {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if (warehouseData == null) {
+        if (warehouse == null) {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
-        if (!Objects.equals(warehouseData.getClientId(), user.getClientId())) {
+        if (!Objects.equals(warehouse.getClientId(), user.getClientId())) {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
@@ -69,15 +73,18 @@ public class ShipmentImpl implements IShipment {
             throw new BadRequestExceptions(Constants.ErrorPurchase);
         }
 
+        if(shipmentType == null){
+            throw new BadRequestExceptions(Constants.ErrorShipmentType);
+        }
+
         try{
-            List<RequestStockTransactionItem> requestStockTransactionItemList = requestShipmentItemList.stream().map(shipmentItem -> RequestStockTransactionItem.builder()
+            List<RequestStockTransactionItem> requestStockTransactionItemList = requestShipment.getRequestShipmentItemList().stream().map(shipmentItem -> RequestStockTransactionItem.builder()
                     .quantity(shipmentItem.getQuantity())
                     .supplierProductSerial(shipmentItem.getSupplierProductSerial().toUpperCase())
                     .build()).toList();
-            StockTransaction newStockTransaction = iStockTransaction.save(serial.toUpperCase(),warehouseData.getName(),requestStockTransactionItemList,"ENTRADA",user.getUsername());
-
+            StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getSerial().toUpperCase(), warehouse.getName(),requestStockTransactionItemList,"ENTRADA",user.getUsername());
             Shipment newShipment = shipmentRepository.save(Shipment.builder()
-                            .serial(serial.toUpperCase())
+                            .serial(requestShipment.getSerial().toUpperCase())
                             .status(true)
                             .purchase(purchase)
                             .purchaseId(purchase.getId())
@@ -85,21 +92,26 @@ public class ShipmentImpl implements IShipment {
                             .stockTransactionId(newStockTransaction.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
-                            .warehouse(warehouseData)
-                            .warehouseId(warehouseData.getId())
+                            .warehouse(warehouse)
+                            .warehouseId(warehouse.getId())
+                            .shipmentType(shipmentType)
+                            .shipmentTypeId(shipmentType.getId())
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .tokenUser(user.getUsername())
                       .build());
-            for(RequestShipmentItem requestShipmentItem : requestShipmentItemList){
-                  iShipmentItem.save(newShipment,purchase,warehouseData.getName(),requestShipmentItem,user.getUsername());
-                  iWarehouseStock.in(warehouseData.getName(),requestShipmentItem.getSupplierProductSerial(),requestShipmentItem.getQuantity(),user.getUsername());
+            for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
+                  iShipmentItem.save(newShipment,purchase,warehouse.getName(),requestShipmentItem,user.getUsername());
+                  iWarehouseStock.in(warehouse.getName(),requestShipmentItem.getSupplierProductSerial(),requestShipmentItem.getQuantity(),user.getUsername());
                   iGeneralStock.in(requestShipmentItem.getSupplierProductSerial(),requestShipmentItem.getQuantity(),user.getUsername());
             }
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        return null;
     }
 }

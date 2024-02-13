@@ -1238,6 +1238,15 @@ public class Seeder implements CommandLineRunner {
 
                         requestShipmentItemList1.add(requestShipmentItem6);
 
+                        RequestShipment requestShipment1 = RequestShipment.builder()
+                                .shipmentType("embarque")
+                                .requestShipmentItemList(requestShipmentItemList1)
+                                .warehouse("luminous")
+                                .serial("AA00001")
+                                .build();
+
+                        iShipment.save(requestShipment1, "gjimenez");
+
                         List<RequestShipmentItem> requestShipmentItemList2 = new ArrayList<>();
 
                         RequestShipmentItem requestShipmentItem7 = RequestShipmentItem.builder()
@@ -1294,8 +1303,14 @@ public class Seeder implements CommandLineRunner {
 
                         requestShipmentItemList2.add(requestShipmentItem12);
 
-                        iShipment.save("AA00001", "luminous", requestShipmentItemList1, "gjimenez");
-                        iShipment.save("BB00001", "alcazar", requestShipmentItemList2, "fcasas");
+                        RequestShipment requestShipment2 = RequestShipment.builder()
+                                .shipmentType("embarque")
+                                .serial("BB00001")
+                                .requestShipmentItemList(requestShipmentItemList2)
+                                .warehouse("alcazar")
+                                .build();
+
+                        iShipment.save(requestShipment2, "fcasas");
 
                         // orders mocks
                         List<MultipartFile> receipts1 = new ArrayList<>();
