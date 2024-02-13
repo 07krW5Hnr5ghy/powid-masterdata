@@ -1991,6 +1991,29 @@ http://localhost:8080/masterdata/shipmentItem?serial=SA00001&warehouse=luminous&
     ... more items
 ]
 
+### POST /shipmentType protected
+
+- Description : add one shipment type to the database
+
+- Request : none
+
+- Parameters :
+
+1. name : name of the shipment type
+2. tokenUser : username of the user who creates the shipment type
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/shipment-type?name=embarque&tokenUser=admin1
+
 ### GET /size-type protected
 
 - Description : list all active size types

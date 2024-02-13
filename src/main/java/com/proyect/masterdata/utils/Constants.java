@@ -84,6 +84,7 @@ public class Constants {
     public static final String tableOrderPaymentReceipt = "order_payment_receipt";
     public static final String tableProductPicture = "product_picture";
     public static final String tableCourierPicture = "courier_picture";
+    public static final String tableShipmentType = "shipment_type";
 
     // messages
     public static final String register = "registration correctly";
@@ -213,4 +214,6 @@ public class Constants {
     public static final String ErrorStockReturnExists = "Stock return already exists";
     public static final String ErrorStockReturnQuantity = "Can't return more stock than the purchase";
     public static final String ErrorOrderStockQuantity = "There is not enough stock in the warehouse for the order";
+    public static final String ErrorShipmentType = "Shipment type already exists";
+    public static final String ErrorShipmentTypeExists = "Shipment type already exists";
 }

@@ -81,6 +81,7 @@ public class Seeder implements CommandLineRunner {
         private final ICancellationReason iCancellationReason;
         private final ICancelledOrder iCancelledOrder;
         private final IStockReturn iStockReturn;
+        private final IShipmentType iShipmentType;
         @Override
         public void run(String... args) throws Exception {
 
@@ -342,6 +343,10 @@ public class Seeder implements CommandLineRunner {
                                 .build();
 
                         iUnit.save(requestUnit2,"admin1");
+
+                        // shipment type
+                        iShipmentType.save("embarque","admin1");
+                        iShipmentType.save("devolucion","admin1");
 
                         // cancellation reason
                         iCancellationReason.save("No hay stock","admin1");
