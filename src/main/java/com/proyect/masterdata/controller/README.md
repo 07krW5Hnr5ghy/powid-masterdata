@@ -1991,6 +1991,24 @@ http://localhost:8080/masterdata/shipmentItem?serial=SA00001&warehouse=luminous&
     ... more items
 ]
 
+### GET /shipmentType protected
+
+- Description : list active shipment types
+
+- Request : none
+
+- Parameters : none
+
+- Response :
+
+[
+    "name of the shipment type"
+]
+
+- Example :
+
+http://localhost:8080/masterdata/shipment-type
+
 ### POST /shipmentType protected
 
 - Description : add one shipment type to the database

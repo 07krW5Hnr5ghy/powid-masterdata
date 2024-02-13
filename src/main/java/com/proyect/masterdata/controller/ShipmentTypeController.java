@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("shipment-type")
@@ -24,5 +26,11 @@ public class ShipmentTypeController {
     ) throws BadRequestExceptions {
         ResponseSuccess result = iShipmentType.save(name,tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<String>> list() throws BadRequestExceptions {
+        List<String> result = iShipmentType.list();
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
