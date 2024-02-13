@@ -587,7 +587,7 @@ Response
 
 - Example :
 
-http://localhost:8080/masterdata/item?productSku=B00002&quantity=5&tokenUser=fcasas
+http://localhost:8080/masterdata/item?productSku=B00002&quantity=5&user=fcasas
 
 
 ### GET /color
@@ -969,7 +969,7 @@ http://localhost:8080/masterdata/entry-channel?name=facebook&tokenUser=admin1
 
 - Request : none
 
-- Paramenters : 
+- Parameters : 
 
 1. user : filter warehouses by the client of the user (required)
 2. sort : sort the values the only valid values are ASC and DESC, default is ASC
@@ -2819,7 +2819,7 @@ http://localhost:8080/masterdata/supplier-product/supplier-products?tokenUser=gj
 
 - Request : none
 
-- Paramenters : none
+- Parameters : none
 
 - Response : 
 

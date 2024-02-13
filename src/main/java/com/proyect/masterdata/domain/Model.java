@@ -49,9 +49,16 @@ public class Model {
     @Column(name = "brand_id")
     private Long brandId;
 
+    @Column(name = "client_id")
+    private Long clientId;
+
     @ManyToOne
     @JoinColumn(name = "brand_id", columnDefinition = "brandId", insertable = false, updatable = false)
     private Brand brand;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
+    private Client client;
 
     @Column(name = "token_user")
     private String tokenUser;

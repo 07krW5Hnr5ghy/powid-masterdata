@@ -20,9 +20,9 @@ public class ItemController {
     public ResponseEntity<ResponseCheckStockItem> checkStockItem(
             @RequestParam("productSku") String productSku,
             @RequestParam("quantity") Integer quantity,
-            @RequestParam("tokenUser") String tokenUser
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        ResponseCheckStockItem result = iItem.checkStock(productSku, quantity, tokenUser);
+        ResponseCheckStockItem result = iItem.checkStock(productSku, quantity, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

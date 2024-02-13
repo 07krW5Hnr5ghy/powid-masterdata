@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -40,12 +41,12 @@ public class ModelImpl implements IModel {
     public ResponseSuccess save(String name, String brand, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        boolean existsUser;
+        User user;
         boolean existsModel;
         Brand brandData;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsModel = modelRepository.existsByName(name.toUpperCase());
             brandData = brandRepository.findByName(brand.toUpperCase());
         } catch (RuntimeException e) {
@@ -53,7 +54,7 @@ public class ModelImpl implements IModel {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
@@ -70,6 +71,8 @@ public class ModelImpl implements IModel {
                     .name(name.toUpperCase())
                     .brand(brandData)
                     .brandId(brandData.getId())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())

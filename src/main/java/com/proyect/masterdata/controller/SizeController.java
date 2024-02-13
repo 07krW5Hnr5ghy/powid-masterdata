@@ -57,12 +57,12 @@ public class SizeController {
     @GetMapping(value = "list-size")
     public ResponseEntity<Page<SizeDTO>> list(
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "tokenUser", required = false) String tokenUser,
+            @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<SizeDTO> result = iSize.list(name, tokenUser, sort, sortColumn, pageNumber,
+        Page<SizeDTO> result = iSize.list(name, user, sort, sortColumn, pageNumber,
                 pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
