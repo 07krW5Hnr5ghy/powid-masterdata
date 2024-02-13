@@ -45,8 +45,8 @@ public class ShipmentImpl implements IShipment {
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipment.getWarehouse().toUpperCase());
-            shipment = shipmentRepository.findBySerial(requestShipment.getSerial().toUpperCase());
-            purchase = purchaseRepository.findBySerialAndStatusTrue(requestShipment.getSerial().toUpperCase());
+            shipment = shipmentRepository.findBySerial(requestShipment.getPurchaseSerial().toUpperCase());
+            purchase = purchaseRepository.findBySerialAndStatusTrue(requestShipment.getPurchaseSerial().toUpperCase());
             shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -82,9 +82,9 @@ public class ShipmentImpl implements IShipment {
                     .quantity(shipmentItem.getQuantity())
                     .supplierProductSerial(shipmentItem.getSupplierProductSerial().toUpperCase())
                     .build()).toList();
-            StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getSerial().toUpperCase(), warehouse.getName(),requestStockTransactionItemList,"ENTRADA",user.getUsername());
+            StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getPurchaseSerial().toUpperCase(), warehouse.getName(),requestStockTransactionItemList,"ENTRADA",user.getUsername());
             Shipment newShipment = shipmentRepository.save(Shipment.builder()
-                            .serial(requestShipment.getSerial().toUpperCase())
+                            .serial(requestShipment.getPurchaseSerial().toUpperCase())
                             .status(true)
                             .purchase(purchase)
                             .purchaseId(purchase.getId())

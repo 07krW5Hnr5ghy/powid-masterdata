@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class RequestShipment {
-    private String serial;
+    private String purchaseSerial;
     private String warehouse;
     private String shipmentType;
     private List<RequestShipmentItem> requestShipmentItemList;

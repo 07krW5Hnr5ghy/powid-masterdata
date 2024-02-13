@@ -1947,27 +1947,30 @@ http://localhost:8080/masterdata/purchaseItem?serial=AA00001&tokenUser=gjimenez
 
 http://localhost:8080/masterdata/shipmentItem?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous
 
-### POST /shipmentItem protected
+### POST /shipment protected
 
-- Description : add one shipmentItem to the database
+- Description : add one shipment to the database
 
 - Request : 
 
-[
-    {
-        "quantity": number of units,
-        "observations": observation of the state of the goods,
-        "supplierProductSerial": serial of the provider product,
-        "purchaseSerial": serial of the purchaseItem ordering of the goods
-    }
-    ... more items
-]
+{
+    "purchaseSerial":"serial of the purchase of the shipment goods",
+    "warehouse":"name of the shipment warehouse",
+    "shipmentType":"name of the shipment type",
+    "requestShipmentList": [
+        {
+            "quantity": number of units,
+            "observations": observation of the state of the goods,
+            "supplierProductSerial": serial of the provider product,
+            "purchaseSerial": serial of the purchaseItem ordering of the goods
+        }
+        ... more items
+    ]
+}
 
 - Parameters : 
 
-1. serial : serial of the purchaseItem ordering
-2. warehouse : name of the warehouse where arrive the shipmentItem
-3. tokenUser : username of the user who creates the purchaseItem
+1. tokenUser : username of who register the shipment
 
 - Response : 
 
