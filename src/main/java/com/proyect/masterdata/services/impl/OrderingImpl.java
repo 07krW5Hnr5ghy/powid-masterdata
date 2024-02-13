@@ -270,9 +270,9 @@ public class OrderingImpl implements IOrdering {
 
             if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
                 List<Item> orderItems = itemRepository.findAllByOrderId(ordering.getId());
+                List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 for(Item item : orderItems){
                     List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndItemId(orderStock.getId(),item.getId());
-                    List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                     for(OrderStockItem orderStockItem : orderStockItemList){
                         stockTransactionList.add(RequestStockTransactionItem.builder()
                                         .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
@@ -281,8 +281,8 @@ public class OrderingImpl implements IOrdering {
                         iWarehouseStock.out(orderStockItem.getOrderStock().getWarehouse().getName(), orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
                         iGeneralStock.out(orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
                     }
-                    iStockTransaction.save("O"+orderId,orderStock.getWarehouse().getName(),stockTransactionList,"SALIDA",user.getUsername());
                 }
+                iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse().getName(),stockTransactionList,"SALIDA",user.getUsername());
             }
 
             if(!Objects.equals(paymentMethod.getId(), sale.getPaymentMethod().getId())){
@@ -310,7 +310,7 @@ public class OrderingImpl implements IOrdering {
                     .message(Constants.update)
                     .build();
         }catch (RuntimeException e){
-            log.error(e.getMessage());
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }

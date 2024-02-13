@@ -184,7 +184,7 @@ Body
 
 - Example :
 
-http://localhost:8080/masterdata/brand?pageNumber=0&pageSize=3&sort=DESC&sortColumn=name&tokenUser=admin1
+http://localhost:8080/masterdata/brand?pageNumber=0&pageSize=3&sort=DESC&sortColumn=name&user=gjimenez
 
 ### POST /brand protected
 
@@ -676,7 +676,7 @@ Request body
 - Parameters :
 
 1. name : filter couriers by name
-2. user : filter models by the username who registered the couriers
+2. user : filter couriers by client
 3. sort : sort the values the only valid values are ASC and DESC, default is ASC
 4. sortColumn : select the value that sorts the list in this case name or user
 5. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -1074,7 +1074,7 @@ http://localhost:8080/masterdata/general-stock?pageNumber=0&pageSize=2&user=gjim
 
 - Example :
 
-http://localhost:8080/masterdata/model?pageNumber=0&pageSize=3&brand=nike
+http://localhost:8080/masterdata/model?pageNumber=0&pageSize=3&brand=nike&user=gjimenez
 
 ### POST /model protected
 

@@ -1289,8 +1289,8 @@ public class Seeder implements CommandLineRunner {
 
                         requestShipmentItemList2.add(requestShipmentItem12);
 
-                        iShipment.save("SA00001", "luminous", requestShipmentItemList1, "gjimenez");
-                        iShipment.save("SB00001", "alcazar", requestShipmentItemList2, "fcasas");
+                        iShipment.save("AA00001", "luminous", requestShipmentItemList1, "gjimenez");
+                        iShipment.save("BB00001", "alcazar", requestShipmentItemList2, "fcasas");
 
                         // orders mocks
                         List<MultipartFile> receipts1 = new ArrayList<>();
