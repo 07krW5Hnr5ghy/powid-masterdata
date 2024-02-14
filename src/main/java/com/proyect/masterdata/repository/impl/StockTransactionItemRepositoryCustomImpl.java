@@ -23,7 +23,7 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Order;
 
 @Repository
-public class StockTransactionItemItemRepositoryCustomImpl implements StockTransactionItemRepositoryCustom {
+public class StockTransactionItemRepositoryCustomImpl implements StockTransactionItemRepositoryCustom {
 
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
