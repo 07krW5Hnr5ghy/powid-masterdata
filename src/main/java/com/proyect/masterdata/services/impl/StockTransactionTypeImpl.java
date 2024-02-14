@@ -78,7 +78,7 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             stockTransactionTypes = stockTransactionTypeRepository.findByNameIn(
-                    names.stream().map(stockTransactionType -> stockTransactionType.toUpperCase()).toList());
+                    names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

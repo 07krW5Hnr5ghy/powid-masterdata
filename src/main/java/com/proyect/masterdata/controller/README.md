@@ -2375,7 +2375,7 @@ http://localhost:8080/masterdata/stock-return?purchaseSerial=AA00001&tokenUser=a
 
 - Request : none
 
-- Parameter :
+- Parameters :
 
 1. user : name of the user who is listing the stock transactions (required)
 2. serial : serial of the stock transaction
@@ -2426,7 +2426,7 @@ http://localhost:8080/masterdata/stock-transaction?user=gjimenez&pageNumber=0&pa
 
 - Request : none
 
-- Parameter :
+- Parameters :
 
 1. user : filter the stock transaction items by client (required)
 2. stockTransactionSerial : filter stock transaction items by stock transaction serial 
@@ -2471,6 +2471,61 @@ http://localhost:8080/masterdata/stock-transaction?user=gjimenez&pageNumber=0&pa
 - example :
 
 http://localhost:8080/masterdata/stock-transaction-item?user=gjimenez&pageNumber=0&pageSize=4&stockTransactionSerial=SAA00001&supplierProductSerial=A00001A
+
+### GET /stock-transaction-type
+
+- Description : list active stock transactions types
+
+- Request : none
+
+- Parameters : none
+
+- Response :
+
+[
+    {
+        "name": "ENTRADA"
+    },
+    {
+        "name": "SALIDA"
+    },
+    {
+        "name": "TRANSFERENCIA"
+    },
+    {
+        "name": "DEVOLUCION-COMPRADOR"
+    },
+    {
+        "name": "DEVOLUCION-PROVEEDOR"
+    }
+]
+
+- example :
+
+http://localhost:8080/masterdata/stock-transaction-type
+
+### POST /stock-transaction-type protected
+
+- Description : add one store type to the database
+
+- Request : none
+
+- Parameters :
+
+1. name : name of the stock transaction type
+2. tokenUser : username of the user who creates stock transaction type
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/stock-transaction-type?name=entrada&tokenUser=admin1
 
 ### GET /store-type
 
