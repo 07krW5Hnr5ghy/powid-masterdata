@@ -2420,6 +2420,58 @@ http://localhost:8080/masterdata/stock-return?purchaseSerial=AA00001&tokenUser=a
 
 http://localhost:8080/masterdata/stock-transaction?user=gjimenez&pageNumber=0&pageSize=4&warehouse=luminous&serial=SAA00001&stockTransactionType=entrada
 
+### GET /stock-transaction-item
+
+- Description : list stock transactions item
+
+- Request : none
+
+- Parameter :
+
+1. user : filter the stock transaction items by client (required)
+2. stockTransactionSerial : filter stock transaction items by stock transaction serial 
+3. supplierProductSerial : filter stock transaction items by supplier product serial
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "quantity": 15,
+            "warehouse": "LUMINOUS",
+            "stockTransactionSerial": "SAA00001",
+            "stockTransactionType": "ENTRADA",
+            "supplierProductSerial": "A00001A",
+            "date": "2024-02-14T17:21:50.367+00:00"
+        }
+    ],
+    "pageable": {
+    "sort": [],
+    "offset": 0,
+    "pageSize": 4,
+    "pageNumber": 0,
+    "unpaged": false,
+    "paged": true
+    },
+    "last": true,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "size": 4,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/stock-transaction-item?user=gjimenez&pageNumber=0&pageSize=4&stockTransactionSerial=SAA00001&supplierProductSerial=A00001A
+
 ### GET /store-type
 
 - Description : list all active store types

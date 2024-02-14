@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,6 @@ import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.StockTransactionItemRepository;
-import com.proyect.masterdata.repository.StockTransactionItemRepositoryCustom;
-import com.proyect.masterdata.repository.StockTransactionTypeRepository;
-import com.proyect.masterdata.repository.SupplierProductRepository;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.repository.WarehouseRepository;
 import com.proyect.masterdata.services.IStockTransactionItem;
 import com.proyect.masterdata.utils.Constants;
 
@@ -33,10 +28,9 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
 
     private final UserRepository userRepository;
     private final StockTransactionItemRepository stockTransactionItemRepository;
-    private final StockTransactionTypeRepository stockTransactionTypeRepository;
     private final SupplierProductRepository supplierProductRepository;
-    private final WarehouseRepository warehouseRepository;
     private final StockTransactionItemRepositoryCustom stockTransactionItemRepositoryCustom;
+    private final StockTransactionRepository stockTransactionRepository;
 
     @Override
     public ResponseSuccess save(StockTransaction stockTransaction,RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
@@ -85,21 +79,28 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     }
 
     @Override
-    public Page<StockTransactionItemDTO> list(String user, String warehouse, String sort, String sortColumn,
+    public Page<StockTransactionItemDTO> list(String user, String stockTransactionSerial, String supplierProductSerial, String sort, String sortColumn,
                                               Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Long clientId;
-        Long warehouseId;
+        Long stockTransactionId;
+        Long supplierProductId;
         Page<StockTransactionItem> stockTransactionPage;
 
-        if (warehouse != null) {
-            warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+        if (stockTransactionSerial != null) {
+            stockTransactionId = stockTransactionRepository.findBySerial(stockTransactionSerial.toUpperCase()).getId();
         } else {
-            warehouseId = null;
+            stockTransactionId = null;
+        }
+
+        if(supplierProductSerial != null){
+            supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+        }else{
+            supplierProductId = null;
         }
 
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            stockTransactionPage = stockTransactionItemRepositoryCustom.searchForStockTransaction(clientId, warehouseId,
+            stockTransactionPage = stockTransactionItemRepositoryCustom.searchForStockTransactionItem(clientId, stockTransactionId, supplierProductId,
                     sort, sortColumn, pageNumber, pageSize);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -115,6 +116,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                         .quantity(stockTransactionItem.getQuantity())
                         .warehouse(stockTransactionItem.getStockTransaction().getWarehouse().getName())
                         .supplierProductSerial(stockTransactionItem.getSupplierProduct().getSerial())
+                        .stockTransactionSerial(stockTransactionItem.getStockTransaction().getSerial())
                         .stockTransactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
                         .date(stockTransactionItem.getRegistrationDate())
                         .build())

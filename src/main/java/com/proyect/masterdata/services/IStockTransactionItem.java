@@ -15,7 +15,7 @@ public interface IStockTransactionItem {
         ResponseSuccess save(StockTransaction stockTransaction,RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
 
-        Page<StockTransactionItemDTO> list(String user, String warehouse, String sort, String sortColumn,
+        Page<StockTransactionItemDTO> list(String user, String stockTransactionSerial,String supplierProductSerial, String sort, String sortColumn,
                                            Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
 
 }
