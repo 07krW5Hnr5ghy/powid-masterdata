@@ -1,15 +1,14 @@
 package com.proyect.masterdata.repository;
 
-import com.proyect.masterdata.domain.PurchaseItem;
+import com.proyect.masterdata.domain.Purchase;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PurchaseItemRepositoryCustom {
-    Page<PurchaseItem> searchForPurchaseItem(
+public interface PurchaseRepositoryCustom {
+    Page<Purchase> searchForPurchase(
             Long clientId,
-            Long purchaseId,
-            Long supplierProductId,
+            String serial,
             String sort,
             String sortColumn,
             Integer pageNumber,

@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import java.util.List;
 
+import com.proyect.masterdata.dto.PurchaseDTO;
 import com.proyect.masterdata.services.IPurchase;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -40,5 +41,17 @@ public class PurchaseController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping()
+    public ResponseEntity<Page<PurchaseDTO>> list(
+            @RequestParam(value = "serial", required = false) String serial,
+            @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = true) Integer pageSize
+    ) throws BadRequestExceptions {
+        Page<PurchaseDTO> result = iPurchase.list(serial,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
 
 }

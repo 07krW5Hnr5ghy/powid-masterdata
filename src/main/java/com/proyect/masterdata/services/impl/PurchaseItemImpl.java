@@ -100,16 +100,29 @@ public class PurchaseItemImpl implements IPurchaseItem {
     }
 
     @Override
-    public Page<PurchaseItemDTO> list(String serial, String user, String sort, String sortColumn,
+    public Page<PurchaseItemDTO> list(String serial, String user, String supplierProductSerial, String sort, String sortColumn,
                                       Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
 
         Page<PurchaseItem> pagePurchase;
         Long clientId;
+        Long supplierProductId;
         Long purchaseId;
+
+        if(serial != null){
+            purchaseId = purchaseRepository.findBySerial(serial.toUpperCase()).getId();
+        }else {
+            purchaseId = null;
+        }
+
+        if(supplierProductSerial != null){
+            supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+        }else {
+            supplierProductId = null;
+        }
 
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            pagePurchase = purchaseItemRepositoryCustom.searchForPurchase(clientId, serial, sort, sortColumn,
+            pagePurchase = purchaseItemRepositoryCustom.searchForPurchaseItem(clientId, purchaseId,supplierProductId, sort, sortColumn,
                     pageNumber, pageSize, true);
         } catch (RuntimeException e) {
             log.error(e.getMessage());

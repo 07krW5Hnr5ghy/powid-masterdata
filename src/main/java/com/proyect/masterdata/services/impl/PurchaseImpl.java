@@ -3,19 +3,24 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.PurchaseItem;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.PurchaseDTO;
 import com.proyect.masterdata.dto.request.RequestPurchaseItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.PurchaseRepository;
+import com.proyect.masterdata.repository.PurchaseRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IPurchase;
 import com.proyect.masterdata.services.IPurchaseItem;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +31,7 @@ public class PurchaseImpl implements IPurchase {
     private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
     private final IPurchaseItem iPurchaseItem;
+    private final PurchaseRepositoryCustom purchaseRepositoryCustom;
     @Override
     public ResponseSuccess save(String serial, List<RequestPurchaseItem> requestPurchaseItemList, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -67,5 +73,36 @@ public class PurchaseImpl implements IPurchase {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<PurchaseDTO> list(String serial, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+        Page<Purchase> pagePurchase;
+        Long clientId;
+        String serialData;
+
+        if(serial != null){
+            serialData = serial.toUpperCase();
+        }else {
+            serialData = null;
+        }
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            pagePurchase = purchaseRepositoryCustom.searchForPurchase(clientId,serialData,sort,sortColumn,pageNumber,pageSize,true);
+        }catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(pagePurchase.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> PurchaseDTO.builder()
+                .serial(purchase.getSerial())
+                .registrationDate(purchase.getRegistrationDate())
+                .build()).toList();
+
+        return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
     }
 }

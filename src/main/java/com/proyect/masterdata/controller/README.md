@@ -1790,7 +1790,7 @@ http://localhost:8080/masterdata/province/department?department=amazonas
 
 http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&user=admin1
 
-### GET /purchaseItem protected
+### GET /purchase protected
 
 - Description : list all active purchases
 
@@ -1811,41 +1811,83 @@ http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&u
     "content": [
         {
             "serial": "AA00001",
-            "quantity": 15,
-            "supplierProductSerial": "A00001A",
-            "unitPrice": 3.4,
-            "date": "2024-01-07T04:07:28.998+00:00"
-        },
-        {
-            "serial": "AA00001",
-            "quantity": 4,
-            "supplierProductSerial": "A00001B",
-            "unitPrice": 7.8,
-            "date": "2024-01-07T04:07:28.998+00:00"
+            "registrationDate": "2024-02-14T04:13:38.623+00:00"
         }
     ],
     "pageable": {
-        "sort": [],
-        "offset": 0,
-        "pageNumber": 0,
-        "pageSize": 2,
-        "unpaged": false,
-        "paged": true
+    "sort": [],
+    "offset": 0,
+    "pageNumber": 0,
+    "pageSize": 2,
+    "paged": true,
+    "unpaged": false
     },
-    "last": false,
-    "totalPages": 3,
-    "totalElements": 6,
+    "last": true,
+    "totalElements": 1,
+    "totalPages": 1,
     "first": true,
-    "numberOfElements": 2,
     "size": 2,
     "number": 0,
     "sort": [],
+    "numberOfElements": 1,
     "empty": false
 }
 
 - Example : 
 
+http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&serial=AA00001
+
+### GET /purchase-item protected
+
+- Description : list all active purchase items
+
+- Request : none
+
+- Parameters :
+
+1. serial : filter purchase items by serial
+2. user : filter purchase items by the client of the user (required)
+3. supplierProductSerial : filter purchase items by supplier product serial
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "serial": "AA00001",
+            "quantity": 15,
+            "supplierProductSerial": "A00001A",
+            "unitPrice": 3.4,
+            "date": "2024-02-14T04:51:51.638+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 2,
+        "pageNumber": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "first": true,
+    "empty": false
+}
+
+- Example :
+
 http://localhost:8080/masterdata/purchaseItem?user=gjimenez&pageNumber=0&pageSize=2
+
 
 ### POST /purchaseItem protected
 

@@ -21,11 +21,12 @@ public class PurchaseItemController {
     public ResponseEntity<Page<PurchaseItemDTO>> list(
             @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "supplierProductSerial", required = false) String supplierProductSerial,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<PurchaseItemDTO> result = iPurchaseItem.list(serial, user, sort, sortColumn, pageNumber, pageSize);
+        Page<PurchaseItemDTO> result = iPurchaseItem.list(serial, user,supplierProductSerial, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
