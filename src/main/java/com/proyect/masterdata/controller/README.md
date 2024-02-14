@@ -1889,7 +1889,7 @@ http://localhost:8080/masterdata/purchaseItem?serial=AA00001&tokenUser=gjimenez
 
 ### GET /shipmentItem protected
 
-- Description : list all shipments
+- Description : list all shipment items
 
 - Request : none
 
@@ -1946,6 +1946,57 @@ http://localhost:8080/masterdata/purchaseItem?serial=AA00001&tokenUser=gjimenez
 - Example : 
 
 http://localhost:8080/masterdata/shipmentItem?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous
+
+### GET /shipment protected
+
+- Description : list all active shipments
+
+- Request : none
+
+- Parameters :
+
+1. purchaseSerial : filter shipments by purchase serial
+2. warehouse : filter shipments by warehouse
+3. user : filter shipments by the client of the user (required)
+4. shipmentType : filter shipments by shipment type
+5. sort : sort the values the only valid values are ASC and DESC, default is ASC
+6. sortColumn : select the value that sorts the list in this case name or user
+7. pageNumber : the page number to select of the list the first is page zero (0) (required)
+8. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "purchaseSerial": "AA00001",
+            "warehouse": "LUMINOUS",
+            "shipmentType": "EMBARQUE",
+            "registrationDate": "2024-02-14T01:12:22.576+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 2,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 1,
+    "first": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
+}
+
+- Example :
+
+http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous&shipmentType=embarque
 
 ### POST /shipment protected
 

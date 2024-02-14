@@ -1242,7 +1242,7 @@ public class Seeder implements CommandLineRunner {
                                 .shipmentType("embarque")
                                 .requestShipmentItemList(requestShipmentItemList1)
                                 .warehouse("luminous")
-                                .serial("AA00001")
+                                .purchaseSerial("AA00001")
                                 .build();
 
                         iShipment.save(requestShipment1, "gjimenez");
@@ -1305,7 +1305,7 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipment requestShipment2 = RequestShipment.builder()
                                 .shipmentType("embarque")
-                                .serial("BB00001")
+                                .purchaseSerial("BB00001")
                                 .requestShipmentItemList(requestShipmentItemList2)
                                 .warehouse("alcazar")
                                 .build();

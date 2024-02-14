@@ -1,17 +1,19 @@
 package com.proyect.masterdata.repository;
 
-import com.proyect.masterdata.domain.ShipmentItem;
+import com.proyect.masterdata.domain.Shipment;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ShipmentItemRepositoryCustom {
-    Page<ShipmentItem> searchForShipmentItem(
+public interface ShipmentRepositoryCustom {
+    Page<Shipment> searchForShipment(
             Long clientId,
-            String serial,
+            String purchaseSerial,
             Long warehouseId,
+            Long shipmentTypeId,
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize);
+            Integer pageSize,
+            Boolean status);
 }

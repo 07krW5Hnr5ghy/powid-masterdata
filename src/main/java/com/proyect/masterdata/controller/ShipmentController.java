@@ -1,6 +1,8 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.ShipmentDTO;
 import com.proyect.masterdata.dto.ShipmentItemDTO;
+import com.proyect.masterdata.dto.request.RequestShipment;
 import com.proyect.masterdata.dto.request.RequestShipmentItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -24,12 +26,25 @@ public class ShipmentController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("serial") String serial,
-            @RequestParam("warehouse") String warehouse,
-            @RequestBody() List<RequestShipmentItem> requestShipmentItemList,
+            @RequestBody() RequestShipment requestShipment,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iShipment.save(serial, warehouse, requestShipmentItemList, tokenUser);
+        ResponseSuccess result = iShipment.save(requestShipment, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<Page<ShipmentDTO>> list(
+            @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
+            @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "warehouse", required = false) String warehouse,
+            @RequestParam(value = "shipmentType", required = false) String shipmentType,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = true) Integer pageSize
+    ) throws BadRequestExceptions{
+        Page<ShipmentDTO> result = iShipment.list(purchaseSerial,user,warehouse,shipmentType,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }

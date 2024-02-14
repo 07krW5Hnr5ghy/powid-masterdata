@@ -109,7 +109,7 @@ public class ShipmentItemImpl implements IShipmentItem {
     @Override
     public Page<ShipmentItemDTO> list(String serial, String user, String warehouse, String sort, String sortColumn,
                                       Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
-        Page<ShipmentItem> pageShipment;
+        Page<ShipmentItem> pageShipmentItem;
         Long clientId;
         Long warehouseId;
 
@@ -121,27 +121,27 @@ public class ShipmentItemImpl implements IShipmentItem {
 
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            pageShipment = shipmentItemRepositoryCustom.searchForShipment(clientId, serial, warehouseId, sort, sortColumn,
+            pageShipmentItem = shipmentItemRepositoryCustom.searchForShipmentItem(clientId, serial, warehouseId, sort, sortColumn,
                     pageNumber, pageSize);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.ResultsFound);
         }
 
-        if (pageShipment.isEmpty()) {
+        if (pageShipmentItem.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
 
-        List<ShipmentItemDTO> shipmentItemDTOS = pageShipment.getContent().stream().map(shipmentItem -> ShipmentItemDTO.builder()
+        List<ShipmentItemDTO> shipmentItemDTOS = pageShipmentItem.getContent().stream().map(shipmentItem -> ShipmentItemDTO.builder()
                 .purchaseSerial(shipmentItem.getPurchaseItem().getPurchase().getSerial())
                 .quantity(shipmentItem.getQuantity())
-                .serial(shipmentItem.getShipment().getSerial())
+                .serial(shipmentItem.getShipment().getPurchaseSerial())
                 .supplierProductSerial(shipmentItem.getSupplierProduct().getSerial())
                 .warehouse(shipmentItem.getShipment().getWarehouse().getName())
                 .date(shipmentItem.getRegistrationDate())
                 .build()).toList();
 
-        return new PageImpl<>(shipmentItemDTOS, pageShipment.getPageable(), pageShipment.getTotalElements());
+        return new PageImpl<>(shipmentItemDTOS, pageShipmentItem.getPageable(), pageShipmentItem.getTotalElements());
     }
 
 }
