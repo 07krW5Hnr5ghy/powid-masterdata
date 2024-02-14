@@ -1887,7 +1887,7 @@ http://localhost:8080/masterdata/purchaseItem?serial=AA00001&tokenUser=gjimenez
     ... more items
 ]
 
-### GET /shipmentItem protected
+### GET /shipment-item protected
 
 - Description : list all shipment items
 
@@ -1895,9 +1895,9 @@ http://localhost:8080/masterdata/purchaseItem?serial=AA00001&tokenUser=gjimenez
 
 - Parameters : 
 
-1. serial : filter purchases by serial
-2. warehouse : filter by warehouse
-3. user : filter purchases by the client of the user (required)
+1. purchaseSerial : filter shipment items by purchase serial
+2. user : filter shipment items by the client of the user (required)
+3. supplierProductSerial : filter shipment items by supplier product serial
 4. sort : sort the values the only valid values are ASC and DESC, default is ASC
 5. sortColumn : select the value that sorts the list in this case name or user
 6. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -1908,20 +1908,12 @@ http://localhost:8080/masterdata/purchaseItem?serial=AA00001&tokenUser=gjimenez
 {
     "content": [
         {
-            "serial": "SA00001",
+            "serial": "AA00001",
             "warehouse": "LUMINOUS",
             "quantity": 15,
             "supplierProductSerial": "A00001A",
             "purchaseSerial": "AA00001",
-            "date": "2024-01-07T02:27:06.523+00:00"
-        },
-        {
-            "serial": "SA00001",
-            "warehouse": "LUMINOUS",
-            "quantity": 4,
-            "supplierProductSerial": "A00001B",
-            "purchaseSerial": "AA00001",
-            "date": "2024-01-07T02:27:06.539+00:00"
+            "date": "2024-02-14T02:45:20.582+00:00"
         }
     ],
     "pageable": {
@@ -1932,20 +1924,20 @@ http://localhost:8080/masterdata/purchaseItem?serial=AA00001&tokenUser=gjimenez
         "unpaged": false,
         "paged": true
     },
-    "last": false,
-    "totalElements": 6,
-    "totalPages": 3,
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 1,
     "first": true,
     "size": 2,
     "number": 0,
     "sort": [],
-    "numberOfElements": 2,
+    "numberOfElements": 1,
     "empty": false
 }
 
 - Example : 
 
-http://localhost:8080/masterdata/shipmentItem?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous
+http://localhost:8080/masterdata/shipment-item?user=gjimenez&pageNumber=0&pageSize=2&purchaseSerial=AA00001&supplierProductSerial=A00001A
 
 ### GET /shipment protected
 

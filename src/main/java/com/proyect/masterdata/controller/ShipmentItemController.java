@@ -17,14 +17,14 @@ public class ShipmentItemController {
     private final IShipmentItem iShipmentItem;
     @GetMapping()
     public ResponseEntity<Page<ShipmentItemDTO>> list(
-            @RequestParam(value = "serial", required = false) String serial,
+            @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "warehouse", required = false) String warehouse,
+            @RequestParam(value = "supplierProductSerial", required = false) String supplierProductSerial,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<ShipmentItemDTO> result = iShipmentItem.list(serial, user, warehouse, sort, sortColumn, pageNumber, pageSize);
+        Page<ShipmentItemDTO> result = iShipmentItem.list(purchaseSerial, user, supplierProductSerial, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

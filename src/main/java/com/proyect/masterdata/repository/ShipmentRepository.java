@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ShipmentRepository extends JpaRepository<Shipment,Long> {
     Shipment findByPurchaseSerialAndShipmentTypeId(String serial,Long shipmentTypeId);
+    Shipment findByPurchaseSerial(String serial);
 }

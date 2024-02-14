@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 public interface ShipmentItemRepositoryCustom {
     Page<ShipmentItem> searchForShipmentItem(
             Long clientId,
-            String serial,
-            Long warehouseId,
+            Long shipmentId,
+            Long supplierProductId,
             String sort,
             String sortColumn,
             Integer pageNumber,

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,6 @@ import com.proyect.masterdata.dto.ShipmentItemDTO;
 import com.proyect.masterdata.dto.request.RequestShipmentItem;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.PurchaseItemRepository;
-import com.proyect.masterdata.repository.ShipmentItemRepository;
-import com.proyect.masterdata.repository.ShipmentItemRepositoryCustom;
-import com.proyect.masterdata.repository.SupplierProductRepository;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.repository.WarehouseRepository;
 import com.proyect.masterdata.services.IGeneralStock;
 import com.proyect.masterdata.services.IShipmentItem;
 import com.proyect.masterdata.services.IWarehouseStock;
@@ -38,6 +33,7 @@ public class ShipmentItemImpl implements IShipmentItem {
     private final PurchaseItemRepository purchaseItemRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final ShipmentItemRepositoryCustom shipmentItemRepositoryCustom;
+    private final ShipmentRepository shipmentRepository;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
 
@@ -107,21 +103,28 @@ public class ShipmentItemImpl implements IShipmentItem {
     }
 
     @Override
-    public Page<ShipmentItemDTO> list(String serial, String user, String warehouse, String sort, String sortColumn,
+    public Page<ShipmentItemDTO> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn,
                                       Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         Page<ShipmentItem> pageShipmentItem;
         Long clientId;
-        Long warehouseId;
+        Long shipmentId;
+        Long supplierProductId;
 
-        if (warehouse != null) {
-            warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+        if (purchaseSerial != null) {
+            shipmentId = shipmentRepository.findByPurchaseSerial(purchaseSerial.toUpperCase()).getId();
         } else {
-            warehouseId = null;
+            shipmentId = null;
+        }
+
+        if (supplierProductSerial != null) {
+            supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+        } else {
+            supplierProductId = null;
         }
 
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            pageShipmentItem = shipmentItemRepositoryCustom.searchForShipmentItem(clientId, serial, warehouseId, sort, sortColumn,
+            pageShipmentItem = shipmentItemRepositoryCustom.searchForShipmentItem(clientId, shipmentId, supplierProductId, sort, sortColumn,
                     pageNumber, pageSize);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
