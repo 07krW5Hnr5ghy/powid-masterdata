@@ -1,4 +1,4 @@
-package com.proyect.masterdata.dto;
+package com.proyect.masterdata.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ItemDTO {
-    private Long id;
-    private ProductDTO product;
+public class RequestOrderItem {
     private Integer quantity;
-    private Double unitPrice;
-    private Double totalPrice;
+    private Double discount;
+    private String productSku;
     private String observations;
 }

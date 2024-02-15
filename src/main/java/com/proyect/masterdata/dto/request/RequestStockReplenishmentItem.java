@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestItem {
-    private Integer quantity;
-    private Double discount;
+public class RequestStockReplenishmentItem {
     private String productSku;
-    private String observations;
+    private Integer quantity;
 }

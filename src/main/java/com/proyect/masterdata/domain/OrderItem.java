@@ -17,7 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 @Table(name = Constants.tableItem, schema = Constants.schemaOrder)
-public class Item {
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

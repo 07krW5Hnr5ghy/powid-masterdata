@@ -1,6 +1,5 @@
 package com.proyect.masterdata.dto.request;
 
-import com.proyect.masterdata.domain.Item;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +21,7 @@ public class RequestOrderSave {
     private String saleChannel;
     private String paymentMethod;
     private String managementType;
-    private List<RequestItem> requestItems;
+    private List<RequestOrderItem> requestOrderItems;
     private String customerName;
     private String customerType;
     private String instagram;

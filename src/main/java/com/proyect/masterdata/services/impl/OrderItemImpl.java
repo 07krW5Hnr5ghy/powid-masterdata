@@ -2,14 +2,14 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CheckStockItemDTO;
-import com.proyect.masterdata.dto.request.RequestItem;
+import com.proyect.masterdata.dto.request.RequestOrderItem;
 import com.proyect.masterdata.dto.response.ResponseCheckStockItem;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.IItem;
+import com.proyect.masterdata.services.IOrderItem;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -22,22 +22,22 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class ItemImpl implements IItem {
+public class OrderItemImpl implements IOrderItem {
 
     private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
+    private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     @Override
-    public ResponseSuccess save(Ordering ordering, RequestItem requestItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         Product product;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(requestItem.getProductSku());
+            product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -52,16 +52,16 @@ public class ItemImpl implements IItem {
         }
 
         try{
-            itemRepository.save(Item.builder()
-                            .discount(requestItem.getDiscount())
+            orderItemRepository.save(OrderItem.builder()
+                            .discount(requestOrderItem.getDiscount())
                             .ordering(ordering)
                             .orderId(ordering.getId())
-                            .quantity(requestItem.getQuantity())
+                            .quantity(requestOrderItem.getQuantity())
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .product(product)
                             .productId(product.getId())
-                            .observations(requestItem.getObservations())
+                            .observations(requestOrderItem.getObservations())
                             .status(true)
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
@@ -142,10 +142,10 @@ public class ItemImpl implements IItem {
     @Override
     public ResponseDelete delete(Long orderId, Long itemId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
-        Item item;
+        OrderItem orderItem;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            item = itemRepository.findByIdAndOrderId(itemId,orderId);
+            orderItem = orderItemRepository.findByIdAndOrderId(itemId,orderId);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -155,15 +155,15 @@ public class ItemImpl implements IItem {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if(item == null){
+        if(orderItem == null){
             throw new InternalErrorExceptions(Constants.ErrorItem);
         }
 
         try{
-            item.setStatus(false);
-            item.setUpdateDate(new Date(System.currentTimeMillis()));
-            item.setTokenUser(user.getUsername());
-            itemRepository.save(item);
+            orderItem.setStatus(false);
+            orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
+            orderItem.setTokenUser(user.getUsername());
+            orderItemRepository.save(orderItem);
             return ResponseDelete.builder()
                     .message(Constants.delete)
                     .code(200)

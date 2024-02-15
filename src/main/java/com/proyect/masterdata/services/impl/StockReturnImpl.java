@@ -68,6 +68,7 @@ public class StockReturnImpl implements IStockReturn {
                 }
             }
             StockReturn newStockReturn = stockReturnRepository.save(StockReturn.builder()
+                            .serial(purchase.getSerial())
                             .purchase(purchase)
                             .purchaseId(purchase.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))

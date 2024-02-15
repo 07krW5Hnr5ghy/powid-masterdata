@@ -558,9 +558,9 @@ Response
     }
 ]
 
-### GET /item protected
+### GET /orderItem protected
 
-- Description : check the stock of one item for the database
+- Description : check the stock of one orderItem for the database
 - Request: none
 - Parameters :
 
@@ -587,7 +587,7 @@ Response
 
 - Example :
 
-http://localhost:8080/masterdata/item?productSku=B00002&quantity=5&user=fcasas
+http://localhost:8080/masterdata/orderItem?productSku=B00002&quantity=5&user=fcasas
 
 
 ### GET /color
@@ -1492,9 +1492,9 @@ http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez
 - Request :
 
 {
-    "quantity":quantity of stock to cover the order item,
+    "quantity":quantity of stock to cover the order orderItem,
     "supplierProductSerial": serial of the supplier product,
-    "itemId": id of the item of the order,
+    "itemId": id of the orderItem of the order,
     "warehouse" : name of the warehouse 
 }
 
@@ -1837,7 +1837,7 @@ http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&u
 
 http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&serial=AA00001
 
-### GET /purchase-item protected
+### GET /purchase-orderItem protected
 
 - Description : list all active purchase items
 
@@ -1886,7 +1886,7 @@ http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&
 
 - Example :
 
-http://localhost:8080/masterdata/purchase-item?user=gjimenez&pageNumber=0&pageSize=2
+http://localhost:8080/masterdata/purchase-orderItem?user=gjimenez&pageNumber=0&pageSize=2
 
 
 ### POST /purchaseItem protected
@@ -1918,7 +1918,7 @@ http://localhost:8080/masterdata/purchase-item?user=gjimenez&pageNumber=0&pageSi
 
 - Example :
 
-http://localhost:8080/masterdata/purchase-item?serial=AA00001&tokenUser=gjimenez
+http://localhost:8080/masterdata/purchase-orderItem?serial=AA00001&tokenUser=gjimenez
 
 [
     {
@@ -1929,7 +1929,7 @@ http://localhost:8080/masterdata/purchase-item?serial=AA00001&tokenUser=gjimenez
     ... more items
 ]
 
-### GET /shipment-item protected
+### GET /shipment-orderItem protected
 
 - Description : list all shipment items
 
@@ -1979,7 +1979,7 @@ http://localhost:8080/masterdata/purchase-item?serial=AA00001&tokenUser=gjimenez
 
 - Example : 
 
-http://localhost:8080/masterdata/shipment-item?user=gjimenez&pageNumber=0&pageSize=2&purchaseSerial=AA00001&supplierProductSerial=A00001A
+http://localhost:8080/masterdata/shipment-orderItem?user=gjimenez&pageNumber=0&pageSize=2&purchaseSerial=AA00001&supplierProductSerial=A00001A
 
 ### GET /shipment protected
 
@@ -2067,7 +2067,7 @@ http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&
 
 - Example :
 
-http://localhost:8080/masterdata/shipment-item?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
+http://localhost:8080/masterdata/shipment-orderItem?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
 
 [
     {
@@ -2353,7 +2353,7 @@ http://localhost:8080/masterdata/stock-return?purchaseSerial=AA00001&tokenUser=g
     }
 ]
 
-### GET /stock-return-item
+### GET /stock-return-orderItem
 
 - Description : list active stock return items per client
 
@@ -2402,7 +2402,7 @@ http://localhost:8080/masterdata/stock-return?purchaseSerial=AA00001&tokenUser=g
 
 - example :
 
-http://localhost:8080/masterdata/stock-return-item?user=gjimenez&pageNumber=0&pageSize=4&purchaseSerial=AA00001&supplierProductSerial=A00001A
+http://localhost:8080/masterdata/stock-return-orderItem?user=gjimenez&pageNumber=0&pageSize=4&purchaseSerial=AA00001&supplierProductSerial=A00001A
 
 ### GET /stock-transaction
 
@@ -2455,9 +2455,9 @@ http://localhost:8080/masterdata/stock-return-item?user=gjimenez&pageNumber=0&pa
 
 http://localhost:8080/masterdata/stock-transaction?user=gjimenez&pageNumber=0&pageSize=4&warehouse=luminous&serial=SAA00001&stockTransactionType=entrada
 
-### GET /stock-transaction-item
+### GET /stock-transaction-orderItem
 
-- Description : list stock transactions item
+- Description : list stock transactions orderItem
 
 - Request : none
 
@@ -2505,7 +2505,7 @@ http://localhost:8080/masterdata/stock-transaction?user=gjimenez&pageNumber=0&pa
 
 - example :
 
-http://localhost:8080/masterdata/stock-transaction-item?user=gjimenez&pageNumber=0&pageSize=4&stockTransactionSerial=SAA00001&supplierProductSerial=A00001A
+http://localhost:8080/masterdata/stock-transaction-orderItem?user=gjimenez&pageNumber=0&pageSize=4&stockTransactionSerial=SAA00001&supplierProductSerial=A00001A
 
 ### GET /stock-transaction-type
 

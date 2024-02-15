@@ -26,7 +26,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     private final UserRepository userRepository;
     private final OrderingRepository orderingRepository;
     private final OrderStockItemRepository orderStockItemRepository;
-    private final ItemRepository itemRepository;
+    private final OrderItemRepository orderItemRepository;
     private final WarehouseRepository warehouseRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final OrderStockItemRepositoryCustom orderStockItemRepositoryCustom;
@@ -37,13 +37,13 @@ public class OrderStockItemImpl implements IOrderStockItem {
 
         User user;
         Ordering ordering;
-        Item item;
+        OrderItem orderItem;
         SupplierProduct supplierProduct;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             ordering = orderingRepository.findById(orderStock.getOrderId()).orElse(null);
-            item = itemRepository.findByIdAndOrderId(requestOrderStockItem.getItemId(), orderStock.getOrderId());
+            orderItem = orderItemRepository.findByIdAndOrderId(requestOrderStockItem.getItemId(), orderStock.getOrderId());
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -58,7 +58,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }
 
-        if(item == null){
+        if(orderItem == null){
             throw new BadRequestExceptions(Constants.ErrorItem);
         }
 
@@ -70,8 +70,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             orderStockItemRepository.save(OrderStockItem.builder()
                             .orderStock(orderStock)
                             .orderStockId(orderStock.getId())
-                            .item(item)
-                            .itemId(item.getId())
+                            .orderItem(orderItem)
+                            .itemId(orderItem.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .supplierProduct(supplierProduct)
                             .supplierProductId(supplierProduct.getId())
@@ -178,10 +178,10 @@ public class OrderStockItemImpl implements IOrderStockItem {
     @Override
     public Boolean checkWarehouseItemStock(Long orderId,Warehouse warehouse,RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions, BadRequestExceptions {
         SupplierProduct supplierProduct;
-        Item item;
+        OrderItem orderItem;
         try{
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
-            item = itemRepository.findByIdAndOrderId(requestOrderStockItem.getItemId(), orderId);
+            orderItem = orderItemRepository.findByIdAndOrderId(requestOrderStockItem.getItemId(), orderId);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -191,13 +191,13 @@ public class OrderStockItemImpl implements IOrderStockItem {
             throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
         }
 
-        if(item == null){
+        if(orderItem == null){
             throw new BadRequestExceptions(Constants.ErrorItem);
         }
 
         try{
             WarehouseStock warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(),supplierProduct.getId());
-            return warehouseStock.getQuantity() >= item.getQuantity();
+            return warehouseStock.getQuantity() >= orderItem.getQuantity();
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

@@ -76,7 +76,6 @@ public class Constants {
     public static final String tableCustomer = "customer";
     public static final String tableCancellationReason = "cancellation_reason";
     public static final String tableCancelledOrder = "cancelled_order";
-    public static final String tableRestock = "restock";
     public static final String tableOrderStock = "order_stock";
     public static final String tableOrderStockItem = "order_stock_item";
     public static final String tableUnitType = "unit_type";
@@ -86,6 +85,7 @@ public class Constants {
     public static final String tableCourierPicture = "courier_picture";
     public static final String tableShipmentType = "shipment_type";
     public static final String tableStockReturnItem = "stock_return_item";
+    public static final String tableStockReplenishmentItem = "stock_replenishmentItem";
 
     // messages
     public static final String register = "registration correctly";
@@ -217,4 +217,8 @@ public class Constants {
     public static final String ErrorOrderStockQuantity = "There is not enough stock in the warehouse for the order";
     public static final String ErrorShipmentType = "Shipment type already exists";
     public static final String ErrorShipmentTypeExists = "Shipment type already exists";
+    public static final String ErrorStockReplenishment = "Stock replenishment does not exists";
+    public static final String ErrorStockReplenishmentExists = "Stock replenishment already exists";
+    public static final String ErrorStockReplenishmentQuantity = "Stock replenishment quantity can't be more than order item quantity";
+    public static final String ErrorStockReplenishmentOrderState = "Stock replenishment only for orders with lack of stock for their items";
 }

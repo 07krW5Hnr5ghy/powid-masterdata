@@ -32,7 +32,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
     private final CancelledOrderRepositoryCustom cancelledOrderRepositoryCustom;
     private final OrderStateRepository orderStateRepository;
     private final IStockTransaction iStockTransaction;
-    private final ItemRepository itemRepository;
+    private final OrderItemRepository orderItemRepository;
     private final OrderStockItemRepository orderStockItemRepository;
     private final WarehouseRepository warehouseRepository;
     private final OrderStockRepository orderStockRepository;
@@ -46,7 +46,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
         CancellationReason cancellationReason;
         OrderState orderState;
         Warehouse warehouseData;
-        List<Item> itemList;
+        List<OrderItem> orderItemList;
         OrderStock orderStock;
 
         try{
@@ -86,10 +86,10 @@ public class CancelledOrderImpl implements ICancelledOrder {
 
         try {
             if(ordering.getOrderState().getName().equals("ENTREGADO")){
-                itemList = itemRepository.findAllByOrderId(ordering.getId());
+                orderItemList = orderItemRepository.findAllByOrderId(ordering.getId());
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
-                for(Item item : itemList){
-                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndItemId(orderStock.getId(),item.getId());
+                for(OrderItem orderItem : orderItemList){
+                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndItemId(orderStock.getId(), orderItem.getId());
                     for(OrderStockItem orderStockItem : orderStockItemList){
                         stockTransactionList.add(RequestStockTransactionItem.builder()
                                 .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())

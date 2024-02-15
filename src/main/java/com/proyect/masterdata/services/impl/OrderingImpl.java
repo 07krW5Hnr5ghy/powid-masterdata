@@ -1,7 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
-import com.proyect.masterdata.dto.ItemDTO;
+import com.proyect.masterdata.dto.OrderItemDTO;
 import com.proyect.masterdata.dto.OrderDTO;
 import com.proyect.masterdata.dto.ProductDTO;
 import com.proyect.masterdata.dto.request.*;
@@ -29,11 +29,11 @@ public class OrderingImpl implements IOrdering {
     private final OrderStateRepository orderStateRepository;
     private final ISale iSale;
     private final ICustomer iCustomer;
-    private final IItem iItem;
+    private final IOrderItem iOrderItem;
     private final OrderingRepositoryCustom orderingRepositoryCustom;
     private final SaleRepository saleRepository;
     private final CustomerRepository customerRepository;
-    private final ItemRepository itemRepository;
+    private final OrderItemRepository orderItemRepository;
     private final ProductPriceRepository productPriceRepository;
     private final ProductRepository productRepository;
     private final PaymentMethodRepository paymentMethodRepository;
@@ -86,9 +86,9 @@ public class OrderingImpl implements IOrdering {
 
             double saleAmount = 0.00;
 
-            for(RequestItem requestItem : requestOrderSave.getRequestItems()){
+            for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
 
-                Product product = productRepository.findBySkuAndStatusTrue(requestItem.getProductSku().toUpperCase());
+                Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
 
                 if(product == null){
                     throw new BadRequestExceptions(Constants.ErrorProduct);
@@ -96,8 +96,8 @@ public class OrderingImpl implements IOrdering {
 
                 ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
 
-                saleAmount += (productPrice.getUnitSalePrice() * requestItem.getQuantity());
-                iItem.save(ordering,requestItem,tokenUser);
+                saleAmount += (productPrice.getUnitSalePrice() * requestOrderItem.getQuantity());
+                iOrderItem.save(ordering, requestOrderItem,tokenUser);
             }
 
             RequestSale requestSale = RequestSale.builder()
@@ -162,10 +162,10 @@ public class OrderingImpl implements IOrdering {
             Sale sale = saleRepository.findByOrderId(order.getId());
             Customer customer = customerRepository.findByOrderId(order.getId());
 
-            List<ItemDTO> itemDTOS = itemRepository.findAllByOrderId(order.getId()).stream().map(item -> {
+            List<OrderItemDTO> orderItemDTOS = orderItemRepository.findAllByOrderId(order.getId()).stream().map(item -> {
                 ProductPrice productPrice = productPriceRepository.findByProductId(item.getProductId());
                 Double totalPrice = productPrice.getUnitSalePrice() * item.getQuantity();
-                return ItemDTO.builder()
+                return OrderItemDTO.builder()
                         .id(item.getId())
                         .product(ProductDTO.builder()
                                 .sku(item.getProduct().getSku())
@@ -209,7 +209,7 @@ public class OrderingImpl implements IOrdering {
                     .deliveryAddress(sale.getDeliveryAddress())
                     .courier(order.getCourier().getName())
                     .paymentReceipts(paymentReceipts)
-                    .items(itemDTOS)
+                    .items(orderItemDTOS)
                     .saleAmount(sale.getSaleAmount())
                     .build();
         }).toList();
@@ -269,10 +269,10 @@ public class OrderingImpl implements IOrdering {
             }
 
             if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
-                List<Item> orderItems = itemRepository.findAllByOrderId(ordering.getId());
+                List<OrderItem> orderOrderItems = orderItemRepository.findAllByOrderId(ordering.getId());
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
-                for(Item item : orderItems){
-                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndItemId(orderStock.getId(),item.getId());
+                for(OrderItem orderItem : orderOrderItems){
+                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndItemId(orderStock.getId(), orderItem.getId());
                     for(OrderStockItem orderStockItem : orderStockItemList){
                         stockTransactionList.add(RequestStockTransactionItem.builder()
                                         .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())

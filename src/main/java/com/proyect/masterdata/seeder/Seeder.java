@@ -1318,24 +1318,24 @@ public class Seeder implements CommandLineRunner {
                         );
                         receipts1.add(multipartFile1);
 
-                        RequestItem requestItem1 = RequestItem.builder()
+                        RequestOrderItem requestOrderItem1 = RequestOrderItem.builder()
                                 .productSku("A00001")
                                 .discount(0.00)
                                 .quantity(2)
                                 .observations("")
                                 .build();
 
-                        RequestItem requestItem2 = RequestItem.builder()
+                        RequestOrderItem requestOrderItem2 = RequestOrderItem.builder()
                                 .quantity(1)
                                 .discount(3.00)
                                 .productSku("A00002")
                                 .observations("")
                                 .build();
 
-                        ArrayList<RequestItem> requestItems1 = new ArrayList<>();
+                        ArrayList<RequestOrderItem> requestOrderItems1 = new ArrayList<>();
 
-                        requestItems1.add(requestItem1);
-                        requestItems1.add(requestItem2);
+                        requestOrderItems1.add(requestOrderItem1);
+                        requestOrderItems1.add(requestOrderItem2);
 
                         RequestOrderSave requestOrderSave1 = RequestOrderSave.builder()
                                 .advancedPayment(0.00)
@@ -1355,7 +1355,7 @@ public class Seeder implements CommandLineRunner {
                                 .paymentMethod("yape")
                                 .receipts(receipts1)
                                 .saleChannel("tienda online")
-                                .requestItems(requestItems1)
+                                .requestOrderItems(requestOrderItems1)
                                 .build();
 
                         iOrdering.save(requestOrderSave1,"gjimenez");
@@ -1391,24 +1391,24 @@ public class Seeder implements CommandLineRunner {
                         );
                         receipts2.add(multipartFile3);
 
-                        RequestItem requestItem3 = RequestItem.builder()
+                        RequestOrderItem requestOrderItem3 = RequestOrderItem.builder()
                                 .productSku("A00003")
                                 .quantity(3)
                                 .discount(0.00)
                                 .observations("")
                                 .build();
 
-                        RequestItem requestItem4 = RequestItem.builder()
+                        RequestOrderItem requestOrderItem4 = RequestOrderItem.builder()
                                 .productSku("A00001")
                                 .quantity(1)
                                 .discount(2.00)
                                 .observations("")
                                 .build();
 
-                        ArrayList<RequestItem> requestItems2 = new ArrayList<>();
+                        ArrayList<RequestOrderItem> requestOrderItems2 = new ArrayList<>();
 
-                        requestItems2.add(requestItem3);
-                        requestItems2.add(requestItem4);
+                        requestOrderItems2.add(requestOrderItem3);
+                        requestOrderItems2.add(requestOrderItem4);
 
                         RequestOrderSave requestOrderSave2 = RequestOrderSave.builder()
                                 .advancedPayment(4.00)
@@ -1428,31 +1428,31 @@ public class Seeder implements CommandLineRunner {
                                 .paymentMethod("plin")
                                 .receipts(receipts2)
                                 .saleChannel("tienda online")
-                                .requestItems(requestItems2)
+                                .requestOrderItems(requestOrderItems2)
                                 .build();
 
                         iOrdering.save(requestOrderSave2,"gjimenez");
 
                         List<MultipartFile> receipts3 = new ArrayList<>();
 
-                        RequestItem requestItem5 = RequestItem.builder()
+                        RequestOrderItem requestOrderItem5 = RequestOrderItem.builder()
                                 .productSku("B00001")
                                 .discount(0.00)
                                 .quantity(1)
                                 .observations("")
                                 .build();
 
-                        RequestItem requestItem6 = RequestItem.builder()
+                        RequestOrderItem requestOrderItem6 = RequestOrderItem.builder()
                                 .quantity(3)
                                 .discount(5.00)
                                 .productSku("B00002")
                                 .observations("")
                                 .build();
 
-                        List<RequestItem> requestItems3 = new ArrayList<>();
+                        List<RequestOrderItem> requestOrderItems3 = new ArrayList<>();
 
-                        requestItems3.add(requestItem5);
-                        requestItems3.add(requestItem6);
+                        requestOrderItems3.add(requestOrderItem5);
+                        requestOrderItems3.add(requestOrderItem6);
 
                         RequestOrderSave requestOrderSave3 = RequestOrderSave.builder()
                                 .advancedPayment(0.00)
@@ -1472,31 +1472,31 @@ public class Seeder implements CommandLineRunner {
                                 .paymentMethod("efectivo")
                                 .receipts(receipts3)
                                 .saleChannel("tienda online")
-                                .requestItems(requestItems3)
+                                .requestOrderItems(requestOrderItems3)
                                 .build();
 
                         iOrdering.save(requestOrderSave3,"fcasas");
 
                         List<MultipartFile> receipts4 = new ArrayList<>();
 
-                        RequestItem requestItem7 = RequestItem.builder()
+                        RequestOrderItem requestOrderItem7 = RequestOrderItem.builder()
                                 .productSku("B00002")
                                 .discount(7.00)
                                 .quantity(5)
                                 .observations("")
                                 .build();
 
-                        RequestItem requestItem8 = RequestItem.builder()
+                        RequestOrderItem requestOrderItem8 = RequestOrderItem.builder()
                                 .quantity(2)
                                 .discount(0.00)
                                 .productSku("B00003")
                                 .observations("")
                                 .build();
 
-                        List<RequestItem> requestItems4 = new ArrayList<>();
+                        List<RequestOrderItem> requestOrderItems4 = new ArrayList<>();
 
-                        requestItems4.add(requestItem7);
-                        requestItems4.add(requestItem8);
+                        requestOrderItems4.add(requestOrderItem7);
+                        requestOrderItems4.add(requestOrderItem8);
 
                         RequestOrderSave requestOrderSave4 = RequestOrderSave.builder()
                                 .advancedPayment(0.00)
@@ -1516,7 +1516,7 @@ public class Seeder implements CommandLineRunner {
                                 .paymentMethod("efectivo")
                                 .receipts(receipts4)
                                 .saleChannel("tienda online")
-                                .requestItems(requestItems4)
+                                .requestOrderItems(requestOrderItems4)
                                 .build();
 
                         iOrdering.save(requestOrderSave4,"fcasas");

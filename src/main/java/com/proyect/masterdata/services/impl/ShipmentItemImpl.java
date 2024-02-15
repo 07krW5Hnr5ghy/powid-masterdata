@@ -89,6 +89,7 @@ public class ShipmentItemImpl implements IShipmentItem {
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .quantity(requestShipmentItem.getQuantity())
+                            .tokenUser(user.getUsername())
                     .build());
 
             iWarehouseStock.in(shipment.getWarehouse().getName(),supplierProduct.getSerial(), requestShipmentItem.getQuantity(), user.getUsername());
