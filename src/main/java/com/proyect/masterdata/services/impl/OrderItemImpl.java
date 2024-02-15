@@ -64,6 +64,7 @@ public class OrderItemImpl implements IOrderItem {
                             .observations(requestOrderItem.getObservations())
                             .status(true)
                             .registrationDate(new Date(System.currentTimeMillis()))
+                            .updateDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
                     .build());
             return ResponseSuccess.builder()

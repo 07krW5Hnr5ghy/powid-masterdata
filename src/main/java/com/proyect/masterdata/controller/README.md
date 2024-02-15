@@ -2267,6 +2267,42 @@ Request Body
     "m","l","xs","xl"
 ]
 
+### POST /stock-replenishment protected
+
+- Description : add one stock replenishment to the database
+
+    - Request :
+      [
+          {
+            "productSku" : "sku of the product to replenish",
+            "quantity" : "quantity of the product to replenish"
+          }
+      ]
+
+- Parameters :
+
+1. orderId : id of the order to replenish the stock
+2. tokenUser : username of the user who register the stock replenish
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/stock-replenishment?orderId=5&tokenUser=gjimenez
+
+[
+    {
+        "productSku" : "A00001",
+        "quantity" : 5
+    }
+]
+
 ### GET /stock-return
 
 - Description : list active stock return items per client
@@ -2353,7 +2389,7 @@ http://localhost:8080/masterdata/stock-return?purchaseSerial=AA00001&tokenUser=g
     }
 ]
 
-### GET /stock-return-orderItem
+### GET /stock-return-item
 
 - Description : list active stock return items per client
 

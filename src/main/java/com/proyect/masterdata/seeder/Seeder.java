@@ -52,7 +52,6 @@ public class Seeder implements CommandLineRunner {
         private final IDistrict iDistrict;
         private final IStockTransactionType iStockTransactionType;
         private final IWarehouse iWarehouse;
-        private final IStockTransactionItem iStockTransactionItem;
         private final IModule iModule;
         private final ISubscription iSubscription;
         private final IShipment iShipment;
@@ -71,6 +70,7 @@ public class Seeder implements CommandLineRunner {
         private final ICancelledOrder iCancelledOrder;
         private final IStockReturn iStockReturn;
         private final IShipmentType iShipmentType;
+        private final IStockReplenishment iStockReplenishment;
         @Override
         public void run(String... args) throws Exception {
 
@@ -837,7 +837,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678925")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct19, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct19, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct20 = RequestSupplierProduct.builder()
                                 .productSku("B00001")
@@ -846,7 +846,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678926")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct20, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct20, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct21 = RequestSupplierProduct.builder()
                                 .productSku("B00002")
@@ -855,7 +855,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678925")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct21, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct21, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct22 = RequestSupplierProduct.builder()
                                 .productSku("B00002")
@@ -864,7 +864,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678926")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct22, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct22, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct23 = RequestSupplierProduct.builder()
                                 .productSku("B00003")
@@ -873,7 +873,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678925")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct23, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct23, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct24 = RequestSupplierProduct.builder()
                                 .productSku("B00003")
@@ -882,7 +882,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678926")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct24, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct24, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct25 = RequestSupplierProduct.builder()
                                 .productSku("B00004")
@@ -891,7 +891,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678925")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct25, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct25, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct26 = RequestSupplierProduct.builder()
                                 .productSku("B00004")
@@ -900,7 +900,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678926")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct26, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct26, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct27 = RequestSupplierProduct.builder()
                                 .productSku("B00005")
@@ -909,7 +909,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678925")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct27, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct27, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct28 = RequestSupplierProduct.builder()
                                 .productSku("B00005")
@@ -918,7 +918,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678926")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct28, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct28, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct29 = RequestSupplierProduct.builder()
                                 .productSku("B00006")
@@ -927,7 +927,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678925")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct29, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct29, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct30 = RequestSupplierProduct.builder()
                                 .productSku("B00006")
@@ -936,7 +936,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678926")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct30, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct30, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct31 = RequestSupplierProduct.builder()
                                 .productSku("B00007")
@@ -945,7 +945,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678925")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct31, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct31, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct32 = RequestSupplierProduct.builder()
                                 .productSku("B00007")
@@ -954,7 +954,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678926")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct32, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct32, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct33 = RequestSupplierProduct.builder()
                                 .productSku("B00008")
@@ -963,7 +963,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678925")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct33, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct33, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct34 = RequestSupplierProduct.builder()
                                 .productSku("B00008")
@@ -972,7 +972,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678926")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct34, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct34, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct35 = RequestSupplierProduct.builder()
                                 .productSku("B00009")
@@ -981,7 +981,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678925")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct35, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct35, "fcasas");
 
                         RequestSupplierProduct requestSupplierProduct36 = RequestSupplierProduct.builder()
                                 .productSku("B00009")
@@ -990,7 +990,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierRuc("12345678926")
                                 .build();
 
-                        iSupplierProduct.save(requestSupplierProduct36, "gjimenez");
+                        iSupplierProduct.save(requestSupplierProduct36, "fcasas");
 
                         // stock transaction types mocks
                         iStockTransactionType.save("entrada", "admin1");
@@ -1521,6 +1521,48 @@ public class Seeder implements CommandLineRunner {
 
                         iOrdering.save(requestOrderSave4,"fcasas");
 
+                        RequestOrderItem requestOrderItem9 = RequestOrderItem.builder()
+                                .productSku("A00003")
+                                .quantity(5)
+                                .discount(0.00)
+                                .observations("")
+                                .build();
+
+                        RequestOrderItem requestOrderItem10 = RequestOrderItem.builder()
+                                .productSku("A00001")
+                                .quantity(8)
+                                .discount(2.00)
+                                .observations("")
+                                .build();
+
+                        ArrayList<RequestOrderItem> requestOrderItems5 = new ArrayList<>();
+
+                        requestOrderItems5.add(requestOrderItem9);
+                        requestOrderItems5.add(requestOrderItem10);
+
+                        RequestOrderSave requestOrderSave5 = RequestOrderSave.builder()
+                                .advancedPayment(2.00)
+                                .customerAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
+                                .customerDepartment("LIMA")
+                                .customerProvince("LIMA")
+                                .customerDistrict("INDEPENDENCIA")
+                                .customerName("Consuelo Rojas")
+                                .customerPhone("956701333")
+                                .customerReference("")
+                                .customerType("Tradicional")
+                                .deliveryAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
+                                .deliveryAmount(4.00)
+                                .managementType("venta")
+                                .instagram("")
+                                .observations("")
+                                .paymentMethod("plin")
+                                .receipts(receipts2)
+                                .saleChannel("tienda online")
+                                .requestOrderItems(requestOrderItems5)
+                                .build();
+
+                        iOrdering.save(requestOrderSave5,"gjimenez");
+
                         // order stock mocks
 
                         RequestOrderStockItem requestOrderStockItem1 = RequestOrderStockItem.builder()
@@ -1619,7 +1661,7 @@ public class Seeder implements CommandLineRunner {
 
                         iCancelledOrder.save(requestCancelledOrder1,"gjimenez");
 
-                        // mock products
+                        // mock courier pictures and change state to delivered
                         List<MultipartFile> courierImages1 = new ArrayList<>();
                         File courierImage1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\test_pics\\bill.jpg");
                         // uncomment for deployment
@@ -1644,6 +1686,7 @@ public class Seeder implements CommandLineRunner {
 
                         iCourier.updateOrder(1L,requestCourierOrder1,"gjimenez");
 
+                        // mock register stock return
                         List<RequestStockReturnItem> requestStockReturnItemList = new ArrayList<RequestStockReturnItem>();
                         RequestStockReturnItem requestStockReturnItem1 = RequestStockReturnItem.builder()
                                 .observations("unidades dañadas por agua")
@@ -1664,6 +1707,31 @@ public class Seeder implements CommandLineRunner {
                                 .build();
                         requestStockReturnItemList.add(requestStockReturnItem3);
                         iStockReturn.save("AA00001",requestStockReturnItemList,"gjimenez");
+                        // update order to lack of stock state
+                        RequestOrderUpdate requestOrderUpdate3 = RequestOrderUpdate.builder()
+                                .pictures(new ArrayList<>())
+                                .receipts(receipts2)
+                                .saleChannel("tienda online")
+                                .courier("SIN COURIER")
+                                .paymentState("POR RECAUDAR")
+                                .paymentMethod("plin")
+                                .orderState("NO HAY STOCK")
+                                .observations("falta de stock para cumplir con el pedido")
+                                .build();
+                        iOrdering.update(5L,requestOrderUpdate3,"gjimenez");
+                        // mock stock replenishment
+                        List<RequestStockReplenishmentItem> requestStockReplenishmentItemList1 = new ArrayList<RequestStockReplenishmentItem>();
+                        RequestStockReplenishmentItem requestStockReplenishmentItem1 =  RequestStockReplenishmentItem.builder()
+                                .productSku("A00001")
+                                .quantity(8)
+                                .build();
+                        RequestStockReplenishmentItem requestStockReplenishmentItem2 = RequestStockReplenishmentItem.builder()
+                                .productSku("A00003")
+                                .quantity(5)
+                                .build();
+                        requestStockReplenishmentItemList1.add(requestStockReplenishmentItem1);
+                        requestStockReplenishmentItemList1.add(requestStockReplenishmentItem2);
+                        iStockReplenishment.save(5L,requestStockReplenishmentItemList1,"gjimenez");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());
