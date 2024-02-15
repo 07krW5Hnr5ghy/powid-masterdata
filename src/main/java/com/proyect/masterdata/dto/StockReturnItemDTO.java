@@ -11,8 +11,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class StockReturnDTO {
+public class StockReturnItemDTO {
     private String purchaseSerial;
+    private String supplierProductSerial;
+    private Integer quantity;
+    private String observations;
     private Date registrationDate;
-    private Date updateDate;
 }

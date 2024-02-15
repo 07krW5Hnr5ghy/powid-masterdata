@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StockReturnRepository extends JpaRepository<StockReturn,Long> {
-    StockReturn findByPurchaseIdAndSupplierProductId(Long purchaseId, Long supplierProductId);
+    StockReturn findByPurchaseId(Long id);
 }

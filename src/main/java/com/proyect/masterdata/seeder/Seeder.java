@@ -1,33 +1,22 @@
 package com.proyect.masterdata.seeder;
 
+import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.LocationDTO;
+import com.proyect.masterdata.dto.request.*;
+import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import com.proyect.masterdata.dto.request.*;
-import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.*;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
-import com.proyect.masterdata.domain.Access;
-import com.proyect.masterdata.domain.Client;
-import com.proyect.masterdata.domain.Department;
-import com.proyect.masterdata.domain.District;
-import com.proyect.masterdata.domain.Province;
-import com.proyect.masterdata.domain.Role;
-import com.proyect.masterdata.domain.RoleAccess;
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.UserRole;
-import com.proyect.masterdata.dto.LocationDTO;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.mock.web.MockMultipartFile;
 
 @Component
 @RequiredArgsConstructor
@@ -1655,26 +1644,26 @@ public class Seeder implements CommandLineRunner {
 
                         iCourier.updateOrder(1L,requestCourierOrder1,"gjimenez");
 
-                        List<RequestStockReturn> requestStockReturnList = new ArrayList<RequestStockReturn>();
-                        RequestStockReturn requestStockReturn1 = RequestStockReturn.builder()
+                        List<RequestStockReturnItem> requestStockReturnItemList = new ArrayList<RequestStockReturnItem>();
+                        RequestStockReturnItem requestStockReturnItem1 = RequestStockReturnItem.builder()
                                 .observations("unidades dañadas por agua")
                                 .quantity(4)
                                 .supplierProductSerial("A00001A")
                                 .build();
-                        requestStockReturnList.add(requestStockReturn1);
-                        RequestStockReturn requestStockReturn2 = RequestStockReturn.builder()
+                        requestStockReturnItemList.add(requestStockReturnItem1);
+                        RequestStockReturnItem requestStockReturnItem2 = RequestStockReturnItem.builder()
                                 .observations("unidades defectuosas")
                                 .quantity(2)
                                 .supplierProductSerial("A00002A")
                                 .build();
-                        requestStockReturnList.add(requestStockReturn2);
-                        RequestStockReturn requestStockReturn3 = RequestStockReturn.builder()
+                        requestStockReturnItemList.add(requestStockReturnItem2);
+                        RequestStockReturnItem requestStockReturnItem3 = RequestStockReturnItem.builder()
                                 .observations("mercancia incorrecta")
                                 .quantity(3)
                                 .supplierProductSerial("A00003A")
                                 .build();
-                        requestStockReturnList.add(requestStockReturn3);
-                        iStockReturn.save(requestStockReturnList,"AA00001","gjimenez");
+                        requestStockReturnItemList.add(requestStockReturnItem3);
+                        iStockReturn.save("AA00001",requestStockReturnItemList,"gjimenez");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());

@@ -1,7 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.StockReturn;
-import com.proyect.masterdata.repository.StockReturnRepositoryCustom;
+import com.proyect.masterdata.domain.StockReturnItem;
+import com.proyect.masterdata.repository.StockReturnItemRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -17,17 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCustom {
+public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<StockReturn> searchForStockReturnItem(Long purchaseId, Long clientId, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<StockReturnItem> searchForStockReturnItem(Long purchaseId, Long clientId, Long supplierProductId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<StockReturn> criteriaQuery = criteriaBuilder.createQuery(StockReturn.class);
-        Root<StockReturn> itemRoot = criteriaQuery.from(StockReturn.class);
+        CriteriaQuery<StockReturnItem> criteriaQuery = criteriaBuilder.createQuery(StockReturnItem.class);
+        Root<StockReturnItem> itemRoot = criteriaQuery.from(StockReturnItem.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicate(purchaseId, clientId,status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(purchaseId, clientId, supplierProductId, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -46,21 +46,21 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<StockReturn> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<StockReturnItem> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(purchaseId,clientId, status);
+        Long count = getOrderCount(purchaseId,clientId, supplierProductId);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicate(
             Long purchaseId,
             Long clientId,
-            Boolean status,
+            Long supplierProductId,
             CriteriaBuilder criteriaBuilder,
-            Root<StockReturn> itemRoot) {
+            Root<StockReturnItem> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -72,10 +72,14 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("purchaseId"), purchaseId)));
         }
 
+        if (supplierProductId != null) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("supplierProductId"), purchaseId)));
+        }
+
         return conditions;
     }
 
-    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<StockReturn> itemRoot) {
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<StockReturnItem> itemRoot) {
 
         List<Order> stockReturnList = new ArrayList<>();
 
@@ -87,10 +91,14 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
             stockReturnList.add(criteriaBuilder.asc(itemRoot.get("purchaseId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("supplierProductId")) {
+            stockReturnList.add(criteriaBuilder.asc(itemRoot.get("supplierProductId")));
+        }
+
         return stockReturnList;
     }
 
-    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<StockReturn> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<StockReturnItem> itemRoot) {
 
         List<Order> stockReturnList = new ArrayList<>();
 
@@ -102,16 +110,20 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
             stockReturnList.add(criteriaBuilder.desc(itemRoot.get("purchaseId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("supplierProductId")) {
+            stockReturnList.add(criteriaBuilder.desc(itemRoot.get("supplierProductId")));
+        }
+
         return stockReturnList;
     }
 
-    private Long getOrderCount(Long purchaseId, Long clientId,Boolean status) {
+    private Long getOrderCount(Long purchaseId, Long clientId,Long supplierProductId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<StockReturn> itemRoot = criteriaQuery.from(StockReturn.class);
+        Root<StockReturnItem> itemRoot = criteriaQuery.from(StockReturnItem.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(purchaseId, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(purchaseId, clientId, supplierProductId, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

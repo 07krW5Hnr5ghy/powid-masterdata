@@ -1,38 +1,23 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.StockReturnDTO;
-import com.proyect.masterdata.dto.request.RequestStockReturnItem;
-import com.proyect.masterdata.dto.response.ResponseSuccess;
+import com.proyect.masterdata.dto.StockReturnItemDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.services.IStockReturn;
+import com.proyect.masterdata.services.IStockReturnItem;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("stock-return")
+@RequestMapping("stock-return-item")
 @AllArgsConstructor
-public class StockReturnController {
-    private final IStockReturn iStockReturn;
-
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> save(
-            @RequestBody() List<RequestStockReturnItem> requestStockReturnItemList,
-            @RequestParam("purchaseSerial") String purchaseSerial,
-            @RequestParam("tokenUser") String tokenUser
-            ) throws BadRequestExceptions {
-        ResponseSuccess result = iStockReturn.save(purchaseSerial,requestStockReturnItemList,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+public class StockReturnItemController {
+    private final IStockReturnItem iStockReturnItem;
 
     @GetMapping()
-    public ResponseEntity<Page<StockReturnDTO>> list(
+    public ResponseEntity<Page<StockReturnItemDTO>> list(
             @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "supplierProductSerial", required = false) String supplierProductSerial,
@@ -40,9 +25,8 @@ public class StockReturnController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<StockReturnDTO> result = iStockReturn.list(purchaseSerial, user, sort, sortColumn, pageNumber,
+        Page<StockReturnItemDTO> result = iStockReturnItem.list(purchaseSerial, user,supplierProductSerial, sort, sortColumn, pageNumber,
                 pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
 }

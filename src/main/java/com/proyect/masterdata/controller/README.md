@@ -2269,7 +2269,7 @@ Request Body
 
 ### GET /stock-return
 
-- Description : list active stock return per client
+- Description : list active stock return items per client
 
 - Request : none
 
@@ -2285,51 +2285,35 @@ Request Body
 - Response :
 
 {
-"content": [
-{
-"quantity": 10,
-"warehouse": "LUMINOUS",
-"stockTransactionType": "ENTRADA",
-"supplierProductSerial": "A00001A",
-"date": "2024-01-01T04:53:53.326+00:00"
-},
-{
-"quantity": 15,
-"warehouse": "OIKAS",
-"stockTransactionType": "ENTRADA",
-"supplierProductSerial": "A00002B",
-"date": "2024-01-01T04:53:53.326+00:00"
-},
-{
-"quantity": 20,
-"warehouse": "LUMINOUS",
-"stockTransactionType": "ENTRADA",
-"supplierProductSerial": "A00003A",
-"date": "2024-01-01T04:53:53.326+00:00"
-}
-],
-"pageable": {
-"sort": [],
-"offset": 0,
-"pageNumber": 0,
-"pageSize": 3,
-"unpaged": false,
-"paged": true
-},
-"last": true,
-"totalElements": 3,
-"totalPages": 1,
-"first": true,
-"size": 3,
-"number": 0,
-"sort": [],
-"numberOfElements": 3,
-"empty": false
+    "content": [
+        {
+            "purchaseSerial": "AA00001",
+            "registrationDate": "2024-02-15T02:53:16.034+00:00",
+            "updateDate": "2024-02-15T02:53:16.034+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 4,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": true,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "size": 4,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
 }
 
 - example :
 
-http://localhost:8080/masterdata/stock-return?user=gjimenez&pageNumber=0&pageSize=4&warehouse=luminous
+http://localhost:8080/masterdata/stock-return?user=gjimenez&pageNumber=0&pageSize=4&purchaseSerial=AA00001
 
 ### POST /stock-return protected
 
@@ -2359,7 +2343,7 @@ http://localhost:8080/masterdata/stock-return?user=gjimenez&pageNumber=0&pageSiz
 
 - Example :
 
-http://localhost:8080/masterdata/stock-return?purchaseSerial=AA00001&tokenUser=admin1
+http://localhost:8080/masterdata/stock-return?purchaseSerial=AA00001&tokenUser=gjimenez
 
 [
     {
@@ -2368,6 +2352,57 @@ http://localhost:8080/masterdata/stock-return?purchaseSerial=AA00001&tokenUser=a
         "observations" : "unidades dañadas por agua"
     }
 ]
+
+### GET /stock-return-item
+
+- Description : list active stock return items per client
+
+- Request : none
+
+- Parameter :
+
+1. user : name of the user who is listing the stock return (required)
+2. purchaseSerial : serial purchaseItem of the return stock
+3. supplierProductSerial : serial of the supplier product
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "purchaseSerial": "AA00001",
+            "supplierProductSerial": "A00001A",
+            "quantity": 4,
+            "observations": "unidades dañadas por agua",
+            "registrationDate": "2024-02-15T02:53:16.044+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 4,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": true,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "size": 4,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/stock-return-item?user=gjimenez&pageNumber=0&pageSize=4&purchaseSerial=AA00001&supplierProductSerial=A00001A
 
 ### GET /stock-transaction
 

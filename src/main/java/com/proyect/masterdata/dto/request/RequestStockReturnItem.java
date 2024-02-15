@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestStockReturn {
+public class RequestStockReturnItem {
     private String supplierProductSerial;
     private Integer quantity;
     private String observations;
