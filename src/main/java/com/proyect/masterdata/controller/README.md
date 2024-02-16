@@ -2351,6 +2351,57 @@ http://localhost:8080/masterdata/stock-replenishment?orderId=5&tokenUser=gjimene
     }
 ]
 
+### GET /stock-replenishment-item
+
+- Description : list active stock replenishment items
+
+- Request : none
+
+- Parameter :
+
+1. user : name of the user who is listing the stock return (required)
+2. orderId : order id number for the order that request stock replenishment
+3. productSku : product sku code of the product belonging to the stock replenishment
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "orderId": 5,
+            "productSku": "A00003",
+            "quantity": 5,
+            "registrationDate": "2024-02-16T03:18:34.276+00:00",
+            "updateDate": "2024-02-16T03:18:34.276+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 4,
+        "pageNumber": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 1,
+    "first": true,
+    "size": 4,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/stock-replenishment-item?user=gjimenez&pageNumber=0&pageSize=4&orderId=5&productSku=A00003
+
 ### GET /stock-return
 
 - Description : list active stock return items per client

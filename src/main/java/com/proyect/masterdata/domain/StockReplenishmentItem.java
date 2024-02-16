@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -37,6 +39,15 @@ public class StockReplenishmentItem {
 
     @Column(name = "token_user")
     private String tokenUser;
+
+    @Column(name = "status")
+    private Boolean status;
+
+    @Column(name = "registration_date")
+    private Date registrationDate;
+
+    @Column(name = "update_date")
+    private Date updateDate;
 
     @ManyToOne
     @JoinColumn(name = "order_id", columnDefinition = "orderId", insertable = false,updatable = false)
