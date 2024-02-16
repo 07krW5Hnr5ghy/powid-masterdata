@@ -37,6 +37,7 @@ public class ShipmentImpl implements IShipment {
     private final IGeneralStock iGeneralStock;
     private final ShipmentTypeRepository shipmentTypeRepository;
     private final ShipmentRepositoryCustom shipmentRepositoryCustom;
+    private final SupplierProductRepository supplierProductRepository;
 
     @Override
     public ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -83,11 +84,18 @@ public class ShipmentImpl implements IShipment {
         }
 
         try{
+
+            for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
+                SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProductSerial());
+                if(supplierProduct == null){
+                    throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                }
+            }
             List<RequestStockTransactionItem> requestStockTransactionItemList = requestShipment.getRequestShipmentItemList().stream().map(shipmentItem -> RequestStockTransactionItem.builder()
                     .quantity(shipmentItem.getQuantity())
                     .supplierProductSerial(shipmentItem.getSupplierProductSerial().toUpperCase())
                     .build()).toList();
-            StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getPurchaseSerial().toUpperCase(), warehouse.getName(),requestStockTransactionItemList,"ENTRADA",user.getUsername());
+            StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getPurchaseSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
             Shipment newShipment = shipmentRepository.save(Shipment.builder()
                             .purchaseSerial(requestShipment.getPurchaseSerial().toUpperCase())
                             .status(true)
@@ -106,8 +114,9 @@ public class ShipmentImpl implements IShipment {
                             .tokenUser(user.getUsername())
                       .build());
             for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
+                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProductSerial());
                   iShipmentItem.save(newShipment,purchase,warehouse.getName(),requestShipmentItem,user.getUsername());
-                  iWarehouseStock.in(warehouse.getName(),requestShipmentItem.getSupplierProductSerial(),requestShipmentItem.getQuantity(),user.getUsername());
+                  iWarehouseStock.in(warehouse,supplierProduct,requestShipmentItem.getQuantity(),user);
                   iGeneralStock.in(requestShipmentItem.getSupplierProductSerial(),requestShipmentItem.getQuantity(),user.getUsername());
             }
             return ResponseSuccess.builder()

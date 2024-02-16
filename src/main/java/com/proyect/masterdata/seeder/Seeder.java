@@ -71,6 +71,7 @@ public class Seeder implements CommandLineRunner {
         private final IStockReturn iStockReturn;
         private final IShipmentType iShipmentType;
         private final IStockReplenishment iStockReplenishment;
+        private final IStockTransfer iStockTransfer;
         @Override
         public void run(String... args) throws Exception {
 
@@ -995,7 +996,8 @@ public class Seeder implements CommandLineRunner {
                         // stock transaction types mocks
                         iStockTransactionType.save("entrada", "admin1");
                         iStockTransactionType.save("salida", "admin1");
-                        iStockTransactionType.save("transferencia", "admin1");
+                        iStockTransactionType.save("transferencia-entrada", "admin1");
+                        iStockTransactionType.save("transferencia-salida", "admin1");
                         iStockTransactionType.save("devolucion-comprador","admin1");
                         iStockTransactionType.save("devolucion-proveedor","admin1");
 
@@ -1732,6 +1734,21 @@ public class Seeder implements CommandLineRunner {
                         requestStockReplenishmentItemList1.add(requestStockReplenishmentItem1);
                         requestStockReplenishmentItemList1.add(requestStockReplenishmentItem2);
                         iStockReplenishment.save(5L,requestStockReplenishmentItemList1,"gjimenez");
+
+                        RequestStockTransfer requestStockTransfer1 = RequestStockTransfer.builder()
+                                .originWarehouse("luminous")
+                                .destinationWarehouse("oikas")
+                                .build();
+                        List<RequestStockTransferItem> requestStockTransferItemList1 = new ArrayList<>();
+                        requestStockTransferItemList1.add(RequestStockTransferItem.builder()
+                                .quantity(15)
+                                .supplierProductSerial("A00003B")
+                                .build());
+                        requestStockTransferItemList1.add(RequestStockTransferItem.builder()
+                                        .quantity(12)
+                                        .supplierProductSerial("A00002B")
+                                .build());
+                        iStockTransfer.save(requestStockTransfer1,requestStockTransferItemList1,"gjimenez");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());

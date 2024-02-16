@@ -92,7 +92,7 @@ public class ShipmentItemImpl implements IShipmentItem {
                             .tokenUser(user.getUsername())
                     .build());
 
-            iWarehouseStock.in(shipment.getWarehouse().getName(),supplierProduct.getSerial(), requestShipmentItem.getQuantity(), user.getUsername());
+            iWarehouseStock.in(shipment.getWarehouse(),supplierProduct, requestShipmentItem.getQuantity(), user);
             iGeneralStock.in(supplierProduct.getSerial(), requestShipmentItem.getQuantity(), user.getUsername());
 
             return newShipmentItem;

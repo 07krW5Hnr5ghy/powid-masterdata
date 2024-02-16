@@ -40,6 +40,12 @@ public class StockTransferItem {
     @CreationTimestamp
     private Date updateDate;
 
+    @Column(name = "stock_transfer_id")
+    private Long stockTransferId;
+
+    @Column(name = "token_user")
+    private String tokenUser;
+
     @ManyToOne()
     @JoinColumn(name = "supplier_product_id",columnDefinition = "supplierProductId",insertable = false,updatable = false)
     private SupplierProduct supplierProduct;
@@ -47,4 +53,8 @@ public class StockTransferItem {
     @ManyToOne()
     @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @JoinColumn(name = "stock_transfer_id",columnDefinition = "stockTransferId",insertable = false,updatable = false)
+    private StockTransfer stockTransfer;
 }

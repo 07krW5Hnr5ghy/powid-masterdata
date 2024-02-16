@@ -278,11 +278,11 @@ public class OrderingImpl implements IOrdering {
                                         .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
                                         .quantity(orderStockItem.getQuantity())
                                 .build());
-                        iWarehouseStock.out(orderStockItem.getOrderStock().getWarehouse().getName(), orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
+                        iWarehouseStock.out(orderStockItem.getOrderStock().getWarehouse(), orderStockItem.getSupplierProduct(), orderStockItem.getQuantity(),user);
                         iGeneralStock.out(orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
                     }
                 }
-                iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse().getName(),stockTransactionList,"SALIDA",user.getUsername());
+                iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"SALIDA",user);
             }
 
             if(!Objects.equals(paymentMethod.getId(), sale.getPaymentMethod().getId())){

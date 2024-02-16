@@ -1,5 +1,8 @@
 package com.proyect.masterdata.services;
 
+import com.proyect.masterdata.domain.SupplierProduct;
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.Warehouse;
 import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.dto.WarehouseStockDTO;
@@ -8,10 +11,10 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IWarehouseStock {
-        public ResponseSuccess in(String warehouse, String supplierProductSerial, Integer quantity, String tokenUser)
+        public ResponseSuccess in(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
                         throws InternalErrorExceptions, BadRequestExceptions;
 
-        public ResponseSuccess out(String warehouse, String supplierProductSerial, Integer quantity, String tokenUser)
+        public ResponseSuccess out(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
                         throws InternalErrorExceptions, BadRequestExceptions;
 
         public Page<WarehouseStockDTO> list(String warehouse, String user, String sort, String sortColumn,

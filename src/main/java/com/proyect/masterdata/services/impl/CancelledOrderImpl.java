@@ -97,7 +97,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
                                 .build());
                     }
                 }
-                iStockTransaction.save("C"+ordering.getId(),warehouseData.getName(),stockTransactionList,"DEVOLUCION-COMPRADOR",user.getUsername());
+                iStockTransaction.save("C"+ordering.getId(),warehouseData,stockTransactionList,"DEVOLUCION-COMPRADOR",user);
             }
             cancelledOrderRepository.save(CancelledOrder.builder()
                             .ordering(ordering)

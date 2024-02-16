@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -40,22 +41,10 @@ public class WarehouseStockImpl implements IWarehouseStock {
     private final WarehouseStockRepositoryCustom warehouseStockRepositoryCustom;
 
     @Override
-    public ResponseSuccess in(String warehouse, String supplierProductSerial, Integer quantity, String tokenUser)
+    public ResponseSuccess in(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        User user;
-        SupplierProduct supplierProduct;
-        Warehouse warehouseData;
         WarehouseStock warehouseStock;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-            warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
@@ -65,16 +54,16 @@ public class WarehouseStockImpl implements IWarehouseStock {
             throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
         }
 
-        if (warehouseData == null) {
+        if (warehouse == null) {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
-        if (warehouseData.getClientId() != user.getClientId()) {
+        if (!Objects.equals(warehouse.getClientId(), user.getClientId())) {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
         try {
-            warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouseData.getId(),
+            warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(),
                     supplierProduct.getId());
 
             if (warehouseStock != null) {
@@ -87,8 +76,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
-                        .warehouse(warehouseData)
-                        .warehouseId(warehouseData.getId())
+                        .warehouse(warehouse)
+                        .warehouseId(warehouse.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .tokenUser(user.getUsername())
@@ -106,22 +95,10 @@ public class WarehouseStockImpl implements IWarehouseStock {
     }
 
     @Override
-    public ResponseSuccess out(String warehouse, String supplierProductSerial, Integer quantity, String tokenUser)
+    public ResponseSuccess out(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        User user;
-        SupplierProduct supplierProduct;
-        Warehouse warehouseData;
         WarehouseStock warehouseStock;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-            warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
@@ -131,16 +108,16 @@ public class WarehouseStockImpl implements IWarehouseStock {
             throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
         }
 
-        if (warehouseData == null) {
+        if (warehouse == null) {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
-        if (warehouseData.getClientId() != user.getClientId()) {
+        if (!Objects.equals(warehouse.getClientId(), user.getClientId())) {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
         try {
-            warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouseData.getId(),
+            warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(),
                     supplierProduct.getId());
 
             if (warehouseStock == null) {

@@ -2697,6 +2697,57 @@ http://localhost:8080/masterdata/stock-transaction-type
 
 http://localhost:8080/masterdata/stock-transaction-type?name=entrada&tokenUser=admin1
 
+### POST /stock-transfer protected
+
+- Description : add one stock transfer to the database
+
+- Request :
+
+  - Request Stock Transfer : 
+
+    {
+        "originWarehouse":"name of the origin warehouse",
+        "destinationWarehouse" : "name of the destination warehouse"
+    }
+
+  - Request Stock Transfer Items :
+
+    [
+          {
+              "supplierProductSerial" : "serial of the supplier product to be transfer",
+              "quantity" : "quantity of the supplier product to be transfer"
+          }
+    ]
+
+- Parameters :
+
+1. purchaseSerial : serial of the purchaseItem of the returned stock
+2. tokenUser : username of the user who register the return
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/stock-transfer?tokenUser=gjimenez
+
+{
+    "originWarehouse" : "",
+    "destinationWarehouse" : ""
+}
+
+[
+    {
+        "supplierProductSerial" : "A00001A",
+        "quantity" : 4
+    }
+]
+
 ### GET /store-type
 
 - Description : list all active store types

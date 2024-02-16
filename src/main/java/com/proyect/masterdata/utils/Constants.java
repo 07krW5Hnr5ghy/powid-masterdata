@@ -223,4 +223,7 @@ public class Constants {
     public static final String ErrorStockReplenishmentExists = "Stock replenishment already exists";
     public static final String ErrorStockReplenishmentQuantity = "Stock replenishment quantity can't be more than order item quantity";
     public static final String ErrorStockReplenishmentOrderState = "Stock replenishment only for orders with lack of stock for their items";
+    public static final String ErrorOriginWarehouse = "Origin warehouse does not exist";
+    public static final String ErrorDestinationWarehouse = "Destination warehouse does not exist";
+    public static final String ErrorOriginWarehouseStock = "Not enough stock to transfer from origin warehouse";
 }

@@ -35,15 +35,11 @@ public class StockTransactionImpl implements IStockTransaction {
     private final IStockTransactionItem iStockTransactionItem;
     private final StockTransactionRepositoryCustom stockTransactionRepositoryCustom;
     @Override
-    public StockTransaction save(String serial, String warehouse, List<RequestStockTransactionItem> requestStockTransactionItemList,String stockTransactionType, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
-        User user;
-        Warehouse warehouseData;
+    public StockTransaction save(String serial, Warehouse warehouse, List<RequestStockTransactionItem> requestStockTransactionItemList,String stockTransactionType, User user) throws BadRequestExceptions, InternalErrorExceptions {
         StockTransaction stockTransaction;
         StockTransactionType stockTransactionTypeData;
 
         try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
             stockTransaction = stockTransactionRepository.findBySerial(serial.toUpperCase());
             stockTransactionTypeData = stockTransactionTypeRepository.findByNameAndStatusTrue(stockTransactionType.toUpperCase());
         }catch (RuntimeException e){
@@ -53,10 +49,6 @@ public class StockTransactionImpl implements IStockTransaction {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if(warehouseData == null){
-            throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
         if(stockTransaction != null){
@@ -73,8 +65,8 @@ public class StockTransactionImpl implements IStockTransaction {
                             .serial(serial.toUpperCase())
                             .stockTransactionType(stockTransactionTypeData)
                             .stockTransactionTypeId(stockTransactionTypeData.getId())
-                            .warehouse(warehouseData)
-                            .warehouseId(warehouseData.getId())
+                            .warehouse(warehouse)
+                            .warehouseId(warehouse.getId())
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .registrationDate(new Date(System.currentTimeMillis()))

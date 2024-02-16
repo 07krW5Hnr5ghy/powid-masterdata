@@ -40,6 +40,9 @@ public class StockTransfer {
     @CreationTimestamp
     private Date updateDate;
 
+    @Column(name = "token_user")
+    private String tokenUser;
+
     @ManyToOne()
     @JoinColumn(name = "origin_warehouse_id", columnDefinition = "originWarehouseId",insertable = false,updatable = false)
     private Warehouse originWarehouse;
