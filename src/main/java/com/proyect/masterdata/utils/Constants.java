@@ -86,6 +86,8 @@ public class Constants {
     public static final String tableShipmentType = "shipment_type";
     public static final String tableStockReturnItem = "stock_return_item";
     public static final String tableStockReplenishmentItem = "stock_replenishmentItem";
+    public static final String tableStockTransfer = "stock_transfer";
+    public static final String tableStockTransferItem = "stock_transfer_item";
 
     // messages
     public static final String register = "registration correctly";

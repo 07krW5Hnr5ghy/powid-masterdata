@@ -2247,7 +2247,7 @@ http://localhost:8080/masterdata/size?name=s&sizeType=ropa&tokenUser=admin1
 
 1. name : name of the size
 2. sizeType : name of the size type of the size
-2. tokenUser : username of the user who creates size 
+3. tokenUser : username of the user who creates size 
 
 - Response : 
 
