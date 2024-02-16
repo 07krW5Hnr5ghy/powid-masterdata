@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.StockReplenishmentDTO;
 import com.proyect.masterdata.dto.request.RequestStockReplenishmentItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -11,8 +12,11 @@ import com.proyect.masterdata.services.IStockReplenishmentItem;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +30,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
     private final IStockReplenishmentItem iStockReplenishmentItem;
+    private final StockReplenishmentRepositoryCustom stockReplenishmentRepositoryCustom;
     @Override
     public ResponseSuccess save(Long orderId, List<RequestStockReplenishmentItem> requestStockReplenishmentItems, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -86,5 +91,31 @@ public class StockReplenishmentImpl implements IStockReplenishment {
         }catch (RuntimeException e){
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<StockReplenishmentDTO> list(String user, Long orderId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        Page<StockReplenishment> pageStockReplenishment;
+        Long clientId;
+
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            pageStockReplenishment = stockReplenishmentRepositoryCustom.searchForStockReplenishment(clientId,orderId,sort,sortColumn,pageNumber,pageSize,true);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(pageStockReplenishment.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<StockReplenishmentDTO> stockReplenishmentDTOS = pageStockReplenishment.getContent().stream().map(stockReplenishment -> StockReplenishmentDTO.builder()
+                .orderId(stockReplenishment.getOrderId())
+                .registrationDate(stockReplenishment.getRegistrationDate())
+                .updateDate(stockReplenishment.getUpdateDate())
+                .build()
+        ).toList();
+        return new PageImpl<>(stockReplenishmentDTOS,pageStockReplenishment.getPageable(),pageStockReplenishment.getTotalElements());
     }
 }

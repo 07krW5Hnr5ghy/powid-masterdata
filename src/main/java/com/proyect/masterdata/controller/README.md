@@ -2267,6 +2267,54 @@ Request Body
     "m","l","xs","xl"
 ]
 
+### GET /stock-replenishment
+
+- Description : list active stock replenishments
+
+- Request : none
+
+- Parameter :
+
+1. user : name of the user who is listing the stock return (required)
+2. orderId : order id number for the order that request stock replenishment
+3. sort : sort the values the only valid values are ASC and DESC, default is ASC
+4. sortColumn : select the value that sorts the list in this case name or user
+5. pageNumber : the page number to select of the list the first is page zero (0) (required)
+6. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "orderId": 5,
+            "registrationDate": "2024-02-16T01:07:05.850+00:00",
+            "updateDate": "2024-02-16T01:07:05.850+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 4,
+        "pageNumber": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 1,
+    "first": true,
+    "size": 4,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/stock-replenishment?user=gjimenez&pageNumber=0&pageSize=4&orderId=5
+
 ### POST /stock-replenishment protected
 
 - Description : add one stock replenishment to the database
