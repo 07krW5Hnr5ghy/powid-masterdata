@@ -2590,9 +2590,9 @@ http://localhost:8080/masterdata/stock-return-orderItem?user=gjimenez&pageNumber
 
 http://localhost:8080/masterdata/stock-transaction?user=gjimenez&pageNumber=0&pageSize=4&warehouse=luminous&serial=SAA00001&stockTransactionType=entrada
 
-### GET /stock-transaction-orderItem
+### GET /stock-transaction-item
 
-- Description : list stock transactions orderItem
+- Description : list stock transaction items
 
 - Request : none
 
@@ -2696,6 +2696,56 @@ http://localhost:8080/masterdata/stock-transaction-type
 - Example :
 
 http://localhost:8080/masterdata/stock-transaction-type?name=entrada&tokenUser=admin1
+
+### GET /stock-transfer
+
+- Description : list stock transfers
+
+- Request : none
+
+- Parameters :
+
+1. user : filter the stock transfers by client (required)
+2. originWarehouse : filter stock transfers by origin warehouse name
+3. destinationWarehouse : filter stock transfer by supplier destination warehouse name
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "stockTransferId": 1,
+            "originWarehouse": "LUMINOUS",
+            "destinationWarehouse": "OIKAS",
+            "registrationDate": "2024-02-17T03:40:39.346+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 4,
+        "pageNumber": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "size": 4,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/stock-transfer?user=gjimenez&pageNumber=0&pageSize=4&originWarehouse=luminous&destinationWarehouse=oikas
 
 ### POST /stock-transfer protected
 

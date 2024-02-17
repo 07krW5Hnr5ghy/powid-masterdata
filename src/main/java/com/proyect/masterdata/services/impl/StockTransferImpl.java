@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.StockTransferDTO;
 import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.request.RequestStockTransfer;
 import com.proyect.masterdata.dto.request.RequestStockTransferItem;
@@ -15,9 +16,12 @@ import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +37,7 @@ public class StockTransferImpl implements IStockTransfer {
     private final IStockTransferItem iStockTransferItem;
     private final IStockTransaction iStockTransaction;
     private final IWarehouseStock iWarehouseStock;
+    private final StockTransferRepositoryCustom stockTransferRepositoryCustom;
     @Override
     public ResponseSuccess save(RequestStockTransfer requestStockTransfer, List<RequestStockTransferItem> requestStockTransferItems,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -105,5 +110,47 @@ public class StockTransferImpl implements IStockTransfer {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<StockTransferDTO> list(String user, String originWarehouse, String destinationWarehouse, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+
+        Page<StockTransfer> pageStockTransfer;
+        Long clientId;
+        Long originWarehouseId;
+        Long destinationWarehouseId;
+
+        if(originWarehouse != null){
+            originWarehouseId = warehouseRepository.findByNameAndStatusTrue(originWarehouse.toUpperCase()).getId();
+        }else {
+            originWarehouseId = null;
+        }
+
+        if(destinationWarehouse != null){
+            destinationWarehouseId = warehouseRepository.findByNameAndStatusTrue(destinationWarehouse.toUpperCase()).getId();
+        }else{
+            destinationWarehouseId = null;
+        }
+
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            pageStockTransfer = stockTransferRepositoryCustom.searchForStockTransfer(clientId,originWarehouseId,destinationWarehouseId,sort,sortColumn,pageNumber,pageSize);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(pageStockTransfer.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<StockTransferDTO> stockTransferDTOS = pageStockTransfer.getContent().stream().map(stockTransfer -> StockTransferDTO.builder()
+                .originWarehouse(stockTransfer.getOriginWarehouse().getName())
+                .destinationWarehouse(stockTransfer.getDestinationWarehouse().getName())
+                .registrationDate(stockTransfer.getRegistrationDate())
+                .stockTransferId(stockTransfer.getId())
+                .build()).toList();
+
+        return new PageImpl<>(stockTransferDTOS,pageStockTransfer.getPageable(),pageStockTransfer.getTotalElements());
     }
 }
