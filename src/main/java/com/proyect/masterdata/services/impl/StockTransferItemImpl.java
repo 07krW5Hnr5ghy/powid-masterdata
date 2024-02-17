@@ -4,23 +4,34 @@ import com.proyect.masterdata.domain.StockTransfer;
 import com.proyect.masterdata.domain.StockTransferItem;
 import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.StockTransferItemDTO;
 import com.proyect.masterdata.dto.request.RequestStockTransferItem;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.StockTransferItemRepository;
+import com.proyect.masterdata.repository.StockTransferItemRepositoryCustom;
+import com.proyect.masterdata.repository.SupplierProductRepository;
+import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IStockTransferItem;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class StockTransferItemImpl implements IStockTransferItem {
     private final StockTransferItemRepository stockTransferItemRepository;
+    private final UserRepository userRepository;
+    private final StockTransferItemRepositoryCustom stockTransferItemRepositoryCustom;
+    private final SupplierProductRepository supplierProductRepository;
     @Override
     public StockTransferItem save(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -41,5 +52,41 @@ public class StockTransferItemImpl implements IStockTransferItem {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public Page<StockTransferItemDTO> list(String user, Long stockTransferId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+
+        Page<StockTransferItem> pageStockTransferItem;
+        Long clientId;
+        Long supplierProductId;
+
+        if(supplierProductSerial != null){
+            supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+        }else{
+            supplierProductId = null;
+        }
+
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            pageStockTransferItem = stockTransferItemRepositoryCustom.searchForStockTransferItem(clientId,stockTransferId,supplierProductId,sort,sortColumn,pageNumber,pageSize);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(pageStockTransferItem.isEmpty()){
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<StockTransferItemDTO> stockTransferItemDTOS = pageStockTransferItem.getContent().stream().map(stockTransferItem -> StockTransferItemDTO.builder()
+                .stockTransferId(stockTransferItem.getStockTransferId())
+                .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
+                .quantity(stockTransferItem.getQuantity())
+                .registrationDate(stockTransferItem.getRegistrationDate())
+                .build()
+        ).toList();
+
+        return new PageImpl<>(stockTransferItemDTOS,pageStockTransferItem.getPageable(),pageStockTransferItem.getTotalElements());
     }
 }

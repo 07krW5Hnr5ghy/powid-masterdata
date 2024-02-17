@@ -2798,6 +2798,56 @@ http://localhost:8080/masterdata/stock-transfer?tokenUser=gjimenez
     }
 ]
 
+### GET /stock-transfer-item
+
+- Description : list stock transfer items
+
+- Request : none
+
+- Parameters :
+
+1. user : filter the stock transfer items by client (required)
+2. stockTransferId : filter stock transfer items by stock transfer id
+3. supplierProductSerial : filter stock transfer items by supplier product serial
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "stockTransferId": 1,
+            "quantity": 15,
+            "supplierProductSerial": "A00003B",
+            "registrationDate": "2024-02-17T05:35:38.265+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 4,
+        "pageNumber": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "last": true,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "size": 4,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/stock-transfer-item?user=gjimenez&pageNumber=0&pageSize=4&stockTransferId=1&supplierProductSerial=A00003B
+
 ### GET /store-type
 
 - Description : list all active store types
