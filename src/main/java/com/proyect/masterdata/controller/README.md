@@ -1326,164 +1326,116 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
 - Parameters :
 
 1. user : filter orders by the client of the user (required)
-2. orderId : filter orders by id 
-3. sort : sort the values the only valid values are ASC and DESC, default is ASC
-4. sortColumn : select the value that sorts the list in this case name or user
-5. pageNumber : the page number to select of the list the first is page zero (0) (required)
-6. pageSize : number the records per Page (required)
+2. orderId : filter orders by id
+3. orderState : filter orders by order state name
+4. courier : filter orders by courier name
+5. paymentState : filter orders by payment state name
+6. paymentMethod : filter orders by payment method name
+7. saleChannel : filter orders by sale channel name
+8. managementType : filter orders by management type 
+9. sort : sort the values the only valid values are ASC and DESC, default is ASC
+10. sortColumn : select the value that sorts the list in this case name or user
+11. pageNumber : the page number to select of the list the first is page zero (0) (required)
+12. pageSize : number the records per Page (required)
 
 - Response :
 
 {
-"content": [
-{
-"id": 1,
-"sellerName": "GONZALO JIMENEZ",
-"customerName": "EMILIO GOMEZ",
-"customerType": "Tradicional",
-"customerPhone": "940544828",
-"instagram": "",
-"department": "LIMA",
-"province": "LIMA",
-"district": "BREÑA",
-"address": "807 IQUIQUE",
-"managementType": "VENTA",
-"paymentType": "POS",
-"saleChannel": "TIENDA ONLINE",
-"reference": "",
-"paymentReceipts": [
-"http://res.cloudinary.com/dqzvbdf9r/image/upload/v1707259931/PEDIDO_1_GJIMENEZ_2024-02-06_17-52-11_COMPROBANTE_1.jpg"
-],
-"saleAmount": 10.01,
-"deliveryAmount": 10.01,
-"advancedPayment": 0.0,
-"duePayment": 10.01,
-"registrationDate": "2024-02-06T22:52:11.016+00:00",
-"updateDate": "2024-02-06T22:52:11.016+00:00",
-"deliveryAddress": "807 IQUIQUE",
-"courier": "SIN COURIER",
-"items": [
-{
-"id": 1,
-"product": {
-"sku": "A00001",
-"model": "F90",
-"size": "12",
-"category": "TENNIS",
-"color": "NEGRO",
-"unit": "PAR",
-"price": 2.3
-},
-"quantity": 2,
-"unitPrice": 2.3,
-"totalPrice": 4.6,
-"observations": ""
-},
-{
-"id": 2,
-"product": {
-"sku": "A00002",
-"model": "M2000",
-"size": "24",
-"category": "BOTAS",
-"color": "ROJO",
-"unit": "PAR",
-"price": 5.41
-},
-"quantity": 1,
-"unitPrice": 5.41,
-"totalPrice": 5.41,
-"observations": ""
-}
-],
-"orderStatus": "ENTREGADO"
-},
-{
-"id": 2,
-"sellerName": "GONZALO JIMENEZ",
-"customerName": "CONSUELO ROJAS",
-"customerType": "Tradicional",
-"customerPhone": "956701333",
-"instagram": "",
-"department": "LIMA",
-"province": "LIMA",
-"district": "INDEPENDENCIA",
-"address": "AV. JORGE CHAVEZ 420, OFICN LIMA",
-"managementType": "VENTA",
-"paymentType": "PLIN",
-"saleChannel": "TIENDA ONLINE",
-"reference": "",
-"paymentReceipts": [
-"http://res.cloudinary.com/dqzvbdf9r/image/upload/v1707259933/PEDIDO_2_GJIMENEZ_2024-02-06_17-52-12_COMPROBANTE_1.jpg",
-"http://res.cloudinary.com/dqzvbdf9r/image/upload/v1707259933/PEDIDO_2_GJIMENEZ_2024-02-06_17-52-12_COMPROBANTE_2.jpg"
-],
-"saleAmount": 12.29,
-"deliveryAmount": 12.29,
-"advancedPayment": 4.0,
-"duePayment": 11.29,
-"registrationDate": "2024-02-06T22:52:12.754+00:00",
-"updateDate": "2024-02-06T22:52:12.754+00:00",
-"deliveryAddress": "AV. JORGE CHAVEZ 420, OFICN LIMA",
-"courier": "SIN COURIER",
-"items": [
-{
-"id": 3,
-"product": {
-"sku": "A00003",
-"model": "MERCURIAL",
-"size": "24",
-"category": "TENNIS",
-"color": "VERDE",
-"unit": "PAR",
-"price": 3.33
-},
-"quantity": 3,
-"unitPrice": 3.33,
-"totalPrice": 9.99,
-"observations": ""
-},
-{
-"id": 4,
-"product": {
-"sku": "A00001",
-"model": "F90",
-"size": "12",
-"category": "TENNIS",
-"color": "NEGRO",
-"unit": "PAR",
-"price": 2.3
-},
-"quantity": 1,
-"unitPrice": 2.3,
-"totalPrice": 2.3,
-"observations": ""
-}
-],
-"orderStatus": "CANCELADO"
-}
-],
-"pageable": {
-"sort": [],
-"offset": 0,
-"pageNumber": 0,
-"pageSize": 2,
-"unpaged": false,
-"paged": true
-},
-"totalPages": 1,
-"totalElements": 2,
-"last": true,
-"size": 2,
-"number": 0,
-"sort": [],
-"first": true,
-"numberOfElements": 2,
-"empty": false
+    "content": [
+        {
+            "id": 1,
+            "sellerName": "GONZALO JIMENEZ",
+            "customerName": "EMILIO GOMEZ",
+            "customerType": "Tradicional",
+            "customerPhone": "940544828",
+            "instagram": "",
+            "department": "LIMA",
+            "province": "LIMA",
+            "district": "BREÑA",
+            "address": "807 IQUIQUE",
+            "managementType": "VENTA",
+            "paymentMethod": "LINK",
+            "saleChannel": "TIENDA ONLINE",
+            "reference": "",
+            "paymentReceipts": [
+                "http://res.cloudinary.com/dqzvbdf9r/image/upload/v1708232900/COMPANY_1_PEDIDOS/PEDIDO_1_GJIMENEZ_2024-02-18_00-08-20_COMPROBANTE_1.jpg"
+            ],
+            "courierPictures": [
+                "http://res.cloudinary.com/dqzvbdf9r/image/upload/v1708232905/COMPANY_1_PEDIDOS/PEDIDO_1_GJIMENEZ_2024-02-18_00-08-24_COURIER_1.jpg"
+            ],
+            "saleAmount": 10.01,
+            "deliveryAmount": 10.01,
+            "advancedPayment": 0.0,
+            "duePayment": 10.01,
+            "registrationDate": "2024-02-18T05:08:20.199+00:00",
+            "updateDate": "2024-02-18T05:08:24.818+00:00",
+            "deliveryAddress": "807 IQUIQUE",
+            "courier": "MARVISUR",
+            "items": [
+                {
+                    "id": 1,
+                    "product": {
+                        "sku": "A00001",
+                        "model": "F90",
+                        "size": "12",
+                        "category": "TENNIS",
+                        "color": "NEGRO",
+                        "unit": "PAR",
+                        "price": 2.3,
+                        "pictures": [
+                            "http://res.cloudinary.com/dqzvbdf9r/image/upload/v1708232883/COMPANY_1_PRODUCTOS/PRODUCTO_A00001_GJIMENEZ_2024-02-18_00-08-03_IMAGEN_1.jpg"
+                        ]
+                    },
+                    "quantity": 2,
+                    "unitPrice": 2.3,
+                    "totalPrice": 4.6,
+                    "observations": ""
+                },
+                {
+                    "id": 2,
+                    "product": {
+                        "sku": "A00002",
+                        "model": "M2000",
+                        "size": "24",
+                        "category": "BOTAS",
+                        "color": "ROJO",
+                        "unit": "PAR",
+                        "price": 5.41,
+                        "pictures": [
+                            "http://res.cloudinary.com/dqzvbdf9r/image/upload/v1708232884/COMPANY_1_PRODUCTOS/PRODUCTO_A00002_GJIMENEZ_2024-02-18_00-08-04_IMAGEN_1.jpg"
+                        ]
+                    },
+                    "quantity": 1,
+                    "unitPrice": 5.41,
+                    "totalPrice": 5.41,
+                    "observations": ""
+                }
+            ],
+            "orderStatus": "ENTREGADO"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageSize": 2,
+        "pageNumber": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 1,
+    "first": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
 }
 
 - example :
 
-http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez
+http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez&orderId=1&orderState=entregado&courier=marvisur&paymentState=recaudado&paymentMethod=link&saleChannel=tienda online&managementType=venta
 
 ### POST /order-stock protected
 

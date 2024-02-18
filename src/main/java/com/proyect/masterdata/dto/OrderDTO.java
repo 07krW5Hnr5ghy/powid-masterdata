@@ -24,10 +24,11 @@ public class OrderDTO {
     private String district;
     private String address;
     private String managementType;
-    private String paymentType;
+    private String paymentMethod;
     private String saleChannel;
     private String reference;
     private List<String> paymentReceipts;
+    private List<String> courierPictures;
     private Double saleAmount;
     private Double deliveryAmount;
     private Double advancedPayment;

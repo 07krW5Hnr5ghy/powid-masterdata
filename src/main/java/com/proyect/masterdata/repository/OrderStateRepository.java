@@ -9,12 +9,9 @@ import java.util.List;
 @Repository
 public interface OrderStateRepository extends JpaRepository<OrderState, Long> {
     List<OrderState> findAllByStatusTrue();
-
     List<OrderState> findAllByStatusFalse();
-
     OrderState findByIdAndStatusTrue(Long id);
-
     OrderState findByNameAndStatusTrue(String name);
-
+    OrderState findByName(String name);
     List<OrderState> findByNameIn(List<String> names);
 }

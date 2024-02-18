@@ -169,7 +169,6 @@ public class CourierImpl implements ICourier {
 
         User user;
         Ordering ordering;
-        Sale sale;
         OrderState orderState;
         PaymentMethod paymentMethod;
 
@@ -189,8 +188,6 @@ public class CourierImpl implements ICourier {
 
         if(ordering == null){
             throw new BadRequestExceptions(Constants.ErrorOrdering);
-        }else {
-            sale = saleRepository.findByOrderId(ordering.getId());
         }
 
         if(orderState == null){
@@ -204,17 +201,15 @@ public class CourierImpl implements ICourier {
                 ordering.setOrderStateId(orderState.getId());
             }
 
-            if(!Objects.equals(paymentMethod.getId(), sale.getPaymentMethodId())){
-                sale.setPaymentMethod(paymentMethod);
-                sale.setPaymentMethodId(paymentMethod.getId());
+            if(!Objects.equals(paymentMethod.getId(), ordering.getPaymentMethodId())){
+                ordering.setPaymentMethod(paymentMethod);
+                ordering.setPaymentMethodId(paymentMethod.getId());
             }
 
             ordering.setUpdateDate(new Date(System.currentTimeMillis()));
-            sale.setUpdateDate(new Date(System.currentTimeMillis()));
 
             iCourierPicture.uploadPicture(requestCourierOrder.getOrderPictures(),ordering.getId(),user.getUsername());
             orderingRepository.save(ordering);
-            saleRepository.save(sale);
 
             return ResponseSuccess.builder()
                     .code(200)

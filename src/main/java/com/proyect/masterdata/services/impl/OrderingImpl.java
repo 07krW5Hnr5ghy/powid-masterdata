@@ -47,17 +47,29 @@ public class OrderingImpl implements IOrdering {
     private final ICourierPicture iCourierPicture;
     private final IStockTransaction iStockTransaction;
     private final OrderStockRepository orderStockRepository;
+    private final SaleChannelRepository saleChannelRepository;
+    private final ManagementTypeRepository managementTypeRepository;
+    private final CourierPictureRepository courierPictureRepository;
+    private final ProductPictureRepository productPictureRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         OrderState orderState;
         Courier courier;
+        PaymentState paymentState;
+        SaleChannel saleChannel;
+        ManagementType managementType;
+        PaymentMethod paymentMethod;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
             courier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
+            paymentState = paymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
+            saleChannel = saleChannelRepository.findByNameAndStatusTrue(requestOrderSave.getSaleChannel().toUpperCase());
+            managementType = managementTypeRepository.findByNameAndStatusTrue(requestOrderSave.getManagementType().toUpperCase());
+            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -65,6 +77,18 @@ public class OrderingImpl implements IOrdering {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(saleChannel == null){
+            throw new BadRequestExceptions(Constants.ErrorSaleChannel);
+        }
+
+        if(paymentMethod == null){
+            throw new BadRequestExceptions(Constants.ErrorPaymentMethod);
+        }
+
+        if(managementType == null){
+            throw new BadRequestExceptions(Constants.ErrorManagementType);
         }
 
         try{
@@ -77,6 +101,14 @@ public class OrderingImpl implements IOrdering {
                             .clientId(user.getClientId())
                             .courier(courier)
                             .courierId(courier.getId())
+                            .saleChannel(saleChannel)
+                            .saleChannelId(saleChannel.getId())
+                            .paymentState(paymentState)
+                            .paymentStateId(paymentState.getId())
+                            .paymentMethod(paymentMethod)
+                            .paymentMethodId(paymentMethod.getId())
+                            .managementType(managementType)
+                            .managementTypeId(managementType.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
@@ -134,23 +166,63 @@ public class OrderingImpl implements IOrdering {
                     .build();
 
         }catch (RuntimeException e){
-            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public Page<OrderDTO> list(Long id,String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<OrderDTO> list(Long orderId,String user,String orderState,String courier,String paymentState,String paymentMethod,String saleChannel,String managementType, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
 
         Page<Ordering> pageOrdering;
         Long clientId;
+        Long orderStateId;
+        Long courierId;
+        Long paymentStateId;
+        Long paymentMethodId;
+        Long saleChannelId;
+        Long managementTypeId;
+
+        if(orderState != null){
+            orderStateId = orderStateRepository.findByName(orderState.toUpperCase()).getId();
+        }else{
+            orderStateId = null;
+        }
+
+        if(courier != null){
+            courierId = courierRepository.findByName(courier.toUpperCase()).getId();
+        }else {
+            courierId = null;
+        }
+
+        if(paymentState != null){
+            paymentStateId = paymentStateRepository.findByName(paymentState.toUpperCase()).getId();
+        }else {
+            paymentStateId = null;
+        }
+
+        if(paymentMethod != null){
+            paymentMethodId = paymentMethodRepository.findByName(paymentMethod.toUpperCase()).getId();
+        }else {
+            paymentMethodId = null;
+        }
+
+        if(saleChannel != null){
+            saleChannelId = saleChannelRepository.findByName(saleChannel.toUpperCase()).getId();
+        }else {
+            saleChannelId = null;
+        }
+
+        if(managementType != null){
+            managementTypeId = managementTypeRepository.findByName(managementType.toUpperCase()).getId();
+        }else{
+            managementTypeId = null;
+        }
 
         try{
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-            pageOrdering = orderingRepositoryCustom.searchForOrdering(id,clientId,sort,sortColumn,pageNumber,pageSize);
+            pageOrdering = orderingRepositoryCustom.searchForOrdering(orderId,clientId,orderStateId,courierId,paymentStateId,paymentMethodId,saleChannelId,managementTypeId,sort,sortColumn,pageNumber,pageSize);
         }catch (RuntimeException e){
-            log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
 
@@ -164,6 +236,7 @@ public class OrderingImpl implements IOrdering {
 
             List<OrderItemDTO> orderItemDTOS = orderItemRepository.findAllByOrderId(order.getId()).stream().map(item -> {
                 ProductPrice productPrice = productPriceRepository.findByProductId(item.getProductId());
+                List<String> productPictures = productPictureRepository.findAllByProductId(item.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
                 Double totalPrice = productPrice.getUnitSalePrice() * item.getQuantity();
                 return OrderItemDTO.builder()
                         .id(item.getId())
@@ -175,6 +248,7 @@ public class OrderingImpl implements IOrdering {
                                 .category(item.getProduct().getCategoryProduct().getName())
                                 .price(productPrice.getUnitSalePrice())
                                 .unit(item.getProduct().getUnit().getName())
+                                .pictures(productPictures)
                                 .build())
                         .quantity(item.getQuantity())
                         .unitPrice(productPrice.getUnitSalePrice())
@@ -184,6 +258,7 @@ public class OrderingImpl implements IOrdering {
             }).toList();
 
             List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
+            List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
 
             return OrderDTO.builder()
                     .id(order.getId())
@@ -198,17 +273,18 @@ public class OrderingImpl implements IOrdering {
                     .instagram(customer.getInstagram())
                     .deliveryAmount(sale.getSaleAmount())
                     .advancedPayment(sale.getAdvancePayment())
-                    .managementType(sale.getManagementType().getName())
+                    .managementType(order.getManagementType().getName())
                     .reference(customer.getReference())
                     .duePayment((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment())
-                    .saleChannel(sale.getSaleChannel().getName())
+                    .saleChannel(order.getSaleChannel().getName())
                     .sellerName(sale.getSeller())
                     .registrationDate(order.getRegistrationDate())
                     .updateDate(order.getUpdateDate())
-                    .paymentType(sale.getPaymentMethod().getName())
+                    .paymentMethod(order.getPaymentMethod().getName())
                     .deliveryAddress(sale.getDeliveryAddress())
                     .courier(order.getCourier().getName())
                     .paymentReceipts(paymentReceipts)
+                    .courierPictures(courierPictures)
                     .items(orderItemDTOS)
                     .saleAmount(sale.getSaleAmount())
                     .build();
@@ -219,6 +295,7 @@ public class OrderingImpl implements IOrdering {
 
     @Override
     public ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+
         User user;
         Ordering ordering;
         OrderState orderState;
@@ -236,7 +313,6 @@ public class OrderingImpl implements IOrdering {
             paymentState = paymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
             courier = courierRepository.findByNameAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase());
         }catch (RuntimeException e){
-            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -247,6 +323,10 @@ public class OrderingImpl implements IOrdering {
 
         if(courier == null){
             throw new BadRequestExceptions(Constants.ErrorCourier);
+        }
+
+        if(paymentState == null){
+            throw new BadRequestExceptions(Constants.ErrorPaymentState);
         }
 
         if(ordering == null){
@@ -285,14 +365,14 @@ public class OrderingImpl implements IOrdering {
                 iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"SALIDA",user);
             }
 
-            if(!Objects.equals(paymentMethod.getId(), sale.getPaymentMethod().getId())){
-                sale.setPaymentMethod(paymentMethod);
-                sale.setPaymentMethodId(paymentMethod.getId());
+            if(!Objects.equals(paymentMethod.getId(), ordering.getPaymentMethod().getId())){
+                ordering.setPaymentMethod(paymentMethod);
+                ordering.setPaymentMethodId(paymentMethod.getId());
             }
 
-            if(!Objects.equals(paymentState.getId(),sale.getPaymentState().getId())){
-                sale.setPaymentState(paymentState);
-                sale.setPaymentMethodId(paymentState.getId());
+            if(!Objects.equals(paymentState.getId(),ordering.getPaymentState().getId())){
+                ordering.setPaymentState(paymentState);
+                ordering.setPaymentStateId(paymentState.getId());
             }
 
             if(!Objects.equals(courier.getId(),ordering.getCourier().getId())){

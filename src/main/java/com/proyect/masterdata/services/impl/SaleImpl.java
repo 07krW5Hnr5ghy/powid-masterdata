@@ -27,17 +27,12 @@ public class SaleImpl implements ISale {
     private final SaleRepository saleRepository;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestSale requestSale, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+
         User user;
-        PaymentState paymentState;
-        PaymentMethod paymentMethod;
-        SaleChannel saleChannel;
         ManagementType managementType;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            paymentState = paymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
-            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestSale.getPaymentMethod().toUpperCase());
-            saleChannel = saleChannelRepository.findByNameAndStatusTrue(requestSale.getSaleChannel().toUpperCase());
             managementType = managementTypeRepository.findByNameAndStatusTrue(requestSale.getManagementType().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -46,14 +41,6 @@ public class SaleImpl implements ISale {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if(paymentMethod == null){
-            throw new BadRequestExceptions(Constants.ErrorPaymentMethod);
-        }
-
-        if(saleChannel == null){
-            throw new BadRequestExceptions(Constants.ErrorSaleChannel);
         }
 
         if(managementType == null){
@@ -71,17 +58,9 @@ public class SaleImpl implements ISale {
                             .ordering(ordering)
                             .orderId(ordering.getId())
                             .duePayment(duePayment)
-                            .managementType(managementType)
-                            .managementTypeId(managementType.getId())
                             .observations(requestSale.getObservations().toUpperCase())
-                            .paymentMethod(paymentMethod)
-                            .paymentMethodId(paymentMethod.getId())
                             .saleAmount(requestSale.getSaleAmount())
                             .deliveryAmount(requestSale.getDeliveryAmount())
-                            .paymentState(paymentState)
-                            .paymentStateId(paymentState.getId())
-                            .saleChannel(saleChannel)
-                            .saleChannelId(saleChannel.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .seller(requestSale.getSeller().toUpperCase())
@@ -92,7 +71,6 @@ public class SaleImpl implements ISale {
                     .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
-            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

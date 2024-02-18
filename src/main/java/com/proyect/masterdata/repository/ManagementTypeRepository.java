@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ManagementTypeRepository extends JpaRepository<ManagementType,Long> {
     ManagementType findByNameAndStatusTrue(String name);
+    ManagementType findByName(String name);
 }

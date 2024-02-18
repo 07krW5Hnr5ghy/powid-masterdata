@@ -60,18 +60,6 @@ public class Sale {
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "sale_channel_id")
-    private Long saleChannelId;
-
-    @Column(name = "payment_state_id")
-    private Long paymentStateId;
-
-    @Column(name = "payment_method_id")
-    private Long paymentMethodId;
-
-    @Column(name = "management_type_id")
-    private Long managementTypeId;
-
     @Column(name = "order_id")
     private Long orderId;
 
@@ -86,23 +74,7 @@ public class Sale {
     private Ordering ordering;
 
     @ManyToOne
-    @JoinColumn(name = "sale_channel_id", columnDefinition = "saleChannelId", insertable = false, updatable = false)
-    private SaleChannel saleChannel;
-
-    @ManyToOne
-    @JoinColumn(name = "payment_state_id", columnDefinition = "paymentStateId", insertable = false, updatable = false)
-    private PaymentState paymentState;
-
-    @ManyToOne
-    @JoinColumn(name = "payment_method_id", columnDefinition = "paymentMethodId", insertable = false, updatable = false)
-    private PaymentMethod paymentMethod;
-
-    @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
-
-    @ManyToOne
-    @JoinColumn(name = "management_type_id", columnDefinition = "managementTypeId", insertable = false, updatable = false)
-    private ManagementType managementType;
 
 }

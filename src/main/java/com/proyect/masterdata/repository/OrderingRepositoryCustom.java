@@ -8,8 +8,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderingRepositoryCustom {
     Page<Ordering> searchForOrdering(
-            Long id,
+            Long orderId,
             Long clientId,
+            Long orderStateId,
+            Long courierId,
+            Long paymentStateId,
+            Long paymentMethodId,
+            Long saleChannelId,
+            Long managementTypeId,
             String sort,
             String sortColumn,
             Integer pageNumber,

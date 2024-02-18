@@ -37,12 +37,18 @@ public class OrderingController {
     public ResponseEntity<Page<OrderDTO>> list(
             @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize
+            @RequestParam(value = "orderState",required = false) String orderState,
+            @RequestParam(value = "courier",required = false) String courier,
+            @RequestParam(value = "paymentState",required = false) String paymentState,
+            @RequestParam(value = "paymentMethod",required = false) String paymentMethod,
+            @RequestParam(value = "saleChannel",required = false) String saleChannel,
+            @RequestParam(value = "managementType",required = false) String managementType,
+            @RequestParam(value = "sort",required = false) String sort,
+            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "pageNumber") Integer pageNumber,
+            @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions{
-        Page<OrderDTO> result = iOrdering.list(orderId,user,sort,sortColumn,pageNumber,pageSize);
+        Page<OrderDTO> result = iOrdering.list(orderId,user,orderState,courier,paymentState,paymentMethod,saleChannel,managementType,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
