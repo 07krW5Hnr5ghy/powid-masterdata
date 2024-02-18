@@ -24,10 +24,9 @@ public class StockTransferController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestStockTransfer requestStockTransfer,
-            @RequestBody() List<RequestStockTransferItem> requestStockTransferItemList,
             @RequestParam() String tokenUser
             ) throws BadRequestExceptions {
-        ResponseSuccess result = iStockTransfer.save(requestStockTransfer,requestStockTransferItemList,tokenUser);
+        ResponseSuccess result = iStockTransfer.save(requestStockTransfer,tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

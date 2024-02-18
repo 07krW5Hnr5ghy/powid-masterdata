@@ -2709,17 +2709,14 @@ http://localhost:8080/masterdata/stock-transfer?user=gjimenez&pageNumber=0&pageS
 
     {
         "originWarehouse":"name of the origin warehouse",
-        "destinationWarehouse" : "name of the destination warehouse"
+        "destinationWarehouse" : "name of the destination warehouse",
+        "requestStockTransferItemsList" : [
+            {
+                "supplierProductSerial" : "serial of the supplier product to be transfer",
+                "quantity" : "quantity of the supplier product to be transfer"
+            }
+        ] 
     }
-
-  - Request Stock Transfer Items :
-
-    [
-          {
-              "supplierProductSerial" : "serial of the supplier product to be transfer",
-              "quantity" : "quantity of the supplier product to be transfer"
-          }
-    ]
 
 - Parameters :
 

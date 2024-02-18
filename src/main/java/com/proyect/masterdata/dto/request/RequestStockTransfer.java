@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,4 +14,5 @@ import lombok.NoArgsConstructor;
 public class RequestStockTransfer {
     private String originWarehouse;
     private String destinationWarehouse;
+    private List<RequestStockTransferItem> requestStockTransferItemList;
 }

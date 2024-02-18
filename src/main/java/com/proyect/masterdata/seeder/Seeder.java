@@ -1735,20 +1735,22 @@ public class Seeder implements CommandLineRunner {
                         requestStockReplenishmentItemList1.add(requestStockReplenishmentItem2);
                         iStockReplenishment.save(5L,requestStockReplenishmentItemList1,"gjimenez");
 
-                        RequestStockTransfer requestStockTransfer1 = RequestStockTransfer.builder()
-                                .originWarehouse("luminous")
-                                .destinationWarehouse("oikas")
-                                .build();
                         List<RequestStockTransferItem> requestStockTransferItemList1 = new ArrayList<>();
                         requestStockTransferItemList1.add(RequestStockTransferItem.builder()
                                 .quantity(15)
                                 .supplierProductSerial("A00003B")
                                 .build());
                         requestStockTransferItemList1.add(RequestStockTransferItem.builder()
-                                        .quantity(12)
-                                        .supplierProductSerial("A00002B")
+                                .quantity(12)
+                                .supplierProductSerial("A00002B")
                                 .build());
-                        iStockTransfer.save(requestStockTransfer1,requestStockTransferItemList1,"gjimenez");
+                        RequestStockTransfer requestStockTransfer1 = RequestStockTransfer.builder()
+                                .originWarehouse("luminous")
+                                .destinationWarehouse("oikas")
+                                .requestStockTransferItemList(requestStockTransferItemList1)
+                                .build();
+
+                        iStockTransfer.save(requestStockTransfer1,"gjimenez");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());

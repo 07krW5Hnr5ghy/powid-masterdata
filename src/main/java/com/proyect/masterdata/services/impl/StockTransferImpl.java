@@ -39,7 +39,7 @@ public class StockTransferImpl implements IStockTransfer {
     private final IWarehouseStock iWarehouseStock;
     private final StockTransferRepositoryCustom stockTransferRepositoryCustom;
     @Override
-    public ResponseSuccess save(RequestStockTransfer requestStockTransfer, List<RequestStockTransferItem> requestStockTransferItems,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(RequestStockTransfer requestStockTransfer,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
         Warehouse originWarehouse;
@@ -67,7 +67,7 @@ public class StockTransferImpl implements IStockTransfer {
         }
 
         try{
-            for(RequestStockTransferItem requestStockTransferItem : requestStockTransferItems){
+            for(RequestStockTransferItem requestStockTransferItem : requestStockTransfer.getRequestStockTransferItemList()){
                 SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransferItem.getSupplierProductSerial());
                 WarehouseStock originWarehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(originWarehouse.getId(), supplierProduct.getId());
                 if(originWarehouseStock.getQuantity() < requestStockTransferItem.getQuantity()){
@@ -89,7 +89,7 @@ public class StockTransferImpl implements IStockTransfer {
 
             List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
 
-            for(RequestStockTransferItem requestStockTransferItem : requestStockTransferItems){
+            for(RequestStockTransferItem requestStockTransferItem : requestStockTransfer.getRequestStockTransferItemList()){
                 SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransferItem.getSupplierProductSerial());
                 requestStockTransactionItemList.add(RequestStockTransactionItem.builder()
                                 .quantity(requestStockTransferItem.getQuantity())
