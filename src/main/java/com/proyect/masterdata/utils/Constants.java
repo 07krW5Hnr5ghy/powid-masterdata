@@ -226,4 +226,6 @@ public class Constants {
     public static final String ErrorOriginWarehouse = "Origin warehouse does not exist";
     public static final String ErrorDestinationWarehouse = "Destination warehouse does not exist";
     public static final String ErrorOriginWarehouseStock = "Not enough stock to transfer from origin warehouse";
+    public static final String ErrorOrderItem = "Order Item does not exist";
+    public static final String ErrorOrderItemExists = "Order Item already exists";
 }

@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
     List<OrderItem> findAllByOrderId(Long orderId);
+    List<OrderItem> findAllByOrderIdAndStatusTrue(Long orderId);
     OrderItem findByIdAndOrderId(Long itemId, Long orderId);
     OrderItem findByOrderIdAndProductId(Long orderId,Long productId);
 }

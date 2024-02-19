@@ -72,6 +72,7 @@ public class Seeder implements CommandLineRunner {
         private final IShipmentType iShipmentType;
         private final IStockReplenishment iStockReplenishment;
         private final IStockTransfer iStockTransfer;
+        private final IOrderItem iOrderItem;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1751,6 +1752,14 @@ public class Seeder implements CommandLineRunner {
                                 .build();
 
                         iStockTransfer.save(requestStockTransfer1,"gjimenez");
+
+                        RequestOrderItem requestOrderItemAdd = RequestOrderItem.builder()
+                                .productSku("B00003")
+                                .discount(0.00)
+                                .observations("")
+                                .quantity(2)
+                                .build();
+                        iOrderItem.add(3L,requestOrderItemAdd,"fcasas");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());

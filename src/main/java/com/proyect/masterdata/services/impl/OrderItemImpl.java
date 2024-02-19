@@ -29,6 +29,9 @@ public class OrderItemImpl implements IOrderItem {
     private final ProductRepository productRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final WarehouseStockRepository warehouseStockRepository;
+    private final OrderingRepository orderingRepository;
+    private final SaleRepository saleRepository;
+    private final ProductPriceRepository productPriceRepository;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -168,6 +171,75 @@ public class OrderItemImpl implements IOrderItem {
             return ResponseDelete.builder()
                     .message(Constants.delete)
                     .code(200)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public ResponseSuccess add(Long orderId,RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        Ordering ordering;
+        Product product;
+        OrderItem orderItem;
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            ordering = orderingRepository.findById(orderId).orElse(null);
+            product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(ordering == null){
+            throw new BadRequestExceptions(Constants.ErrorOrdering);
+        }
+
+        if(product == null){
+            throw new BadRequestExceptions(Constants.ErrorProduct);
+        }else {
+            orderItem  = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
+        }
+
+        if(orderItem != null ){
+            throw new BadRequestExceptions(Constants.ErrorOrderItemExists);
+        }
+
+        try{
+            Sale sale = saleRepository.findByOrderId(ordering.getId());
+            orderItemRepository.save(OrderItem.builder()
+                            .ordering(ordering)
+                            .orderId(ordering.getId())
+                            .status(true)
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
+                            .discount(requestOrderItem.getDiscount())
+                            .observations(requestOrderItem.getObservations())
+                            .product(product)
+                            .productId(product.getId())
+                            .quantity(requestOrderItem.getQuantity())
+                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .updateDate(new Date(System.currentTimeMillis()))
+                            .tokenUser(user.getUsername())
+                    .build());
+            List<OrderItem> orderItemList = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
+            double newSaleAmount = 0.00;
+            for(OrderItem orderProduct : orderItemList ){
+                ProductPrice productPrice = productPriceRepository.findByProductId(orderProduct.getProductId());
+                newSaleAmount += productPrice.getUnitSalePrice() * orderProduct.getQuantity();
+            }
+            sale.setSaleAmount(newSaleAmount);
+            sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());
+            saleRepository.save(sale);
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());

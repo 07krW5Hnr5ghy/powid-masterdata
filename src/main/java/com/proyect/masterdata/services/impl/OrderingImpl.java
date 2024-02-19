@@ -271,7 +271,7 @@ public class OrderingImpl implements IOrdering {
                     .district(customer.getDistrict().getName())
                     .address(customer.getAddress())
                     .instagram(customer.getInstagram())
-                    .deliveryAmount(sale.getSaleAmount())
+                    .deliveryAmount(sale.getDeliveryAmount())
                     .advancedPayment(sale.getAdvancePayment())
                     .managementType(order.getManagementType().getName())
                     .reference(customer.getReference())
@@ -390,7 +390,6 @@ public class OrderingImpl implements IOrdering {
                     .message(Constants.update)
                     .build();
         }catch (RuntimeException e){
-            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
