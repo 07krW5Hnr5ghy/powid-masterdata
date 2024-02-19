@@ -144,12 +144,15 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public ResponseDelete delete(Long orderId, Long itemId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseDelete delete(Long orderId, String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
+        Ordering ordering;
         OrderItem orderItem;
+        Product product;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            orderItem = orderItemRepository.findByIdAndOrderId(itemId,orderId);
+            ordering = orderingRepository.findById(orderId).orElse(null);
+            product = productRepository.findBySku(productSku.toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -159,15 +162,35 @@ public class OrderItemImpl implements IOrderItem {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
+        if(ordering == null){
+            throw new BadRequestExceptions(Constants.ErrorOrdering);
+        }
+
+        if(product == null){
+            throw new InternalErrorExceptions(Constants.ErrorProduct);
+        }else {
+            orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
+        }
+
         if(orderItem == null){
-            throw new InternalErrorExceptions(Constants.ErrorItem);
+            throw new BadRequestExceptions(Constants.ErrorOrderItem);
         }
 
         try{
+            Sale sale = saleRepository.findByOrderId(ordering.getId());
             orderItem.setStatus(false);
             orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
             orderItem.setTokenUser(user.getUsername());
             orderItemRepository.save(orderItem);
+            List<OrderItem> orderItemList = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
+            double newSaleAmount = 0.00;
+            for(OrderItem orderProduct : orderItemList ){
+                ProductPrice productPrice = productPriceRepository.findByProductId(orderProduct.getProductId());
+                newSaleAmount += productPrice.getUnitSalePrice() * orderProduct.getQuantity();
+            }
+            sale.setSaleAmount(newSaleAmount);
+            sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());
+            saleRepository.save(sale);
             return ResponseDelete.builder()
                     .message(Constants.delete)
                     .code(200)

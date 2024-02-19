@@ -1735,7 +1735,7 @@ public class Seeder implements CommandLineRunner {
                         requestStockReplenishmentItemList1.add(requestStockReplenishmentItem1);
                         requestStockReplenishmentItemList1.add(requestStockReplenishmentItem2);
                         iStockReplenishment.save(5L,requestStockReplenishmentItemList1,"gjimenez");
-
+                        // mock stock transfer
                         List<RequestStockTransferItem> requestStockTransferItemList1 = new ArrayList<>();
                         requestStockTransferItemList1.add(RequestStockTransferItem.builder()
                                 .quantity(15)
@@ -1752,7 +1752,7 @@ public class Seeder implements CommandLineRunner {
                                 .build();
 
                         iStockTransfer.save(requestStockTransfer1,"gjimenez");
-
+                        // add order item mock
                         RequestOrderItem requestOrderItemAdd = RequestOrderItem.builder()
                                 .productSku("B00003")
                                 .discount(0.00)
@@ -1760,6 +1760,8 @@ public class Seeder implements CommandLineRunner {
                                 .quantity(2)
                                 .build();
                         iOrderItem.add(3L,requestOrderItemAdd,"fcasas");
+                        // delete order item mock
+                        iOrderItem.delete(4L,"B00002","fcasas");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());

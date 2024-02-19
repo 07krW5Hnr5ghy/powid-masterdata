@@ -1437,6 +1437,67 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
 
 http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez&orderId=1&orderState=entregado&courier=marvisur&paymentState=recaudado&paymentMethod=link&saleChannel=tienda online&managementType=venta
 
+### POST /order-item protected
+
+- Description : add one order item to the database
+
+- Request :
+
+{
+    "quantity":"quantity of the order item to add",
+    "discount":"percentage of the discount to apply in the item",
+    "productSku":"sku of the product to add to the order",
+    "observations":"observations about the order item"
+}
+
+- Parameters :
+
+1. orderId : id number of the order to add the item
+2. tokenUser : username of the user who register the order
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/order-item?orderId=3&tokenUser=fcasas
+
+{
+    "quantity":2,
+    "discount":0.00,
+    "productSku":"B00002",
+    "observations":""
+}
+
+### DELETE /order-item protected
+
+- Description : delete one order item of the database
+
+- Request : none
+
+- Parameters :
+
+1. orderId : id number of the order to add the item
+2. productSku : product sku of the item to delete from the order
+3. tokenUser : username of the user who register the order
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "successfully deleted"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/order-item?orderId=4&productSku=B00002&tokenUser=fcasas
+
 ### POST /order-stock protected
 
 - Description : add a list of order stocks to the database

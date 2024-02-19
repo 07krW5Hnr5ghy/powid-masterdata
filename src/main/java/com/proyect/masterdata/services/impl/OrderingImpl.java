@@ -234,7 +234,7 @@ public class OrderingImpl implements IOrdering {
             Sale sale = saleRepository.findByOrderId(order.getId());
             Customer customer = customerRepository.findByOrderId(order.getId());
 
-            List<OrderItemDTO> orderItemDTOS = orderItemRepository.findAllByOrderId(order.getId()).stream().map(item -> {
+            List<OrderItemDTO> orderItemDTOS = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId()).stream().map(item -> {
                 ProductPrice productPrice = productPriceRepository.findByProductId(item.getProductId());
                 List<String> productPictures = productPictureRepository.findAllByProductId(item.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
                 Double totalPrice = productPrice.getUnitSalePrice() * item.getQuantity();
