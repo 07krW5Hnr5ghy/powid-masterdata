@@ -1444,8 +1444,8 @@ http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez&ord
 - Request :
 
 {
-    "quantity":"quantity of the order item to add",
-    "discount":"percentage of the discount to apply in the item",
+    "quantity":"quantity of the order item to add to the order",
+    "discount":"percentage of the discount to apply in the order item",
     "productSku":"sku of the product to add to the order",
     "observations":"observations about the order item"
 }
@@ -1497,6 +1497,43 @@ http://localhost:8080/masterdata/order-item?orderId=3&tokenUser=fcasas
 - Example :
 
 http://localhost:8080/masterdata/order-item?orderId=4&productSku=B00002&tokenUser=fcasas
+
+### PUT /order-item protected
+
+- Description : update one order item to the database
+
+- Request :
+
+{
+    "quantity":"quantity of the order item to update",
+    "discount":"percentage of the discount to update in the order item",
+    "productSku":"sku of the product to find the order item to update",
+    "observations":"update observations about the order item"
+}
+
+- Parameters :
+
+1. orderId : id number of the order to add the item
+2. tokenUser : username of the user who register the order
+
+- Response :
+
+{
+
+    "code": 200,
+    "message": "registration correctly"
+}
+
+- Example :
+
+http://localhost:8080/masterdata/order-item?orderId=3&tokenUser=fcasas
+
+{
+    "quantity":3,
+    "discount":5.00,
+    "productSku":"B00001",
+    "observations":"adicionan dos unidades del producto en el pedido"
+}
 
 ### POST /order-stock protected
 

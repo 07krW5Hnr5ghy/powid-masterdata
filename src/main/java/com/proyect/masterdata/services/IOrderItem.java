@@ -13,4 +13,5 @@ public interface IOrderItem {
     public ResponseCheckStockItem checkStock(String productSku,Integer quantity,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     public ResponseDelete delete(Long orderId,String productSku,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     public ResponseSuccess add(Long orderId,RequestOrderItem requestOrderItem,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    public ResponseSuccess update(Long orderId,RequestOrderItem requestOrderItem,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
 }

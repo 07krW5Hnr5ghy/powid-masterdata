@@ -64,7 +64,7 @@ public class OrderItemImpl implements IOrderItem {
                             .clientId(user.getClientId())
                             .product(product)
                             .productId(product.getId())
-                            .observations(requestOrderItem.getObservations())
+                            .observations(requestOrderItem.getObservations().toUpperCase())
                             .status(true)
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
@@ -186,7 +186,7 @@ public class OrderItemImpl implements IOrderItem {
             double newSaleAmount = 0.00;
             for(OrderItem orderProduct : orderItemList ){
                 ProductPrice productPrice = productPriceRepository.findByProductId(orderProduct.getProductId());
-                newSaleAmount += productPrice.getUnitSalePrice() * orderProduct.getQuantity();
+                newSaleAmount += (productPrice.getUnitSalePrice() * orderProduct.getQuantity()) - ((productPrice.getUnitSalePrice() * orderProduct.getQuantity())*(orderProduct.getDiscount()/100));
             }
             sale.setSaleAmount(newSaleAmount);
             sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());
@@ -243,7 +243,7 @@ public class OrderItemImpl implements IOrderItem {
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .discount(requestOrderItem.getDiscount())
-                            .observations(requestOrderItem.getObservations())
+                            .observations(requestOrderItem.getObservations().toUpperCase())
                             .product(product)
                             .productId(product.getId())
                             .quantity(requestOrderItem.getQuantity())
@@ -255,7 +255,67 @@ public class OrderItemImpl implements IOrderItem {
             double newSaleAmount = 0.00;
             for(OrderItem orderProduct : orderItemList ){
                 ProductPrice productPrice = productPriceRepository.findByProductId(orderProduct.getProductId());
-                newSaleAmount += productPrice.getUnitSalePrice() * orderProduct.getQuantity();
+                newSaleAmount += (productPrice.getUnitSalePrice() * orderProduct.getQuantity()) - ((productPrice.getUnitSalePrice() * orderProduct.getQuantity())*(requestOrderItem.getDiscount()/100));
+            }
+            sale.setSaleAmount(newSaleAmount);
+            sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());
+            saleRepository.save(sale);
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public ResponseSuccess update(Long orderId, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        Ordering ordering;
+        Product product;
+        OrderItem orderItem;
+
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            ordering = orderingRepository.findById(orderId).orElse(null);
+            product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(ordering == null){
+            throw new BadRequestExceptions(Constants.ErrorOrdering);
+        }
+
+        if(product == null){
+            throw new BadRequestExceptions(Constants.ErrorProduct);
+        }else {
+            orderItem  = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
+        }
+
+        if(orderItem == null ){
+            throw new BadRequestExceptions(Constants.ErrorOrderItem);
+        }
+
+        try{
+            Sale sale = saleRepository.findByOrderId(ordering.getId());
+            orderItem.setQuantity(requestOrderItem.getQuantity());
+            orderItem.setDiscount(requestOrderItem.getDiscount());
+            orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
+            orderItem.setObservations(requestOrderItem.getObservations().toUpperCase());
+            orderItemRepository.save(orderItem);
+            List<OrderItem> orderItemList = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
+            double newSaleAmount = 0.00;
+            for(OrderItem orderProduct : orderItemList ){
+                ProductPrice productPrice = productPriceRepository.findByProductId(orderProduct.getProductId());
+                newSaleAmount += (productPrice.getUnitSalePrice() * orderProduct.getQuantity()) - ((productPrice.getUnitSalePrice() * orderProduct.getQuantity())*(requestOrderItem.getDiscount()/100));
             }
             sale.setSaleAmount(newSaleAmount);
             sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());

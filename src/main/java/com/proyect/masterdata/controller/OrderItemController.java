@@ -40,13 +40,23 @@ public class OrderItemController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     public ResponseEntity<ResponseDelete> deleteItem(
             @RequestParam("orderId") Long orderId,
             @RequestParam("productSku") String productSku,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions {
         ResponseDelete result = iOrderItem.delete(orderId,productSku,tokenUser);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseSuccess> updateItem(
+            @RequestParam("orderId") Long orderId,
+            @RequestBody()RequestOrderItem requestOrderItem,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iOrderItem.update(orderId,requestOrderItem,tokenUser);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

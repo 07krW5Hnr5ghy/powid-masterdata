@@ -1762,6 +1762,14 @@ public class Seeder implements CommandLineRunner {
                         iOrderItem.add(3L,requestOrderItemAdd,"fcasas");
                         // delete order item mock
                         iOrderItem.delete(4L,"B00002","fcasas");
+                        // update order item mock
+                        RequestOrderItem requestOrderItemUpdate = RequestOrderItem.builder()
+                                .productSku("B00001")
+                                .discount(5.00)
+                                .quantity(3)
+                                .observations("se adicionan dos unidades al pedido")
+                                .build();
+                        iOrderItem.update(3L,requestOrderItemUpdate,"fcasas");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());
