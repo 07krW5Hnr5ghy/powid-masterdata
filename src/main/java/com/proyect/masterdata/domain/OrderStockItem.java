@@ -46,6 +46,9 @@ public class OrderStockItem {
     @Column(name = "client_id")
     private Long clientId;
 
+    @Column(name = "order_id")
+    private Long orderId;
+
     @Column(name = "token_user")
     private String tokenUser;
 
@@ -64,5 +67,9 @@ public class OrderStockItem {
     @ManyToOne
     @JoinColumn(name = "order_stock_id",columnDefinition = "orderStockId",insertable = false,updatable = false)
     private OrderStock orderStock;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
+    private Ordering ordering;
 
 }

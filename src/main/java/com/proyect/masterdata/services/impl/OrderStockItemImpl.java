@@ -71,6 +71,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
                             .orderStock(orderStock)
                             .orderStockId(orderStock.getId())
                             .orderItem(orderItem)
+                            .orderId(ordering.getId())
+                            .ordering(ordering)
                             .itemId(orderItem.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .supplierProduct(supplierProduct)
@@ -92,25 +94,20 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public Page<OrderStockItemDTO> list(String warehouse, Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<OrderStockItemDTO> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<OrderStockItem> pageOrderStock;
-        User userdata;
-        Warehouse warehouseData;
+        Long clientId;
+        Long supplierProductId;
 
-        if (user != null) {
-            userdata = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+        if (supplierProductSerial != null) {
+            supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
         } else {
-            userdata = null;
-        }
-
-        if (warehouse != null) {
-            warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
-        } else {
-            warehouseData = null;
+            supplierProductId = null;
         }
 
         try{
-            pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStock(warehouseData,orderId,userdata,true,sort,sortColumn,pageNumber,pageSize);
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(clientId,orderId,supplierProductId,sort,sortColumn,pageNumber,pageSize,true);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -124,7 +121,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
                     .itemId(orderStockItem.getItemId())
-                    .serialSupplierProduct(orderStockItem.getSupplierProduct().getSerial())
+                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
@@ -134,25 +131,20 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public Page<OrderStockItemDTO> listFalse(String warehouse, Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<OrderStockItemDTO> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         Page<OrderStockItem> pageOrderStock;
-        User userdata;
-        Warehouse warehouseData;
+        Long clientId;
+        Long supplierProductId;
 
-        if (user != null) {
-            userdata = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+        if (supplierProductSerial != null) {
+            supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
         } else {
-            userdata = null;
-        }
-
-        if (warehouse != null) {
-            warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
-        } else {
-            warehouseData = null;
+            supplierProductId = null;
         }
 
         try{
-            pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStock(warehouseData,orderId,userdata,false,sort,sortColumn,pageNumber,pageSize);
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(clientId,orderId,supplierProductId,sort,sortColumn,pageNumber,pageSize,false);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);
@@ -166,7 +158,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 .orderId(orderStockItem.getOrderStock().getOrderId())
                 .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
                 .itemId(orderStockItem.getItemId())
-                .serialSupplierProduct(orderStockItem.getSupplierProduct().getSerial())
+                .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
                 .quantity(orderStockItem.getQuantity())
                 .registrationDate(orderStockItem.getRegistrationDate())
                 .updateDate(orderStockItem.getUpdateDate())

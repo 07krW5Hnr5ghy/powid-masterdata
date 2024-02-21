@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.OrderStockDTO;
 import com.proyect.masterdata.dto.OrderStockItemDTO;
 import com.proyect.masterdata.dto.request.RequestOrderStockItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -33,6 +34,20 @@ public class OrderStockController {
             ) throws InternalErrorExceptions, BadRequestExceptions{
         ResponseSuccess result = iOrderStock.save(orderId,warehouse, requestOrderStockItemList,tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<Page<OrderStockDTO>> list(
+            @RequestParam(value = "warehouse",required = false) String warehouse,
+            @RequestParam(value = "orderId",required = false) Long orderId,
+            @RequestParam("user") String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
+    ) throws BadRequestExceptions{
+        Page<OrderStockDTO> result = iOrderStock.list(warehouse,orderId,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }

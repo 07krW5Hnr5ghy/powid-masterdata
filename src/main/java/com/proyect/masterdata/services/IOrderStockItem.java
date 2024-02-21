@@ -13,8 +13,8 @@ import java.util.List;
 
 public interface IOrderStockItem {
     public ResponseSuccess save(OrderStock orderStock, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    public Page<OrderStockItemDTO> list(String warehouse, Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    public Page<OrderStockItemDTO> listFalse(String warehouse, Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    public Page<OrderStockItemDTO> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    public Page<OrderStockItemDTO> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
     public Boolean checkWarehouseItemStock(Long orderId, Warehouse warehouse, RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions,BadRequestExceptions;
 
 }

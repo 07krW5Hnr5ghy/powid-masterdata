@@ -37,6 +37,12 @@ public class OrderStock {
     @Column(name = "update_date")
     private Date updateDate;
 
+    @Column(name = "token_user")
+    private String tokenUser;
+
+    @Column(name = "client_id")
+    private Long clientId;
+
     @ManyToOne
     @JoinColumn(name = "order_id", columnDefinition = "orderId", insertable = false, updatable = false)
     private Ordering ordering;
@@ -44,5 +50,9 @@ public class OrderStock {
     @ManyToOne
     @JoinColumn(name = "warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)
     private Warehouse warehouse;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
+    private Client client;
 
 }

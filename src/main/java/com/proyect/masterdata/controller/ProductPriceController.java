@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping()
+@RequestMapping("/product-price")
 @AllArgsConstructor
 public class ProductPriceController {
 

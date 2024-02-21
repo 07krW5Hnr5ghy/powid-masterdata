@@ -1535,6 +1535,55 @@ http://localhost:8080/masterdata/order-item?orderId=3&tokenUser=fcasas
     "observations":"adicionan dos unidades del producto en el pedido"
 }
 
+### GET /order-stock protected
+
+- Description : list order stocks
+
+- Request : none
+
+- Parameters :
+
+1. warehouse : filter order stocks by warehouse
+2. orderId : filter order stocks by order
+3. user : filter orders by the client of the user (required)
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "orderId": 1,
+            "warehouse": "LUMINOUS",
+            "registrationDate": "2024-02-21T06:39:41.185+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "pageNumber": 0,
+        "pageSize": 2,
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 1,
+    "first": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/order-stock?pageNumber=0&pageSize=2&user=gjimenez&warehouse=luminous&orderId=1
+
 ### POST /order-stock protected
 
 - Description : add a list of order stocks to the database
@@ -1565,7 +1614,7 @@ http://localhost:8080/masterdata/order-item?orderId=3&tokenUser=fcasas
 
 http://localhost:8080/masterdata/order-stock?orderId=1&tokenUser=gjimenez
 
-### GET /order-stock protected
+### GET /order-stock-item protected
 
 - Description : list order stocks
 
@@ -1573,9 +1622,9 @@ http://localhost:8080/masterdata/order-stock?orderId=1&tokenUser=gjimenez
 
 - Parameters :
 
-1. warehouse : filter order stocks by warehouse
-2. orderId : filter order stocks by order
-3. user : filter orders by the client of the user (required)
+1. user : filter orders by the client of the user (required)
+2. orderId : filter order stocks by order id number
+3. supplierProductSerial : filter orders by supplier product serial
 4. sort : sort the values the only valid values are ASC and DESC, default is ASC
 5. sortColumn : select the value that sorts the list in this case name or user
 6. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -1584,48 +1633,39 @@ http://localhost:8080/masterdata/order-stock?orderId=1&tokenUser=gjimenez
 - Response :
 
 {
-"content": [
-    {
-        "orderId": 1,
-        "itemId": 1,
-        "warehouse": "LUMINOUS",
-        "serialSupplierProduct": "A00001A",
-        "quantity": 2,
-        "registrationDate": "2024-01-29T23:31:25.533+00:00",
-        "updateDate": "2024-01-29T23:31:25.533+00:00"
+    "content": [
+        {
+            "orderId": 1,
+            "itemId": 1,
+            "warehouse": "LUMINOUS",
+            "supplierProductSerial": "A00001A",
+            "quantity": 2,
+            "registrationDate": "2024-02-21T07:14:01.911+00:00",
+            "updateDate": "2024-02-21T07:14:01.911+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 2,
+        "paged": true,
+        "unpaged": false
     },
-    {
-        "orderId": 1,
-        "itemId": 2,
-        "warehouse": "LUMINOUS",
-        "serialSupplierProduct": "A00002A",
-        "quantity": 1,
-        "registrationDate": "2024-01-29T23:31:25.545+00:00",
-        "updateDate": "2024-01-29T23:31:25.545+00:00"
-    }
-],
-"pageable": {
-"sort": [],
-"offset": 0,
-"pageSize": 2,
-"pageNumber": 0,
-"paged": true,
-"unpaged": false
-},
-"totalPages": 2,
-"last": false,
-"totalElements": 4,
-"size": 2,
-"number": 0,
-"sort": [],
-"first": true,
-"numberOfElements": 2,
-"empty": false
+    "totalPages": 1,
+    "totalElements": 1,
+    "last": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "first": true,
+    "empty": false
 }
 
 - example :
 
-http://localhost:8080/masterdata/order-stock?pageNumber=0&pageSize=2&user=gjimenez
+http://localhost:8080/masterdata/order-stock-item?pageNumber=0&pageSize=2&user=gjimenez&orderId=1&supplierProductSerial=A00001A
 
 
 ### GET /product protected

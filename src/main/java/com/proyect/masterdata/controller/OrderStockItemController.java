@@ -19,15 +19,15 @@ public class OrderStockItemController {
 
     @GetMapping()
     public ResponseEntity<Page<OrderStockItemDTO>> list(
-            @RequestParam(value = "warehouse", required = false) String warehouse,
-            @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "orderId", required = false) Long orderId,
+            @RequestParam(value = "supplierProductSerial", required = false) String supplierProductSerial,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) throws BadRequestExceptions {
-        Page<OrderStockItemDTO> result = iOrderStockItem.list(warehouse,orderId,user,sort,sortColumn,pageNumber,pageSize);
+        Page<OrderStockItemDTO> result = iOrderStockItem.list(user,orderId,supplierProductSerial,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
