@@ -1,19 +1,19 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.PaymentState;
+import com.proyect.masterdata.domain.OrderPaymentState;
 import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.dto.PaymentStateDTO;
-import com.proyect.masterdata.dto.request.RequestPaymentState;
-import com.proyect.masterdata.dto.request.RequestPaymentStateSave;
+import com.proyect.masterdata.dto.OrderPaymentStateDTO;
+import com.proyect.masterdata.dto.request.RequestOrderPaymentState;
+import com.proyect.masterdata.dto.request.RequestOrderPaymentStateSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.PaymentStateMapper;
-import com.proyect.masterdata.repository.PaymentStateRepository;
-import com.proyect.masterdata.repository.PaymentStateRepositoryCustom;
+import com.proyect.masterdata.repository.OrderPaymentStateRepository;
+import com.proyect.masterdata.repository.OrderPaymentStateRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.services.IPaymentState;
+import com.proyect.masterdata.services.IOrderPaymentState;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,21 +30,21 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class PaymentStateImpl implements IPaymentState {
+public class OrderPaymentStateImpl implements IOrderPaymentState {
 
-    private final PaymentStateRepository paymentStateRepository;
+    private final OrderPaymentStateRepository orderPaymentStateRepository;
     private final PaymentStateMapper paymentStateMapper;
     private final UserRepository userRepository;
-    private final PaymentStateRepositoryCustom paymentStateRepositoryCustom;
+    private final OrderPaymentStateRepositoryCustom orderPaymentStateRepositoryCustom;
 
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
-        PaymentState paymentState;
+        OrderPaymentState orderPaymentState;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            paymentState = paymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
+            orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -53,12 +53,12 @@ public class PaymentStateImpl implements IPaymentState {
         if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (paymentState != null) {
+        if (orderPaymentState != null) {
             throw new BadRequestExceptions(Constants.ErrorPaymentStateExists.toUpperCase());
         }
 
         try {
-            paymentStateRepository.save(PaymentState.builder()
+            orderPaymentStateRepository.save(OrderPaymentState.builder()
                             .name(name.toUpperCase())
                             .status(true)
                             .registrationDate(new Date(System.currentTimeMillis()))
@@ -78,11 +78,11 @@ public class PaymentStateImpl implements IPaymentState {
     public ResponseSuccess saveAll(List<String> names, String user)
             throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
-        List<PaymentState> paymentStates;
+        List<OrderPaymentState> orderPaymentStates;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            paymentStates = paymentStateRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
+            orderPaymentStates = orderPaymentStateRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -91,18 +91,18 @@ public class PaymentStateImpl implements IPaymentState {
         if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (!paymentStates.isEmpty()) {
+        if (!orderPaymentStates.isEmpty()) {
             throw new BadRequestExceptions(Constants.ErrorPaymentStateList.toUpperCase());
         }
 
         try {
-            List<RequestPaymentStateSave> requestPaymentStateSaves = names.stream()
-                    .map(data -> RequestPaymentStateSave.builder()
+            List<RequestOrderPaymentStateSave> requestOrderPaymentStateSaves = names.stream()
+                    .map(data -> RequestOrderPaymentStateSave.builder()
                             .user(user.toUpperCase())
                             .name(data.toUpperCase())
                             .build())
                     .toList();
-            paymentStateRepository.saveAll(paymentStateMapper.listPaymentStateToListName(requestPaymentStateSaves));
+            orderPaymentStateRepository.saveAll(paymentStateMapper.listPaymentStateToListName(requestOrderPaymentStateSaves));
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -114,14 +114,14 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public PaymentStateDTO update(RequestPaymentState requestPaymentState)
+    public OrderPaymentStateDTO update(RequestOrderPaymentState requestOrderPaymentState)
             throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
-        PaymentState paymentState;
+        OrderPaymentState orderPaymentState;
 
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestPaymentState.getUser().toUpperCase());
-            paymentState = paymentStateRepository.findById(requestPaymentState.getCode()).orElse(null);
+            datauser = userRepository.findByUsernameAndStatusTrue(requestOrderPaymentState.getUser().toUpperCase());
+            orderPaymentState = orderPaymentStateRepository.findById(requestOrderPaymentState.getCode()).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -130,17 +130,17 @@ public class PaymentStateImpl implements IPaymentState {
         if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (paymentState == null) {
+        if (orderPaymentState == null) {
             throw new BadRequestExceptions(Constants.ErrorPaymentState.toUpperCase());
         }
 
-        paymentState.setName(requestPaymentState.getName().toUpperCase());
-        paymentState.setTokenUser(datauser.getUsername().toUpperCase());
-        paymentState.setStatus(requestPaymentState.isStatus());
-        paymentState.setUpdateDate(new Date(System.currentTimeMillis()));
+        orderPaymentState.setName(requestOrderPaymentState.getName().toUpperCase());
+        orderPaymentState.setTokenUser(datauser.getUsername().toUpperCase());
+        orderPaymentState.setStatus(requestOrderPaymentState.isStatus());
+        orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
 
         try {
-            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentStateRepository.save(paymentState));
+            return paymentStateMapper.paymentStateToPaymentStateDTO(orderPaymentStateRepository.save(orderPaymentState));
         } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
@@ -151,11 +151,11 @@ public class PaymentStateImpl implements IPaymentState {
     @Transactional
     public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
-        PaymentState paymentState;
+        OrderPaymentState orderPaymentState;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            paymentState = paymentStateRepository.findById(code).orElse(null);
+            orderPaymentState = orderPaymentStateRepository.findById(code).orElse(null);
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -164,14 +164,14 @@ public class PaymentStateImpl implements IPaymentState {
         if (datauser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
-        if (paymentState == null) {
+        if (orderPaymentState == null) {
             throw new BadRequestExceptions(Constants.ErrorPaymentState.toUpperCase());
         }
 
         try {
-            paymentState.setStatus(false);
-            paymentState.setUpdateDate(new Date(System.currentTimeMillis()));
-            paymentStateRepository.save(paymentState);
+            orderPaymentState.setStatus(false);
+            orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
+            orderPaymentStateRepository.save(orderPaymentState);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)
@@ -183,11 +183,11 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public Page<PaymentStateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
-        Page<PaymentState> paymentStatePage;
+    public Page<OrderPaymentStateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+                                           Integer pageSize) throws BadRequestExceptions {
+        Page<OrderPaymentState> paymentStatePage;
         try {
-            paymentStatePage = paymentStateRepositoryCustom.searchForPaymentState(name, user, sort, sortColumn,
+            paymentStatePage = orderPaymentStateRepositoryCustom.searchForPaymentState(name, user, sort, sortColumn,
                     pageNumber, pageSize, true);
         } catch (RuntimeException e) {
             log.error(e);
@@ -201,26 +201,26 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public List<PaymentStateDTO> listPaymentState() throws BadRequestExceptions {
-        List<PaymentState> paymentStates = new ArrayList<>();
+    public List<OrderPaymentStateDTO> listPaymentState() throws BadRequestExceptions {
+        List<OrderPaymentState> orderPaymentStates = new ArrayList<>();
         try {
-            paymentStates = paymentStateRepository.findAllByStatusTrue();
+            orderPaymentStates = orderPaymentStateRepository.findAllByStatusTrue();
         } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if (paymentStates.isEmpty()) {
+        if (orderPaymentStates.isEmpty()) {
             return Collections.emptyList();
         }
-        return paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStates);
+        return paymentStateMapper.listPaymentStateToListPaymentStateDTO(orderPaymentStates);
     }
 
     @Override
-    public Page<PaymentStateDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
-            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<PaymentState> paymentStatePage;
+    public Page<OrderPaymentStateDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+                                                      Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        Page<OrderPaymentState> paymentStatePage;
         try {
-            paymentStatePage = paymentStateRepositoryCustom.searchForPaymentState(name, user, sort, sortColumn,
+            paymentStatePage = orderPaymentStateRepositoryCustom.searchForPaymentState(name, user, sort, sortColumn,
                     pageNumber, pageSize, false);
         } catch (RuntimeException e) {
             log.error(e);
@@ -234,9 +234,9 @@ public class PaymentStateImpl implements IPaymentState {
     }
 
     @Override
-    public PaymentStateDTO findByCode(Long code) throws BadRequestExceptions {
+    public OrderPaymentStateDTO findByCode(Long code) throws BadRequestExceptions {
         try {
-            return paymentStateMapper.paymentStateToPaymentStateDTO(paymentStateRepository.findByIdAndStatusTrue(code));
+            return paymentStateMapper.paymentStateToPaymentStateDTO(orderPaymentStateRepository.findByIdAndStatusTrue(code));
         } catch (RuntimeException e) {
             throw new BadRequestExceptions(Constants.ResultsFound);
         }

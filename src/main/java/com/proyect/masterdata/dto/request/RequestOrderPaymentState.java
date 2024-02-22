@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestPaymentState {
+public class RequestOrderPaymentState {
     private Long code;
     private String name;
     private String user;

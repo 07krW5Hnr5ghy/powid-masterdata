@@ -1,11 +1,11 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.PaymentStateDTO;
-import com.proyect.masterdata.dto.request.RequestPaymentState;
+import com.proyect.masterdata.dto.OrderPaymentStateDTO;
+import com.proyect.masterdata.dto.request.RequestOrderPaymentState;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.services.IPaymentState;
+import com.proyect.masterdata.services.IOrderPaymentState;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -21,26 +21,26 @@ import java.util.List;
 @AllArgsConstructor
 public class PaymentStateController {
 
-    private final IPaymentState iPaymentState;
+    private final IOrderPaymentState iOrderPaymentState;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iPaymentState.save(name, user);
+        ResponseSuccess result = iOrderPaymentState.save(name, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/payment-states", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> saveall(
             @RequestBody() List<String> names, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iPaymentState.saveAll(names, user);
+        ResponseSuccess result = iOrderPaymentState.saveAll(names, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PaymentStateDTO> update(
-            @RequestBody() RequestPaymentState requestPaymentState) throws BadRequestExceptions {
-        PaymentStateDTO result = iPaymentState.update(requestPaymentState);
+    public ResponseEntity<OrderPaymentStateDTO> update(
+            @RequestBody() RequestOrderPaymentState requestOrderPaymentState) throws BadRequestExceptions {
+        OrderPaymentStateDTO result = iOrderPaymentState.update(requestOrderPaymentState);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -48,45 +48,45 @@ public class PaymentStateController {
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("code") Long code,
             @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iPaymentState.delete(code, user);
+        ResponseDelete result = iOrderPaymentState.delete(code, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "/list")
-    public ResponseEntity<List<PaymentStateDTO>> listPaymentState() throws BadRequestExceptions {
-        List<PaymentStateDTO> result = iPaymentState.listPaymentState();
+    public ResponseEntity<List<OrderPaymentStateDTO>> listPaymentState() throws BadRequestExceptions {
+        List<OrderPaymentStateDTO> result = iOrderPaymentState.listPaymentState();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
-    public ResponseEntity<Page<PaymentStateDTO>> list(
+    public ResponseEntity<Page<OrderPaymentStateDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<PaymentStateDTO> result = iPaymentState.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        Page<OrderPaymentStateDTO> result = iOrderPaymentState.list(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "/statusFalse")
-    public ResponseEntity<Page<PaymentStateDTO>> listStatusFalse(
+    public ResponseEntity<Page<OrderPaymentStateDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<PaymentStateDTO> result = iPaymentState.listStatusFalse(name, user, sort, sortColumn, pageNumber,
+        Page<OrderPaymentStateDTO> result = iOrderPaymentState.listStatusFalse(name, user, sort, sortColumn, pageNumber,
                 pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "/code")
-    public ResponseEntity<PaymentStateDTO> findByCode(
+    public ResponseEntity<OrderPaymentStateDTO> findByCode(
             @RequestParam("code") Long code) throws BadRequestExceptions {
-        PaymentStateDTO result = iPaymentState.findByCode(code);
+        OrderPaymentStateDTO result = iOrderPaymentState.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

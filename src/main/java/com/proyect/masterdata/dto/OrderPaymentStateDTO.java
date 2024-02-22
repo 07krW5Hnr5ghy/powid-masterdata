@@ -1,4 +1,4 @@
-package com.proyect.masterdata.dto.request;
+package com.proyect.masterdata.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestPaymentStateSave {
+public class OrderPaymentStateDTO {
+    private Long code;
     private String name;
-    private String user;
 }

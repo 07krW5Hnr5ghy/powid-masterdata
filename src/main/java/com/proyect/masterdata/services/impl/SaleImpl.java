@@ -20,7 +20,7 @@ import java.util.Date;
 public class SaleImpl implements ISale {
 
     private final UserRepository userRepository;
-    private final PaymentStateRepository paymentStateRepository;
+    private final OrderPaymentStateRepository orderPaymentStateRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final SaleChannelRepository saleChannelRepository;
     private final ManagementTypeRepository managementTypeRepository;

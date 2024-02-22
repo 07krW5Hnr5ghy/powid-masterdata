@@ -1329,7 +1329,7 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
 2. orderId : filter orders by id
 3. orderState : filter orders by order state name
 4. courier : filter orders by courier name
-5. paymentState : filter orders by payment state name
+5. orderPaymentState : filter orders by payment state name
 6. paymentMethod : filter orders by payment method name
 7. saleChannel : filter orders by sale channel name
 8. managementType : filter orders by management type 
@@ -1435,7 +1435,7 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
 
 - example :
 
-http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez&orderId=1&orderState=entregado&courier=marvisur&paymentState=recaudado&paymentMethod=link&saleChannel=tienda online&managementType=venta
+http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez&orderId=1&orderState=entregado&courier=marvisur&orderPaymentState=recaudado&paymentMethod=link&saleChannel=tienda online&managementType=venta
 
 ### POST /order-item protected
 

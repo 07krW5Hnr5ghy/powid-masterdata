@@ -57,7 +57,7 @@ public class Seeder implements CommandLineRunner {
         private final IShipment iShipment;
         private final IPurchase iPurchase;
         private final IOrderState iOrderState;
-        private final IPaymentState iPaymentState;
+        private final IOrderPaymentState iOrderPaymentState;
         private final ISaleChannel iSaleChannel;
         private final IManagementType iManagementType;
         private final IPaymentMethod iPaymentMethod;
@@ -286,9 +286,9 @@ public class Seeder implements CommandLineRunner {
                         iOrderState.save("cancelado","admin1");
 
                         // payment state
-                        iPaymentState.save("por recaudar","admin1");
-                        iPaymentState.save("recaudado","admin1");
-                        iPaymentState.save("perdida","admin1");
+                        iOrderPaymentState.save("por recaudar","admin1");
+                        iOrderPaymentState.save("recaudado","admin1");
+                        iOrderPaymentState.save("perdida","admin1");
 
                         // sale channel
                         iSaleChannel.save("tienda online","admin1");

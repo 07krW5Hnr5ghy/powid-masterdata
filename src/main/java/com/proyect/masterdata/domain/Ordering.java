@@ -81,7 +81,7 @@ public class Ordering {
 
     @ManyToOne()
     @JoinColumn(name = "payment_state_id", columnDefinition = "paymentStateId",insertable = false,updatable = false)
-    private PaymentState paymentState;
+    private OrderPaymentState orderPaymentState;
 
     @ManyToOne()
     @JoinColumn(name = "payment_method_id", columnDefinition = "paymentMethodId",insertable = false,updatable = false)

@@ -16,7 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 @Table(name = Constants.tablePaymentState, schema = Constants.schemaMaster)
-public class PaymentState {
+public class OrderPaymentState {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)

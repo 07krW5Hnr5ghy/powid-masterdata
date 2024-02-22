@@ -1,7 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.PaymentState;
-import com.proyect.masterdata.repository.PaymentStateRepositoryCustom;
+import com.proyect.masterdata.domain.OrderPaymentState;
+import com.proyect.masterdata.repository.OrderPaymentStateRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -17,12 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class PaymentStateCustomImpl implements PaymentStateRepositoryCustom {
+public class OrderPaymentStateCustomImpl implements OrderPaymentStateRepositoryCustom {
     @PersistenceContext(name="entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<PaymentState> searchForPaymentState(
+    public Page<OrderPaymentState> searchForPaymentState(
             String name,
             String user,
             String sort,
@@ -32,8 +32,8 @@ public class PaymentStateCustomImpl implements PaymentStateRepositoryCustom {
             Boolean status){
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<PaymentState> criteriaQuery = criteriaBuilder.createQuery(PaymentState.class);
-        Root<PaymentState> itemRoot = criteriaQuery.from(PaymentState.class);
+        CriteriaQuery<OrderPaymentState> criteriaQuery = criteriaBuilder.createQuery(OrderPaymentState.class);
+        Root<OrderPaymentState> itemRoot = criteriaQuery.from(OrderPaymentState.class);
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
@@ -51,7 +51,7 @@ public class PaymentStateCustomImpl implements PaymentStateRepositoryCustom {
             criteriaQuery.where(conditions.toArray(new Predicate[]{}));
         }
 
-        TypedQuery<PaymentState> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<OrderPaymentState> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber*pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
@@ -65,7 +65,7 @@ public class PaymentStateCustomImpl implements PaymentStateRepositoryCustom {
             String user,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<PaymentState> itemRoot
+            Root<OrderPaymentState> itemRoot
     ){
         List<Predicate> conditions = new ArrayList<>();
 
@@ -97,7 +97,7 @@ public class PaymentStateCustomImpl implements PaymentStateRepositoryCustom {
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<PaymentState> itemRoot
+            Root<OrderPaymentState> itemRoot
     ){
         List<Order> paymentStateList = new ArrayList<>();
         if(sortColumn.equalsIgnoreCase("NAME")){
@@ -112,7 +112,7 @@ public class PaymentStateCustomImpl implements PaymentStateRepositoryCustom {
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<PaymentState> itemRoot
+            Root<OrderPaymentState> itemRoot
     ){
         List<Order> paymentStateList = new ArrayList<>();
         if(sortColumn.equalsIgnoreCase("NAME")){
@@ -127,7 +127,7 @@ public class PaymentStateCustomImpl implements PaymentStateRepositoryCustom {
     private long getOrderCount(String name,String user,Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<PaymentState> itemRoot = criteriaQuery.from(PaymentState.class);
+        Root<OrderPaymentState> itemRoot = criteriaQuery.from(OrderPaymentState.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);

@@ -1,8 +1,6 @@
 package com.proyect.masterdata.services;
 
-import com.proyect.masterdata.dto.PaymentStateDTO;
 import com.proyect.masterdata.dto.PaymentTypeDTO;
-import com.proyect.masterdata.dto.request.RequestPaymentTypeSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;

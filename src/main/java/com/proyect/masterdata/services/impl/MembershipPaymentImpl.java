@@ -1,14 +1,12 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
-import com.proyect.masterdata.dto.PaymentDTO;
 import com.proyect.masterdata.dto.PaymentUpdateDTO;
 import com.proyect.masterdata.dto.request.RequestMembershipPayment;
 import com.proyect.masterdata.dto.request.RequestMembershipPaymentUpdate;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.mapper.PaymentMapper;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IMembershipPayment;
 import com.proyect.masterdata.utils.Constants;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +29,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
     private final UserRepository userRepository;
     private final MembershipPaymentRepositoryCustom membershipPaymentRepositoryCustom;
     private final PaymentMethodRepository paymentMethodRepository;
-    private final PaymentStateRepository paymentStateRepository;
+    private final OrderPaymentStateRepository orderPaymentStateRepository;
 
     @Override
     public ResponseSuccess save(Long membershipId, RequestMembershipPayment requestMembershipPayment, String tokenUser)
@@ -42,7 +39,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
         Membership membership;
         MembershipPayment membershipPayment;
         PaymentMethod paymentMethod;
-        PaymentState paymentState;
+        OrderPaymentState orderPaymentState;
 
         try {
             existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -50,7 +47,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
             membershipPayment = membershipPaymentRepository.findByMembershipIdAndStatusTrue(membershipId);
             paymentMethod = paymentMethodRepository
                     .findByNameAndStatusTrue(requestMembershipPayment.getPaymentMethod().toUpperCase());
-            paymentState = paymentStateRepository.findByNameAndStatusTrue("CREADO");
+            orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("CREADO");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -78,8 +75,8 @@ public class MembershipPaymentImpl implements IMembershipPayment {
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .paymentMethod(paymentMethod)
                     .paymentMethodId(paymentMethod.getId())
-                    .paymentState(paymentState)
-                    .paymentStateId(paymentState.getId())
+                    .orderPaymentState(orderPaymentState)
+                    .paymentStateId(orderPaymentState.getId())
                     .status(true)
                     .build());
 
