@@ -21,7 +21,7 @@ public class SaleImpl implements ISale {
 
     private final UserRepository userRepository;
     private final OrderPaymentStateRepository orderPaymentStateRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
+    private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     private final SaleChannelRepository saleChannelRepository;
     private final ManagementTypeRepository managementTypeRepository;
     private final SaleRepository saleRepository;

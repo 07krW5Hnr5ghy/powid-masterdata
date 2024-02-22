@@ -1,9 +1,8 @@
 package com.proyect.masterdata.mapper;
 
-import com.proyect.masterdata.domain.PaymentMethod;
-import com.proyect.masterdata.dto.PaymentMethodDTO;
-import com.proyect.masterdata.dto.request.RequestPaymentMethodSave;
-import com.proyect.masterdata.dto.request.RequestPaymentMethod;
+import com.proyect.masterdata.domain.OrderPaymentMethod;
+import com.proyect.masterdata.dto.OrderPaymentMethodDTO;
+import com.proyect.masterdata.dto.request.RequestOrderPaymentMethodSave;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -15,11 +14,11 @@ public interface PaymentMethodMapper {
     PaymentMethodMapper INSTANCE = Mappers.getMapper(PaymentMethodMapper.class);
 
     @Mapping(target = "code", source = "id")
-    PaymentMethodDTO paymentMethodToPaymentMethodDTO(PaymentMethod paymentMethod);
+    OrderPaymentMethodDTO paymentMethodToPaymentMethodDTO(OrderPaymentMethod orderPaymentMethod);
 
-    List<PaymentMethodDTO> listPaymentMethodToListPaymentMethodDTO(List<PaymentMethod> paymentMethodList);
+    List<OrderPaymentMethodDTO> listPaymentMethodToListPaymentMethodDTO(List<OrderPaymentMethod> orderPaymentMethodList);
 
-    PaymentMethod paymentMethodToName(RequestPaymentMethodSave requestPaymentMethodSave);
+    OrderPaymentMethod paymentMethodToName(RequestOrderPaymentMethodSave requestOrderPaymentMethodSave);
 
-    List<PaymentMethod> listPaymentMethodToListName(List<RequestPaymentMethodSave> requestPaymentMethodSaveList);
+    List<OrderPaymentMethod> listPaymentMethodToListName(List<RequestOrderPaymentMethodSave> requestOrderPaymentMethodSaveList);
 }

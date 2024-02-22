@@ -756,7 +756,7 @@ http://localhost:8080/masterdata/courier?tokenUser=admin1
 - Request :
 
 {
-    "paymentMethod":"name of the paymentMethod",
+    "orderPaymentMethod":"name of the orderPaymentMethod",
     "orderState":"name of the order state",
     "orderPictures":"array of files for courier pictures"
 }
@@ -779,7 +779,7 @@ http://localhost:8080/masterdata/courier?tokenUser=admin1
 http://localhost:8080/masterdata/courier?tokenUser=admin1
 
 {
-    "paymentMethod":"Link",
+    "orderPaymentMethod":"Link",
     "orderState":"entregado",
     "orderPictures":[...image files]
 }
@@ -1244,7 +1244,7 @@ http://localhost:8080/masterdata/onboard
     "deliveryAmount":"amount of delivery fee with two decimals",
     "advancedPayment":"prepaid amount for the order",
     "saleChannel":"name of the channel of sale",
-    "paymentMethod":"name of the payment method",
+    "orderPaymentMethod":"name of the payment method",
     "managementType":"name of the management type",
     "requestItems":"array of request items",
     "customerName" : "name of the customer",
@@ -1283,7 +1283,7 @@ http://localhost:8080/masterdata/order?tokenUser=gjimenez
 {
 "orderState":"name of the state of the order",
 "observations":"observations about the order",
-"paymentMethod":"name of the payment method",
+"orderPaymentMethod":"name of the payment method",
 "saleChannel" : "channel of sale",
 "receipts":"array of receipts pictures",
 "courier":"name of the courier",
@@ -1310,7 +1310,7 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
 {
 "orderState":"entregado",
 "observations":"",
-"paymentMethod":"link",
+"orderPaymentMethod":"link",
 "saleChannel" : "tienda online",
 "receipts":[...receipt pictures],
 "courier":"marvisur",
@@ -1330,7 +1330,7 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
 3. orderState : filter orders by order state name
 4. courier : filter orders by courier name
 5. orderPaymentState : filter orders by payment state name
-6. paymentMethod : filter orders by payment method name
+6. orderPaymentMethod : filter orders by payment method name
 7. saleChannel : filter orders by sale channel name
 8. managementType : filter orders by management type 
 9. sort : sort the values the only valid values are ASC and DESC, default is ASC
@@ -1354,7 +1354,7 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
             "district": "BREÑA",
             "address": "807 IQUIQUE",
             "managementType": "VENTA",
-            "paymentMethod": "LINK",
+            "orderPaymentMethod": "LINK",
             "saleChannel": "TIENDA ONLINE",
             "reference": "",
             "paymentReceipts": [
@@ -1435,7 +1435,7 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
 
 - example :
 
-http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez&orderId=1&orderState=entregado&courier=marvisur&orderPaymentState=recaudado&paymentMethod=link&saleChannel=tienda online&managementType=venta
+http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez&orderId=1&orderState=entregado&courier=marvisur&orderPaymentState=recaudado&orderPaymentMethod=link&saleChannel=tienda online&managementType=venta
 
 ### POST /order-item protected
 

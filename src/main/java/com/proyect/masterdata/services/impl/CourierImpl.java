@@ -32,7 +32,7 @@ public class CourierImpl implements ICourier {
     private final CourierRepositoryCustom courierRepositoryCustom;
     private final OrderingRepository orderingRepository;
     private final OrderStateRepository orderStateRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
+    private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     private final SaleRepository saleRepository;
     private final ICourierPicture iCourierPicture;
     @Override
@@ -170,13 +170,13 @@ public class CourierImpl implements ICourier {
         User user;
         Ordering ordering;
         OrderState orderState;
-        PaymentMethod paymentMethod;
+        OrderPaymentMethod orderPaymentMethod;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             ordering = orderingRepository.findById(orderId).orElse(null);
             orderState = orderStateRepository.findByNameAndStatusTrue(requestCourierOrder.getOrderState().toUpperCase());
-            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestCourierOrder.getPaymentMethod().toUpperCase());
+            orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestCourierOrder.getPaymentMethod().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -201,9 +201,9 @@ public class CourierImpl implements ICourier {
                 ordering.setOrderStateId(orderState.getId());
             }
 
-            if(!Objects.equals(paymentMethod.getId(), ordering.getPaymentMethodId())){
-                ordering.setPaymentMethod(paymentMethod);
-                ordering.setPaymentMethodId(paymentMethod.getId());
+            if(!Objects.equals(orderPaymentMethod.getId(), ordering.getPaymentMethodId())){
+                ordering.setOrderPaymentMethod(orderPaymentMethod);
+                ordering.setPaymentMethodId(orderPaymentMethod.getId());
             }
 
             ordering.setUpdateDate(new Date(System.currentTimeMillis()));

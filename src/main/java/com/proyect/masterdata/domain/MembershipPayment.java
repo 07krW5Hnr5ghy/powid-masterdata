@@ -65,6 +65,6 @@ public class MembershipPayment {
 
         @ManyToOne()
         @JoinColumn(name = "payment_method_id", columnDefinition = "paymentMethodId", insertable = false, updatable = false)
-        private PaymentMethod paymentMethod;
+        private OrderPaymentMethod orderPaymentMethod;
 
 }

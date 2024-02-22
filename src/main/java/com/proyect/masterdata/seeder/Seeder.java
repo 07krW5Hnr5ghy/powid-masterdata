@@ -60,7 +60,7 @@ public class Seeder implements CommandLineRunner {
         private final IOrderPaymentState iOrderPaymentState;
         private final ISaleChannel iSaleChannel;
         private final IManagementType iManagementType;
-        private final IPaymentMethod iPaymentMethod;
+        private final IOrderPaymentMethod iOrderPaymentMethod;
         private final IOrdering iOrdering;
         private final IOrderStock iOrderStock;
         private final IUnitType iUnitType;
@@ -303,18 +303,18 @@ public class Seeder implements CommandLineRunner {
                         iManagementType.save("recupero","admin1");
 
                         // payment type
-                        iPaymentMethod.save("yape","admin1");
-                        iPaymentMethod.save("pos","admin1");
-                        iPaymentMethod.save("efectivo","admin1");
-                        iPaymentMethod.save("link","admin1");
-                        iPaymentMethod.save("cambio","admin1");
-                        iPaymentMethod.save("plin","admin1");
-                        iPaymentMethod.save("plataforma mp/web","admin1");
-                        iPaymentMethod.save("bcp","admin1");
-                        iPaymentMethod.save("contraentrega","admin1");
-                        iPaymentMethod.save("canje","admin1");
-                        iPaymentMethod.save("interbank","admin1");
-                        iPaymentMethod.save("banco de la nacion","admin1");
+                        iOrderPaymentMethod.save("yape","admin1");
+                        iOrderPaymentMethod.save("pos","admin1");
+                        iOrderPaymentMethod.save("efectivo","admin1");
+                        iOrderPaymentMethod.save("link","admin1");
+                        iOrderPaymentMethod.save("cambio","admin1");
+                        iOrderPaymentMethod.save("plin","admin1");
+                        iOrderPaymentMethod.save("plataforma mp/web","admin1");
+                        iOrderPaymentMethod.save("bcp","admin1");
+                        iOrderPaymentMethod.save("contraentrega","admin1");
+                        iOrderPaymentMethod.save("canje","admin1");
+                        iOrderPaymentMethod.save("interbank","admin1");
+                        iOrderPaymentMethod.save("banco de la nacion","admin1");
 
                         //unit type
                         iUnitType.save("ropa","admin1");

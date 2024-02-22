@@ -28,7 +28,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
     private final MembershipRepository membershipRepository;
     private final UserRepository userRepository;
     private final MembershipPaymentRepositoryCustom membershipPaymentRepositoryCustom;
-    private final PaymentMethodRepository paymentMethodRepository;
+    private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     private final OrderPaymentStateRepository orderPaymentStateRepository;
 
     @Override
@@ -38,14 +38,14 @@ public class MembershipPaymentImpl implements IMembershipPayment {
         boolean existsUser;
         Membership membership;
         MembershipPayment membershipPayment;
-        PaymentMethod paymentMethod;
+        OrderPaymentMethod orderPaymentMethod;
         OrderPaymentState orderPaymentState;
 
         try {
             existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             membership = membershipRepository.findByIdAndStatusTrue(membershipId);
             membershipPayment = membershipPaymentRepository.findByMembershipIdAndStatusTrue(membershipId);
-            paymentMethod = paymentMethodRepository
+            orderPaymentMethod = orderPaymentMethodRepository
                     .findByNameAndStatusTrue(requestMembershipPayment.getPaymentMethod().toUpperCase());
             orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("CREADO");
         } catch (RuntimeException e) {
@@ -73,8 +73,8 @@ public class MembershipPaymentImpl implements IMembershipPayment {
                     .months(requestMembershipPayment.getMonths())
                     .invoiceUrl(requestMembershipPayment.getInvoiceUrl())
                     .registrationDate(new Date(System.currentTimeMillis()))
-                    .paymentMethod(paymentMethod)
-                    .paymentMethodId(paymentMethod.getId())
+                    .orderPaymentMethod(orderPaymentMethod)
+                    .paymentMethodId(orderPaymentMethod.getId())
                     .orderPaymentState(orderPaymentState)
                     .paymentStateId(orderPaymentState.getId())
                     .status(true)

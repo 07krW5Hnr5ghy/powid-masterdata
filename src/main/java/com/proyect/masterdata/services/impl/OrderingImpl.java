@@ -36,7 +36,7 @@ public class OrderingImpl implements IOrdering {
     private final OrderItemRepository orderItemRepository;
     private final ProductPriceRepository productPriceRepository;
     private final ProductRepository productRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
+    private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     private final OrderPaymentStateRepository orderPaymentStateRepository;
     private final CourierRepository courierRepository;
     private final OrderStockItemRepository orderStockItemRepository;
@@ -60,7 +60,7 @@ public class OrderingImpl implements IOrdering {
         OrderPaymentState orderPaymentState;
         SaleChannel saleChannel;
         ManagementType managementType;
-        PaymentMethod paymentMethod;
+        OrderPaymentMethod orderPaymentMethod;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -69,7 +69,7 @@ public class OrderingImpl implements IOrdering {
             orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
             saleChannel = saleChannelRepository.findByNameAndStatusTrue(requestOrderSave.getSaleChannel().toUpperCase());
             managementType = managementTypeRepository.findByNameAndStatusTrue(requestOrderSave.getManagementType().toUpperCase());
-            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
+            orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -83,7 +83,7 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorSaleChannel);
         }
 
-        if(paymentMethod == null){
+        if(orderPaymentMethod == null){
             throw new BadRequestExceptions(Constants.ErrorPaymentMethod);
         }
 
@@ -105,8 +105,8 @@ public class OrderingImpl implements IOrdering {
                             .saleChannelId(saleChannel.getId())
                             .orderPaymentState(orderPaymentState)
                             .paymentStateId(orderPaymentState.getId())
-                            .paymentMethod(paymentMethod)
-                            .paymentMethodId(paymentMethod.getId())
+                            .orderPaymentMethod(orderPaymentMethod)
+                            .paymentMethodId(orderPaymentMethod.getId())
                             .managementType(managementType)
                             .managementTypeId(managementType.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
@@ -202,7 +202,7 @@ public class OrderingImpl implements IOrdering {
         }
 
         if(paymentMethod != null){
-            paymentMethodId = paymentMethodRepository.findByName(paymentMethod.toUpperCase()).getId();
+            paymentMethodId = orderPaymentMethodRepository.findByName(paymentMethod.toUpperCase()).getId();
         }else {
             paymentMethodId = null;
         }
@@ -280,7 +280,7 @@ public class OrderingImpl implements IOrdering {
                     .sellerName(sale.getSeller())
                     .registrationDate(order.getRegistrationDate())
                     .updateDate(order.getUpdateDate())
-                    .paymentMethod(order.getPaymentMethod().getName())
+                    .paymentMethod(order.getOrderPaymentMethod().getName())
                     .deliveryAddress(sale.getDeliveryAddress())
                     .courier(order.getCourier().getName())
                     .paymentReceipts(paymentReceipts)
@@ -300,7 +300,7 @@ public class OrderingImpl implements IOrdering {
         Ordering ordering;
         OrderState orderState;
         Sale sale;
-        PaymentMethod paymentMethod;
+        OrderPaymentMethod orderPaymentMethod;
         OrderPaymentState orderPaymentState;
         Courier courier;
         OrderStock orderStock;
@@ -309,7 +309,7 @@ public class OrderingImpl implements IOrdering {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             ordering = orderingRepository.findById(orderId).orElse(null);
             orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
-            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
+            orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
             orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
             courier = courierRepository.findByNameAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase());
         }catch (RuntimeException e){
@@ -365,9 +365,9 @@ public class OrderingImpl implements IOrdering {
                 iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"SALIDA",user);
             }
 
-            if(!Objects.equals(paymentMethod.getId(), ordering.getPaymentMethod().getId())){
-                ordering.setPaymentMethod(paymentMethod);
-                ordering.setPaymentMethodId(paymentMethod.getId());
+            if(!Objects.equals(orderPaymentMethod.getId(), ordering.getOrderPaymentMethod().getId())){
+                ordering.setOrderPaymentMethod(orderPaymentMethod);
+                ordering.setPaymentMethodId(orderPaymentMethod.getId());
             }
 
             if(!Objects.equals(orderPaymentState.getId(),ordering.getOrderPaymentState().getId())){

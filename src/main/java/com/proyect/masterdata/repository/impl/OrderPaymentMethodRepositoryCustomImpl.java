@@ -1,7 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.PaymentMethod;
-import com.proyect.masterdata.repository.PaymentMethodRepositoryCustom;
+import com.proyect.masterdata.domain.OrderPaymentMethod;
+import com.proyect.masterdata.repository.OrderPaymentMethodRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -17,15 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class PaymentMethodRepositoryCustomImpl implements PaymentMethodRepositoryCustom {
+public class OrderPaymentMethodRepositoryCustomImpl implements OrderPaymentMethodRepositoryCustom {
     @PersistenceContext(name="entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<PaymentMethod> searchForPaymentMethod(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<OrderPaymentMethod> searchForPaymentMethod(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<PaymentMethod> criteriaQuery = criteriaBuilder.createQuery(PaymentMethod.class);
-        Root<PaymentMethod> itemRoot = criteriaQuery.from(PaymentMethod.class);
+        CriteriaQuery<OrderPaymentMethod> criteriaQuery = criteriaBuilder.createQuery(OrderPaymentMethod.class);
+        Root<OrderPaymentMethod> itemRoot = criteriaQuery.from(OrderPaymentMethod.class);
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
@@ -43,7 +43,7 @@ public class PaymentMethodRepositoryCustomImpl implements PaymentMethodRepositor
             criteriaQuery.where(conditions.toArray(new Predicate[]{}));
         }
 
-        TypedQuery<PaymentMethod> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<OrderPaymentMethod> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber*pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
@@ -57,7 +57,7 @@ public class PaymentMethodRepositoryCustomImpl implements PaymentMethodRepositor
             String user,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<PaymentMethod> itemRoot
+            Root<OrderPaymentMethod> itemRoot
     ){
         List<Predicate> conditions = new ArrayList<>();
 
@@ -89,7 +89,7 @@ public class PaymentMethodRepositoryCustomImpl implements PaymentMethodRepositor
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<PaymentMethod> itemRoot
+            Root<OrderPaymentMethod> itemRoot
     ){
         List<Order> paymentMethodList = new ArrayList<>();
         if(sortColumn.equalsIgnoreCase("NAME")){
@@ -104,7 +104,7 @@ public class PaymentMethodRepositoryCustomImpl implements PaymentMethodRepositor
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<PaymentMethod> itemRoot
+            Root<OrderPaymentMethod> itemRoot
     ){
         List<Order> paymentMethodList = new ArrayList<>();
         if(sortColumn.equalsIgnoreCase("NAME")){
@@ -119,7 +119,7 @@ public class PaymentMethodRepositoryCustomImpl implements PaymentMethodRepositor
     private long getOrderCount(String name,String user,Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<PaymentMethod> itemRoot = criteriaQuery.from(PaymentMethod.class);
+        Root<OrderPaymentMethod> itemRoot = criteriaQuery.from(OrderPaymentMethod.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(name,user,status,criteriaBuilder,itemRoot);
