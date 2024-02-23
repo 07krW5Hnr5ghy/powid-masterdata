@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.domain.Membership;
+import com.proyect.masterdata.domain.MembershipPayment;
 import com.proyect.masterdata.dto.PaymentUpdateDTO;
 import com.proyect.masterdata.dto.request.RequestMembershipPayment;
 import com.proyect.masterdata.dto.request.RequestMembershipPaymentUpdate;
@@ -38,16 +39,11 @@ public class MembershipPaymentImpl implements IMembershipPayment {
         boolean existsUser;
         Membership membership;
         MembershipPayment membershipPayment;
-        OrderPaymentMethod orderPaymentMethod;
-        OrderPaymentState orderPaymentState;
 
         try {
             existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             membership = membershipRepository.findByIdAndStatusTrue(membershipId);
             membershipPayment = membershipPaymentRepository.findByMembershipIdAndStatusTrue(membershipId);
-            orderPaymentMethod = orderPaymentMethodRepository
-                    .findByNameAndStatusTrue(requestMembershipPayment.getPaymentMethod().toUpperCase());
-            orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("CREADO");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -70,13 +66,8 @@ public class MembershipPaymentImpl implements IMembershipPayment {
             membershipPaymentRepository.save(MembershipPayment.builder()
                     .netAmount(requestMembershipPayment.getNetAmount())
                     .grossAmount(requestMembershipPayment.getGrossAmount())
-                    .months(requestMembershipPayment.getMonths())
                     .invoiceUrl(requestMembershipPayment.getInvoiceUrl())
                     .registrationDate(new Date(System.currentTimeMillis()))
-                    .orderPaymentMethod(orderPaymentMethod)
-                    .paymentMethodId(orderPaymentMethod.getId())
-                    .orderPaymentState(orderPaymentState)
-                    .paymentStateId(orderPaymentState.getId())
                     .status(true)
                     .build());
 

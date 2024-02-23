@@ -88,6 +88,8 @@ public class Constants {
     public static final String tableStockReplenishmentItem = "stock_replenishmentItem";
     public static final String tableStockTransfer = "stock_transfer";
     public static final String tableStockTransferItem = "stock_transfer_item";
+    public static final String tableMembershipPaymentState = "membership_payment_state";
+    public static final String tableMercadoPagoPayment = "mercado_pago_payment";
 
     // messages
     public static final String register = "registration correctly";

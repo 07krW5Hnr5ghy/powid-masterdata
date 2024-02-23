@@ -23,9 +23,6 @@ public class MembershipPayment {
         @Column(name = "membership_payment_id", nullable = false)
         private Long id;
 
-        @Column(name = "months", nullable = false)
-        private Integer months;
-
         @Column(name = "net_amount", nullable = false)
         private Double netAmount;
 
@@ -49,22 +46,15 @@ public class MembershipPayment {
         @Column(name = "membership_id", nullable = false)
         private Long membershipId;
 
-        @Column(name = "payment_state_id", nullable = false)
-        private Long paymentStateId;
-
-        @Column(name = "payment_method_id", nullable = false)
-        private Long paymentMethodId;
+        @Column(name = "membership_payment_state_id", nullable = false)
+        private Long membershipPaymentStateId;
 
         @ManyToOne()
         @JoinColumn(name = "membership_id", columnDefinition = "membershipId", insertable = false, updatable = false)
         private Membership membership;
 
         @ManyToOne()
-        @JoinColumn(name = "payment_state_id", columnDefinition = "paymentStateId", insertable = false, updatable = false)
-        private OrderPaymentState orderPaymentState;
-
-        @ManyToOne()
-        @JoinColumn(name = "payment_method_id", columnDefinition = "paymentMethodId", insertable = false, updatable = false)
-        private OrderPaymentMethod orderPaymentMethod;
+        @JoinColumn(name = "membership_payment_state_id", columnDefinition = "membershipPaymentStateId", insertable = false, updatable = false)
+        private MembershipPaymentState membershipPaymentState;
 
 }

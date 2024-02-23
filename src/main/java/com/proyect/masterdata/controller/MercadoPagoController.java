@@ -12,14 +12,14 @@ import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.preference.Preference;
+import com.proyect.masterdata.services.IMercadoPagoPayment;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -34,6 +34,8 @@ public class MercadoPagoController {
 
     @Value("${mercadopago.api.token}")
     private String mercadoPagoToken;
+
+    private final IMercadoPagoPayment iMercadoPagoPayment;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public String mercadoPagoTest(){
@@ -61,7 +63,7 @@ public class MercadoPagoController {
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                     .items(items)
                     .backUrls(backUrls)
-                    .notificationUrl("https://2861-2800-484-d57f-3830-e900-8538-4734-51c6.ngrok-free.app/masterdata/webhook")
+                    .notificationUrl("https://4b8d-2800-484-d57f-3830-c4ed-ebe9-a1c4-d3e3.ngrok-free.app/masterdata/webhook")
                     .build();
 
             PreferenceClient preferenceClient = new PreferenceClient();
@@ -74,4 +76,16 @@ public class MercadoPagoController {
             return e.toString();
         }
     }
+
+    @PostMapping(value = "check-status",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> checkPaymentStatus(
+            @RequestParam(value = "id",required = false) String id,
+            @RequestParam(value = "topic",required = false) String topic,
+            @RequestParam(value = "data.id",required = false) Long paymentId,
+            @RequestParam(value = "type",required = false) String type
+    ) throws MPException, MPApiException {
+        String result = iMercadoPagoPayment.checkPaymentStatus(paymentId,type);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 }

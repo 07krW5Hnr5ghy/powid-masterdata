@@ -123,7 +123,7 @@ public class SubscriptionImpl implements ISubscription {
 
                 List<ModulePlanDTO> moduleList = modules.stream().map(module -> {
 
-                    Double discount = ((module.getMonthlyPrice() * subscription.getMonths())
+                    double discount = ((module.getMonthlyPrice() * subscription.getMonths())
                             * subscription.getDiscountPercent()) / 100;
                     BigDecimal discountedPrice = new BigDecimal((module.getMonthlyPrice() * subscription.getMonths()) -
                             discount).setScale(2, RoundingMode.HALF_EVEN);
