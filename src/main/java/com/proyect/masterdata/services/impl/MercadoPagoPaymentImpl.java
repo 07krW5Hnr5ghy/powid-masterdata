@@ -95,20 +95,17 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
     public ResponseSuccess registerPayment(Long paymentId, String type) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException {
         try{
             if(paymentId != null & Objects.equals(type, "payment")){
-                MercadoPagoMetadataDTO metadata = null;
                 PaymentClient paymentClient = new PaymentClient();
                 Payment newPayment = paymentClient.get(paymentId);
+                System.out.println(newPayment.getStatus());
+                if(!Objects.equals(newPayment.getStatus(), "approved")){
+                    throw new BadRequestExceptions(Constants.ErrorMercadoPagoPaymentFailed);
+                }
                 double fee = 0.00;
                 for(PaymentFeeDetail paymentFeeDetail : newPayment.getFeeDetails()){
                     fee += paymentFeeDetail.getAmount().doubleValue();
                 }
-                Object mercadoPagoMetadataDTO = newPayment.getMetadata();
-                System.out.println(mercadoPagoMetadataDTO);
-                System.out.println(newPayment.getMetadata().get("user_id"));
-                if(mercadoPagoMetadataDTO instanceof MercadoPagoMetadataDTO){
-                    System.out.println("yes");
-                    metadata = (MercadoPagoMetadataDTO) mercadoPagoMetadataDTO;
-                }
+                System.out.println(newPayment.getMetadata());
                 List<String> moduleNames = ((List<String>) newPayment.getMetadata().get("modules"));
                 RequestMembershipPayment requestMembershipPayment = RequestMembershipPayment.builder()
                         .netAmount(newPayment.getTransactionDetails().getNetReceivedAmount().doubleValue())

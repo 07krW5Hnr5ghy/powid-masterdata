@@ -234,4 +234,5 @@ public class Constants {
     public static final String ErrorOrderItemExists = "Order Item already exists";
     public static final String ErrorPaymentGateway = "Payment Gateway does not exist";
     public static final String ErrorPaymentGatewayExists = "Payment Gateway already exists";
+    public static final String ErrorMercadoPagoPaymentFailed = "Mercado Pago Payment Failed";
 }
