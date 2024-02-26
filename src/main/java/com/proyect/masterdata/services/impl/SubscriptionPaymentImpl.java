@@ -59,7 +59,7 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
                         discount;
             }
 
-            return iMercadoPagoPayment.sendPayment(netAmount,subscription,user);
+            return iMercadoPagoPayment.sendPayment(netAmount,subscription,requestSubscriptionPayment.getModules(),user);
 
         }catch (RuntimeException e){
             log.error(e.getMessage());

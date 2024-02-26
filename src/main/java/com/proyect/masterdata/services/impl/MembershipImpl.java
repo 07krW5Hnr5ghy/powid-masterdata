@@ -1,12 +1,10 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Client;
-import com.proyect.masterdata.domain.Membership;
+import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.domain.Module;
 import com.proyect.masterdata.dto.MembershipDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
-import com.proyect.masterdata.domain.Module;
-import com.proyect.masterdata.domain.Subscription;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
@@ -36,39 +34,20 @@ public class MembershipImpl implements IMembership {
     private final SubscriptionRepository subscriptionRepository;
 
     @Override
-    public ResponseSuccess save(String clientRuc, String subscriptionName, Boolean demo, String tokenUser)
+    public ResponseSuccess save(Client client, MembershipPayment membershipPayment, String subscriptionName,List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        boolean existsUser;
-        Membership membership = null;
-        Client client;
         Subscription subscription;
 
         try {
-
-            client = clientRepository.findByRucAndStatusTrue(clientRuc);
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             subscription = subscriptionRepository.findByNameAndStatusTrue(subscriptionName.toUpperCase());
-
-            if (client != null) {
-                membership = membershipRepository.findByClientIdAndStatusTrue(client.getId());
-            }
-
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
         if (client == null) {
             throw new BadRequestExceptions(Constants.ErrorClient);
-        }
-
-        if (membership != null) {
-            throw new BadRequestExceptions(Constants.ErrorMembershipActive);
         }
 
         if (subscription == null) {
@@ -88,14 +67,17 @@ public class MembershipImpl implements IMembership {
             Date expirationDate = calendar.getTime();
 
             membershipRepository.save(Membership.builder()
-                    // .client(client)
-                    // .clientId(client.getId())
-                    // .subscription(subscription)
-                    // .subscriptionId(subscription.getId())
-                    // .registrationDate(new Date(System.currentTimeMillis()))
-                    // .expirationDate(expirationDate)
-                    // .status(true)
-                    // .demo(demo)
+                            .clientId(client.getId())
+                            .client(client)
+                            .demo(demo)
+                            .expirationDate(expirationDate)
+                            .membershipPayment(membershipPayment)
+                            .membershipPaymentId(membershipPayment.getId())
+                            .status(true)
+                            .updateDate(new Date(System.currentTimeMillis()))
+                            .subscription(subscription)
+                            .subscriptionId(subscription.getId())
+                            .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
 
             return ResponseSuccess.builder()

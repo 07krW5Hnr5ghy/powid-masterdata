@@ -90,6 +90,8 @@ public class Constants {
     public static final String tableStockTransferItem = "stock_transfer_item";
     public static final String tableMembershipPaymentState = "membership_payment_state";
     public static final String tableMercadoPagoPayment = "mercado_pago_payment";
+    public static final String tablePaymentGateway = "payment_gateway";
+    public static final String getTableMembershipPaymentState = "membership_payment_state";
 
     // messages
     public static final String register = "registration correctly";
@@ -230,4 +232,6 @@ public class Constants {
     public static final String ErrorOriginWarehouseStock = "Not enough stock to transfer from origin warehouse";
     public static final String ErrorOrderItem = "Order Item does not exist";
     public static final String ErrorOrderItemExists = "Order Item already exists";
+    public static final String ErrorPaymentGateway = "Payment Gateway does not exist";
+    public static final String ErrorPaymentGatewayExists = "Payment Gateway already exists";
 }

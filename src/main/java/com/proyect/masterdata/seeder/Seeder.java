@@ -73,6 +73,7 @@ public class Seeder implements CommandLineRunner {
         private final IStockReplenishment iStockReplenishment;
         private final IStockTransfer iStockTransfer;
         private final IOrderItem iOrderItem;
+        private final IPaymentGateway iPaymentGateway;
         @Override
         public void run(String... args) throws Exception {
 
@@ -350,6 +351,10 @@ public class Seeder implements CommandLineRunner {
                         iCancellationReason.save("Cliente no confiable para contraentrega","admin1");
                         iCancellationReason.save("Robo por motorizado","admin1");
                         iCancellationReason.save("No le gusto producto","admin1");
+
+                        // payment gateway
+                        iPaymentGateway.save("mercado pago","admin1");
+                        iPaymentGateway.save("demo","admin1");
 
                         // mock brands
                         iBrand.save("nike", "gjimenez");

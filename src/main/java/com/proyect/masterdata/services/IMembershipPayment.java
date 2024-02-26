@@ -9,8 +9,10 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface IMembershipPayment {
-        ResponseSuccess save(Long membershipId, RequestMembershipPayment requestMembershipPayment, String tokenUser)
+        ResponseSuccess save(RequestMembershipPayment requestMembershipPayment, List<String> modules, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
 
         PaymentUpdateDTO update(Long membershipId, RequestMembershipPaymentUpdate requestMembershipPaymentUpdate,

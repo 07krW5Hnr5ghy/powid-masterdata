@@ -18,16 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class MembershipController {
     private final IMembership iMembership;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("clientRuc") String clientRuc,
-            @RequestParam("subscription") String subscription,
-            @RequestParam("demo") Boolean demo,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iMembership.save(clientRuc, subscription, demo, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @GetMapping()
     public ResponseEntity<Page<MembershipDTO>> list(
             @RequestParam(value = "channel", required = false) String channel,

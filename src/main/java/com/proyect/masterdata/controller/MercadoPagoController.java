@@ -12,6 +12,7 @@ import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.preference.Preference;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.services.IMercadoPagoPayment;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -78,13 +79,13 @@ public class MercadoPagoController {
     }
 
     @PostMapping(value = "check-status",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> checkPaymentStatus(
+    public ResponseEntity<ResponseSuccess> checkPaymentStatus(
             @RequestParam(value = "id",required = false) String id,
             @RequestParam(value = "topic",required = false) String topic,
             @RequestParam(value = "data.id",required = false) Long paymentId,
             @RequestParam(value = "type",required = false) String type
     ) throws MPException, MPApiException {
-        String result = iMercadoPagoPayment.checkPaymentStatus(paymentId,type);
+        ResponseSuccess result = iMercadoPagoPayment.registerPayment(paymentId,type);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

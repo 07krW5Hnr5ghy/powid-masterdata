@@ -29,8 +29,11 @@ public class MembershipPayment {
         @Column(name = "gross_amount", nullable = false)
         private Double grossAmount;
 
-        @Column(name = "invoice_url")
-        private String invoiceUrl;
+        @Column(name = "payment_gateway_fee", nullable = false)
+        private Double paymentGatewayFee;
+
+        @Column(name = "igv", nullable = false)
+        private Double igv;
 
         @Column(name = "registration_date", nullable = false)
         @CreationTimestamp
@@ -40,21 +43,11 @@ public class MembershipPayment {
         @CreationTimestamp
         private Date updateDate;
 
-        @Column(name = "status", nullable = false)
-        private Boolean status;
-
-        @Column(name = "membership_id", nullable = false)
-        private Long membershipId;
-
-        @Column(name = "membership_payment_state_id", nullable = false)
-        private Long membershipPaymentStateId;
+        @Column(name = "payment_gateway_id")
+        private Long paymentGatewayId;
 
         @ManyToOne()
-        @JoinColumn(name = "membership_id", columnDefinition = "membershipId", insertable = false, updatable = false)
-        private Membership membership;
-
-        @ManyToOne()
-        @JoinColumn(name = "membership_payment_state_id", columnDefinition = "membershipPaymentStateId", insertable = false, updatable = false)
-        private MembershipPaymentState membershipPaymentState;
+        @JoinColumn(name = "payment_gateway_id",columnDefinition = "paymentGatewayId",insertable = false,updatable = false)
+        private PaymentGateway paymentGateway;
 
 }

@@ -23,13 +23,10 @@ import static java.util.logging.Level.*;
 public class MasterdataApplication {
 
 	private final Seeder seeder;
-	@Value("${mercadopago.api.token}")
-	private static String mercadoPagoToken;
+
 	public static void main(String[] args) {
 
 		SpringApplication.run(MasterdataApplication.class, args);
-		MercadoPagoConfig.setAccessToken(mercadoPagoToken);
-		MercadoPagoConfig.setLoggingLevel(Level.FINEST);
 	}
 
 	// @Bean

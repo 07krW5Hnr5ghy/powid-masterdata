@@ -15,18 +15,16 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableMembershipPaymentState,schema = Constants.schemaPayment)
-public class MembershipPaymentState {
+@Table(name = Constants.tablePaymentGateway,schema = Constants.schemaPayment)
+public class PaymentGateway {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "membership_payment_state_id", nullable = false)
+    @Column(name = "payment_gateway_id", nullable = false)
     private Long id;
 
     @Column(name = "name")
     private String name;
-
-    @Column(name = "status")
-    private Boolean status;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -35,5 +33,8 @@ public class MembershipPaymentState {
     @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
+
+    @Column(name = "status")
+    private Boolean status;
 
 }

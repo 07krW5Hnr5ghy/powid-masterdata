@@ -9,36 +9,45 @@ import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.payment.Payment;
+import com.mercadopago.resources.payment.PaymentFeeDetail;
 import com.mercadopago.resources.preference.Preference;
 import com.proyect.masterdata.domain.Subscription;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.MercadoPagoMetadataDTO;
+import com.proyect.masterdata.dto.request.RequestMembershipPayment;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.services.IMembershipPayment;
 import com.proyect.masterdata.services.IMercadoPagoPayment;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
+    @Value("${mercadopago.api.token}")
+    private String mercadoPagoToken;
+    private final IMembershipPayment iMembershipPayment;
     @Override
-    public String sendPayment(Double netAmount, Subscription subscription, User user) throws InternalErrorExceptions, BadRequestExceptions {
+    public String sendPayment(Double netAmount, Subscription subscription,List<String> modules, User user) throws InternalErrorExceptions, BadRequestExceptions {
+        MercadoPagoConfig.setAccessToken(mercadoPagoToken);
+        MercadoPagoConfig.setLoggingLevel(Level.FINEST);
         try{
             PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
                     .title("Pago subscripcion " + subscription.getName() + " powip.")
                     .quantity(1)
                     .unitPrice(new BigDecimal(netAmount).setScale(2, RoundingMode.HALF_EVEN))
-                    .currencyId("USD")
+                    .currencyId("PEN")
                     .build();
             List<PreferenceItemRequest> items = new ArrayList<>();
             items.add(itemRequest);
@@ -49,11 +58,22 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                     .success("https://youtube.com")
                     .build();
 
+            Map<String, Object> metadata = new HashMap<>();
+//            metadata.put("userInfo",MercadoPagoMetadataDTO.builder()
+//                            .user_id(user.getUsername())
+//                            .subscription_name(subscription.getName())
+//                            .modules(modules)
+//                    .build());
+            metadata.put("userId",user.getUsername());
+            metadata.put("subscriptionName",subscription.getName());
+            metadata.put("modules",modules);
+
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                     .items(items)
+                    .metadata(metadata)
                     .backUrls(backUrls)
                     .binaryMode(true)
-                    .notificationUrl("https://4b8d-2800-484-d57f-3830-c4ed-ebe9-a1c4-d3e3.ngrok-free.app/masterdata/webhook")
+                    .notificationUrl("https://57ec-200-118-60-112.ngrok-free.app/masterdata/mercado-pago/check-status")
                     .build();
 
             PreferenceClient preferenceClient = new PreferenceClient();
@@ -66,17 +86,50 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         } catch (MPException | MPApiException e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public String checkPaymentStatus(Long paymentId, String type) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException {
-        if(paymentId != null & Objects.equals(type, "payment")){
-            PaymentClient paymentClient = new PaymentClient();
-            Payment newPayment = paymentClient.get(paymentId);
-            System.out.println(newPayment.getId());
-            return "Payment Successful";
-        }else { return "Payment failed"; }
+    public ResponseSuccess registerPayment(Long paymentId, String type) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException {
+        try{
+            if(paymentId != null & Objects.equals(type, "payment")){
+                MercadoPagoMetadataDTO metadata = null;
+                PaymentClient paymentClient = new PaymentClient();
+                Payment newPayment = paymentClient.get(paymentId);
+                double fee = 0.00;
+                for(PaymentFeeDetail paymentFeeDetail : newPayment.getFeeDetails()){
+                    fee += paymentFeeDetail.getAmount().doubleValue();
+                }
+                Object mercadoPagoMetadataDTO = newPayment.getMetadata();
+                System.out.println(mercadoPagoMetadataDTO);
+                System.out.println(newPayment.getMetadata().get("user_id"));
+                if(mercadoPagoMetadataDTO instanceof MercadoPagoMetadataDTO){
+                    System.out.println("yes");
+                    metadata = (MercadoPagoMetadataDTO) mercadoPagoMetadataDTO;
+                }
+                List<String> moduleNames = ((List<String>) newPayment.getMetadata().get("modules"));
+                RequestMembershipPayment requestMembershipPayment = RequestMembershipPayment.builder()
+                        .netAmount(newPayment.getTransactionDetails().getNetReceivedAmount().doubleValue())
+                        .igv(newPayment.getTaxesAmount().doubleValue())
+                        .paymentGatewayFee(fee)
+                        .grossAmount(newPayment.getTransactionDetails().getNetReceivedAmount().doubleValue() + newPayment.getTaxesAmount().doubleValue() + fee)
+                        .subscriptionName(newPayment.getMetadata().get("subscription_name").toString())
+                        .demo(false)
+                        .modules(moduleNames)
+                        .paymentGateway("mercado pago")
+                        .build();
+                iMembershipPayment.save(requestMembershipPayment,requestMembershipPayment.getModules() ,newPayment.getMetadata().get("user_id").toString());
+                System.out.println(newPayment.getId());
+            }
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 }

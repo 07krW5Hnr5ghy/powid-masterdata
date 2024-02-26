@@ -19,20 +19,11 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/payment")
+@RequestMapping("payment")
 @AllArgsConstructor
 public class MembershipPaymentController {
 
     private final IMembershipPayment iMembershipPayment;
-
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("membershipId") Long membershipId,
-            @RequestBody() RequestMembershipPayment requestMembershipPayment,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iMembershipPayment.save(membershipId, requestMembershipPayment, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PaymentUpdateDTO> update(

@@ -2,6 +2,8 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Membership;
 import com.proyect.masterdata.domain.MembershipPayment;
+import com.proyect.masterdata.domain.PaymentGateway;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.PaymentUpdateDTO;
 import com.proyect.masterdata.dto.request.RequestMembershipPayment;
 import com.proyect.masterdata.dto.request.RequestMembershipPaymentUpdate;
@@ -9,6 +11,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IMembership;
 import com.proyect.masterdata.services.IMembershipPayment;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,45 +35,39 @@ public class MembershipPaymentImpl implements IMembershipPayment {
     private final MembershipPaymentRepositoryCustom membershipPaymentRepositoryCustom;
     private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     private final OrderPaymentStateRepository orderPaymentStateRepository;
-
+    private final IMembership iMembership;
+    private final PaymentGatewayRepository paymentGatewayRepository;
     @Override
-    public ResponseSuccess save(Long membershipId, RequestMembershipPayment requestMembershipPayment, String tokenUser)
+    public ResponseSuccess save(RequestMembershipPayment requestMembershipPayment, List<String> modules, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
-
-        boolean existsUser;
-        Membership membership;
-        MembershipPayment membershipPayment;
-
+        User user;
+        PaymentGateway paymentGateway;
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            membership = membershipRepository.findByIdAndStatusTrue(membershipId);
-            membershipPayment = membershipPaymentRepository.findByMembershipIdAndStatusTrue(membershipId);
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            paymentGateway = paymentGatewayRepository.findByNameAndStatusTrue(requestMembershipPayment.getPaymentGateway().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (membership == null) {
-            throw new BadRequestExceptions(Constants.ErrorMembership);
-        }
-
-        if (membershipPayment != null) {
-            throw new BadRequestExceptions(Constants.ErrorMembershipPaymentExist);
         }
 
         try {
 
-            membershipPaymentRepository.save(MembershipPayment.builder()
+            MembershipPayment newMembershipPayment = membershipPaymentRepository.save(MembershipPayment.builder()
                     .netAmount(requestMembershipPayment.getNetAmount())
                     .grossAmount(requestMembershipPayment.getGrossAmount())
-                    .invoiceUrl(requestMembershipPayment.getInvoiceUrl())
+                    .igv(requestMembershipPayment.getIgv())
+                    .paymentGatewayFee(requestMembershipPayment.getPaymentGatewayFee())
                     .registrationDate(new Date(System.currentTimeMillis()))
-                    .status(true)
+                    .updateDate(new Date(System.currentTimeMillis()))
+                    .paymentGateway(paymentGateway)
+                    .paymentGatewayId(paymentGateway.getId())
                     .build());
+
+            iMembership.save(user.getClient(),newMembershipPayment, requestMembershipPayment.getSubscriptionName(), requestMembershipPayment.getModules(),requestMembershipPayment.getDemo(),user.getUsername());
 
             return ResponseSuccess.builder()
                     .code(200)
@@ -92,7 +90,6 @@ public class MembershipPaymentImpl implements IMembershipPayment {
 
         try {
             existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            membershipPayment = membershipPaymentRepository.findByMembershipIdAndStatusTrue(membershipId);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
