@@ -11,6 +11,7 @@ import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.payment.PaymentFeeDetail;
 import com.mercadopago.resources.preference.Preference;
+import com.proyect.masterdata.domain.Membership;
 import com.proyect.masterdata.domain.Subscription;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.MercadoPagoMetadataDTO;
@@ -18,6 +19,9 @@ import com.proyect.masterdata.dto.request.RequestMembershipPayment;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.repository.MembershipRepository;
+import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IMembership;
 import com.proyect.masterdata.services.IMembershipPayment;
 import com.proyect.masterdata.services.IMercadoPagoPayment;
 import com.proyect.masterdata.utils.Constants;
@@ -38,10 +42,13 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
     @Value("${mercadopago.api.token}")
     private String mercadoPagoToken;
     private final IMembershipPayment iMembershipPayment;
+    private final MembershipRepository membershipRepository;
+    private final UserRepository userRepository;
     @Override
     public String sendPayment(Double netAmount, Subscription subscription,List<String> modules, User user) throws InternalErrorExceptions, BadRequestExceptions {
         MercadoPagoConfig.setAccessToken(mercadoPagoToken);
         MercadoPagoConfig.setLoggingLevel(Level.FINEST);
+
         try{
             PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
                     .title("Pago subscripcion " + subscription.getName() + " powip.")
@@ -59,11 +66,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                     .build();
 
             Map<String, Object> metadata = new HashMap<>();
-//            metadata.put("userInfo",MercadoPagoMetadataDTO.builder()
-//                            .user_id(user.getUsername())
-//                            .subscription_name(subscription.getName())
-//                            .modules(modules)
-//                    .build());
+
             metadata.put("userId",user.getUsername());
             metadata.put("subscriptionName",subscription.getName());
             metadata.put("modules",modules);
@@ -73,7 +76,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                     .metadata(metadata)
                     .backUrls(backUrls)
                     .binaryMode(true)
-                    .notificationUrl("https://91bf-2800-484-d57f-3830-14f4-b055-c7a9-8b35.ngrok-free.app/masterdata/mercado-pago/check-status")
+                    .notificationUrl("https://966d-2800-484-d57f-3830-e4c7-bec1-875b-b3c1.ngrok-free.app/masterdata/mercado-pago/check-status")
                     .build();
 
             PreferenceClient preferenceClient = new PreferenceClient();
@@ -93,18 +96,29 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
 
     @Override
     public ResponseSuccess registerPayment(Long paymentId, String type) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException {
+        User user;
+        Membership membership;
         try{
             if(paymentId != null & Objects.equals(type, "payment")){
+
                 PaymentClient paymentClient = new PaymentClient();
                 Payment newPayment = paymentClient.get(paymentId);
+                user = userRepository.findByUsernameAndStatusTrue(newPayment.getMetadata().get("user_id").toString());
+                membership = membershipRepository.findByClientIdAndStatusTrue(user.getClientId());
+                if(membership != null){
+                    throw new BadRequestExceptions(Constants.ErrorMembershipActive);
+                }
                 System.out.println(newPayment.getStatus());
+
                 if(!Objects.equals(newPayment.getStatus(), "approved")){
                     throw new BadRequestExceptions(Constants.ErrorMercadoPagoPaymentFailed);
                 }
+
                 double fee = 0.00;
                 for(PaymentFeeDetail paymentFeeDetail : newPayment.getFeeDetails()){
                     fee += paymentFeeDetail.getAmount().doubleValue();
                 }
+
                 System.out.println(newPayment.getMetadata());
                 List<String> moduleNames = (List<String>) newPayment.getMetadata().get("modules");
                 RequestMembershipPayment requestMembershipPayment = RequestMembershipPayment.builder()
