@@ -73,7 +73,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                     .metadata(metadata)
                     .backUrls(backUrls)
                     .binaryMode(true)
-                    .notificationUrl("https://57ec-200-118-60-112.ngrok-free.app/masterdata/mercado-pago/check-status")
+                    .notificationUrl("https://91bf-2800-484-d57f-3830-14f4-b055-c7a9-8b35.ngrok-free.app/masterdata/mercado-pago/check-status")
                     .build();
 
             PreferenceClient preferenceClient = new PreferenceClient();
@@ -106,7 +106,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                     fee += paymentFeeDetail.getAmount().doubleValue();
                 }
                 System.out.println(newPayment.getMetadata());
-                List<String> moduleNames = ((List<String>) newPayment.getMetadata().get("modules"));
+                List<String> moduleNames = (List<String>) newPayment.getMetadata().get("modules");
                 RequestMembershipPayment requestMembershipPayment = RequestMembershipPayment.builder()
                         .netAmount(newPayment.getTransactionDetails().getNetReceivedAmount().doubleValue())
                         .igv(newPayment.getTaxesAmount().doubleValue())
@@ -118,7 +118,6 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                         .paymentGateway("mercado pago")
                         .build();
                 iMembershipPayment.save(requestMembershipPayment,requestMembershipPayment.getModules() ,newPayment.getMetadata().get("user_id").toString());
-                System.out.println(newPayment.getId());
             }
             return ResponseSuccess.builder()
                     .code(200)

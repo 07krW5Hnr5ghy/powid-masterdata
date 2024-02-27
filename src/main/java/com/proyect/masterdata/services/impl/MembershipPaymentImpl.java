@@ -67,7 +67,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
                     .paymentGatewayId(paymentGateway.getId())
                     .build());
 
-            iMembership.save(user.getClient(),newMembershipPayment, requestMembershipPayment.getSubscriptionName(), requestMembershipPayment.getModules(),requestMembershipPayment.getDemo(),user.getUsername());
+            Membership newMembership = iMembership.save(user.getClient(),newMembershipPayment, requestMembershipPayment.getSubscriptionName(), requestMembershipPayment.getModules(),requestMembershipPayment.getDemo(),user.getUsername());
 
             return ResponseSuccess.builder()
                     .code(200)

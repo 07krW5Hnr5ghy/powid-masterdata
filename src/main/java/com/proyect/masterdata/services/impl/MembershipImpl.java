@@ -1,10 +1,9 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.domain.Module;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.MembershipDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
-import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
@@ -18,8 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,12 +31,13 @@ public class MembershipImpl implements IMembership {
     private final ClientRepository clientRepository;
     private final MembershipRepositoryCustom membershipRepositoryCustom;
     private final SubscriptionRepository subscriptionRepository;
-
+    private final MembershipModuleRepository membershipModuleRepository;
     @Override
-    public ResponseSuccess save(Client client, MembershipPayment membershipPayment, String subscriptionName,List<String> modules, Boolean demo, String tokenUser)
+    public Membership save(Client client, MembershipPayment membershipPayment, String subscriptionName,List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         Subscription subscription;
+        Membership membership;
 
         try {
             subscription = subscriptionRepository.findByNameAndStatusTrue(subscriptionName.toUpperCase());
@@ -48,25 +48,23 @@ public class MembershipImpl implements IMembership {
 
         if (client == null) {
             throw new BadRequestExceptions(Constants.ErrorClient);
+        }else {
+            membership = membershipRepository.findByClientIdAndStatusTrue(client.getId());
         }
 
         if (subscription == null) {
             throw new BadRequestExceptions(Constants.ErrorSubscription);
         }
 
+        if(membership != null){
+            throw new BadRequestExceptions(Constants.ErrorMembershipActive);
+        }
+
         try {
-
-            Date currentDate = new Date(System.currentTimeMillis());
-
             Calendar calendar = Calendar.getInstance();
-
-            calendar.setTime(currentDate);
-
-            calendar.add(calendar.MONTH, subscription.getMonths());
-
+            calendar.add(Calendar.MONTH, subscription.getMonths());
             Date expirationDate = calendar.getTime();
-
-            membershipRepository.save(Membership.builder()
+            Membership newMembership =  membershipRepository.save(Membership.builder()
                             .clientId(client.getId())
                             .client(client)
                             .demo(demo)
@@ -79,13 +77,23 @@ public class MembershipImpl implements IMembership {
                             .subscriptionId(subscription.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-
+            newMembership.setExpirationDate(expirationDate);
+            membershipRepository.save(newMembership);
+            for(String moduleName : modules){
+                Module module = moduleRepository.findByNameAndStatusTrue(moduleName);
+                membershipModuleRepository.save(MembershipModule.builder()
+                                .membership(newMembership)
+                                .membershipId(newMembership.getId())
+                                .module(module)
+                                .moduleId(module.getId())
+                                .registrationDate(new Date(System.currentTimeMillis()))
+                                .updateDate(new Date(System.currentTimeMillis()))
+                                .status(true)
+                        .build());
+            }
+            return newMembership;
         } catch (RuntimeException e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

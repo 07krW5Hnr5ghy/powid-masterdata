@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.domain.Client;
+import com.proyect.masterdata.domain.Membership;
 import com.proyect.masterdata.domain.MembershipPayment;
 import com.proyect.masterdata.dto.MembershipDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public interface IMembership {
 
-    ResponseSuccess save(Client client,MembershipPayment membershipPayment, String subscriptionName, List<String> modules, Boolean demo, String tokenUser)
+    Membership save(Client client, MembershipPayment membershipPayment, String subscriptionName, List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
 
     ResponseDelete delete(String clientRuc, String tokenUser)
