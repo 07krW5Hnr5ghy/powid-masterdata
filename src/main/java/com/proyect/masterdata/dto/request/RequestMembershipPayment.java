@@ -15,9 +15,10 @@ public class RequestMembershipPayment {
     private Double netAmount;
     private Double grossAmount;
     private Double paymentGatewayFee;
-    private Double igv;
+    private Double taxAmount;
     private String subscriptionName;
     private Boolean demo;
     private List<String> modules;
     private String paymentGateway;
+    private Long paymentReference;
 }

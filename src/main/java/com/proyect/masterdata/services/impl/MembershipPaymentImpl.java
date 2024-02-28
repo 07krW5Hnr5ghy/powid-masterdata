@@ -42,9 +42,11 @@ public class MembershipPaymentImpl implements IMembershipPayment {
             throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         PaymentGateway paymentGateway;
+        MembershipPayment membershipPayment;
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             paymentGateway = paymentGatewayRepository.findByNameAndStatusTrue(requestMembershipPayment.getPaymentGateway().toUpperCase());
+            membershipPayment = membershipPaymentRepository.findByPaymentReference(requestMembershipPayment.getPaymentReference());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -54,20 +56,25 @@ public class MembershipPaymentImpl implements IMembershipPayment {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
+        if(membershipPayment != null){
+            throw new BadRequestExceptions(Constants.ErrorMembershipPaymentExist);
+        }
+
         try {
 
             MembershipPayment newMembershipPayment = membershipPaymentRepository.save(MembershipPayment.builder()
                     .netAmount(requestMembershipPayment.getNetAmount())
                     .grossAmount(requestMembershipPayment.getGrossAmount())
-                    .igv(requestMembershipPayment.getIgv())
+                    .taxAmount(requestMembershipPayment.getTaxAmount())
                     .paymentGatewayFee(requestMembershipPayment.getPaymentGatewayFee())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .updateDate(new Date(System.currentTimeMillis()))
                     .paymentGateway(paymentGateway)
                     .paymentGatewayId(paymentGateway.getId())
+                    .paymentReference(requestMembershipPayment.getPaymentReference())
                     .build());
 
-            Membership newMembership = iMembership.save(user.getClient(),newMembershipPayment, requestMembershipPayment.getSubscriptionName(), requestMembershipPayment.getModules(),requestMembershipPayment.getDemo(),user.getUsername());
+            iMembership.save(user.getClient(),newMembershipPayment, requestMembershipPayment.getSubscriptionName(), requestMembershipPayment.getModules(),requestMembershipPayment.getDemo(),user.getUsername());
 
             return ResponseSuccess.builder()
                     .code(200)

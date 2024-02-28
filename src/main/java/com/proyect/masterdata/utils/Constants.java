@@ -91,7 +91,7 @@ public class Constants {
     public static final String tableMembershipPaymentState = "membership_payment_state";
     public static final String tableMercadoPagoPayment = "mercado_pago_payment";
     public static final String tablePaymentGateway = "payment_gateway";
-    public static final String getTableMembershipPaymentState = "membership_payment_state";
+    public static final String tableMembershipState = "membership_state";
 
     // messages
     public static final String register = "registration correctly";
@@ -169,10 +169,10 @@ public class Constants {
     public static final String ErrorSubscriptionExists = "The subscription already exists";
     public static final String ErrorModule = "The module does not exists";
     public static final String ErrorModuleExist = "The module already exists";
-    public static final String ErrorMembershipActive = "The client has already an active membership";
+    public static final String ErrorMembershipActivePayed = "The client has already an active membership and another payed membership";
     public static final String ErrorMembership = "The membership does not exists or is already inactive";
     public static final String ErrorMembershipNotExpired = "The membership is not expired yet";
-    public static final String ErrorMembershipPaymentExist = "Exists an active membership payment";
+    public static final String ErrorMembershipPaymentExist = "The membership payment already exists";
     public static final String ErrorBrand = "The brand does not exists";
     public static final String ErrorBrandExists = "The brand already exists";
     public static final String ErrorModel = "The model does not exists";
@@ -235,4 +235,6 @@ public class Constants {
     public static final String ErrorPaymentGateway = "Payment Gateway does not exist";
     public static final String ErrorPaymentGatewayExists = "Payment Gateway already exists";
     public static final String ErrorMercadoPagoPaymentFailed = "Mercado Pago Payment Failed";
+    public static final String ErrorMembershipState = "Membership state does not exist";
+    public static final String ErrorMembershipStateExists = "Membership state already exists";
 }

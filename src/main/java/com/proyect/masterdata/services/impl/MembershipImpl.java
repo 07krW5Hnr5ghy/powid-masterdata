@@ -32,15 +32,20 @@ public class MembershipImpl implements IMembership {
     private final MembershipRepositoryCustom membershipRepositoryCustom;
     private final SubscriptionRepository subscriptionRepository;
     private final MembershipModuleRepository membershipModuleRepository;
+    private final MembershipStateRepository membershipStateRepository;
     @Override
     public Membership save(Client client, MembershipPayment membershipPayment, String subscriptionName,List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         Subscription subscription;
         Membership membership;
+        MembershipState activeState;
+        MembershipState payedState;
 
         try {
             subscription = subscriptionRepository.findByNameAndStatusTrue(subscriptionName.toUpperCase());
+            activeState = membershipStateRepository.findByNameAndStatusTrue("activa");
+            payedState = membershipStateRepository.findByNameAndStatusTrue("pagada");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -48,16 +53,10 @@ public class MembershipImpl implements IMembership {
 
         if (client == null) {
             throw new BadRequestExceptions(Constants.ErrorClient);
-        }else {
-            membership = membershipRepository.findByClientIdAndStatusTrue(client.getId());
         }
 
         if (subscription == null) {
             throw new BadRequestExceptions(Constants.ErrorSubscription);
-        }
-
-        if(membership != null){
-            throw new BadRequestExceptions(Constants.ErrorMembershipActive);
         }
 
         try {
@@ -71,13 +70,25 @@ public class MembershipImpl implements IMembership {
                             .expirationDate(expirationDate)
                             .membershipPayment(membershipPayment)
                             .membershipPaymentId(membershipPayment.getId())
-                            .status(true)
                             .updateDate(new Date(System.currentTimeMillis()))
                             .subscription(subscription)
                             .subscriptionId(subscription.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
             newMembership.setExpirationDate(expirationDate);
+            Membership activeMembership = membershipRepository.findByClientIdAndMembershipStateId(client.getId(), activeState.getId());
+            if(activeMembership == null){
+                newMembership.setMembershipState(activeState);
+                newMembership.setMembershipStateId(activeState.getId());
+            }
+            Membership payedMembership = membershipRepository.findByClientIdAndMembershipStateId(client.getId(), payedState.getId());
+            if(payedMembership == null){
+                newMembership.setMembershipState(payedState);
+                newMembership.setMembershipStateId(payedState.getId());
+            }else{
+                throw new BadRequestExceptions(Constants.ErrorMembershipActivePayed);
+            }
+
             membershipRepository.save(newMembership);
             for(String moduleName : modules){
                 Module module = moduleRepository.findByNameAndStatusTrue(moduleName);
@@ -108,14 +119,8 @@ public class MembershipImpl implements IMembership {
         Membership membership = null;
 
         try {
-
             existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
             client = clientRepository.findByRucAndStatusTrue(clientRuc);
-
-            if (client != null) {
-                membership = membershipRepository.findByClientIdAndStatusTrue(client.getId());
-            }
-
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

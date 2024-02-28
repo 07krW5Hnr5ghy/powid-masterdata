@@ -74,6 +74,7 @@ public class Seeder implements CommandLineRunner {
         private final IStockTransfer iStockTransfer;
         private final IOrderItem iOrderItem;
         private final IPaymentGateway iPaymentGateway;
+        private final IMembershipState iMembershipState;
         @Override
         public void run(String... args) throws Exception {
 
@@ -355,6 +356,11 @@ public class Seeder implements CommandLineRunner {
                         // payment gateway
                         iPaymentGateway.save("mercado pago","admin1");
                         iPaymentGateway.save("demo","admin1");
+
+                        // membership states
+                        iMembershipState.save("activa","admin1");
+                        iMembershipState.save("pagada","admin1");
+                        iMembershipState.save("expirada","admin1");
 
                         // mock brands
                         iBrand.save("nike", "gjimenez");

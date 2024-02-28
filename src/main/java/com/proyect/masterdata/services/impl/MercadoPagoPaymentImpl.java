@@ -12,6 +12,7 @@ import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.payment.PaymentFeeDetail;
 import com.mercadopago.resources.preference.Preference;
 import com.proyect.masterdata.domain.Membership;
+import com.proyect.masterdata.domain.MembershipPayment;
 import com.proyect.masterdata.domain.Subscription;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.MercadoPagoMetadataDTO;
@@ -19,6 +20,7 @@ import com.proyect.masterdata.dto.request.RequestMembershipPayment;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.repository.MembershipPaymentRepository;
 import com.proyect.masterdata.repository.MembershipRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IMembership;
@@ -44,6 +46,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
     private final IMembershipPayment iMembershipPayment;
     private final MembershipRepository membershipRepository;
     private final UserRepository userRepository;
+    private final MembershipPaymentRepository membershipPaymentRepository;
     @Override
     public String sendPayment(Double netAmount, Subscription subscription,List<String> modules, User user) throws InternalErrorExceptions, BadRequestExceptions {
         MercadoPagoConfig.setAccessToken(mercadoPagoToken);
@@ -96,18 +99,18 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
 
     @Override
     public ResponseSuccess registerPayment(Long paymentId, String type) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException {
-        User user;
-        Membership membership;
+        MembershipPayment membershipPayment;
         try{
             if(paymentId != null & Objects.equals(type, "payment")){
 
                 PaymentClient paymentClient = new PaymentClient();
                 Payment newPayment = paymentClient.get(paymentId);
-                user = userRepository.findByUsernameAndStatusTrue(newPayment.getMetadata().get("user_id").toString());
-                membership = membershipRepository.findByClientIdAndStatusTrue(user.getClientId());
-                if(membership != null){
-                    throw new BadRequestExceptions(Constants.ErrorMembershipActive);
+                membershipPayment = membershipPaymentRepository.findByPaymentReference(paymentId);
+
+                if(membershipPayment != null){
+                    throw new BadRequestExceptions(Constants.ErrorMembershipPaymentExist);
                 }
+
                 System.out.println(newPayment.getStatus());
 
                 if(!Objects.equals(newPayment.getStatus(), "approved")){
@@ -123,13 +126,14 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                 List<String> moduleNames = (List<String>) newPayment.getMetadata().get("modules");
                 RequestMembershipPayment requestMembershipPayment = RequestMembershipPayment.builder()
                         .netAmount(newPayment.getTransactionDetails().getNetReceivedAmount().doubleValue())
-                        .igv(newPayment.getTaxesAmount().doubleValue())
+                        .taxAmount(newPayment.getTaxesAmount().doubleValue())
                         .paymentGatewayFee(fee)
                         .grossAmount(newPayment.getTransactionDetails().getNetReceivedAmount().doubleValue() + newPayment.getTaxesAmount().doubleValue() + fee)
                         .subscriptionName(newPayment.getMetadata().get("subscription_name").toString())
                         .demo(false)
                         .modules(moduleNames)
                         .paymentGateway("mercado pago")
+                        .paymentReference(paymentId)
                         .build();
                 iMembershipPayment.save(requestMembershipPayment,requestMembershipPayment.getModules() ,newPayment.getMetadata().get("user_id").toString());
             }

@@ -32,8 +32,11 @@ public class MembershipPayment {
         @Column(name = "payment_gateway_fee", nullable = false)
         private Double paymentGatewayFee;
 
-        @Column(name = "igv", nullable = false)
-        private Double igv;
+        @Column(name = "tax_amount", nullable = false)
+        private Double taxAmount;
+
+        @Column(name = "payment_reference")
+        private Long paymentReference;
 
         @Column(name = "registration_date", nullable = false)
         @CreationTimestamp
