@@ -1,14 +1,11 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.domain.Module;
-import com.proyect.masterdata.domain.Subscription;
-import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.request.RequestSubscriptionPayment;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.ModuleRepository;
-import com.proyect.masterdata.repository.SubscriptionRepository;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IMercadoPagoPayment;
 import com.proyect.masterdata.services.ISubscriptionPayment;
 import com.proyect.masterdata.utils.Constants;
@@ -24,13 +21,19 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
     private final SubscriptionRepository subscriptionRepository;
     private final ModuleRepository moduleRepository;
     private final IMercadoPagoPayment iMercadoPagoPayment;
+    private final MembershipStateRepository membershipStateRepository;
+    private final MembershipRepository membershipRepository;
     @Override
     public String send(RequestSubscriptionPayment requestSubscriptionPayment, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+
         User user;
         Subscription subscription;
+        MembershipState payedState;
+
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             subscription = subscriptionRepository.findByNameAndStatusTrue(requestSubscriptionPayment.getSubscriptionName().toUpperCase());
+            payedState = membershipStateRepository.findByNameAndStatusTrue("pagada");
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -45,6 +48,11 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
         }
 
         try{
+
+            Membership payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getId(), payedState.getId());
+            if(payedMembership != null){
+                throw new BadRequestExceptions(Constants.ErrorMembershipActivePayed);
+            }
 
             double netAmount = 0.00;
 
