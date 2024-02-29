@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IMembershipPayment {
-        ResponseSuccess save(RequestMembershipPayment requestMembershipPayment, List<String> modules, String tokenUser)
+        ResponseSuccess save(RequestMembershipPayment requestMembershipPayment, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
 
         PaymentUpdateDTO update(Long membershipId, RequestMembershipPaymentUpdate requestMembershipPaymentUpdate,

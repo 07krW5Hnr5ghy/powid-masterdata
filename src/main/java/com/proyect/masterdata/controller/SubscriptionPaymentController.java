@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.request.RequestSubscriptionPayment;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.ISubscriptionPayment;
 import lombok.AllArgsConstructor;
@@ -24,5 +25,13 @@ public class SubscriptionPaymentController {
             ) throws BadRequestExceptions {
         String result = iSubscriptionPayment.send(requestSubscriptionPayment,tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "demo")
+    public ResponseEntity<ResponseSuccess> activeDemo(
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iSubscriptionPayment.activateDemo(tokenUser);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

@@ -44,8 +44,8 @@ public class MembershipImpl implements IMembership {
 
         try {
             subscription = subscriptionRepository.findByNameAndStatusTrue(subscriptionName.toUpperCase());
-            activeState = membershipStateRepository.findByNameAndStatusTrue("activa");
-            payedState = membershipStateRepository.findByNameAndStatusTrue("pagada");
+            activeState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
+            payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

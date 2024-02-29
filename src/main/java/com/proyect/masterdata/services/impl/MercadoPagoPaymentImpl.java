@@ -79,13 +79,13 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                     .metadata(metadata)
                     .backUrls(backUrls)
                     .binaryMode(true)
-                    .notificationUrl("https://966d-2800-484-d57f-3830-e4c7-bec1-875b-b3c1.ngrok-free.app/masterdata/mercado-pago/check-status")
+                    .notificationUrl("https://53bc-2800-484-d57f-3830-2802-2a8d-3b15-5e51.ngrok-free.app/masterdata/mercado-pago/check-status")
                     .build();
 
             PreferenceClient preferenceClient = new PreferenceClient();
 
             Preference preference = preferenceClient.create(preferenceRequest);
-            System.out.println(preference.getResponse());
+            System.out.println(preference.getResponse().getContent());
             return preference.getInitPoint();
 
         }catch (RuntimeException e){
@@ -105,11 +105,6 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
 
                 PaymentClient paymentClient = new PaymentClient();
                 Payment newPayment = paymentClient.get(paymentId);
-                membershipPayment = membershipPaymentRepository.findByPaymentReference(paymentId);
-
-                if(membershipPayment != null){
-                    throw new BadRequestExceptions(Constants.ErrorMembershipPaymentExist);
-                }
 
                 System.out.println(newPayment.getStatus());
 
@@ -133,9 +128,8 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                         .demo(false)
                         .modules(moduleNames)
                         .paymentGateway("mercado pago")
-                        .paymentReference(paymentId)
                         .build();
-                iMembershipPayment.save(requestMembershipPayment,requestMembershipPayment.getModules() ,newPayment.getMetadata().get("user_id").toString());
+                iMembershipPayment.save(requestMembershipPayment,newPayment.getMetadata().get("user_id").toString());
             }
             return ResponseSuccess.builder()
                     .code(200)

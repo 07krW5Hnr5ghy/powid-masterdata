@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MembershipPaymentRepository extends JpaRepository<MembershipPayment, Long> {
-    MembershipPayment findByPaymentReference(Long paymentReference);
+
 }

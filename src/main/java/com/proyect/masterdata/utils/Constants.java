@@ -237,4 +237,5 @@ public class Constants {
     public static final String ErrorMercadoPagoPaymentFailed = "Mercado Pago Payment Failed";
     public static final String ErrorMembershipState = "Membership state does not exist";
     public static final String ErrorMembershipStateExists = "Membership state already exists";
+    public static final String ErrorMembershipDemo = "Membership demo already exists";
 }

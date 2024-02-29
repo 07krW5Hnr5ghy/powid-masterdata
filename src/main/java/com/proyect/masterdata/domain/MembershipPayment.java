@@ -35,9 +35,6 @@ public class MembershipPayment {
         @Column(name = "tax_amount", nullable = false)
         private Double taxAmount;
 
-        @Column(name = "payment_reference")
-        private Long paymentReference;
-
         @Column(name = "registration_date", nullable = false)
         @CreationTimestamp
         private Date registrationDate;

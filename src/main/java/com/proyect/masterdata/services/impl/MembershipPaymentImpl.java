@@ -1,6 +1,5 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Membership;
 import com.proyect.masterdata.domain.MembershipPayment;
 import com.proyect.masterdata.domain.PaymentGateway;
 import com.proyect.masterdata.domain.User;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +36,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
     private final IMembership iMembership;
     private final PaymentGatewayRepository paymentGatewayRepository;
     @Override
-    public ResponseSuccess save(RequestMembershipPayment requestMembershipPayment, List<String> modules, String tokenUser)
+    public ResponseSuccess save(RequestMembershipPayment requestMembershipPayment, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         PaymentGateway paymentGateway;
@@ -46,7 +44,6 @@ public class MembershipPaymentImpl implements IMembershipPayment {
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             paymentGateway = paymentGatewayRepository.findByNameAndStatusTrue(requestMembershipPayment.getPaymentGateway().toUpperCase());
-            membershipPayment = membershipPaymentRepository.findByPaymentReference(requestMembershipPayment.getPaymentReference());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -54,10 +51,6 @@ public class MembershipPaymentImpl implements IMembershipPayment {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if(membershipPayment != null){
-            throw new BadRequestExceptions(Constants.ErrorMembershipPaymentExist);
         }
 
         try {
@@ -71,7 +64,6 @@ public class MembershipPaymentImpl implements IMembershipPayment {
                     .updateDate(new Date(System.currentTimeMillis()))
                     .paymentGateway(paymentGateway)
                     .paymentGatewayId(paymentGateway.getId())
-                    .paymentReference(requestMembershipPayment.getPaymentReference())
                     .build());
 
             iMembership.save(user.getClient(),newMembershipPayment, requestMembershipPayment.getSubscriptionName(), requestMembershipPayment.getModules(),requestMembershipPayment.getDemo(),user.getUsername());

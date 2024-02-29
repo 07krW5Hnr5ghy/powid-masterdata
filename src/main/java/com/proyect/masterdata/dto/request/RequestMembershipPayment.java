@@ -20,5 +20,4 @@ public class RequestMembershipPayment {
     private Boolean demo;
     private List<String> modules;
     private String paymentGateway;
-    private Long paymentReference;
 }
