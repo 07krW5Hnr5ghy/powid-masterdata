@@ -29,9 +29,9 @@ public class SubscriptionPaymentController {
 
     @PostMapping(value = "demo")
     public ResponseEntity<ResponseSuccess> activeDemo(
-            @RequestParam("tokenUser") String tokenUser
+            @RequestParam("username") String username
     ) throws BadRequestExceptions {
-        ResponseSuccess result = iSubscriptionPayment.activateDemo(tokenUser);
+        ResponseSuccess result = iSubscriptionPayment.activateDemo(username);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

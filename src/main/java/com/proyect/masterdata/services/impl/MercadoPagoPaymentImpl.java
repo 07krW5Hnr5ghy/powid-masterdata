@@ -79,7 +79,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                     .metadata(metadata)
                     .backUrls(backUrls)
                     .binaryMode(true)
-                    .notificationUrl("https://53bc-2800-484-d57f-3830-2802-2a8d-3b15-5e51.ngrok-free.app/masterdata/mercado-pago/check-status")
+                    .notificationUrl("https://ec29-2800-484-d57f-3830-c461-b0e1-ff7f-c5f.ngrok-free.app/masterdata/mercado-pago/check-status")
                     .build();
 
             PreferenceClient preferenceClient = new PreferenceClient();

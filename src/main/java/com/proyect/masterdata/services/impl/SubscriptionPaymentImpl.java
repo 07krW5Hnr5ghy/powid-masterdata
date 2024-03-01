@@ -83,12 +83,12 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
     }
 
     @Override
-    public ResponseSuccess activateDemo(String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess activateDemo(String username) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Membership demoMembership;
 
         try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
