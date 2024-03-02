@@ -75,6 +75,7 @@ public class Seeder implements CommandLineRunner {
         private final IOrderItem iOrderItem;
         private final IPaymentGateway iPaymentGateway;
         private final IMembershipState iMembershipState;
+        private final IAccess iAccess;
         @Override
         public void run(String... args) throws Exception {
 
@@ -83,25 +84,25 @@ public class Seeder implements CommandLineRunner {
 
                         Access access = accessRepository
                                 .save(new Access(1L, "USER_GET", true, new Date(System.currentTimeMillis()),
-                                        new Date(System.currentTimeMillis()), "TEST"));
+                                        new Date(System.currentTimeMillis()), "SISTEMA"));
 
                         Role role = roleRepository.save(new Role(
                                 1L, "ADMINISTRATOR", true, new Date(System.currentTimeMillis()),
-                                new Date(System.currentTimeMillis()), "TEST"));
+                                new Date(System.currentTimeMillis()), "SISTEMA"));
 
                         // department, province and district to create system user
 
                         Department department = departmentRepository
                                 .save(new Department(1L, "SISTEMA", true, new Date(System.currentTimeMillis()),
-                                        "TEST"));
+                                        "SISTEMA"));
 
                         Province province = provinceRepository.save(new Province(1L, "SISTEMA", true,
-                                new Date(System.currentTimeMillis()), department.getId(), "TEST", department));
+                                new Date(System.currentTimeMillis()), department.getId(), "SISTEMA", department));
 
                         District district = districtRepository
                                 .save(new District(1L, "SISTEMA", true, new Date(System.currentTimeMillis()),
                                         province.getId(),
-                                        province, "TEST"));
+                                        province, "SISTEMA"));
 
                         Client systemClient = clientRepository.save(new Client(1L, "SISTEMA", "SISTEMA", "SISTEMA", "SISTEMA",
                                 "SISTEMA", "SISTEMA", "SISTEMA", "SISTEMA", true, district.getId(),
@@ -181,6 +182,68 @@ public class Seeder implements CommandLineRunner {
                                 iDistrict.save(locationDistrict.getDistrict(), "ADMIN1", locationDistrict.getProvince());
                         }
 
+                        // access
+                        iAccess.save("ACCESS_POST","admin1");
+                        iAccess.save("BRAND_POST","admin1");
+                        iAccess.save("BRAND_DELETE","admin1");
+                        iAccess.save("BRAND_GET","admin1");
+                        iAccess.save("CANCELLATION_REASON_POST","admin1");
+                        iAccess.save("CANCELLATION_REASON_GET","admin1");
+                        iAccess.save("CANCELLED_ORDER_POST","admin1");
+                        iAccess.save("CANCELLED_ORDER_GET","admin1");
+                        iAccess.save("CATEGORY_POST","admin1");
+                        iAccess.save("CATEGORY_PUT","admin1");
+                        iAccess.save("CATEGORY_DELETE","admin1");
+                        iAccess.save("CATEGORY_PRODUCT_POST","admin1");
+                        iAccess.save("CATEGORY_PRODUCT_GET","admin1");
+                        iAccess.save("CLIENT_GET","admin1");
+                        iAccess.save("CLIENT_POST","admin1");
+                        iAccess.save("CLIENT_PUT","admin1");
+                        iAccess.save("CLIENT_DELETE","admin1");
+                        iAccess.save("CLOSING_CHANNEL_POST","admin1");
+                        iAccess.save("COLOR_POST","admin1");
+                        iAccess.save("COLOR_GET","admin1");
+                        iAccess.save("COLOR_DELETE","admin1");
+                        iAccess.save("COURIER_POST","admin1");
+                        iAccess.save("COURIER_GET","admin1");
+                        iAccess.save("DEPARTMENT_POST","admin1");
+                        iAccess.save("DEPARTMENT_DELETE","admin1");
+                        iAccess.save("DISTRICT_POST","admin1");
+                        iAccess.save("DISTRICT_DELETE","admin1");
+                        iAccess.save("ENTRY_CHANNEL_POST","admin1");
+                        iAccess.save("GENERAL_STOCK_GET","admin1");
+                        iAccess.save("MEMBERSHIP_GET","admin1");
+                        iAccess.save("MODEL_GET","admin1");
+                        iAccess.save("MODEL_POST","admin1");
+                        iAccess.save("MODEL_DELETE","admin1");
+                        iAccess.save("MODULE_GET","admin1");
+                        iAccess.save("MODULE_POST","admin1");
+                        iAccess.save("MODULE_PUT","admin1");
+                        iAccess.save("ONBOARD_GET","admin1");
+                        iAccess.save("ORDER_GET","admin1");
+                        iAccess.save("ORDER_POST","admin1");
+                        iAccess.save("ORDER_PUT","admin1");
+                        iAccess.save("ORDER_ITEM_GET","admin1");
+                        iAccess.save("ORDER_ITEM_POST","admin1");
+                        iAccess.save("ORDER_ITEM_DELETE","admin1");
+                        iAccess.save("ORDER_ITEM_PUT","admin1");
+                        iAccess.save("ORDER_STOCK_GET","admin1");
+                        iAccess.save("ORDER_STOCK_POST","admin1");
+                        iAccess.save("ORDER_STOCK_ITEM_GET","admin1");
+                        iAccess.save("PAYMENT_GATEWAY_POST","admin1");
+                        iAccess.save("ORDER_PAYMENT_METHOD_POST","admin1");
+                        iAccess.save("ORDER_PAYMENT_METHOD_GET","admin1");
+                        iAccess.save("ORDER_PAYMENT_METHOD_DELETE","admin1");
+                        iAccess.save("ORDER_PAYMENT_STATE_GET","admin1");
+                        iAccess.save("ORDER_PAYMENT_STATE_POST","admin1");
+                        iAccess.save("ORDER_PAYMENT_STATE_DELETE","admin1");
+                        iAccess.save("PRODUCT_GET","admin1");
+                        iAccess.save("PRODUCT_POST","admin1");
+                        iAccess.save("PRODUCT_DELETE","admin1");
+                        iAccess.save("PRODUCT_PRICE_POST","admin1");
+                        iAccess.save("PROVINCE_POST","admin1");
+                        iAccess.save("PROVINCE_GET","admin1");
+                        iAccess.save("PROVINCE_DELETE","admin1");
                         // mock modules
                         iModule.save("Módulo de Ventas", 3.00, "ADMIN1");
                         iModule.save("Módulo de Gestión", 5.00, "ADMIN1");

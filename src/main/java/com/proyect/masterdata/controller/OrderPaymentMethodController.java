@@ -17,9 +17,9 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/payment-method")
+@RequestMapping("order-payment-method")
 @AllArgsConstructor
-public class PaymentMethodController {
+public class OrderPaymentMethodController {
 
     private final IOrderPaymentMethod iOrderPaymentMethod;
 
