@@ -31,7 +31,7 @@ public class CourierController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "order",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "order",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> updateOrder(
             @RequestParam("orderId") Long orderId,
             @RequestBody() RequestCourierOrder requestCourierOrder,
