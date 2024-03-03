@@ -24,15 +24,15 @@ public class SaleChannelController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iSaleChannel.save(name, user);
+            @RequestParam("name") String name, @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iSaleChannel.save(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/sale-channels", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iSaleChannel.saveAll(names, user);
+    public ResponseEntity<ResponseSuccess> saveAll(
+            @RequestBody() List<String> names, @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iSaleChannel.saveAll(names, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

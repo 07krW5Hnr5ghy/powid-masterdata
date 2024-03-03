@@ -26,15 +26,15 @@ public class RoleController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iRole.save(name, user);
+            @RequestParam("name") String name, @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iRole.save(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(value = "/roles", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iRole.saveAll(names, user);
+    public ResponseEntity<ResponseSuccess> saveAll(
+            @RequestBody() List<String> names, @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iRole.saveAll(names, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -48,8 +48,8 @@ public class RoleController {
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("code") Long code,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iRole.delete(code, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iRole.delete(code, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

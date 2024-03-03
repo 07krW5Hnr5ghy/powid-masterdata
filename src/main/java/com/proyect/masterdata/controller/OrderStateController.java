@@ -17,9 +17,9 @@ import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/state")
+@RequestMapping("order-state")
 @AllArgsConstructor
-public class StateController {
+public class OrderStateController {
 
     private final IOrderState iState;
 
