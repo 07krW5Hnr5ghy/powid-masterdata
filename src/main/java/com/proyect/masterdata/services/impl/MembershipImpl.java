@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IMembership;
+import com.proyect.masterdata.services.IUserRole;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,8 +34,9 @@ public class MembershipImpl implements IMembership {
     private final SubscriptionRepository subscriptionRepository;
     private final MembershipModuleRepository membershipModuleRepository;
     private final MembershipStateRepository membershipStateRepository;
+    private final IUserRole iUserRole;
     @Override
-    public Membership save(Client client, MembershipPayment membershipPayment, String subscriptionName,List<String> modules, Boolean demo, String tokenUser)
+    public Membership save(User user, MembershipPayment membershipPayment, String subscriptionName,List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         Subscription subscription;
@@ -51,10 +53,6 @@ public class MembershipImpl implements IMembership {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (client == null) {
-            throw new BadRequestExceptions(Constants.ErrorClient);
-        }
-
         if (subscription == null) {
             throw new BadRequestExceptions(Constants.ErrorSubscription);
         }
@@ -64,8 +62,8 @@ public class MembershipImpl implements IMembership {
             calendar.add(Calendar.MONTH, subscription.getMonths());
             Date expirationDate = calendar.getTime();
             Membership newMembership =  membershipRepository.save(Membership.builder()
-                            .clientId(client.getId())
-                            .client(client)
+                            .clientId(user.getClientId())
+                            .client(user.getClient())
                             .demo(demo)
                             .expirationDate(expirationDate)
                             .membershipPayment(membershipPayment)
@@ -76,12 +74,12 @@ public class MembershipImpl implements IMembership {
                             .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
             newMembership.setExpirationDate(expirationDate);
-            Membership activeMembership = membershipRepository.findByClientIdAndMembershipStateId(client.getId(), activeState.getId());
+            Membership activeMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), activeState.getId());
             if(activeMembership == null){
                 newMembership.setMembershipState(activeState);
                 newMembership.setMembershipStateId(activeState.getId());
             }
-            Membership payedMembership = membershipRepository.findByClientIdAndMembershipStateId(client.getId(), payedState.getId());
+            Membership payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), payedState.getId());
             if(payedMembership == null){
                 newMembership.setMembershipState(payedState);
                 newMembership.setMembershipStateId(payedState.getId());

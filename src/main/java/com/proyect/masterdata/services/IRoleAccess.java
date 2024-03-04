@@ -5,6 +5,6 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IRoleAccess {
-    ResponseSuccess save(String role, String Access, String tokenUser)
+    ResponseSuccess save(String roleName, String accessName, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
 }

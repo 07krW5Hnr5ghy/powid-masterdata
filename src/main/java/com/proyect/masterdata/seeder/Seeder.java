@@ -222,6 +222,7 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("MODULE_GET","admin1");
                         iAccess.save("MODULE_POST","admin1");
                         iAccess.save("MODULE_PUT","admin1");
+                        iAccess.save("MODULE_DELETE","admin1");
                         iAccess.save("ONBOARD_GET","admin1");
                         iAccess.save("ORDER_GET","admin1");
                         iAccess.save("ORDER_POST","admin1");
@@ -277,6 +278,7 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("STOCK_RETURN_ITEM_GET","admin1");
                         iAccess.save("STOCK_TRANSACTION_GET","admin1");
                         iAccess.save("STOCK_TRANSACTION_ITEM_GET","admin1");
+                        iAccess.save("STOCK_TRANSACTION_TYPE_GET","admin1");
                         iAccess.save("STOCK_TRANSACTION_TYPE_POST","admin1");
                         iAccess.save("STOCK_TRANSACTION_TYPE_DELETE","admin1");
                         iAccess.save("STOCK_TRANSFER_POST","admin1");
@@ -328,7 +330,7 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("SALES","ORDER_ITEM_DELETE","ADMIN1");
                         iRoleAccess.save("SALES","ORDER_PAYMENT_METHOD_GET","ADMIN1");
                         iRoleAccess.save("SALES","ORDER_PAYMENT_STATE_GET","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_STATE","ADMIN1");
+                        iRoleAccess.save("SALES","ORDER_STATE_GET","ADMIN1");
                         iRoleAccess.save("SALES","PRODUCT_GET","ADMIN1");
                         iRoleAccess.save("CUSTOMER_SERVICE","BRAND_GET","ADMIN1");
                         iRoleAccess.save("CUSTOMER_SERVICE","CANCELLATION_REASON_GET","ADMIN1");
@@ -344,7 +346,7 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("CUSTOMER_SERVICE","ORDER_ITEM_DELETE","ADMIN1");
                         iRoleAccess.save("CUSTOMER_SERVICE","ORDER_PAYMENT_METHOD_GET","ADMIN1");
                         iRoleAccess.save("CUSTOMER_SERVICE","ORDER_PAYMENT_STATE_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_STATE","ADMIN1");
+                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_STATE_GET","ADMIN1");
                         iRoleAccess.save("CUSTOMER_SERVICE","PRODUCT_GET","ADMIN1");
                         iRoleAccess.save("MARKETING","BRAND_GET","ADMIN1");
                         iRoleAccess.save("MARKETING","BRAND_POST","ADMIN1");
@@ -394,7 +396,6 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("STOCK","UNIT_GET","ADMIN1");
                         iRoleAccess.save("STOCK","WAREHOUSE_GET","ADMIN1");
                         iRoleAccess.save("STOCK","WAREHOUSE_POST","ADMIN1");
-                        iRoleAccess.save("STOCK","WAREHOUSE_DELETE","ADMIN1");
                         iRoleAccess.save("COURIER","COURIER_PUT","ADMIN1");
                         iRoleAccess.save("BUSINESS","BRAND_GET","ADMIN1");
                         iRoleAccess.save("BUSINESS","COLOR_GET","ADMIN1");
@@ -442,7 +443,6 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("ADMINISTRATION","CANCELLED_ORDER_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","CANCELLATION_REASON_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","CANCELLATION_REASON_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CATEGORY_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","CATEGORY_POST","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","CATEGORY_DELETE","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","CATEGORY_PUT","ADMIN1");
