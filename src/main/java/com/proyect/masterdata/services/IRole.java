@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.dto.RoleDTO;
-import com.proyect.masterdata.dto.request.RequestAccessesToRole;
 import com.proyect.masterdata.dto.request.RequestRole;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
