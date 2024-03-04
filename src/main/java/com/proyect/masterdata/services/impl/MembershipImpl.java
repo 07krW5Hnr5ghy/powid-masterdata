@@ -34,20 +34,24 @@ public class MembershipImpl implements IMembership {
     private final SubscriptionRepository subscriptionRepository;
     private final MembershipModuleRepository membershipModuleRepository;
     private final MembershipStateRepository membershipStateRepository;
+    private final UserRoleRepository userRoleRepository;
+    private final RoleRepository roleRepository;
     private final IUserRole iUserRole;
     @Override
     public Membership save(User user, MembershipPayment membershipPayment, String subscriptionName,List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         Subscription subscription;
-        Membership membership;
         MembershipState activeState;
         MembershipState payedState;
+        Role role;
+        UserRole userRole = null;
 
         try {
             subscription = subscriptionRepository.findByNameAndStatusTrue(subscriptionName.toUpperCase());
             activeState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
             payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
+            role = roleRepository.findByNameAndStatusTrue("BUSINESS");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -55,6 +59,10 @@ public class MembershipImpl implements IMembership {
 
         if (subscription == null) {
             throw new BadRequestExceptions(Constants.ErrorSubscription);
+        }
+
+        if(role != null){
+            userRole = userRoleRepository.findByUserIdAndRoleId(user.getId(),role.getId());
         }
 
         try {
@@ -99,6 +107,9 @@ public class MembershipImpl implements IMembership {
                                 .updateDate(new Date(System.currentTimeMillis()))
                                 .status(true)
                         .build());
+            }
+            if(userRole == null){
+                iUserRole.save(user.getUsername(),"BUSINESS",user.getUsername());
             }
             return newMembership;
         } catch (RuntimeException e) {
@@ -145,9 +156,7 @@ public class MembershipImpl implements IMembership {
                     .message(Constants.delete)
                     .build();
 
-        } catch (
-
-        RuntimeException e) {
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

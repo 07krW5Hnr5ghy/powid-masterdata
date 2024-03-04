@@ -75,9 +75,7 @@ public class AuthenticationImpl implements IAuthentication {
 
             if(activeMembership != null){
                 if(activeMembership.getExpirationDate().compareTo(currentDate) < 0){
-                    activeMembership.setMembershipState(expiredState);
-                    activeMembership.setMembershipStateId(expiredState.getId());
-                    activeMembership.setUpdateDate(currentDate);
+                    iMembership.delete(user.getUsername());
                     payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(),payedState.getId());
                     if(payedMembership != null){
                         payedMembership.setMembershipState(activeState);
