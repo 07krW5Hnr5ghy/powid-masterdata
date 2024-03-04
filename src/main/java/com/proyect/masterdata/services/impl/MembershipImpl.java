@@ -109,27 +109,25 @@ public class MembershipImpl implements IMembership {
     }
 
     @Override
-    public ResponseDelete delete(String clientRuc, String tokenUser)
+    public ResponseDelete delete(String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        boolean existsUser;
-        Client client;
-        Membership membership = null;
+        User user;
+        Membership membership;
+        MembershipState membershipState;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            client = clientRepository.findByRucAndStatusTrue(clientRuc);
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            membershipState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (client == null) {
-            throw new BadRequestExceptions(Constants.ErrorClient);
+        }else {
+            membership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), membershipState.getId());
         }
 
         if (membership == null) {
@@ -137,19 +135,11 @@ public class MembershipImpl implements IMembership {
         }
 
         try {
-
-            Date currentDate = new Date(System.currentTimeMillis());
-
-            // if (currentDate.after(membership.getExpirationDate())
-            // || currentDate.equals(membership.getExpirationDate())) {
-
-            // membership.setStatus(false);
-            // membership.setUpdateDate(currentDate);
-
-            // } else {
-            // throw new BadRequestExceptions(Constants.ErrorMembershipNotExpired);
-            // }
-
+            MembershipState expiredState = membershipStateRepository.findByNameAndStatusTrue("EXPIRADA");
+            membership.setMembershipState(expiredState);
+            membership.setMembershipStateId(expiredState.getId());
+            membership.setUpdateDate(new Date(System.currentTimeMillis()));
+            membershipRepository.save(membership);
             return ResponseDelete.builder()
                     .code(200)
                     .message(Constants.delete)

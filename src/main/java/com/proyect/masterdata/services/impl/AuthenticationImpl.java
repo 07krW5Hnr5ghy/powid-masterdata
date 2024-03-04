@@ -1,19 +1,18 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.domain.Module;
+import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
-import com.proyect.masterdata.domain.ClosingChannel;
-import com.proyect.masterdata.domain.District;
-import com.proyect.masterdata.domain.Module;
-import com.proyect.masterdata.domain.Onboard;
-import com.proyect.masterdata.domain.Store;
-import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.request.RequestClientSave;
 import com.proyect.masterdata.dto.request.RequestOnboard;
 import com.proyect.masterdata.dto.request.RequestOnboarding;
@@ -23,22 +22,6 @@ import com.proyect.masterdata.dto.response.ResponseLogin;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.CategoryRepository;
-import com.proyect.masterdata.repository.ClientRepository;
-import com.proyect.masterdata.repository.ClosingChannelRepository;
-import com.proyect.masterdata.repository.DistrictRepository;
-import com.proyect.masterdata.repository.ModuleRepository;
-import com.proyect.masterdata.repository.StoreRepository;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.services.IAuthentication;
-import com.proyect.masterdata.services.IClient;
-import com.proyect.masterdata.services.IOnboard;
-import com.proyect.masterdata.services.IOnboardChannel;
-import com.proyect.masterdata.services.IOnboardModule;
-import com.proyect.masterdata.services.IOnboardStore;
-import com.proyect.masterdata.services.IStore;
-import com.proyect.masterdata.services.IToken;
-import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -65,16 +48,43 @@ public class AuthenticationImpl implements IAuthentication {
     private final CategoryRepository categoryRepository;
     private final ModuleRepository moduleRepository;
     private final IOnboardModule iOnboardModule;
+    private final IMembership iMembership;
+    private final MembershipRepository membershipRepository;
+    private final MembershipStateRepository membershipStateRepository;
 
     public ResponseLogin loginUser(String username, String password) {
         try {
 
             User user;
+            Membership activeMembership;
+            Membership payedMembership;
+            MembershipState activeState;
 
             user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            activeState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
+            Date currentDate = new Date(System.currentTimeMillis());
+            MembershipState payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
+            MembershipState expiredState = membershipStateRepository.findByNameAndStatusTrue("EXPIRADA");
+
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorAuthentication);
+            }else {
+                activeMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getId(), activeState.getId());
+            }
+
+            if(activeMembership != null){
+                if(activeMembership.getExpirationDate().compareTo(currentDate) < 0){
+                    activeMembership.setMembershipState(expiredState);
+                    activeMembership.setMembershipStateId(expiredState.getId());
+                    activeMembership.setUpdateDate(currentDate);
+                    payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(),payedState.getId());
+                    if(payedMembership != null){
+                        payedMembership.setMembershipState(activeState);
+                        payedMembership.setMembershipStateId(activeState.getId());
+                        membershipRepository.save(payedMembership);
+                    }
+                }
             }
 
             Authentication auth = authenticationManager.authenticate(
