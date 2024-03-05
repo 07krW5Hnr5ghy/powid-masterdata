@@ -79,6 +79,7 @@ public class Seeder implements CommandLineRunner {
         private final IRole iRole;
         private final IRoleAccess iRoleAccess;
         private final IUserRole iUserRole;
+        private final IUser iUser;
         @Override
         public void run(String... args) throws Exception {
 
@@ -121,11 +122,11 @@ public class Seeder implements CommandLineRunner {
                                         district, systemClient));
 
                         userRoleRepository.save(
-                                new UserRole(1L, adminUser.getId(), role.getId(), "TEST",
+                                new UserRole(1L, adminUser.getId(), role.getId(), "SISTEMA",
                                         new Date(System.currentTimeMillis())));
 
                         roleAccessRepository.save(
-                                new RoleAccess(1L, role.getId(), access.getId(), "TEST",
+                                new RoleAccess(1L, role.getId(), access.getId(), "SISTEMA",
                                         new Date(System.currentTimeMillis())));
 
                         // user for register new users
@@ -729,9 +730,164 @@ public class Seeder implements CommandLineRunner {
                                 .address(business1.getAddress())
                                 .password("abc123+")
                                 .district(business1.getDistrict().getName())
-                                .tokenUser("GJIMENEZ")
+                                .tokenUser(business1.getUsername())
                                 .roleName("SALES")
                                 .build();
+
+                        iUser.save(businessSales1);
+
+                        RequestUser businessSales2 = RequestUser.builder()
+                                .user("MAPARICIO")
+                                .name("MARIO")
+                                .surname("APARICIO")
+                                .dni("12345678913")
+                                .email("mp@gmail.com")
+                                .mobile("222456789")
+                                .gender("M")
+                                .address(business2.getAddress())
+                                .password("abc123+")
+                                .district(business2.getDistrict().getName())
+                                .tokenUser(business2.getUsername())
+                                .roleName("SALES")
+                                .build();
+
+                        iUser.save(businessSales2);
+
+                        RequestUser businessStock1 = RequestUser.builder()
+                                .user("AYEPES")
+                                .name("AMANDA")
+                                .surname("YEPES")
+                                .dni("12345678914")
+                                .email("ay@gmail.com")
+                                .mobile("222256789")
+                                .gender("F")
+                                .address(business1.getAddress())
+                                .password("abc123+")
+                                .district(business1.getDistrict().getName())
+                                .tokenUser(business1.getUsername())
+                                .roleName("STOCK")
+                                .build();
+
+                        iUser.save(businessStock1);
+
+                        RequestUser businessStock2 = RequestUser.builder()
+                                .user("NTORRES")
+                                .name("NICOLE")
+                                .surname("TORRES")
+                                .dni("12345678915")
+                                .email("nt@gmail.com")
+                                .mobile("222226789")
+                                .gender("F")
+                                .address(business2.getAddress())
+                                .password("abc123+")
+                                .district(business2.getDistrict().getName())
+                                .tokenUser(business2.getUsername())
+                                .roleName("STOCK")
+                                .build();
+
+                        iUser.save(businessStock2);
+
+                        RequestUser businessMarketing1 = RequestUser.builder()
+                                .user("OPEREZ")
+                                .name("OMAR")
+                                .surname("PEREZ")
+                                .dni("12345678916")
+                                .email("op@gmail.com")
+                                .mobile("222222789")
+                                .gender("M")
+                                .address(business1.getAddress())
+                                .password("abc123+")
+                                .district(business1.getDistrict().getName())
+                                .tokenUser(business1.getUsername())
+                                .roleName("MARKETING")
+                                .build();
+
+                        iUser.save(businessMarketing1);
+
+                        RequestUser businessMarketing2 = RequestUser.builder()
+                                .user("JORTIZ")
+                                .name("JASON")
+                                .surname("ORTIZ")
+                                .dni("12345678917")
+                                .email("jo@gmail.com")
+                                .mobile("222222289")
+                                .gender("M")
+                                .address(business2.getAddress())
+                                .password("abc123+")
+                                .district(business2.getDistrict().getName())
+                                .tokenUser(business2.getUsername())
+                                .roleName("MARKETING")
+                                .build();
+
+                        iUser.save(businessMarketing2);
+
+                        RequestUser businessCustomerService1 = RequestUser.builder()
+                                .user("ICONTRERAS")
+                                .name("ISAAC")
+                                .surname("CONTRERAS")
+                                .dni("12345678918")
+                                .email("ic@gmail.com")
+                                .mobile("222222229")
+                                .gender("M")
+                                .address(business1.getAddress())
+                                .password("abc123+")
+                                .district(business1.getDistrict().getName())
+                                .tokenUser(business1.getUsername())
+                                .roleName("CUSTOMER_SERVICE")
+                                .build();
+
+                        iUser.save(businessCustomerService1);
+
+                        RequestUser businessCustomerService2 = RequestUser.builder()
+                                .user("VMENDEZ")
+                                .name("VANESSA")
+                                .surname("MENDEZ")
+                                .dni("12345678919")
+                                .email("vm@gmail.com")
+                                .mobile("222222222")
+                                .gender("F")
+                                .address(business2.getAddress())
+                                .password("abc123+")
+                                .district(business2.getDistrict().getName())
+                                .tokenUser(business2.getUsername())
+                                .roleName("CUSTOMER_SERVICE")
+                                .build();
+
+                        iUser.save(businessCustomerService2);
+
+                        RequestUser businessCourier1 = RequestUser.builder()
+                                .user("MSALAS")
+                                .name("MARCO")
+                                .surname("SALAS")
+                                .dni("12345678920")
+                                .email("mc@gmail.com")
+                                .mobile("322222222")
+                                .gender("M")
+                                .address(business1.getAddress())
+                                .password("abc123+")
+                                .district(business1.getDistrict().getName())
+                                .tokenUser(business1.getUsername())
+                                .roleName("COURIER")
+                                .build();
+
+                        iUser.save(businessCourier1);
+
+                        RequestUser businessCourier2 = RequestUser.builder()
+                                .user("GTRUJILLO")
+                                .name("GERMAN")
+                                .surname("TRUJILLO")
+                                .dni("12345678921")
+                                .email("gt@gmail.com")
+                                .mobile("332222222")
+                                .gender("M")
+                                .address(business2.getAddress())
+                                .password("abc123+")
+                                .district(business2.getDistrict().getName())
+                                .tokenUser(business2.getUsername())
+                                .roleName("COURIER")
+                                .build();
+
+                        iUser.save(businessCourier2);
 
                         // mock models
                         iModel.save("f90", "nike", "gjimenez");

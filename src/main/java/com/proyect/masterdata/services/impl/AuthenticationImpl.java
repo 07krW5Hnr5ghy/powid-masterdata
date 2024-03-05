@@ -132,7 +132,6 @@ public class AuthenticationImpl implements IAuthentication {
                     .findByNameIn(requestOnboarding.getModules().stream().map(module -> module.toUpperCase()).toList());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
-            System.out.println("Arriba");
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
@@ -259,7 +258,6 @@ public class AuthenticationImpl implements IAuthentication {
 
         } catch (RuntimeException e) {
             log.error(e.getMessage());
-            System.out.println("Abajo");
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
