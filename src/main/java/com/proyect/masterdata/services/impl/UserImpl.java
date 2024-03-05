@@ -19,7 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,26 +33,28 @@ public class UserImpl implements IUser {
     private final UserRepositoryCustom userRepositoryCustom;
     private final PasswordEncoder passwordEncoder;
     private final ClientRepository clientRepository;
+    private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
 
     @Override
     public ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         boolean existsUser;
-        boolean existsTokenUser;
+        User tokenUser;
         boolean existsDni;
         boolean existsEmail;
         boolean existsMobile;
         District district;
-        Client client;
+        Role role;
 
         try {
             existsUser = userRepository.existsByUsername(requestUser.getUser().toUpperCase());
-            existsTokenUser = userRepository.existsByUsernameAndStatusTrue(requestUser.getTokenUser().toUpperCase());
+            tokenUser = userRepository.findByUsernameAndStatusTrue(requestUser.getTokenUser().toUpperCase());
             existsDni = userRepository.existsByDni(requestUser.getDni());
             existsEmail = userRepository.existsByEmail(requestUser.getEmail());
             existsMobile = userRepository.existsByMobile(requestUser.getMobile());
             district = districtRepository.findByNameAndStatusTrue(requestUser.getDistrict().toUpperCase());
-            client = clientRepository.findByRucAndStatusTrue(requestUser.getClientRuc());
+            role = roleRepository.findByNameAndStatusTrue(requestUser.getRoleName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -62,7 +64,7 @@ public class UserImpl implements IUser {
             throw new BadRequestExceptions(Constants.ErrorUserExist);
         }
 
-        if (!existsTokenUser) {
+        if (tokenUser == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
@@ -82,12 +84,12 @@ public class UserImpl implements IUser {
             throw new BadRequestExceptions(Constants.ErrorDistrict);
         }
 
-        if (client == null) {
-            throw new BadRequestExceptions(Constants.ErrorClient);
+        if(role == null){
+            throw new BadRequestExceptions(Constants.ErrorRole);
         }
 
         try {
-            userRepository.save(User.builder()
+            User newUser = userRepository.save(User.builder()
                     .username(requestUser.getUser().toUpperCase())
                     .name(requestUser.getName().toUpperCase())
                     .surname(requestUser.getSurname().toUpperCase())
@@ -100,11 +102,18 @@ public class UserImpl implements IUser {
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .districtId(district.getId())
                     .district(district)
-                    .clientId(client.getId())
-                    .client(client)
+                    .clientId(tokenUser.getClientId())
+                    .client(tokenUser.getClient())
                     .tokenUser(requestUser.getTokenUser())
                     .status(true)
                     .build());
+            userRoleRepository.save(UserRole.builder()
+                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .userId(newUser.getId())
+                            .roleId(role.getId())
+                            .tokenUser(tokenUser.getUsername())
+                    .build());
+
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

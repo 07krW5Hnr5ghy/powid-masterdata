@@ -211,7 +211,7 @@ public class AuthenticationImpl implements IAuthentication {
                     .password(requestOnboarding.getPassword())
                     .email(requestOnboarding.getEmail())
                     .district(requestOnboarding.getDistrict().toUpperCase())
-                    .clientRuc(requestOnboarding.getBusinessRuc())
+                    .roleName("BUSINESS")
                     .tokenUser("REGISTER")
                     .build();
 

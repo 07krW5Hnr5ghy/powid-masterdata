@@ -78,6 +78,7 @@ public class Seeder implements CommandLineRunner {
         private final IAccess iAccess;
         private final IRole iRole;
         private final IRoleAccess iRoleAccess;
+        private final IUserRole iUserRole;
         @Override
         public void run(String... args) throws Exception {
 
@@ -151,14 +152,14 @@ public class Seeder implements CommandLineRunner {
 
                         // mocks users
 
-                        User user1 = userRepository
+                        User business1 = userRepository
                                 .save(new User(3L, "GJIMENEZ", "GONZALO", "JIMENEZ", "12345678910", "gj@gmail.com",
                                         "CRA 123", "M", "123456789", passwordEncoder.encode("123abc+"), true,
                                         new Date(System.currentTimeMillis()),
                                         new Date(System.currentTimeMillis()), district.getId(), client1.getId(),
                                         "ADMIN1", district, client1));
 
-                        User user2 = userRepository
+                        User business2 = userRepository
                                 .save(new User(4L, "FCASAS", "FERNANDO", "CASAS", "12345678911", "fc@gmail.com",
                                         "CRA 124", "M", "123456789", passwordEncoder.encode("123abc+"), true,
                                         new Date(System.currentTimeMillis()),
@@ -713,6 +714,24 @@ public class Seeder implements CommandLineRunner {
                         iBrand.save("adidas", "fcasas");
                         iBrand.save("kenzo", "fcasas");
                         iBrand.save("lacoste", "fcasas");
+
+                        iUserRole.save(business1.getUsername(), "BUSINESS",business1.getUsername());
+                        iUserRole.save(business2.getUsername(),"BUSINESS",business2.getUsername());
+
+                        RequestUser businessSales1 = RequestUser.builder()
+                                .user("CROJAS")
+                                .dni("12345678912")
+                                .email("cj@gmail.com")
+                                .name("CAMILO")
+                                .surname("ROJAS")
+                                .mobile("223456789")
+                                .gender("M")
+                                .address(business1.getAddress())
+                                .password("abc123+")
+                                .district(business1.getDistrict().getName())
+                                .tokenUser("GJIMENEZ")
+                                .roleName("SALES")
+                                .build();
 
                         // mock models
                         iModel.save("f90", "nike", "gjimenez");
