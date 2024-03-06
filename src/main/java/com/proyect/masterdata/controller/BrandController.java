@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,7 @@ public class BrandController {
     private final IBrand iBrand;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -38,6 +40,7 @@ public class BrandController {
     }
 
     @PostMapping(value = "brands", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> namesList,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -46,6 +49,7 @@ public class BrandController {
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -54,6 +58,7 @@ public class BrandController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:BRAND_GET')")
     public ResponseEntity<Page<BrandDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,
@@ -66,6 +71,7 @@ public class BrandController {
     }
 
     @GetMapping(value = "status-false")
+    @PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:BRAND_GET')")
     public ResponseEntity<Page<BrandDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,

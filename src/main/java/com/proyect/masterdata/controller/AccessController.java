@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ public class AccessController {
     private final IAccess iAccess;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam(value = "name") String name,
             @RequestParam(value = "user") String user) throws BadRequestExceptions {

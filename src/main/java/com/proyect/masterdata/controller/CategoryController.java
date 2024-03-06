@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class CategoryController {
     private final ICategory iCategory;
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
@@ -32,7 +34,8 @@ public class CategoryController {
     }
 
     @PostMapping(value = "categories")
-    public ResponseEntity<ResponseSuccess> saveall(
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_POST')")
+    public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestCreateCategory> categories,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseSuccess result = iCategory.saveAll(categories, tokenUser);
@@ -40,6 +43,7 @@ public class CategoryController {
     }
 
     @PutMapping()
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_PUT')")
     public ResponseEntity<CategoryDTO> update(
             @RequestParam("tokenUser") String tokenUser,
             @RequestBody() RequestCategory requestCategory) throws BadRequestExceptions {
@@ -48,6 +52,7 @@ public class CategoryController {
     }
 
     @DeleteMapping()
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -62,6 +67,7 @@ public class CategoryController {
     }
 
     @GetMapping(value = "list")
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_GET')")
     public ResponseEntity<Page<CategoryDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -74,6 +80,7 @@ public class CategoryController {
     }
 
     @GetMapping(value = "status-false")
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_GET')")
     public ResponseEntity<Page<CategoryDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

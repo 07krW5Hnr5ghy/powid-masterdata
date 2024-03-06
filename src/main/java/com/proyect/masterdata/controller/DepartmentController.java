@@ -11,17 +11,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/department")
+@RequestMapping("department")
 @AllArgsConstructor
 public class DepartmentController {
         private final IDepartment iDepartment;
 
         @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
         public ResponseEntity<ResponseSuccess> save(
                         @RequestParam("name") String name,
                         @RequestParam("user") String user) throws BadRequestExceptions {
@@ -29,8 +31,9 @@ public class DepartmentController {
                 return new ResponseEntity<>(result, HttpStatus.OK);
         }
 
-        @PostMapping(value = "/departments", consumes = MediaType.APPLICATION_JSON_VALUE)
-        public ResponseEntity<ResponseSuccess> saveall(
+        @PostMapping(value = "departments", consumes = MediaType.APPLICATION_JSON_VALUE)
+        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
+        public ResponseEntity<ResponseSuccess> saveAll(
                         @RequestParam("user") String user,
                         @RequestBody() List<String> names) throws BadRequestExceptions {
                 ResponseSuccess result = iDepartment.saveAll(names, user);
@@ -38,6 +41,7 @@ public class DepartmentController {
         }
 
         @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
         public ResponseEntity<DepartmentDTO> update(
                         @RequestBody() RequestDepartment requestDepartment) throws BadRequestExceptions {
                 DepartmentDTO result = iDepartment.update(requestDepartment);
@@ -45,6 +49,7 @@ public class DepartmentController {
         }
 
         @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_DELETE')")
         public ResponseEntity<ResponseDelete> delete(
                         @RequestParam("code") Long code,
                         @RequestParam("user") String user) throws BadRequestExceptions {
@@ -59,6 +64,7 @@ public class DepartmentController {
         }
 
         @GetMapping(value = "list")
+        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_GET')")
         public ResponseEntity<Page<DepartmentDTO>> list(
                         @RequestParam(value = "name", required = false) String name,
                         @RequestParam(value = "user", required = false) String user,
@@ -71,6 +77,7 @@ public class DepartmentController {
         }
 
         @GetMapping(value = "status-false")
+        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_GET')")
         public ResponseEntity<Page<DepartmentDTO>> listStatusFalse(
                         @RequestParam(value = "name", required = false) String name,
                         @RequestParam(value = "user", required = false) String user,
@@ -80,13 +87,6 @@ public class DepartmentController {
                         @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
                 Page<DepartmentDTO> result = iDepartment.listStatusFalse(name, user, sort, sortColumn, pageNumber,
                                 pageSize);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-        }
-
-        @GetMapping(value = "/code")
-        public ResponseEntity<DepartmentDTO> findByCode(
-                        @RequestParam("code") Long code) throws BadRequestExceptions {
-                DepartmentDTO result = iDepartment.findByCode(code);
                 return new ResponseEntity<>(result, HttpStatus.OK);
         }
 

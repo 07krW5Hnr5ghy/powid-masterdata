@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class CourierController {
     private final ICourier iCourier;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COURIER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody()RequestCourier requestCourier,
             @RequestParam("tokenUser") String tokenUser
@@ -32,6 +34,7 @@ public class CourierController {
     }
 
     @PutMapping(value = "order",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:COURIER') and hasAuthority('ACCESS:COURIER_PUT')")
     public ResponseEntity<ResponseSuccess> updateOrder(
             @RequestParam("orderId") Long orderId,
             @RequestBody() RequestCourierOrder requestCourierOrder,
@@ -42,6 +45,7 @@ public class CourierController {
     }
 
     @DeleteMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COURIER_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
@@ -51,6 +55,7 @@ public class CourierController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
     public ResponseEntity<Page<CourierDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,
@@ -64,6 +69,7 @@ public class CourierController {
     }
 
     @GetMapping(value = "list-false")
+    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
     public ResponseEntity<Page<CourierDTO>> listFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,

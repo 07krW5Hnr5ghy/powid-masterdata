@@ -52,20 +52,20 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
-//                    auth.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/entry-channel/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/closing-channel/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/category/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/department/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/province/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/district/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/store-type/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/subscription/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/module").permitAll();
-//                    auth.requestMatchers("/file/**").permitAll();
-//                    auth.requestMatchers("/doc/**").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/entry-channel/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/closing-channel/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/category/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/department/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/province/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/district/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/store-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/subscription/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/module").permitAll();
+                    auth.requestMatchers("/file/**").permitAll();
+                    auth.requestMatchers("/doc/**").permitAll();
                     // auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
-                    auth.requestMatchers("/**").permitAll();
+//                    auth.requestMatchers("/**").permitAll();
                     auth.anyRequest().authenticated();
                 });
 

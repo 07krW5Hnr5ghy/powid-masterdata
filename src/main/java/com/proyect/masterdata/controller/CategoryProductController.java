@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,7 @@ public class CategoryProductController {
     private final ICategoryProduct iCategoryProduct;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
@@ -41,6 +43,7 @@ public class CategoryProductController {
     }
 
     @PostMapping(value = "category-products", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestCategoryProduct> categoryProducts,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -49,6 +52,7 @@ public class CategoryProductController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:CATEGORY_PRODUCT_GET')")
     public ResponseEntity<Page<CategoryProductDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

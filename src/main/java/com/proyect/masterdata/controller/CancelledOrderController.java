@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +22,7 @@ public class CancelledOrderController {
     private final ICancelledOrder iCancelledOrder;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLES:CUSTOMER_SERVICE') and hasAuthority('ACCESS:CANCELLED_ORDER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestCancelledOrder requestCancelledOrder,
             @RequestParam("tokenUser") String tokenUser
@@ -30,6 +32,7 @@ public class CancelledOrderController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLES:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CANCELLED_ORDER_GET')")
     public ResponseEntity<Page<CancelledOrderDTO>> list(
             @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "user") String user,

@@ -49,20 +49,20 @@ public class FileController {
 //    public String uploadFile(@RequestParam("image")MultipartFile multipartFile) throws IOException {
 //        return iFile.uploadFile(multipartFile);
 //    }
-    @GetMapping("download/{filename}")
-    public ResponseEntity<Resource> downloadFile(
-            @PathVariable("filename") String filename
-    ) throws IOException {
-        Path filePath = get(DIRECTORY).toAbsolutePath().normalize().resolve(filename);
-
-        if(!Files.exists(filePath)){
-            throw new FileNotFoundException(filename + "was not found in the server");
-        }
-
-        Resource resource = new UrlResource(filePath.toUri());
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("File-Name",filename);
-        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION,"attachment;File-Name=" + resource.getFilename());
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath))).headers(httpHeaders).body(resource);
-    }
+//    @GetMapping("download/{filename}")
+//    public ResponseEntity<Resource> downloadFile(
+//            @PathVariable("filename") String filename
+//    ) throws IOException {
+//        Path filePath = get(DIRECTORY).toAbsolutePath().normalize().resolve(filename);
+//
+//        if(!Files.exists(filePath)){
+//            throw new FileNotFoundException(filename + "was not found in the server");
+//        }
+//
+//        Resource resource = new UrlResource(filePath.toUri());
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add("File-Name",filename);
+//        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION,"attachment;File-Name=" + resource.getFilename());
+//        return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath))).headers(httpHeaders).body(resource);
+//    }
 }
