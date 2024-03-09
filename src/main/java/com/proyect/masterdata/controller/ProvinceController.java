@@ -11,27 +11,30 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/province")
+@RequestMapping("province")
 @AllArgsConstructor
 public class ProvinceController {
     private IProvince iProvince;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
-            @RequestParam("user") String user,
+            @RequestParam("tokenUser") String tokenUser,
             @RequestParam("department") String department) throws BadRequestExceptions {
-        ResponseSuccess result = iProvince.save(name, user, department);
+        ResponseSuccess result = iProvince.save(name, tokenUser, department);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/provinces", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> saveall(
+    @PostMapping(value = "provinces", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_POST')")
+    public ResponseEntity<ResponseSuccess> saveAll(
             @RequestParam("user") String user,
             @RequestParam("department") String department,
             @RequestBody() List<String> names) throws BadRequestExceptions {
@@ -39,28 +42,24 @@ public class ProvinceController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProvinceDTO> update(
-            @RequestBody() RequestProvince requestProvince) throws BadRequestExceptions {
-        ProvinceDTO result = iProvince.update(requestProvince);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iProvince.delete(code, user);
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iProvince.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
     public ResponseEntity<List<ProvinceDTO>> listProvince() throws BadRequestExceptions {
         List<ProvinceDTO> result = iProvince.listProvince();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "list")
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
     public ResponseEntity<Page<ProvinceDTO>> list(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -75,7 +74,8 @@ public class ProvinceController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false")
+    @GetMapping(value = "status-false")
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
     public ResponseEntity<Page<ProvinceDTO>> listStatusFalse(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -87,13 +87,6 @@ public class ProvinceController {
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
         Page<ProvinceDTO> result = iProvince.listStatusFalse(name, user, codeDepartment, nameDepartment, sort,
                 sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/code")
-    public ResponseEntity<ProvinceDTO> findByCode(
-            @RequestParam("code") Long code) throws BadRequestExceptions {
-        ProvinceDTO result = iProvince.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

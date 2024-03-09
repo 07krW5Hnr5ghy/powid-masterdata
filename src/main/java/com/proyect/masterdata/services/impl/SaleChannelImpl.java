@@ -35,7 +35,6 @@ public class SaleChannelImpl implements ISaleChannel {
     private final SaleChannelMapper saleChannelMapper;
     private final UserRepository userRepository;
     private final SaleChannelRepositoryCustom saleChannelRepositoryCustom;
-
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
@@ -107,48 +106,13 @@ public class SaleChannelImpl implements ISaleChannel {
     }
 
     @Override
-    public SaleChannelDTO update(RequestSaleChannel requestSaleChannel)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        SaleChannel saleChannel;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestSaleChannel.getUser().toUpperCase());
-            saleChannel = saleChannelRepository.findById(requestSaleChannel.getCode()).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (saleChannel == null) {
-            throw new BadRequestExceptions(Constants.ErrorSaleChannel.toUpperCase());
-        }
-
-        saleChannel.setName(requestSaleChannel.getName().toUpperCase());
-        saleChannel.setTokenUser(datauser.getUsername().toUpperCase());
-        saleChannel.setStatus(requestSaleChannel.isStatus());
-        saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
-
-        try {
-            return saleChannelMapper.saleChannelToSaleChannelDTO(saleChannelRepository.save(saleChannel));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
     @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         SaleChannel saleChannel;
-
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            saleChannel = saleChannelRepository.findById(code).orElse(null);
+            saleChannel = saleChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -224,15 +188,6 @@ public class SaleChannelImpl implements ISaleChannel {
         }
         return new PageImpl<>(saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannelPage.getContent()),
                 saleChannelPage.getPageable(), saleChannelPage.getTotalElements());
-    }
-
-    @Override
-    public SaleChannelDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return saleChannelMapper.saleChannelToSaleChannelDTO(saleChannelRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
     }
 
 }

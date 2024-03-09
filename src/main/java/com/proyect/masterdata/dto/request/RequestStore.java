@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class RequestStore {
     private String name;
     private String url;
-    private String user;
+    private String tokenUser;
 }

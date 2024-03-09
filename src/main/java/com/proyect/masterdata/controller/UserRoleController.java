@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ public class UserRoleController {
     private final IUserRole iUserRole;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:USER_ROLE_POST')")
     ResponseEntity<ResponseSuccess> save(
             @RequestParam(value = "username") String username,
             @RequestParam(value = "role") String role,

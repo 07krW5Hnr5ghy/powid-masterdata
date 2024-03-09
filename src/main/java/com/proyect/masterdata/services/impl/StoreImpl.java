@@ -103,72 +103,6 @@ public class StoreImpl implements IStore {
     }
 
     @Override
-    public ResponseSuccess saveAll(String ruc, List<RequestStoreSave> storeList, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-
-        boolean existsUser;
-        List<Store> stores;
-        List<StoreType> storeTypes;
-        Client client;
-
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            stores = storeRepository.findByNameIn(storeList.stream()
-                    .map(store -> store.getName().toUpperCase()).collect(Collectors.toList()));
-            client = clientRepository.findByRucAndStatusTrue(ruc);
-            storeTypes = storeTypeRepository.findByNameInAndStatusTrue(
-                    storeList.stream().map(store -> store.getStoreType().toUpperCase()).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (!stores.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorStoreExist);
-        }
-
-        if (client == null) {
-            throw new BadRequestExceptions(Constants.ErrorClient);
-        }
-
-        if (storeTypes.size() != storeList.size()) {
-            throw new BadRequestExceptions(Constants.ErrorStoreType);
-        }
-
-        List<Store> storeSaveList = storeList.stream()
-                .map(store -> {
-                    StoreType storeType = storeTypeRepository
-                            .findByNameAndStatusTrue(store.getStoreType().toUpperCase());
-                    return Store.builder()
-                            .name(store.getName().toUpperCase())
-                            .url(store.getUrl())
-                            .client(client)
-                            .clientId(client.getId())
-                            .storeType(storeType)
-                            .storeTypeId(storeType.getId())
-                            .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(user.toUpperCase())
-                            .build();
-                })
-                .toList();
-        try {
-            storeRepository.saveAll(storeSaveList);
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
     public StoreDTO update(RequestStore requestStore)
             throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -176,7 +110,7 @@ public class StoreImpl implements IStore {
         Store store;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(requestStore.getUser().toUpperCase());
+            existsUser = userRepository.existsByUsernameAndStatusTrue(requestStore.getTokenUser().toUpperCase());
             store = storeRepository.findByNameAndStatusTrue(requestStore.getName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
@@ -192,7 +126,7 @@ public class StoreImpl implements IStore {
         }
 
         store.setUrl(requestStore.getUrl());
-        store.setTokenUser(requestStore.getUser().toUpperCase());
+        store.setTokenUser(requestStore.getTokenUser().toUpperCase());
         store.setUpdateDate(new Date(System.currentTimeMillis()));
 
         try {

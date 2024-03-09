@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.List;
 public class StockReplenishmentController {
     private final IStockReplenishment iStockReplenishment;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_POST')")
     private ResponseEntity<ResponseSuccess> save(
             @RequestParam("orderId") Long orderId,
             @RequestBody() List<RequestStockReplenishmentItem> requestStockReplenishmentItems,
@@ -30,6 +32,7 @@ public class StockReplenishmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_GET')")
     private ResponseEntity<Page<StockReplenishmentDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "orderId",required = false) Long orderId,

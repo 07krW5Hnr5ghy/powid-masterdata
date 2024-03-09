@@ -3,6 +3,7 @@ package com.proyect.masterdata.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ public class WarehouseStockController {
     private final IWarehouseStock iWarehouseStock;
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
     public ResponseEntity<Page<WarehouseStockDTO>> list(
             @RequestParam(value = "warehouse", required = true) String warehouse,
             @RequestParam(value = "user", required = true) String user,

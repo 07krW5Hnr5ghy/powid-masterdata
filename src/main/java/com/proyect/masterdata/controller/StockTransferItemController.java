@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class StockTransferItemController {
     private final IStockTransferItem iStockTransferItem;
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_ITEM_GET')")
     public ResponseEntity<Page<StockTransferItemDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "stockTransferId",required = false) Long stockTransferId,

@@ -1,6 +1,5 @@
 package com.proyect.masterdata.mapper;
 
-import com.proyect.masterdata.domain.PaymentType;
 import com.proyect.masterdata.dto.PaymentTypeDTO;
 import com.proyect.masterdata.dto.request.RequestPaymentTypeSave;
 import org.mapstruct.Mapper;

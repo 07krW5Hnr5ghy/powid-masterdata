@@ -114,48 +114,14 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
     }
 
     @Override
-    public OrderPaymentStateDTO update(RequestOrderPaymentState requestOrderPaymentState)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        OrderPaymentState orderPaymentState;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestOrderPaymentState.getUser().toUpperCase());
-            orderPaymentState = orderPaymentStateRepository.findById(requestOrderPaymentState.getCode()).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (orderPaymentState == null) {
-            throw new BadRequestExceptions(Constants.ErrorPaymentState.toUpperCase());
-        }
-
-        orderPaymentState.setName(requestOrderPaymentState.getName().toUpperCase());
-        orderPaymentState.setTokenUser(datauser.getUsername().toUpperCase());
-        orderPaymentState.setStatus(requestOrderPaymentState.isStatus());
-        orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
-
-        try {
-            return paymentStateMapper.paymentStateToPaymentStateDTO(orderPaymentStateRepository.save(orderPaymentState));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
-        }
-    }
-
-    @Override
     @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         OrderPaymentState orderPaymentState;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            orderPaymentState = orderPaymentStateRepository.findById(code).orElse(null);
+            orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -233,12 +199,4 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
                 paymentStatePage.getPageable(), paymentStatePage.getTotalElements());
     }
 
-    @Override
-    public OrderPaymentStateDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return paymentStateMapper.paymentStateToPaymentStateDTO(orderPaymentStateRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
 }

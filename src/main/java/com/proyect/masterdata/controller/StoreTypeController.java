@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class StoreTypeController {
     private final IStoreType iStoreType;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:STORE_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -36,6 +38,7 @@ public class StoreTypeController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_TYPE_GET')")
     public ResponseEntity<List<StoreTypeDTO>> listStoreType() throws BadRequestExceptions {
         List<StoreTypeDTO> result = iStoreType.listStoreType();
         return new ResponseEntity<>(result, HttpStatus.OK);

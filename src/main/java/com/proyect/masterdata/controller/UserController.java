@@ -13,16 +13,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/user")
+@RequestMapping("user")
 @AllArgsConstructor
 public class UserController {
     private IUser iUser;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:USER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestUser requestUser) throws BadRequestExceptions {
         ResponseSuccess result = iUser.save(requestUser);
@@ -30,6 +32,7 @@ public class UserController {
     }
 
     @PutMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:USER_PUT')")
     public ResponseEntity<UserDTO> update(
             @RequestBody() RequestUserSave requestUserSave,
             @RequestParam("user") String user) throws BadRequestExceptions {
@@ -38,6 +41,7 @@ public class UserController {
     }
 
     @DeleteMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:USER_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("user") String user) throws BadRequestExceptions {
         ResponseDelete result = iUser.delete(user);
@@ -45,6 +49,7 @@ public class UserController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:USER_GET')")
     public ResponseEntity<Page<UserQueryDTO>> list(
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "clientRuc", required = true) String clientRuc,

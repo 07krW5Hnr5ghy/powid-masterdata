@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,16 +25,20 @@ public class OrderStateController {
     private final IOrderState iState;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iState.save(name, user);
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iState.save(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/states", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iState.saveAll(names, user);
+    @PostMapping(value = "order-states", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_POST')")
+    public ResponseEntity<ResponseSuccess> saveAll(
+            @RequestBody() List<String> names,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iState.saveAll(names, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -45,20 +50,23 @@ public class OrderStateController {
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("code") Long code,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iState.delete(code, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iState.delete(code, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list")
+    @GetMapping(value = "list")
+    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_GET')")
     public ResponseEntity<List<OrderStateDTO>> listState() throws BadRequestExceptions {
         List<OrderStateDTO> result = iState.listState();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_GET')")
     public ResponseEntity<Page<OrderStateDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -70,7 +78,8 @@ public class OrderStateController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/statusFalse")
+    @GetMapping(value = "status-false")
+    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_GET')")
     public ResponseEntity<Page<OrderStateDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -79,13 +88,6 @@ public class OrderStateController {
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
         Page<OrderStateDTO> result = iState.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/code")
-    public ResponseEntity<OrderStateDTO> findByCode(
-            @RequestParam("code") Long code) throws BadRequestExceptions {
-        OrderStateDTO result = iState.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

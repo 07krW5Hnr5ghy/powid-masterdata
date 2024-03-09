@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class SizeTypeController {
     private final ISizeType iSizeType;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SIZE_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -30,7 +32,8 @@ public class SizeTypeController {
     }
 
     @PostMapping(value = "size-types", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> saveall(
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SIZE_TYPE_POST')")
+    public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> names,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseSuccess result = iSizeType.saveAll(names, tokenUser);
@@ -38,6 +41,7 @@ public class SizeTypeController {
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SIZE_TYPE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -46,12 +50,14 @@ public class SizeTypeController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_TYPE_GET')")
     public ResponseEntity<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions {
         List<SizeTypeDTO> result = iSizeType.listSizeType();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "list")
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_TYPE_GET')")
     public ResponseEntity<Page<SizeTypeDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -63,7 +69,8 @@ public class SizeTypeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/statusFalse")
+    @GetMapping(value = "status-false")
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_TYPE_GET')")
     public ResponseEntity<Page<SizeTypeDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

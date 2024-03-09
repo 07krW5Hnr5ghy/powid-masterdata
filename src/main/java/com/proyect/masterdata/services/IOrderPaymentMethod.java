@@ -13,8 +13,7 @@ import java.util.List;
 public interface IOrderPaymentMethod {
     ResponseSuccess save(String name, String user) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions;
-    OrderPaymentMethodDTO update(RequestOrderPaymentMethod requestOrderPaymentMethod) throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
+    ResponseDelete delete(String name,String user) throws BadRequestExceptions, InternalErrorExceptions;
     List<OrderPaymentMethodDTO> listPaymentMethod() throws BadRequestExceptions;
     Page<OrderPaymentMethodDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
     Page<OrderPaymentMethodDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;

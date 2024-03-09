@@ -11,47 +11,45 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/sale-channel")
+@RequestMapping("sale-channel")
 @AllArgsConstructor
 public class SaleChannelController {
     private final ISaleChannel iSaleChannel;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name, @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseSuccess result = iSaleChannel.save(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/sale-channels", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "sale-channels", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> names, @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseSuccess result = iSaleChannel.saveAll(names, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SaleChannelDTO> update(
-            @RequestBody() RequestSaleChannel requestSaleChannel) throws BadRequestExceptions {
-        SaleChannelDTO result = iSaleChannel.update(requestSaleChannel);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
+            @RequestParam("tokenUser") String tokenUser,
             @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iSaleChannel.delete(code, user);
+        ResponseDelete result = iSaleChannel.delete(tokenUser, user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-sale-channel")
+    @GetMapping(value = "list-sale-channel")
     public ResponseEntity<List<SaleChannelDTO>> listSaleChannel() throws BadRequestExceptions {
         List<SaleChannelDTO> result = iSaleChannel.listSaleChannel();
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -69,7 +67,7 @@ public class SaleChannelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false")
+    @GetMapping(value = "status-false")
     public ResponseEntity<Page<SaleChannelDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -78,13 +76,6 @@ public class SaleChannelController {
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
         Page<SaleChannelDTO> result = iSaleChannel.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/code")
-    public ResponseEntity<SaleChannelDTO> findByCode(
-            @RequestParam("code") Long code) throws BadRequestExceptions {
-        SaleChannelDTO result = iSaleChannel.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

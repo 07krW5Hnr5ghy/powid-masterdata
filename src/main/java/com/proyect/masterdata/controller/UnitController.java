@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.request.RequestUnit;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ public class UnitController {
     private final IUnit iUnit;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestUnit requestUnit,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -41,6 +43,7 @@ public class UnitController {
     }
 
     @PostMapping(value = "units", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> names,
             @RequestParam("unitType") String unitType,
@@ -50,6 +53,7 @@ public class UnitController {
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -58,6 +62,7 @@ public class UnitController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_GET')")
     public ResponseEntity<List<UnitDTO>> list() throws BadRequestExceptions {
         List<UnitDTO> result = iUnit.listUnit();
         return new ResponseEntity<>(result, HttpStatus.OK);

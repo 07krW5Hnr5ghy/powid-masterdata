@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,10 +22,9 @@ import java.util.List;
 @RequestMapping("shipment")
 @AllArgsConstructor
 public class ShipmentController {
-
     private final IShipment iShipment;
-
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SHIPMENT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestShipment requestShipment,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -33,6 +33,7 @@ public class ShipmentController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
     public ResponseEntity<Page<ShipmentDTO>> list(
             @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
             @RequestParam(value = "user", required = true) String user,

@@ -25,15 +25,6 @@ public class MembershipPaymentController {
 
     private final IMembershipPayment iMembershipPayment;
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PaymentUpdateDTO> update(
-            @RequestParam("membershipId") Long membershipId,
-            @RequestBody() RequestMembershipPaymentUpdate requestMembershipPaymentUpdate,
-            @RequestParam("user") String tokenUser) throws BadRequestExceptions {
-        PaymentUpdateDTO result = iMembershipPayment.update(membershipId, requestMembershipPaymentUpdate, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     // @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     // public ResponseEntity<Page<MembershipPayment>> list(
     // @RequestParam(value = "totalPayment", required = false) Double totalPayment,

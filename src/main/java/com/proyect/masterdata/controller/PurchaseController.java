@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,7 @@ public class PurchaseController {
     private final IPurchase iPurchase;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:PURCHASE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("serial") String serial,
             @RequestBody() List<RequestPurchaseItem> purchaseList,
@@ -42,6 +44,7 @@ public class PurchaseController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
     public ResponseEntity<Page<PurchaseDTO>> list(
             @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "user", required = true) String user,

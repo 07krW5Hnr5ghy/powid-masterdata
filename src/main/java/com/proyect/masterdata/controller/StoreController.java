@@ -12,36 +12,30 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/store")
+@RequestMapping("store")
 @AllArgsConstructor
 public class StoreController {
 
     private IStore iStore;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestStoreSave requestClientChannelSave,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iStore.save(requestClientChannelSave, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/stores", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestParam("ruc") String ruc,
-            @RequestBody() List<RequestStoreSave> clientChannels,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iStore.saveAll(ruc, clientChannels, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iStore.save(requestClientChannelSave, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_PUT')")
     public ResponseEntity<StoreDTO> update(
             @RequestBody() RequestStore requestClientChannel) throws BadRequestExceptions {
         StoreDTO result = iStore.update(requestClientChannel);
@@ -49,6 +43,7 @@ public class StoreController {
     }
 
     @DeleteMapping()
+    @PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("user") String user) throws BadRequestExceptions {
@@ -57,6 +52,7 @@ public class StoreController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:STORE_GET')")
     public ResponseEntity<Page<StoreDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -68,7 +64,8 @@ public class StoreController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false")
+    @GetMapping(value = "status-false")
+    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:STORE_GET')")
     public ResponseEntity<Page<StoreDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

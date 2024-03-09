@@ -12,48 +12,48 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/role")
+@RequestMapping("role")
 @AllArgsConstructor
 public class RoleController {
 
     private IRole iRole;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name, @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseSuccess result = iRole.save(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/roles", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "roles", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<String> names, @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+            @RequestBody() List<String> names,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseSuccess result = iRole.saveAll(names, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RoleDTO> update(
-            @RequestBody() RequestRole requestUserRole) throws BadRequestExceptions {
-        RoleDTO result = iRole.update(requestUserRole);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @DeleteMapping()
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
+            @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iRole.delete(code, tokenUser);
+        ResponseDelete result = iRole.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ROLE_GET')")
     public ResponseEntity<Page<RoleDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -65,7 +65,8 @@ public class RoleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false")
+    @GetMapping(value = "status-false")
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ROLE_GET')")
     public ResponseEntity<Page<RoleDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

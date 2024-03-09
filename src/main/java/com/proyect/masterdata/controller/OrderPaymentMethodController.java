@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,41 +25,41 @@ public class OrderPaymentMethodController {
     private final IOrderPaymentMethod iOrderPaymentMethod;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_PAYMENT_METHOD_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iOrderPaymentMethod.save(name, user);
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iOrderPaymentMethod.save(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/payment-methods", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> saveall(
-            @RequestBody() List<String> names, @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iOrderPaymentMethod.saveAll(names, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OrderPaymentMethodDTO> update(
-            @RequestBody() RequestOrderPaymentMethod requestOrderPaymentMethod) throws BadRequestExceptions {
-        OrderPaymentMethodDTO result = iOrderPaymentMethod.update(requestOrderPaymentMethod);
+    @PostMapping(value = "order-payment-methods", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_PAYMENT_METHOD_POST')")
+    public ResponseEntity<ResponseSuccess> saveAll(
+            @RequestBody() List<String> names,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iOrderPaymentMethod.saveAll(names, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_PAYMENT_METHOD_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iOrderPaymentMethod.delete(code, user);
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iOrderPaymentMethod.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/list-payment-method")
+    @GetMapping(value = "list-payment-method")
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_PAYMENT_METHOD_GET')")
     public ResponseEntity<List<OrderPaymentMethodDTO>> listPaymentMethod() throws BadRequestExceptions {
         List<OrderPaymentMethodDTO> result = iOrderPaymentMethod.listPaymentMethod();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_PAYMENT_METHOD_GET')")
     public ResponseEntity<Page<OrderPaymentMethodDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -70,7 +71,8 @@ public class OrderPaymentMethodController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/status-false")
+    @GetMapping(value = "status-false")
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_PAYMENT_METHOD_GET')")
     public ResponseEntity<Page<OrderPaymentMethodDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -80,13 +82,6 @@ public class OrderPaymentMethodController {
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
         Page<OrderPaymentMethodDTO> result = iOrderPaymentMethod.listStatusFalse(name, user, sort, sortColumn, pageNumber,
                 pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/code")
-    public ResponseEntity<OrderPaymentMethodDTO> findByCode(
-            @RequestParam("code") Long code) throws BadRequestExceptions {
-        OrderPaymentMethodDTO result = iOrderPaymentMethod.findByCode(code);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

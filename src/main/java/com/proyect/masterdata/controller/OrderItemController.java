@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +22,7 @@ public class OrderItemController {
     private final IOrderItem iOrderItem;
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_ITEM_GET')")
     public ResponseEntity<ResponseCheckStockItem> checkStockItem(
             @RequestParam("productSku") String productSku,
             @RequestParam("quantity") Integer quantity,
@@ -31,6 +33,7 @@ public class OrderItemController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_POST')")
     public ResponseEntity<ResponseSuccess> addItem(
             @RequestParam("orderId") Long orderId,
             @RequestBody()RequestOrderItem requestOrderItem,
@@ -41,6 +44,7 @@ public class OrderItemController {
     }
 
     @DeleteMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_DELETE')")
     public ResponseEntity<ResponseDelete> deleteItem(
             @RequestParam("orderId") Long orderId,
             @RequestParam("productSku") String productSku,
@@ -51,6 +55,7 @@ public class OrderItemController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_PUT')")
     public ResponseEntity<ResponseSuccess> updateItem(
             @RequestParam("orderId") Long orderId,
             @RequestBody()RequestOrderItem requestOrderItem,

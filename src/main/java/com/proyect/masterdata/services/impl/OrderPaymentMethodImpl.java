@@ -113,48 +113,14 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
     }
 
     @Override
-    public OrderPaymentMethodDTO update(RequestOrderPaymentMethod requestOrderPaymentMethod)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        OrderPaymentMethod orderPaymentMethod;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestOrderPaymentMethod.getUser().toUpperCase());
-            orderPaymentMethod = orderPaymentMethodRepository.findById(requestOrderPaymentMethod.getCode()).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (orderPaymentMethod == null) {
-            throw new BadRequestExceptions(Constants.ErrorPaymentMethod);
-        }
-
-        orderPaymentMethod.setName(requestOrderPaymentMethod.getName().toUpperCase());
-        orderPaymentMethod.setTokenUser(datauser.getUsername().toUpperCase());
-        orderPaymentMethod.setStatus(requestOrderPaymentMethod.isStatus());
-        orderPaymentMethod.setUpdateDate(new Date(System.currentTimeMillis()));
-
-        try {
-            return paymentMethodMapper.paymentMethodToPaymentMethodDTO(orderPaymentMethodRepository.save(orderPaymentMethod));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
     @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         OrderPaymentMethod orderPaymentMethod;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            orderPaymentMethod = orderPaymentMethodRepository.findById(code).orElse(null);
+            orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

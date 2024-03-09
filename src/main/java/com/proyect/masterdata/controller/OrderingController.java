@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class OrderingController {
     private final IOrdering iOrdering;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:SALES') and hasAuthority('ACCESS:ORDER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestOrderSave requestOrderSave,
             @RequestParam("tokenUser") String tokenUser
@@ -34,6 +36,7 @@ public class OrderingController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK') and hasAuthority('ACCESS:ORDER_GET')")
     public ResponseEntity<Page<OrderDTO>> list(
             @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "user", required = true) String user,
@@ -53,6 +56,7 @@ public class OrderingController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_PUT')")
     public ResponseEntity<ResponseSuccess> update(
             @RequestParam("orderId") Long orderId,
             @RequestBody()RequestOrderUpdate requestOrderUpdate,

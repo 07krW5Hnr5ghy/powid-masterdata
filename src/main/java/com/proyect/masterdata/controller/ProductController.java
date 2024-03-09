@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +35,7 @@ public class ProductController {
     private final IProduct iProduct;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestProductSave product,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -42,6 +44,7 @@ public class ProductController {
     }
 
     @PostMapping(value = "products", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestProductSave> productList,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -50,6 +53,7 @@ public class ProductController {
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("sku") String sku,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -58,6 +62,7 @@ public class ProductController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> list(
             @RequestParam(value = "sku", required = false) String sku,
             @RequestParam(value = "model", required = false) String model,
@@ -71,6 +76,7 @@ public class ProductController {
     }
 
     @GetMapping(value = "list-false")
+    @PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> listFalse(
             @RequestParam(value = "sku", required = false) String sku,
             @RequestParam(value = "model", required = false) String model,

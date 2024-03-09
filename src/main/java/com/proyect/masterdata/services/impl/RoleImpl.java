@@ -123,47 +123,14 @@ public class RoleImpl implements IRole {
     }
 
     @Override
-    public RoleDTO update(RequestRole requestRole) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        Role role;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestRole.getTokenUser().toUpperCase());
-            role = roleRepository.findById(requestRole.getCode()).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (role == null) {
-            throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
-        }
-
-        role.setName(requestRole.getName().toUpperCase());
-        role.setStatus(requestRole.isStatus());
-        role.setRegistrationDate(new Date(System.currentTimeMillis()));
-        role.setTokenUser(datauser.getUsername().toUpperCase());
-
-        try {
-            return roleMapper.roleToRoleDTO(roleRepository.save(role));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
     @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
         Role role;
 
         try {
             datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            role = roleRepository.findById(code).orElse(null);
+            role = roleRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e);
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

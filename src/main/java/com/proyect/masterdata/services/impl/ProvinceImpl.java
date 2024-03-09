@@ -127,50 +127,12 @@ public class ProvinceImpl implements IProvince {
     }
 
     @Override
-    public ProvinceDTO update(RequestProvince requestProvince) throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
-        boolean existsDepartment;
-        Province province;
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(requestProvince.getUser().toUpperCase());
-            existsDepartment = departmentRepository.existsById(requestProvince.getCodeDepartment());
-            province = provinceRepository.findByNameAndStatusTrue(requestProvince.getName().toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        if (province == null) {
-            throw new BadRequestExceptions(Constants.ErrorProvince.toUpperCase());
-        }
-
-        if (!existsDepartment) {
-            throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
-        }
-
-        try {
-            province.setName(requestProvince.getName().toUpperCase());
-            province.setTokenUser(requestProvince.getUser().toUpperCase());
-            province.setRegistrationDate(new Date(System.currentTimeMillis()));
-            province.setStatus(requestProvince.isStatus());
-            province.setDepartmentId(requestProvince.getCodeDepartment());
-            return provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
-        }
-    }
-
-    @Override
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
         Province province;
         try {
             existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            province = provinceRepository.findById(code).orElse(null);
+            province = provinceRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -243,26 +205,6 @@ public class ProvinceImpl implements IProvince {
         }
         return new PageImpl<>(provinceMapper.listProvinceToListProvinceDTO(provincePage.getContent()),
                 provincePage.getPageable(), provincePage.getTotalElements());
-    }
-
-    @Override
-    public ProvinceDTO findByCode(Long code) throws BadRequestExceptions {
-        boolean exists;
-        try {
-            exists = provinceRepository.existsById(code);
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if (!exists) {
-            throw new BadRequestExceptions(Constants.ErrorProvince);
-        }
-
-        try {
-            return provinceMapper.provinceToProvinceDTO(provinceRepository.findById(code).orElse(null));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
     }
 
     @Override

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class ShipmentItemController {
     private final IShipmentItem iShipmentItem;
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_ITEM_GET')")
     public ResponseEntity<Page<ShipmentItemDTO>> list(
             @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
             @RequestParam(value = "user", required = true) String user,

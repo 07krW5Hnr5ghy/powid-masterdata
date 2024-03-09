@@ -1,7 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.Connection;
-import com.proyect.masterdata.domain.PaymentType;
 import com.proyect.masterdata.repository.ConnectionRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

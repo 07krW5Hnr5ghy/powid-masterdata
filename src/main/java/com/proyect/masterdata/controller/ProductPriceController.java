@@ -7,16 +7,18 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin({"*"})
-@RequestMapping("/product-price")
+@RequestMapping("product-price")
 @AllArgsConstructor
 public class ProductPriceController {
 
     private final IProductPrice iProductPrice;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_PRICE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("productSku") String productSku,
             @RequestParam("unitPrice") Double unitPrice,

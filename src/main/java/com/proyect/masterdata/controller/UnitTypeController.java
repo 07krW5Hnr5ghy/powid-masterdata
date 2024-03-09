@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class UnitTypeController {
     private final IUnitType iUnitType;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
@@ -31,6 +33,7 @@ public class UnitTypeController {
     }
 
     @PostMapping(value = "unit-types", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> names,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -39,6 +42,7 @@ public class UnitTypeController {
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_TYPE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -47,6 +51,7 @@ public class UnitTypeController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_TYPE_GET')")
     public ResponseEntity<List<UnitTypeDTO>> list() throws BadRequestExceptions {
         List<UnitTypeDTO> result = iUnitType.listUnitType();
         return new ResponseEntity<>(result, HttpStatus.OK);

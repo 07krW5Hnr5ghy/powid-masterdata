@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
 public class StockTransferController {
     private final IStockTransfer iStockTransfer;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_TRANSFER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestStockTransfer requestStockTransfer,
             @RequestParam() String tokenUser
@@ -31,6 +33,7 @@ public class StockTransferController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_GET')")
     public ResponseEntity<Page<StockTransferDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "originWarehouse",required = false) String originWarehouse,
