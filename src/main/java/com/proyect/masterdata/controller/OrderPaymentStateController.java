@@ -45,9 +45,9 @@ public class OrderPaymentStateController {
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_PAYMENT_STATE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
+            @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iOrderPaymentState.delete(code, tokenUser);
+        ResponseDelete result = iOrderPaymentState.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

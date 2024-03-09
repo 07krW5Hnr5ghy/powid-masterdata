@@ -296,6 +296,7 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("STORE_TYPE_POST","ADMIN1");
                         iAccess.save("SUBSCRIPTION_GET","ADMIN1");
                         iAccess.save("SUBSCRIPTION_POST","ADMIN1");
+                        iAccess.save("SUBSCRIPTION_PAYMENT_POST","ADMIN1");
                         iAccess.save("SUPPLIER_GET","ADMIN1");
                         iAccess.save("SUPPLIER_POST","ADMIN1");
                         iAccess.save("SUPPLIER_DELETE","ADMIN1");
