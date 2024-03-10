@@ -229,4 +229,38 @@ public class BrandImpl implements IBrand {
                 brandPage.getTotalElements());
     }
 
+    @Override
+    public ResponseSuccess activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        Brand brand;
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            brand = brandRepository.findByName(name.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (user == null) {
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if (brand == null) {
+            throw new BadRequestExceptions(Constants.ErrorBrand);
+        }
+
+        try {
+            brand.setStatus(true);
+            brand.setUpdateDate(new Date(System.currentTimeMillis()));
+            brandRepository.save(brand);
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.update)
+                    .build();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
 }

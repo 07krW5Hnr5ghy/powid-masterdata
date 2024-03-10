@@ -48,7 +48,7 @@ public class AccessController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @GetMapping("list-false")
+    @GetMapping("status-false")
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_GET')")
     public ResponseEntity<List<AccessDTO>> listFalse() throws BadRequestExceptions {
         List<AccessDTO> result = iAccess.listFalse();
