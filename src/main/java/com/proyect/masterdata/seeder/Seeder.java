@@ -21,7 +21,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class Seeder implements CommandLineRunner {
-
+        // repositories
         private final AccessRepository accessRepository;
         private final ClientRepository clientRepository;
         private final DepartmentRepository departmentRepository;
@@ -32,7 +32,7 @@ public class Seeder implements CommandLineRunner {
         private final UserRepository userRepository;
         private final UserRoleRepository userRoleRepository;
         private final PasswordEncoder passwordEncoder;
-
+        // services
         private final IBrand iBrand;
         private final ICategory iCategory;
         private final IModel iModel;
