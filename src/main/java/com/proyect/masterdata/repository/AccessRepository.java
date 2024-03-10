@@ -11,11 +11,8 @@ import com.proyect.masterdata.domain.Access;
 
 @Repository
 public interface AccessRepository extends JpaRepository<Access, Long> {
-
     Access findByName(String name);
-
     Access findByNameAndStatusTrue(String name);
-
-    List<Access> findByNameInAndStatusTrue(List<String> names);
-
+    List<Access> findAllByStatusTrue();
+    List<Access> findAllByStatusFalse();
 }

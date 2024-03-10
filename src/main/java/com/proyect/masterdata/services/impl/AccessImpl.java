@@ -1,8 +1,12 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.AccessDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.stereotype.Service;
 
@@ -97,6 +101,44 @@ public class AccessImpl implements IAccess {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public List<AccessDTO> list() throws BadRequestExceptions {
+        List<Access> accesses = new ArrayList<>();
+
+        try{
+            accesses = accessRepository.findAllByStatusTrue();
+        }catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(accesses.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return accesses.stream().map(access -> AccessDTO.builder()
+                .name(access.getName())
+                .build()).toList();
+    }
+
+    @Override
+    public List<AccessDTO> listFalse() throws BadRequestExceptions {
+        List<Access> accesses = new ArrayList<>();
+
+        try{
+            accesses = accessRepository.findAllByStatusFalse();
+        }catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(accesses.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return accesses.stream().map(access -> AccessDTO.builder()
+                .name(access.getName())
+                .build()).toList();
     }
 
 }
