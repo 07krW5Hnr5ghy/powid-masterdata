@@ -54,8 +54,8 @@ public class CancellationReasonController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @PostMapping("activate")
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CANCELLATION_REASON_POST')")
+    @PutMapping("activate")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CANCELLATION_REASON_PUT')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
@@ -63,5 +63,5 @@ public class CancellationReasonController {
         ResponseSuccess result = iCancellationReason.activate(name,tokenUser);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
-    
+
 }

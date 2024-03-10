@@ -196,6 +196,7 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("BRAND_GET","ADMIN1");
                         iAccess.save("CANCELLATION_REASON_POST","ADMIN1");
                         iAccess.save("CANCELLATION_REASON_GET","ADMIN1");
+                        iAccess.save("CANCELLATION_REASON_PUT","ADMIN1");
                         iAccess.save("CANCELLED_ORDER_POST","ADMIN1");
                         iAccess.save("CANCELLED_ORDER_GET","ADMIN1");
                         iAccess.save("CATEGORY_GET","ADMIN1");
@@ -468,6 +469,7 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("ADMINISTRATION","CANCELLED_ORDER_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","CANCELLATION_REASON_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","CANCELLATION_REASON_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRATION","CANCELLATION_REASON_PUT","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","CATEGORY_POST","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","CATEGORY_DELETE","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","CATEGORY_PUT","ADMIN1");
