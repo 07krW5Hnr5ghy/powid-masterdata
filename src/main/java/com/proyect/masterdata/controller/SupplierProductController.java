@@ -35,7 +35,7 @@ public class SupplierProductController {
     private final ISupplierProduct iSupplierProduct;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestSupplierProduct requestSupplierProduct,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -44,7 +44,7 @@ public class SupplierProductController {
     }
 
     @PostMapping(value = "supplier-products", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestSupplierProduct> requestSupplierProductsList,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -53,7 +53,7 @@ public class SupplierProductController {
     }
 
     @DeleteMapping()
-    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_DELETE')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("serial") String serial,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -62,7 +62,7 @@ public class SupplierProductController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<Page<SupplierProductDTO>> list(
             @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "user", required = true) String user,

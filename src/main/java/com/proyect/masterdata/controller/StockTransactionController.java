@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class StockTransactionController {
     private final IStockTransaction iStockTransaction;
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_GET')")
     public ResponseEntity<Page<StockTransactionDTO>> list(
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "serial", required = false) String serial,

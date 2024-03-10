@@ -33,7 +33,7 @@ public class SubscriptionController {
     private final ISubscription iSubscription;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUBSCRIPTION_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUBSCRIPTION_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("months") Integer months,
@@ -44,7 +44,7 @@ public class SubscriptionController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUBSCRIPTION_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUBSCRIPTION_GET')")
     public ResponseEntity<Page<SubscriptionDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

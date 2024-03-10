@@ -18,7 +18,7 @@ public class ProductPriceController {
 
     private final IProductPrice iProductPrice;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_PRICE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_PRICE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("productSku") String productSku,
             @RequestParam("unitPrice") Double unitPrice,

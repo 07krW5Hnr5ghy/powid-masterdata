@@ -240,7 +240,6 @@ public class AuthenticationImpl implements IAuthentication {
                         .name(requestOnboarding.getStore().toUpperCase())
                         .storeType(requestOnboarding.getStoreType().toUpperCase())
                         .url(requestOnboarding.getStoreUrl())
-                        .clientRuc(requestOnboarding.getBusinessRuc())
                         .build();
 
                 iStore.save(requestStoreSave, "REGISTER");

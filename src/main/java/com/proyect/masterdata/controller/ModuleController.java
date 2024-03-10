@@ -24,7 +24,7 @@ public class ModuleController {
     private IModule iModule;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("price") double price,
@@ -34,7 +34,7 @@ public class ModuleController {
     }
 
     @PostMapping(value = "modules", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestModule> modules,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -51,7 +51,7 @@ public class ModuleController {
     }
 
     @DeleteMapping()
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_DELETE')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -60,14 +60,14 @@ public class ModuleController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_GET')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_GET')")
     public ResponseEntity<List<ModuleDTO>> listModule() throws BadRequestExceptions {
         List<ModuleDTO> result = iModule.listModule();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "list")
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_GET')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_GET')")
     public ResponseEntity<Page<ModuleDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -80,7 +80,7 @@ public class ModuleController {
     }
 
     @GetMapping(value = "status-false")
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_GET')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_GET')")
     public ResponseEntity<Page<ModuleDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

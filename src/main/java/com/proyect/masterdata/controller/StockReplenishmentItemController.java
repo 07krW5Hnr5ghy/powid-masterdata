@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class StockReplenishmentItemController {
     private final IStockReplenishmentItem iStockReplenishmentItem;
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_ITEM_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_ITEM_GET')")
     public ResponseEntity<Page<StockReplenishmentItemDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "orderId", required = false) Long orderId,

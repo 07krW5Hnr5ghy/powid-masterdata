@@ -32,7 +32,7 @@ public class WarehouseController {
     private final IWarehouse iWarehouse;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestWarehouse requestWarehouse,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -41,7 +41,7 @@ public class WarehouseController {
     }
 
     @PostMapping(value = "warehouses", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestWarehouse> requestWarehouses,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -50,7 +50,7 @@ public class WarehouseController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_GET')")
     public ResponseEntity<Page<WarehouseDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = true) String user,

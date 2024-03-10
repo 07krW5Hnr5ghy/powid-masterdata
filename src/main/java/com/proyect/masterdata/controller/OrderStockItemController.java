@@ -19,7 +19,7 @@ public class OrderStockItemController {
     private final IOrderStockItem iOrderStockItem;
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "orderId", required = false) Long orderId,
@@ -34,7 +34,7 @@ public class OrderStockItemController {
     }
 
     @GetMapping(value = "list-false")
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> listFalse(
             @RequestParam(value = "warehouse", required = false) String warehouse,
             @RequestParam(value = "orderId", required = false) Long orderId,

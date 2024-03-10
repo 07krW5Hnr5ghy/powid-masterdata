@@ -51,6 +51,7 @@ public class OrderingImpl implements IOrdering {
     private final ManagementTypeRepository managementTypeRepository;
     private final CourierPictureRepository courierPictureRepository;
     private final ProductPictureRepository productPictureRepository;
+    private final StoreRepository storeRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -61,6 +62,7 @@ public class OrderingImpl implements IOrdering {
         SaleChannel saleChannel;
         ManagementType managementType;
         OrderPaymentMethod orderPaymentMethod;
+        Store store;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -70,6 +72,7 @@ public class OrderingImpl implements IOrdering {
             saleChannel = saleChannelRepository.findByNameAndStatusTrue(requestOrderSave.getSaleChannel().toUpperCase());
             managementType = managementTypeRepository.findByNameAndStatusTrue(requestOrderSave.getManagementType().toUpperCase());
             orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
+            store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -89,6 +92,10 @@ public class OrderingImpl implements IOrdering {
 
         if(managementType == null){
             throw new BadRequestExceptions(Constants.ErrorManagementType);
+        }
+
+        if(store == null){
+            throw new BadRequestExceptions(Constants.ErrorStore);
         }
 
         try{
@@ -111,6 +118,8 @@ public class OrderingImpl implements IOrdering {
                             .managementTypeId(managementType.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
+                            .store(store)
+                            .storeId(store.getId())
                             .tokenUser(user.getUsername())
                     .build());
 
@@ -172,7 +181,7 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
-    public Page<OrderDTO> list(Long orderId,String user,String orderState,String courier,String paymentState,String paymentMethod,String saleChannel,String managementType, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public Page<OrderDTO> list(Long orderId,String user,String orderState,String courier,String paymentState,String paymentMethod,String saleChannel,String managementType,String storeName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
 
         Page<Ordering> pageOrdering;
         Long clientId;
@@ -182,6 +191,7 @@ public class OrderingImpl implements IOrdering {
         Long paymentMethodId;
         Long saleChannelId;
         Long managementTypeId;
+        Long storeId;
 
         if(orderState != null){
             orderStateId = orderStateRepository.findByName(orderState.toUpperCase()).getId();
@@ -219,9 +229,15 @@ public class OrderingImpl implements IOrdering {
             managementTypeId = null;
         }
 
+        if(storeName != null){
+            storeId = storeRepository.findByNameAndStatusTrue(storeName.toUpperCase()).getId();
+        }else {
+            storeId = null;
+        }
+
         try{
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-            pageOrdering = orderingRepositoryCustom.searchForOrdering(orderId,clientId,orderStateId,courierId,paymentStateId,paymentMethodId,saleChannelId,managementTypeId,sort,sortColumn,pageNumber,pageSize);
+            pageOrdering = orderingRepositoryCustom.searchForOrdering(orderId,clientId,orderStateId,courierId,paymentStateId,paymentMethodId,saleChannelId,managementTypeId,storeId,sort,sortColumn,pageNumber,pageSize);
         }catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }

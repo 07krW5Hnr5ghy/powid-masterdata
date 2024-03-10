@@ -58,7 +58,7 @@ public class BrandImpl implements IBrand {
         }
 
         if(membership == null){
-            throw new BadRequestExceptions(Constants.ErrorMembershipExpired);
+            //throw new BadRequestExceptions(Constants.ErrorMembershipExpired);
         }
 
         if (existsBrand) {

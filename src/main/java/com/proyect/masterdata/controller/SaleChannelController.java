@@ -24,7 +24,7 @@ public class SaleChannelController {
     private final ISaleChannel iSaleChannel;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -33,7 +33,7 @@ public class SaleChannelController {
     }
 
     @PostMapping(value = "sale-channels", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> names, @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseSuccess result = iSaleChannel.saveAll(names, tokenUser);
@@ -41,7 +41,7 @@ public class SaleChannelController {
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_DELETE')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("tokenUser") String tokenUser,
             @RequestParam("user") String user) throws BadRequestExceptions {

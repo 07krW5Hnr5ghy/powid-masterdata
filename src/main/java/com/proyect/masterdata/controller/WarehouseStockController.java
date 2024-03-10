@@ -25,7 +25,7 @@ public class WarehouseStockController {
     private final IWarehouseStock iWarehouseStock;
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
     public ResponseEntity<Page<WarehouseStockDTO>> list(
             @RequestParam(value = "warehouse", required = true) String warehouse,
             @RequestParam(value = "user", required = true) String user,

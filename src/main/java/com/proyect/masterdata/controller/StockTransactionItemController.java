@@ -19,7 +19,7 @@ public class StockTransactionItemController {
     private final IStockTransactionItem iStockTransactionItem;
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_ITEM_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_ITEM_GET')")
     public ResponseEntity<Page<StockTransactionItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "stockTransactionSerial", required = false) String stockTransactionSerial,

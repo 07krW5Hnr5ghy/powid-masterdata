@@ -24,7 +24,7 @@ public class CourierController {
     private final ICourier iCourier;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COURIER_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COURIER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody()RequestCourier requestCourier,
             @RequestParam("tokenUser") String tokenUser

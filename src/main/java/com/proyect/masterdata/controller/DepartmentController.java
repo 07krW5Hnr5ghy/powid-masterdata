@@ -23,7 +23,7 @@ public class DepartmentController {
         private final IDepartment iDepartment;
 
         @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
+        //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
         public ResponseEntity<ResponseSuccess> save(
                         @RequestParam("name") String name,
                         @RequestParam("user") String user) throws BadRequestExceptions {

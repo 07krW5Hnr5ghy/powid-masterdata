@@ -64,6 +64,9 @@ public class Ordering {
     @Column(name = "management_type_id")
     private Long managementTypeId;
 
+    @Column(name = "store_id")
+    private Long storeId;
+
     @Column(name = "token_user")
     private String tokenUser;
 
@@ -94,5 +97,9 @@ public class Ordering {
     @ManyToOne
     @JoinColumn(name = "management_type_id", columnDefinition = "managementTypeId", insertable = false, updatable = false)
     private ManagementType managementType;
+
+    @ManyToOne
+    @JoinColumn(name = "store_id", columnDefinition = "storeId", insertable = false, updatable = false)
+    private Store store;
 
 }

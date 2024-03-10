@@ -22,7 +22,7 @@ import java.util.List;
 public class StockReplenishmentController {
     private final IStockReplenishment iStockReplenishment;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_POST')")
     private ResponseEntity<ResponseSuccess> save(
             @RequestParam("orderId") Long orderId,
             @RequestBody() List<RequestStockReplenishmentItem> requestStockReplenishmentItems,
@@ -32,7 +32,7 @@ public class StockReplenishmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_GET')")
     private ResponseEntity<Page<StockReplenishmentDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "orderId",required = false) Long orderId,

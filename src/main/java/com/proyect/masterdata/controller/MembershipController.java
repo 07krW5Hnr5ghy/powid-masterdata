@@ -20,7 +20,7 @@ public class MembershipController {
     private final IMembership iMembership;
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:MEMBERSHIP_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:MEMBERSHIP_GET')")
     public ResponseEntity<Page<MembershipDTO>> list(
             @RequestParam(value = "channel", required = false) String channel,
             @RequestParam(value = "module", required = false) String module,

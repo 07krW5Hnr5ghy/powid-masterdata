@@ -19,7 +19,7 @@ public class StockTransferItemController {
     private final IStockTransferItem iStockTransferItem;
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_ITEM_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_ITEM_GET')")
     public ResponseEntity<Page<StockTransferItemDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "stockTransferId",required = false) Long stockTransferId,

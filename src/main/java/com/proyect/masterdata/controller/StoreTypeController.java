@@ -29,7 +29,7 @@ public class StoreTypeController {
     private final IStoreType iStoreType;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:STORE_TYPE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:STORE_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -38,7 +38,7 @@ public class StoreTypeController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_TYPE_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_TYPE_GET')")
     public ResponseEntity<List<StoreTypeDTO>> listStoreType() throws BadRequestExceptions {
         List<StoreTypeDTO> result = iStoreType.listStoreType();
         return new ResponseEntity<>(result, HttpStatus.OK);

@@ -24,14 +24,14 @@ import java.util.List;
 public class ClientController {
     private IClient iClient;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestClientSave requestClientSave) throws BadRequestExceptions {
         ResponseSuccess result = iClient.save(requestClientSave);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
     @PostMapping(value = "clients", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestClientSave> requestClientSaveList,
             @RequestParam("user") String user) throws BadRequestExceptions {
@@ -40,7 +40,7 @@ public class ClientController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_PUT')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_PUT')")
     public ResponseEntity<ClientDTO> update(
             @RequestBody() RequestClient requestClient,
             @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -49,7 +49,7 @@ public class ClientController {
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_DELETE')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("ruc") String ruc,
             @RequestParam("user") String user) throws BadRequestExceptions {
@@ -58,7 +58,7 @@ public class ClientController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:CLIENT_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:CLIENT_GET')")
     public ResponseEntity<Page<ClientDTO>> list(
             @RequestParam(value = "ruc", required = false) String ruc,
             @RequestParam(value = "business", required = false) String business,

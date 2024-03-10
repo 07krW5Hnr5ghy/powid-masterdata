@@ -26,7 +26,7 @@ public class StoreController {
     private IStore iStore;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestStoreSave requestClientChannelSave,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -35,7 +35,7 @@ public class StoreController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_PUT')")
+    //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_PUT')")
     public ResponseEntity<StoreDTO> update(
             @RequestBody() RequestStore requestClientChannel) throws BadRequestExceptions {
         StoreDTO result = iStore.update(requestClientChannel);
@@ -43,16 +43,16 @@ public class StoreController {
     }
 
     @DeleteMapping()
-    @PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_DELETE')")
+    //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iStore.delete(name, user);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseDelete result = iStore.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:STORE_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:STORE_GET')")
     public ResponseEntity<Page<StoreDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -65,7 +65,7 @@ public class StoreController {
     }
 
     @GetMapping(value = "status-false")
-    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:STORE_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:STORE_GET')")
     public ResponseEntity<Page<StoreDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

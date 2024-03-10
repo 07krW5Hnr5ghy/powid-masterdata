@@ -32,7 +32,7 @@ public class ModelController {
     private final IModel iModel;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:MODEL_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:MODEL_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("brand") String brand,
@@ -42,7 +42,7 @@ public class ModelController {
     }
 
     @PostMapping(value = "models", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:MODEL_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:MODEL_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> names,
             @RequestParam("brand") String brand,
@@ -52,7 +52,7 @@ public class ModelController {
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:MODEL_DELETE')")
+    //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:MODEL_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -61,7 +61,7 @@ public class ModelController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
@@ -75,7 +75,7 @@ public class ModelController {
     }
 
     @GetMapping(value = "status-false")
-    @PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "name", required = false) String brand,

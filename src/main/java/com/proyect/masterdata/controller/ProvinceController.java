@@ -23,7 +23,7 @@ public class ProvinceController {
     private IProvince iProvince;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser,
@@ -33,7 +33,7 @@ public class ProvinceController {
     }
 
     @PostMapping(value = "provinces", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestParam("user") String user,
             @RequestParam("department") String department,
@@ -43,7 +43,7 @@ public class ProvinceController {
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_DELETE')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -52,14 +52,14 @@ public class ProvinceController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
     public ResponseEntity<List<ProvinceDTO>> listProvince() throws BadRequestExceptions {
         List<ProvinceDTO> result = iProvince.listProvince();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "list")
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
     public ResponseEntity<Page<ProvinceDTO>> list(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -75,7 +75,7 @@ public class ProvinceController {
     }
 
     @GetMapping(value = "status-false")
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
     public ResponseEntity<Page<ProvinceDTO>> listStatusFalse(
             @RequestParam("name") String name,
             @RequestParam("user") String user,

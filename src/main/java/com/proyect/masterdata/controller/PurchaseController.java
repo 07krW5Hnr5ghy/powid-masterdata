@@ -34,7 +34,7 @@ public class PurchaseController {
     private final IPurchase iPurchase;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:PURCHASE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:PURCHASE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("serial") String serial,
             @RequestBody() List<RequestPurchaseItem> purchaseList,
@@ -44,7 +44,7 @@ public class PurchaseController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
     public ResponseEntity<Page<PurchaseDTO>> list(
             @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "user", required = true) String user,

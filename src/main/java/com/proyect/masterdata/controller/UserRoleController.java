@@ -26,7 +26,7 @@ public class UserRoleController {
     private final IUserRole iUserRole;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:USER_ROLE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:USER_ROLE_POST')")
     ResponseEntity<ResponseSuccess> save(
             @RequestParam(value = "username") String username,
             @RequestParam(value = "role") String role,

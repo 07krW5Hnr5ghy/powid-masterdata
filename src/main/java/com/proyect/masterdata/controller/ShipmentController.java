@@ -24,7 +24,7 @@ import java.util.List;
 public class ShipmentController {
     private final IShipment iShipment;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SHIPMENT_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SHIPMENT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestShipment requestShipment,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -33,7 +33,7 @@ public class ShipmentController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
     public ResponseEntity<Page<ShipmentDTO>> list(
             @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
             @RequestParam(value = "user", required = true) String user,

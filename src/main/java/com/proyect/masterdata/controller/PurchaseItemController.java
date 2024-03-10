@@ -19,7 +19,7 @@ public class PurchaseItemController {
     private final IPurchaseItem iPurchaseItem;
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
     public ResponseEntity<Page<PurchaseItemDTO>> list(
             @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "user", required = true) String user,

@@ -80,6 +80,7 @@ public class Seeder implements CommandLineRunner {
         private final IRoleAccess iRoleAccess;
         private final IUserRole iUserRole;
         private final IUser iUser;
+        private final IStore iStore;
         @Override
         public void run(String... args) throws Exception {
 
@@ -904,6 +905,23 @@ public class Seeder implements CommandLineRunner {
                                 .build();
 
                         iUser.save(businessCourier2);
+
+                        // mock stores
+                        RequestStoreSave requestStoreSave1 = RequestStoreSave.builder()
+                                .url("https://store1.com")
+                                .storeType("SHOPIFY")
+                                .name("store 1")
+                                .build();
+
+                        iStore.save(requestStoreSave1,business1.getUsername());
+
+                        RequestStoreSave requestStoreSave2 = RequestStoreSave.builder()
+                                .url("https://store2.com")
+                                .storeType("PRESTASHOP")
+                                .name("store 2")
+                                .build();
+
+                        iStore.save(requestStoreSave2,business2.getUsername());
 
                         // mock brands
                         iBrand.save("nike", "OPEREZ");
@@ -1913,6 +1931,7 @@ public class Seeder implements CommandLineRunner {
                                 .receipts(receipts1)
                                 .saleChannel("tienda online")
                                 .requestOrderItems(requestOrderItems1)
+                                .storeName("store 1")
                                 .build();
 
                         iOrdering.save(requestOrderSave1,"CROJAS");
@@ -1986,6 +2005,7 @@ public class Seeder implements CommandLineRunner {
                                 .receipts(receipts2)
                                 .saleChannel("tienda online")
                                 .requestOrderItems(requestOrderItems2)
+                                .storeName("store 1")
                                 .build();
 
                         iOrdering.save(requestOrderSave2,"CROJAS");
@@ -2030,6 +2050,7 @@ public class Seeder implements CommandLineRunner {
                                 .receipts(receipts3)
                                 .saleChannel("tienda online")
                                 .requestOrderItems(requestOrderItems3)
+                                .storeName("store 2")
                                 .build();
 
                         iOrdering.save(requestOrderSave3,"MAPARICIO");
@@ -2074,6 +2095,7 @@ public class Seeder implements CommandLineRunner {
                                 .receipts(receipts4)
                                 .saleChannel("tienda online")
                                 .requestOrderItems(requestOrderItems4)
+                                .storeName("store 2")
                                 .build();
 
                         iOrdering.save(requestOrderSave4,"MAPARICIO");
@@ -2116,6 +2138,7 @@ public class Seeder implements CommandLineRunner {
                                 .receipts(receipts2)
                                 .saleChannel("tienda online")
                                 .requestOrderItems(requestOrderItems5)
+                                .storeName("store 1")
                                 .build();
 
                         iOrdering.save(requestOrderSave5,"CROJAS");

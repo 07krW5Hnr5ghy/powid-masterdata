@@ -35,7 +35,7 @@ public class SupplierController {
     private final ISupplier iSupplier;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestSupplier requestSupplier,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -44,7 +44,7 @@ public class SupplierController {
     }
 
     @PostMapping(value = "suppliers", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<RequestSupplier> requestSupplierList,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -53,7 +53,7 @@ public class SupplierController {
     }
 
     @DeleteMapping()
-    @PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_DELETE')")
+    //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("ruc") String ruc,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {

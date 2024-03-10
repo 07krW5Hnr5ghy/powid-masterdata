@@ -16,6 +16,7 @@ public interface OrderingRepositoryCustom {
             Long paymentMethodId,
             Long saleChannelId,
             Long managementTypeId,
+            Long storeId,
             String sort,
             String sortColumn,
             Integer pageNumber,

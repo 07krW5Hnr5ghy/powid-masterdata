@@ -26,7 +26,7 @@ public class GeneralStockController {
     private final IGeneralStock iGeneralStock;
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK') and hasAuthority('ACCESS:GENERAL_STOCK_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK') and hasAuthority('ACCESS:GENERAL_STOCK_GET')")
     public ResponseEntity<Page<GeneralStockDTO>> list(
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "sort", required = false) String sort,

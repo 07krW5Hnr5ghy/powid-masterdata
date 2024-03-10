@@ -23,7 +23,7 @@ import java.util.List;
 public class StockTransferController {
     private final IStockTransfer iStockTransfer;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_TRANSFER_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_TRANSFER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestStockTransfer requestStockTransfer,
             @RequestParam() String tokenUser

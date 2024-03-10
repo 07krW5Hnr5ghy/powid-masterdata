@@ -23,7 +23,7 @@ public class StockReturnController {
     private final IStockReturn iStockReturn;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_RETURN_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_RETURN_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() List<RequestStockReturnItem> requestStockReturnItemList,
             @RequestParam("purchaseSerial") String purchaseSerial,
@@ -34,7 +34,7 @@ public class StockReturnController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_GET')")
     public ResponseEntity<Page<StockReturnDTO>> list(
             @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
             @RequestParam(value = "user", required = true) String user,

@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.Store;
 import com.proyect.masterdata.domain.StoreType;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.StoreDTO;
 import com.proyect.masterdata.dto.request.RequestStore;
 import com.proyect.masterdata.dto.request.RequestStoreSave;
@@ -42,35 +43,29 @@ public class StoreImpl implements IStore {
     private final StoreTypeRepository storeTypeRepository;
 
     @Override
-    public ResponseSuccess save(RequestStoreSave requestStoreSave, String user)
+    public ResponseSuccess save(RequestStoreSave requestStoreSave, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
 
-        boolean existsUser;
+        User user;
         boolean existsStore;
-        Client client;
         StoreType storeType;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsStore = storeRepository
                     .existsByName(requestStoreSave.getName().toUpperCase());
-            client = clientRepository.findByRucAndStatusTrue(requestStoreSave.getClientRuc());
             storeType = storeTypeRepository.findByNameAndStatusTrue(requestStoreSave.getStoreType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (existsStore) {
             throw new BadRequestExceptions(Constants.ErrorStoreExist);
-        }
-
-        if (client == null) {
-            throw new BadRequestExceptions(Constants.ErrorClient);
         }
 
         if (storeType == null) {
@@ -82,13 +77,13 @@ public class StoreImpl implements IStore {
             storeRepository.save(Store.builder()
                     .name(requestStoreSave.getName().toUpperCase())
                     .url(requestStoreSave.getUrl())
-                    .clientId(client.getId())
-                    .client(client)
+                    .clientId(user.getClientId())
+                    .client(user.getClient())
                     .storeType(storeType)
                     .storeTypeId(storeType.getId())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
-                    .tokenUser(user.toUpperCase())
+                    .tokenUser(user.getUsername())
                     .build());
 
             return ResponseSuccess.builder()
