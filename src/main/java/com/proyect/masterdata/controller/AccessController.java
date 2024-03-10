@@ -55,8 +55,8 @@ public class AccessController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @PostMapping(value = "activate",consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_POST')")
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_PUT')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam(value = "name") String name,
             @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions {

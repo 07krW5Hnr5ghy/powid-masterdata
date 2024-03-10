@@ -35,7 +35,7 @@ public class RoleController {
     }
 
     @PostMapping(value = "roles", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
             @RequestBody() List<String> names,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -44,7 +44,7 @@ public class RoleController {
     }
 
     @DeleteMapping()
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_DELETE')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
@@ -53,7 +53,7 @@ public class RoleController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ROLE_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ROLE_GET')")
     public ResponseEntity<Page<RoleDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -66,7 +66,7 @@ public class RoleController {
     }
 
     @GetMapping(value = "status-false")
-    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ROLE_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ROLE_GET')")
     public ResponseEntity<Page<RoleDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -76,5 +76,15 @@ public class RoleController {
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
         Page<RoleDTO> result = iRole.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_POST')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iRole.activate(name,tokenUser);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

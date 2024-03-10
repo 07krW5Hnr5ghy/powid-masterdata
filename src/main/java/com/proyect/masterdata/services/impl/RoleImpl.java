@@ -1,21 +1,16 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.Access;
 import com.proyect.masterdata.domain.Role;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.RoleDTO;
-import com.proyect.masterdata.dto.request.RequestAccessesToRole;
-import com.proyect.masterdata.dto.request.RequestRole;
-import com.proyect.masterdata.dto.request.RequestRoleSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.RoleMapper;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.RoleRepository;
 import com.proyect.masterdata.repository.RoleRepositoryCustom;
+import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IRole;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +32,6 @@ public class RoleImpl implements IRole {
     private final RoleMapper roleMapper;
     private final UserRepository userRepository;
     private final RoleRepositoryCustom roleRepositoryCustom;
-    private final AccessRepository accessRepository;
 
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
@@ -200,6 +192,40 @@ public class RoleImpl implements IRole {
 
         return new PageImpl<>(roleMapper.listRoleToListRoleDTO(rolePage.getContent()),
                 rolePage.getPageable(), rolePage.getTotalElements());
+    }
+
+    @Override
+    public ResponseSuccess activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        User datauser;
+        Role role;
+
+        try {
+            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            role = roleRepository.findByNameAndStatusFalse(name.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e);
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (datauser == null) {
+            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        }
+        if (role == null) {
+            throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
+        }
+
+        try {
+            role.setStatus(true);
+            role.setRegistrationDate(new Date(System.currentTimeMillis()));
+            roleRepository.save(role);
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.update)
+                    .build();
+        } catch (RuntimeException e) {
+            log.error(e);
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+        }
     }
 
 }

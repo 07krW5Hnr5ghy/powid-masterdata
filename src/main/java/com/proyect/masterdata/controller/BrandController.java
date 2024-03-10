@@ -83,7 +83,7 @@ public class BrandController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping(value = "activate",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_PUT')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
