@@ -141,4 +141,39 @@ public class AccessImpl implements IAccess {
                 .build()).toList();
     }
 
+    @Override
+    public ResponseSuccess activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        Access access;
+
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            access = accessRepository.findByName(name.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (user == null) {
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if (access == null) {
+            throw new BadRequestExceptions(Constants.ErrorAccess);
+        }
+
+        try {
+            access.setStatus(false);
+            access.setDateUpDate(new Date(System.currentTimeMillis()));
+            accessRepository.save(access);
+            return ResponseSuccess.builder()
+                    .message(Constants.update)
+                    .code(200)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
 }

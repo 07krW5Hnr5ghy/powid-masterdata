@@ -48,10 +48,19 @@ public class AccessController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("list-false")
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_GET')")
     public ResponseEntity<List<AccessDTO>> listFalse() throws BadRequestExceptions {
         List<AccessDTO> result = iAccess.listFalse();
         return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @PostMapping(value = "activate",consumes = MediaType.APPLICATION_JSON_VALUE)
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_POST')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iAccess.activate(name, tokenUser);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
