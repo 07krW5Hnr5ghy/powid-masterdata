@@ -1,5 +1,8 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.Membership;
+import com.proyect.masterdata.domain.MembershipState;
+import com.proyect.masterdata.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -12,9 +15,6 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.BrandMapper;
-import com.proyect.masterdata.repository.BrandRepository;
-import com.proyect.masterdata.repository.BrandRepositoryCustom;
-import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IBrand;
 import com.proyect.masterdata.utils.Constants;
 
@@ -33,16 +33,19 @@ public class BrandImpl implements IBrand {
     private final UserRepository userRepository;
     private final BrandRepository brandRepository;
     private final BrandRepositoryCustom brandRepositoryCustom;
-    private final BrandMapper brandMapper;
-
+    private final MembershipRepository membershipRepository;
+    private final MembershipStateRepository membershipStateRepository;
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         boolean existsBrand;
+        Membership membership;
+        MembershipState membershipState;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsBrand = brandRepository.existsByName(name.toUpperCase());
+            membershipState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -50,6 +53,12 @@ public class BrandImpl implements IBrand {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            membership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), membershipState.getId());
+        }
+
+        if(membership == null){
+            throw new BadRequestExceptions(Constants.ErrorMembershipExpired);
         }
 
         if (existsBrand) {
@@ -81,10 +90,13 @@ public class BrandImpl implements IBrand {
 
         User user;
         List<Brand> brandList;
+        Membership membership;
+        MembershipState membershipState;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             brandList = brandRepository.findByNameIn(namesList);
+            membershipState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -92,6 +104,12 @@ public class BrandImpl implements IBrand {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            membership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), membershipState.getId());
+        }
+
+        if(membership == null){
+            throw new BadRequestExceptions(Constants.ErrorMembershipExpired);
         }
 
         if (!brandList.isEmpty()) {
@@ -160,8 +178,7 @@ public class BrandImpl implements IBrand {
 
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-            brandPage = brandRepositoryCustom.searchForBrand(name, clientId, sort, sortColumn, pageNumber, pageSize,
-                    true);
+            brandPage = brandRepositoryCustom.searchForBrand(name, clientId, sort, sortColumn, pageNumber, pageSize, true);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);
