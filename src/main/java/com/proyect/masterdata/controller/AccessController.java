@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,8 +29,18 @@ public class AccessController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iAccess.save(name, user);
+            @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions {
+        ResponseSuccess result = iAccess.save(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DELETE')")
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "tokenUser") String tokenUser
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iAccess.delete(name,tokenUser);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

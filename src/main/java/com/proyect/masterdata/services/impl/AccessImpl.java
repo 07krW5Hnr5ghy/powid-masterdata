@@ -2,6 +2,8 @@ package com.proyect.masterdata.services.impl;
 
 import java.util.Date;
 
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Access;
@@ -26,24 +28,23 @@ public class AccessImpl implements IAccess {
 
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-
-        boolean existsTokenUser;
-        boolean existsAccess;
+        User user;
+        Access access;
 
         try {
-            existsTokenUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            existsAccess = accessRepository.existsByName(name.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            access = accessRepository.findByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsTokenUser) {
-            throw new BadRequestExceptions("Usuario no existe");
+        if (user == null) {
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if (existsAccess) {
-            throw new BadRequestExceptions("Acceso no existe");
+        if (access != null) {
+            throw new BadRequestExceptions(Constants.ErrorAccessExists);
         }
 
         try {
@@ -58,6 +59,41 @@ public class AccessImpl implements IAccess {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        Access access;
+
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            access = accessRepository.findByName(name.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (user == null) {
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if (access == null) {
+            throw new BadRequestExceptions(Constants.ErrorAccess);
+        }
+
+        try {
+            access.setStatus(false);
+            access.setDateUpDate(new Date(System.currentTimeMillis()));
+            accessRepository.save(access);
+            return ResponseDelete.builder()
+                    .message(Constants.delete)
+                    .code(200)
+                    .build();
+        }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
