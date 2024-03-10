@@ -8,10 +8,9 @@ import java.util.List;
 
 @Repository
 public interface BrandRepository extends JpaRepository<Brand, Long> {
-
     boolean existsByName(String name);
-
     Brand findByName(String name);
-
+    Brand findByNameAndStatusTrue(String name);
+    Brand findByNameAndStatusFalse(String name);
     List<Brand> findByNameIn(List<String> namesList);
 }

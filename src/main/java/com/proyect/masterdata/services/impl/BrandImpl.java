@@ -141,7 +141,7 @@ public class BrandImpl implements IBrand {
         Brand brand;
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            brand = brandRepository.findByName(name.toUpperCase());
+            brand = brandRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -235,7 +235,7 @@ public class BrandImpl implements IBrand {
         Brand brand;
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            brand = brandRepository.findByName(name.toUpperCase());
+            brand = brandRepository.findByNameAndStatusFalse(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

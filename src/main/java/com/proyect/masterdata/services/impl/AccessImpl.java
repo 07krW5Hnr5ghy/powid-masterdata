@@ -75,7 +75,7 @@ public class AccessImpl implements IAccess {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            access = accessRepository.findByName(name.toUpperCase());
+            access = accessRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -148,7 +148,7 @@ public class AccessImpl implements IAccess {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            access = accessRepository.findByName(name.toUpperCase());
+            access = accessRepository.findByNameAndStatusFalse(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

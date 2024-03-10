@@ -10,5 +10,7 @@ import java.util.List;
 public interface CancellationReasonRepository extends JpaRepository<CancellationReason,Long> {
     CancellationReason findByName(String name);
     CancellationReason findByNameAndStatusTrue(String name);
+    CancellationReason findByNameAndStatusFalse(String name);
     List<CancellationReason> findAllByStatusTrue();
+    List<CancellationReason> findAllByStatusFalse();
 }

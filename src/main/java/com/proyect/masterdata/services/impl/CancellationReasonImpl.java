@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.CancellationReason;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -82,5 +83,90 @@ public class CancellationReasonImpl implements ICancellationReason {
         }
 
         return cancellationReasonList.stream().map(CancellationReason::getName).toList();
+    }
+
+    @Override
+    public List<String> listFalse() throws BadRequestExceptions {
+        List<CancellationReason> cancellationReasonList = new ArrayList<>();
+
+        try{
+            cancellationReasonList = cancellationReasonRepository.findAllByStatusFalse();
+        }catch (RuntimeException e){
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if(cancellationReasonList.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return cancellationReasonList.stream().map(CancellationReason::getName).toList();
+    }
+
+    @Override
+    public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        CancellationReason cancellationReason;
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            cancellationReason = cancellationReasonRepository.findByNameAndStatusTrue(name.toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(cancellationReason == null){
+            throw new BadRequestExceptions(Constants.ErrorCancellationReason);
+        }
+
+        try{
+            cancellationReason.setStatus(false);
+            cancellationReason.setUpdateDate(new Date(System.currentTimeMillis()));
+            cancellationReasonRepository.save(cancellationReason);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public ResponseSuccess activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        CancellationReason cancellationReason;
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            cancellationReason = cancellationReasonRepository.findByNameAndStatusFalse(name.toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(cancellationReason == null){
+            throw new BadRequestExceptions(Constants.ErrorCancellationReason);
+        }
+
+        try{
+            cancellationReason.setStatus(true);
+            cancellationReason.setUpdateDate(new Date(System.currentTimeMillis()));
+            cancellationReasonRepository.save(cancellationReason);
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.update)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 }
