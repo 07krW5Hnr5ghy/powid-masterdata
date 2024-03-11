@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 public interface UserRepositoryCustom {
     Page<User> searchForUser(
             String user,
-            Long cientId,
+            Long clientId,
+            String dni,
+            String email,
             String sort,
             String sortColumn,
             Integer pageNumber,

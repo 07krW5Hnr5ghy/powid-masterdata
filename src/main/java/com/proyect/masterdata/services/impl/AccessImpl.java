@@ -92,6 +92,7 @@ public class AccessImpl implements IAccess {
         try {
             access.setStatus(false);
             access.setDateUpDate(new Date(System.currentTimeMillis()));
+            access.setTokenUser(tokenUser.toUpperCase());
             accessRepository.save(access);
             return ResponseDelete.builder()
                     .message(Constants.delete)
@@ -165,6 +166,7 @@ public class AccessImpl implements IAccess {
         try {
             access.setStatus(true);
             access.setDateUpDate(new Date(System.currentTimeMillis()));
+            access.setTokenUser(tokenUser.toUpperCase());
             accessRepository.save(access);
             return ResponseSuccess.builder()
                     .message(Constants.update)

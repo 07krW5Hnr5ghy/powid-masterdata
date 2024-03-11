@@ -158,6 +158,7 @@ public class BrandImpl implements IBrand {
         try {
             brand.setStatus(false);
             brand.setUpdateDate(new Date(System.currentTimeMillis()));
+            brand.setTokenUser(tokenUser.toUpperCase());
             brandRepository.save(brand);
             return ResponseDelete.builder()
                     .code(200)
@@ -252,6 +253,7 @@ public class BrandImpl implements IBrand {
         try {
             brand.setStatus(true);
             brand.setUpdateDate(new Date(System.currentTimeMillis()));
+            brand.setTokenUser(tokenUser.toUpperCase());
             brandRepository.save(brand);
             return ResponseSuccess.builder()
                     .code(200)

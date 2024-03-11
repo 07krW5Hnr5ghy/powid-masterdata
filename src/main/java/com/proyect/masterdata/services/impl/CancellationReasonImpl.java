@@ -23,10 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class CancellationReasonImpl implements ICancellationReason {
-
     private final CancellationReasonRepository cancellationReasonRepository;
     private final UserRepository userRepository;
-
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -55,6 +53,7 @@ public class CancellationReasonImpl implements ICancellationReason {
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .status(true)
+                            .tokenUser(tokenUser.toUpperCase())
                     .build());
 
             return ResponseSuccess.builder()
@@ -125,6 +124,7 @@ public class CancellationReasonImpl implements ICancellationReason {
         try{
             cancellationReason.setStatus(false);
             cancellationReason.setUpdateDate(new Date(System.currentTimeMillis()));
+            cancellationReason.setTokenUser(tokenUser.toUpperCase());
             cancellationReasonRepository.save(cancellationReason);
             return ResponseDelete.builder()
                     .code(200)
@@ -159,6 +159,7 @@ public class CancellationReasonImpl implements ICancellationReason {
         try{
             cancellationReason.setStatus(true);
             cancellationReason.setUpdateDate(new Date(System.currentTimeMillis()));
+            cancellationReason.setTokenUser(tokenUser.toUpperCase());
             cancellationReasonRepository.save(cancellationReason);
             return ResponseSuccess.builder()
                     .code(200)

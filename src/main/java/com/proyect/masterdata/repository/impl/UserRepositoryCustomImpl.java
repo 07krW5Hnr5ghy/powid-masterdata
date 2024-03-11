@@ -20,11 +20,12 @@ import java.util.List;
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
-
     @Override
     public Page<User> searchForUser(
             String user,
             Long clientId,
+            String dni,
+            String email,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -35,7 +36,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         Root<User> itemRoot = criteriaQuery.from(User.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(user, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(user, clientId, dni, email, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> userList = new ArrayList<>();
@@ -55,13 +56,15 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(user, clientId, status);
+        long count = getOrderCount(user, clientId, dni, email, status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             String username,
             Long clientId,
+            String dni,
+            String email,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<User> itemRoot) {
@@ -72,11 +75,25 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("user")), username.toUpperCase())));
+                                    criteriaBuilder.upper(itemRoot.get("username")), username.toUpperCase())));
         }
 
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
+        }
+
+        if (dni != null) {
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    criteriaBuilder.upper(itemRoot.get("dni")), dni.toUpperCase())));
+        }
+
+        if (email != null) {
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    criteriaBuilder.upper(itemRoot.get("email")), email.toLowerCase())));
         }
 
         if (status) {
@@ -97,12 +114,20 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
         List<Order> userList = new ArrayList<>();
 
-        if (sortColumn.equalsIgnoreCase("USER")) {
-            userList.add(criteriaBuilder.asc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("USERNAME")) {
+            userList.add(criteriaBuilder.asc(itemRoot.get("username")));
         }
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
             userList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("dni")) {
+            userList.add(criteriaBuilder.asc(itemRoot.get("dni")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("email")) {
+            userList.add(criteriaBuilder.asc(itemRoot.get("email")));
         }
 
         return userList;
@@ -115,24 +140,32 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
         List<Order> userList = new ArrayList<>();
 
-        if (sortColumn.equalsIgnoreCase("USER")) {
-            userList.add(criteriaBuilder.desc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("USERNAME")) {
+            userList.add(criteriaBuilder.desc(itemRoot.get("username")));
         }
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
             userList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("dni")) {
+            userList.add(criteriaBuilder.desc(itemRoot.get("dni")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("email")) {
+            userList.add(criteriaBuilder.desc(itemRoot.get("email")));
+        }
+
         return userList;
     }
 
-    private long getOrderCount(String username, Long clientId, Boolean status) {
+    private long getOrderCount(String username, Long clientId,String dni, String email, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<User> itemRoot = criteriaQuery.from(User.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(username, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(username, clientId, dni, email, status, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

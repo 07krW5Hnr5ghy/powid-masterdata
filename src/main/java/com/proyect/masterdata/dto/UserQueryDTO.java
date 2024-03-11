@@ -21,4 +21,5 @@ public class UserQueryDTO {
     private String address;
     private String mobile;
     private String gender;
+    private List<String> roleNames;
 }

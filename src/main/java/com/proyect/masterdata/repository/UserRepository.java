@@ -8,22 +8,13 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
     List<User> findByUsernameIn(List<String> name);
-
     User findByUsernameAndStatusTrue(String user);
-
+    User findByUsernameAndStatusFalse(String user);
     boolean existsByUsername(String user);
-
     boolean existsByUsernameAndStatusTrue(String user);
-
     boolean existsByDni(String dni);
-
     boolean existsByEmail(String email);
-
     boolean existsByMobile(String mobile);
-
     User findByClientId(Long clientId);
-
-    List<User> findAll();
 }

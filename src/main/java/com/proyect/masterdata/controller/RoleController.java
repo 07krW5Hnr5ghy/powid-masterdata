@@ -79,7 +79,7 @@ public class RoleController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_POST')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_PUT')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser

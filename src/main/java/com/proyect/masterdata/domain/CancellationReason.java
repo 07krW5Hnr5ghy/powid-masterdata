@@ -37,4 +37,7 @@ public class CancellationReason {
     @CreationTimestamp
     private Date updateDate;
 
+    @Column(name = "token_user")
+    private String tokenUser;
+
 }
