@@ -195,6 +195,7 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("BRAND_POST","ADMIN1");
                         iAccess.save("BRAND_DELETE","ADMIN1");
                         iAccess.save("BRAND_GET","ADMIN1");
+                        iAccess.save("BRAND_PUT","ADMIN1");
                         iAccess.save("CANCELLATION_REASON_POST","ADMIN1");
                         iAccess.save("CANCELLATION_REASON_GET","ADMIN1");
                         iAccess.save("CANCELLATION_REASON_PUT","ADMIN1");

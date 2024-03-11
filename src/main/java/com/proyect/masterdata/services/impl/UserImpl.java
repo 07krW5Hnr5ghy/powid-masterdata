@@ -236,7 +236,7 @@ public class UserImpl implements IUser {
                     .surname(userData.getSurname())
                     .user(userData.getUsername())
                     .roleNames(userRoles.stream().map(userRole -> {
-                        Role role = roleRepository.findByRoleId(userRole.getRoleId());
+                        Role role = roleRepository.findById(userRole.getRoleId()).orElse(null);
                         return role.getName();
                     }).toList())
                     .build();
@@ -274,7 +274,7 @@ public class UserImpl implements IUser {
                     .surname(userData.getSurname())
                     .user(userData.getUsername())
                     .roleNames(userRoles.stream().map(userRole -> {
-                        Role role = roleRepository.findByRoleId(userRole.getRoleId());
+                        Role role = roleRepository.findById(userRole.getRoleId()).orElse(null);
                         return role.getName();
                     }).toList())
                     .build();
