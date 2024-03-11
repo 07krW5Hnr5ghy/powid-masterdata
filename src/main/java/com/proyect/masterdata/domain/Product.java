@@ -23,7 +23,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableProduct, schema = Constants.schemaArticle)
+@Table(name = Constants.tableProduct, schema = Constants.schemaMarketing)
 public class Product {
 
     @Id

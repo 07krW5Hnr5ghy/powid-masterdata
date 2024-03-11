@@ -4,7 +4,7 @@ public class Constants {
     // schemas
     public static final String schemaMaster = "master";
     public static final String schemaManagement = "management";
-    public static final String schemaArticle = "article";
+    public static final String schemaMarketing = "marketing";
     public static final String schemaPayment = "payment";
     public static final String schemaStock = "stock";
     public static final String schemaOrder = "ordering";

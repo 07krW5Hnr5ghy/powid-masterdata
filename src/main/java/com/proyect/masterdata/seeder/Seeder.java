@@ -461,7 +461,6 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("BUSINESS","UNIT_TYPE_GET","ADMIN1");
                         iRoleAccess.save("BUSINESS","USER_GET","ADMIN1");
                         iRoleAccess.save("BUSINESS","USER_POST","ADMIN1");
-                        iRoleAccess.save("BUSINESS","USER_PUT","ADMIN1");
                         iRoleAccess.save("BUSINESS","WAREHOUSE_GET","ADMIN1");
                         iRoleAccess.save("BUSINESS","WAREHOUSE_STOCK_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","ACCESS_POST","ADMIN1");

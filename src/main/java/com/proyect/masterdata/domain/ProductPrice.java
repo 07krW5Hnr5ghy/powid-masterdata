@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableProductPrice, schema = Constants.schemaArticle)
+@Table(name = Constants.tableProductPrice, schema = Constants.schemaMarketing)
 public class ProductPrice {
 
     @Id

@@ -300,7 +300,7 @@ public class UserImpl implements IUser {
 
         try {
             datauser.setUpdateDate(new Date(System.currentTimeMillis()));
-            datauser.setStatus(false);
+            datauser.setStatus(true);
             datauser.setTokenUser(username.toUpperCase());
             userRepository.save(datauser);
             return ResponseSuccess.builder()
