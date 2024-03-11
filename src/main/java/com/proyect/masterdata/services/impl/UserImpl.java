@@ -286,9 +286,10 @@ public class UserImpl implements IUser {
     @Override
     public ResponseSuccess activate(String username, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
-
+        User tokenUserData;
         try {
             datauser = userRepository.findByUsernameAndStatusFalse(username.toUpperCase());
+            tokenUserData = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -298,10 +299,14 @@ public class UserImpl implements IUser {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
+        if (tokenUserData == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
         try {
             datauser.setUpdateDate(new Date(System.currentTimeMillis()));
             datauser.setStatus(true);
-            datauser.setTokenUser(username.toUpperCase());
+            datauser.setTokenUser(tokenUserData.getUsername());
             userRepository.save(datauser);
             return ResponseSuccess.builder()
                     .code(200)

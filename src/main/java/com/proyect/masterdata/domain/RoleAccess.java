@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Builder
@@ -38,5 +39,13 @@ public class RoleAccess {
     private String tokenUser;
 
     @Column(name = "registration_date")
+    @CreationTimestamp
     private Date registrationDate;
+
+    @Column(name = "update_date")
+    @CreationTimestamp
+    private Date updateDate;
+
+    @Column(name = "status")
+    private Boolean status;
 }

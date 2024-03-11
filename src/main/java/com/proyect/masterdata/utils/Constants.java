@@ -92,7 +92,6 @@ public class Constants {
     public static final String tableMercadoPagoPayment = "mercado_pago_payment";
     public static final String tablePaymentGateway = "payment_gateway";
     public static final String tableMembershipState = "membership_state";
-
     // messages
     public static final String register = "registration correctly";
     public static final String update = "correctly updated";
@@ -240,4 +239,6 @@ public class Constants {
     public static final String ErrorMembershipStateExists = "Membership state already exists";
     public static final String ErrorMembershipDemo = "Membership demo already exists";
     public static final String ErrorMembershipExpired = "Membership is expired";
+    public static final String ErrorRoleAccess = "Role access does not exist";
+    public static final String ErrorRoleAccessExists = "Role access already exists";
 }
