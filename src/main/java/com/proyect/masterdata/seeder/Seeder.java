@@ -128,7 +128,7 @@ public class Seeder implements CommandLineRunner {
 
                         roleAccessRepository.save(
                                 new RoleAccess(1L, role.getId(), access.getId(), "SISTEMA",
-                                        new Date(System.currentTimeMillis())));
+                                        new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()),true));
 
                         // user for register new users
 
@@ -268,6 +268,10 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("ROLE_GET","ADMIN1");
                         iAccess.save("ROLE_DELETE","ADMIN1");
                         iAccess.save("ROLE_PUT","ADMIN1");
+                        iAccess.save("ROLE_ACCESS_GET","ADMIN1");
+                        iAccess.save("ROLE_ACCESS_POST","ADMIN1");
+                        iAccess.save("ROLE_ACCESS_PUT","ADMIN1");
+                        iAccess.save("ROLE_ACCESS_DELETE","ADMIN1");
                         iAccess.save("SALE_CHANNEL_POST","ADMIN1");
                         iAccess.save("SALE_CHANNEL_DELETE","ADMIN1");
                         iAccess.save("SHIPMENT_GET","ADMIN1");
@@ -522,6 +526,10 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("ADMINISTRATION","ROLE_POST","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","ROLE_PUT","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","ROLE_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRATION","ROLE_ACCESS_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRATION","ROLE_ACCESS_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRATION","ROLE_ACCESS_PUT","ADMIN1");
+                        iRoleAccess.save("ADMINISTRATION","ROLE_ACCESS_DELETE","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","SALE_CHANNEL_DELETE","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","SALE_CHANNEL_POST","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","SHIPMENT_GET","ADMIN1");
@@ -554,7 +562,6 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("ADMINISTRATION","UNIT_TYPE_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","UNIT_TYPE_POST","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","UNIT_TYPE_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","USER_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","USER_POST","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","USER_PUT","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","USER_DELETE","ADMIN1");
