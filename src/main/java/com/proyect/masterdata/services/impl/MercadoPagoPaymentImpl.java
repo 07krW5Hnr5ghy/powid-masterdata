@@ -47,6 +47,8 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
     private final MembershipRepository membershipRepository;
     private final UserRepository userRepository;
     private final MembershipPaymentRepository membershipPaymentRepository;
+    @Value("${mercadopago.notification-url}")
+    private String mercadoPagoNotificationUrl;
     @Override
     public String sendPayment(Double netAmount, Subscription subscription,List<String> modules, User user) throws InternalErrorExceptions, BadRequestExceptions {
         MercadoPagoConfig.setAccessToken(mercadoPagoToken);
@@ -79,7 +81,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                     .metadata(metadata)
                     .backUrls(backUrls)
                     .binaryMode(true)
-                    .notificationUrl("https://ec29-2800-484-d57f-3830-c461-b0e1-ff7f-c5f.ngrok-free.app/masterdata/mercado-pago/check-status")
+                    .notificationUrl(mercadoPagoNotificationUrl)
                     .build();
 
             PreferenceClient preferenceClient = new PreferenceClient();
