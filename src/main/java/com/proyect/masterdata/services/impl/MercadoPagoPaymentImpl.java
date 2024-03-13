@@ -140,6 +140,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                     .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
