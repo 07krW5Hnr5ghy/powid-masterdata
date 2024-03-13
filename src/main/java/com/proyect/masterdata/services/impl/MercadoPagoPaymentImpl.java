@@ -132,6 +132,8 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                         .paymentGateway("mercado pago")
                         .build();
                 iMembershipPayment.save(requestMembershipPayment,newPayment.getMetadata().get("user_id").toString());
+            }else{
+                throw new BadRequestExceptions(Constants.ErrorMercadoPagoPayment);
             }
             return ResponseSuccess.builder()
                     .code(200)
