@@ -71,7 +71,7 @@ public class MercadoPagoController {
 
             Preference preference = preferenceClient.create(preferenceRequest);
             System.out.println(preference.getResponse());
-            return preference.getId();
+            return preference.getNotificationUrl();
 
         }catch (MPException | MPApiException e){
             return e.toString();
