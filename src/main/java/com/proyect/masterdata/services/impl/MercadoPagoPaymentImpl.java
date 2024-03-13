@@ -47,7 +47,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
     private final MembershipRepository membershipRepository;
     private final UserRepository userRepository;
     private final MembershipPaymentRepository membershipPaymentRepository;
-    @Value("${mercadopago.notification-url}")
+    @Value("${mercadopago.notification.url}")
     private String mercadoPagoNotificationUrl;
     @Override
     public String sendPayment(Double netAmount, Subscription subscription,List<String> modules, User user) throws InternalErrorExceptions, BadRequestExceptions {
