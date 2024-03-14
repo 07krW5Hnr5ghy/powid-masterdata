@@ -106,7 +106,8 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
     public ResponseSuccess registerPayment(Long paymentId, String type, String requestIdHeader, String signatureHeader) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException {
         MembershipPayment membershipPayment;
         try{
-            if(paymentId != null & Objects.equals(type, "payment")){
+            /*& Objects.equals(type, "payment")*/
+            if(paymentId != null){
 
                 PaymentClient paymentClient = new PaymentClient();
                 Payment newPayment = paymentClient.get(paymentId);
@@ -129,7 +130,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                     signatureMap.put(key, value);
                 }
                 String template = "id:[{0}];request-id:[{1}];ts:[{2}]";
-                String formattedString = MessageFormat.format(template, requestIdHeader, requestIdHeader, signatureMap.get("ts"));
+                String formattedString = MessageFormat.format(template, paymentId, requestIdHeader, signatureMap.get("ts"));
                 System.out.println(formattedString);
                 String cyphedSignature = new HmacUtils("HmacSHA256", mercadoPagoSecretKey).hmacHex(formattedString);
                 System.out.println("cyphed signature");
