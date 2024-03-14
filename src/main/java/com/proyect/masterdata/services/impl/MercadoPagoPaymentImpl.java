@@ -134,7 +134,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                 String cyphedSignature = new HmacUtils("HmacSHA256", mercadoPagoSecretKey).hmacHex(formattedString);
                 System.out.println("cyphed signature");
                 System.out.println(cyphedSignature);
-                if(Objects.equals(mercadoPagoSecretKey, cyphedSignature)){
+                if(!Objects.equals(mercadoPagoSecretKey, cyphedSignature)){
                     throw new BadRequestExceptions(Constants.ErrorMercadoPagoOrigin);
                 }
                 double fee = 0.00;
