@@ -135,7 +135,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                 System.out.println("cyphed signature");
                 System.out.println(cyphedSignature);
                 if(Objects.equals(mercadoPagoSecretKey, cyphedSignature)){
-                    System.out.println("Pago verificado");
+                    throw new BadRequestExceptions(Constants.ErrorMercadoPagoOrigin);
                 }
                 double fee = 0.00;
                 for(PaymentFeeDetail paymentFeeDetail : newPayment.getFeeDetails()){
