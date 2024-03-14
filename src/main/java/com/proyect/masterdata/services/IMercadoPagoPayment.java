@@ -12,5 +12,5 @@ import java.util.List;
 
 public interface IMercadoPagoPayment {
     public String sendPayment(Double netAmount, Subscription subscription,List<String> modules, User user) throws InternalErrorExceptions, BadRequestExceptions;
-    public ResponseSuccess registerPayment(Long paymentId, String type) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException;
+    public ResponseSuccess registerPayment(Long paymentId, String type, String requestIdHeader,String signatureHeader) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException;
 }

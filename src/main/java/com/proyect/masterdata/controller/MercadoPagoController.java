@@ -17,6 +17,7 @@ import com.proyect.masterdata.services.IMercadoPagoPayment;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -83,9 +84,12 @@ public class MercadoPagoController {
             @RequestParam(value = "id",required = false) String id,
             @RequestParam(value = "topic",required = false) String topic,
             @RequestParam(value = "data.id",required = false) Long paymentId,
-            @RequestParam(value = "type",required = false) String type
-    ) throws MPException, MPApiException {
-        ResponseSuccess result = iMercadoPagoPayment.registerPayment(paymentId,type);
+            @RequestParam(value = "type",required = false) String type,
+            @RequestHeader HttpHeaders headers
+            ) throws MPException, MPApiException {
+        String requestIdHeader = headers.getFirst("X-Request-Id");
+        String signatureHeader = headers.getFirst("X-Signature");
+        ResponseSuccess result = iMercadoPagoPayment.registerPayment(paymentId,type,requestIdHeader,signatureHeader);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
