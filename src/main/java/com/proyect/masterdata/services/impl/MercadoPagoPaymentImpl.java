@@ -106,24 +106,23 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
     public ResponseSuccess registerPayment(Long paymentId, String type, String requestIdHeader, String signatureHeader) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException {
         MembershipPayment membershipPayment;
         try{
-            /*& Objects.equals(type, "payment")*/
-            if(paymentId != null){
+            if(paymentId != null & Objects.equals(type, "payment")){
 
                 PaymentClient paymentClient = new PaymentClient();
                 Payment newPayment = paymentClient.get(paymentId);
 
                 System.out.println(newPayment.getStatus());
 
-//                if(!Objects.equals(newPayment.getStatus(), "approved")){
-//                    throw new BadRequestExceptions(Constants.ErrorMercadoPagoPaymentFailed);
-//                }
+                if(!Objects.equals(newPayment.getStatus(), "approved")){
+                    throw new BadRequestExceptions(Constants.ErrorMercadoPagoPaymentFailed);
+                }
 
                 System.out.println("mercado pago secret key");
                 System.out.println(mercadoPagoSecretKey);
                 String exampleSignatureHeader = "ts=1704908010,v1=618c85345248dd820d5fd456117c2ab2ef8eda45a0282ff693eac24131a5e839";
                 Map<String,String> signatureMap = new HashMap<>();
                 Pattern pattern = Pattern.compile("(\\w+)=([^,]+)");
-                Matcher matcher = pattern.matcher(exampleSignatureHeader);
+                Matcher matcher = pattern.matcher(signatureHeader);
                 while (matcher.find()) {
                     String key = matcher.group(1);
                     String value = matcher.group(2);
