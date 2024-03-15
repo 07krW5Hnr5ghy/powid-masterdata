@@ -69,7 +69,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
             purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),
                     supplierProduct.getId());
         }
-        
+
         if (purchaseItem != null) {
             throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
         }
