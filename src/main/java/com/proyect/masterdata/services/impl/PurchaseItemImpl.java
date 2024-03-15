@@ -59,17 +59,17 @@ public class PurchaseItemImpl implements IPurchaseItem {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
+        if (supplierProduct == null) {
+            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        }
+
         if(purchase == null){
             throw new BadRequestExceptions(Constants.ErrorPurchase);
         }else{
             purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),
                     supplierProduct.getId());
         }
-
-        if (supplierProduct == null) {
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
-        }
-
+        
         if (purchaseItem != null) {
             throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
         }

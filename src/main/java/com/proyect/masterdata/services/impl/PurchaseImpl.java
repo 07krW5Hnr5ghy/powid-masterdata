@@ -1,7 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Purchase;
-import com.proyect.masterdata.domain.PurchaseItem;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.PurchaseDTO;
 import com.proyect.masterdata.dto.request.RequestPurchaseItem;
@@ -70,6 +69,7 @@ public class PurchaseImpl implements IPurchase {
                     .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
