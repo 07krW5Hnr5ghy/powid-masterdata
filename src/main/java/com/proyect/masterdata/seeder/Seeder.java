@@ -1766,7 +1766,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem1 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("AA00001")
                                 .quantity(15)
                                 .supplierProductSerial("A00001A")
                                 .build();
@@ -1775,7 +1774,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem2 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("AA00001")
                                 .quantity(4)
                                 .supplierProductSerial("A00001B")
                                 .build();
@@ -1784,7 +1782,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem3 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("AA00001")
                                 .quantity(20)
                                 .supplierProductSerial("A00002A")
                                 .build();
@@ -1793,7 +1790,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem4 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("AA00001")
                                 .quantity(25)
                                 .supplierProductSerial("A00002B")
                                 .build();
@@ -1802,7 +1798,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem5 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("AA00001")
                                 .quantity(7)
                                 .supplierProductSerial("A00003A")
                                 .build();
@@ -1811,7 +1806,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem6 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("AA00001")
                                 .quantity(15)
                                 .supplierProductSerial("A00003B")
                                 .build();
@@ -1831,7 +1825,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem7 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("BB00001")
                                 .quantity(9)
                                 .supplierProductSerial("B00001A")
                                 .build();
@@ -1840,7 +1833,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem8 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("BB00001")
                                 .quantity(15)
                                 .supplierProductSerial("B00001B")
                                 .build();
@@ -1849,7 +1841,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem9 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("BB00001")
                                 .quantity(36)
                                 .supplierProductSerial("B00002A")
                                 .build();
@@ -1858,7 +1849,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem10 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("BB00001")
                                 .quantity(13)
                                 .supplierProductSerial("B00002B")
                                 .build();
@@ -1867,7 +1857,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem11 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("BB00001")
                                 .quantity(20)
                                 .supplierProductSerial("B00003A")
                                 .build();
@@ -1876,7 +1865,6 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipmentItem requestShipmentItem12 = RequestShipmentItem.builder()
                                 .observations("no aplica")
-                                .purchaseSerial("BB00001")
                                 .quantity(27)
                                 .supplierProductSerial("B00003B")
                                 .build();
