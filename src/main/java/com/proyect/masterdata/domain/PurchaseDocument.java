@@ -15,16 +15,16 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tablePurchase, schema = Constants.schemaStock)
-public class Purchase {
+@Table(name = Constants.tablePurchaseDocument,schema = Constants.schemaMaster)
+public class PurchaseDocument {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "purchase_id")
+    @Column(name = "purchase_document_id")
     private Long id;
 
-    @Column(name = "serial")
-    private String serial;
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -37,20 +37,6 @@ public class Purchase {
     @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "client_id")
-    private Long clientId;
-
     @Column(name = "token_user")
     private String tokenUser;
-
-    @Column(name = "purchase_document_id")
-    private Long purchaseDocumentId;
-
-    @ManyToOne
-    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
-    private Client client;
-
-    @ManyToOne
-    @JoinColumn(name = "purchase_document_id",columnDefinition = "purchaseDocumentId",insertable = false,updatable = false)
-    private PurchaseDocument purchaseDocument;
 }

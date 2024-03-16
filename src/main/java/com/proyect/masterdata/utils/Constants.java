@@ -92,6 +92,7 @@ public class Constants {
     public static final String tableMercadoPagoPayment = "mercado_pago_payment";
     public static final String tablePaymentGateway = "payment_gateway";
     public static final String tableMembershipState = "membership_state";
+    public static final String tablePurchaseDocument = "purchase_document";
     // messages
     public static final String register = "registration correctly";
     public static final String update = "correctly updated";
@@ -245,4 +246,6 @@ public class Constants {
     public static final String ErrorMercadoPagoOrigin = "Mercado pago origin not verified";
     public static final String ErrorSupplierRucExists = "Supplier ruc already exists";
     public static final String ErrorSupplierNameExists = "Supplier name already exists";
+    public static final String ErrorPurchaseDocument = "Purchase document does not exist";
+    public static final String ErrorPurchaseDocumentExists = "Purchase document already exists";
 }

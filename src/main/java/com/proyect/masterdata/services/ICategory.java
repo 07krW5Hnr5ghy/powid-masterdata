@@ -14,20 +14,14 @@ import java.util.List;
 public interface ICategory {
     ResponseSuccess save(String name, String description, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
-
     ResponseSuccess saveAll(List<RequestCreateCategory> categories, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
-
     CategoryDTO update(RequestCategory requestCategory, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
-
     ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-
     List<CategoryDTO> listCategory() throws BadRequestExceptions;
-
     Page<CategoryDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
-
     Page<CategoryDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
 }

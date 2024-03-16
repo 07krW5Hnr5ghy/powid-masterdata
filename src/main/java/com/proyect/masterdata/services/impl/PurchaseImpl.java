@@ -1,12 +1,14 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Purchase;
+import com.proyect.masterdata.domain.PurchaseDocument;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.PurchaseDTO;
 import com.proyect.masterdata.dto.request.RequestPurchaseItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.repository.PurchaseDocumentRepository;
 import com.proyect.masterdata.repository.PurchaseRepository;
 import com.proyect.masterdata.repository.PurchaseRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
@@ -31,14 +33,17 @@ public class PurchaseImpl implements IPurchase {
     private final UserRepository userRepository;
     private final IPurchaseItem iPurchaseItem;
     private final PurchaseRepositoryCustom purchaseRepositoryCustom;
+    private final PurchaseDocumentRepository purchaseDocumentRepository;
     @Override
-    public ResponseSuccess save(String serial, List<RequestPurchaseItem> requestPurchaseItemList, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String serial,String documentName, List<RequestPurchaseItem> requestPurchaseItemList, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Purchase purchase;
+        PurchaseDocument purchaseDocument;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             purchase = purchaseRepository.findBySerial(serial.toUpperCase());
+            purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(documentName.toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -52,6 +57,10 @@ public class PurchaseImpl implements IPurchase {
             throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
         }
 
+        if(purchaseDocument == null){
+            throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
+        }
+
         try{
             Purchase newPurchase = purchaseRepository.save(Purchase.builder()
                             .serial(serial.toUpperCase())
@@ -60,6 +69,8 @@ public class PurchaseImpl implements IPurchase {
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .tokenUser(user.getUsername())
+                            .purchaseDocument(purchaseDocument)
+                            .purchaseDocumentId(purchaseDocument.getId())
                     .build());
             for(RequestPurchaseItem requestPurchaseItem : requestPurchaseItemList){
                 iPurchaseItem.save(newPurchase.getId(),requestPurchaseItem,user.getUsername());
@@ -69,7 +80,6 @@ public class PurchaseImpl implements IPurchase {
                     .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
-            e.printStackTrace();
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }

@@ -81,6 +81,7 @@ public class Seeder implements CommandLineRunner {
         private final IUserRole iUserRole;
         private final IUser iUser;
         private final IStore iStore;
+        private final IPurchaseDocument iPurchaseDocument;
         @Override
         public void run(String... args) throws Exception {
 
@@ -263,6 +264,9 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("PROVINCE_DELETE","ADMIN1");
                         iAccess.save("PURCHASE_GET","ADMIN1");
                         iAccess.save("PURCHASE_POST","ADMIN1");
+                        iAccess.save("PURCHASE_DOCUMENT_POST","ADMIN1");
+                        iAccess.save("PURCHASE_DOCUMENT_DELETE","ADMIN1");
+                        iAccess.save("PURCHASE_DOCUMENT_GET","ADMIN1");
                         iAccess.save("PURCHASE_ITEM_GET","ADMIN1");
                         iAccess.save("ROLE_POST","ADMIN1");
                         iAccess.save("ROLE_GET","ADMIN1");
@@ -522,6 +526,9 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("ADMINISTRATION","PROVINCE_DELETE","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","PURCHASE_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","PURCHASE_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRATION","PURCHASE_DOCUMENT_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRATION","PURCHASE_DOCUMENT_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRATION","PURCHASE_DOCUMENT_DELETE","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","ROLE_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","ROLE_POST","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","ROLE_PUT","ADMIN1");
@@ -748,6 +755,11 @@ public class Seeder implements CommandLineRunner {
                         iMembershipState.save("activa","admin1");
                         iMembershipState.save("pagada","admin1");
                         iMembershipState.save("expirada","admin1");
+                        // purchase documents
+                        iPurchaseDocument.save("factura","admin1");
+                        iPurchaseDocument.save("boleta","admin1");
+                        iPurchaseDocument.save("recibo","admin1");
+                        iPurchaseDocument.save("sin comprobante","admin1");
                         // mock users
                         iUserRole.save(business1.getUsername(), "BUSINESS",business1.getUsername());
                         iUserRole.save(business2.getUsername(),"BUSINESS",business2.getUsername());
@@ -1757,8 +1769,8 @@ public class Seeder implements CommandLineRunner {
 
                         requestPurchaseItemList2.add(requestPurchaseItem12);
 
-                        iPurchase.save("AA00001", requestPurchaseItemList1, "AYEPES");
-                        iPurchase.save("BB00001", requestPurchaseItemList2, "NTORRES");
+                        iPurchase.save("AA00001","factura", requestPurchaseItemList1, "AYEPES");
+                        iPurchase.save("BB00001","factura", requestPurchaseItemList2, "NTORRES");
 
                         // shipments
 
