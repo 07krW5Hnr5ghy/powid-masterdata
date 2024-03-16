@@ -14,12 +14,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 public interface ISupplier {
         ResponseSuccess save(RequestSupplier requestSupplier, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-
-        ResponseSuccess saveAll(List<RequestSupplier> requestSuppliers, String tokenUser)
-                        throws InternalErrorExceptions, BadRequestExceptions;
-
         ResponseDelete delete(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-
         Page<SupplierDTO> list(String name, String ruc, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws BadRequestExceptions;
 }

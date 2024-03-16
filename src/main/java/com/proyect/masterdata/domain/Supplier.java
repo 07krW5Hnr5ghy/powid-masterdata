@@ -32,10 +32,10 @@ public class Supplier {
     @Column(name = "supplier_id")
     private Long id;
 
-    @Column(name = "business_name", unique = true)
+    @Column(name = "business_name")
     private String businessName;
 
-    @Column(name = "ruc", unique = true)
+    @Column(name = "ruc")
     private String ruc;
 
     @Column(name = "country")

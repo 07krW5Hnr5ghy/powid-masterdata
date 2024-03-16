@@ -43,15 +43,6 @@ public class SupplierController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "suppliers", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<RequestSupplier> requestSupplierList,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iSupplier.saveAll(requestSupplierList, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_DELETE')")
     public ResponseEntity<ResponseDelete> delete(

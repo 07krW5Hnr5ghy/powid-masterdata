@@ -51,7 +51,6 @@ public class SupplierProductImpl implements ISupplierProduct {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplier = supplierRepository.findByRucAndStatusTrue(requestSupplierProduct.getSupplierRuc());
             product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProductSku());
             supplierProduct = supplierProductRepository.findBySerial(requestSupplierProduct.getSerial());
         } catch (RuntimeException e) {
@@ -61,6 +60,8 @@ public class SupplierProductImpl implements ISupplierProduct {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else {
+            supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplierProduct.getSupplierRuc(), user.getClientId());
         }
 
         if (supplier == null) {
@@ -111,7 +112,7 @@ public class SupplierProductImpl implements ISupplierProduct {
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             supplierProducts = supplierProductRepository.findBySerialIn(
-                    requestSupplierProducts.stream().map(supplierProduct -> supplierProduct.getSerial()).toList());
+                    requestSupplierProducts.stream().map(RequestSupplierProduct::getSerial).toList());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

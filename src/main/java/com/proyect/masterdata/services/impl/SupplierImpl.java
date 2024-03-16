@@ -39,11 +39,11 @@ public class SupplierImpl implements ISupplier {
             throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
-        Supplier supplier;
+        Supplier supplierRuc;
+        Supplier supplierName;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplier = supplierRepository.findByRucAndStatusTrue(requestSupplier.getRuc());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -51,10 +51,17 @@ public class SupplierImpl implements ISupplier {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            supplierRuc = supplierRepository.findByRucAndClientId(requestSupplier.getRuc(), user.getClientId());
+            supplierName = supplierRepository.findByBusinessNameAndClientId(requestSupplier.getBusinessName().toUpperCase(), user.getClientId());
         }
 
-        if (supplier != null) {
-            throw new BadRequestExceptions(Constants.ErrorSupplierExists);
+        if (supplierRuc != null) {
+            throw new BadRequestExceptions(Constants.ErrorSupplierRucExists);
+        }
+
+        if(supplierName != null){
+            throw new BadRequestExceptions(Constants.ErrorSupplierNameExists);
         }
 
         try {
@@ -83,62 +90,12 @@ public class SupplierImpl implements ISupplier {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestSupplier> requestSupplierList, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-
-        List<Supplier> suppliers;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            suppliers = supplierRepository
-                    .findByRucInAndStatusTrue(requestSupplierList.stream().map(supplier -> supplier.getRuc()).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (!suppliers.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorSupplierExists);
-        }
-
-        try {
-            supplierRepository.saveAll(requestSupplierList.stream().map(supplier -> Supplier.builder()
-                    .businessName(supplier.getBusinessName())
-                    .client(user.getClient())
-                    .clientId(user.getClientId())
-                    .country(supplier.getCountry())
-                    .location(supplier.getLocation())
-                    .email(supplier.getEmail())
-                    .phoneNumber(supplier.getPhoneNumber())
-                    .ruc(supplier.getRuc())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
-                    .build()).toList());
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
     public ResponseDelete delete(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Supplier supplier;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplier = supplierRepository.findByRucAndStatusTrue(ruc);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -146,6 +103,8 @@ public class SupplierImpl implements ISupplier {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+        }else {
+            supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(ruc, user.getClientId());
         }
 
         if (supplier == null) {

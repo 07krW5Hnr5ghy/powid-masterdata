@@ -243,4 +243,6 @@ public class Constants {
     public static final String ErrorRoleAccessExists = "Role access already exists";
     public static final String ErrorMercadoPagoPayment = "Mercado pago payment does not exist";
     public static final String ErrorMercadoPagoOrigin = "Mercado pago origin not verified";
+    public static final String ErrorSupplierRucExists = "Supplier ruc already exists";
+    public static final String ErrorSupplierNameExists = "Supplier name already exists";
 }
