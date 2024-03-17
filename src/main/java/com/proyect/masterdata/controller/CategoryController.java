@@ -22,7 +22,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CategoryController {
     private final ICategory iCategory;
-
     @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_POST')")
     public ResponseEntity<ResponseSuccess> save(
@@ -32,7 +31,6 @@ public class CategoryController {
         ResponseSuccess result = iCategory.save(name, description, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     @PostMapping(value = "categories")
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_POST')")
     public ResponseEntity<ResponseSuccess> saveAll(
@@ -41,7 +39,6 @@ public class CategoryController {
         ResponseSuccess result = iCategory.saveAll(categories, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     @PutMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_PUT')")
     public ResponseEntity<CategoryDTO> update(
@@ -50,7 +47,6 @@ public class CategoryController {
         CategoryDTO result = iCategory.update(requestCategory, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
@@ -59,13 +55,11 @@ public class CategoryController {
         ResponseDelete result = iCategory.delete(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     @GetMapping()
     public ResponseEntity<List<CategoryDTO>> listCategory() throws BadRequestExceptions {
         List<CategoryDTO> result = iCategory.listCategory();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     @GetMapping(value = "list")
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_GET')")
     public ResponseEntity<Page<CategoryDTO>> list(
@@ -78,7 +72,6 @@ public class CategoryController {
         Page<CategoryDTO> result = iCategory.list(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     @GetMapping(value = "status-false")
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_GET')")
     public ResponseEntity<Page<CategoryDTO>> listStatusFalse(
@@ -90,6 +83,15 @@ public class CategoryController {
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
         Page<CategoryDTO> result = iCategory.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    @PutMapping("activate")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_PUT')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iCategory.activate(name,tokenUser);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }

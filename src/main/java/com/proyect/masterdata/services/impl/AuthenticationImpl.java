@@ -66,7 +66,6 @@ public class AuthenticationImpl implements IAuthentication {
             MembershipState payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
             MembershipState expiredState = membershipStateRepository.findByNameAndStatusTrue("EXPIRADA");
 
-
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorAuthentication);
             }else {

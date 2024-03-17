@@ -33,12 +33,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class CategoryImpl implements ICategory {
-
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final UserRepository userRepository;
     private final CategoryRepositoryCustom categoryRepositoryCustom;
-
     @Override
     public ResponseSuccess save(String name, String description, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -81,7 +79,6 @@ public class CategoryImpl implements ICategory {
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
-
     @Override
     public ResponseSuccess saveAll(List<RequestCreateCategory> categories, String tokenUser)
             throws BadRequestExceptions {
@@ -132,7 +129,6 @@ public class CategoryImpl implements ICategory {
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
-
     @Override
     public CategoryDTO update(RequestCategory requestCategory, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -166,7 +162,6 @@ public class CategoryImpl implements ICategory {
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
         }
     }
-
     @Override
     @Transactional
     public ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -203,7 +198,6 @@ public class CategoryImpl implements ICategory {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
-
     @Override
     public List<CategoryDTO> listCategory() throws BadRequestExceptions {
         List<Category> categories = new ArrayList<>();
@@ -220,7 +214,6 @@ public class CategoryImpl implements ICategory {
 
         return categoryMapper.listCategoryToListCategoryDTO(categories);
     }
-
     @Override
     public Page<CategoryDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
@@ -238,7 +231,6 @@ public class CategoryImpl implements ICategory {
         return new PageImpl<>(categoryMapper.listCategoryToListCategoryDTO(categoryPage.getContent()),
                 categoryPage.getPageable(), categoryPage.getTotalElements());
     }
-
     @Override
     public Page<CategoryDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
@@ -257,6 +249,39 @@ public class CategoryImpl implements ICategory {
 
         return new PageImpl<>(categoryMapper.listCategoryToListCategoryDTO(categoryPage.getContent()),
                 categoryPage.getPageable(), categoryPage.getTotalElements());
+    }
+    @Override
+    public ResponseSuccess activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        User user;
+        Category category;
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            category = categoryRepository.findByNameAndStatusTrue(name.toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(category == null){
+            throw new BadRequestExceptions(Constants.ErrorCategory);
+        }
+
+        try {
+            category.setStatus(false);
+            category.setUpdateDate(new Date(System.currentTimeMillis()));
+            category.setTokenUser(user.getUsername());
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.update)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 
 }

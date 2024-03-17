@@ -14,13 +14,9 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IMembership {
-
     Membership save(User user, MembershipPayment membershipPayment, String subscriptionName, List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
-
-    ResponseDelete delete(String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions;
-
+    ResponseDelete delete(String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     Page<MembershipDTO> list(String channel, String module, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
 }

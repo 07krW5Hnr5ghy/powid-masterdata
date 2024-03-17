@@ -24,4 +24,5 @@ public interface ICategory {
             Integer pageSize) throws BadRequestExceptions;
     Page<CategoryDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
+    ResponseSuccess activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
 }
