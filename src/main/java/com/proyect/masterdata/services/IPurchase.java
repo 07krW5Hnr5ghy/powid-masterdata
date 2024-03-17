@@ -11,5 +11,5 @@ import java.util.List;
 
 public interface IPurchase {
     public ResponseSuccess save(String serial,String documentName, List<RequestPurchaseItem> requestPurchaseItemList,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    public Page<PurchaseDTO> list(String serial,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+    public Page<PurchaseDTO> list(String serial,String user,String documentName,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
 }

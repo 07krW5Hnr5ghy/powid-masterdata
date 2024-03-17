@@ -9,6 +9,7 @@ public interface PurchaseRepositoryCustom {
     Page<Purchase> searchForPurchase(
             Long clientId,
             String serial,
+            Long purchaseDocumentId,
             String sort,
             String sortColumn,
             Integer pageNumber,

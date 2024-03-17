@@ -43,12 +43,13 @@ public class PurchaseController {
     public ResponseEntity<Page<PurchaseDTO>> list(
             @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "documentName", required = false) String documentName,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize
     ) throws BadRequestExceptions {
-        Page<PurchaseDTO> result = iPurchase.list(serial,user,sort,sortColumn,pageNumber,pageSize);
+        Page<PurchaseDTO> result = iPurchase.list(serial,user,documentName,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

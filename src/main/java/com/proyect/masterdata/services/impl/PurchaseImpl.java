@@ -86,10 +86,11 @@ public class PurchaseImpl implements IPurchase {
     }
 
     @Override
-    public Page<PurchaseDTO> list(String serial, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+    public Page<PurchaseDTO> list(String serial, String user,String documentName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         Page<Purchase> pagePurchase;
         Long clientId;
         String serialData;
+        Long purchaseDocumentId;
 
         if(serial != null){
             serialData = serial.toUpperCase();
@@ -99,7 +100,8 @@ public class PurchaseImpl implements IPurchase {
 
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            pagePurchase = purchaseRepositoryCustom.searchForPurchase(clientId,serialData,sort,sortColumn,pageNumber,pageSize,true);
+            purchaseDocumentId = purchaseDocumentRepository.findByNameAndStatusTrue(documentName.toUpperCase()).getId();
+            pagePurchase = purchaseRepositoryCustom.searchForPurchase(clientId,serialData,purchaseDocumentId,sort,sortColumn,pageNumber,pageSize,true);
         }catch (RuntimeException e){
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
