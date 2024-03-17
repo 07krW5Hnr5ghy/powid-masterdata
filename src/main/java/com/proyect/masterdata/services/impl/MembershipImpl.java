@@ -163,12 +163,28 @@ public class MembershipImpl implements IMembership {
     }
 
     @Override
-    public Page<MembershipDTO> list(String channel, String module, String sort, String sortColumn, Integer pageNumber,
+    public Page<MembershipDTO> list(String user, String membershipState,String subscription , String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
-        Page<Membership> membershipPage = null;
-        Module moduleData;
+        Page<Membership> membershipPage;
+        Long clientId;
+        Long membershipStateId;
+        Long subscriptionId;
+
+        if(membershipState != null){
+            membershipStateId = membershipStateRepository.findByNameAndStatusTrue(membershipState.toUpperCase()).getId();
+        }else{
+            membershipStateId = null;
+        }
+
+        if(subscription != null){
+            subscriptionId = subscriptionRepository.findByNameAndStatusTrue(subscription.toUpperCase()).getId();
+        }else {
+            subscriptionId = null;
+        }
+
         try {
-            moduleData = moduleRepository.findByNameAndStatusTrue(module.toUpperCase());
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            membershipPage = membershipRepositoryCustom.searchForMembership(clientId,membershipStateId,subscriptionId,sort,sortColumn,pageNumber,pageSize,true);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -176,11 +192,50 @@ public class MembershipImpl implements IMembership {
         if (membershipPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
-        List<MembershipDTO> membershipDTOS = membershipPage.getContent().stream().map(membership -> {
-            return MembershipDTO.builder()
-                    .build();
-        }).toList();
+        List<MembershipDTO> membershipDTOS = membershipPage.getContent().stream().map(membership -> MembershipDTO.builder()
+                .membershipState(membership.getMembershipState().getName())
+                .subscription(membership.getSubscription().getName())
+                .registrationDate(membership.getRegistrationDate())
+                .expirationDate(membership.getExpirationDate())
+                .build()).toList();
         return new PageImpl<>(membershipDTOS, membershipPage.getPageable(), membershipPage.getTotalElements());
     }
+    @Override
+    public Page<MembershipDTO> listFalse(String user, String membershipState,String subscription , String sort, String sortColumn, Integer pageNumber,
+                                    Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+        Page<Membership> membershipPage;
+        Long clientId;
+        Long membershipStateId;
+        Long subscriptionId;
 
+        if(membershipState != null){
+            membershipStateId = membershipStateRepository.findByNameAndStatusTrue(membershipState.toUpperCase()).getId();
+        }else{
+            membershipStateId = null;
+        }
+
+        if(subscription != null){
+            subscriptionId = subscriptionRepository.findByNameAndStatusTrue(subscription.toUpperCase()).getId();
+        }else {
+            subscriptionId = null;
+        }
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            membershipPage = membershipRepositoryCustom.searchForMembership(clientId,membershipStateId,subscriptionId,sort,sortColumn,pageNumber,pageSize,false);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if (membershipPage.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+        List<MembershipDTO> membershipDTOS = membershipPage.getContent().stream().map(membership -> MembershipDTO.builder()
+                .membershipState(membership.getMembershipState().getName())
+                .subscription(membership.getSubscription().getName())
+                .registrationDate(membership.getRegistrationDate())
+                .expirationDate(membership.getExpirationDate())
+                .build()).toList();
+        return new PageImpl<>(membershipDTOS, membershipPage.getPageable(), membershipPage.getTotalElements());
+    }
 }

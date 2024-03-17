@@ -21,13 +21,13 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
     @PersistenceContext(name="entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Membership> searchForMembership(Long idMembership, Long idModule, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<Membership> searchForMembership(Long clientId, Long membershipStateId,Long subscriptionId, String sort, String sortColumn, Integer pageNumber, Integer pageSize,Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Membership> criteriaQuery = criteriaBuilder.createQuery(Membership.class);
         Root<Membership> itemRoot = criteriaQuery.from(Membership.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(idMembership,idModule,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(clientId,membershipStateId,subscriptionId,status,criteriaBuilder,itemRoot);
 
         if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
             List<Order> membershipList = new ArrayList<>();
@@ -47,72 +47,93 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        long count = getOrderCount(idMembership,idModule);
+        long count = getOrderCount(clientId,membershipStateId,subscriptionId,status);
         return new PageImpl<>(orderTypedQuery.getResultList(),pageable,count);
     }
 
     public List<Predicate> predicateConditions(
-            Long idMembership,
-            Long idModulo,
+            Long clientId,
+            Long stateId,
+            Long subscriptionId,
+            Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Membership> itemRoot
     ){
         List<Predicate> conditions = new ArrayList<>();
 
-        if(idMembership!=null){
+        if(clientId!=null){
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    itemRoot.get("id"),idMembership)));
+                                    itemRoot.get("clientId"),clientId)));
         }
 
-        if(idModulo!=null){
+        if(stateId!=null){
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    itemRoot.get("idModule"),idModulo)));
+                                    itemRoot.get("membershipStateId"),stateId)));
+        }
+
+        if(subscriptionId!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    itemRoot.get("subscriptionId"),subscriptionId)));
+        }
+
+        if (status) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
+        }
+
+        if (!status) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
 
         return conditions;
     }
-
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
             Root<Membership> itemRoot
     ){
         List<Order> membershipList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("id")){
-            membershipList.add(criteriaBuilder.asc(itemRoot.get("id")));
+        if(sortColumn.equalsIgnoreCase("clientId")){
+            membershipList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
-        if(sortColumn.equalsIgnoreCase("idModule")){
-            membershipList.add(criteriaBuilder.asc(itemRoot.get("idModule")));
+        if(sortColumn.equalsIgnoreCase("membershipStateId")){
+            membershipList.add(criteriaBuilder.asc(itemRoot.get("membershipStateId")));
+        }
+        if(sortColumn.equalsIgnoreCase("subscriptionId")){
+            membershipList.add(criteriaBuilder.asc(itemRoot.get("subscriptionId")));
         }
         return membershipList;
     }
-
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
             Root<Membership> itemRoot
     ){
         List<Order> membershipList = new ArrayList<>();
-        if(sortColumn.equalsIgnoreCase("id")){
-            membershipList.add(criteriaBuilder.desc(itemRoot.get("id")));
+        if(sortColumn.equalsIgnoreCase("clientId")){
+            membershipList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
-        if(sortColumn.equalsIgnoreCase("idModule")){
-            membershipList.add(criteriaBuilder.desc(itemRoot.get("idModule")));
+        if(sortColumn.equalsIgnoreCase("stateId")){
+            membershipList.add(criteriaBuilder.desc(itemRoot.get("stateId")));
+        }
+        if(sortColumn.equalsIgnoreCase("subscriptionId")){
+            membershipList.add(criteriaBuilder.desc(itemRoot.get("subscriptionId")));
         }
         return membershipList;
     }
 
-    private long getOrderCount(Long idMembership,Long idModule){
+    private long getOrderCount(Long clientId,Long stateId,Long subscriptionId,Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Membership> itemRoot = criteriaQuery.from(Membership.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(idMembership,idModule,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(clientId,stateId,subscriptionId,status,criteriaBuilder,itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[]{}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

@@ -17,6 +17,8 @@ public interface IMembership {
     Membership save(User user, MembershipPayment membershipPayment, String subscriptionName, List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
     ResponseDelete delete(String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    Page<MembershipDTO> list(String channel, String module, String sort, String sortColumn, Integer pageNumber,
+    Page<MembershipDTO> list(String user, String membershipState,String subscriptionId, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+    Page<MembershipDTO> listFalse(String user, String membershipState,String subscriptionId, String sort, String sortColumn, Integer pageNumber,
+                             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
 }

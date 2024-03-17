@@ -6,10 +6,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MembershipRepositoryCustom {
-    Page<Membership> searchForMembership(Long idMembership,
-                                         Long idModule,
+    Page<Membership> searchForMembership(Long clientId,
+                                         Long membershipStateId,
+                                         Long subscriptionId,
                                          String sort,
                                          String sortColumn,
                                          Integer pageNumber,
-                                         Integer pageSize);
+                                         Integer pageSize,
+                                         Boolean status);
 }
