@@ -3,9 +3,8 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.MembershipPayment;
 import com.proyect.masterdata.domain.PaymentGateway;
 import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.dto.PaymentUpdateDTO;
+import com.proyect.masterdata.dto.MembershipPaymentDTO;
 import com.proyect.masterdata.dto.request.RequestMembershipPayment;
-import com.proyect.masterdata.dto.request.RequestMembershipPaymentUpdate;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -80,59 +80,42 @@ public class MembershipPaymentImpl implements IMembershipPayment {
     }
 
     @Override
-    public PaymentUpdateDTO update(Long membershipId, RequestMembershipPaymentUpdate requestMembershipPaymentUpdate,
-            String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
+    public Page<MembershipPaymentDTO> list(String user, Double grossAmount, Double netAmount, Double paymentGatewayFee, Double taxAmount, String paymentGateway, String sort,
+                                           String sortColumn,
+                                           Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        Page<MembershipPayment> membershipPaymentPage;
+        Long clientId;
+        Long paymentGatewayId;
 
-        MembershipPayment membershipPayment;
-        boolean existsUser;
-
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
+        if(paymentGateway != null){
+            paymentGatewayId = paymentGatewayRepository.findByNameAndStatusTrue(paymentGateway.toUpperCase()).getId();
+        }else{
+            paymentGatewayId = null;
         }
 
         try {
-            // payment.setIdPaymentState(newState.getId());
-            // if (requestPaymentUpdate.getNewInvoiceUrl() != null
-            // & requestPaymentUpdate.getNewInvoiceUrl() != payment.getUrlInvoice()) {
-            // payment.setUrlInvoice(requestPaymentUpdate.getNewInvoiceUrl());
-            // }
-            // payment.setDateRegistration(new Date(System.currentTimeMillis()));
-            // payment = paymentRepository.save(payment);
-            return PaymentUpdateDTO.builder()
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public Page<MembershipPayment> list(Double totalPayment, String month, String channel, String sort,
-            String sortColumn,
-            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<MembershipPayment> paymentPage;
-
-        try {
-            paymentPage = membershipPaymentRepositoryCustom.searchForPayment(totalPayment, month, null, sort,
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            membershipPaymentPage = membershipPaymentRepositoryCustom.searchForMembershipPayment(clientId, grossAmount, netAmount, paymentGatewayFee, taxAmount,paymentGatewayId, sort,
                     sortColumn, pageNumber, pageSize);
         } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
         }
-        if (paymentPage.isEmpty()) {
+        if (membershipPaymentPage.isEmpty()) {
             return new PageImpl<>(Collections.emptyList());
         }
 
-        return new PageImpl<>(paymentPage.getContent(),
-                paymentPage.getPageable(), paymentPage.getTotalElements());
+        List<MembershipPaymentDTO> membershipPaymentDTOS = membershipPaymentPage.getContent().stream().map(membershipPayment -> MembershipPaymentDTO.builder()
+                .grossAmount(membershipPayment.getGrossAmount())
+                .netAmount(membershipPayment.getNetAmount())
+                .paymentGatewayFee(membershipPayment.getPaymentGatewayFee())
+                .taxAmount(membershipPayment.getTaxAmount())
+                .paymentGateway(membershipPayment.getPaymentGateway().getName())
+                .registrationDate(membershipPayment.getRegistrationDate())
+                .build()).toList();
+
+        return new PageImpl<>(membershipPaymentDTOS,
+                membershipPaymentPage.getPageable(), membershipPaymentPage.getTotalElements());
     }
 
 }

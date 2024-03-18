@@ -227,6 +227,7 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("ENTRY_CHANNEL_POST","ADMIN1");
                         iAccess.save("GENERAL_STOCK_GET","ADMIN1");
                         iAccess.save("MEMBERSHIP_GET","ADMIN1");
+                        iAccess.save("MEMBERSHIP_PAYMENT_GET","ADMIN1");
                         iAccess.save("MODEL_GET","ADMIN1");
                         iAccess.save("MODEL_POST","ADMIN1");
                         iAccess.save("MODEL_DELETE","ADMIN1");
@@ -435,6 +436,7 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("BUSINESS","COURIER_POST","ADMIN1");
                         iRoleAccess.save("BUSINESS","GENERAL_STOCK_GET","ADMIN1");
                         iRoleAccess.save("BUSINESS","MEMBERSHIP_GET","ADMIN1");
+                        iRoleAccess.save("BUSINESS","MEMBERSHIP_PAYMENT_GET","ADMIN1");
                         iRoleAccess.save("BUSINESS","MODEL_GET","ADMIN1");
                         iRoleAccess.save("BUSINESS","ORDER_GET","ADMIN1");
                         iRoleAccess.save("BUSINESS","ORDER_ITEM_GET","ADMIN1");
@@ -501,6 +503,7 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("ADMINISTRATION","ENTRY_CHANNEL_POST","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","GENERAL_STOCK_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","MEMBERSHIP_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRATION","MEMBERSHIP_PAYMENT_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","MODEL_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","MODULE_GET","ADMIN1");
                         iRoleAccess.save("ADMINISTRATION","MODULE_POST","ADMIN1");

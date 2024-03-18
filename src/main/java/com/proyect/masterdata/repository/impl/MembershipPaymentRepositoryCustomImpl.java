@@ -20,12 +20,14 @@ import java.util.List;
 public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
-
     @Override
-    public Page<MembershipPayment> searchForPayment(
-            Double totalPayment,
-            String month,
-            Long idChannel,
+    public Page<MembershipPayment> searchForMembershipPayment(
+            Long clientId,
+            Double grossAmount,
+            Double netAmount,
+            Double paymentGatewayFee,
+            Double taxAmount,
+            Long paymentGatewayId,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -36,7 +38,7 @@ public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentR
         Root<MembershipPayment> itemRoot = criteriaQuery.from(MembershipPayment.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(totalPayment, month, idChannel, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(clientId, grossAmount, netAmount, paymentGatewayFee, taxAmount, paymentGatewayId, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> paymentList = new ArrayList<>();
@@ -56,37 +58,61 @@ public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentR
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(totalPayment, month, idChannel);
+        long count = getOrderCount(clientId, grossAmount, netAmount, paymentGatewayFee, taxAmount, paymentGatewayId);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
-            Double totalPayment,
-            String month,
-            Long idChannel,
+            Long clientId,
+            Double grossAmount,
+            Double netAmount,
+            Double paymentGatewayFee,
+            Double taxAmount,
+            Long paymentGatewayId,
             CriteriaBuilder criteriaBuilder,
             Root<MembershipPayment> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
 
-        if (totalPayment != null) {
+        if (clientId != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    itemRoot.get("totalPayment"), totalPayment)));
+                                    itemRoot.get("clientId"), clientId)));
         }
 
-        if (month != null) {
+        if (grossAmount != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("month")), month.toUpperCase())));
+                                    itemRoot.get("grossAmount"), grossAmount)));
         }
 
-        if (idChannel != null) {
+        if (netAmount != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    itemRoot.get("idChannel"), idChannel)));
+                                    itemRoot.get("netAmount"), netAmount)));
+        }
+
+        if (paymentGatewayFee != null) {
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    itemRoot.get("paymentGatewayFee"), paymentGatewayFee)));
+        }
+
+        if (taxAmount != null) {
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    itemRoot.get("taxAmount"), taxAmount)));
+        }
+
+        if (paymentGatewayId != null) {
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    itemRoot.get("paymentGatewayId"), paymentGatewayId)));
         }
 
         return conditions;
@@ -97,11 +123,23 @@ public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentR
             CriteriaBuilder criteriaBuilder,
             Root<MembershipPayment> itemRoot) {
         List<Order> paymentList = new ArrayList<>();
-        if (sortColumn.equalsIgnoreCase("totalPayment")) {
-            paymentList.add(criteriaBuilder.asc(itemRoot.get("totalPayment")));
+        if (sortColumn.equalsIgnoreCase("clientId")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
-        if (sortColumn.equalsIgnoreCase("month")) {
-            paymentList.add(criteriaBuilder.asc(itemRoot.get("month")));
+        if (sortColumn.equalsIgnoreCase("grossAmount")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("grossAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("netAmount")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("netAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("paymentGatewayFee")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("paymentGatewayFee")));
+        }
+        if (sortColumn.equalsIgnoreCase("taxAmount")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("taxAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("paymentGatewayId")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("paymentGatewayId")));
         }
         return paymentList;
     }
@@ -111,22 +149,34 @@ public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentR
             CriteriaBuilder criteriaBuilder,
             Root<MembershipPayment> itemRoot) {
         List<Order> paymentList = new ArrayList<>();
-        if (sortColumn.equalsIgnoreCase("totalPayment")) {
-            paymentList.add(criteriaBuilder.desc(itemRoot.get("totalPayment")));
+        if (sortColumn.equalsIgnoreCase("clientId")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
-        if (sortColumn.equalsIgnoreCase("month")) {
-            paymentList.add(criteriaBuilder.desc(itemRoot.get("month")));
+        if (sortColumn.equalsIgnoreCase("grossAmount")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("grossAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("netAmount")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("netAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("paymentGatewayFee")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("paymentGatewayFee")));
+        }
+        if (sortColumn.equalsIgnoreCase("taxAmount")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("taxAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("paymentGatewayId")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("paymentGatewayId")));
         }
         return paymentList;
     }
 
-    private long getOrderCount(Double totalPayment, String month, Long idChannel) {
+    private long getOrderCount(Long clientId, Double grossAmount, Double netAmount, Double paymentGatewayFee, Double taxAmount,Long paymentGatewayId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<MembershipPayment> itemRoot = criteriaQuery.from(MembershipPayment.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(totalPayment, month, idChannel, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(clientId, grossAmount, netAmount, paymentGatewayFee, taxAmount, paymentGatewayId, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

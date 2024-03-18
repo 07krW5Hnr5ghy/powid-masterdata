@@ -6,10 +6,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MembershipPaymentRepositoryCustom {
-    Page<MembershipPayment> searchForPayment(
-            Double totalPayment,
-            String month,
-            Long idChannel,
+    Page<MembershipPayment> searchForMembershipPayment(
+            Long clientId,
+            Double grossAmount,
+            Double netAmount,
+            Double paymentGatewayFee,
+            Double taxAmount,
+            Long paymentGatewayId,
             String sort,
             String sortColumn,
             Integer pageNumber,
