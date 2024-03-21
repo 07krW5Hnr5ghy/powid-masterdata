@@ -206,15 +206,29 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public Page<SupplierProductDTO> list(String serial, String user, String sort, String sortColumn, Integer pageNumber,
+    public Page<SupplierProductDTO> list(String serial, String user, String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
 
         Page<SupplierProduct> supplierProductPage;
         Long clientId;
+        Long productId;
+        Long supplierId;
+
+        if(productSku != null){
+            productId = productRepository.findBySku(productSku.toUpperCase()).getId();
+        }else {
+            productId = null;
+        }
+
+        if(supplierRuc != null){
+            supplierId = supplierRepository.findByRuc(supplierRuc.toUpperCase()).getId();
+        }else{
+            supplierId = null;
+        }
 
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, sort,
+            supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, productId, supplierId, purchasePrice, sort,
                     sortColumn, pageNumber, pageSize, true);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -230,7 +244,54 @@ public class SupplierProductImpl implements ISupplierProduct {
                         .productSku(supplierProduct.getProduct().getSku())
                         .purchasePrice(supplierProduct.getPurchasePrice())
                         .serial(supplierProduct.getSerial())
-                        .supplierRuc(supplierProduct.getSupplier().getBusinessName())
+                        .supplierName(supplierProduct.getSupplier().getBusinessName())
+                        .build())
+                .toList();
+
+        return new PageImpl<>(supplierProductDTOs, supplierProductPage.getPageable(),
+                supplierProductPage.getTotalElements());
+    }
+
+    @Override
+    public Page<SupplierProductDTO> listFalse(String serial, String user, String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
+                                         Integer pageSize) throws BadRequestExceptions {
+
+        Page<SupplierProduct> supplierProductPage;
+        Long clientId;
+        Long productId;
+        Long supplierId;
+
+        if(productSku != null){
+            productId = productRepository.findBySku(productSku.toUpperCase()).getId();
+        }else {
+            productId = null;
+        }
+
+        if(supplierRuc != null){
+            supplierId = supplierRepository.findByRuc(supplierRuc.toUpperCase()).getId();
+        }else{
+            supplierId = null;
+        }
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, productId, supplierId, purchasePrice, sort,
+                    sortColumn, pageNumber, pageSize, false);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (supplierProductPage.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+
+        List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
+                .map(supplierProduct -> SupplierProductDTO.builder()
+                        .productSku(supplierProduct.getProduct().getSku())
+                        .purchasePrice(supplierProduct.getPurchasePrice())
+                        .serial(supplierProduct.getSerial())
+                        .supplierName(supplierProduct.getSupplier().getBusinessName())
                         .build())
                 .toList();
 

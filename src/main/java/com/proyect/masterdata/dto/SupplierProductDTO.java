@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class SupplierProductDTO {
     private String serial;
     private String productSku;
-    private String supplierRuc;
+    private String supplierName;
     private Double purchasePrice;
 }

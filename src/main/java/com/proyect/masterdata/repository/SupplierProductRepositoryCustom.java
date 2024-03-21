@@ -10,6 +10,9 @@ public interface SupplierProductRepositoryCustom {
     public Page<SupplierProduct> searchForSupplierProduct(
             String serial,
             Long clientId,
+            Long productId,
+            Long supplierId,
+            Double purchasePrice,
             String sort,
             String sortColumn,
             Integer pageNumber,

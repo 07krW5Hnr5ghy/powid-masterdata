@@ -940,7 +940,7 @@ public class Seeder implements CommandLineRunner {
                         // mock stores
                         RequestStoreSave requestStoreSave1 = RequestStoreSave.builder()
                                 .url("https://store1.com")
-                                .storeType("SHOPIFY")
+                                .storeType("WOOCOMMERCE")
                                 .name("store 1")
                                 .build();
 
