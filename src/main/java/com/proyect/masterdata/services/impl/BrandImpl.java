@@ -265,4 +265,52 @@ public class BrandImpl implements IBrand {
         }
     }
 
+    @Override
+    public List<BrandDTO> listBrands(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Brand> brands;
+        Long clientId;
+
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            brands = brandRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(brands.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return brands.stream().map(brand -> BrandDTO.builder()
+                .name(brand.getName())
+                .client(brand.getClient().getBusiness())
+                .tokenUser(brand.getTokenUser())
+                .build()).toList();
+    }
+
+    @Override
+    public List<BrandDTO> listBrandsFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Brand> brands;
+        Long clientId;
+
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            brands = brandRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(brands.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return brands.stream().map(brand -> BrandDTO.builder()
+                .name(brand.getName())
+                .client(brand.getClient().getBusiness())
+                .tokenUser(brand.getTokenUser())
+                .build()).toList();
+    }
+
 }

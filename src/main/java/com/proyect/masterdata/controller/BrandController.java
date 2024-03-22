@@ -57,7 +57,7 @@ public class BrandController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:BRAND_GET')")
     public ResponseEntity<Page<BrandDTO>> list(
             @RequestParam(value = "name", required = false) String name,
@@ -70,7 +70,7 @@ public class BrandController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "status-false")
+    @GetMapping(value = "pagination-status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:BRAND_GET')")
     public ResponseEntity<Page<BrandDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
@@ -90,5 +90,23 @@ public class BrandController {
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
         ResponseSuccess result = iBrand.activate(name, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:BRAND_GET')")
+    public ResponseEntity<List<BrandDTO>> listBrands(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<BrandDTO> result = iBrand.listBrands(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("status-false")
+    //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:BRAND_GET')")
+    public ResponseEntity<List<BrandDTO>> listBrandsFalse(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<BrandDTO> result = iBrand.listBrandsFalse(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

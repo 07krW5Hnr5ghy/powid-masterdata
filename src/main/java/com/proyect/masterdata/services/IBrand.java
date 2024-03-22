@@ -23,4 +23,6 @@ public interface IBrand {
                         Integer pageSize)
                         throws InternalErrorExceptions, BadRequestExceptions;
         ResponseSuccess activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+        List<BrandDTO> listBrands(String user) throws BadRequestExceptions, InternalErrorExceptions;
+        List<BrandDTO> listBrandsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }
