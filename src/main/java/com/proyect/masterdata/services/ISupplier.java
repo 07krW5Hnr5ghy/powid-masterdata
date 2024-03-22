@@ -17,4 +17,6 @@ public interface ISupplier {
         ResponseDelete delete(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         Page<SupplierDTO> list(String name, String ruc, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws BadRequestExceptions;
+        List<SupplierDTO> listSuppliers(String user) throws InternalErrorExceptions,BadRequestExceptions;
+        List<SupplierDTO> listSuppliersFalse(String user) throws InternalErrorExceptions,BadRequestExceptions;
 }

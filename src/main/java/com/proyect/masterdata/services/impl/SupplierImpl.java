@@ -29,11 +29,9 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class SupplierImpl implements ISupplier {
-
     private final UserRepository userRepository;
     private final SupplierRepository supplierRepository;
     private final SupplierRepositoryCustom supplierRepositoryCustom;
-
     @Override
     public ResponseSuccess save(RequestSupplier requestSupplier, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -158,6 +156,58 @@ public class SupplierImpl implements ISupplier {
 
         return new PageImpl<>(supplierDTOs, supplierPage.getPageable(), supplierPage.getTotalElements());
 
+    }
+
+    @Override
+    public List<SupplierDTO> listSuppliers(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        Long clientId;
+        List<Supplier> suppliers;
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            suppliers = supplierRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(suppliers.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return suppliers.stream().map(supplier -> SupplierDTO.builder()
+                .businessName(supplier.getBusinessName())
+                .country(supplier.getCountry())
+                .email(supplier.getEmail())
+                .location(supplier.getLocation())
+                .phoneNumber(supplier.getPhoneNumber())
+                .ruc(supplier.getRuc())
+                .build()).toList();
+    }
+
+    @Override
+    public List<SupplierDTO> listSuppliersFalse(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        Long clientId;
+        List<Supplier> suppliers;
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            suppliers = supplierRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(suppliers.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return suppliers.stream().map(supplier -> SupplierDTO.builder()
+                .businessName(supplier.getBusinessName())
+                .country(supplier.getCountry())
+                .email(supplier.getEmail())
+                .location(supplier.getLocation())
+                .phoneNumber(supplier.getPhoneNumber())
+                .ruc(supplier.getRuc())
+                .build()).toList();
     }
 
 }

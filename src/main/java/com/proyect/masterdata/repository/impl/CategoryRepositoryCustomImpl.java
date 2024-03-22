@@ -20,7 +20,6 @@ import java.util.List;
 public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
-
     @Override
     public Page<Category> searchForCategory(
             String name,

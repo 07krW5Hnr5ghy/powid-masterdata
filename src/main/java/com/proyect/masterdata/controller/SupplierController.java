@@ -52,8 +52,8 @@ public class SupplierController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:STOCK','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUPPLIER_GET')")
+    @GetMapping("pagination")
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:STOCK','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUPPLIER_GET')")
     public ResponseEntity<Page<SupplierDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "ruc", required = false) String ruc,
@@ -64,6 +64,24 @@ public class SupplierController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
         Page<SupplierDTO> result = iSupplier.list(name, ruc, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:STOCK','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUPPLIER_GET')")
+    public ResponseEntity<List<SupplierDTO>> listSupplier(
+            @RequestParam(value = "user") String user
+    ) throws BadRequestExceptions {
+        List<SupplierDTO> result = iSupplier.listSuppliers(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("status-false")
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:STOCK','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUPPLIER_GET')")
+    public ResponseEntity<List<SupplierDTO>> listSupplierFalse(
+            @RequestParam(value = "user") String user
+    ) throws BadRequestExceptions {
+        List<SupplierDTO> result = iSupplier.listSuppliers(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }

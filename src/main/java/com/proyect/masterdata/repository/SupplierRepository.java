@@ -14,4 +14,6 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     Supplier findByBusinessNameAndClientId(String businessName,Long clientId);
     Supplier findByRucAndClientIdAndStatusTrue(String ruc,Long clientId);
     Supplier findByRuc(String ruc);
+    List<Supplier> findAllByClientIdAndStatusTrue(Long clientId);
+    List<Supplier> findAllByClientIdAndStatusFalse(Long clientId);
 }
