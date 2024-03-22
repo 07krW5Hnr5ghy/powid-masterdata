@@ -11,12 +11,12 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IWarehouse {
-        public ResponseSuccess save(RequestWarehouse requestWarehouse, String tokenUser)
+        ResponseSuccess save(RequestWarehouse requestWarehouse, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-
-        public ResponseSuccess saveAll(List<RequestWarehouse> requestWarehousesList, String tokenUser)
+        ResponseSuccess saveAll(List<RequestWarehouse> requestWarehousesList, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-
-        public Page<WarehouseDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+        Page<WarehouseDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+        List<WarehouseDTO> listWarehouse(String user) throws BadRequestExceptions,InternalErrorExceptions;
+        List<WarehouseDTO> listWarehouseFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

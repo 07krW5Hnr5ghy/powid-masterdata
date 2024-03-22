@@ -49,7 +49,7 @@ public class WarehouseController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_GET')")
     public ResponseEntity<Page<WarehouseDTO>> list(
             @RequestParam(value = "name", required = false) String name,
@@ -61,4 +61,23 @@ public class WarehouseController {
         Page<WarehouseDTO> result = iWarehouse.list(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_GET')")
+    public ResponseEntity<List<WarehouseDTO>> listWarehouse(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<WarehouseDTO> result = iWarehouse.listWarehouse(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_GET')")
+    public ResponseEntity<List<WarehouseDTO>> listWarehouseFalse(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<WarehouseDTO> result = iWarehouse.listWarehouseFalse(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+    
 }

@@ -151,4 +151,48 @@ public class WarehouseImpl implements IWarehouse {
         return new PageImpl<>(warehouseDTOs, warehousePage.getPageable(), warehousePage.getTotalElements());
     }
 
+    @Override
+    public List<WarehouseDTO> listWarehouse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Warehouse> warehouses;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            warehouses = warehouseRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (warehouses.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
+                .location(warehouse.getLocation())
+                .name(warehouse.getName())
+                .build()).toList();
+    }
+
+    @Override
+    public List<WarehouseDTO> listWarehouseFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Warehouse> warehouses;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            warehouses = warehouseRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (warehouses.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
+                .location(warehouse.getLocation())
+                .name(warehouse.getName())
+                .build()).toList();
+    }
+
 }

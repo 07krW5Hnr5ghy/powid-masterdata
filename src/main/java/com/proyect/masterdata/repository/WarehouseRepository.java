@@ -12,4 +12,6 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
     Warehouse findByName(String name);
     Warehouse findByNameAndStatusTrue(String name);
     List<Warehouse> findByNameIn(List<String> names);
+    List<Warehouse> findAllByClientIdAndStatusTrue(Long clientId);
+    List<Warehouse> findAllByClientIdAndStatusFalse(Long clientId);
 }
