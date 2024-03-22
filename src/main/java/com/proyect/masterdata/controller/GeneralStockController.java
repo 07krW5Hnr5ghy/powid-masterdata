@@ -17,6 +17,8 @@ import com.proyect.masterdata.services.IGeneralStock;
 
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("general-stock")
@@ -25,7 +27,7 @@ public class GeneralStockController {
 
     private final IGeneralStock iGeneralStock;
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK') and hasAuthority('ACCESS:GENERAL_STOCK_GET')")
     public ResponseEntity<Page<GeneralStockDTO>> list(
             @RequestParam(value = "user", required = true) String user,
@@ -35,6 +37,15 @@ public class GeneralStockController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
         Page<GeneralStockDTO> result = iGeneralStock.list(user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("pagination")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK') and hasAuthority('ACCESS:GENERAL_STOCK_GET')")
+    public ResponseEntity<List<GeneralStockDTO>> list(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<GeneralStockDTO> result = iGeneralStock.listGeneralStock(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }

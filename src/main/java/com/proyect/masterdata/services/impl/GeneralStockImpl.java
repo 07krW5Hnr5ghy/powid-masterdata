@@ -169,4 +169,30 @@ public class GeneralStockImpl implements IGeneralStock {
                 generalStockPage.getTotalElements());
     }
 
+    @Override
+    public List<GeneralStockDTO> listGeneralStock(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        Long clientId;
+        List<GeneralStock> generalStocks;
+        try {
+            clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
+            generalStocks = generalStockRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(generalStocks.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return generalStocks.stream()
+                .map(generalStock -> GeneralStockDTO.builder()
+                        .quantity(generalStock.getQuantity())
+                        .supplierProductSerial(generalStock.getSupplierProduct().getSerial())
+                        .registrationDate(generalStock.getRegistrationDate())
+                        .updateDate(generalStock.getUpdateDate())
+                        .build())
+                .toList();
+    }
+
 }
