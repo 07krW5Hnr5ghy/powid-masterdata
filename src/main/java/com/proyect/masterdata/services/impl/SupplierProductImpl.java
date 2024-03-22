@@ -299,4 +299,56 @@ public class SupplierProductImpl implements ISupplierProduct {
                 supplierProductPage.getTotalElements());
     }
 
+    @Override
+    public List<SupplierProductDTO> listSupplierProduct(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<SupplierProduct> supplierProducts;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(supplierProducts.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return supplierProducts.stream()
+                .map(supplierProduct -> SupplierProductDTO.builder()
+                        .productSku(supplierProduct.getProduct().getSku())
+                        .purchasePrice(supplierProduct.getPurchasePrice())
+                        .serial(supplierProduct.getSerial())
+                        .supplierName(supplierProduct.getSupplier().getBusinessName())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    public List<SupplierProductDTO> listSupplierProductFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<SupplierProduct> supplierProducts;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
+            supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(supplierProducts.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return supplierProducts.stream()
+                .map(supplierProduct -> SupplierProductDTO.builder()
+                        .productSku(supplierProduct.getProduct().getSku())
+                        .purchasePrice(supplierProduct.getPurchasePrice())
+                        .serial(supplierProduct.getSerial())
+                        .supplierName(supplierProduct.getSupplier().getBusinessName())
+                        .build())
+                .toList();
+    }
+
 }
