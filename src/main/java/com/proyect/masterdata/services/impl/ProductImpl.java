@@ -349,4 +349,96 @@ public class ProductImpl implements IProduct {
         return new PageImpl<>(productDTOs, productPage.getPageable(), productPage.getTotalElements());
     }
 
+    @Override
+    public List<ProductDTO> listProducts(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Product> products;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            products = productRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(products.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return products.stream().map(product -> {
+            ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+            return ProductDTO.builder()
+                    .sku(product.getSku())
+                    .model(product.getModel().getName())
+                    .category(product.getCategoryProduct().getName())
+                    .color(product.getColor().getName())
+                    .size(product.getSize().getName())
+                    .unit(product.getUnit().getName())
+                    .price(productPrice.getUnitSalePrice())
+                    .build();
+        }).toList();
+    }
+
+    @Override
+    public List<ProductDTO> listProductsFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Product> products;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            products = productRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(products.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return products.stream().map(product -> {
+            ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+            return ProductDTO.builder()
+                    .sku(product.getSku())
+                    .model(product.getModel().getName())
+                    .category(product.getCategoryProduct().getName())
+                    .color(product.getColor().getName())
+                    .size(product.getSize().getName())
+                    .unit(product.getUnit().getName())
+                    .price(productPrice.getUnitSalePrice())
+                    .build();
+        }).toList();
+    }
+
+    @Override
+    public List<ProductDTO> listProductsModel(String user, String model) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Product> products;
+        Long clientId;
+        Long modelId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            modelId = modelRepository.findByNameAndStatusTrue(model.toUpperCase()).getId();
+            products = productRepository.findAllByClientIdAndModelIdAndStatusFalse(clientId,modelId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(products.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return products.stream().map(product -> {
+            ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+            return ProductDTO.builder()
+                    .sku(product.getSku())
+                    .model(product.getModel().getName())
+                    .category(product.getCategoryProduct().getName())
+                    .color(product.getColor().getName())
+                    .size(product.getSize().getName())
+                    .unit(product.getUnit().getName())
+                    .price(productPrice.getUnitSalePrice())
+                    .build();
+        }).toList();
+    }
+
 }

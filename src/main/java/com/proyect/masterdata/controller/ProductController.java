@@ -61,7 +61,7 @@ public class ProductController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> list(
             @RequestParam(value = "sku", required = false) String sku,
@@ -75,7 +75,7 @@ public class ProductController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "list-false")
+    @GetMapping(value = "pagination-list-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> listFalse(
             @RequestParam(value = "sku", required = false) String sku,
@@ -87,5 +87,33 @@ public class ProductController {
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions {
         Page<ProductDTO> result = iProduct.listFalse(sku, model,user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
+    public ResponseEntity<List<ProductDTO>> listProducts(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<ProductDTO> result = iProduct.listProducts(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("status-false")
+    //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
+    public ResponseEntity<List<ProductDTO>> listProductsFalse(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<ProductDTO> result = iProduct.listProductsFalse(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("model")
+    //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
+    public ResponseEntity<List<ProductDTO>> listProductsModel(
+            @RequestParam("user") String user,
+            @RequestParam("model") String model
+    ) throws BadRequestExceptions {
+        List<ProductDTO> result = iProduct.listProductsModel(user,model);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
