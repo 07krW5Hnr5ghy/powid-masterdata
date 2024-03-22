@@ -175,7 +175,7 @@ public class GeneralStockImpl implements IGeneralStock {
         List<GeneralStock> generalStocks;
         try {
             clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
-            generalStocks = generalStockRepository.findAllByClientIdAndStatusTrue(clientId);
+            generalStocks = generalStockRepository.findAllByClientId(clientId);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

@@ -39,7 +39,7 @@ public class GeneralStockController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("pagination")
+    @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK') and hasAuthority('ACCESS:GENERAL_STOCK_GET')")
     public ResponseEntity<List<GeneralStockDTO>> list(
             @RequestParam("user") String user

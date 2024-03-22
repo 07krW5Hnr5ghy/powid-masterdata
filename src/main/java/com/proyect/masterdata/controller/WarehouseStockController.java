@@ -16,6 +16,8 @@ import com.proyect.masterdata.services.IWarehouseStock;
 
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("warehouse-stock")
@@ -24,7 +26,7 @@ public class WarehouseStockController {
 
     private final IWarehouseStock iWarehouseStock;
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
     public ResponseEntity<Page<WarehouseStockDTO>> list(
             @RequestParam(value = "warehouse", required = true) String warehouse,
@@ -35,5 +37,14 @@ public class WarehouseStockController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
         Page<WarehouseStockDTO> result = iWarehouseStock.list(warehouse, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
+    public ResponseEntity<List<WarehouseStockDTO>> listWarehouseStock(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<WarehouseStockDTO> result = iWarehouseStock.listWarehouse(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

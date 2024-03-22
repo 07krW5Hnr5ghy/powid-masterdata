@@ -180,4 +180,31 @@ public class WarehouseStockImpl implements IWarehouseStock {
                 warehouseStockPage.getTotalElements());
     }
 
+    @Override
+    public List<WarehouseStockDTO> listWarehouse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<WarehouseStock> warehouseStocks;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user).getClientId();
+            warehouseStocks = warehouseStockRepository.findAllByClientId(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(warehouseStocks.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return warehouseStocks.stream()
+                .map(warehouseStock -> WarehouseStockDTO.builder()
+                        .quantity(warehouseStock.getQuantity())
+                        .supplierProductSerial(warehouseStock.getSupplierProduct().getSerial())
+                        .warehouse(warehouseStock.getWarehouse().getName())
+                        .registrationDate(warehouseStock.getRegistrationDate())
+                        .updateDate(warehouseStock.getUpdateDate())
+                        .build())
+                .toList();
+    }
+
 }
