@@ -195,4 +195,58 @@ public class OrderStockItemImpl implements IOrderStockItem {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
+
+    @Override
+    public List<OrderStockItemDTO> listOrderStockItem(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        Long clientId;
+        List<OrderStockItem> orderStockItems;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            orderStockItems = orderStockItemRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(orderStockItems.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
+                .orderId(orderStockItem.getOrderStock().getOrderId())
+                .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
+                .itemId(orderStockItem.getItemId())
+                .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                .quantity(orderStockItem.getQuantity())
+                .registrationDate(orderStockItem.getRegistrationDate())
+                .updateDate(orderStockItem.getUpdateDate())
+                .build()).toList();
+    }
+
+    @Override
+    public List<OrderStockItemDTO> listOrderStockItemFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        Long clientId;
+        List<OrderStockItem> orderStockItems;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            orderStockItems = orderStockItemRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(orderStockItems.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
+                .orderId(orderStockItem.getOrderStock().getOrderId())
+                .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
+                .itemId(orderStockItem.getItemId())
+                .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                .quantity(orderStockItem.getQuantity())
+                .registrationDate(orderStockItem.getRegistrationDate())
+                .updateDate(orderStockItem.getUpdateDate())
+                .build()).toList();
+    }
 }

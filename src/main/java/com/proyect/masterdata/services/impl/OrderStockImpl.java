@@ -127,4 +127,33 @@ public class OrderStockImpl implements IOrderStock {
 
         return new PageImpl<>(orderStockDTOS,pageOrderStock.getPageable(),pageOrderStock.getTotalElements());
     }
+
+    @Override
+    public List<OrderStockDTO> listOrderStock(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<OrderStock> orderStocks;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            orderStocks = orderStockRepository.findAllByClientId(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (orderStocks.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
+                .orderId(orderStock.getId())
+                .warehouse(orderStock.getWarehouse().getName())
+                .registrationDate(orderStock.getRegistrationDate())
+                .build()
+        ).toList();
+    }
+
+    @Override
+    public List<OrderStockDTO> listOrderStockFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return null;
+    }
 }

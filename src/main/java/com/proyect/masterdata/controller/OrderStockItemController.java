@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin({"*"})
 @RequestMapping("order-stock-item")
@@ -18,7 +20,7 @@ public class OrderStockItemController {
 
     private final IOrderStockItem iOrderStockItem;
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
@@ -33,7 +35,7 @@ public class OrderStockItemController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "list-false")
+    @GetMapping(value = "pagination-status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> listFalse(
             @RequestParam(value = "warehouse", required = false) String warehouse,
@@ -45,6 +47,24 @@ public class OrderStockItemController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) throws BadRequestExceptions {
         Page<OrderStockItemDTO> result = iOrderStockItem.listFalse(warehouse,orderId,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
+    public ResponseEntity<List<OrderStockItemDTO>> listOrderStockItem(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<OrderStockItemDTO> result = iOrderStockItem.listOrderStockItem(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("status-false")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
+    public ResponseEntity<List<OrderStockItemDTO>> listOrderStockItemFalse(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<OrderStockItemDTO> result = iOrderStockItem.listOrderStockItem(user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

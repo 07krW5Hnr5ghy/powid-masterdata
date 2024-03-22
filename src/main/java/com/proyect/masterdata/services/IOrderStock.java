@@ -11,6 +11,9 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IOrderStock {
-    public ResponseSuccess save(Long orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    public Page<OrderStockDTO> list(String warehouse, Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    ResponseSuccess save(Long orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    Page<OrderStockDTO> list(String warehouse, Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    List<OrderStockDTO> listOrderStock(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    List<OrderStockDTO> listOrderStockFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
+
 }

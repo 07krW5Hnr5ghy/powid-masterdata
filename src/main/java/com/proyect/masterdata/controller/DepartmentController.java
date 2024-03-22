@@ -32,7 +32,7 @@ public class DepartmentController {
         }
 
         @PostMapping(value = "departments", consumes = MediaType.APPLICATION_JSON_VALUE)
-        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
+        //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
         public ResponseEntity<ResponseSuccess> saveAll(
                         @RequestParam("user") String user,
                         @RequestBody() List<String> names) throws BadRequestExceptions {
@@ -41,7 +41,7 @@ public class DepartmentController {
         }
 
         @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
+        //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
         public ResponseEntity<DepartmentDTO> update(
                         @RequestBody() RequestDepartment requestDepartment) throws BadRequestExceptions {
                 DepartmentDTO result = iDepartment.update(requestDepartment);
@@ -49,7 +49,7 @@ public class DepartmentController {
         }
 
         @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_DELETE')")
+        //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_DELETE')")
         public ResponseEntity<ResponseDelete> delete(
                         @RequestParam("code") Long code,
                         @RequestParam("user") String user) throws BadRequestExceptions {
@@ -64,7 +64,7 @@ public class DepartmentController {
         }
 
         @GetMapping(value = "list")
-        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_GET')")
+        //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_GET')")
         public ResponseEntity<Page<DepartmentDTO>> list(
                         @RequestParam(value = "name", required = false) String name,
                         @RequestParam(value = "user", required = false) String user,
@@ -77,7 +77,7 @@ public class DepartmentController {
         }
 
         @GetMapping(value = "status-false")
-        @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_GET')")
+        //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_GET')")
         public ResponseEntity<Page<DepartmentDTO>> listStatusFalse(
                         @RequestParam(value = "name", required = false) String name,
                         @RequestParam(value = "user", required = false) String user,

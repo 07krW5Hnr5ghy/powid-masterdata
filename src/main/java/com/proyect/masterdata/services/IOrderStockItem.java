@@ -12,9 +12,11 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IOrderStockItem {
-    public ResponseSuccess save(OrderStock orderStock, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    public Page<OrderStockItemDTO> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    public Page<OrderStockItemDTO> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    public Boolean checkWarehouseItemStock(Long orderId, Warehouse warehouse, RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions,BadRequestExceptions;
+    ResponseSuccess save(OrderStock orderStock, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    Page<OrderStockItemDTO> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    Page<OrderStockItemDTO> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    Boolean checkWarehouseItemStock(Long orderId, Warehouse warehouse, RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions,BadRequestExceptions;
+    List<OrderStockItemDTO> listOrderStockItem(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    List<OrderStockItemDTO> listOrderStockItemFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

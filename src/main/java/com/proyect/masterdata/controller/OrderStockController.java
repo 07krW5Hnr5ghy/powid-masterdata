@@ -38,7 +38,7 @@ public class OrderStockController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STOCK_GET')")
     public ResponseEntity<Page<OrderStockDTO>> list(
             @RequestParam(value = "warehouse",required = false) String warehouse,
@@ -50,6 +50,15 @@ public class OrderStockController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) throws BadRequestExceptions{
         Page<OrderStockDTO> result = iOrderStock.list(warehouse,orderId,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STOCK_GET')")
+    public ResponseEntity<List<OrderStockDTO>> listOrderStock(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<OrderStockDTO> result = iOrderStock.listOrderStock(user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

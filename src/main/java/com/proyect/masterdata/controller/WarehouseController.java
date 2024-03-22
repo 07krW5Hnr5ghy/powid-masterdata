@@ -71,7 +71,7 @@ public class WarehouseController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_GET')")
     public ResponseEntity<List<WarehouseDTO>> listWarehouseFalse(
             @RequestParam("user") String user
@@ -79,5 +79,5 @@ public class WarehouseController {
         List<WarehouseDTO> result = iWarehouse.listWarehouseFalse(user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
-    
+
 }
