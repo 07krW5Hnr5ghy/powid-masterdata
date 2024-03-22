@@ -60,7 +60,7 @@ public class ModelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> list(
             @RequestParam(value = "name", required = false) String name,
@@ -74,7 +74,7 @@ public class ModelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "status-false")
+    @GetMapping(value = "pagination-status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
@@ -86,6 +86,34 @@ public class ModelController {
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions {
         Page<ModelDTO> result = iModel.listStatusFalse(name, brand, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
+    public ResponseEntity<List<ModelDTO>> listModels(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<ModelDTO> result = iModel.listModels(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("status-false")
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
+    public ResponseEntity<List<ModelDTO>> listModelsFalse(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<ModelDTO> result = iModel.listModelsFalse(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("brand")
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
+    public ResponseEntity<List<ModelDTO>> listModelsBrand(
+            @RequestParam("user") String user,
+            @RequestParam("brand") String brand
+    ) throws BadRequestExceptions {
+        List<ModelDTO> result = iModel.listModelBrand(user,brand);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }

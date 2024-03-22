@@ -11,21 +11,18 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IModel {
-
         ResponseSuccess save(String name, String brand, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-
         ResponseSuccess saveAll(List<String> names, String brand, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-
         ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-
         Page<ModelDTO> list(String name, String brand, String tokenUser, String sort, String columnSort,
                         Integer pageNumber,
                         Integer pageSize);
-
         Page<ModelDTO> listStatusFalse(String name, String brand, String tokenUser, String sort, String columnSort,
                         Integer pageNumber,
                         Integer pageSize);
-
+        List<ModelDTO> listModels(String user) throws BadRequestExceptions,InternalErrorExceptions;
+        List<ModelDTO> listModelsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
+        List<ModelDTO> listModelBrand(String user,String brand) throws BadRequestExceptions,InternalErrorExceptions;
 }

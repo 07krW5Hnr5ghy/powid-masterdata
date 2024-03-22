@@ -16,7 +16,6 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.mapper.ModelMapper;
 import com.proyect.masterdata.repository.BrandRepository;
 import com.proyect.masterdata.repository.ModelRepository;
 import com.proyect.masterdata.repository.ModelRepositoryCustom;
@@ -247,6 +246,80 @@ public class ModelImpl implements IModel {
 
         return new PageImpl<>(models, pageModel.getPageable(),
                 pageModel.getTotalElements());
+    }
+
+    @Override
+    public List<ModelDTO> listModels(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Model> models;
+        Long clientId;
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            models = modelRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(models.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return models.stream().map(model -> ModelDTO.builder()
+                .name(model.getName())
+                .brand(model.getBrand().getName())
+                .user(model.getTokenUser())
+                .build()).toList();
+    }
+
+    @Override
+    public List<ModelDTO> listModelsFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Model> models;
+        Long clientId;
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            models = modelRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(models.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return models.stream().map(model -> ModelDTO.builder()
+                .name(model.getName())
+                .brand(model.getBrand().getName())
+                .user(model.getTokenUser())
+                .build()).toList();
+    }
+
+    @Override
+    public List<ModelDTO> listModelBrand(String user, String brand) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Model> models;
+        Long clientId;
+        Long brandId;
+
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            brandId = brandRepository.findByName(brand.toUpperCase()).getId();
+            models = modelRepository.findAllByClientIdAndBrandIdAndStatusTrue(clientId,brandId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(models.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return models.stream().map(model -> ModelDTO.builder()
+                .name(model.getName())
+                .brand(model.getBrand().getName())
+                .user(model.getTokenUser())
+                .build()).toList();
     }
 
 }
