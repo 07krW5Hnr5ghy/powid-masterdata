@@ -31,7 +31,7 @@ public class ShipmentTypeController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_TYPE_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_TYPE_GET')")
     public ResponseEntity<List<String>> list() throws BadRequestExceptions {
         List<String> result = iShipmentType.list();
         return new ResponseEntity<>(result,HttpStatus.OK);

@@ -7,7 +7,11 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface IStockReplenishmentItem {
-    public StockReplenishmentItem save(OrderItem orderItem, RequestStockReplenishmentItem requestStockReplenishmentItem, User user, StockReplenishment stockReplenishment) throws InternalErrorExceptions, BadRequestExceptions;
-    public Page<StockReplenishmentItemDTO> list(String user,Long orderId,String productSku,String sort,String sortColumn,Integer pageNumber,Integer pageSize);
+    StockReplenishmentItem save(OrderItem orderItem, RequestStockReplenishmentItem requestStockReplenishmentItem, User user, StockReplenishment stockReplenishment) throws InternalErrorExceptions, BadRequestExceptions;
+    Page<StockReplenishmentItemDTO> list(String user,Long orderId,String productSku,String sort,String sortColumn,Integer pageNumber,Integer pageSize);
+    List<StockReplenishmentItemDTO> listStockReplenishmentItem(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    List<StockReplenishmentItemDTO> listStockReplenishmentItemFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

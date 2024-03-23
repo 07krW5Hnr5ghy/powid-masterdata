@@ -118,4 +118,48 @@ public class StockReplenishmentImpl implements IStockReplenishment {
         ).toList();
         return new PageImpl<>(stockReplenishmentDTOS,pageStockReplenishment.getPageable(),pageStockReplenishment.getTotalElements());
     }
+
+    @Override
+    public List<StockReplenishmentDTO> listStockReplenishment(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<StockReplenishment> stockReplenishments;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stockReplenishments = stockReplenishmentRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(stockReplenishments.isEmpty()){
+            return Collections.emptyList();
+        }
+        return stockReplenishments.stream().map(stockReplenishment -> StockReplenishmentDTO.builder()
+                .orderId(stockReplenishment.getOrderId())
+                .registrationDate(stockReplenishment.getRegistrationDate())
+                .updateDate(stockReplenishment.getUpdateDate())
+                .build()
+        ).toList();
+    }
+
+    @Override
+    public List<StockReplenishmentDTO> listStockReplenishmentFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<StockReplenishment> stockReplenishments;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
+            stockReplenishments = stockReplenishmentRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(stockReplenishments.isEmpty()){
+            return Collections.emptyList();
+        }
+        return stockReplenishments.stream().map(stockReplenishment -> StockReplenishmentDTO.builder()
+                .orderId(stockReplenishment.getOrderId())
+                .registrationDate(stockReplenishment.getRegistrationDate())
+                .updateDate(stockReplenishment.getUpdateDate())
+                .build()
+        ).toList();
+    }
 }

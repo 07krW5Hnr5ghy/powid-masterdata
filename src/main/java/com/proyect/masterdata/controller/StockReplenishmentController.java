@@ -23,7 +23,7 @@ public class StockReplenishmentController {
     private final IStockReplenishment iStockReplenishment;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_POST')")
-    private ResponseEntity<ResponseSuccess> save(
+    public ResponseEntity<ResponseSuccess> save(
             @RequestParam("orderId") Long orderId,
             @RequestBody() List<RequestStockReplenishmentItem> requestStockReplenishmentItems,
             @RequestParam("tokenUser") String tokenUser
@@ -31,9 +31,9 @@ public class StockReplenishmentController {
         ResponseSuccess result = iStockReplenishment.save(orderId,requestStockReplenishmentItems,tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_GET')")
-    private ResponseEntity<Page<StockReplenishmentDTO>> list(
+    public ResponseEntity<Page<StockReplenishmentDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "orderId",required = false) Long orderId,
             @RequestParam(value = "sort",required = false) String sort,
@@ -44,4 +44,13 @@ public class StockReplenishmentController {
         Page<StockReplenishmentDTO> result = iStockReplenishment.list(user,orderId,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_GET')")
+    public ResponseEntity<List<StockReplenishmentDTO>> listStockReplenishment(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<StockReplenishmentDTO> result = iStockReplenishment.listStockReplenishment(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
 }

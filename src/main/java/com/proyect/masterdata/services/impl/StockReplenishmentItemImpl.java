@@ -1,6 +1,9 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.domain.OrderItem;
+import com.proyect.masterdata.domain.StockReplenishment;
+import com.proyect.masterdata.domain.StockReplenishmentItem;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.StockReplenishmentItemDTO;
 import com.proyect.masterdata.dto.request.RequestStockReplenishmentItem;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -86,5 +89,51 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 .build()).toList();
 
         return new PageImpl<>(stockReplenishmentItemDTOS,pageStockReplenishmentItem.getPageable(),pageStockReplenishmentItem.getTotalElements());
+    }
+
+    @Override
+    public List<StockReplenishmentItemDTO> listStockReplenishmentItem(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<StockReplenishmentItem> stockReplenishmentItems;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stockReplenishmentItems = stockReplenishmentItemRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(stockReplenishmentItems.isEmpty()){
+            return Collections.emptyList();
+        }
+        return stockReplenishmentItems.stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
+                .productSku(stockReplenishmentItem.getProduct().getSku())
+                .orderId(stockReplenishmentItem.getOrderId())
+                .quantity(stockReplenishmentItem.getQuantity())
+                .registrationDate(stockReplenishmentItem.getRegistrationDate())
+                .updateDate(stockReplenishmentItem.getUpdateDate())
+                .build()).toList();
+    }
+
+    @Override
+    public List<StockReplenishmentItemDTO> listStockReplenishmentItemFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<StockReplenishmentItem> stockReplenishmentItems;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stockReplenishmentItems = stockReplenishmentItemRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(stockReplenishmentItems.isEmpty()){
+            return Collections.emptyList();
+        }
+        return stockReplenishmentItems.stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
+                .productSku(stockReplenishmentItem.getProduct().getSku())
+                .orderId(stockReplenishmentItem.getOrderId())
+                .quantity(stockReplenishmentItem.getQuantity())
+                .registrationDate(stockReplenishmentItem.getRegistrationDate())
+                .updateDate(stockReplenishmentItem.getUpdateDate())
+                .build()).toList();
     }
 }

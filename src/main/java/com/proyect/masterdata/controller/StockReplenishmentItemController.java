@@ -10,13 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("stock-replenishment-item")
 @AllArgsConstructor
 public class StockReplenishmentItemController {
     private final IStockReplenishmentItem iStockReplenishmentItem;
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_ITEM_GET')")
     public ResponseEntity<Page<StockReplenishmentItemDTO>> list(
             @RequestParam("user") String user,
@@ -29,5 +31,13 @@ public class StockReplenishmentItemController {
     ) throws BadRequestExceptions {
         Page<StockReplenishmentItemDTO> result = iStockReplenishmentItem.list(user,orderId,productSku,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_ITEM_GET')")
+    public ResponseEntity<List<StockReplenishmentItemDTO>> listStockReplenishmentItems(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<StockReplenishmentItemDTO> result = iStockReplenishmentItem.listStockReplenishmentItem(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
