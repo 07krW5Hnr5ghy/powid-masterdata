@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("stock-transaction-item")
@@ -18,7 +20,7 @@ public class StockTransactionItemController {
 
     private final IStockTransactionItem iStockTransactionItem;
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_ITEM_GET')")
     public ResponseEntity<Page<StockTransactionItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
@@ -31,5 +33,13 @@ public class StockTransactionItemController {
         Page<StockTransactionItemDTO> result = iStockTransactionItem.list(user, stockTransactionSerial, supplierProductSerial, sort, sortColumn, pageNumber,
                 pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_ITEM_GET')")
+    public ResponseEntity<List<StockTransactionItemDTO>> listStockTransactionItem(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<StockTransactionItemDTO> result = iStockTransactionItem.listStockTransactionItem(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

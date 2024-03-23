@@ -15,4 +15,5 @@ public interface IStockTransaction {
     public StockTransaction save(String serial, Warehouse warehouse, List<RequestStockTransactionItem> requestStockTransactionItemList, String stockTransactionType, User user) throws BadRequestExceptions, InternalErrorExceptions;
     Page<StockTransactionDTO> list(String user, String serial, String warehouse, String stockTransactionType, String sort, String sortColumn,
                                    Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    List<StockTransactionDTO> listStockTransaction(String user) throws InternalErrorExceptions,BadRequestExceptions;
 }

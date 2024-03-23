@@ -14,8 +14,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 public interface IStockTransactionItem {
         ResponseSuccess save(StockTransaction stockTransaction,RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-
         Page<StockTransactionItemDTO> list(String user, String stockTransactionSerial,String supplierProductSerial, String sort, String sortColumn,
                                            Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-
+        List<StockTransactionItemDTO> listStockTransactionItem(String user) throws InternalErrorExceptions,BadRequestExceptions;
 }

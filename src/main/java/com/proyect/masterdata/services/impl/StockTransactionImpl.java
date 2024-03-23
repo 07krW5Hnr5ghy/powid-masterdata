@@ -131,4 +131,26 @@ public class StockTransactionImpl implements IStockTransaction {
 
         return new PageImpl<>(stockTransactionDTOS,pageStockTransaction.getPageable(),pageStockTransaction.getTotalElements());
     }
+
+    @Override
+    public List<StockTransactionDTO> listStockTransaction(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        List<StockTransaction> stockTransactions;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stockTransactions = stockTransactionRepository.findAllByClientId(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if (stockTransactions.isEmpty()){
+            return Collections.emptyList();
+        }
+        return stockTransactions.stream().map(stockTransaction -> StockTransactionDTO.builder()
+                .serial(stockTransaction.getSerial())
+                .warehouse(stockTransaction.getWarehouse().getName())
+                .stockTransactionType(stockTransaction.getStockTransactionType().getName())
+                .registrationDate(stockTransaction.getRegistrationDate())
+                .build()).toList();
+    }
 }
