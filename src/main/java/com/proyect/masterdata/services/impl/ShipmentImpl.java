@@ -212,4 +212,29 @@ public class ShipmentImpl implements IShipment {
 
         return new PageImpl<>(shipmentDTOS,pageShipment.getPageable(),pageShipment.getTotalElements());
     }
+
+    @Override
+    public List<ShipmentDTO> listShipment(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Shipment> shipments;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            shipments = shipmentRepository.findAllByClientId(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(shipments.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return shipments.stream().map(shipment -> ShipmentDTO.builder()
+                .purchaseSerial(shipment.getPurchaseSerial())
+                .warehouse(shipment.getWarehouse().getName())
+                .shipmentType(shipment.getShipmentType().getName())
+                .registrationDate(shipment.getRegistrationDate())
+                .build()).toList();
+    }
+
 }

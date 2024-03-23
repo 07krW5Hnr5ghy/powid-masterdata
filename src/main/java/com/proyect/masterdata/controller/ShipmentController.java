@@ -31,7 +31,7 @@ public class ShipmentController {
         ResponseSuccess result = iShipment.save(requestShipment, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
     public ResponseEntity<Page<ShipmentDTO>> list(
             @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
@@ -44,6 +44,14 @@ public class ShipmentController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize
     ) throws BadRequestExceptions{
         Page<ShipmentDTO> result = iShipment.list(purchaseSerial,user,warehouse,shipmentType,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
+    public ResponseEntity<List<ShipmentDTO>> listShipment(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions{
+        List<ShipmentDTO> result = iShipment.listShipment(user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

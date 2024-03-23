@@ -11,9 +11,10 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IShipment {
-    public ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    public Page<ShipmentDTO> list(String serialPurchase, String user, String warehouse, String shipmentType, String sort, String sortColumn,
+    ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    Page<ShipmentDTO> list(String serialPurchase, String user, String warehouse, String shipmentType, String sort, String sortColumn,
                                   Integer pageNumber, Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
-    public Page<ShipmentDTO> listFalse(String serialPurchase, String user, String warehouse, String shipmentType, String sort, String sortColumn,
+    Page<ShipmentDTO> listFalse(String serialPurchase, String user, String warehouse, String shipmentType, String sort, String sortColumn,
                                   Integer pageNumber, Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
+    List<ShipmentDTO> listShipment(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

@@ -53,7 +53,6 @@ public class ShipmentItemImpl implements IShipmentItem {
             purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
-            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
@@ -98,7 +97,6 @@ public class ShipmentItemImpl implements IShipmentItem {
             return newShipmentItem;
         } catch (RuntimeException e) {
             log.error(e.getMessage());
-            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
@@ -146,6 +144,32 @@ public class ShipmentItemImpl implements IShipmentItem {
                 .build()).toList();
 
         return new PageImpl<>(shipmentItemDTOS, pageShipmentItem.getPageable(), pageShipmentItem.getTotalElements());
+    }
+
+    @Override
+    public List<ShipmentItemDTO> listShipmentItem(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        List<ShipmentItem> shipmentItems;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            shipmentItems = shipmentItemRepository.findAllByClientId(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (shipmentItems.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return shipmentItems.stream().map(shipmentItem -> ShipmentItemDTO.builder()
+                .purchaseSerial(shipmentItem.getPurchaseItem().getPurchase().getSerial())
+                .quantity(shipmentItem.getQuantity())
+                .serial(shipmentItem.getShipment().getPurchaseSerial())
+                .supplierProductSerial(shipmentItem.getSupplierProduct().getSerial())
+                .warehouse(shipmentItem.getShipment().getWarehouse().getName())
+                .date(shipmentItem.getRegistrationDate())
+                .build()).toList();
     }
 
 }

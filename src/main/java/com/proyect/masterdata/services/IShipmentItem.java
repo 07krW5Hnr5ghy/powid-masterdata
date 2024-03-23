@@ -16,7 +16,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 public interface IShipmentItem {
     ShipmentItem save(Shipment shipment, Purchase purchase, String warehouse, RequestShipmentItem requestShipmentItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
-
     Page<ShipmentItemDTO> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn,
                                Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+    List<ShipmentItemDTO> listShipmentItem(String user) throws InternalErrorExceptions,BadRequestExceptions;
 }
