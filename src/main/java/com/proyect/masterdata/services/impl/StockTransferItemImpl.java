@@ -89,4 +89,27 @@ public class StockTransferItemImpl implements IStockTransferItem {
 
         return new PageImpl<>(stockTransferItemDTOS,pageStockTransferItem.getPageable(),pageStockTransferItem.getTotalElements());
     }
+
+    @Override
+    public List<StockTransferItemDTO> listStockTransferItem(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<StockTransferItem> stockTransferItems;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stockTransferItems = stockTransferItemRepository.findAllByClientId(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if (stockTransferItems.isEmpty()){
+            return Collections.emptyList();
+        }
+        return stockTransferItems.stream().map(stockTransferItem -> StockTransferItemDTO.builder()
+                .stockTransferId(stockTransferItem.getStockTransferId())
+                .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
+                .quantity(stockTransferItem.getQuantity())
+                .registrationDate(stockTransferItem.getRegistrationDate())
+                .build()
+        ).toList();
+    }
 }

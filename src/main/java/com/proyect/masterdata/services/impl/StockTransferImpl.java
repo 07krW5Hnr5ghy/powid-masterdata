@@ -153,4 +153,26 @@ public class StockTransferImpl implements IStockTransfer {
 
         return new PageImpl<>(stockTransferDTOS,pageStockTransfer.getPageable(),pageStockTransfer.getTotalElements());
     }
+
+    @Override
+    public List<StockTransferDTO> listStockTransfer(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        List<StockTransfer> stockTransfers;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stockTransfers = stockTransferRepository.findAllByClientId(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if (stockTransfers.isEmpty()){
+            return Collections.emptyList();
+        }
+        return stockTransfers.stream().map(stockTransfer -> StockTransferDTO.builder()
+                .originWarehouse(stockTransfer.getOriginWarehouse().getName())
+                .destinationWarehouse(stockTransfer.getDestinationWarehouse().getName())
+                .registrationDate(stockTransfer.getRegistrationDate())
+                .stockTransferId(stockTransfer.getId())
+                .build()).toList();
+    }
 }

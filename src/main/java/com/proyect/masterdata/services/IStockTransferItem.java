@@ -10,7 +10,10 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface IStockTransferItem {
-    public StockTransferItem save(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions;
-    public Page<StockTransferItemDTO> list(String user,Long stockTransferId,String supplierProductSerial,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
+    StockTransferItem save(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions;
+    Page<StockTransferItemDTO> list(String user,Long stockTransferId,String supplierProductSerial,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
+    List<StockTransferItemDTO> listStockTransferItem(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

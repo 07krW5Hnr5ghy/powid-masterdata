@@ -32,8 +32,8 @@ public class StockTransferController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_GET')")
+    @GetMapping("pagination")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_GET')")
     public ResponseEntity<Page<StockTransferDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "originWarehouse",required = false) String originWarehouse,
@@ -44,6 +44,15 @@ public class StockTransferController {
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions {
         Page<StockTransferDTO> result = iStockTransfer.list(user,originWarehouse,destinationWarehouse,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_GET')")
+    public ResponseEntity<List<StockTransferDTO>> listStockTransfer(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<StockTransferDTO> result = iStockTransfer.listStockTransfer(user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
