@@ -43,6 +43,9 @@ public class StockReturnItem {
     @Column(name = "purchase_id")
     private Long purchaseId;
 
+    @Column(name = "status")
+    private Boolean status;
+
     @Column(name = "stock_return_id")
     private Long stockReturnId;
 

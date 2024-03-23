@@ -147,4 +147,50 @@ public class StockReturnImpl implements IStockReturn {
                 .build()).toList();
         return new PageImpl<>(stockReturnDTOS,pageStockReturn.getPageable(),pageStockReturn.getTotalElements());
     }
+
+    @Override
+    public List<StockReturnDTO> listStockReturn(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        List<StockReturn> stockReturns;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stockReturns = stockReturnRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(stockReturns.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
+                .registrationDate(stockReturn.getRegistrationDate())
+                .purchaseSerial(stockReturn.getPurchase().getSerial())
+                .updateDate(stockReturn.getUpdateDate())
+                .build()).toList();
+    }
+
+    @Override
+    public List<StockReturnDTO> listStockReturnFalse(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        List<StockReturn> stockReturns;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stockReturns = stockReturnRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(stockReturns.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
+                .registrationDate(stockReturn.getRegistrationDate())
+                .purchaseSerial(stockReturn.getPurchase().getSerial())
+                .updateDate(stockReturn.getUpdateDate())
+                .build()).toList();
+    }
 }

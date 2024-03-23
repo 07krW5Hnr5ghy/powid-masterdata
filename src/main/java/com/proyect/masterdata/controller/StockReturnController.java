@@ -33,7 +33,7 @@ public class StockReturnController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_GET')")
     public ResponseEntity<Page<StockReturnDTO>> list(
             @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
@@ -46,6 +46,24 @@ public class StockReturnController {
         Page<StockReturnDTO> result = iStockReturn.list(purchaseSerial, user, sort, sortColumn, pageNumber,
                 pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_GET')")
+    public ResponseEntity<List<StockReturnDTO>> listStockReturn(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<StockReturnDTO> result = iStockReturn.listStockReturn(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("status-false")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_GET')")
+    public ResponseEntity<List<StockReturnDTO>> listStockReturnFalse(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<StockReturnDTO> result = iStockReturn.listStockReturnFalse(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }

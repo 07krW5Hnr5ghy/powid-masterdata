@@ -49,6 +49,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                             .stockReturnId(stockReturn.getId())
                             .observations(requestStockReturnItem.getObservations())
                             .registrationDate(new Date(System.currentTimeMillis()))
+                            .status(true)
                     .build());
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -96,6 +97,54 @@ public class StockReturnItemImpl implements IStockReturnItem {
                     .build()
         ).toList();
         return new PageImpl<>(stockReturnDTOS,pageStockReturn.getPageable(),pageStockReturn.getTotalElements());
+    }
+
+    @Override
+    public List<StockReturnItemDTO> listStockReturnItem(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        List<StockReturnItem> stockReturnItems;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(stockReturnItems.isEmpty()){
+            return Collections.emptyList();
+        }
+        return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
+                .purchaseSerial(stockReturnItem.getPurchase().getSerial())
+                .supplierProductSerial(stockReturnItem.getSupplierProduct().getSerial())
+                .registrationDate(stockReturnItem.getRegistrationDate())
+                .quantity(stockReturnItem.getQuantity())
+                .observations(stockReturnItem.getObservations())
+                .build()
+        ).toList();
+    }
+
+    @Override
+    public List<StockReturnItemDTO> listStockReturnItemFalse(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        List<StockReturnItem> stockReturnItems;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(stockReturnItems.isEmpty()){
+            return Collections.emptyList();
+        }
+        return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
+                .purchaseSerial(stockReturnItem.getPurchase().getSerial())
+                .supplierProductSerial(stockReturnItem.getSupplierProduct().getSerial())
+                .registrationDate(stockReturnItem.getRegistrationDate())
+                .quantity(stockReturnItem.getQuantity())
+                .observations(stockReturnItem.getObservations())
+                .build()
+        ).toList();
     }
 
 }
