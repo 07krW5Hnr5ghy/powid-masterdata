@@ -31,7 +31,6 @@ public class ShipmentController {
         ResponseSuccess result = iShipment.save(requestShipment, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
     public ResponseEntity<Page<ShipmentDTO>> list(

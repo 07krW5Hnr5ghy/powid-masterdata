@@ -117,4 +117,44 @@ public class PurchaseImpl implements IPurchase {
 
         return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
     }
+
+    @Override
+    public List<PurchaseDTO> listPurchase(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Purchase> purchases;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            purchases = purchaseRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(purchases.isEmpty()){
+            return Collections.emptyList();
+        }
+        return purchases.stream().map(purchase -> PurchaseDTO.builder()
+                .serial(purchase.getSerial())
+                .registrationDate(purchase.getRegistrationDate())
+                .build()).toList();
+    }
+
+    @Override
+    public List<PurchaseDTO> listPurchaseFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<Purchase> purchases;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            purchases = purchaseRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(purchases.isEmpty()){
+            return Collections.emptyList();
+        }
+        return purchases.stream().map(purchase -> PurchaseDTO.builder()
+                .serial(purchase.getSerial())
+                .registrationDate(purchase.getRegistrationDate())
+                .build()).toList();
+    }
 }

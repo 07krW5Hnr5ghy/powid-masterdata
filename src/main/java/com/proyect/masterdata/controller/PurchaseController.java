@@ -38,7 +38,7 @@ public class PurchaseController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
     public ResponseEntity<Page<PurchaseDTO>> list(
             @RequestParam(value = "serial", required = false) String serial,
@@ -50,6 +50,24 @@ public class PurchaseController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize
     ) throws BadRequestExceptions {
         Page<PurchaseDTO> result = iPurchase.list(serial,user,documentName,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
+    public ResponseEntity<List<PurchaseDTO>> listPurchase(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<PurchaseDTO> result = iPurchase.listPurchase(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("status-false")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
+    public ResponseEntity<List<PurchaseDTO>> listPurchaseFalse(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<PurchaseDTO> result = iPurchase.listPurchaseFalse(user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

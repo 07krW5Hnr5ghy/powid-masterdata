@@ -29,13 +29,11 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class PurchaseItemImpl implements IPurchaseItem {
-
     private final UserRepository userRepository;
     private final PurchaseRepository purchaseRepository;
     private final PurchaseItemRepository purchaseItemRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final PurchaseItemRepositoryCustom purchaseItemRepositoryCustom;
-
     @Override
     public ResponseSuccess save(Long purchaseId, RequestPurchaseItem requestPurchaseItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -187,6 +185,56 @@ public class PurchaseItemImpl implements IPurchaseItem {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public List<PurchaseItemDTO> listPurchaseItem(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<PurchaseItem> purchaseItems;
+        Long clientId;
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            purchaseItems = purchaseItemRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(purchaseItems.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return purchaseItems.stream().map(purchaseItem -> PurchaseItemDTO.builder()
+                .date(purchaseItem.getRegistrationDate())
+                .quantity(purchaseItem.getQuantity())
+                .serial(purchaseItem.getPurchase().getSerial())
+                .supplierProductSerial(purchaseItem.getSupplierProduct().getSerial())
+                .unitPrice(purchaseItem.getUnitPrice())
+                .build()).toList();
+    }
+
+    @Override
+    public List<PurchaseItemDTO> listPurchaseItemFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<PurchaseItem> purchaseItems;
+        Long clientId;
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            purchaseItems = purchaseItemRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(purchaseItems.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return purchaseItems.stream().map(purchaseItem -> PurchaseItemDTO.builder()
+                .date(purchaseItem.getRegistrationDate())
+                .quantity(purchaseItem.getQuantity())
+                .serial(purchaseItem.getPurchase().getSerial())
+                .supplierProductSerial(purchaseItem.getSupplierProduct().getSerial())
+                .unitPrice(purchaseItem.getUnitPrice())
+                .build()).toList();
     }
 
 }

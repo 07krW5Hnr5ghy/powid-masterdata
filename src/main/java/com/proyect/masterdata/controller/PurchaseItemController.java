@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("purchase-item")
@@ -18,7 +20,7 @@ public class PurchaseItemController {
 
     private final IPurchaseItem iPurchaseItem;
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
     public ResponseEntity<Page<PurchaseItemDTO>> list(
             @RequestParam(value = "serial", required = false) String serial,
@@ -30,5 +32,23 @@ public class PurchaseItemController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
         Page<PurchaseItemDTO> result = iPurchaseItem.list(serial, user,supplierProductSerial, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
+    public ResponseEntity<List<PurchaseItemDTO>> listPurchaseItem(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<PurchaseItemDTO> result = iPurchaseItem.listPurchaseItem(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("status-false")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
+    public ResponseEntity<List<PurchaseItemDTO>> listPurchaseItemFalse(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<PurchaseItemDTO> result = iPurchaseItem.listPurchaseItemFalse(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
