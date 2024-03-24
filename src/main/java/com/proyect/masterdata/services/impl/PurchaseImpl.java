@@ -110,10 +110,14 @@ public class PurchaseImpl implements IPurchase {
             return new PageImpl<>(Collections.emptyList());
         }
 
-        List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> PurchaseDTO.builder()
-                .serial(purchase.getSerial())
-                .registrationDate(purchase.getRegistrationDate())
-                .build()).toList();
+        List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> {
+            PurchaseDocument purchaseDocument = purchaseDocumentRepository.findById(purchase.getPurchaseDocumentId()).orElse(null);
+            return PurchaseDTO.builder()
+                    .serial(purchase.getSerial())
+                    .registrationDate(purchase.getRegistrationDate())
+                    .purchaseDocument(purchaseDocument.getName())
+                .build();
+        }).toList();
 
         return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
     }
@@ -132,10 +136,15 @@ public class PurchaseImpl implements IPurchase {
         if(purchases.isEmpty()){
             return Collections.emptyList();
         }
-        return purchases.stream().map(purchase -> PurchaseDTO.builder()
-                .serial(purchase.getSerial())
-                .registrationDate(purchase.getRegistrationDate())
-                .build()).toList();
+
+        return purchases.stream().map(purchase -> {
+            PurchaseDocument purchaseDocument = purchaseDocumentRepository.findById(purchase.getPurchaseDocumentId()).orElse(null);
+            return PurchaseDTO.builder()
+                    .serial(purchase.getSerial())
+                    .registrationDate(purchase.getRegistrationDate())
+                    .purchaseDocument(purchaseDocument.getName())
+                    .build();
+        }).toList();
     }
 
     @Override
@@ -152,9 +161,13 @@ public class PurchaseImpl implements IPurchase {
         if(purchases.isEmpty()){
             return Collections.emptyList();
         }
-        return purchases.stream().map(purchase -> PurchaseDTO.builder()
-                .serial(purchase.getSerial())
-                .registrationDate(purchase.getRegistrationDate())
-                .build()).toList();
+        return purchases.stream().map(purchase -> {
+            PurchaseDocument purchaseDocument = purchaseDocumentRepository.findById(purchase.getPurchaseDocumentId()).orElse(null);
+            return PurchaseDTO.builder()
+                    .serial(purchase.getSerial())
+                    .registrationDate(purchase.getRegistrationDate())
+                    .purchaseDocument(purchaseDocument.getName())
+                    .build();
+        }).toList();
     }
 }
