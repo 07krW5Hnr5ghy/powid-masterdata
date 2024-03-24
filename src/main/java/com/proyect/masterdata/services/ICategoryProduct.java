@@ -13,10 +13,9 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 public interface ICategoryProduct {
     ResponseSuccess save(String name, String description, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
-
-    ResponseSuccess saveAll(List<RequestCategoryProduct> categorieProducts, String tokenUser)
+    ResponseSuccess saveAll(List<RequestCategoryProduct> categoryProducts, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
-
     Page<CategoryProductDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
+    List<CategoryProductDTO> listCategoryProducts() throws InternalErrorExceptions,BadRequestExceptions;
 }

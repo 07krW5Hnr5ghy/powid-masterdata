@@ -51,7 +51,7 @@ public class CategoryProductController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:CATEGORY_PRODUCT_GET')")
     public ResponseEntity<Page<CategoryProductDTO>> list(
             @RequestParam(value = "name", required = false) String name,
@@ -64,4 +64,10 @@ public class CategoryProductController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping()
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:CATEGORY_PRODUCT_GET')")
+    public ResponseEntity<List<CategoryProductDTO>> listCategoryProducts() throws BadRequestExceptions {
+        List<CategoryProductDTO> result = iCategoryProduct.listCategoryProducts();
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
 }

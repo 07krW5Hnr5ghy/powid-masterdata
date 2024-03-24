@@ -10,8 +10,7 @@ import com.proyect.masterdata.domain.CategoryProduct;
 @Repository
 public interface CategoryProductRepository extends JpaRepository<CategoryProduct, Long> {
     CategoryProduct findByName(String name);
-
     List<CategoryProduct> findByNameIn(List<String> names);
-
     CategoryProduct findByNameAndStatusTrue(String name);
+    List<CategoryProduct> findAllByStatusTrue();
 }

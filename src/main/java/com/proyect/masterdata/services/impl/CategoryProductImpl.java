@@ -150,4 +150,24 @@ public class CategoryProductImpl implements ICategoryProduct {
                 categoryProductPage.getTotalElements());
 
     }
+
+    @Override
+    public List<CategoryProductDTO> listCategoryProducts() throws InternalErrorExceptions, BadRequestExceptions {
+        List<CategoryProduct> categoryProducts;
+        try {
+            categoryProducts = categoryProductRepository.findAllByStatusTrue();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(categoryProducts.isEmpty()){
+            return Collections.emptyList();
+        }
+        return categoryProducts.stream()
+                .map(categoryProduct -> CategoryProductDTO.builder()
+                        .description(categoryProduct.getDescription())
+                        .name(categoryProduct.getName())
+                        .build())
+                .toList();
+    }
 }
