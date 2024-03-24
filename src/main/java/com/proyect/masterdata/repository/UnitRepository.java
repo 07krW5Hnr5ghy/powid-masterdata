@@ -10,8 +10,7 @@ import com.proyect.masterdata.domain.Unit;
 @Repository
 public interface UnitRepository extends JpaRepository<Unit, Long> {
     Unit findByNameAndStatusTrue(String name);
-
     List<Unit> findByNameInAndStatusTrue(List<String> names);
-
     List<Unit> findAllByStatusTrue();
+    List<Unit> findAllByUnitTypeIdAndStatusTrue(Long unitTypeId);
 }

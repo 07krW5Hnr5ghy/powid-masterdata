@@ -68,4 +68,13 @@ public class UnitController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("unit-type")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_GET')")
+    public ResponseEntity<List<UnitDTO>> list(
+            @RequestParam("unitTypeName") String unitTypeName
+    ) throws BadRequestExceptions {
+        List<UnitDTO> result = iUnit.listUnitByType(unitTypeName);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 }

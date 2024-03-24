@@ -64,10 +64,11 @@ public class UnitImpl implements IUnit {
         try {
             unitRepository.save(Unit.builder()
                     .name(requestUnit.getName().toUpperCase())
-                            .unitType(unitType)
-                            .unitTypeId(unitType.getId())
+                    .unitType(unitType)
+                    .unitTypeId(unitType.getId())
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
+                    .updateDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
 
@@ -174,6 +175,29 @@ public class UnitImpl implements IUnit {
 
         try {
             units = unitRepository.findAllByStatusTrue();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.ResultsFound);
+        }
+
+        if (units.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return units.stream().map(unit -> UnitDTO.builder()
+                .name(unit.getName())
+                .unitType(unit.getUnitType().getName())
+                .build()).toList();
+    }
+
+    @Override
+    public List<UnitDTO> listUnitByType(String unitTypeName) throws BadRequestExceptions {
+        List<Unit> units;
+        Long unitTypeId;
+
+        try {
+            unitTypeId = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase()).getId();
+            units = unitRepository.findAllByUnitTypeIdAndStatusTrue(unitTypeId);
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.ResultsFound);
