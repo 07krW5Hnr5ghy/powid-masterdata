@@ -46,6 +46,7 @@ public class WarehouseImpl implements IWarehouse {
             warehouse = warehouseRepository.findByName(requestWarehouse.getName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
@@ -119,6 +120,7 @@ public class WarehouseImpl implements IWarehouse {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
