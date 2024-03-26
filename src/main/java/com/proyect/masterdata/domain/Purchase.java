@@ -46,6 +46,9 @@ public class Purchase {
     @Column(name = "purchase_document_id")
     private Long purchaseDocumentId;
 
+    @Column(name = "supplier_id")
+    private Long supplierId;
+
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
@@ -53,4 +56,8 @@ public class Purchase {
     @ManyToOne
     @JoinColumn(name = "purchase_document_id",columnDefinition = "purchaseDocumentId",insertable = false,updatable = false)
     private PurchaseDocument purchaseDocument;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id",columnDefinition = "supplierId", insertable = false, updatable = false)
+    private Supplier supplier;
 }

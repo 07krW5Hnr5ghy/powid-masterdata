@@ -2,16 +2,14 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.PurchaseDocument;
+import com.proyect.masterdata.domain.Supplier;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.PurchaseDTO;
 import com.proyect.masterdata.dto.request.RequestPurchaseItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.PurchaseDocumentRepository;
-import com.proyect.masterdata.repository.PurchaseRepository;
-import com.proyect.masterdata.repository.PurchaseRepositoryCustom;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IPurchase;
 import com.proyect.masterdata.services.IPurchaseItem;
 import com.proyect.masterdata.utils.Constants;
@@ -34,11 +32,13 @@ public class PurchaseImpl implements IPurchase {
     private final IPurchaseItem iPurchaseItem;
     private final PurchaseRepositoryCustom purchaseRepositoryCustom;
     private final PurchaseDocumentRepository purchaseDocumentRepository;
+    private final SupplierRepository supplierRepository;
     @Override
-    public ResponseSuccess save(String serial,String documentName, List<RequestPurchaseItem> requestPurchaseItemList, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String serial,String supplierRuc,String documentName, List<RequestPurchaseItem> requestPurchaseItemList, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Purchase purchase;
         PurchaseDocument purchaseDocument;
+        Supplier supplier;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -51,6 +51,8 @@ public class PurchaseImpl implements IPurchase {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            supplier = supplierRepository.findByClientIdAndRucAndStatusTrue(user.getClientId(),supplierRuc.toUpperCase());
         }
 
         if(purchase != null){
@@ -71,6 +73,8 @@ public class PurchaseImpl implements IPurchase {
                             .tokenUser(user.getUsername())
                             .purchaseDocument(purchaseDocument)
                             .purchaseDocumentId(purchaseDocument.getId())
+                            .supplier(supplier)
+                            .supplierId(supplier.getId())
                     .build());
             for(RequestPurchaseItem requestPurchaseItem : requestPurchaseItemList){
                 iPurchaseItem.save(newPurchase.getId(),requestPurchaseItem,user.getUsername());
@@ -137,15 +141,14 @@ public class PurchaseImpl implements IPurchase {
             return Collections.emptyList();
         }
 
-        return purchases.stream().map(purchase -> {
-            PurchaseDocument purchaseDocument = purchaseDocumentRepository.findById(purchase.getPurchaseDocumentId()).orElse(null);
-            return PurchaseDTO.builder()
+        return purchases.stream().map(purchase -> PurchaseDTO.builder()
                     .serial(purchase.getSerial())
                     .registrationDate(purchase.getRegistrationDate())
-                    .purchaseDocument(purchaseDocument.getName())
+                    .purchaseDocument(purchase.getPurchaseDocument().getName())
+                    .supplierName(purchase.getSupplier().getBusinessName())
                     .id(purchase.getId())
-                    .build();
-        }).toList();
+                    .build()
+        ).toList();
     }
 
     @Override
@@ -162,14 +165,13 @@ public class PurchaseImpl implements IPurchase {
         if(purchases.isEmpty()){
             return Collections.emptyList();
         }
-        return purchases.stream().map(purchase -> {
-            PurchaseDocument purchaseDocument = purchaseDocumentRepository.findById(purchase.getPurchaseDocumentId()).orElse(null);
-            return PurchaseDTO.builder()
-                    .serial(purchase.getSerial())
-                    .registrationDate(purchase.getRegistrationDate())
-                    .purchaseDocument(purchaseDocument.getName())
-                    .id(purchase.getId())
-                    .build();
-        }).toList();
+        return purchases.stream().map(purchase -> PurchaseDTO.builder()
+                .serial(purchase.getSerial())
+                .registrationDate(purchase.getRegistrationDate())
+                .purchaseDocument(purchase.getPurchaseDocument().getName())
+                .supplierName(purchase.getSupplier().getBusinessName())
+                .id(purchase.getId())
+                .build()
+        ).toList();
     }
 }

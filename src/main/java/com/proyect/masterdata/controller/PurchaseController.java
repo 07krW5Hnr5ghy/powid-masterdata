@@ -32,9 +32,10 @@ public class PurchaseController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("serial") String serial,
             @RequestBody() List<RequestPurchaseItem> purchaseList,
+            @RequestParam("supplierRuc") String supplierRuc,
             @RequestParam("documentName") String documentName,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iPurchase.save(serial,documentName, purchaseList, tokenUser);
+        ResponseSuccess result = iPurchase.save(serial, supplierRuc, documentName, purchaseList, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

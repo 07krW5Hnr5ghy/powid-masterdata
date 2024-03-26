@@ -70,6 +70,7 @@ public class StockTransferImpl implements IStockTransfer {
             for(RequestStockTransferItem requestStockTransferItem : requestStockTransfer.getRequestStockTransferItemList()){
                 SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransferItem.getSupplierProductSerial());
                 WarehouseStock originWarehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(originWarehouse.getId(), supplierProduct.getId());
+
                 if(originWarehouseStock.getQuantity() < requestStockTransferItem.getQuantity()){
                     throw new BadRequestExceptions(Constants.ErrorOriginWarehouseStock);
                 }
@@ -108,6 +109,7 @@ public class StockTransferImpl implements IStockTransfer {
                     .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }

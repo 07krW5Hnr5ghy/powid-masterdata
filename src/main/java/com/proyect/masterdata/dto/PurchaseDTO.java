@@ -16,4 +16,5 @@ public class PurchaseDTO {
     private Date registrationDate;
     private String purchaseDocument;
     private Long id;
+    private String supplierName;
 }
