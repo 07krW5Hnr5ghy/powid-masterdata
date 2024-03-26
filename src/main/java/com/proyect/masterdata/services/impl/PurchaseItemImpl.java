@@ -188,12 +188,16 @@ public class PurchaseItemImpl implements IPurchaseItem {
     }
 
     @Override
-    public List<PurchaseItemDTO> listPurchaseItem(String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public List<PurchaseItemDTO> listPurchaseItem(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
         List<PurchaseItem> purchaseItems;
         Long clientId;
         try{
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            purchaseItems = purchaseItemRepository.findAllByClientIdAndStatusTrue(clientId);
+            if(id != null){
+                purchaseItems = purchaseItemRepository.findAllByClientIdAndIdAndStatusTrue(clientId,id);
+            }else{
+                purchaseItems = purchaseItemRepository.findAllByClientIdAndStatusTrue(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -213,12 +217,16 @@ public class PurchaseItemImpl implements IPurchaseItem {
     }
 
     @Override
-    public List<PurchaseItemDTO> listPurchaseItemFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public List<PurchaseItemDTO> listPurchaseItemFalse(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
         List<PurchaseItem> purchaseItems;
         Long clientId;
         try{
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            purchaseItems = purchaseItemRepository.findAllByClientIdAndStatusFalse(clientId);
+            if(id != null){
+                purchaseItems = purchaseItemRepository.findAllByClientIdAndIdAndStatusFalse(clientId,id);
+            }else{
+                purchaseItems = purchaseItemRepository.findAllByClientIdAndStatusFalse(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

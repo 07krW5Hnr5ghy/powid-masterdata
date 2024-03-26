@@ -143,6 +143,7 @@ public class PurchaseImpl implements IPurchase {
                     .serial(purchase.getSerial())
                     .registrationDate(purchase.getRegistrationDate())
                     .purchaseDocument(purchaseDocument.getName())
+                    .id(purchase.getId())
                     .build();
         }).toList();
     }
@@ -167,6 +168,7 @@ public class PurchaseImpl implements IPurchase {
                     .serial(purchase.getSerial())
                     .registrationDate(purchase.getRegistrationDate())
                     .purchaseDocument(purchaseDocument.getName())
+                    .id(purchase.getId())
                     .build();
         }).toList();
     }

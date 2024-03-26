@@ -15,4 +15,5 @@ public class PurchaseDTO {
     private String serial;
     private Date registrationDate;
     private String purchaseDocument;
+    private Long id;
 }

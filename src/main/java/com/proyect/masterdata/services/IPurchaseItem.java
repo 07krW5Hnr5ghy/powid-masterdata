@@ -17,7 +17,7 @@ public interface IPurchaseItem {
     Page<PurchaseItemDTO> list(String serial, String user, String supplierProductSerial, String sort, String sortColumn,
                                Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
     ResponseDelete delete(String purchaseSerial,String serialSupplierProduct,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
-    List<PurchaseItemDTO> listPurchaseItem(String user) throws BadRequestExceptions,InternalErrorExceptions;
-    List<PurchaseItemDTO> listPurchaseItemFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    List<PurchaseItemDTO> listPurchaseItem(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
+    List<PurchaseItemDTO> listPurchaseItemFalse(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

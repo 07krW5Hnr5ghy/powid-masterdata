@@ -37,18 +37,20 @@ public class PurchaseItemController {
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
     public ResponseEntity<List<PurchaseItemDTO>> listPurchaseItem(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam(value = "id",required = false) Long id
     ) throws BadRequestExceptions {
-        List<PurchaseItemDTO> result = iPurchaseItem.listPurchaseItem(user);
+        List<PurchaseItemDTO> result = iPurchaseItem.listPurchaseItem(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
     @GetMapping("status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
     public ResponseEntity<List<PurchaseItemDTO>> listPurchaseItemFalse(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam(value = "id",required = false) Long id
     ) throws BadRequestExceptions {
-        List<PurchaseItemDTO> result = iPurchaseItem.listPurchaseItemFalse(user);
+        List<PurchaseItemDTO> result = iPurchaseItem.listPurchaseItemFalse(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
