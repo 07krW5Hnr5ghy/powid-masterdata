@@ -300,12 +300,18 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public List<SupplierProductDTO> listSupplierProduct(String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public List<SupplierProductDTO> listSupplierProduct(String user,String supplierRuc) throws BadRequestExceptions, InternalErrorExceptions {
         List<SupplierProduct> supplierProducts;
         Long clientId;
+        Long supplierId;
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+            if(supplierRuc != null){
+                supplierId = supplierRepository.findByClientIdAndRucAndStatusTrue(clientId,supplierRuc.toUpperCase()).getId();
+                supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(clientId,supplierId);
+            }else {
+                supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -326,12 +332,18 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public List<SupplierProductDTO> listSupplierProductFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public List<SupplierProductDTO> listSupplierProductFalse(String user,String supplierRuc) throws BadRequestExceptions, InternalErrorExceptions {
         List<SupplierProduct> supplierProducts;
         Long clientId;
+        Long supplierId;
         try {
             clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
-            supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+            if(supplierRuc != null){
+                supplierId = supplierRepository.findByClientIdAndRucAndStatusFalse(clientId,supplierRuc.toUpperCase()).getId();
+                supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusFalse(clientId,supplierId);
+            }else{
+                supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

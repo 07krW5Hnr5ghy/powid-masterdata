@@ -97,18 +97,20 @@ public class SupplierProductController {
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<List<SupplierProductDTO>> listSupplierProduct(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam("supplierRuc") String supplierRuc
     ) throws BadRequestExceptions {
-        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProduct(user);
+        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProduct(user,supplierRuc);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
     @GetMapping("status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<List<SupplierProductDTO>> listSupplierProductFalse(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam("supplierRuc") String supplierRuc
     ) throws BadRequestExceptions {
-        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProductFalse(user);
+        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProductFalse(user,supplierRuc);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
