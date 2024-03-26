@@ -194,7 +194,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
         try{
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
             if(id != null){
-                purchaseItems = purchaseItemRepository.findAllByClientIdAndIdAndStatusTrue(clientId,id);
+                purchaseItems = purchaseItemRepository.findAllByClientIdAndPurchaseIdAndStatusTrue(clientId,id);
             }else{
                 purchaseItems = purchaseItemRepository.findAllByClientIdAndStatusTrue(clientId);
             }
@@ -223,7 +223,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
         try{
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
             if(id != null){
-                purchaseItems = purchaseItemRepository.findAllByClientIdAndIdAndStatusFalse(clientId,id);
+                purchaseItems = purchaseItemRepository.findAllByClientIdAndPurchaseIdAndStatusFalse(clientId,id);
             }else{
                 purchaseItems = purchaseItemRepository.findAllByClientIdAndStatusFalse(clientId);
             }
