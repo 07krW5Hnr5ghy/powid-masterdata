@@ -212,6 +212,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 .quantity(purchaseItem.getQuantity())
                 .serial(purchaseItem.getPurchase().getSerial())
                 .supplierProductSerial(purchaseItem.getSupplierProduct().getSerial())
+                .supplier(purchaseItem.getSupplierProduct().getSupplier().getBusinessName())
                 .unitPrice(purchaseItem.getUnitPrice())
                 .build()).toList();
     }
@@ -241,6 +242,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 .quantity(purchaseItem.getQuantity())
                 .serial(purchaseItem.getPurchase().getSerial())
                 .supplierProductSerial(purchaseItem.getSupplierProduct().getSerial())
+                .supplier(purchaseItem.getSupplierProduct().getSupplier().getBusinessName())
                 .unitPrice(purchaseItem.getUnitPrice())
                 .build()).toList();
     }
