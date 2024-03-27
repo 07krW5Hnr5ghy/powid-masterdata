@@ -1677,7 +1677,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem1 = RequestPurchaseItem.builder()
                                 .quantity(15)
                                 .supplierProductSerial("A00001A")
-                                .unitPrice(3.40)
                                 .build();
 
                         requestPurchaseItemList1.add(requestPurchaseItem1);
@@ -1685,7 +1684,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem2 = RequestPurchaseItem.builder()
                                 .quantity(4)
                                 .supplierProductSerial("A00002A")
-                                .unitPrice(7.8)
                                 .build();
 
                         requestPurchaseItemList1.add(requestPurchaseItem2);
@@ -1693,7 +1691,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem3 = RequestPurchaseItem.builder()
                                 .quantity(20)
                                 .supplierProductSerial("A00003A")
-                                .unitPrice(12.45)
                                 .build();
 
                         requestPurchaseItemList1.add(requestPurchaseItem3);
@@ -1701,7 +1698,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem4 = RequestPurchaseItem.builder()
                                 .quantity(25)
                                 .supplierProductSerial("A00004A")
-                                .unitPrice(20.03)
                                 .build();
 
                         requestPurchaseItemList1.add(requestPurchaseItem4);
@@ -1709,7 +1705,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem5 = RequestPurchaseItem.builder()
                                 .quantity(7)
                                 .supplierProductSerial("A00005A")
-                                .unitPrice(14.76)
                                 .build();
 
                         requestPurchaseItemList1.add(requestPurchaseItem5);
@@ -1717,7 +1712,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem6 = RequestPurchaseItem.builder()
                                 .quantity(15)
                                 .supplierProductSerial("A00006A")
-                                .unitPrice(2.91)
                                 .build();
 
                         requestPurchaseItemList1.add(requestPurchaseItem6);
@@ -1727,7 +1721,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem7 = RequestPurchaseItem.builder()
                                 .quantity(9)
                                 .supplierProductSerial("B00001A")
-                                .unitPrice(23.77)
                                 .build();
 
                         requestPurchaseItemList2.add(requestPurchaseItem7);
@@ -1735,7 +1728,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem8 = RequestPurchaseItem.builder()
                                 .quantity(15)
                                 .supplierProductSerial("B00002A")
-                                .unitPrice(13.91)
                                 .build();
 
                         requestPurchaseItemList2.add(requestPurchaseItem8);
@@ -1743,7 +1735,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem9 = RequestPurchaseItem.builder()
                                 .quantity(36)
                                 .supplierProductSerial("B00003A")
-                                .unitPrice(5.19)
                                 .build();
 
                         requestPurchaseItemList2.add(requestPurchaseItem9);
@@ -1751,7 +1742,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem10 = RequestPurchaseItem.builder()
                                 .quantity(13)
                                 .supplierProductSerial("B00004A")
-                                .unitPrice(2.72)
                                 .build();
 
                         requestPurchaseItemList2.add(requestPurchaseItem10);
@@ -1759,7 +1749,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem11 = RequestPurchaseItem.builder()
                                 .quantity(20)
                                 .supplierProductSerial("B00005A")
-                                .unitPrice(17.40)
                                 .build();
 
                         requestPurchaseItemList2.add(requestPurchaseItem11);
@@ -1767,7 +1756,6 @@ public class Seeder implements CommandLineRunner {
                         RequestPurchaseItem requestPurchaseItem12 = RequestPurchaseItem.builder()
                                 .quantity(27)
                                 .supplierProductSerial("B00006A")
-                                .unitPrice(10.99)
                                 .build();
 
                         requestPurchaseItemList2.add(requestPurchaseItem12);

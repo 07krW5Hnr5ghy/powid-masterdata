@@ -84,7 +84,6 @@ public class PurchaseItemImpl implements IPurchaseItem {
                     .status(true)
                     .supplierProduct(supplierProduct)
                     .supplierProductId(supplierProduct.getId())
-                    .unitPrice(requestPurchaseItem.getUnitPrice())
                     .tokenUser(user.getUsername())
                     .build());
 
@@ -136,7 +135,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 .quantity(purchaseItem.getQuantity())
                 .serial(purchaseItem.getPurchase().getSerial())
                 .supplierProductSerial(purchaseItem.getSupplierProduct().getSerial())
-                .unitPrice(purchaseItem.getUnitPrice())
+                .unitPrice(purchaseItem.getSupplierProduct().getPurchasePrice())
                 .build()).toList();
 
         return new PageImpl<>(purchaseItemDTOS, pagePurchase.getPageable(), pagePurchase.getTotalElements());
@@ -213,7 +212,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 .serial(purchaseItem.getPurchase().getSerial())
                 .supplierProductSerial(purchaseItem.getSupplierProduct().getSerial())
                 .supplier(purchaseItem.getSupplierProduct().getSupplier().getBusinessName())
-                .unitPrice(purchaseItem.getUnitPrice())
+                .unitPrice(purchaseItem.getSupplierProduct().getPurchasePrice())
                 .build()).toList();
     }
 
@@ -243,7 +242,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 .serial(purchaseItem.getPurchase().getSerial())
                 .supplierProductSerial(purchaseItem.getSupplierProduct().getSerial())
                 .supplier(purchaseItem.getSupplierProduct().getSupplier().getBusinessName())
-                .unitPrice(purchaseItem.getUnitPrice())
+                .unitPrice(purchaseItem.getSupplierProduct().getPurchasePrice())
                 .build()).toList();
     }
 

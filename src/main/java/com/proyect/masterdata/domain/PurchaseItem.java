@@ -49,9 +49,6 @@ public class PurchaseItem {
     @Column(name = "supplier_product_id")
     private Long supplierProductId;
 
-    @Column(name = "unit_price")
-    private Double unitPrice;
-
     @Column(name = "purchase_id")
     private Long purchaseId;
 

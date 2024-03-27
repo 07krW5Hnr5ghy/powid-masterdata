@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 public class RequestPurchaseItem {
     private Integer quantity;
     private String supplierProductSerial;
-    private Double unitPrice;
 }
