@@ -5,6 +5,7 @@ import com.proyect.masterdata.domain.PurchaseDocument;
 import com.proyect.masterdata.domain.Supplier;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.PurchaseDTO;
+import com.proyect.masterdata.dto.request.RequestPurchase;
 import com.proyect.masterdata.dto.request.RequestPurchaseItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -34,16 +35,16 @@ public class PurchaseImpl implements IPurchase {
     private final PurchaseDocumentRepository purchaseDocumentRepository;
     private final SupplierRepository supplierRepository;
     @Override
-    public ResponseSuccess save(String serial,String supplierRuc,String documentName, List<RequestPurchaseItem> requestPurchaseItemList, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(RequestPurchase requestPurchase) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Purchase purchase;
         PurchaseDocument purchaseDocument;
         Supplier supplier;
 
         try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            purchase = purchaseRepository.findBySerial(serial.toUpperCase());
-            purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(documentName.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(requestPurchase.getTokenUser().toUpperCase());
+            purchase = purchaseRepository.findBySerial(requestPurchase.getSerial().toUpperCase());
+            purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestPurchase.getDocumentName().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -52,7 +53,7 @@ public class PurchaseImpl implements IPurchase {
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
-            supplier = supplierRepository.findByClientIdAndRucAndStatusTrue(user.getClientId(),supplierRuc.toUpperCase());
+            supplier = supplierRepository.findByClientIdAndRucAndStatusTrue(user.getClientId(), requestPurchase.getSupplierRuc().toUpperCase());
         }
 
         if(purchase != null){
@@ -65,7 +66,7 @@ public class PurchaseImpl implements IPurchase {
 
         try{
             Purchase newPurchase = purchaseRepository.save(Purchase.builder()
-                            .serial(serial.toUpperCase())
+                            .serial(requestPurchase.getSerial().toUpperCase())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .status(true)
                             .client(user.getClient())
@@ -76,7 +77,7 @@ public class PurchaseImpl implements IPurchase {
                             .supplier(supplier)
                             .supplierId(supplier.getId())
                     .build());
-            for(RequestPurchaseItem requestPurchaseItem : requestPurchaseItemList){
+            for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getPurchaseItemsList()){
                 iPurchaseItem.save(newPurchase.getId(),requestPurchaseItem,user.getUsername());
             }
             return ResponseSuccess.builder()

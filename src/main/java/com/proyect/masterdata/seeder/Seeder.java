@@ -1716,6 +1716,16 @@ public class Seeder implements CommandLineRunner {
 
                         requestPurchaseItemList1.add(requestPurchaseItem6);
 
+                        RequestPurchase requestPurchase1 = RequestPurchase.builder()
+                                .serial("AA00001")
+                                .documentName("factura")
+                                .supplierRuc("12345678922")
+                                .tokenUser("AYEPES")
+                                .purchaseItemsList(requestPurchaseItemList1)
+                                .build();
+
+                        iPurchase.save(requestPurchase1);
+
                         List<RequestPurchaseItem> requestPurchaseItemList2 = new ArrayList<>();
 
                         RequestPurchaseItem requestPurchaseItem7 = RequestPurchaseItem.builder()
@@ -1760,8 +1770,15 @@ public class Seeder implements CommandLineRunner {
 
                         requestPurchaseItemList2.add(requestPurchaseItem12);
 
-                        iPurchase.save("AA00001","12345678922","factura", requestPurchaseItemList1, "AYEPES");
-                        iPurchase.save("BB00001","12345678925","factura", requestPurchaseItemList2, "NTORRES");
+                        RequestPurchase requestPurchase2 = RequestPurchase.builder()
+                                .serial("BB00001")
+                                .documentName("factura")
+                                .purchaseItemsList(requestPurchaseItemList2)
+                                .supplierRuc("12345678925")
+                                .tokenUser("NTORRES")
+                                .build();
+
+                        iPurchase.save(requestPurchase2);
 
                         // shipments
 

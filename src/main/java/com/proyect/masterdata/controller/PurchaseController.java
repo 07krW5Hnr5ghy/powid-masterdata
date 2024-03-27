@@ -3,6 +3,7 @@ package com.proyect.masterdata.controller;
 import java.util.List;
 
 import com.proyect.masterdata.dto.PurchaseDTO;
+import com.proyect.masterdata.dto.request.RequestPurchase;
 import com.proyect.masterdata.services.IPurchase;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -30,12 +31,9 @@ public class PurchaseController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:PURCHASE_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("serial") String serial,
-            @RequestBody() List<RequestPurchaseItem> purchaseItemList,
-            @RequestParam("supplierRuc") String supplierRuc,
-            @RequestParam("documentName") String documentName,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iPurchase.save(serial, supplierRuc, documentName, purchaseItemList, tokenUser);
+            @RequestBody()RequestPurchase requestPurchase
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iPurchase.save(requestPurchase);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
