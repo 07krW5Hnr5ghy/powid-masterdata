@@ -31,11 +31,11 @@ public class PurchaseController {
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:PURCHASE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("serial") String serial,
-            @RequestBody() List<RequestPurchaseItem> purchaseList,
+            @RequestBody() List<RequestPurchaseItem> purchaseItemList,
             @RequestParam("supplierRuc") String supplierRuc,
             @RequestParam("documentName") String documentName,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iPurchase.save(serial, supplierRuc, documentName, purchaseList, tokenUser);
+        ResponseSuccess result = iPurchase.save(serial, supplierRuc, documentName, purchaseItemList, tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
