@@ -14,4 +14,5 @@ public class SupplierProductDTO {
     private String productSku;
     private String supplierName;
     private Double purchasePrice;
+    private Long supplierProductId;
 }

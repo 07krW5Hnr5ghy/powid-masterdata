@@ -327,6 +327,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                         .purchasePrice(supplierProduct.getPurchasePrice())
                         .serial(supplierProduct.getSerial())
                         .supplierName(supplierProduct.getSupplier().getBusinessName())
+                        .supplierProductId(supplierProduct.getId())
                         .build())
                 .toList();
     }
@@ -359,6 +360,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                         .purchasePrice(supplierProduct.getPurchasePrice())
                         .serial(supplierProduct.getSerial())
                         .supplierName(supplierProduct.getSupplier().getBusinessName())
+                        .supplierProductId(supplierProduct.getId())
                         .build())
                 .toList();
     }
