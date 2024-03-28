@@ -104,7 +104,7 @@ public class StockReturnImpl implements IStockReturn {
                         .build());
             }
 
-            iStockTransaction.save("DS"+newStockReturn.getId(),shipment.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-PROVEEDOR",user);
+            iStockTransaction.save("SR"+newStockReturn.getId(),shipment.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-PROVEEDOR",user);
 
             return ResponseSuccess.builder()
                     .code(200)
