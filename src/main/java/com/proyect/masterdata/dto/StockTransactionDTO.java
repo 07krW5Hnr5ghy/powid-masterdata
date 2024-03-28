@@ -16,4 +16,5 @@ public class StockTransactionDTO {
     private String warehouse;
     private String stockTransactionType;
     private Date registrationDate;
+    private Long id;
 }

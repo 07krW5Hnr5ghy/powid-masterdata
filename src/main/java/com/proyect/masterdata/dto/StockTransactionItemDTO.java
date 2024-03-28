@@ -17,5 +17,5 @@ public class StockTransactionItemDTO {
     private String stockTransactionSerial;
     private String stockTransactionType;
     private String supplierProductSerial;
-    private Date date;
+    private Date registrationDate;
 }

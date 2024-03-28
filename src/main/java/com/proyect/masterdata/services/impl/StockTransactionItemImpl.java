@@ -118,7 +118,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                         .supplierProductSerial(stockTransactionItem.getSupplierProduct().getSerial())
                         .stockTransactionSerial(stockTransactionItem.getStockTransaction().getSerial())
                         .stockTransactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
-                        .date(stockTransactionItem.getRegistrationDate())
+                        .registrationDate(stockTransactionItem.getRegistrationDate())
                         .build())
                 .toList();
 
@@ -127,12 +127,16 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     }
 
     @Override
-    public List<StockTransactionItemDTO> listStockTransactionItem(String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public List<StockTransactionItemDTO> listStockTransactionItem(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
         List<StockTransactionItem> stockTransactionItems;
         Long clientId;
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            stockTransactionItems = stockTransactionItemRepository.findAllByClientId(clientId);
+            if(id != null){
+                stockTransactionItems = stockTransactionItemRepository.findAllByClientIdAndStockTransactionId(clientId,id);
+            }else{
+                stockTransactionItems = stockTransactionItemRepository.findAllByClientId(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -147,7 +151,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                         .supplierProductSerial(stockTransactionItem.getSupplierProduct().getSerial())
                         .stockTransactionSerial(stockTransactionItem.getStockTransaction().getSerial())
                         .stockTransactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
-                        .date(stockTransactionItem.getRegistrationDate())
+                        .registrationDate(stockTransactionItem.getRegistrationDate())
                         .build())
                 .toList();
     }

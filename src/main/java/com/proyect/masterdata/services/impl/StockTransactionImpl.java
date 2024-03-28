@@ -151,6 +151,7 @@ public class StockTransactionImpl implements IStockTransaction {
                 .warehouse(stockTransaction.getWarehouse().getName())
                 .stockTransactionType(stockTransaction.getStockTransactionType().getName())
                 .registrationDate(stockTransaction.getRegistrationDate())
+                .id(stockTransaction.getId())
                 .build()).toList();
     }
 }

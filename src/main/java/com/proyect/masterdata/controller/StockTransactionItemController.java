@@ -37,9 +37,10 @@ public class StockTransactionItemController {
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_ITEM_GET')")
     public ResponseEntity<List<StockTransactionItemDTO>> listStockTransactionItem(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam(value = "id",required = false) Long id
     ) throws BadRequestExceptions {
-        List<StockTransactionItemDTO> result = iStockTransactionItem.listStockTransactionItem(user);
+        List<StockTransactionItemDTO> result = iStockTransactionItem.listStockTransactionItem(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

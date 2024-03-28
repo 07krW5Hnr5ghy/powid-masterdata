@@ -16,5 +16,5 @@ public interface IStockTransactionItem {
                         throws InternalErrorExceptions, BadRequestExceptions;
         Page<StockTransactionItemDTO> list(String user, String stockTransactionSerial,String supplierProductSerial, String sort, String sortColumn,
                                            Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-        List<StockTransactionItemDTO> listStockTransactionItem(String user) throws InternalErrorExceptions,BadRequestExceptions;
+        List<StockTransactionItemDTO> listStockTransactionItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
 }
