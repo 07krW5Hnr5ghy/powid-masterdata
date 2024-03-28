@@ -147,12 +147,16 @@ public class ShipmentItemImpl implements IShipmentItem {
     }
 
     @Override
-    public List<ShipmentItemDTO> listShipmentItem(String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public List<ShipmentItemDTO> listShipmentItem(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
         List<ShipmentItem> shipmentItems;
         Long clientId;
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            shipmentItems = shipmentItemRepository.findAllByClientId(clientId);
+            if(id != null){
+                shipmentItems = shipmentItemRepository.findAllByClientIdAndShipmentId(clientId,id);
+            }else{
+                shipmentItems = shipmentItemRepository.findAllByClientId(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

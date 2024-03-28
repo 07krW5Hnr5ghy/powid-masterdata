@@ -101,8 +101,6 @@ public class ShipmentImpl implements IShipment {
                             .status(true)
                             .purchase(purchase)
                             .purchaseId(purchase.getId())
-                            .stockTransaction(newStockTransaction)
-                            .stockTransactionId(newStockTransaction.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .warehouse(warehouse)
@@ -235,6 +233,7 @@ public class ShipmentImpl implements IShipment {
                 .warehouse(shipment.getWarehouse().getName())
                 .shipmentType(shipment.getShipmentType().getName())
                 .registrationDate(shipment.getRegistrationDate())
+                .id(shipment.getId())
                 .build()).toList();
     }
 

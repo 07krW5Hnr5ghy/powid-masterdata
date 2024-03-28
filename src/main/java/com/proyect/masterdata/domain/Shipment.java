@@ -43,9 +43,6 @@ public class Shipment {
     @Column(name = "warehouse_id")
     private Long warehouseId;
 
-    @Column(name = "stock_transaction_id")
-    private Long stockTransactionId;
-
     @Column(name = "purchase_id")
     private Long purchaseId;
 
@@ -62,10 +59,6 @@ public class Shipment {
     @ManyToOne
     @JoinColumn(name = "warehouse_id", columnDefinition = "warehouseId", insertable = false, updatable = false)
     private Warehouse warehouse;
-
-    @ManyToOne
-    @JoinColumn(name = "stock_transaction_id", columnDefinition = "stockTransactionId", insertable = false, updatable = false)
-    private StockTransaction stockTransaction;
 
     @ManyToOne
     @JoinColumn(name = "purchase_id", columnDefinition = "purchaseId", insertable = false, updatable = false)

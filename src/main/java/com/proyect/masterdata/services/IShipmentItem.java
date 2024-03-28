@@ -18,5 +18,5 @@ public interface IShipmentItem {
             throws InternalErrorExceptions, BadRequestExceptions;
     Page<ShipmentItemDTO> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn,
                                Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
-    List<ShipmentItemDTO> listShipmentItem(String user) throws InternalErrorExceptions,BadRequestExceptions;
+    List<ShipmentItemDTO> listShipmentItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
 }

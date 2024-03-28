@@ -34,9 +34,10 @@ public class ShipmentItemController {
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_ITEM_GET')")
     public ResponseEntity<List<ShipmentItemDTO>> listShipment(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam("id") Long id
     ) throws BadRequestExceptions {
-        List<ShipmentItemDTO> result = iShipmentItem.listShipmentItem(user);
+        List<ShipmentItemDTO> result = iShipmentItem.listShipmentItem(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
