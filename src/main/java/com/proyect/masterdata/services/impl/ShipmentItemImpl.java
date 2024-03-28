@@ -137,7 +137,6 @@ public class ShipmentItemImpl implements IShipmentItem {
         List<ShipmentItemDTO> shipmentItemDTOS = pageShipmentItem.getContent().stream().map(shipmentItem -> ShipmentItemDTO.builder()
                 .purchaseSerial(shipmentItem.getPurchaseItem().getPurchase().getSerial())
                 .quantity(shipmentItem.getQuantity())
-                .serial(shipmentItem.getShipment().getPurchaseSerial())
                 .supplierProductSerial(shipmentItem.getSupplierProduct().getSerial())
                 .warehouse(shipmentItem.getShipment().getWarehouse().getName())
                 .registrationDate(shipmentItem.getRegistrationDate())
