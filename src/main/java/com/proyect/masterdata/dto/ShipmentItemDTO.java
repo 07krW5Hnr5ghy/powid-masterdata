@@ -12,10 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ShipmentItemDTO {
-    private String serial;
     private String warehouse;
     private Integer quantity;
     private String supplierProductSerial;
     private String purchaseSerial;
-    private Date date;
+    private Date registrationDate;
 }

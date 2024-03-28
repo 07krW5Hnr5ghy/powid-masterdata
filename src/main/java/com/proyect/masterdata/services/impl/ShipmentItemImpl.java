@@ -140,7 +140,7 @@ public class ShipmentItemImpl implements IShipmentItem {
                 .serial(shipmentItem.getShipment().getPurchaseSerial())
                 .supplierProductSerial(shipmentItem.getSupplierProduct().getSerial())
                 .warehouse(shipmentItem.getShipment().getWarehouse().getName())
-                .date(shipmentItem.getRegistrationDate())
+                .registrationDate(shipmentItem.getRegistrationDate())
                 .build()).toList();
 
         return new PageImpl<>(shipmentItemDTOS, pageShipmentItem.getPageable(), pageShipmentItem.getTotalElements());
@@ -169,10 +169,9 @@ public class ShipmentItemImpl implements IShipmentItem {
         return shipmentItems.stream().map(shipmentItem -> ShipmentItemDTO.builder()
                 .purchaseSerial(shipmentItem.getPurchaseItem().getPurchase().getSerial())
                 .quantity(shipmentItem.getQuantity())
-                .serial(shipmentItem.getShipment().getPurchaseSerial())
                 .supplierProductSerial(shipmentItem.getSupplierProduct().getSerial())
                 .warehouse(shipmentItem.getShipment().getWarehouse().getName())
-                .date(shipmentItem.getRegistrationDate())
+                .registrationDate(shipmentItem.getRegistrationDate())
                 .build()).toList();
     }
 
