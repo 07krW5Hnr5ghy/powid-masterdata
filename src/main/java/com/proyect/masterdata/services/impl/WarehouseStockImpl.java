@@ -181,12 +181,18 @@ public class WarehouseStockImpl implements IWarehouseStock {
     }
 
     @Override
-    public List<WarehouseStockDTO> listWarehouse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public List<WarehouseStockDTO> listWarehouse(String user,String warehouseName) throws BadRequestExceptions, InternalErrorExceptions {
         List<WarehouseStock> warehouseStocks;
+        Warehouse warehouse;
         Long clientId;
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user).getClientId();
-            warehouseStocks = warehouseStockRepository.findAllByClientId(clientId);
+            if(warehouseName != null){
+                warehouse = warehouseRepository.findByNameAndStatusTrue(warehouseName.toUpperCase());
+                warehouseStocks = warehouseStockRepository.findAllByClientIdAndWarehouseId(clientId, warehouse.getId());
+            }else{
+                warehouseStocks = warehouseStockRepository.findAllByClientId(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

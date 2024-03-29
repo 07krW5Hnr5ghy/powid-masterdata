@@ -42,9 +42,10 @@ public class WarehouseStockController {
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
     public ResponseEntity<List<WarehouseStockDTO>> listWarehouseStock(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam(value = "warehouse",required = false) String warehouse
     ) throws BadRequestExceptions {
-        List<WarehouseStockDTO> result = iWarehouseStock.listWarehouse(user);
+        List<WarehouseStockDTO> result = iWarehouseStock.listWarehouse(user,warehouse);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
