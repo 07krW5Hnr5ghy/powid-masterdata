@@ -200,6 +200,7 @@ public class Constants {
     public static final String ErrorPurchaseItemExists = "The purchase item already exists";
     public static final String ErrorShipment = "The shipment does not exists";
     public static final String ErrorShipmentExists = "The shipment already exists";
+    public static final String ErrorShipmentReturn = "The stock return does not exists";
     public static final String ErrorWarehouseStock = "The warehouse stock does not exist";
     public static final String ErrorWarehouseStockExists = "The warehouse stock already exists";
     public static final String ErrorWarehouseStockLess = "the quantity is greater than the actual stock";
@@ -248,4 +249,5 @@ public class Constants {
     public static final String ErrorSupplierNameExists = "Supplier name already exists";
     public static final String ErrorPurchaseDocument = "Purchase document does not exist";
     public static final String ErrorPurchaseDocumentExists = "Purchase document already exists";
+
 }

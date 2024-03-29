@@ -38,6 +38,7 @@ public class ShipmentImpl implements IShipment {
     private final ShipmentTypeRepository shipmentTypeRepository;
     private final ShipmentRepositoryCustom shipmentRepositoryCustom;
     private final SupplierProductRepository supplierProductRepository;
+    private final StockReturnRepository stockReturnRepository;
 
     @Override
     public ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -47,6 +48,7 @@ public class ShipmentImpl implements IShipment {
         Shipment shipment;
         Purchase purchase;
         ShipmentType shipmentType;
+        StockReturn stockReturn;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -84,6 +86,12 @@ public class ShipmentImpl implements IShipment {
         }
 
         try{
+            if(Objects.equals(shipmentType.getName(), "DEVOLUCION")){
+                stockReturn = stockReturnRepository.findBySerial(requestShipment.getPurchaseSerial());
+                if(stockReturn == null){
+                    throw new BadRequestExceptions(Constants.ErrorShipmentReturn);
+                }
+            }
 
             for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
                 SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProductSerial());
