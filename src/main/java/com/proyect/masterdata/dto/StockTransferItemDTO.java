@@ -14,6 +14,8 @@ import java.util.Date;
 public class StockTransferItemDTO {
     private Long stockTransferId;
     private Integer quantity;
+    private String originWarehouse;
+    private String destinationWarehouse;
     private String supplierProductSerial;
     private Date registrationDate;
 }

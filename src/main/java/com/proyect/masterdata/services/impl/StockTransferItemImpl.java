@@ -112,6 +112,8 @@ public class StockTransferItemImpl implements IStockTransferItem {
                 .stockTransferId(stockTransferItem.getStockTransferId())
                 .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
                 .quantity(stockTransferItem.getQuantity())
+                .originWarehouse(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
+                .destinationWarehouse(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())
                 .registrationDate(stockTransferItem.getRegistrationDate())
                 .build()
         ).toList();
