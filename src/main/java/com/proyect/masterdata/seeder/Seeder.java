@@ -2255,7 +2255,7 @@ public class Seeder implements CommandLineRunner {
                                 .pictures(courierPictures)
                                 .build();
 
-                        iOrdering.update(1L,requestOrderUpdate1,"gjimenez");
+                        iOrdering.update(1L,requestOrderUpdate1,"ICONTRERAS");
 
                         RequestCancelledOrder requestCancelledOrder1 = RequestCancelledOrder.builder()
                                 .cancellationReason("Demora en entrega")
@@ -2263,7 +2263,7 @@ public class Seeder implements CommandLineRunner {
                                 .warehouse("luminous")
                                 .build();
 
-                        iCancelledOrder.save(requestCancelledOrder1,"gjimenez");
+                        iCancelledOrder.save(requestCancelledOrder1,"ICONTRERAS");
 
                         // mock courier pictures and change state to delivered
                         List<MultipartFile> courierImages1 = new ArrayList<>();
@@ -2288,7 +2288,7 @@ public class Seeder implements CommandLineRunner {
                                 .paymentMethod("LINK")
                                 .build();
 
-                        iCourier.updateOrder(1L,requestCourierOrder1,"gjimenez");
+                        iCourier.updateOrder(1L,requestCourierOrder1,"MSALAS");
 
                         // mock register stock return
                         List<RequestStockReturnItem> requestStockReturnItemList = new ArrayList<RequestStockReturnItem>();
