@@ -157,12 +157,16 @@ public class StockTransferImpl implements IStockTransfer {
     }
 
     @Override
-    public List<StockTransferDTO> listStockTransfer(String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public List<StockTransferDTO> listStockTransfer(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
         List<StockTransfer> stockTransfers;
         Long clientId;
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            stockTransfers = stockTransferRepository.findAllByClientId(clientId);
+            if(id != null){
+                stockTransfers = stockTransferRepository.findAllByClientIdAndId(clientId,id);
+            }else{
+                stockTransfers = stockTransferRepository.findAllByClientId(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

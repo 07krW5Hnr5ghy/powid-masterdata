@@ -13,6 +13,6 @@ import java.util.List;
 public interface IStockTransfer {
     ResponseSuccess save(RequestStockTransfer requestStockTransfer, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     Page<StockTransferDTO> list(String user,String originWarehouse,String destinationWarehouse,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
-    List<StockTransferDTO> listStockTransfer(String user) throws InternalErrorExceptions,BadRequestExceptions;
+    List<StockTransferDTO> listStockTransfer(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
 
 }
