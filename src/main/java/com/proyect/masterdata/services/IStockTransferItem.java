@@ -15,5 +15,5 @@ import java.util.List;
 public interface IStockTransferItem {
     StockTransferItem save(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions;
     Page<StockTransferItemDTO> list(String user,Long stockTransferId,String supplierProductSerial,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
-    List<StockTransferItemDTO> listStockTransferItem(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    List<StockTransferItemDTO> listStockTransferItem(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
 }

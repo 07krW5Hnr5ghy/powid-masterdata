@@ -50,10 +50,9 @@ public class StockTransferController {
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_GET')")
     public ResponseEntity<List<StockTransferDTO>> listStockTransfer(
-            @RequestParam("user") String user,
-            @RequestParam(value = "id",required = false) Long id
+            @RequestParam("user") String user
     ) throws BadRequestExceptions {
-        List<StockTransferDTO> result = iStockTransfer.listStockTransfer(user,id);
+        List<StockTransferDTO> result = iStockTransfer.listStockTransfer(user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

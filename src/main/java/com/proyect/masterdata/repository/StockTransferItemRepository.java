@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface StockTransferItemRepository extends JpaRepository<StockTransferItem,Long> {
     List<StockTransferItem> findAllByClientId(Long clientId);
+    List<StockTransferItem> findAllByClientIdAndStockTransferId(Long clientId,Long stockTransferId);
 }
