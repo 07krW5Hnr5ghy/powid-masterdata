@@ -131,11 +131,12 @@ public class PurchaseItemImpl implements IPurchaseItem {
         }
 
         List<PurchaseItemDTO> purchaseItemDTOS = pagePurchase.getContent().stream().map(purchaseItem -> PurchaseItemDTO.builder()
-                .date(purchaseItem.getRegistrationDate())
+                .registrationDate(purchaseItem.getRegistrationDate())
                 .quantity(purchaseItem.getQuantity())
                 .serial(purchaseItem.getPurchase().getSerial())
                 .supplierProductSerial(purchaseItem.getSupplierProduct().getSerial())
                 .unitPrice(purchaseItem.getSupplierProduct().getPurchasePrice())
+                .id(purchaseItem.getId())
                 .build()).toList();
 
         return new PageImpl<>(purchaseItemDTOS, pagePurchase.getPageable(), pagePurchase.getTotalElements());
@@ -207,12 +208,13 @@ public class PurchaseItemImpl implements IPurchaseItem {
         }
 
         return purchaseItems.stream().map(purchaseItem -> PurchaseItemDTO.builder()
-                .date(purchaseItem.getRegistrationDate())
+                .registrationDate(purchaseItem.getRegistrationDate())
                 .quantity(purchaseItem.getQuantity())
                 .serial(purchaseItem.getPurchase().getSerial())
                 .supplierProductSerial(purchaseItem.getSupplierProduct().getSerial())
                 .supplier(purchaseItem.getSupplierProduct().getSupplier().getBusinessName())
                 .unitPrice(purchaseItem.getSupplierProduct().getPurchasePrice())
+                .id(purchaseItem.getId())
                 .build()).toList();
     }
 
@@ -237,12 +239,13 @@ public class PurchaseItemImpl implements IPurchaseItem {
         }
 
         return purchaseItems.stream().map(purchaseItem -> PurchaseItemDTO.builder()
-                .date(purchaseItem.getRegistrationDate())
+                .registrationDate(purchaseItem.getRegistrationDate())
                 .quantity(purchaseItem.getQuantity())
                 .serial(purchaseItem.getPurchase().getSerial())
                 .supplierProductSerial(purchaseItem.getSupplierProduct().getSerial())
                 .supplier(purchaseItem.getSupplierProduct().getSupplier().getBusinessName())
                 .unitPrice(purchaseItem.getSupplierProduct().getPurchasePrice())
+                .id(purchaseItem.getId())
                 .build()).toList();
     }
 

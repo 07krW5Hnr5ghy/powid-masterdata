@@ -17,5 +17,6 @@ public class PurchaseItemDTO {
     private String supplierProductSerial;
     private String supplier;
     private Double unitPrice;
-    private Date date;
+    private Date registrationDate;
+    private Long id;
 }
