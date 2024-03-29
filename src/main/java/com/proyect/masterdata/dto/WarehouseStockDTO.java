@@ -17,4 +17,5 @@ public class WarehouseStockDTO {
     public Integer quantity;
     public Date registrationDate;
     public Date updateDate;
+    public Long id;
 }

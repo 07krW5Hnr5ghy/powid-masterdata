@@ -209,6 +209,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
                         .warehouse(warehouseStock.getWarehouse().getName())
                         .registrationDate(warehouseStock.getRegistrationDate())
                         .updateDate(warehouseStock.getUpdateDate())
+                        .id(warehouseStock.getId())
                         .build())
                 .toList();
     }
