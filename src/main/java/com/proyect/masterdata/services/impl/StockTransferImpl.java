@@ -44,11 +44,13 @@ public class StockTransferImpl implements IStockTransfer {
         User user;
         Warehouse originWarehouse;
         Warehouse destinationWarehouse;
+        StockTransfer stockTransfer;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             originWarehouse = warehouseRepository.findByNameAndStatusTrue(requestStockTransfer.getOriginWarehouse().toUpperCase());
             destinationWarehouse = warehouseRepository.findByNameAndStatusTrue(requestStockTransfer.getDestinationWarehouse().toUpperCase());
+            stockTransfer = stockTransferRepository.findBySerial(requestStockTransfer.getSerial().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -56,6 +58,10 @@ public class StockTransferImpl implements IStockTransfer {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(stockTransfer != null){
+            throw new BadRequestExceptions(Constants.ErrorStockTransferExists);
         }
 
         if(originWarehouse == null){
@@ -77,6 +83,7 @@ public class StockTransferImpl implements IStockTransfer {
             }
 
             StockTransfer newStockTransfer = stockTransferRepository.save(StockTransfer.builder()
+                            .serial(requestStockTransfer.getSerial().toUpperCase())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .originWarehouse(originWarehouse)
@@ -147,6 +154,7 @@ public class StockTransferImpl implements IStockTransfer {
         }
 
         List<StockTransferDTO> stockTransferDTOS = pageStockTransfer.getContent().stream().map(stockTransfer -> StockTransferDTO.builder()
+                .serial(stockTransfer.getSerial())
                 .originWarehouse(stockTransfer.getOriginWarehouse().getName())
                 .destinationWarehouse(stockTransfer.getDestinationWarehouse().getName())
                 .registrationDate(stockTransfer.getRegistrationDate())
@@ -171,6 +179,7 @@ public class StockTransferImpl implements IStockTransfer {
             return Collections.emptyList();
         }
         return stockTransfers.stream().map(stockTransfer -> StockTransferDTO.builder()
+                .serial(stockTransfer.getSerial())
                 .originWarehouse(stockTransfer.getOriginWarehouse().getName())
                 .destinationWarehouse(stockTransfer.getDestinationWarehouse().getName())
                 .registrationDate(stockTransfer.getRegistrationDate())

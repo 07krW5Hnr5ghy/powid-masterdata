@@ -66,7 +66,7 @@ public class StockReturnImpl implements IStockReturn {
         if(purchase == null){
             throw new BadRequestExceptions(Constants.ErrorPurchase);
         }else{
-            stockReturn = stockReturnRepository.findByPurchaseId(purchase.getId());
+            stockReturn = stockReturnRepository.findBySerial(requestStockReturn.getSerial());
             shipment = shipmentRepository.findByPurchaseIdAndShipmentTypeName(purchase.getId(), "EMBARQUE");
         }
 
@@ -91,7 +91,7 @@ public class StockReturnImpl implements IStockReturn {
                 }
             }
             StockReturn newStockReturn = stockReturnRepository.save(StockReturn.builder()
-                            .serial(purchase.getSerial())
+                            .serial(requestStockReturn.getSerial().toUpperCase())
                             .purchase(purchase)
                             .purchaseId(purchase.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
@@ -152,6 +152,7 @@ public class StockReturnImpl implements IStockReturn {
 
         List<StockReturnDTO> stockReturnDTOS = pageStockReturn.getContent().stream().map(stockReturn -> StockReturnDTO.builder()
                 .registrationDate(stockReturn.getRegistrationDate())
+                .serial(stockReturn.getSerial())
                 .purchaseSerial(stockReturn.getPurchase().getSerial())
                 .updateDate(stockReturn.getUpdateDate())
                 .build()).toList();
@@ -176,6 +177,7 @@ public class StockReturnImpl implements IStockReturn {
 
         return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
                 .registrationDate(stockReturn.getRegistrationDate())
+                .serial(stockReturn.getSerial())
                 .purchaseSerial(stockReturn.getPurchase().getSerial())
                 .updateDate(stockReturn.getUpdateDate())
                 .id(stockReturn.getId())
@@ -201,6 +203,7 @@ public class StockReturnImpl implements IStockReturn {
 
         return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
                 .registrationDate(stockReturn.getRegistrationDate())
+                .serial(stockReturn.getSerial())
                 .purchaseSerial(stockReturn.getPurchase().getSerial())
                 .updateDate(stockReturn.getUpdateDate())
                 .id(stockReturn.getId())

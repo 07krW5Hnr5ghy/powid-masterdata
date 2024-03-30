@@ -12,6 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class StockReturnItemDTO {
+    private String serial;
     private String purchaseSerial;
     private String supplierProductSerial;
     private Integer quantity;

@@ -13,6 +13,7 @@ import java.util.Date;
 @Data
 public class StockTransferDTO {
     private Long stockTransferId;
+    private String serial;
     private String originWarehouse;
     private String destinationWarehouse;
     private Date registrationDate;

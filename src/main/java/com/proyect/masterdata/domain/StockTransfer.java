@@ -23,6 +23,9 @@ public class StockTransfer {
     @Column(name = "stock_transfer_id")
     private Long id;
 
+    @Column(name = "serial")
+    private String serial;
+
     @Column(name = "origin_warehouse_id")
     private Long originWarehouseId;
 

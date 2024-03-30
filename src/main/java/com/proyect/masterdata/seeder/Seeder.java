@@ -2311,6 +2311,7 @@ public class Seeder implements CommandLineRunner {
                                 .build();
                         requestStockReturnItemList.add(requestStockReturnItem3);
                         RequestStockReturn requestStockReturn1 = RequestStockReturn.builder()
+                                .serial("SR1AA00001")
                                 .purchaseSerial("AA00001")
                                 .warehouse("luminous")
                                 .tokenUser("AYEPES")
@@ -2353,6 +2354,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplierProductSerial("A00002A")
                                 .build());
                         RequestStockTransfer requestStockTransfer1 = RequestStockTransfer.builder()
+                                .serial("ST00001")
                                 .originWarehouse("luminous")
                                 .destinationWarehouse("oikas")
                                 .requestStockTransferItemList(requestStockTransferItemList1)

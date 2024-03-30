@@ -126,6 +126,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 .observations(stockReturnItem.getObservations())
                 .supplier(stockReturnItem.getSupplierProduct().getSupplier().getBusinessName())
                 .id(stockReturnItem.getId())
+                .serial(stockReturnItem.getStockReturn().getSerial())
                 .build()
         ).toList();
     }
@@ -155,6 +156,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 .quantity(stockReturnItem.getQuantity())
                 .observations(stockReturnItem.getObservations())
                 .supplier(stockReturnItem.getSupplierProduct().getSupplier().getBusinessName())
+                .serial(stockReturnItem.getStockReturn().getSerial())
                 .build()
         ).toList();
     }

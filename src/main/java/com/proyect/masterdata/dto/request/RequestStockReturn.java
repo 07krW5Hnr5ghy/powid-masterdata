@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class RequestStockReturn {
+    private String serial;
     private String purchaseSerial;
     private String warehouse;
     private List<RequestStockReturnItem> requestStockReturnItemList;
