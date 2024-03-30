@@ -124,6 +124,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 .registrationDate(stockReturnItem.getRegistrationDate())
                 .quantity(stockReturnItem.getQuantity())
                 .observations(stockReturnItem.getObservations())
+                .supplier(stockReturnItem.getSupplierProduct().getSupplier().getBusinessName())
                 .id(stockReturnItem.getId())
                 .build()
         ).toList();
@@ -153,6 +154,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 .registrationDate(stockReturnItem.getRegistrationDate())
                 .quantity(stockReturnItem.getQuantity())
                 .observations(stockReturnItem.getObservations())
+                .supplier(stockReturnItem.getSupplierProduct().getSupplier().getBusinessName())
                 .build()
         ).toList();
     }

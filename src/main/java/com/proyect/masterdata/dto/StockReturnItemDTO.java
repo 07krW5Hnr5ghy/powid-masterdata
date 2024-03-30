@@ -17,5 +17,6 @@ public class StockReturnItemDTO {
     private Integer quantity;
     private String observations;
     private Date registrationDate;
+    private String supplier;
     private Long id;
 }
