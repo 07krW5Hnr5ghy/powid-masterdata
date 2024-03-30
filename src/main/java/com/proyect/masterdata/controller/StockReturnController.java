@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.StockReturnDTO;
+import com.proyect.masterdata.dto.request.RequestStockReturn;
 import com.proyect.masterdata.dto.request.RequestStockReturnItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -25,11 +26,9 @@ public class StockReturnController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_RETURN_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestBody() List<RequestStockReturnItem> requestStockReturnItemList,
-            @RequestParam("purchaseSerial") String purchaseSerial,
-            @RequestParam("tokenUser") String tokenUser
+            @RequestBody() RequestStockReturn requestStockReturn
             ) throws BadRequestExceptions {
-        ResponseSuccess result = iStockReturn.save(purchaseSerial,requestStockReturnItemList,tokenUser);
+        ResponseSuccess result = iStockReturn.save(requestStockReturn);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

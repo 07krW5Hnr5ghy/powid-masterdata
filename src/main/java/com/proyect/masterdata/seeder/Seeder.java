@@ -2310,7 +2310,13 @@ public class Seeder implements CommandLineRunner {
                                 .supplierProductSerial("A00003A")
                                 .build();
                         requestStockReturnItemList.add(requestStockReturnItem3);
-                        iStockReturn.save("AA00001",requestStockReturnItemList,"AYEPES");
+                        RequestStockReturn requestStockReturn1 = RequestStockReturn.builder()
+                                .purchaseSerial("AA00001")
+                                .warehouse("luminous")
+                                .tokenUser("AYEPES")
+                                .requestStockReturnItemList(requestStockReturnItemList)
+                                .build();
+                        iStockReturn.save(requestStockReturn1);
                         // update order to lack of stock state
                         RequestOrderUpdate requestOrderUpdate3 = RequestOrderUpdate.builder()
                                 .pictures(new ArrayList<>())
