@@ -140,6 +140,7 @@ public class ShipmentItemImpl implements IShipmentItem {
                 .supplierProductSerial(shipmentItem.getSupplierProduct().getSerial())
                 .warehouse(shipmentItem.getShipment().getWarehouse().getName())
                 .registrationDate(shipmentItem.getRegistrationDate())
+                .id(shipmentItem.getId())
                 .build()).toList();
 
         return new PageImpl<>(shipmentItemDTOS, pageShipmentItem.getPageable(), pageShipmentItem.getTotalElements());
@@ -171,6 +172,7 @@ public class ShipmentItemImpl implements IShipmentItem {
                 .supplierProductSerial(shipmentItem.getSupplierProduct().getSerial())
                 .warehouse(shipmentItem.getShipment().getWarehouse().getName())
                 .registrationDate(shipmentItem.getRegistrationDate())
+                .id(shipmentItem.getId())
                 .build()).toList();
     }
 
