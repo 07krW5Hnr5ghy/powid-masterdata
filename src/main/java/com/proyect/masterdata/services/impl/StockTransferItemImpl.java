@@ -109,6 +109,7 @@ public class StockTransferItemImpl implements IStockTransferItem {
             return Collections.emptyList();
         }
         return stockTransferItems.stream().map(stockTransferItem -> StockTransferItemDTO.builder()
+                .serial(stockTransferItem.getStockTransfer().getSerial())
                 .stockTransferId(stockTransferItem.getStockTransferId())
                 .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
                 .quantity(stockTransferItem.getQuantity())
