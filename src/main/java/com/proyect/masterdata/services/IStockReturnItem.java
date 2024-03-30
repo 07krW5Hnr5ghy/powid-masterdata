@@ -15,6 +15,6 @@ public interface IStockReturnItem {
     public StockReturnItem save(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
     Page<StockReturnItemDTO> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn,
                                   Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    List<StockReturnItemDTO> listStockReturnItem(String user) throws InternalErrorExceptions,BadRequestExceptions;
-    List<StockReturnItemDTO> listStockReturnItemFalse(String user) throws InternalErrorExceptions,BadRequestExceptions;
+    List<StockReturnItemDTO> listStockReturnItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
+    List<StockReturnItemDTO> listStockReturnItemFalse(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
 }

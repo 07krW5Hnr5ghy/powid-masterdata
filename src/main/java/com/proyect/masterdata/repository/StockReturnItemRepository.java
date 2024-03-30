@@ -12,4 +12,6 @@ public interface StockReturnItemRepository extends JpaRepository<StockReturnItem
     StockReturn findByPurchaseIdAndSupplierProductId(Long purchaseId, Long supplierProductId);
     List<StockReturnItem> findAllByClientIdAndStatusTrue(Long clientId);
     List<StockReturnItem> findAllByClientIdAndStatusFalse(Long clientId);
+    List<StockReturnItem> findAllByClientIdAndStockReturnIdAndStatusTrue(Long clientId,Long stockReturnId);
+    List<StockReturnItem> findAllByClientIdAndStockReturnIdAndStatusFalse(Long clientId,Long stockReturnId);
 }

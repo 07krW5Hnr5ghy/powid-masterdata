@@ -94,18 +94,23 @@ public class StockReturnItemImpl implements IStockReturnItem {
                     .registrationDate(stockReturnItem.getRegistrationDate())
                     .quantity(stockReturnItem.getQuantity())
                     .observations(stockReturnItem.getObservations())
+                    .id(stockReturnItem.getId())
                     .build()
         ).toList();
         return new PageImpl<>(stockReturnDTOS,pageStockReturn.getPageable(),pageStockReturn.getTotalElements());
     }
 
     @Override
-    public List<StockReturnItemDTO> listStockReturnItem(String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public List<StockReturnItemDTO> listStockReturnItem(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
         List<StockReturnItem> stockReturnItems;
         Long clientId;
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStatusTrue(clientId);
+            if(id != null){
+                stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStockReturnIdAndStatusTrue(clientId,id);
+            }else{
+                stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStatusTrue(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -119,17 +124,22 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 .registrationDate(stockReturnItem.getRegistrationDate())
                 .quantity(stockReturnItem.getQuantity())
                 .observations(stockReturnItem.getObservations())
+                .id(stockReturnItem.getId())
                 .build()
         ).toList();
     }
 
     @Override
-    public List<StockReturnItemDTO> listStockReturnItemFalse(String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public List<StockReturnItemDTO> listStockReturnItemFalse(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
         List<StockReturnItem> stockReturnItems;
         Long clientId;
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStatusFalse(clientId);
+            if(id != null){
+                stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStockReturnIdAndStatusFalse(clientId,id);
+            }else{
+                stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStatusFalse(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

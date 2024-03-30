@@ -37,17 +37,19 @@ public class StockReturnItemController {
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_ITEM_GET')")
     public ResponseEntity<List<StockReturnItemDTO>> listStockReturnItem(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam(value = "id", required = false) Long id
     ) throws InternalErrorExceptions,BadRequestExceptions {
-        List<StockReturnItemDTO> result = iStockReturnItem.listStockReturnItem(user.toUpperCase());
+        List<StockReturnItemDTO> result = iStockReturnItem.listStockReturnItem(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
     @GetMapping("status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_ITEM_GET')")
     public ResponseEntity<List<StockReturnItemDTO>> listStockReturnItemFalse(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam(value = "id",required = false) Long id
     ) throws InternalErrorExceptions,BadRequestExceptions {
-        List<StockReturnItemDTO> result = iStockReturnItem.listStockReturnItemFalse(user.toUpperCase());
+        List<StockReturnItemDTO> result = iStockReturnItem.listStockReturnItemFalse(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

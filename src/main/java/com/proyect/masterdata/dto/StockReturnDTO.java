@@ -15,4 +15,5 @@ public class StockReturnDTO {
     private String purchaseSerial;
     private Date registrationDate;
     private Date updateDate;
+    private Long id;
 }

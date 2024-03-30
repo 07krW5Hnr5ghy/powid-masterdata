@@ -168,6 +168,7 @@ public class StockReturnImpl implements IStockReturn {
                 .registrationDate(stockReturn.getRegistrationDate())
                 .purchaseSerial(stockReturn.getPurchase().getSerial())
                 .updateDate(stockReturn.getUpdateDate())
+                .id(stockReturn.getId())
                 .build()).toList();
     }
 
@@ -191,6 +192,7 @@ public class StockReturnImpl implements IStockReturn {
                 .registrationDate(stockReturn.getRegistrationDate())
                 .purchaseSerial(stockReturn.getPurchase().getSerial())
                 .updateDate(stockReturn.getUpdateDate())
+                .id(stockReturn.getId())
                 .build()).toList();
     }
 }
