@@ -179,6 +179,7 @@ public class StockReturnImpl implements IStockReturn {
                 .purchaseSerial(stockReturn.getPurchase().getSerial())
                 .updateDate(stockReturn.getUpdateDate())
                 .id(stockReturn.getId())
+                .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
                 .build()).toList();
     }
 
@@ -203,6 +204,7 @@ public class StockReturnImpl implements IStockReturn {
                 .purchaseSerial(stockReturn.getPurchase().getSerial())
                 .updateDate(stockReturn.getUpdateDate())
                 .id(stockReturn.getId())
+                .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
                 .build()).toList();
     }
 }
