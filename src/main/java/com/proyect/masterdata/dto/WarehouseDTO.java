@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class WarehouseDTO {
     private String name;
     private String location;
+    private Long id;
 }

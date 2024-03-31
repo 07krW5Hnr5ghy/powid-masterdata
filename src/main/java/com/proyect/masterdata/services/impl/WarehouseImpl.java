@@ -173,6 +173,7 @@ public class WarehouseImpl implements IWarehouse {
         return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
                 .location(warehouse.getLocation())
                 .name(warehouse.getName())
+                .id(warehouse.getId())
                 .build()).toList();
     }
 
@@ -195,6 +196,7 @@ public class WarehouseImpl implements IWarehouse {
         return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
                 .location(warehouse.getLocation())
                 .name(warehouse.getName())
+                .id(warehouse.getId())
                 .build()).toList();
     }
 
