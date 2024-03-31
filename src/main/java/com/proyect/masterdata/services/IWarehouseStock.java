@@ -20,6 +20,6 @@ public interface IWarehouseStock {
         Page<WarehouseStockDTO> list(String warehouse, String user, String sort, String sortColumn,
                         Integer pageNumber,
                         Integer pageSize) throws InternalErrorExceptions;
-        List<WarehouseStockDTO> listWarehouse(String user,String warehouseName) throws BadRequestExceptions,InternalErrorExceptions;
+        List<WarehouseStockDTO> listWarehouse(String user,Long warehouseId) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

@@ -43,9 +43,9 @@ public class WarehouseStockController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
     public ResponseEntity<List<WarehouseStockDTO>> listWarehouseStock(
             @RequestParam("user") String user,
-            @RequestParam(value = "warehouse",required = false) String warehouse
+            @RequestParam(value = "warehouseId",required = false) Long warehouseId
     ) throws BadRequestExceptions {
-        List<WarehouseStockDTO> result = iWarehouseStock.listWarehouse(user,warehouse);
+        List<WarehouseStockDTO> result = iWarehouseStock.listWarehouse(user,warehouseId);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
