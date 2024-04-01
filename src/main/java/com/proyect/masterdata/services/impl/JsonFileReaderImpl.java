@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import com.proyect.masterdata.dto.CountryDTO;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -43,9 +44,9 @@ public class JsonFileReaderImpl implements IJsonFileReader {
                     new TypeReference<List<LocationDTO>>() {
                     });
 
-            filteredDepartments = locations.stream().collect(
-                    Collectors.toMap(LocationDTO::getDepartment, obj -> obj, (existing, replacement) -> existing))
-                    .values().stream().collect(Collectors.toList());
+            filteredDepartments = new ArrayList<>(locations.stream().collect(
+                            Collectors.toMap(LocationDTO::getDepartment, obj -> obj, (existing, replacement) -> existing))
+                    .values());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,9 +69,9 @@ public class JsonFileReaderImpl implements IJsonFileReader {
                     new TypeReference<List<LocationDTO>>() {
                     });
 
-            filteredProvinces = locations.stream().collect(
-                    Collectors.toMap(LocationDTO::getProvince, obj -> obj, (existing, replacement) -> existing))
-                    .values().stream().collect(Collectors.toList());
+            filteredProvinces = new ArrayList<>(locations.stream().collect(
+                            Collectors.toMap(LocationDTO::getProvince, obj -> obj, (existing, replacement) -> existing))
+                    .values());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -95,14 +96,31 @@ public class JsonFileReaderImpl implements IJsonFileReader {
                     new TypeReference<List<LocationDTO>>() {
                     });
 
-            filteredDistrict = locations.stream().collect(
-                    Collectors.toMap(LocationDTO::getDistrict, obj -> obj, (existing, replacement) -> existing))
-                    .values().stream().collect(Collectors.toList());
+            filteredDistrict = new ArrayList<>(locations.stream().collect(
+                            Collectors.toMap(LocationDTO::getDistrict, obj -> obj, (existing, replacement) -> existing))
+                    .values());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return filteredDistrict;
+    }
+
+    @Override
+    public List<CountryDTO> filterCountry() {
+        List<CountryDTO> filteredCountry = new ArrayList<>();
+        try{
+            // uncomment for deployment
+            // File file = new File("src/main/country.json");
+            File file = new File(
+                    "C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\country.json");
+            ObjectMapper mapper = new ObjectMapper();
+            List<CountryDTO> locations = mapper.readValue(file,new TypeReference<List<CountryDTO>>(){});
+            filteredCountry = new ArrayList<>(locations.stream().collect(Collectors.toMap(CountryDTO::getValue,obj->obj,(existing,replacement) -> existing)).values());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return filteredCountry;
     }
 
 }

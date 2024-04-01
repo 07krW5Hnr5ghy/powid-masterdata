@@ -1,6 +1,7 @@
 package com.proyect.masterdata.seeder;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.CountryDTO;
 import com.proyect.masterdata.dto.LocationDTO;
 import com.proyect.masterdata.dto.request.*;
 import com.proyect.masterdata.repository.*;
@@ -82,6 +83,7 @@ public class Seeder implements CommandLineRunner {
         private final IUser iUser;
         private final IStore iStore;
         private final IPurchaseDocument iPurchaseDocument;
+        private final ICountry iCountry;
         @Override
         public void run(String... args) throws Exception {
 
@@ -186,6 +188,14 @@ public class Seeder implements CommandLineRunner {
 
                         for (LocationDTO locationDistrict : listDistrict) {
                                 iDistrict.save(locationDistrict.getDistrict(), "ADMIN1", locationDistrict.getProvince());
+                        }
+
+                        // mock countries
+
+                        List<CountryDTO> listCountry = iJsonFileReader.filterCountry();
+
+                        for(CountryDTO country : listCountry){
+                                iCountry.save(country.getValue(),"ADMIN1");
                         }
 
                         // access
