@@ -16,4 +16,5 @@ public class SupplierDTO {
     private String location;
     private String phoneNumber;
     private String email;
+    private Long id;
 }

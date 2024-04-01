@@ -98,9 +98,9 @@ public class SupplierProductController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<List<SupplierProductDTO>> listSupplierProduct(
             @RequestParam("user") String user,
-            @RequestParam(value = "supplierRuc",required = false) String supplierRuc
+            @RequestParam(value = "id",required = false) Long id
     ) throws BadRequestExceptions {
-        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProduct(user,supplierRuc);
+        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProduct(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
@@ -108,9 +108,9 @@ public class SupplierProductController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<List<SupplierProductDTO>> listSupplierProductFalse(
             @RequestParam("user") String user,
-            @RequestParam(value = "supplierRuc",required = false) String supplierRuc
+            @RequestParam(value = "id",required = false) Long id
     ) throws BadRequestExceptions {
-        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProductFalse(user,supplierRuc);
+        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProductFalse(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

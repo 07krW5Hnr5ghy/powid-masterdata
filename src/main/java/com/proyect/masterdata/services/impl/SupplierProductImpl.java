@@ -300,15 +300,13 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public List<SupplierProductDTO> listSupplierProduct(String user,String supplierRuc) throws BadRequestExceptions, InternalErrorExceptions {
+    public List<SupplierProductDTO> listSupplierProduct(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
         List<SupplierProduct> supplierProducts;
         Long clientId;
-        Long supplierId;
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            if(supplierRuc != null){
-                supplierId = supplierRepository.findByClientIdAndRucAndStatusTrue(clientId,supplierRuc.toUpperCase()).getId();
-                supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(clientId,supplierId);
+            if(id != null){
+                supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(clientId,id);
             }else {
                 supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
             }
@@ -333,15 +331,13 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public List<SupplierProductDTO> listSupplierProductFalse(String user,String supplierRuc) throws BadRequestExceptions, InternalErrorExceptions {
+    public List<SupplierProductDTO> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
         List<SupplierProduct> supplierProducts;
         Long clientId;
-        Long supplierId;
         try {
             clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
-            if(supplierRuc != null){
-                supplierId = supplierRepository.findByClientIdAndRucAndStatusFalse(clientId,supplierRuc.toUpperCase()).getId();
-                supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusFalse(clientId,supplierId);
+            if(id != null){
+                supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusFalse(clientId,id);
             }else{
                 supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
             }

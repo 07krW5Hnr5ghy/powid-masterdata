@@ -175,6 +175,7 @@ public class SupplierImpl implements ISupplier {
         }
 
         return suppliers.stream().map(supplier -> SupplierDTO.builder()
+                .id(supplier.getId())
                 .businessName(supplier.getBusinessName())
                 .country(supplier.getCountry())
                 .email(supplier.getEmail())
@@ -201,6 +202,7 @@ public class SupplierImpl implements ISupplier {
         }
 
         return suppliers.stream().map(supplier -> SupplierDTO.builder()
+                .id(supplier.getId())
                 .businessName(supplier.getBusinessName())
                 .country(supplier.getCountry())
                 .email(supplier.getEmail())
