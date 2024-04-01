@@ -178,6 +178,8 @@ public class Seeder implements CommandLineRunner {
                                 iDepartment.save(locationDepartment.getDepartment(), "ADMIN1");
                         }
 
+                        iDepartment.save("NO APLICA","ADMIN1");
+
                         List<LocationDTO> listProvince = iJsonFileReader.filterProvince();
 
                         for (LocationDTO locationProvince : listProvince) {

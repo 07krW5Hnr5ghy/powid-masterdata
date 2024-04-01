@@ -94,6 +94,7 @@ public class Constants {
     public static final String tableMembershipState = "membership_state";
     public static final String tablePurchaseDocument = "purchase_document";
     public static final String tableCountry = "country";
+    public static final String tableSupplierType = "supplier-type";
     // messages
     public static final String register = "registration correctly";
     public static final String update = "correctly updated";
@@ -254,5 +255,6 @@ public class Constants {
     public static final String ErrorPurchaseDocumentExists = "Purchase document already exists";
     public static final String ErrorCountry = "Country does not exist";
     public static final String ErrorCountryExists = "Country already exists";
-
+    public static final String ErrorSupplierType = "Supplier type does not exist";
+    public static final String ErrorSupplierTypeExists = "Supplier type already exists";
 }

@@ -178,7 +178,9 @@ public class DepartmentImpl implements IDepartment {
         List<Department> departments = new ArrayList<>();
         try {
             departments = departmentRepository.findAllByStatusTrue().stream()
-                    .filter(department -> !department.getName().equals("SISTEMA")).toList();
+                    .filter(department -> !department.getName().equals("SISTEMA"))
+                    .filter(department -> !department.getName().equals("NO APLICA"))
+                    .toList();
         } catch (RuntimeException e) {
             log.error(e);
             throw new BadRequestExceptions(Constants.ResultsFound);
