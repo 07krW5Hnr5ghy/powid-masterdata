@@ -205,6 +205,9 @@ public class SupplierImpl implements ISupplier {
                 .location(supplier.getLocation())
                 .phoneNumber(supplier.getPhoneNumber())
                 .ruc(supplier.getRuc())
+                .department(supplier.getDistrict().getProvince().getDepartment().getName())
+                .province(supplier.getDistrict().getProvince().getName())
+                .district(supplier.getDistrict().getName())
                 .build()).toList();
     }
 
@@ -232,6 +235,9 @@ public class SupplierImpl implements ISupplier {
                 .location(supplier.getLocation())
                 .phoneNumber(supplier.getPhoneNumber())
                 .ruc(supplier.getRuc())
+                .department(supplier.getDistrict().getProvince().getDepartment().getName())
+                .province(supplier.getDistrict().getProvince().getName())
+                .district(supplier.getDistrict().getName())
                 .build()).toList();
     }
 
