@@ -208,6 +208,7 @@ public class SupplierImpl implements ISupplier {
                 .department(supplier.getDistrict().getProvince().getDepartment().getName())
                 .province(supplier.getDistrict().getProvince().getName())
                 .district(supplier.getDistrict().getName())
+                .supplierType(supplier.getSupplierType().getName())
                 .build()).toList();
     }
 
@@ -238,6 +239,7 @@ public class SupplierImpl implements ISupplier {
                 .department(supplier.getDistrict().getProvince().getDepartment().getName())
                 .province(supplier.getDistrict().getProvince().getName())
                 .district(supplier.getDistrict().getName())
+                .supplierType(supplier.getSupplierType().getName())
                 .build()).toList();
     }
 
