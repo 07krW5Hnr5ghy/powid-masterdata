@@ -84,6 +84,7 @@ public class Seeder implements CommandLineRunner {
         private final IStore iStore;
         private final IPurchaseDocument iPurchaseDocument;
         private final ICountry iCountry;
+        private final ISupplierType iSupplierType;
         @Override
         public void run(String... args) throws Exception {
 
@@ -186,11 +187,15 @@ public class Seeder implements CommandLineRunner {
                                 iProvince.save(locationProvince.getProvince(), "ADMIN1", locationProvince.getDepartment());
                         }
 
+                        iProvince.save("NO APLICA","ADMIN1","NO APLICA");
+
                         List<LocationDTO> listDistrict = iJsonFileReader.filterDistrict();
 
                         for (LocationDTO locationDistrict : listDistrict) {
                                 iDistrict.save(locationDistrict.getDistrict(), "ADMIN1", locationDistrict.getProvince());
                         }
+
+                        iDistrict.save("NO APLICA","ADMIN1","NO APLICA");
 
                         // mock countries
 
@@ -199,6 +204,10 @@ public class Seeder implements CommandLineRunner {
                         for(CountryDTO country : listCountry){
                                 iCountry.save(country.getValue(),"ADMIN1");
                         }
+
+                        // supplier types
+                        iSupplierType.save("INTERNO","ADMIN1");
+                        iSupplierType.save("DISTRIBUIDOR","ADMIN1");
 
                         // access
                         iAccess.save("ACCESS_POST","ADMIN1");
@@ -1246,7 +1255,9 @@ public class Seeder implements CommandLineRunner {
                         RequestSupplier supplier1 = RequestSupplier.builder().build();
                         supplier1.setBusinessName("burgenvillia .corp");
                         supplier1.setRuc("12345678922");
-                        supplier1.setCountry("Peru");
+                        supplier1.setCountry("PERÚ");
+                        supplier1.setDistrict("RIMAC");
+                        supplier1.setSupplierType("INTERNO");
                         supplier1.setEmail("bg@gmail.com");
                         supplier1.setLocation("Lima, Street 123");
                         supplier1.setPhoneNumber("323456789");
@@ -1256,7 +1267,9 @@ public class Seeder implements CommandLineRunner {
                         RequestSupplier supplier2 = RequestSupplier.builder().build();
                         supplier2.setBusinessName("coltran ltd");
                         supplier2.setRuc("12345678924");
-                        supplier2.setCountry("India");
+                        supplier2.setCountry("INDIA");
+                        supplier2.setDistrict("NO APLICA");
+                        supplier2.setSupplierType("DISTRIBUIDOR");
                         supplier2.setEmail("coltran@gmail.com");
                         supplier2.setLocation("Mumbai, Av 345");
                         supplier2.setPhoneNumber("333456789");
@@ -1267,6 +1280,8 @@ public class Seeder implements CommandLineRunner {
                         supplier3.setBusinessName("xincheng ptd");
                         supplier3.setRuc("12345678925");
                         supplier3.setCountry("China");
+                        supplier3.setDistrict("NO APLICA");
+                        supplier3.setSupplierType("DISTRIBUIDOR");
                         supplier3.setEmail("xincheng@gmail.com");
                         supplier3.setLocation("Shanghai, st 777");
                         supplier3.setPhoneNumber("343456789");
@@ -1277,6 +1292,8 @@ public class Seeder implements CommandLineRunner {
                         supplier4.setBusinessName("tejidos sa");
                         supplier4.setRuc("12345678926");
                         supplier4.setCountry("España");
+                        supplier4.setDistrict("NO APLICA");
+                        supplier4.setSupplierType("DISTRIBUIDOR");
                         supplier4.setEmail("tejidos@gmail.com");
                         supplier4.setLocation("Valencia, tranv 843");
                         supplier4.setPhoneNumber("353456789");
