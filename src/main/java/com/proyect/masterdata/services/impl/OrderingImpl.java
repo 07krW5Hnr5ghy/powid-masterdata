@@ -310,6 +310,81 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
+    public List<OrderDTO> listOrder(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        Long clientId;
+        List<Ordering> orderingList;
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+            orderingList = orderingRepository.findAllByClientId(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(orderingList.isEmpty()){
+            return Collections.emptyList();
+        }
+        return orderingList.stream().map(order -> {
+            Sale sale = saleRepository.findByOrderId(order.getId());
+            Customer customer = customerRepository.findByOrderId(order.getId());
+
+            List<OrderItemDTO> orderItemDTOS = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId()).stream().map(item -> {
+                ProductPrice productPrice = productPriceRepository.findByProductId(item.getProductId());
+                List<String> productPictures = productPictureRepository.findAllByProductId(item.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
+                Double totalPrice = (productPrice.getUnitSalePrice() * item.getQuantity())-((productPrice.getUnitSalePrice() * item.getQuantity())*(item.getDiscount()/100));
+                return OrderItemDTO.builder()
+                        .id(item.getId())
+                        .product(ProductDTO.builder()
+                                .sku(item.getProduct().getSku())
+                                .model(item.getProduct().getModel().getName())
+                                .color(item.getProduct().getColor().getName())
+                                .size(item.getProduct().getSize().getName())
+                                .category(item.getProduct().getCategoryProduct().getName())
+                                .price(productPrice.getUnitSalePrice())
+                                .unit(item.getProduct().getUnit().getName())
+                                .pictures(productPictures)
+                                .build())
+                        .quantity(item.getQuantity())
+                        .unitPrice(productPrice.getUnitSalePrice())
+                        .totalPrice(totalPrice)
+                        .observations(item.getObservations())
+                        .build();
+            }).toList();
+
+            List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
+            List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
+
+            return OrderDTO.builder()
+                    .id(order.getId())
+                    .customerName(customer.getName())
+                    .customerPhone(customer.getPhone())
+                    .customerType(customer.getType())
+                    .orderStatus(order.getOrderState().getName())
+                    .department(customer.getDepartment().getName())
+                    .province(customer.getProvince().getName())
+                    .district(customer.getDistrict().getName())
+                    .address(customer.getAddress())
+                    .instagram(customer.getInstagram())
+                    .deliveryAmount(sale.getDeliveryAmount())
+                    .advancedPayment(sale.getAdvancePayment())
+                    .managementType(order.getManagementType().getName())
+                    .reference(customer.getReference())
+                    .duePayment((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment())
+                    .saleChannel(order.getSaleChannel().getName())
+                    .sellerName(sale.getSeller())
+                    .registrationDate(order.getRegistrationDate())
+                    .updateDate(order.getUpdateDate())
+                    .paymentMethod(order.getOrderPaymentMethod().getName())
+                    .deliveryAddress(sale.getDeliveryAddress())
+                    .courier(order.getCourier().getName())
+                    .paymentReceipts(paymentReceipts)
+                    .courierPictures(courierPictures)
+                    .items(orderItemDTOS)
+                    .saleAmount(sale.getSaleAmount())
+                    .build();
+        }).toList();
+    }
+
+    @Override
     public ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;

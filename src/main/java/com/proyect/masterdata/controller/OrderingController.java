@@ -35,7 +35,7 @@ public class OrderingController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK') and hasAuthority('ACCESS:ORDER_GET')")
     public ResponseEntity<Page<OrderDTO>> list(
             @RequestParam(value = "orderId", required = false) Long orderId,
@@ -64,6 +64,15 @@ public class OrderingController {
             @RequestParam("tokenUser") String tokenUser
             ) throws BadRequestExceptions{
         ResponseSuccess result = iOrdering.update(orderId,requestOrderUpdate,tokenUser);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK') and hasAuthority('ACCESS:ORDER_GET')")
+    public ResponseEntity<List<OrderDTO>> listOrders(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<OrderDTO> result = iOrdering.listOrder(user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

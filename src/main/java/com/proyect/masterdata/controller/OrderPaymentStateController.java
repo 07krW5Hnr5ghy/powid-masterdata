@@ -51,14 +51,14 @@ public class OrderPaymentStateController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "list")
+    @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_PAYMENT_STATE_GET')")
     public ResponseEntity<List<OrderPaymentStateDTO>> listPaymentState() throws BadRequestExceptions {
         List<OrderPaymentStateDTO> result = iOrderPaymentState.listPaymentState();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_PAYMENT_STATE_GET')")
     public ResponseEntity<Page<OrderPaymentStateDTO>> list(
             @RequestParam(value = "name", required = false) String name,
@@ -71,7 +71,7 @@ public class OrderPaymentStateController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "status-false")
+    @GetMapping(value = "pagination/status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_PAYMENT_STATE_GET')")
     public ResponseEntity<Page<OrderPaymentStateDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,

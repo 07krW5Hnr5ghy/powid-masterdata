@@ -56,7 +56,7 @@ public class SizeTypeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "list")
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_TYPE_GET')")
     public ResponseEntity<Page<SizeTypeDTO>> list(
             @RequestParam(value = "name", required = false) String name,
@@ -69,7 +69,7 @@ public class SizeTypeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "status-false")
+    @GetMapping(value = "pagination/status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_TYPE_GET')")
     public ResponseEntity<Page<SizeTypeDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,

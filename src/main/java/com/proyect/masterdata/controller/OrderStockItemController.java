@@ -35,7 +35,7 @@ public class OrderStockItemController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "pagination-status-false")
+    @GetMapping(value = "pagination/status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> listFalse(
             @RequestParam(value = "warehouse", required = false) String warehouse,

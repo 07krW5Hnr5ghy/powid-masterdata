@@ -58,14 +58,14 @@ public class OrderStateController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "list")
+    @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_GET')")
     public ResponseEntity<List<OrderStateDTO>> listState() throws BadRequestExceptions {
         List<OrderStateDTO> result = iState.listState();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_GET')")
     public ResponseEntity<Page<OrderStateDTO>> list(
             @RequestParam(value = "name", required = false) String name,
@@ -78,7 +78,7 @@ public class OrderStateController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "status-false")
+    @GetMapping(value = "pagination/status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_GET')")
     public ResponseEntity<Page<OrderStateDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,

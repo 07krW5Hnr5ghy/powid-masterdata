@@ -49,13 +49,13 @@ public class SaleChannelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "list-sale-channel")
+    @GetMapping()
     public ResponseEntity<List<SaleChannelDTO>> listSaleChannel() throws BadRequestExceptions {
         List<SaleChannelDTO> result = iSaleChannel.listSaleChannel();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     public ResponseEntity<Page<SaleChannelDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,
@@ -67,7 +67,7 @@ public class SaleChannelController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "status-false")
+    @GetMapping(value = "pagination/status-false")
     public ResponseEntity<Page<SaleChannelDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = false) String user,

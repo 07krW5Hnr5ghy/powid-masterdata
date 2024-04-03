@@ -51,7 +51,7 @@ public class StoreController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:STORE_GET')")
     public ResponseEntity<Page<StoreDTO>> list(
             @RequestParam(value = "name", required = false) String name,
@@ -64,7 +64,7 @@ public class StoreController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "status-false")
+    @GetMapping(value = "pagination/status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:STORE_GET')")
     public ResponseEntity<Page<StoreDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,

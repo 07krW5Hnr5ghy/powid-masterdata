@@ -49,7 +49,7 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:USER_GET')")
     public ResponseEntity<Page<UserQueryDTO>> list(
             @RequestParam(value = "user", required = false) String user,
@@ -64,7 +64,7 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("status-false")
+    @GetMapping("pagination/status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:USER_GET')")
     public ResponseEntity<Page<UserQueryDTO>> listFalse(
             @RequestParam(value = "user", required = false) String user,

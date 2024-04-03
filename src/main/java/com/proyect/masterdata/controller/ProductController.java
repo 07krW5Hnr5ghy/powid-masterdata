@@ -75,7 +75,7 @@ public class ProductController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "pagination-list-false")
+    @GetMapping(value = "pagination/list-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> listFalse(
             @RequestParam(value = "sku", required = false) String sku,

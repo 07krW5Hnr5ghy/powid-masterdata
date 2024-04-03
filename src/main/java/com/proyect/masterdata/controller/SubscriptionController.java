@@ -43,7 +43,7 @@ public class SubscriptionController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUBSCRIPTION_GET')")
     public ResponseEntity<Page<SubscriptionDTO>> list(
             @RequestParam(value = "name", required = false) String name,
