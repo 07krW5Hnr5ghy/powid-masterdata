@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 public class OrderDTO {
     private Long id;
+    private Long serial;
     private String sellerName;
     private String customerName;
     private String customerType;

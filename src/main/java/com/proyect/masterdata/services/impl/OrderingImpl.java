@@ -355,6 +355,7 @@ public class OrderingImpl implements IOrdering {
 
             return OrderDTO.builder()
                     .id(order.getId())
+                    .serial(order.getId())
                     .customerName(customer.getName())
                     .customerPhone(customer.getPhone())
                     .customerType(customer.getType())
