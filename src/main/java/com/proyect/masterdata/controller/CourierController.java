@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin({"*"})
 @RequestMapping("courier")
@@ -34,7 +36,7 @@ public class CourierController {
     }
 
     @PutMapping(value = "order",consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:COURIER') and hasAuthority('ACCESS:COURIER_PUT')")
+    //@PreAuthorize("hasAuthority('ROLE:COURIER') and hasAuthority('ACCESS:COURIER_PUT')")
     public ResponseEntity<ResponseSuccess> updateOrder(
             @RequestParam("orderId") Long orderId,
             @RequestBody() RequestCourierOrder requestCourierOrder,
@@ -45,7 +47,7 @@ public class CourierController {
     }
 
     @DeleteMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COURIER_DELETE')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COURIER_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
@@ -54,8 +56,8 @@ public class CourierController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
+    @GetMapping("pagination")
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
     public ResponseEntity<Page<CourierDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,
@@ -68,8 +70,8 @@ public class CourierController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @GetMapping(value = "list-false")
-    @PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
+    @GetMapping("pagination/status-false")
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
     public ResponseEntity<Page<CourierDTO>> listFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,
@@ -79,6 +81,24 @@ public class CourierController {
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions {
         Page<CourierDTO> result = iCourier.listFalse(name,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
+    public ResponseEntity<List<CourierDTO>> listCourier(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<CourierDTO> result = iCourier.listCouriers(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping("status-false")
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
+    public ResponseEntity<List<CourierDTO>> listCourierFalse(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<CourierDTO> result = iCourier.listCouriersFalse(user);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 

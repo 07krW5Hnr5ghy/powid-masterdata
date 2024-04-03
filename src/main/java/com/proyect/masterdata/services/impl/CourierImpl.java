@@ -220,4 +220,44 @@ public class CourierImpl implements ICourier {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
+
+    @Override
+    public List<CourierDTO> listCouriers(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        Long clientId;
+        List<Courier> couriers;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+            couriers = courierRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(couriers.isEmpty()){
+            return Collections.emptyList();
+        }
+        return couriers.stream().map(courier -> CourierDTO.builder()
+                .courier(courier.getName())
+                .phoneNumber(courier.getPhoneNumber())
+                .build()).toList();
+    }
+
+    @Override
+    public List<CourierDTO> listCouriersFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        Long clientId;
+        List<Courier> couriers;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+            couriers = courierRepository.findAllByClientIdAndStatusFalse(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(couriers.isEmpty()){
+            return Collections.emptyList();
+        }
+        return couriers.stream().map(courier -> CourierDTO.builder()
+                .courier(courier.getName())
+                .phoneNumber(courier.getPhoneNumber())
+                .build()).toList();
+    }
 }
