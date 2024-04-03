@@ -38,6 +38,5 @@ public class OrderDTO {
     private Date updateDate;
     private String deliveryAddress;
     private String courier;
-    private List<OrderItemDTO> items;
     private String orderStatus;
 }

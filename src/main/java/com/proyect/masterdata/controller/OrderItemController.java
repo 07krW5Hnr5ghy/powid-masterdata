@@ -21,7 +21,7 @@ public class OrderItemController {
 
     private final IOrderItem iOrderItem;
 
-    @GetMapping()
+    @GetMapping("check-stock")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_ITEM_GET')")
     public ResponseEntity<ResponseCheckStockItem> checkStockItem(
             @RequestParam("productSku") String productSku,

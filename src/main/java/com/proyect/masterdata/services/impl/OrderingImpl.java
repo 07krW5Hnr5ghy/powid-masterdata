@@ -249,30 +249,6 @@ public class OrderingImpl implements IOrdering {
         List<OrderDTO> orderDTOS = pageOrdering.getContent().stream().map(order -> {
             Sale sale = saleRepository.findByOrderId(order.getId());
             Customer customer = customerRepository.findByOrderId(order.getId());
-
-            List<OrderItemDTO> orderItemDTOS = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId()).stream().map(item -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(item.getProductId());
-                List<String> productPictures = productPictureRepository.findAllByProductId(item.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
-                Double totalPrice = (productPrice.getUnitSalePrice() * item.getQuantity())-((productPrice.getUnitSalePrice() * item.getQuantity())*(item.getDiscount()/100));
-                return OrderItemDTO.builder()
-                        .id(item.getId())
-                        .product(ProductDTO.builder()
-                                .sku(item.getProduct().getSku())
-                                .model(item.getProduct().getModel().getName())
-                                .color(item.getProduct().getColor().getName())
-                                .size(item.getProduct().getSize().getName())
-                                .category(item.getProduct().getCategoryProduct().getName())
-                                .price(productPrice.getUnitSalePrice())
-                                .unit(item.getProduct().getUnit().getName())
-                                .pictures(productPictures)
-                                .build())
-                        .quantity(item.getQuantity())
-                        .unitPrice(productPrice.getUnitSalePrice())
-                        .totalPrice(totalPrice)
-                        .observations(item.getObservations())
-                        .build();
-            }).toList();
-
             List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
             List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
 
@@ -301,7 +277,6 @@ public class OrderingImpl implements IOrdering {
                     .courier(order.getCourier().getName())
                     .paymentReceipts(paymentReceipts)
                     .courierPictures(courierPictures)
-                    .items(orderItemDTOS)
                     .saleAmount(sale.getSaleAmount())
                     .build();
         }).toList();
@@ -326,30 +301,6 @@ public class OrderingImpl implements IOrdering {
         return orderingList.stream().map(order -> {
             Sale sale = saleRepository.findByOrderId(order.getId());
             Customer customer = customerRepository.findByOrderId(order.getId());
-
-            List<OrderItemDTO> orderItemDTOS = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId()).stream().map(item -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(item.getProductId());
-                List<String> productPictures = productPictureRepository.findAllByProductId(item.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
-                Double totalPrice = (productPrice.getUnitSalePrice() * item.getQuantity())-((productPrice.getUnitSalePrice() * item.getQuantity())*(item.getDiscount()/100));
-                return OrderItemDTO.builder()
-                        .id(item.getId())
-                        .product(ProductDTO.builder()
-                                .sku(item.getProduct().getSku())
-                                .model(item.getProduct().getModel().getName())
-                                .color(item.getProduct().getColor().getName())
-                                .size(item.getProduct().getSize().getName())
-                                .category(item.getProduct().getCategoryProduct().getName())
-                                .price(productPrice.getUnitSalePrice())
-                                .unit(item.getProduct().getUnit().getName())
-                                .pictures(productPictures)
-                                .build())
-                        .quantity(item.getQuantity())
-                        .unitPrice(productPrice.getUnitSalePrice())
-                        .totalPrice(totalPrice)
-                        .observations(item.getObservations())
-                        .build();
-            }).toList();
-
             List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
             List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
 
@@ -379,7 +330,6 @@ public class OrderingImpl implements IOrdering {
                     .courier(order.getCourier().getName())
                     .paymentReceipts(paymentReceipts)
                     .courierPictures(courierPictures)
-                    .items(orderItemDTOS)
                     .saleAmount(sale.getSaleAmount())
                     .build();
         }).toList();

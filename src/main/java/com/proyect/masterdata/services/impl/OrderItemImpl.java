@@ -2,6 +2,8 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CheckStockItemDTO;
+import com.proyect.masterdata.dto.OrderItemDTO;
+import com.proyect.masterdata.dto.ProductDTO;
 import com.proyect.masterdata.dto.request.RequestOrderItem;
 import com.proyect.masterdata.dto.response.ResponseCheckStockItem;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -16,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +35,7 @@ public class OrderItemImpl implements IOrderItem {
     private final OrderingRepository orderingRepository;
     private final SaleRepository saleRepository;
     private final ProductPriceRepository productPriceRepository;
+    private final ProductPictureRepository productPictureRepository;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -328,5 +332,43 @@ public class OrderItemImpl implements IOrderItem {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public List<OrderItemDTO> listOrderItems(String user, Long id) throws BadRequestExceptions, InternalErrorExceptions {
+        Long clientId;
+        List<OrderItem> orderItemList;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            if(id != null){
+                orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(clientId,id);
+            }else {
+                orderItemList = orderItemRepository.findAllByClientIdAndStatusTrue(clientId);
+            }
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(orderItemList.isEmpty()){
+            return Collections.emptyList();
+        }
+        List<OrderItemDTO> orderItemDTOS = orderItemList.stream().map(orderItem -> {
+            List<String> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
+            ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+            Double totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscount()/100));
+            return OrderItemDTO.builder()
+                .unit(orderItem.getProduct().getUnit().getName())
+                .color(orderItem.getProduct().getColor().getName())
+                .size(orderItem.getProduct().getSize().getName())
+                .pictures(productPictures)
+                    .category(orderItem.getProduct().getCategoryProduct().getName())
+                    .sku(orderItem.getProduct().getSku())
+                    .unitPrice(productPrice.getUnitSalePrice())
+                    .discount(orderItem.getDiscount())
+                    .quantity(orderItem.getQuantity())
+                    .totalPrice(totalPrice)
+                .build();
+        }).toList();
+        return null;
     }
 }
