@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 public class OrderItemDTO {
     private Long id;
+    private Long orderId;
     private String sku;
     private String color;
     private String size;
