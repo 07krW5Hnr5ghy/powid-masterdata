@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.OrderItemDTO;
 import com.proyect.masterdata.dto.request.RequestOrderItem;
 import com.proyect.masterdata.dto.response.ResponseCheckStockItem;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -12,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin({"*"})
@@ -62,6 +65,16 @@ public class OrderItemController {
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions {
         ResponseSuccess result = iOrderItem.update(orderId,requestOrderItem,tokenUser);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_ITEM_GET')")
+    public ResponseEntity<List<OrderItemDTO>> listOrderItems(
+            @RequestParam("user") String user,
+            @RequestParam(value = "id",required = false) Long id
+    ) throws BadRequestExceptions {
+        List<OrderItemDTO> result = iOrderItem.listOrderItems(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
