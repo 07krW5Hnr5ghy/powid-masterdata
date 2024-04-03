@@ -352,7 +352,7 @@ public class OrderItemImpl implements IOrderItem {
         if(orderItemList.isEmpty()){
             return Collections.emptyList();
         }
-        List<OrderItemDTO> orderItemDTOS = orderItemList.stream().map(orderItem -> {
+        return orderItemList.stream().map(orderItem -> {
             List<String> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
             Double totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscount()/100));
@@ -370,6 +370,5 @@ public class OrderItemImpl implements IOrderItem {
                     .totalPrice(totalPrice)
                 .build();
         }).toList();
-        return null;
     }
 }
