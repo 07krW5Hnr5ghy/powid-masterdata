@@ -40,4 +40,5 @@ public class OrderDTO {
     private String courier;
     private String orderStatus;
     private String observations;
+    private String closingChannel;
 }

@@ -122,6 +122,7 @@ public class ProductImpl implements IProduct {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e) {
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 

@@ -52,6 +52,7 @@ public class OrderingImpl implements IOrdering {
     private final CourierPictureRepository courierPictureRepository;
     private final ProductPictureRepository productPictureRepository;
     private final StoreRepository storeRepository;
+    private final ClosingChannelRepository closingChannelRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -63,6 +64,7 @@ public class OrderingImpl implements IOrdering {
         ManagementType managementType;
         OrderPaymentMethod orderPaymentMethod;
         Store store;
+        ClosingChannel closingChannel;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -73,7 +75,9 @@ public class OrderingImpl implements IOrdering {
             managementType = managementTypeRepository.findByNameAndStatusTrue(requestOrderSave.getManagementType().toUpperCase());
             orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
             store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
+            closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -98,6 +102,10 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorStore);
         }
 
+        if(closingChannel == null){
+            throw new BadRequestExceptions(Constants.ErrorClosingChannel);
+        }
+
         try{
 
             Ordering ordering = orderingRepository.save(Ordering.builder()
@@ -120,6 +128,8 @@ public class OrderingImpl implements IOrdering {
                             .updateDate(new Date(System.currentTimeMillis()))
                             .store(store)
                             .storeId(store.getId())
+                            .closingChannel(closingChannel)
+                            .closingChannelId(closingChannel.getId())
                             .tokenUser(user.getUsername())
                     .build());
 
@@ -332,6 +342,7 @@ public class OrderingImpl implements IOrdering {
                     .courierPictures(courierPictures)
                     .saleAmount(sale.getSaleAmount())
                     .observations(sale.getObservations())
+                    .closingChannel(order.getClosingChannel().getName())
                     .build();
         }).toList();
     }

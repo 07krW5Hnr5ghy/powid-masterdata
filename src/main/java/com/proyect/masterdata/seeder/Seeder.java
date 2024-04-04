@@ -711,8 +711,8 @@ public class Seeder implements CommandLineRunner {
                         iOrderPaymentState.save("perdida","admin1");
 
                         // sale channel
-                        iSaleChannel.save("tienda online","admin1");
-                        iSaleChannel.save("almacen de cadena","admin1");
+                        iSaleChannel.save("web","admin1");
+                        iSaleChannel.save("ripley","admin1");
 
                         // management type
                         iManagementType.save("canje","admin1");
@@ -1982,9 +1982,10 @@ public class Seeder implements CommandLineRunner {
                                 .observations("")
                                 .paymentMethod("yape")
                                 .receipts(receipts1)
-                                .saleChannel("tienda online")
+                                .saleChannel("web")
                                 .requestOrderItems(requestOrderItems1)
                                 .storeName("store 1")
+                                .closingChannel("whatsapp")
                                 .build();
 
                         iOrdering.save(requestOrderSave1,"CROJAS");
@@ -2056,9 +2057,10 @@ public class Seeder implements CommandLineRunner {
                                 .observations("")
                                 .paymentMethod("plin")
                                 .receipts(receipts2)
-                                .saleChannel("tienda online")
+                                .saleChannel("web")
                                 .requestOrderItems(requestOrderItems2)
                                 .storeName("store 1")
+                                .closingChannel("facebook")
                                 .build();
 
                         iOrdering.save(requestOrderSave2,"CROJAS");
@@ -2101,9 +2103,10 @@ public class Seeder implements CommandLineRunner {
                                 .observations("")
                                 .paymentMethod("efectivo")
                                 .receipts(receipts3)
-                                .saleChannel("tienda online")
+                                .saleChannel("web")
                                 .requestOrderItems(requestOrderItems3)
                                 .storeName("store 2")
+                                .closingChannel("twitter")
                                 .build();
 
                         iOrdering.save(requestOrderSave3,"MAPARICIO");
@@ -2146,9 +2149,10 @@ public class Seeder implements CommandLineRunner {
                                 .observations("URB. LA CAPILLA 130, CALLE SARAGOZA- LA MOLINA")
                                 .paymentMethod("efectivo")
                                 .receipts(receipts4)
-                                .saleChannel("tienda online")
+                                .saleChannel("web")
                                 .requestOrderItems(requestOrderItems4)
                                 .storeName("store 2")
+                                .closingChannel("web")
                                 .build();
 
                         iOrdering.save(requestOrderSave4,"MAPARICIO");
@@ -2189,9 +2193,10 @@ public class Seeder implements CommandLineRunner {
                                 .observations("")
                                 .paymentMethod("plin")
                                 .receipts(receipts2)
-                                .saleChannel("tienda online")
+                                .saleChannel("web")
                                 .requestOrderItems(requestOrderItems5)
                                 .storeName("store 1")
+                                .closingChannel("instagram")
                                 .build();
 
                         iOrdering.save(requestOrderSave5,"CROJAS");

@@ -32,4 +32,5 @@ public class RequestOrderSave {
     private String customerDepartment;
     private String customerReference;
     private String storeName;
+    private String closingChannel;
 }

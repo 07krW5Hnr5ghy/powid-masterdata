@@ -67,6 +67,9 @@ public class Ordering {
     @Column(name = "store_id")
     private Long storeId;
 
+    @Column(name = "closing_channel_id")
+    private Long closingChannelId;
+
     @Column(name = "token_user")
     private String tokenUser;
 
@@ -101,5 +104,9 @@ public class Ordering {
     @ManyToOne
     @JoinColumn(name = "store_id", columnDefinition = "storeId", insertable = false, updatable = false)
     private Store store;
+
+    @ManyToOne
+    @JoinColumn(name = "closing_channel_id",columnDefinition = "closingChannelId",insertable = false,updatable = false)
+    private ClosingChannel closingChannel;
 
 }
