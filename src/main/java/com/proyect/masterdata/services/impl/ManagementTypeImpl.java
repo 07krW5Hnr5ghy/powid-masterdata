@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -56,5 +58,20 @@ public class ManagementTypeImpl implements IManagementType {
         }catch (RuntimeException e){
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public List<String> list() throws InternalErrorExceptions, BadRequestExceptions {
+        List<ManagementType> managementTypes;
+        try {
+            managementTypes = managementTypeRepository.findAllByStatusTrue();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(managementTypes.isEmpty()){
+            return Collections.emptyList();
+        }
+        return managementTypes.stream().map(ManagementType::getName).toList();
     }
 }
