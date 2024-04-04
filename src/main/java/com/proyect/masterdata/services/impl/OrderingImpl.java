@@ -53,6 +53,7 @@ public class OrderingImpl implements IOrdering {
     private final ProductPictureRepository productPictureRepository;
     private final StoreRepository storeRepository;
     private final ClosingChannelRepository closingChannelRepository;
+    private final CustomerTypeRepository customerTypeRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -168,7 +169,7 @@ public class OrderingImpl implements IOrdering {
             RequestCustomer requestCustomer = RequestCustomer.builder()
                     .phone(requestOrderSave.getCustomerPhone())
                     .name(requestOrderSave.getCustomerName())
-                    .type(requestOrderSave.getCustomerType())
+                    .type(requestOrderSave.getCustomerType().toUpperCase())
                     .district(requestOrderSave.getCustomerDistrict())
                     .province(requestOrderSave.getCustomerProvince())
                     .department(requestOrderSave.getCustomerDepartment())
@@ -266,7 +267,7 @@ public class OrderingImpl implements IOrdering {
                     .id(order.getId())
                     .customerName(customer.getName())
                     .customerPhone(customer.getPhone())
-                    .customerType(customer.getType())
+                    .customerType(customer.getCustomerType().getName())
                     .orderStatus(order.getOrderState().getName())
                     .department(customer.getDepartment().getName())
                     .province(customer.getProvince().getName())
@@ -319,7 +320,7 @@ public class OrderingImpl implements IOrdering {
                     .serial(order.getId())
                     .customerName(customer.getName())
                     .customerPhone(customer.getPhone())
-                    .customerType(customer.getType())
+                    .customerType(customer.getCustomerType().getName())
                     .orderStatus(order.getOrderState().getName())
                     .department(customer.getDepartment().getName())
                     .province(customer.getProvince().getName())

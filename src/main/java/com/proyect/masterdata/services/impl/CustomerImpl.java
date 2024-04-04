@@ -22,18 +22,21 @@ public class CustomerImpl implements ICustomer {
     private final DepartmentRepository departmentRepository;
     private final ProvinceRepository provinceRepository;
     private final DistrictRepository districtRepository;
+    private final CustomerTypeRepository customerTypeRepository;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestCustomer requestCustomer, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Department department;
         Province province;
         District district;
+        CustomerType customerType;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             department = departmentRepository.findByNameAndStatusTrue(requestCustomer.getDepartment().toUpperCase());
             province = provinceRepository.findByNameAndStatusTrue(requestCustomer.getProvince().toUpperCase());
             district = districtRepository.findByNameAndStatusTrue(requestCustomer.getDistrict().toUpperCase());
+            customerType = customerTypeRepository.findByNameAndStatusTrue(requestCustomer.getType().toUpperCase());
         } catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -55,6 +58,10 @@ public class CustomerImpl implements ICustomer {
             throw new BadRequestExceptions(Constants.ErrorDistrict);
         }
 
+        if(customerType == null){
+            throw new BadRequestExceptions(Constants.ErrorCustomerType);
+        }
+
         try{
             customerRepository.save(Customer.builder()
                             .address(requestCustomer.getAddress().toUpperCase())
@@ -64,7 +71,8 @@ public class CustomerImpl implements ICustomer {
                             .clientId(user.getClientId())
                             .ordering(ordering)
                             .orderId(ordering.getId())
-                            .type(requestCustomer.getType())
+                            .customerType(customerType)
+                            .customerTypeId(customerType.getId())
                             .department(department)
                             .departmentId(department.getId())
                             .province(province)
