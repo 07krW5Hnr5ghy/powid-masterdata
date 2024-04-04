@@ -39,4 +39,5 @@ public class OrderDTO {
     private String deliveryAddress;
     private String courier;
     private String orderStatus;
+    private String observations;
 }

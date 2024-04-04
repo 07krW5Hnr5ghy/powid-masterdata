@@ -331,6 +331,7 @@ public class OrderingImpl implements IOrdering {
                     .paymentReceipts(paymentReceipts)
                     .courierPictures(courierPictures)
                     .saleAmount(sale.getSaleAmount())
+                    .observations(sale.getObservations())
                     .build();
         }).toList();
     }
