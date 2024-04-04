@@ -85,6 +85,7 @@ public class Seeder implements CommandLineRunner {
         private final IPurchaseDocument iPurchaseDocument;
         private final ICountry iCountry;
         private final ISupplierType iSupplierType;
+        private final ICustomerType iCustomerType;
         @Override
         public void run(String... args) throws Exception {
 
@@ -784,6 +785,9 @@ public class Seeder implements CommandLineRunner {
                         iPurchaseDocument.save("boleta","admin1");
                         iPurchaseDocument.save("recibo","admin1");
                         iPurchaseDocument.save("sin comprobante","admin1");
+                        // customer types
+                        iCustomerType.save("tradicional","admin1");
+                        iCustomerType.save("mayorista","admin1");
                         // mock users
                         iUserRole.save(business1.getUsername(), "BUSINESS",business1.getUsername());
                         iUserRole.save(business2.getUsername(),"BUSINESS",business2.getUsername());
