@@ -74,6 +74,7 @@ public class Constants {
     public static final String tableManagementType = "management_type";
     public static final String tableOrderItem = "order_item";
     public static final String tableCustomer = "customer";
+    public static final String tableCustomerType = "customer_type";
     public static final String tableCancellationReason = "cancellation_reason";
     public static final String tableCancelledOrder = "cancelled_order";
     public static final String tableOrderStock = "order_stock";
@@ -257,4 +258,6 @@ public class Constants {
     public static final String ErrorCountryExists = "Country already exists";
     public static final String ErrorSupplierType = "Supplier type does not exist";
     public static final String ErrorSupplierTypeExists = "Supplier type already exists";
+    public static final String ErrorCustomerType = "Customer type does not exist";
+    public static final String ErrorCustomerTypeExists = "Customer type already exists";
 }
