@@ -243,4 +243,27 @@ public class StoreImpl implements IStore {
                 storePage.getPageable(), storePage.getTotalElements());
     }
 
+    @Override
+    public List<StoreDTO> listStore(String user) throws BadRequestExceptions {
+        List<Store> stores;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            stores = storeRepository.findAllByClientId(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(stores.isEmpty()){
+            return Collections.emptyList();
+        }
+        return stores.stream().map(store -> StoreDTO.builder()
+                .name(store.getName())
+                .url(store.getUrl())
+                .client(store.getClient().getBusiness())
+                .storeType(store.getStoreType().getName())
+                .user(store.getTokenUser())
+                .build()).toList();
+    }
+
 }

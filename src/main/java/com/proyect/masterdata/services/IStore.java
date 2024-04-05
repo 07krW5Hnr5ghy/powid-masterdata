@@ -20,4 +20,5 @@ public interface IStore {
             throws BadRequestExceptions;
     Page<StoreDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
+    List<StoreDTO> listStore(String user) throws BadRequestExceptions;
 }

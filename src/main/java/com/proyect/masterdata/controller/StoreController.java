@@ -77,4 +77,13 @@ public class StoreController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:STORE_GET')")
+    public ResponseEntity<List<StoreDTO>> listStore(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions {
+        List<StoreDTO> result = iStore.listStore(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
 }
