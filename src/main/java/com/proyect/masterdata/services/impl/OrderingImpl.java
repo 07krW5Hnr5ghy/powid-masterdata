@@ -108,7 +108,7 @@ public class OrderingImpl implements IOrdering {
         }
 
         try{
-
+            System.out.println(requestOrderSave);
             Ordering ordering = orderingRepository.save(Ordering.builder()
                             .cancellation(false)
                             .orderState(orderState)
