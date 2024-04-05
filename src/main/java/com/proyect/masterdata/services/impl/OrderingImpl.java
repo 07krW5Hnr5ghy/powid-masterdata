@@ -148,7 +148,7 @@ public class OrderingImpl implements IOrdering {
 
                 ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
 
-                saleAmount += (productPrice.getUnitSalePrice() * requestOrderItem.getQuantity());
+                saleAmount += (productPrice.getUnitSalePrice() * requestOrderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * requestOrderItem.getQuantity()) * (requestOrderItem.getDiscount()/100));
                 iOrderItem.save(ordering, requestOrderItem,tokenUser);
             }
 
