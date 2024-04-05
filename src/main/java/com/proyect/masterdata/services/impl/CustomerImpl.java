@@ -38,6 +38,7 @@ public class CustomerImpl implements ICustomer {
             district = districtRepository.findByNameAndStatusTrue(requestCustomer.getDistrict().toUpperCase());
             customerType = customerTypeRepository.findByNameAndStatusTrue(requestCustomer.getType().toUpperCase());
         } catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -88,6 +89,7 @@ public class CustomerImpl implements ICustomer {
                     .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

@@ -186,6 +186,7 @@ public class OrderingImpl implements IOrdering {
                     .build();
 
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -300,7 +301,7 @@ public class OrderingImpl implements IOrdering {
         Long clientId;
         List<Ordering> orderingList;
         try{
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
             orderingList = orderingRepository.findAllByClientId(clientId);
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -368,6 +369,7 @@ public class OrderingImpl implements IOrdering {
             orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
             courier = courierRepository.findByNameAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase());
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -445,6 +447,7 @@ public class OrderingImpl implements IOrdering {
                     .message(Constants.update)
                     .build();
         }catch (RuntimeException e){
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
