@@ -47,7 +47,6 @@ public class OrderItemController {
     }
 
     @DeleteMapping()
-    @CrossOrigin({"*"})
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_DELETE')")
     public ResponseEntity<ResponseDelete> deleteItem(
             @RequestParam("orderId") Long orderId,
