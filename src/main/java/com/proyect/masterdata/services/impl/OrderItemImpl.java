@@ -368,6 +368,7 @@ public class OrderItemImpl implements IOrderItem {
                     .quantity(orderItem.getQuantity())
                     .orderId(orderItem.getOrderId())
                     .totalPrice(totalPrice)
+                    .observations(orderItem.getObservations())
                 .build();
         }).toList();
     }
