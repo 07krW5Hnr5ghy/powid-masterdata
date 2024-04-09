@@ -338,6 +338,7 @@ public class OrderingImpl implements IOrdering {
                     .registrationDate(order.getRegistrationDate())
                     .updateDate(order.getUpdateDate())
                     .paymentMethod(order.getOrderPaymentMethod().getName())
+                    .paymentState(order.getOrderPaymentState().getName())
                     .deliveryAddress(sale.getDeliveryAddress())
                     .courier(order.getCourier().getName())
                     .paymentReceipts(paymentReceipts)

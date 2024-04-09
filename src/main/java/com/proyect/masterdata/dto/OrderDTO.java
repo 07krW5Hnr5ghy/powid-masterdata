@@ -26,6 +26,7 @@ public class OrderDTO {
     private String address;
     private String managementType;
     private String paymentMethod;
+    private String paymentState;
     private String saleChannel;
     private String reference;
     private List<String> paymentReceipts;
