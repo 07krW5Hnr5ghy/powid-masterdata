@@ -197,12 +197,16 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public List<OrderStockItemDTO> listOrderStockItem(String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public List<OrderStockItemDTO> listOrderStockItem(String user,Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
         Long clientId;
         List<OrderStockItem> orderStockItems;
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            orderStockItems = orderStockItemRepository.findAllByClientIdAndStatusTrue(clientId);
+            if(orderId != null){
+                orderStockItems = orderStockItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(clientId,orderId);
+            }else{
+                orderStockItems = orderStockItemRepository.findAllByClientIdAndStatusTrue(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -224,12 +228,16 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public List<OrderStockItemDTO> listOrderStockItemFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public List<OrderStockItemDTO> listOrderStockItemFalse(String user,Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
         Long clientId;
         List<OrderStockItem> orderStockItems;
         try {
             clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            orderStockItems = orderStockItemRepository.findAllByClientIdAndStatusFalse(clientId);
+            if(orderId != null){
+                orderStockItems = orderStockItemRepository.findAllByClientIdAndOrderIdAndStatusFalse(clientId,orderId);
+            }else{
+                orderStockItems = orderStockItemRepository.findAllByClientIdAndStatusFalse(clientId);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

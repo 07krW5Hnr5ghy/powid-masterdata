@@ -16,7 +16,7 @@ public interface IOrderStockItem {
     Page<OrderStockItemDTO> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
     Page<OrderStockItemDTO> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
     Boolean checkWarehouseItemStock(Long orderId, Warehouse warehouse, RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions,BadRequestExceptions;
-    List<OrderStockItemDTO> listOrderStockItem(String user) throws BadRequestExceptions,InternalErrorExceptions;
-    List<OrderStockItemDTO> listOrderStockItemFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    List<OrderStockItemDTO> listOrderStockItem(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
+    List<OrderStockItemDTO> listOrderStockItemFalse(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

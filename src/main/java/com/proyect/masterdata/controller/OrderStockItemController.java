@@ -53,18 +53,20 @@ public class OrderStockItemController {
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<List<OrderStockItemDTO>> listOrderStockItem(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam(value = "id",required = false) Long id
     ) throws BadRequestExceptions {
-        List<OrderStockItemDTO> result = iOrderStockItem.listOrderStockItem(user);
+        List<OrderStockItemDTO> result = iOrderStockItem.listOrderStockItem(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
     @GetMapping("status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<List<OrderStockItemDTO>> listOrderStockItemFalse(
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam(value = "id",required = false) Long id
     ) throws BadRequestExceptions {
-        List<OrderStockItemDTO> result = iOrderStockItem.listOrderStockItem(user);
+        List<OrderStockItemDTO> result = iOrderStockItem.listOrderStockItem(user,id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
