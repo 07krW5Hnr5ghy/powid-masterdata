@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class OrderItemDTO {
-    private Long id;
+    private Long productId;
     private Long orderId;
     private String sku;
     private String color;
