@@ -14,6 +14,7 @@ import java.util.List;
 public class OrderItemDTO {
     private Long productId;
     private Long orderId;
+    private Long orderItemId;
     private String sku;
     private String color;
     private String size;

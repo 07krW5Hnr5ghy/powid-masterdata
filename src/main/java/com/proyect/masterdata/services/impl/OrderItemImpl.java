@@ -358,6 +358,7 @@ public class OrderItemImpl implements IOrderItem {
             Double totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscount()/100));
             return OrderItemDTO.builder()
                     .productId(orderItem.getProductId())
+                    .orderItemId(orderItem.getId())
                 .unit(orderItem.getProduct().getUnit().getName())
                 .color(orderItem.getProduct().getColor().getName())
                 .size(orderItem.getProduct().getSize().getName())
