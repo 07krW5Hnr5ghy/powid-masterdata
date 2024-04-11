@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.OrderStockItemDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IOrderStockItem;
 import lombok.AllArgsConstructor;
@@ -78,6 +79,17 @@ public class OrderStockItemController {
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions {
         ResponseDelete result = iOrderStockItem.delete(orderId,supplierProduct,tokenUser);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @PutMapping()
+    public ResponseEntity<ResponseSuccess> update(
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("supplierProduct") String supplierProduct,
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestParam("quantity") Integer quantity
+    )throws BadRequestExceptions {
+        ResponseSuccess result = iOrderStockItem.update(orderId,supplierProduct,tokenUser,quantity);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

@@ -20,5 +20,6 @@ public interface IOrderStockItem {
     List<OrderStockItemDTO> listOrderStockItem(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
     List<OrderStockItemDTO> listOrderStockItemFalse(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseDelete delete(Long orderId,String supplierProductSerial,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    ResponseSuccess update(Long orderId,String supplierProductSerial,String tokenUser,Integer quantity) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

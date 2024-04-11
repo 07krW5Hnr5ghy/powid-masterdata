@@ -301,4 +301,46 @@ public class OrderStockItemImpl implements IOrderStockItem {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
+
+    @Override
+    public ResponseSuccess update(Long orderId, String supplierProductSerial, String tokenUser, Integer quantity) throws BadRequestExceptions, InternalErrorExceptions {
+        Long clientId;
+        SupplierProduct supplierProduct;
+        OrderStock orderStock;
+        OrderStockItem orderStockItem;
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClientId();
+            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+            orderStock = orderStockRepository.findByOrderId(orderId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(clientId == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+        if(supplierProduct == null){
+            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        }
+        if(orderStock == null){
+            throw new BadRequestExceptions(Constants.ErrorOrderStock);
+        }else{
+            orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
+        }
+        if(orderStockItem == null){
+            throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
+        }
+        try {
+            orderStockItem.setQuantity(quantity);
+            orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
+            orderStockItemRepository.save(orderStockItem);
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
 }
