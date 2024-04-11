@@ -35,18 +35,20 @@ public class OrderStockItemImpl implements IOrderStockItem {
     private final ProductRepository productRepository;
     private final OrderStockRepository orderStockRepository;
     @Override
-    public ResponseSuccess save(OrderStock orderStock, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(Long orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         Ordering ordering;
         OrderItem orderItem;
         SupplierProduct supplierProduct;
+        OrderStock orderStock;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            ordering = orderingRepository.findById(orderStock.getOrderId()).orElse(null);
-            orderItem = orderItemRepository.findByIdAndOrderId(requestOrderStockItem.getItemId(), orderStock.getOrderId());
+            ordering = orderingRepository.findById(orderId).orElse(null);
+            orderItem = orderItemRepository.findByIdAndOrderId(requestOrderStockItem.getItemId(), orderId);
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
+            orderStock = orderStockRepository.findByOrderId(orderId);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

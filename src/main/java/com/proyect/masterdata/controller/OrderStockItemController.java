@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.OrderStockItemDTO;
+import com.proyect.masterdata.dto.request.RequestOrderStockItem;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -90,6 +91,16 @@ public class OrderStockItemController {
             @RequestParam("quantity") Integer quantity
     )throws BadRequestExceptions {
         ResponseSuccess result = iOrderStockItem.update(orderId,supplierProduct,tokenUser,quantity);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @PostMapping()
+    public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestBody()RequestOrderStockItem requestOrderStockItem
+    ) throws BadRequestExceptions {
+        ResponseSuccess result = iOrderStockItem.save(orderId,requestOrderStockItem,tokenUser);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

@@ -81,7 +81,7 @@ public class OrderStockImpl implements IOrderStock {
                             .tokenUser(user.getUsername())
                     .build());
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
-                iOrderStockItem.save(orderStock,requestOrderStockItem,user.getUsername());
+                iOrderStockItem.save(orderStock.getOrderId(),requestOrderStockItem,user.getUsername());
             }
             return ResponseSuccess.builder()
                     .message(Constants.register)
