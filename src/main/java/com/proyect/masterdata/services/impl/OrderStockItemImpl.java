@@ -308,6 +308,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         SupplierProduct supplierProduct;
         OrderStock orderStock;
         OrderStockItem orderStockItem;
+        WarehouseStock warehouseStock;
         try{
             clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClientId();
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
@@ -329,7 +330,16 @@ public class OrderStockItemImpl implements IOrderStockItem {
         }
         if(orderStockItem == null){
             throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
+        }else {
+            warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(orderStock.getWarehouseId(),supplierProduct.getId());
         }
+        if(orderStockItem.getOrderItem().getQuantity() < quantity){
+            throw new BadRequestExceptions(Constants.ErrorOrderStockItemUpdateOrderQuantity);
+        }
+        if(warehouseStock.getQuantity() < quantity){
+            throw new BadRequestExceptions(Constants.E)
+        }
+
         try {
             orderStockItem.setQuantity(quantity);
             orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
