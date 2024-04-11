@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.OrderStockItemDTO;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IOrderStockItem;
 import lombok.AllArgsConstructor;
@@ -67,6 +68,16 @@ public class OrderStockItemController {
             @RequestParam(value = "id",required = false) Long id
     ) throws BadRequestExceptions {
         List<OrderStockItemDTO> result = iOrderStockItem.listOrderStockItem(user,id);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("supplierProduct") String supplierProduct,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iOrderStockItem.delete(orderId,supplierProduct,tokenUser);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

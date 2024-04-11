@@ -228,6 +228,8 @@ public class Constants {
     public static final String ErrorStockReturnQuantity = "Can't return more stock than the purchase";
     public static final String ErrorStockReturnWarehouseQuantity = "Can't return more stock than the warehouse stock";
     public static final String ErrorOrderStockQuantity = "There is not enough stock in the warehouse for the order";
+    public static final String ErrorOrderStock = "The order stock does not exist";
+    public static final String ErrorOrderStockItem = "The order stock item does not exist";
     public static final String ErrorShipmentType = "Shipment type already exists";
     public static final String ErrorShipmentTypeExists = "Shipment type already exists";
     public static final String ErrorStockReplenishment = "Stock replenishment does not exists";

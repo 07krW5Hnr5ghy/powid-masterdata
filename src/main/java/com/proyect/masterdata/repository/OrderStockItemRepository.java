@@ -13,4 +13,5 @@ public interface OrderStockItemRepository extends JpaRepository<OrderStockItem,L
     List<OrderStockItem> findAllByClientIdAndStatusFalse(Long clientId);
     List<OrderStockItem> findAllByClientIdAndOrderIdAndStatusTrue(Long clientId,Long orderId);
     List<OrderStockItem> findAllByClientIdAndOrderIdAndStatusFalse(Long clientId,Long orderId);
+    OrderStockItem findByOrderStockIdAndSupplierProductIdAndStatusTrue(Long orderStockId,Long supplierProductId);
 }

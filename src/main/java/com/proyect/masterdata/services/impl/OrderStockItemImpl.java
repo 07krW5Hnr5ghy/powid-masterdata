@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderStockItemDTO;
 import com.proyect.masterdata.dto.request.RequestOrderStockItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -32,6 +33,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     private final OrderStockItemRepositoryCustom orderStockItemRepositoryCustom;
     private final WarehouseStockRepository warehouseStockRepository;
     private final ProductRepository productRepository;
+    private final OrderStockRepository orderStockRepository;
     @Override
     public ResponseSuccess save(OrderStock orderStock, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -256,5 +258,47 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 .registrationDate(orderStockItem.getRegistrationDate())
                 .updateDate(orderStockItem.getUpdateDate())
                 .build()).toList();
+    }
+
+    @Override
+    public ResponseDelete delete(Long orderId, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        Long clientId;
+        SupplierProduct supplierProduct;
+        OrderStock orderStock;
+        OrderStockItem orderStockItem;
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClientId();
+            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+            orderStock = orderStockRepository.findByOrderId(orderId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+        }
+        if(clientId == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+        if(supplierProduct == null){
+            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        }
+        if(orderStock == null){
+            throw new BadRequestExceptions(Constants.ErrorOrderStock);
+        }else{
+            orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
+        }
+        if(orderStockItem == null){
+            throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
+        }
+        try{
+            orderStockItem.setStatus(false);
+            orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
+            orderStockItemRepository.save(orderStockItem);
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 }
