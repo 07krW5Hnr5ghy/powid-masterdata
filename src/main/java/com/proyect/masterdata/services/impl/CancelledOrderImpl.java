@@ -89,7 +89,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
                 orderItemList = orderItemRepository.findAllByOrderId(ordering.getId());
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 for(OrderItem orderItem : orderItemList){
-                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndItemId(orderStock.getId(), orderItem.getId());
+                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndOrderItemId(orderStock.getId(), orderItem.getId());
                     for(OrderStockItem orderStockItem : orderStockItemList){
                         stockTransactionList.add(RequestStockTransactionItem.builder()
                                 .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())

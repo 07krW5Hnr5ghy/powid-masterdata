@@ -35,7 +35,7 @@ public class OrderStockItem {
     private Boolean status;
 
     @Column(name = "item_id")
-    private Long itemId;
+    private Long orderItemId;
 
     @Column(name = "supplier_product_id")
     private Long supplierProductId;
@@ -53,7 +53,7 @@ public class OrderStockItem {
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "item_id", columnDefinition = "itemId", insertable = false, updatable = false)
+    @JoinColumn(name = "item_id", columnDefinition = "orderItemId", insertable = false, updatable = false)
     private OrderItem orderItem;
 
     @ManyToOne

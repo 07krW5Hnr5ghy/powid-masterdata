@@ -2210,13 +2210,13 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderStockItem requestOrderStockItem1 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("A00001A")
                                 .quantity(2)
-                                .itemId(1L)
+                                .orderItemId(1L)
                                 .build();
 
                         RequestOrderStockItem requestOrderStockItem2 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("A00002A")
                                 .quantity(1)
-                                .itemId(2L)
+                                .orderItemId(2L)
                                 .build();
 
                         List<RequestOrderStockItem> requestOrderStockItemList1 = new ArrayList<>();
@@ -2228,13 +2228,13 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderStockItem requestOrderStockItem3 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("A00003A")
                                 .quantity(2)
-                                .itemId(3L)
+                                .orderItemId(3L)
                                 .build();
 
                         RequestOrderStockItem requestOrderStockItem4 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("A00002A")
                                 .quantity(1)
-                                .itemId(4L)
+                                .orderItemId(4L)
                                 .build();
 
                         List<RequestOrderStockItem> requestOrderStockItemList2 = new ArrayList<>();
@@ -2246,13 +2246,13 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderStockItem requestOrderStockItem5 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("B00001A")
                                 .quantity(1)
-                                .itemId(5L)
+                                .orderItemId(5L)
                                 .build();
 
                         RequestOrderStockItem requestOrderStockItem6 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("B00002A")
                                 .quantity(3)
-                                .itemId(6L)
+                                .orderItemId(6L)
                                 .build();
 
                         List<RequestOrderStockItem> requestOrderStockItemList3 = new ArrayList<>();
@@ -2264,13 +2264,13 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderStockItem requestOrderStockItem7 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("B00002A")
                                 .quantity(5)
-                                .itemId(7L)
+                                .orderItemId(7L)
                                 .build();
 
                         RequestOrderStockItem requestOrderStockItem8 = RequestOrderStockItem.builder()
                                 .supplierProductSerial("B00003A")
                                 .quantity(2)
-                                .itemId(8L)
+                                .orderItemId(8L)
                                 .build();
 
                         List<RequestOrderStockItem> requestOrderStockItemList4 = new ArrayList<>();

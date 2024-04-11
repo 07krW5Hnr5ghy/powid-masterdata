@@ -95,7 +95,9 @@ public class Constants {
     public static final String tableMembershipState = "membership_state";
     public static final String tablePurchaseDocument = "purchase_document";
     public static final String tableCountry = "country";
-    public static final String tableSupplierType = "supplier-type";
+    public static final String tableSupplierType = "supplier_type";
+    public static final String tableOrderReturn = "order_return";
+    public static final String tableOrderReturnItem = "order_return_item";
     // messages
     public static final String register = "registration correctly";
     public static final String update = "correctly updated";

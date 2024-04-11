@@ -46,7 +46,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             ordering = orderingRepository.findById(orderId).orElse(null);
-            orderItem = orderItemRepository.findByIdAndOrderId(requestOrderStockItem.getItemId(), orderId);
+            orderItem = orderItemRepository.findByIdAndOrderId(requestOrderStockItem.getOrderItemId(), orderId);
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
             orderStock = orderStockRepository.findByOrderId(orderId);
         }catch (RuntimeException e){
@@ -77,7 +77,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                             .orderItem(orderItem)
                             .orderId(ordering.getId())
                             .ordering(ordering)
-                            .itemId(orderItem.getId())
+                            .orderItemId(orderItem.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .supplierProduct(supplierProduct)
                             .supplierProductId(supplierProduct.getId())
@@ -124,7 +124,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .itemId(orderStockItem.getItemId())
+                    .itemId(orderStockItem.getOrderItemId())
                     .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
@@ -161,7 +161,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
                 .orderId(orderStockItem.getOrderStock().getOrderId())
                 .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                .itemId(orderStockItem.getItemId())
+                .itemId(orderStockItem.getOrderItemId())
                 .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
                 .quantity(orderStockItem.getQuantity())
                 .registrationDate(orderStockItem.getRegistrationDate())
@@ -177,7 +177,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         OrderItem orderItem;
         try{
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
-            orderItem = orderItemRepository.findByIdAndOrderId(requestOrderStockItem.getItemId(), orderId);
+            orderItem = orderItemRepository.findByIdAndOrderId(requestOrderStockItem.getOrderItemId(), orderId);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -223,7 +223,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
                 .orderId(orderStockItem.getOrderStock().getOrderId())
                 .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                .itemId(orderStockItem.getItemId())
+                .itemId(orderStockItem.getOrderItemId())
                 .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
                 .quantity(orderStockItem.getQuantity())
                 .registrationDate(orderStockItem.getRegistrationDate())
@@ -254,7 +254,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
                 .orderId(orderStockItem.getOrderStock().getOrderId())
                 .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                .itemId(orderStockItem.getItemId())
+                .itemId(orderStockItem.getOrderItemId())
                 .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
                 .quantity(orderStockItem.getQuantity())
                 .registrationDate(orderStockItem.getRegistrationDate())

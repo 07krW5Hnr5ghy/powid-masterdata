@@ -409,7 +409,7 @@ public class OrderingImpl implements IOrdering {
                 List<OrderItem> orderOrderItems = orderItemRepository.findAllByOrderId(ordering.getId());
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 for(OrderItem orderItem : orderOrderItems){
-                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndItemId(orderStock.getId(), orderItem.getId());
+                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndOrderItemId(orderStock.getId(), orderItem.getId());
                     for(OrderStockItem orderStockItem : orderStockItemList){
                         stockTransactionList.add(RequestStockTransactionItem.builder()
                                         .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
