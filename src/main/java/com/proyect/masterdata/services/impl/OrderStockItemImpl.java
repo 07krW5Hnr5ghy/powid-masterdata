@@ -337,7 +337,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             throw new BadRequestExceptions(Constants.ErrorOrderStockItemUpdateOrderQuantity);
         }
         if(warehouseStock.getQuantity() < quantity){
-            throw new BadRequestExceptions(Constants.E)
+            throw new BadRequestExceptions(Constants.ErrorOrderStockItemUpdateStockQuantity);
         }
 
         try {
