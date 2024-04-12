@@ -86,6 +86,7 @@ public class Seeder implements CommandLineRunner {
         private final ICountry iCountry;
         private final ISupplierType iSupplierType;
         private final ICustomerType iCustomerType;
+        private final IOrderReturnType iOrderReturnType;
         @Override
         public void run(String... args) throws Exception {
 
@@ -759,6 +760,10 @@ public class Seeder implements CommandLineRunner {
                         // shipment type
                         iShipmentType.save("embarque","admin1");
                         iShipmentType.save("devolucion","admin1");
+
+                        // order return type
+                        iOrderReturnType.save("rechazo","admin1");
+                        iOrderReturnType.save("cambio","admin1");
 
                         // cancellation reason
                         iCancellationReason.save("No hay stock","admin1");
