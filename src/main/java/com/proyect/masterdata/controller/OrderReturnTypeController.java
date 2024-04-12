@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IOrderReturnType;
@@ -33,6 +34,14 @@ public class OrderReturnTypeController {
     @GetMapping("status-false")
     public ResponseEntity<List<String>> listFalse() throws BadRequestExceptions{
         List<String> result = iOrderReturnType.listFalse();
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions {
+        ResponseDelete result = iOrderReturnType.delete(name,tokenUser);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

@@ -11,4 +11,5 @@ public interface OrderReturnTypeRepository extends JpaRepository<OrderReturnType
     OrderReturnType findByName(String name);
     List<OrderReturnType> findAllByStatusTrue();
     List<OrderReturnType> findAllByStatusFalse();
+    OrderReturnType findByNameAndStatusTrue(String name);
 }

@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.OrderReturnType;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -85,5 +86,35 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
             return Collections.emptyList();
         }
         return orderReturnTypeList.stream().map(OrderReturnType::getName).toList();
+    }
+
+    @Override
+    public ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        OrderReturnType orderReturnType;
+        User user;
+        try{
+            user = userRepository.findByUsernameAndStatusTrue(name.toUpperCase());
+            orderReturnType = orderReturnTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+        if(orderReturnType == null){
+            throw new BadRequestExceptions(Constants.ErrorOrderReturnType);
+        }
+        try {
+            orderReturnType.setStatus(false);
+            orderReturnType.setUpdateDate(new Date(System.currentTimeMillis()));
+            return ResponseDelete.builder()
+                    .code(200)
+                    .message(Constants.delete)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 }
