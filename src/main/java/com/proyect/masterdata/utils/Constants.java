@@ -98,6 +98,7 @@ public class Constants {
     public static final String tableSupplierType = "supplier_type";
     public static final String tableOrderReturn = "order_return";
     public static final String tableOrderReturnItem = "order_return_item";
+    public static final String tableOrderReturnType = "order_return_type";
     // messages
     public static final String register = "registration correctly";
     public static final String update = "correctly updated";
@@ -266,4 +267,5 @@ public class Constants {
     public static final String ErrorSupplierTypeExists = "Supplier type already exists";
     public static final String ErrorCustomerType = "Customer type does not exist";
     public static final String ErrorCustomerTypeExists = "Customer type already exists";
+    public static final String ErrorOrderReturnType = "Order return type does not exist";
 }
