@@ -36,7 +36,14 @@ public class OrderReturn {
     @Column(name = "order_id")
     private Long orderId;
 
+    @Column(name = "order_stock_id")
+    private Long orderStockId;
+
     @ManyToOne()
     @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
     private Ordering order;
+
+    @ManyToOne()
+    @JoinColumn(name = "order_stock_id",columnDefinition = "orderStockId",insertable = false,updatable = false)
+    private OrderStock orderStock;
 }

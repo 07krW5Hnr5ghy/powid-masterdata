@@ -268,4 +268,9 @@ public class Constants {
     public static final String ErrorCustomerType = "Customer type does not exist";
     public static final String ErrorCustomerTypeExists = "Customer type already exists";
     public static final String ErrorOrderReturnType = "Order return type does not exist";
+    public static final String ErrorOrderReturn = "Order return does not exist";
+    public static final String ErrorOrderReturnExists = "Order return already exists";
+    public static final String ErrorOrderReturnItem = "Order return item does not exist";
+    public static final String ErrorOrderReturnItemExists = "Order return item already exists";
+    public static final String ErrorOrderReturnItemQuantity = "Quantity is greater than the order stock quantity";
 }
