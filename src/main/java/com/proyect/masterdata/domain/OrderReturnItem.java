@@ -25,7 +25,7 @@ public class OrderReturnItem {
     @Column(name = "order_return_id")
     private Long orderReturnId;
 
-    @Column(name = "oder_stock_item_id")
+    @Column(name = "order_stock_item_id")
     private Long orderStockItemId;
 
     @Column(name = "product_id")

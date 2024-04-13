@@ -57,8 +57,6 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
         }
         if(product == null){
             throw new BadRequestExceptions(Constants.ErrorProduct);
-        }else {
-            orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndProductIdAndOrderId(supplierProduct.getId(), product.getId(),orderId);
         }
         if(orderReturnType==null){
             throw new BadRequestExceptions(Constants.ErrorOrderReturnType);
@@ -77,6 +75,8 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
         }
         if(orderStockItem == null){
             throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
+        }else{
+            orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndProductIdAndOrderItemId(supplierProduct.getId(), product.getId(),orderItem.getId());
         }
         if(orderReturnItem != null){
             throw new BadRequestExceptions(Constants.ErrorOrderItemExists);
