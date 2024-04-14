@@ -39,6 +39,9 @@ public class OrderReturn {
     @Column(name = "order_stock_id")
     private Long orderStockId;
 
+    @Column(name = "client_id")
+    private Long clientId;
+
     @ManyToOne()
     @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
     private Ordering order;
@@ -46,4 +49,8 @@ public class OrderReturn {
     @ManyToOne()
     @JoinColumn(name = "order_stock_id",columnDefinition = "orderStockId",insertable = false,updatable = false)
     private OrderStock orderStock;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
+    private Client client;
 }

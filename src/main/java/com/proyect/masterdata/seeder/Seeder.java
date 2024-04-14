@@ -87,6 +87,7 @@ public class Seeder implements CommandLineRunner {
         private final ISupplierType iSupplierType;
         private final ICustomerType iCustomerType;
         private final IOrderReturnType iOrderReturnType;
+        private final IOrderReturn iOrderReturn;
         @Override
         public void run(String... args) throws Exception {
 
@@ -2422,6 +2423,27 @@ public class Seeder implements CommandLineRunner {
                                 .observations("se adicionan dos unidades al pedido")
                                 .build();
                         iOrderItem.update(3L,requestOrderItemUpdate,"VMENDEZ");
+
+                        List<RequestOrderReturnItem> requestOrderReturnItemList = new ArrayList<>();
+
+                        RequestOrderReturnItem requestOrderReturnItem1 = RequestOrderReturnItem.builder()
+                                .productSku("A00001")
+                                .orderReturnType("rechazo")
+                                .quantity(1)
+                                .supplierProductSerial("A00001A")
+                                .build();
+
+                        requestOrderReturnItemList.add(requestOrderReturnItem1);
+
+                        RequestOrderReturnItem requestOrderReturnItem2 = RequestOrderReturnItem.builder()
+                                .productSku("A00002")
+                                .orderReturnType("rechazo")
+                                .supplierProductSerial("A00002A")
+                                .quantity(1)
+                                .build();
+                        requestOrderReturnItemList.add(requestOrderReturnItem2);
+
+                        iOrderReturn.save(1L,requestOrderReturnItemList,"AYEPES");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());

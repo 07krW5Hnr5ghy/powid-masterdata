@@ -6,7 +6,9 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IGeneralStock;
 import com.proyect.masterdata.services.IOrderReturnItem;
+import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,6 +30,8 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     private final OrderReturnRepository orderReturnRepository;
     private final OrderStockRepository orderStockRepository;
     private final OrderStockItemRepository orderStockItemRepository;
+    private final IGeneralStock iGeneralStock;
+    private final IWarehouseStock iWarehouseStock;
     @Override
     public ResponseSuccess save(Long orderReturnId, Long orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -42,7 +46,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderReturnItem.getSupplierProductSerial().toUpperCase());
-            orderReturnType = orderReturnTypeRepository.findByNameAndStatusTrue(requestOrderReturnItem.getOrderReturnType());
+            orderReturnType = orderReturnTypeRepository.findByNameAndStatusTrue(requestOrderReturnItem.getOrderReturnType().toUpperCase());
             product = productRepository.findBySkuAndStatusTrue(requestOrderReturnItem.getProductSku().toUpperCase());
             orderReturn = orderReturnRepository.findByOrderId(orderReturnId);
         }catch (RuntimeException e){
@@ -104,14 +108,20 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                             .supplierProductId(supplierProduct.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
+                            .tokenUser(user.getUsername())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                             .status(true)
                     .build());
+                    iGeneralStock.out(supplierProduct.getSerial(), requestOrderReturnItem.getQuantity(), user.getUsername());
+                    iWarehouseStock.out(orderStock.getWarehouse(),supplierProduct, requestOrderReturnItem.getQuantity(), user);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }

@@ -54,6 +54,12 @@ public class OrderReturnItem {
     @Column(name = "status")
     private Boolean status;
 
+    @Column(name = "token_user")
+    private String tokenUser;
+
+    @Column(name = "client_id")
+    private Long clientId;
+
     @ManyToOne()
     @JoinColumn(name = "order_return_id",columnDefinition = "orderReturnId",insertable = false,updatable = false)
     private OrderReturn orderReturn;
@@ -77,4 +83,8 @@ public class OrderReturnItem {
     @ManyToOne()
     @JoinColumn(name = "supplier_product_id",columnDefinition = "supplierProductId",insertable = false,updatable = false)
     private SupplierProduct supplierProduct;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
+    private Client client;
 }

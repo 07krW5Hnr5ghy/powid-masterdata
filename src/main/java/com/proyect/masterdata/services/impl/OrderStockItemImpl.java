@@ -86,6 +86,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                             .clientId(user.getClientId())
                             .updateDate(new Date(System.currentTimeMillis()))
                             .quantity(requestOrderStockItem.getQuantity())
+                            .tokenUser(user.getUsername())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
