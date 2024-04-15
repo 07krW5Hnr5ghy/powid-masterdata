@@ -17,4 +17,5 @@ public class OrderReturnItemDTO {
     private Date registrationDate;
     private Date updateDate;
     private String returnType;
+    private String warehouse;
 }

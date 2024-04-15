@@ -154,6 +154,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 .returnType(orderReturnItem.getOrderReturnType().getName())
                 .registrationDate(new Date(System.currentTimeMillis()))
                 .updateDate(new Date(System.currentTimeMillis()))
+                .warehouse(orderReturnItem.getOrderStockItem().getOrderStock().getWarehouse().getName())
                 .build()).toList();
     }
 }
