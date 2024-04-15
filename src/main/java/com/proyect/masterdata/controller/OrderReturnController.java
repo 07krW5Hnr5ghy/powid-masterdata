@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.OrderReturnDTO;
 import com.proyect.masterdata.dto.request.RequestOrderReturnItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -26,5 +27,12 @@ public class OrderReturnController {
     ) throws BadRequestExceptions {
         ResponseSuccess result = iOrderReturn.save(orderId,requestOrderReturnItemList,tokenUser);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    @GetMapping()
+    public ResponseEntity<List<OrderReturnDTO>> list(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions{
+        List<OrderReturnDTO> result = iOrderReturn.list(user);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

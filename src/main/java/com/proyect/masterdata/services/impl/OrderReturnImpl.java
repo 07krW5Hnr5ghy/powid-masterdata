@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.OrderReturn;
 import com.proyect.masterdata.domain.OrderStock;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.OrderReturnDTO;
 import com.proyect.masterdata.dto.request.RequestOrderReturnItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -58,6 +60,7 @@ public class OrderReturnImpl implements IOrderReturn {
                             .tokenUser(user.getUsername())
                             .client(user.getClient())
                             .clientId(user.getClientId())
+                            .status(true)
                     .build());
             for(RequestOrderReturnItem requestOrderReturnItem : requestOrderReturnItemList){
                 iOrderReturnItem.save(newOrderReturn.getId(),orderStock.getOrderId(),requestOrderReturnItem,tokenUser);
@@ -71,5 +74,26 @@ public class OrderReturnImpl implements IOrderReturn {
             e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public List<OrderReturnDTO> list(String user) throws BadRequestExceptions {
+        List<OrderReturn> orderReturns;
+        Long clientId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            orderReturns = orderReturnRepository.findAllByClientIdAndStatusTrue(clientId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(orderReturns.isEmpty()){
+            return Collections.emptyList();
+        }
+        return orderReturns.stream().map(orderReturn -> OrderReturnDTO.builder()
+                .registrationDate(orderReturn.getRegistrationDate())
+                .updateDate(orderReturn.getUpdateDate())
+                .orderId(orderReturn.getOrderId())
+                .build()).toList();
     }
 }

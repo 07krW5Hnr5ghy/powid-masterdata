@@ -4,7 +4,10 @@ import com.proyect.masterdata.domain.OrderReturn;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface OrderReturnRepository extends JpaRepository<OrderReturn,Long> {
     OrderReturn findByOrderId(Long orderId);
+    List<OrderReturn> findAllByClientIdAndStatusTrue(Long clientId);
 }

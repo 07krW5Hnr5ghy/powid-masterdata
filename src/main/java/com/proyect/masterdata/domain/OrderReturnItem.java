@@ -43,6 +43,9 @@ public class OrderReturnItem {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "order_id")
+    private Long orderId;
+
     @Column(name = "registration_date")
     @CreationTimestamp()
     private Date registrationDate;
@@ -83,6 +86,10 @@ public class OrderReturnItem {
     @ManyToOne()
     @JoinColumn(name = "supplier_product_id",columnDefinition = "supplierProductId",insertable = false,updatable = false)
     private SupplierProduct supplierProduct;
+
+    @ManyToOne()
+    @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
+    private Ordering order;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)

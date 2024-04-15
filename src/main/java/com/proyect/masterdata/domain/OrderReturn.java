@@ -42,6 +42,9 @@ public class OrderReturn {
     @Column(name = "client_id")
     private Long clientId;
 
+    @Column(name = "status")
+    private Boolean status;
+
     @ManyToOne()
     @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
     private Ordering order;

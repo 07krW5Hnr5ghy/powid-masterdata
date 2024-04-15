@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.OrderReturnItemDTO;
 import com.proyect.masterdata.dto.request.RequestOrderReturnItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -14,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -124,5 +127,33 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public List<OrderReturnItemDTO> list(String user, Long orderId) throws BadRequestExceptions {
+        Long clientId;
+        List<OrderReturnItem> orderReturnItemList;
+        try{
+            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+            if(orderId!=null){
+                orderReturnItemList = orderReturnItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(clientId,orderId);
+            }else {
+                orderReturnItemList = orderReturnItemRepository.findAllByClientIdAndStatusTrue(clientId);
+            }
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(orderReturnItemList.isEmpty()){
+            return Collections.emptyList();
+        }
+        return orderReturnItemList.stream().map(orderReturnItem -> OrderReturnItemDTO.builder()
+                .orderId(orderReturnItem.getOrderItem().getOrderId())
+                .productSku(orderReturnItem.getProduct().getSku())
+                .supplierProduct(orderReturnItem.getSupplierProduct().getSerial())
+                .returnType(orderReturnItem.getOrderReturnType().getName())
+                .registrationDate(new Date(System.currentTimeMillis()))
+                .updateDate(new Date(System.currentTimeMillis()))
+                .build()).toList();
     }
 }
