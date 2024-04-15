@@ -229,6 +229,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 .quantity(orderStockItem.getQuantity())
                 .registrationDate(orderStockItem.getRegistrationDate())
                 .updateDate(orderStockItem.getUpdateDate())
+                .productSku(orderStockItem.getOrderItem().getProduct().getSku())
                 .build()).toList();
     }
 
@@ -260,6 +261,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 .quantity(orderStockItem.getQuantity())
                 .registrationDate(orderStockItem.getRegistrationDate())
                 .updateDate(orderStockItem.getUpdateDate())
+                .productSku(orderStockItem.getOrderItem().getProduct().getSku())
                 .build()).toList();
     }
 

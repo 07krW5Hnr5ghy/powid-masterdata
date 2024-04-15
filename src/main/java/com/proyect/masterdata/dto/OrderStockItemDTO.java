@@ -16,6 +16,7 @@ public class OrderStockItemDTO {
     private Long orderItemId;
     private String warehouse;
     private String supplierProductSerial;
+    private String productSku;
     private Integer quantity;
     private Date registrationDate;
     private Date updateDate;
