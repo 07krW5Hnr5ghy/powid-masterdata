@@ -116,8 +116,8 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                             .clientId(user.getClientId())
                             .status(true)
                     .build());
-                    iGeneralStock.out(supplierProduct.getSerial(), requestOrderReturnItem.getQuantity(), user.getUsername());
-                    iWarehouseStock.out(orderStock.getWarehouse(),supplierProduct, requestOrderReturnItem.getQuantity(), user);
+                    iGeneralStock.in(supplierProduct.getSerial(), requestOrderReturnItem.getQuantity(), user.getUsername());
+                    iWarehouseStock.in(orderStock.getWarehouse(),supplierProduct, requestOrderReturnItem.getQuantity(), user);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
