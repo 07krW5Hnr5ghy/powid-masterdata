@@ -18,4 +18,5 @@ public class OrderReturnItemDTO {
     private Date updateDate;
     private String returnType;
     private String warehouse;
+    private Integer quantity;
 }
