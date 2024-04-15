@@ -94,6 +94,7 @@ public class OrderReturnImpl implements IOrderReturn {
                 .registrationDate(orderReturn.getRegistrationDate())
                 .updateDate(orderReturn.getUpdateDate())
                 .orderId(orderReturn.getOrderId())
+                .warehouse(orderReturn.getOrderStock().getWarehouse().getName())
                 .build()).toList();
     }
 }

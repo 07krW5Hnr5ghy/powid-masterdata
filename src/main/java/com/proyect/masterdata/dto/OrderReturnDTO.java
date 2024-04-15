@@ -13,6 +13,7 @@ import java.util.Date;
 @Data
 public class OrderReturnDTO {
     private Long orderId;
+    private String warehouse;
     private Date registrationDate;
     private Date updateDate;
 }
