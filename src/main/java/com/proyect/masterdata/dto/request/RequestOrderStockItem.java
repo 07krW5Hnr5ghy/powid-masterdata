@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class RequestOrderStockItem {
     private Integer quantity;
     private String supplierProductSerial;
-    private Long orderItemId;
+    private String productSku;
 }

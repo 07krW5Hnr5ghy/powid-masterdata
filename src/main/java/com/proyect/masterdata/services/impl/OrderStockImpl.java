@@ -89,6 +89,7 @@ public class OrderStockImpl implements IOrderStock {
                     .build();
         }catch (RuntimeException e){
             log.error(e.getMessage());
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }

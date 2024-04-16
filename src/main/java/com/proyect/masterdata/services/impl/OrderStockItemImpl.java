@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +43,12 @@ public class OrderStockItemImpl implements IOrderStockItem {
         OrderItem orderItem;
         SupplierProduct supplierProduct;
         OrderStock orderStock;
+        Product product;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProductSku().toUpperCase());
             ordering = orderingRepository.findById(orderId).orElse(null);
-            orderItem = orderItemRepository.findByIdAndOrderId(requestOrderStockItem.getOrderItemId(), orderId);
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
             orderStock = orderStockRepository.findByOrderId(orderId);
         }catch (RuntimeException e){
@@ -62,12 +64,22 @@ public class OrderStockItemImpl implements IOrderStockItem {
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }
 
+        if(product == null){
+            throw new BadRequestExceptions(Constants.ErrorProduct);
+        }else{
+            orderItem = orderItemRepository.findByProductIdAndOrderId(product.getId(), orderId);
+        }
+
         if(orderItem == null){
             throw new BadRequestExceptions(Constants.ErrorItem);
         }
 
         if(supplierProduct == null){
             throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        }
+
+        if(!Objects.equals(supplierProduct.getProduct().getSku(), orderItem.getProduct().getSku())){
+            throw new BadRequestExceptions(Constants.ErrorOrderStockProduct);
         }
 
         try{
@@ -93,6 +105,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                     .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -176,12 +189,19 @@ public class OrderStockItemImpl implements IOrderStockItem {
     public Boolean checkWarehouseItemStock(Long orderId,Warehouse warehouse,RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions, BadRequestExceptions {
         SupplierProduct supplierProduct;
         OrderItem orderItem;
+        Product product;
         try{
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
-            orderItem = orderItemRepository.findByIdAndOrderId(requestOrderStockItem.getOrderItemId(), orderId);
+            product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProductSku().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(product == null){
+            throw new BadRequestExceptions(Constants.ErrorProduct);
+        }else{
+            orderItem = orderItemRepository.findByProductIdAndOrderId(product.getId(), orderId);
         }
 
         if(supplierProduct == null){
