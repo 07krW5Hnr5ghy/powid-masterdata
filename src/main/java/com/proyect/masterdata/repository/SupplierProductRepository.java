@@ -17,4 +17,5 @@ public interface SupplierProductRepository extends JpaRepository<SupplierProduct
     List<SupplierProduct> findAllByClientIdAndStatusFalse(Long clientId);
     List<SupplierProduct> findAllByClientIdAndSupplierIdAndStatusTrue(Long clientId,Long supplierId);
     List<SupplierProduct> findAllByClientIdAndSupplierIdAndStatusFalse(Long clientId,Long supplierId);
+    List<SupplierProduct> findAllByClientIdAndProductIdAndStatusTrue(Long clientId,Long productId);
 }

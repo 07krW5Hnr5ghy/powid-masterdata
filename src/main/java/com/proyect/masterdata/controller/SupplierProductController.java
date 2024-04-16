@@ -114,4 +114,14 @@ public class SupplierProductController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
+    @GetMapping("product")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
+    public ResponseEntity<List<SupplierProductDTO>> listSupplierProductProduct(
+            @RequestParam("user") String user,
+            @RequestParam(value = "productSku") String productSku
+    ) throws BadRequestExceptions {
+        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProductByProduct(user,productSku);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
 }

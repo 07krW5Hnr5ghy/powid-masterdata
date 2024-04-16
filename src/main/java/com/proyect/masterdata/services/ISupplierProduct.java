@@ -23,5 +23,6 @@ public interface ISupplierProduct {
                                       Integer pageSize) throws BadRequestExceptions;
         List<SupplierProductDTO> listSupplierProduct(String user, Long id) throws BadRequestExceptions,InternalErrorExceptions;
         List<SupplierProductDTO> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
+        List<SupplierProductDTO> listSupplierProductByProduct(String user,String productSku) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

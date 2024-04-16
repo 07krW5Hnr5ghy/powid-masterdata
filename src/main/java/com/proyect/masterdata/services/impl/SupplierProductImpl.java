@@ -361,4 +361,33 @@ public class SupplierProductImpl implements ISupplierProduct {
                 .toList();
     }
 
+    @Override
+    public List<SupplierProductDTO> listSupplierProductByProduct(String user, String productSku) throws BadRequestExceptions, InternalErrorExceptions {
+        List<SupplierProduct> supplierProducts;
+        Long clientId;
+        Long productId;
+        try {
+            clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
+            productId = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase()).getId();
+            supplierProducts = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(clientId,productId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(supplierProducts.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return supplierProducts.stream()
+                .map(supplierProduct -> SupplierProductDTO.builder()
+                        .productSku(supplierProduct.getProduct().getSku())
+                        .purchasePrice(supplierProduct.getPurchasePrice())
+                        .serial(supplierProduct.getSerial())
+                        .supplierName(supplierProduct.getSupplier().getBusinessName())
+                        .supplierProductId(supplierProduct.getId())
+                        .build())
+                .toList();
+    }
+
 }
