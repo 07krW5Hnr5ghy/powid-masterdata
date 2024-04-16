@@ -18,5 +18,5 @@ public class WarehouseStockDTO {
     public Date registrationDate;
     public Date updateDate;
     public Long id;
-    public Long productId;
+    public String productSku;
 }
