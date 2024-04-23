@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import static java.util.logging.Level.*;
 
 @SpringBootApplication
-@EnableFeignClients
 @Configuration
 @RequiredArgsConstructor
 public class MasterdataApplication {
