@@ -140,6 +140,7 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<includes>
+					<include>**/*.properties</include>
 					<include>**/*.json</include> <!-- Include specific file types -->
 					<include>**/*.jpg</include>
 					<include>**/*.png</include>
