@@ -1015,7 +1015,7 @@ public class Seeder implements CommandLineRunner {
 
                         // mock products
                         List<MultipartFile> productImages1 = new ArrayList<>();
-                        File image1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\test_pics\\bill.jpg");
+                        File image1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\bill.jpg");
                         // uncomment for deployment
                         // File image1 = new File("src/main/test_pics/bill.jpg");
                         FileInputStream imageInputStream1 = new FileInputStream(image1);
@@ -1030,7 +1030,7 @@ public class Seeder implements CommandLineRunner {
                         );
                         productImages1.add(multipartImage1);
                         List<MultipartFile> productImages2 = new ArrayList<>();
-                        File image2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\test_pics\\invoice1.jpg");
+                        File image2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\invoice1.jpg");
                         // uncomment for deployment
                         // File image2 = new File("src/main/test_pics/bill.jpg");
                         FileInputStream imageInputStream2 = new FileInputStream(image2);
@@ -1941,7 +1941,7 @@ public class Seeder implements CommandLineRunner {
 
                         // orders mocks
                         List<MultipartFile> receipts1 = new ArrayList<>();
-                        File receipt1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\test_pics\\bill.jpg");
+                        File receipt1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\bill.jpg");
                         // uncomment for deployment
                         // File receipt1 = new File("src/main/test_pics/bill.jpg");
                         FileInputStream fileInputStream1 = new FileInputStream(receipt1);
@@ -2001,7 +2001,7 @@ public class Seeder implements CommandLineRunner {
                         iOrdering.save(requestOrderSave1,"CROJAS");
 
                         List<MultipartFile> receipts2 = new ArrayList<>();
-                        File receipt2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\test_pics\\receiptarticle.jpg");
+                        File receipt2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\receiptarticle.jpg");
                         // uncomment for deployment
                         // File receipt2 = new File("src/main/test_pics/receiptarticle.jpg");
                         FileInputStream fileInputStream2 = new FileInputStream(receipt2);
@@ -2016,7 +2016,7 @@ public class Seeder implements CommandLineRunner {
                         );
                         receipts2.add(multipartFile2);
 
-                        File receipt3 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\test_pics\\invoice1.jpg");
+                        File receipt3 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\invoice1.jpg");
                         // uncomment for deployment
                         // File receipt3 = new File("src/main/test_pics/invoice1.jpg");
                         FileInputStream fileInputStream3 = new FileInputStream(receipt3);
@@ -2311,7 +2311,7 @@ public class Seeder implements CommandLineRunner {
 
                         // mock courier pictures and change state to delivered
                         List<MultipartFile> courierImages1 = new ArrayList<>();
-                        File courierImage1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\test_pics\\bill.jpg");
+                        File courierImage1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\bill.jpg");
                         // uncomment for deployment
                         // File courierImage1 = new File("src/main/test_pics/bill.jpg");
                         FileInputStream courierImageInputStream1 = new FileInputStream(courierImage1);
