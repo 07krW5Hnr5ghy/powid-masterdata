@@ -1021,35 +1021,20 @@ public class Seeder implements CommandLineRunner {
                         // mock products
                         List<MultipartFile> productImages1 = new ArrayList<>();
                         Resource resource1 = resourceLoader.getResource("classpath:static/pictures/bill.jpg");
-                        byte[] imageBytes1 = StreamUtils.copyToByteArray(resource1.getInputStream());
-                        //File image1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\bill.jpg");
-                        // uncomment for deployment
-                        File image1 = new File("src/main/resources/static/pictures/bill.jpg");
-                        FileInputStream imageInputStream1 = new FileInputStream(image1);
-                        imageInputStream1.read(imageBytes1);
-                        imageInputStream1.close();
                         MockMultipartFile multipartImage1 = new MockMultipartFile(
-                                "file",
-                                image1.getName(),
+                                "bill.jpg",
+                                "bill.jpg",
                                 "image/jpeg",
-                                imageBytes1
+                                StreamUtils.copyToByteArray(resource1.getInputStream())
                         );
                         productImages1.add(multipartImage1);
                         List<MultipartFile> productImages2 = new ArrayList<>();
                         Resource resource2 = resourceLoader.getResource("classpath:static/pictures/invoice1.jpg");
-                        byte[] imageBytes2 = StreamUtils.copyToByteArray(resource2.getInputStream());
-                        //File image2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\invoice1.jpg");
-                        // uncomment for deployment
-                        File image2 = new File("src/main/resources/static/pictures/bill.jpg");
-                        FileInputStream imageInputStream2 = new FileInputStream(image2);
-                        //byte[] imageBytes2 = new byte[(int) image2.length()];
-                        imageInputStream2.read(imageBytes2);
-                        imageInputStream2.close();
                         MockMultipartFile multipartImage2 = new MockMultipartFile(
-                                "file",
-                                image2.getName(),
+                                "invoice.jpg",
+                                "invoice.jpg",
                                 "image/jpeg",
-                                imageBytes2
+                                StreamUtils.copyToByteArray(resource2.getInputStream())
                         );
                         productImages2.add(multipartImage2);
                         RequestProductSave product1 = RequestProductSave.builder().build();
@@ -1949,19 +1934,12 @@ public class Seeder implements CommandLineRunner {
 
                         // orders mocks
                         List<MultipartFile> receipts1 = new ArrayList<>();
-
-                        //File receipt1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\bill.jpg");
-                        // uncomment for deployment
-                        File receipt1 = new File("src/main/resources/static/pictures/bill.jpg");
-                        FileInputStream fileInputStream1 = new FileInputStream(receipt1);
-                        byte[] fileBytes1 = new byte[(int) receipt1.length()];
-                        fileInputStream1.read(fileBytes1);
-                        fileInputStream1.close();
+                        Resource resource3 = resourceLoader.getResource("classpath:static/pictures/receipt.jpg");
                         MockMultipartFile multipartFile1 = new MockMultipartFile(
-                                "file",
-                                receipt1.getName(),
+                                "receipt.jpg",
+                                "receipt.jpg",
                                 "image/jpeg",
-                                fileBytes1
+                                StreamUtils.copyToByteArray(resource3.getInputStream())
                         );
                         receipts1.add(multipartFile1);
 
@@ -2010,34 +1988,20 @@ public class Seeder implements CommandLineRunner {
                         iOrdering.save(requestOrderSave1,"CROJAS");
 
                         List<MultipartFile> receipts2 = new ArrayList<>();
-                        //File receipt2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\receiptarticle.jpg");
-
-                        // uncomment for deployment
-                        File receipt2 = new File("src/main/resources/static/pictures/receiptarticle.jpg");
-                        FileInputStream fileInputStream2 = new FileInputStream(receipt2);
-                        byte[] fileBytes2 = new byte[(int) receipt2.length()];
-                        fileInputStream2.read(fileBytes2);
-                        fileInputStream2.close();
+                        Resource resource4 = resourceLoader.getResource("classpath:static/pictures/receiptarticle.jpg");
                         MockMultipartFile multipartFile2 = new MockMultipartFile(
-                                "file",
-                                receipt2.getName(),
+                                "receiptarticle.jpg",
+                                "receiptarticle.jpg",
                                 "image/jpeg",
-                                fileBytes2
+                                StreamUtils.copyToByteArray(resource4.getInputStream())
                         );
                         receipts2.add(multipartFile2);
-
-                        //File receipt3 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\invoice1.jpg");
-                        // uncomment for deployment
-                        File receipt3 = new File("src/main/resources/static/pictures/invoice1.jpg");
-                        FileInputStream fileInputStream3 = new FileInputStream(receipt3);
-                        byte[] fileBytes3 = new byte[(int) receipt3.length()];
-                        fileInputStream3.read(fileBytes3);
-                        fileInputStream3.close();
+                        Resource resource5 = resourceLoader.getResource("classpath:static/pictures/invoice1.jpg");
                         MockMultipartFile multipartFile3 = new MockMultipartFile(
-                                "file",
-                                receipt3.getName(),
+                                "invoice1.jpg",
+                                "invoice1.jpg",
                                 "image/jpeg",
-                                fileBytes3
+                                StreamUtils.copyToByteArray(resource5.getInputStream())
                         );
                         receipts2.add(multipartFile3);
 
@@ -2321,18 +2285,12 @@ public class Seeder implements CommandLineRunner {
 
                         // mock courier pictures and change state to delivered
                         List<MultipartFile> courierImages1 = new ArrayList<>();
-                        //File courierImage1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\bill.jpg");
-                        // uncomment for deployment
-                        File courierImage1 = new File("src/main/resources/static/pictures/bill.jpg");
-                        FileInputStream courierImageInputStream1 = new FileInputStream(courierImage1);
-                        byte[] courierImageBytes1 = new byte[(int) courierImage1.length()];
-                        courierImageInputStream1.read(courierImageBytes1);
-                        courierImageInputStream1.close();
+                        Resource resource6 = resourceLoader.getResource("classpath:static/pictures/bill.jpg");
                         MockMultipartFile multipartCourierImage1 = new MockMultipartFile(
-                                "file",
-                                courierImage1.getName(),
+                                "bill.jpg",
+                                "bill.jpg",
                                 "image/jpeg",
-                                courierImageBytes1
+                                StreamUtils.copyToByteArray(resource6.getInputStream())
                         );
                         courierImages1.add(multipartCourierImage1);
 
