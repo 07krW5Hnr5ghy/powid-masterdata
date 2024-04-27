@@ -1015,9 +1015,9 @@ public class Seeder implements CommandLineRunner {
 
                         // mock products
                         List<MultipartFile> productImages1 = new ArrayList<>();
-                        //File image1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\bill.jpg");
+                        //File image1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\bill.jpg");
                         // uncomment for deployment
-                        File image1 = new File("src/main/resources/test_pics/bill.jpg");
+                        File image1 = new File("src/main/resources/static/pictures/bill.jpg");
                         FileInputStream imageInputStream1 = new FileInputStream(image1);
                         byte[] imageBytes1 = new byte[(int) image1.length()];
                         imageInputStream1.read(imageBytes1);
@@ -1031,9 +1031,9 @@ public class Seeder implements CommandLineRunner {
                         productImages1.add(multipartImage1);
                         List<MultipartFile> productImages2 = new ArrayList<>();
 
-                        //File image2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\invoice1.jpg");
+                        //File image2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\invoice1.jpg");
                         // uncomment for deployment
-                        File image2 = new File("src/main/resources/test_pics/bill.jpg");
+                        File image2 = new File("src/main/resources/static/pictures/bill.jpg");
                         FileInputStream imageInputStream2 = new FileInputStream(image2);
                         byte[] imageBytes2 = new byte[(int) image2.length()];
                         imageInputStream2.read(imageBytes2);
@@ -1943,9 +1943,9 @@ public class Seeder implements CommandLineRunner {
                         // orders mocks
                         List<MultipartFile> receipts1 = new ArrayList<>();
 
-                        //File receipt1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\bill.jpg");
+                        //File receipt1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\bill.jpg");
                         // uncomment for deployment
-                        File receipt1 = new File("src/main/resources/test_pics/bill.jpg");
+                        File receipt1 = new File("src/main/resources/static/pictures/bill.jpg");
                         FileInputStream fileInputStream1 = new FileInputStream(receipt1);
                         byte[] fileBytes1 = new byte[(int) receipt1.length()];
                         fileInputStream1.read(fileBytes1);
@@ -2003,10 +2003,10 @@ public class Seeder implements CommandLineRunner {
                         iOrdering.save(requestOrderSave1,"CROJAS");
 
                         List<MultipartFile> receipts2 = new ArrayList<>();
-                        //File receipt2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\receiptarticle.jpg");
+                        //File receipt2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\receiptarticle.jpg");
 
                         // uncomment for deployment
-                        File receipt2 = new File("src/main/resources/test_pics/receiptarticle.jpg");
+                        File receipt2 = new File("src/main/resources/static/pictures/receiptarticle.jpg");
                         FileInputStream fileInputStream2 = new FileInputStream(receipt2);
                         byte[] fileBytes2 = new byte[(int) receipt2.length()];
                         fileInputStream2.read(fileBytes2);
@@ -2019,9 +2019,9 @@ public class Seeder implements CommandLineRunner {
                         );
                         receipts2.add(multipartFile2);
 
-                        //File receipt3 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\invoice1.jpg");
+                        //File receipt3 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\invoice1.jpg");
                         // uncomment for deployment
-                        File receipt3 = new File("src/main/resources/test_pics/invoice1.jpg");
+                        File receipt3 = new File("src/main/resources/static/pictures/invoice1.jpg");
                         FileInputStream fileInputStream3 = new FileInputStream(receipt3);
                         byte[] fileBytes3 = new byte[(int) receipt3.length()];
                         fileInputStream3.read(fileBytes3);
@@ -2314,9 +2314,9 @@ public class Seeder implements CommandLineRunner {
 
                         // mock courier pictures and change state to delivered
                         List<MultipartFile> courierImages1 = new ArrayList<>();
-                        //File courierImage1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\test_pics\\bill.jpg");
+                        //File courierImage1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\bill.jpg");
                         // uncomment for deployment
-                        File courierImage1 = new File("src/main/resources/test_pics/bill.jpg");
+                        File courierImage1 = new File("src/main/resources/static/pictures/bill.jpg");
                         FileInputStream courierImageInputStream1 = new FileInputStream(courierImage1);
                         byte[] courierImageBytes1 = new byte[(int) courierImage1.length()];
                         courierImageInputStream1.read(courierImageBytes1);
