@@ -1,5 +1,6 @@
 package com.proyect.masterdata.seeder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CountryDTO;
 import com.proyect.masterdata.dto.LocationDTO;
@@ -8,13 +9,17 @@ import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -88,6 +93,7 @@ public class Seeder implements CommandLineRunner {
         private final ICustomerType iCustomerType;
         private final IOrderReturnType iOrderReturnType;
         private final IOrderReturn iOrderReturn;
+        private final ResourceLoader resourceLoader;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1012,14 +1018,14 @@ public class Seeder implements CommandLineRunner {
                         iModel.save("realt", "lacoste", "JORTIZ");
                         iModel.save("brust", "lacoste", "JORTIZ");
                         iModel.save("frost", "lacoste", "JORTIZ");
-
                         // mock products
                         List<MultipartFile> productImages1 = new ArrayList<>();
+                        Resource resource1 = resourceLoader.getResource("classpath:static/pictures/bill.jpg");
+                        byte[] imageBytes1 = StreamUtils.copyToByteArray(resource1.getInputStream());
                         //File image1 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\bill.jpg");
                         // uncomment for deployment
                         File image1 = new File("src/main/resources/static/pictures/bill.jpg");
                         FileInputStream imageInputStream1 = new FileInputStream(image1);
-                        byte[] imageBytes1 = new byte[(int) image1.length()];
                         imageInputStream1.read(imageBytes1);
                         imageInputStream1.close();
                         MockMultipartFile multipartImage1 = new MockMultipartFile(
@@ -1030,12 +1036,13 @@ public class Seeder implements CommandLineRunner {
                         );
                         productImages1.add(multipartImage1);
                         List<MultipartFile> productImages2 = new ArrayList<>();
-
+                        Resource resource2 = resourceLoader.getResource("classpath:static/pictures/invoice1.jpg");
+                        byte[] imageBytes2 = StreamUtils.copyToByteArray(resource2.getInputStream());
                         //File image2 = new File("C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\pictures\\invoice1.jpg");
                         // uncomment for deployment
                         File image2 = new File("src/main/resources/static/pictures/bill.jpg");
                         FileInputStream imageInputStream2 = new FileInputStream(image2);
-                        byte[] imageBytes2 = new byte[(int) image2.length()];
+                        //byte[] imageBytes2 = new byte[(int) image2.length()];
                         imageInputStream2.read(imageBytes2);
                         imageInputStream2.close();
                         MockMultipartFile multipartImage2 = new MockMultipartFile(
