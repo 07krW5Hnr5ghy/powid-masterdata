@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -34,13 +35,13 @@ public class JsonFileReaderImpl implements IJsonFileReader {
         List<LocationDTO> filteredDepartments = new ArrayList<>();
 
         try {
-            // uncomment for deployment
-            File file = new File("src/main/resources/static/json/peru.json");
-            //File file = new File(
-              //      "C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\json\\peru.json");
+            Resource resource = resourceLoader.getResource("classpath:static/json/peru.json");
+            InputStream inputStream = resource.getInputStream();
+            Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
+            String content = scanner.hasNext() ? scanner.next() : "";
             ObjectMapper mapper = new ObjectMapper();
 
-            List<LocationDTO> locations = mapper.readValue(file,
+            List<LocationDTO> locations = mapper.readValue(content,
                     new TypeReference<List<LocationDTO>>() {
                     });
 
@@ -59,13 +60,13 @@ public class JsonFileReaderImpl implements IJsonFileReader {
         List<LocationDTO> filteredProvinces = new ArrayList<>();
 
         try {
-            // uncomment for deployment
-            File file = new File("src/main/resources/static/json/peru.json");
-            //File file = new File(
-            //        "C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\json\\peru.json");
+            Resource resource = resourceLoader.getResource("classpath:static/json/peru.json");
+            InputStream inputStream = resource.getInputStream();
+            Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
+            String content = scanner.hasNext() ? scanner.next() : "";
             ObjectMapper mapper = new ObjectMapper();
 
-            List<LocationDTO> locations = mapper.readValue(file,
+            List<LocationDTO> locations = mapper.readValue(content,
                     new TypeReference<List<LocationDTO>>() {
                     });
 
@@ -86,14 +87,13 @@ public class JsonFileReaderImpl implements IJsonFileReader {
 
         try {
 
-            // uncomment for deployment
-            File file = new File("src/main/resources/static/json/peru.json");
-            //File file = new File(
-            //        "C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\json\\peru.json");
-
+            Resource resource = resourceLoader.getResource("classpath:static/json/peru.json");
+            InputStream inputStream = resource.getInputStream();
+            Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
+            String content = scanner.hasNext() ? scanner.next() : "";
             ObjectMapper mapper = new ObjectMapper();
 
-            List<LocationDTO> locations = mapper.readValue(file,
+            List<LocationDTO> locations = mapper.readValue(content,
                     new TypeReference<List<LocationDTO>>() {
                     });
 
@@ -111,13 +111,12 @@ public class JsonFileReaderImpl implements IJsonFileReader {
     public List<CountryDTO> filterCountry() {
         List<CountryDTO> filteredCountry = new ArrayList<>();
         try{
-            // uncomment for deployment
-
-            //File file = new File(
-            //        "C:\\Users\\USUARIO\\Documents\\code\\work\\repositories\\masterdata-java17\\src\\main\\resources\\static\\json\\country.json");
-            File file = new File("src/main/resources/static/json/country.json");
+            Resource resource = resourceLoader.getResource("classpath:static/json/country.json");
+            InputStream inputStream = resource.getInputStream();
+            Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
+            String content = scanner.hasNext() ? scanner.next() : "";
             ObjectMapper mapper = new ObjectMapper();
-            List<CountryDTO> locations = mapper.readValue(file,new TypeReference<List<CountryDTO>>(){});
+            List<CountryDTO> locations = mapper.readValue(content,new TypeReference<List<CountryDTO>>(){});
             filteredCountry = new ArrayList<>(locations.stream().collect(Collectors.toMap(CountryDTO::getValue,obj->obj,(existing,replacement) -> existing)).values());
         }catch (Exception e){
             e.printStackTrace();
