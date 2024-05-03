@@ -1,28 +1,29 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.Access;
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.AccessDTO;
+import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
+import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.repository.AccessRepository;
+import com.proyect.masterdata.repository.AccessRepositoryCustom;
+import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAccess;
+import com.proyect.masterdata.utils.Constants;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.dto.AccessDTO;
-import com.proyect.masterdata.dto.response.ResponseDelete;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
-import com.proyect.masterdata.domain.Access;
-import com.proyect.masterdata.dto.response.ResponseSuccess;
-import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.AccessRepository;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.services.IAccess;
-import com.proyect.masterdata.utils.Constants;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class AccessImpl implements IAccess {
 
     private final UserRepository userRepository;
     private final AccessRepository accessRepository;
+    private final AccessRepositoryCustom accessRepositoryCustom;
 
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -185,22 +187,30 @@ public class AccessImpl implements IAccess {
     }
 
     @Override
-    public List<AccessDTO> list() throws BadRequestExceptions {
-        List<Access> accesses = new ArrayList<>();
+    public CompletableFuture<Page<AccessDTO>> list(String name, String sort, String sortColumn, Integer pageNumber,
+                                Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(() -> {
+            Page<Access> accessPage;
 
-        try{
-            accesses = accessRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                accessPage = accessRepositoryCustom.searchForAccess(name, sort, sortColumn, pageNumber, pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if(accesses.isEmpty()){
-            return Collections.emptyList();
-        }
+            if (accessPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        return accesses.stream().map(access -> AccessDTO.builder()
-                .name(access.getName())
-                .build()).toList();
+            List<AccessDTO> accessDTOs = accessPage.getContent().stream().map(access -> AccessDTO.builder()
+                    .name(access.getName())
+                    .build()).toList();
+
+            return new PageImpl<>(accessDTOs, accessPage.getPageable(),
+                    accessPage.getTotalElements());
+        });
+
     }
 
     @Override
