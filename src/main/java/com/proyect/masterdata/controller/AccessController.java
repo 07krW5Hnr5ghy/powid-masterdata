@@ -38,9 +38,9 @@ public class AccessController {
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam(value = "name") String name,
             @RequestParam(value = "tokenUser") String tokenUser
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iAccess.delete(name,tokenUser);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iAccess.deleteAsync(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping()

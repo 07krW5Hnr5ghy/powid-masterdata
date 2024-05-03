@@ -13,6 +13,7 @@ public interface IAccess {
     ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     ResponseDelete delete(String name,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseDelete> deleteAsync(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     List<AccessDTO> list() throws BadRequestExceptions;
     List<AccessDTO> listFalse() throws BadRequestExceptions;
     ResponseSuccess activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;

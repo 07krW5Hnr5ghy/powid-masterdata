@@ -147,6 +147,44 @@ public class AccessImpl implements IAccess {
     }
 
     @Override
+    public CompletableFuture<ResponseDelete> deleteAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(() -> {
+            User user;
+            Access access;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                access = accessRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (access == null) {
+                throw new BadRequestExceptions(Constants.ErrorAccess);
+            }
+
+            try {
+                access.setStatus(false);
+                access.setDateUpDate(new Date(System.currentTimeMillis()));
+                access.setTokenUser(tokenUser.toUpperCase());
+                accessRepository.save(access);
+                return ResponseDelete.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public List<AccessDTO> list() throws BadRequestExceptions {
         List<Access> accesses = new ArrayList<>();
 
