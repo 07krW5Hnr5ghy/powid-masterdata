@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.AccessDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Access;
@@ -66,6 +68,46 @@ public class AccessImpl implements IAccess {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(() -> {
+            User user;
+            Access access;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                access = accessRepository.findByName(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (access != null) {
+                throw new BadRequestExceptions(Constants.ErrorAccessExists);
+            }
+
+            try {
+                accessRepository.save(Access.builder()
+                        .name(name.toUpperCase())
+                        .status(true)
+                        .dateRegistration(new Date(System.currentTimeMillis()))
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
