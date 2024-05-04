@@ -59,17 +59,23 @@ public class AccessController {
 
     @GetMapping("status-false")
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_GET')")
-    public ResponseEntity<List<AccessDTO>> listFalse() throws BadRequestExceptions {
-        List<AccessDTO> result = iAccess.listFalse();
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    public ResponseEntity<Page<AccessDTO>> listFalse(
+            @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber") Integer pageNumber,
+            @RequestParam(value = "pageSize") Integer pageSize
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<AccessDTO>> result = iAccess.listFalse(name,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_PUT')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iAccess.activate(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iAccess.activate(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

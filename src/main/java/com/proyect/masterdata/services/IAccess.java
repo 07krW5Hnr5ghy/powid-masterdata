@@ -17,6 +17,7 @@ public interface IAccess {
     CompletableFuture<ResponseDelete> deleteAsync(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<Page<AccessDTO>> list(String name, String sort, String sortColumn, Integer pageNumber,
                          Integer pageSize) throws BadRequestExceptions;
-    List<AccessDTO> listFalse() throws BadRequestExceptions;
-    ResponseSuccess activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<Page<AccessDTO>> listFalse(String name, String sort, String sortColumn, Integer pageNumber,
+                                                 Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
 }

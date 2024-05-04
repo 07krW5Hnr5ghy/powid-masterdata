@@ -214,58 +214,67 @@ public class AccessImpl implements IAccess {
     }
 
     @Override
-    public List<AccessDTO> listFalse() throws BadRequestExceptions {
-        List<Access> accesses = new ArrayList<>();
+    public CompletableFuture<Page<AccessDTO>> listFalse(String name, String sort, String sortColumn, Integer pageNumber,
+                                                        Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(() -> {
+            Page<Access> accessPage;
 
-        try{
-            accesses = accessRepository.findAllByStatusFalse();
-        }catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                accessPage = accessRepositoryCustom.searchForAccess(name, sort, sortColumn, pageNumber, pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if(accesses.isEmpty()){
-            return Collections.emptyList();
-        }
+            if (accessPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        return accesses.stream().map(access -> AccessDTO.builder()
-                .name(access.getName())
-                .build()).toList();
+            List<AccessDTO> accessDTOs = accessPage.getContent().stream().map(access -> AccessDTO.builder()
+                    .name(access.getName())
+                    .build()).toList();
+
+            return new PageImpl<>(accessDTOs, accessPage.getPageable(),
+                    accessPage.getTotalElements());
+        });
     }
 
     @Override
-    public ResponseSuccess activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        Access access;
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(() -> {
+            User user;
+            Access access;
 
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            access = accessRepository.findByNameAndStatusFalse(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                access = accessRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (access == null) {
-            throw new BadRequestExceptions(Constants.ErrorAccess);
-        }
+            if (access == null) {
+                throw new BadRequestExceptions(Constants.ErrorAccess);
+            }
 
-        try {
-            access.setStatus(true);
-            access.setDateUpDate(new Date(System.currentTimeMillis()));
-            access.setTokenUser(tokenUser.toUpperCase());
-            accessRepository.save(access);
-            return ResponseSuccess.builder()
-                    .message(Constants.update)
-                    .code(200)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                access.setStatus(true);
+                access.setDateUpDate(new Date(System.currentTimeMillis()));
+                access.setTokenUser(tokenUser.toUpperCase());
+                accessRepository.save(access);
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
 }
