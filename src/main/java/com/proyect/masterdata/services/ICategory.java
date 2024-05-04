@@ -10,19 +10,22 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface ICategory {
     ResponseSuccess save(String name, String description, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(String name, String description, String tokenUser)
+            throws BadRequestExceptions, InternalErrorExceptions;
     ResponseSuccess saveAll(List<RequestCreateCategory> categories, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
-    CategoryDTO update(RequestCategory requestCategory, String tokenUser)
+    CompletableFuture<CategoryDTO> update(RequestCategory requestCategory, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
-    ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    List<CategoryDTO> listCategory() throws BadRequestExceptions;
-    Page<CategoryDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<CategoryDTO>> listCategory() throws BadRequestExceptions;
+    CompletableFuture<Page<CategoryDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
-    Page<CategoryDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    CompletableFuture<Page<CategoryDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
-    ResponseSuccess activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
 }
