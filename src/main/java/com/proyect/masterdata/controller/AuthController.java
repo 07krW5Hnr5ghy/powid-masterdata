@@ -18,6 +18,9 @@ import com.proyect.masterdata.services.IAuthentication;
 
 import lombok.AllArgsConstructor;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("auth")
@@ -35,8 +38,8 @@ public class AuthController {
 
     @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseLogin> login(
-            @RequestBody() RequestLogin requestLogin) throws BadRequestExceptions {
-        ResponseLogin result = iAuthentication.loginUser(requestLogin.getUsername(), requestLogin.getPassword());
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestBody() RequestLogin requestLogin) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseLogin> result = iAuthentication.loginUser(requestLogin.getUsername(), requestLogin.getPassword());
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

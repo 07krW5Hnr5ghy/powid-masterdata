@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.domain.Module;
@@ -52,49 +53,51 @@ public class AuthenticationImpl implements IAuthentication {
     private final MembershipRepository membershipRepository;
     private final MembershipStateRepository membershipStateRepository;
 
-    public ResponseLogin loginUser(String username, String password) {
-        try {
+    public CompletableFuture<ResponseLogin> loginUser(String username, String password) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
 
-            User user;
-            Membership activeMembership;
-            Membership payedMembership;
-            MembershipState activeState;
+                User user;
+                Membership activeMembership;
+                Membership payedMembership;
+                MembershipState activeState;
 
-            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-            activeState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
-            Date currentDate = new Date(System.currentTimeMillis());
-            MembershipState payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
-            MembershipState expiredState = membershipStateRepository.findByNameAndStatusTrue("EXPIRADA");
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                activeState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
+                Date currentDate = new Date(System.currentTimeMillis());
+                MembershipState payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
+                MembershipState expiredState = membershipStateRepository.findByNameAndStatusTrue("EXPIRADA");
 
-            if (user == null) {
-                throw new BadRequestExceptions(Constants.ErrorAuthentication);
-            }else {
-                activeMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getId(), activeState.getId());
-            }
+                if (user == null) {
+                    throw new BadRequestExceptions(Constants.ErrorAuthentication);
+                }else {
+                    activeMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getId(), activeState.getId());
+                }
 
-            if(activeMembership != null){
-                if(activeMembership.getExpirationDate().compareTo(currentDate) < 0){
-                    iMembership.delete(user.getUsername());
-                    payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(),payedState.getId());
-                    if(payedMembership != null){
-                        payedMembership.setMembershipState(activeState);
-                        payedMembership.setMembershipStateId(activeState.getId());
-                        membershipRepository.save(payedMembership);
+                if(activeMembership != null){
+                    if(activeMembership.getExpirationDate().compareTo(currentDate) < 0){
+                        iMembership.delete(user.getUsername());
+                        payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(),payedState.getId());
+                        if(payedMembership != null){
+                            payedMembership.setMembershipState(activeState);
+                            payedMembership.setMembershipStateId(activeState.getId());
+                            membershipRepository.save(payedMembership);
+                        }
                     }
                 }
+
+                Authentication auth = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(username.toUpperCase(), password));
+
+                String token = iToken.generateJwt(auth);
+
+                return new ResponseLogin(userRepository.findByUsernameAndStatusTrue(username.toUpperCase()), token);
+
+            } catch (AuthenticationException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ErrorAuthentication);
             }
-
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username.toUpperCase(), password));
-
-            String token = iToken.generateJwt(auth);
-
-            return new ResponseLogin(userRepository.findByUsernameAndStatusTrue(username.toUpperCase()), token);
-
-        } catch (AuthenticationException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ErrorAuthentication);
-        }
+        });
     }
 
     @Override

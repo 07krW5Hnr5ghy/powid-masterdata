@@ -6,9 +6,11 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
-public interface IAuthentication {
-    public ResponseLogin loginUser(String username, String password);
+import java.util.concurrent.CompletableFuture;
 
-    public ResponseSuccess registerUser(RequestOnboarding requestOnboarding)
+public interface IAuthentication {
+    CompletableFuture<ResponseLogin> loginUser(String username, String password);
+
+    ResponseSuccess registerUser(RequestOnboarding requestOnboarding)
             throws InternalErrorExceptions, BadRequestExceptions;
 }
