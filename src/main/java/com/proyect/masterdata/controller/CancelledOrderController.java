@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @CrossOrigin({"*"})
 @RequestMapping("cancelled-order")
@@ -26,9 +29,9 @@ public class CancelledOrderController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestCancelledOrder requestCancelledOrder,
             @RequestParam("tokenUser") String tokenUser
-            ) throws BadRequestExceptions{
-        ResponseSuccess result = iCancelledOrder.save(requestCancelledOrder,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iCancelledOrder.save(requestCancelledOrder,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
@@ -40,8 +43,8 @@ public class CancelledOrderController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<CancelledOrderDTO> result = iCancelledOrder.list(orderId,user,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<CancelledOrderDTO>> result = iCancelledOrder.list(orderId,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

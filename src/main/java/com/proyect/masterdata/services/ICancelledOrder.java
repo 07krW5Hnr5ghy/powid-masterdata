@@ -7,7 +7,9 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface ICancelledOrder {
-    public ResponseSuccess save(RequestCancelledOrder requestCancelledOrder,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    public Page<CancelledOrderDTO> list(Long orderId,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> save(RequestCancelledOrder requestCancelledOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<Page<CancelledOrderDTO>> list(Long orderId,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
 }
