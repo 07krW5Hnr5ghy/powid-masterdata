@@ -11,6 +11,6 @@ import java.util.concurrent.CompletableFuture;
 public interface IAuthentication {
     CompletableFuture<ResponseLogin> loginUser(String username, String password);
 
-    ResponseSuccess registerUser(RequestOnboarding requestOnboarding)
+    CompletableFuture<ResponseSuccess> registerUser(RequestOnboarding requestOnboarding)
             throws InternalErrorExceptions, BadRequestExceptions;
 }

@@ -101,166 +101,166 @@ public class AuthenticationImpl implements IAuthentication {
     }
 
     @Override
-    public ResponseSuccess registerUser(RequestOnboarding requestOnboarding)
+    public CompletableFuture<ResponseSuccess> registerUser(RequestOnboarding requestOnboarding)
             throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(() -> {
+            boolean existsUser = false;
+            boolean existsUserDni = false;
+            boolean existsUserEmail = false;
+            boolean existsUserMobile = false;
+            boolean existsClientRuc = false;
+            boolean existsClientDni = false;
+            boolean existsClientEmail = false;
+            boolean existsClientMobile = false;
+            boolean category = false;
+            District district = null;
+            List<ClosingChannel> closingChannels;
+            List<Module> modules;
 
-        boolean existsUser = false;
-        boolean existsUserDni = false;
-        boolean existsUserEmail = false;
-        boolean existsUserMobile = false;
-        boolean existsClientRuc = false;
-        boolean existsClientDni = false;
-        boolean existsClientEmail = false;
-        boolean existsClientMobile = false;
-        boolean category = false;
-        District district = null;
-        List<ClosingChannel> closingChannels;
-        List<Module> modules;
-
-        try {
-            existsUser = userRepository.existsByUsername(requestOnboarding.getUsername().toUpperCase());
-            existsUserDni = userRepository.existsByDni(requestOnboarding.getDni());
-            existsUserEmail = userRepository.existsByEmail(requestOnboarding.getEmail());
-            existsUserMobile = userRepository.existsByMobile(requestOnboarding.getMobile());
-            existsClientRuc = clientRepository.existsByRuc(requestOnboarding.getBusinessRuc());
-            existsClientDni = clientRepository.existsByDni(requestOnboarding.getDni());
-            existsClientEmail = clientRepository.existsByEmail(requestOnboarding.getEmail());
-            existsClientMobile = clientRepository.existsByMobile(requestOnboarding.getMobile());
-            district = districtRepository.findByNameAndStatusTrue(requestOnboarding.getDistrict().toUpperCase());
-            closingChannels = closingChannelRepository.findByNameInAndStatusTrue(
-                    requestOnboarding.getClosingChannels().stream().map(name -> name.toUpperCase()).toList());
-            category = categoryRepository.existsByNameAndStatusTrue(requestOnboarding.getCategory().toUpperCase());
-            modules = moduleRepository
-                    .findByNameIn(requestOnboarding.getModules().stream().map(module -> module.toUpperCase()).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUserExist);
-        }
-
-        if (existsUserDni) {
-            throw new BadRequestExceptions(Constants.ErrorUserDniExist);
-        }
-
-        if (existsUserEmail) {
-            throw new BadRequestExceptions(Constants.ErrorUserEmailExist);
-        }
-
-        if (existsUserMobile) {
-            throw new BadRequestExceptions(Constants.ErrorUserMobileExist);
-        }
-
-        if (existsClientRuc) {
-            throw new BadRequestExceptions(Constants.ErrorClientRucExist);
-        }
-
-        if (existsClientDni) {
-            throw new BadRequestExceptions(Constants.ErrorClientDniExist);
-        }
-
-        if (existsClientEmail) {
-            throw new BadRequestExceptions(Constants.ErrorClientEmailExist);
-        }
-
-        if (existsClientMobile) {
-            throw new BadRequestExceptions(Constants.ErrorClientMobileExist);
-        }
-
-        if (district == null) {
-            throw new BadRequestExceptions(Constants.ErrorDistrict);
-        }
-
-        if (closingChannels.size() != requestOnboarding.getClosingChannels().size()) {
-            throw new BadRequestExceptions(Constants.ErrorClosingChannel);
-        }
-
-        if (modules.size() != requestOnboarding.getModules().size()) {
-            throw new BadRequestExceptions(Constants.ErrorClosingChannel);
-        }
-
-        if (!category) {
-            throw new BadRequestExceptions(Constants.ErrorCategory);
-        }
-
-        try {
-
-            RequestClientSave requestClientSave = RequestClientSave.builder()
-                    .name(requestOnboarding.getName().toUpperCase())
-                    .surname(requestOnboarding.getSurname().toUpperCase())
-                    .business(requestOnboarding.getBusinessName().toUpperCase())
-                    .address(requestOnboarding.getAddress().toUpperCase())
-                    .dni(requestOnboarding.getDni())
-                    .email(requestOnboarding.getEmail())
-                    .mobile(requestOnboarding.getMobile())
-                    .district(requestOnboarding.getDistrict().toUpperCase())
-                    .ruc(requestOnboarding.getBusinessRuc())
-                    .build();
-
-            iClient.save(requestClientSave);
-
-            RequestUser requestUser = RequestUser.builder()
-                    .user(requestOnboarding.getUsername().toUpperCase())
-                    .name(requestOnboarding.getName().toUpperCase())
-                    .surname(requestOnboarding.getSurname().toUpperCase())
-                    .address(requestOnboarding.getAddress().toUpperCase())
-                    .dni(requestOnboarding.getDni())
-                    .gender(requestOnboarding.getGender().toUpperCase())
-                    .mobile(requestOnboarding.getMobile())
-                    .password(requestOnboarding.getPassword())
-                    .email(requestOnboarding.getEmail())
-                    .district(requestOnboarding.getDistrict().toUpperCase())
-                    .roleName("BUSINESS")
-                    .tokenUser("REGISTER")
-                    .build();
-
-            iUser.save(requestUser);
-
-            Onboard onboard = iOnboard.save(RequestOnboard.builder()
-                    .businessRuc(requestOnboarding.getBusinessRuc())
-                    .billing(requestOnboarding.getBilling())
-                    .ecommerce(requestOnboarding.getEcommerce())
-                    .category(requestOnboarding.getCategory().toUpperCase())
-                    .entryChannel(requestOnboarding.getEntryChannel())
-                    .users(requestOnboarding.getUsers())
-                    .comments(requestOnboarding.getComment())
-                    .demo(requestOnboarding.getDemo())
-                    .build());
-
-            for (ClosingChannel closingChannel : closingChannels) {
-                iOnboardChannel.save(onboard, closingChannel);
+            try {
+                existsUser = userRepository.existsByUsername(requestOnboarding.getUsername().toUpperCase());
+                existsUserDni = userRepository.existsByDni(requestOnboarding.getDni());
+                existsUserEmail = userRepository.existsByEmail(requestOnboarding.getEmail());
+                existsUserMobile = userRepository.existsByMobile(requestOnboarding.getMobile());
+                existsClientRuc = clientRepository.existsByRuc(requestOnboarding.getBusinessRuc());
+                existsClientDni = clientRepository.existsByDni(requestOnboarding.getDni());
+                existsClientEmail = clientRepository.existsByEmail(requestOnboarding.getEmail());
+                existsClientMobile = clientRepository.existsByMobile(requestOnboarding.getMobile());
+                district = districtRepository.findByNameAndStatusTrue(requestOnboarding.getDistrict().toUpperCase());
+                closingChannels = closingChannelRepository.findByNameInAndStatusTrue(
+                        requestOnboarding.getClosingChannels().stream().map(name -> name.toUpperCase()).toList());
+                category = categoryRepository.existsByNameAndStatusTrue(requestOnboarding.getCategory().toUpperCase());
+                modules = moduleRepository
+                        .findByNameIn(requestOnboarding.getModules().stream().map(module -> module.toUpperCase()).toList());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            for (Module module : modules) {
-                iOnboardModule.save(onboard, module);
+            if (existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUserExist);
             }
 
-            if (requestOnboarding.getEcommerce()) {
-                RequestStoreSave requestStoreSave = RequestStoreSave.builder()
-                        .name(requestOnboarding.getStore().toUpperCase())
-                        .storeType(requestOnboarding.getStoreType().toUpperCase())
-                        .url(requestOnboarding.getStoreUrl())
+            if (existsUserDni) {
+                throw new BadRequestExceptions(Constants.ErrorUserDniExist);
+            }
+
+            if (existsUserEmail) {
+                throw new BadRequestExceptions(Constants.ErrorUserEmailExist);
+            }
+
+            if (existsUserMobile) {
+                throw new BadRequestExceptions(Constants.ErrorUserMobileExist);
+            }
+
+            if (existsClientRuc) {
+                throw new BadRequestExceptions(Constants.ErrorClientRucExist);
+            }
+
+            if (existsClientDni) {
+                throw new BadRequestExceptions(Constants.ErrorClientDniExist);
+            }
+
+            if (existsClientEmail) {
+                throw new BadRequestExceptions(Constants.ErrorClientEmailExist);
+            }
+
+            if (existsClientMobile) {
+                throw new BadRequestExceptions(Constants.ErrorClientMobileExist);
+            }
+
+            if (district == null) {
+                throw new BadRequestExceptions(Constants.ErrorDistrict);
+            }
+
+            if (closingChannels.size() != requestOnboarding.getClosingChannels().size()) {
+                throw new BadRequestExceptions(Constants.ErrorClosingChannel);
+            }
+
+            if (modules.size() != requestOnboarding.getModules().size()) {
+                throw new BadRequestExceptions(Constants.ErrorClosingChannel);
+            }
+
+            if (!category) {
+                throw new BadRequestExceptions(Constants.ErrorCategory);
+            }
+
+            try {
+
+                RequestClientSave requestClientSave = RequestClientSave.builder()
+                        .name(requestOnboarding.getName().toUpperCase())
+                        .surname(requestOnboarding.getSurname().toUpperCase())
+                        .business(requestOnboarding.getBusinessName().toUpperCase())
+                        .address(requestOnboarding.getAddress().toUpperCase())
+                        .dni(requestOnboarding.getDni())
+                        .email(requestOnboarding.getEmail())
+                        .mobile(requestOnboarding.getMobile())
+                        .district(requestOnboarding.getDistrict().toUpperCase())
+                        .ruc(requestOnboarding.getBusinessRuc())
                         .build();
 
-                iStore.save(requestStoreSave, "REGISTER");
+                iClient.save(requestClientSave);
 
-                Store store = storeRepository.findByNameAndStatusTrue(requestOnboarding.getStore().toUpperCase());
+                RequestUser requestUser = RequestUser.builder()
+                        .user(requestOnboarding.getUsername().toUpperCase())
+                        .name(requestOnboarding.getName().toUpperCase())
+                        .surname(requestOnboarding.getSurname().toUpperCase())
+                        .address(requestOnboarding.getAddress().toUpperCase())
+                        .dni(requestOnboarding.getDni())
+                        .gender(requestOnboarding.getGender().toUpperCase())
+                        .mobile(requestOnboarding.getMobile())
+                        .password(requestOnboarding.getPassword())
+                        .email(requestOnboarding.getEmail())
+                        .district(requestOnboarding.getDistrict().toUpperCase())
+                        .roleName("BUSINESS")
+                        .tokenUser("REGISTER")
+                        .build();
 
-                iOnboardStore.save(store, onboard);
+                iUser.save(requestUser);
 
+                Onboard onboard = iOnboard.save(RequestOnboard.builder()
+                        .businessRuc(requestOnboarding.getBusinessRuc())
+                        .billing(requestOnboarding.getBilling())
+                        .ecommerce(requestOnboarding.getEcommerce())
+                        .category(requestOnboarding.getCategory().toUpperCase())
+                        .entryChannel(requestOnboarding.getEntryChannel())
+                        .users(requestOnboarding.getUsers())
+                        .comments(requestOnboarding.getComment())
+                        .demo(requestOnboarding.getDemo())
+                        .build());
+
+                for (ClosingChannel closingChannel : closingChannels) {
+                    iOnboardChannel.save(onboard, closingChannel);
+                }
+
+                for (Module module : modules) {
+                    iOnboardModule.save(onboard, module);
+                }
+
+                if (requestOnboarding.getEcommerce()) {
+                    RequestStoreSave requestStoreSave = RequestStoreSave.builder()
+                            .name(requestOnboarding.getStore().toUpperCase())
+                            .storeType(requestOnboarding.getStoreType().toUpperCase())
+                            .url(requestOnboarding.getStoreUrl())
+                            .build();
+
+                    iStore.save(requestStoreSave, "REGISTER");
+
+                    Store store = storeRepository.findByNameAndStatusTrue(requestOnboarding.getStore().toUpperCase());
+
+                    iOnboardStore.save(store, onboard);
+
+                }
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
+        });
     }
 }
