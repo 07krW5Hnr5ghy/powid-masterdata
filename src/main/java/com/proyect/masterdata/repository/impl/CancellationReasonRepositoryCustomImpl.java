@@ -1,7 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Access;
-import com.proyect.masterdata.repository.AccessRepositoryCustom;
+import com.proyect.masterdata.domain.CancellationReason;
+import com.proyect.masterdata.repository.CancellationReasonRepositoryCustom;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -17,14 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
+public class CancellationReasonRepositoryCustomImpl implements CancellationReasonRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Access> searchForAccess(String name, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<CancellationReason> searchForCancellationReason(String name, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Access> criteriaQuery = criteriaBuilder.createQuery(Access.class);
-        Root<Access> itemRoot = criteriaQuery.from(Access.class);
+        CriteriaQuery<CancellationReason> criteriaQuery = criteriaBuilder.createQuery(CancellationReason.class);
+        Root<CancellationReason> itemRoot = criteriaQuery.from(CancellationReason.class);
 
         criteriaQuery.select(itemRoot);
 
@@ -32,22 +32,22 @@ public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
-            List<Order> accessList = new ArrayList<>();
+            List<Order> cancellationReasonList = new ArrayList<>();
 
             if (sort.equalsIgnoreCase("ASC")) {
-                accessList = listAsc(sortColumn, criteriaBuilder, itemRoot);
+                cancellationReasonList = listAsc(sortColumn, criteriaBuilder, itemRoot);
             }
 
             if (sort.equalsIgnoreCase("DESC")) {
-                accessList = listDesc(sortColumn, criteriaBuilder, itemRoot);
+                cancellationReasonList = listDesc(sortColumn, criteriaBuilder, itemRoot);
             }
 
-            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(accessList);
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(cancellationReasonList);
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<Access> orderTypeQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<CancellationReason> orderTypeQuery = entityManager.createQuery(criteriaQuery);
         orderTypeQuery.setFirstResult(pageNumber * pageSize);
         orderTypeQuery.setMaxResults(pageSize);
 
@@ -60,7 +60,7 @@ public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
             String name,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<Access> itemRoot) {
+            Root<CancellationReason> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -84,7 +84,7 @@ public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
     List<Order> listAsc(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<Access> itemRoot) {
+            Root<CancellationReason> itemRoot) {
 
         List<Order> accessList = new ArrayList<>();
 
@@ -98,7 +98,7 @@ public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
     List<Order> listDesc(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<Access> itemRoot) {
+            Root<CancellationReason> itemRoot) {
         List<Order> accessList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("NAME")) {
@@ -112,7 +112,7 @@ public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Access> itemRoot = criteriaQuery.from(Access.class);
+        Root<CancellationReason> itemRoot = criteriaQuery.from(CancellationReason.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(name, status, criteriaBuilder, itemRoot);
