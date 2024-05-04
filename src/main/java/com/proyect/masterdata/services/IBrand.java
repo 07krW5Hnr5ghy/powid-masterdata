@@ -7,22 +7,24 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.domain.Page;
 
 public interface IBrand {
         ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         ResponseSuccess saveAll(List<String> namesList, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        Page<BrandDTO> list(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
+        CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<Page<BrandDTO>> list(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        Page<BrandDTO> listStatusFalse(String name, String tokenUser, String sort, String sortColumn,
+        CompletableFuture<Page<BrandDTO>> listStatusFalse(String name, String tokenUser, String sort, String sortColumn,
                         Integer pageNumber,
                         Integer pageSize)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        ResponseSuccess activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
-        List<BrandDTO> listBrands(String user) throws BadRequestExceptions, InternalErrorExceptions;
-        List<BrandDTO> listBrandsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+        CompletableFuture<List<BrandDTO>> listBrands(String user) throws BadRequestExceptions, InternalErrorExceptions;
+        CompletableFuture<List<BrandDTO>> listBrandsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

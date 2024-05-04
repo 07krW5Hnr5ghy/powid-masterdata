@@ -21,6 +21,8 @@ import org.springframework.http.MediaType;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -34,9 +36,9 @@ public class BrandController {
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iBrand.save(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iBrand.saveAsync(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping(value = "brands", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -52,9 +54,9 @@ public class BrandController {
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iBrand.delete(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iBrand.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination")
@@ -65,9 +67,9 @@ public class BrandController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
-            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<BrandDTO> result = iBrand.list(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<BrandDTO>> result = iBrand.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "pagination-status-false")
@@ -78,35 +80,35 @@ public class BrandController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
-            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<BrandDTO> result = iBrand.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<BrandDTO>> result = iBrand.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_PUT')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iBrand.activate(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iBrand.activate(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:BRAND_GET')")
     public ResponseEntity<List<BrandDTO>> listBrands(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<BrandDTO> result = iBrand.listBrands(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<BrandDTO>> result = iBrand.listBrands(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping("status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:BRAND_GET')")
     public ResponseEntity<List<BrandDTO>> listBrandsFalse(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<BrandDTO> result = iBrand.listBrandsFalse(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<BrandDTO>> result = iBrand.listBrandsFalse(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
