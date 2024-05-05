@@ -16,6 +16,8 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.ICategoryProduct;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -37,9 +39,9 @@ public class CategoryProductController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iCategoryProduct.save(name, description, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iCategoryProduct.saveAsync(name, description, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping(value = "category-products", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -59,15 +61,15 @@ public class CategoryProductController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<CategoryProductDTO> result = iCategoryProduct.list(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<CategoryProductDTO>> result = iCategoryProduct.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:CATEGORY_PRODUCT_GET')")
-    public ResponseEntity<List<CategoryProductDTO>> listCategoryProducts() throws BadRequestExceptions {
-        List<CategoryProductDTO> result = iCategoryProduct.listCategoryProducts();
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    public ResponseEntity<List<CategoryProductDTO>> listCategoryProducts() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CategoryProductDTO>> result = iCategoryProduct.listCategoryProducts();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

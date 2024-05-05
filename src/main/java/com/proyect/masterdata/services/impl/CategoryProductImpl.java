@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -76,6 +77,48 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String description, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            CategoryProduct categoryProduct;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                categoryProduct = categoryProductRepository.findByName(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (categoryProduct != null) {
+                throw new BadRequestExceptions(Constants.ErrorCategoryProductExists);
+            }
+
+            try {
+                categoryProductRepository.save(CategoryProduct.builder()
+                        .description(description.toUpperCase())
+                        .name(name.toUpperCase())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public ResponseSuccess saveAll(List<RequestCategoryProduct> categoryProductList, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -122,52 +165,55 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
-    public Page<CategoryProductDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<CategoryProductDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
 
-        Page<CategoryProduct> categoryProductPage;
+            Page<CategoryProduct> categoryProductPage;
 
-        try {
-            categoryProductPage = categoryProductRepositoryCustom.searchForCategoryProduct(name, user, sort, sortColumn,
-                    pageNumber, pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                categoryProductPage = categoryProductRepositoryCustom.searchForCategoryProduct(name, user, sort, sortColumn,
+                        pageNumber, pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (categoryProductPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if (categoryProductPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
-                .map(categoryProduct -> CategoryProductDTO.builder()
-                        .description(categoryProduct.getDescription())
-                        .name(categoryProduct.getName())
-                        .build())
-                .toList();
+            List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
+                    .map(categoryProduct -> CategoryProductDTO.builder()
+                            .description(categoryProduct.getDescription())
+                            .name(categoryProduct.getName())
+                            .build())
+                    .toList();
 
-        return new PageImpl<>(categoryProductDTOs, categoryProductPage.getPageable(),
-                categoryProductPage.getTotalElements());
-
+            return new PageImpl<>(categoryProductDTOs, categoryProductPage.getPageable(),
+                    categoryProductPage.getTotalElements());
+        });
     }
 
     @Override
-    public List<CategoryProductDTO> listCategoryProducts() throws InternalErrorExceptions, BadRequestExceptions {
-        List<CategoryProduct> categoryProducts;
-        try {
-            categoryProducts = categoryProductRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(categoryProducts.isEmpty()){
-            return Collections.emptyList();
-        }
-        return categoryProducts.stream()
-                .map(categoryProduct -> CategoryProductDTO.builder()
-                        .description(categoryProduct.getDescription())
-                        .name(categoryProduct.getName())
-                        .build())
-                .toList();
+    public CompletableFuture<List<CategoryProductDTO>> listCategoryProducts() throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<CategoryProduct> categoryProducts;
+            try {
+                categoryProducts = categoryProductRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(categoryProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+            return categoryProducts.stream()
+                    .map(categoryProduct -> CategoryProductDTO.builder()
+                            .description(categoryProduct.getDescription())
+                            .name(categoryProduct.getName())
+                            .build())
+                    .toList();
+        });
     }
 }
