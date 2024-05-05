@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -26,9 +28,9 @@ public class ClientController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestBody() RequestClientSave requestClientSave) throws BadRequestExceptions {
-        ResponseSuccess result = iClient.save(requestClientSave);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestBody() RequestClientSave requestClientSave) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iClient.saveAsync(requestClientSave);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @PostMapping(value = "clients", consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_POST')")
@@ -43,18 +45,18 @@ public class ClientController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_PUT')")
     public ResponseEntity<ClientDTO> update(
             @RequestBody() RequestClient requestClient,
-            @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions {
-        ClientDTO result = iClient.update(requestClient, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ClientDTO> result = iClient.update(requestClient, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("ruc") String ruc,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iClient.delete(ruc, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("user") String user) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iClient.delete(ruc, user);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
@@ -66,8 +68,8 @@ public class ClientController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<ClientDTO> result = iClient.list(ruc, business, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<ClientDTO>> result = iClient.list(ruc, business, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }
