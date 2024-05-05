@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.repository.ClosingChannelRepositoryCustom;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.ClosingChannel;
@@ -29,65 +33,70 @@ public class ClosingChannelImpl implements IClosingChannel {
     private final ClosingChannelRepository closingChannelRepository;
     private final UserRepository userRepository;
     private final ClosingChannelMapper closingChannelMapper;
+    private final ClosingChannelRepositoryCustom closingChannelRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            boolean existsClosingChannel;
 
-        boolean existsUser;
-        boolean existsClosingChannel;
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                existsClosingChannel = closingChannelRepository.existsByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            existsClosingChannel = closingChannelRepository.existsByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (existsClosingChannel) {
+                throw new BadRequestExceptions(Constants.ErrorClosingChannelExists);
+            }
 
-        if (existsClosingChannel) {
-            throw new BadRequestExceptions(Constants.ErrorClosingChannelExists);
-        }
+            try {
+                closingChannelRepository.save(ClosingChannel.builder()
+                        .name(name.toUpperCase())
+                        .status(true)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
 
-        try {
-            closingChannelRepository.save(ClosingChannel.builder()
-                    .name(name.toUpperCase())
-                    .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .updateDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(tokenUser.toUpperCase())
-                    .build());
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<ClosingChannelDTO> listClosingChannel() throws InternalErrorExceptions {
+    public CompletableFuture<Page<ClosingChannelDTO>> listClosingChannel(String name, String sort, String sortColumn, Integer pageNumber,
+                                                                         Integer pageSize) throws InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<ClosingChannel> closingChannelPage;
+            try {
+                closingChannelPage = closingChannelRepositoryCustom.searchForClosingChannel(name, sort, sortColumn, pageNumber, pageSize,true);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        List<ClosingChannel> closingChannels = new ArrayList<>();
+            if(closingChannelPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        try {
-            closingChannels = closingChannelRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            List<ClosingChannelDTO> closingChannelDTOS = closingChannelMapper.listClosingChannelToListClosindChannelDTO(closingChannelPage.getContent());
+            return new PageImpl<>(closingChannelDTOS,closingChannelPage.getPageable(),closingChannelPage.getTotalElements());
+        });
 
-        if (closingChannels.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return closingChannelMapper.listClosingChannelToListClosindChannelDTO(closingChannels);
     }
 
 }
