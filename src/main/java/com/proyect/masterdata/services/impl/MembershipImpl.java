@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -38,204 +39,210 @@ public class MembershipImpl implements IMembership {
     private final RoleRepository roleRepository;
     private final IUserRole iUserRole;
     @Override
-    public Membership save(User user, MembershipPayment membershipPayment, String subscriptionName,List<String> modules, Boolean demo, String tokenUser)
+    public CompletableFuture<Membership> save(User user, MembershipPayment membershipPayment, String subscriptionName, List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Subscription subscription;
+            MembershipState activeState;
+            MembershipState payedState;
+            Role role;
+            UserRole userRole = null;
 
-        Subscription subscription;
-        MembershipState activeState;
-        MembershipState payedState;
-        Role role;
-        UserRole userRole = null;
-
-        try {
-            subscription = subscriptionRepository.findByNameAndStatusTrue(subscriptionName.toUpperCase());
-            activeState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
-            payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
-            role = roleRepository.findByNameAndStatusTrue("BUSINESS");
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (subscription == null) {
-            throw new BadRequestExceptions(Constants.ErrorSubscription);
-        }
-
-        if(role != null){
-            userRole = userRoleRepository.findByUserIdAndRoleId(user.getId(),role.getId());
-        }
-
-        try {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MONTH, subscription.getMonths());
-            Date expirationDate = calendar.getTime();
-            Membership newMembership =  membershipRepository.save(Membership.builder()
-                            .clientId(user.getClientId())
-                            .client(user.getClient())
-                            .demo(demo)
-                            .expirationDate(expirationDate)
-                            .membershipPayment(membershipPayment)
-                            .membershipPaymentId(membershipPayment.getId())
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .subscription(subscription)
-                            .subscriptionId(subscription.getId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                    .build());
-            newMembership.setExpirationDate(expirationDate);
-            Membership activeMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), activeState.getId());
-            if(activeMembership == null){
-                newMembership.setMembershipState(activeState);
-                newMembership.setMembershipStateId(activeState.getId());
-            }
-            Membership payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), payedState.getId());
-            if(payedMembership == null){
-                newMembership.setMembershipState(payedState);
-                newMembership.setMembershipStateId(payedState.getId());
-            }else{
-                throw new BadRequestExceptions(Constants.ErrorMembershipActivePayed);
+            try {
+                subscription = subscriptionRepository.findByNameAndStatusTrue(subscriptionName.toUpperCase());
+                activeState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
+                payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
+                role = roleRepository.findByNameAndStatusTrue("BUSINESS");
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            membershipRepository.save(newMembership);
-            for(String moduleName : modules){
-                Module module = moduleRepository.findByNameAndStatusTrue(moduleName);
-                membershipModuleRepository.save(MembershipModule.builder()
-                                .membership(newMembership)
-                                .membershipId(newMembership.getId())
-                                .module(module)
-                                .moduleId(module.getId())
-                                .registrationDate(new Date(System.currentTimeMillis()))
-                                .updateDate(new Date(System.currentTimeMillis()))
-                                .status(true)
+            if (subscription == null) {
+                throw new BadRequestExceptions(Constants.ErrorSubscription);
+            }
+
+            if(role != null){
+                userRole = userRoleRepository.findByUserIdAndRoleId(user.getId(),role.getId());
+            }
+
+            try {
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.MONTH, subscription.getMonths());
+                Date expirationDate = calendar.getTime();
+                Membership newMembership =  membershipRepository.save(Membership.builder()
+                        .clientId(user.getClientId())
+                        .client(user.getClient())
+                        .demo(demo)
+                        .expirationDate(expirationDate)
+                        .membershipPayment(membershipPayment)
+                        .membershipPaymentId(membershipPayment.getId())
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .subscription(subscription)
+                        .subscriptionId(subscription.getId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
                         .build());
+                newMembership.setExpirationDate(expirationDate);
+                Membership activeMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), activeState.getId());
+                if(activeMembership == null){
+                    newMembership.setMembershipState(activeState);
+                    newMembership.setMembershipStateId(activeState.getId());
+                }
+                Membership payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), payedState.getId());
+                if(payedMembership == null){
+                    newMembership.setMembershipState(payedState);
+                    newMembership.setMembershipStateId(payedState.getId());
+                }else{
+                    throw new BadRequestExceptions(Constants.ErrorMembershipActivePayed);
+                }
+
+                membershipRepository.save(newMembership);
+                for(String moduleName : modules){
+                    Module module = moduleRepository.findByNameAndStatusTrue(moduleName);
+                    membershipModuleRepository.save(MembershipModule.builder()
+                            .membership(newMembership)
+                            .membershipId(newMembership.getId())
+                            .module(module)
+                            .moduleId(module.getId())
+                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .updateDate(new Date(System.currentTimeMillis()))
+                            .status(true)
+                            .build());
+                }
+                if(userRole == null){
+                    iUserRole.save(user.getUsername(),"BUSINESS",user.getUsername());
+                }
+                return newMembership;
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-            if(userRole == null){
-                iUserRole.save(user.getUsername(),"BUSINESS",user.getUsername());
-            }
-            return newMembership;
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+        });
     }
 
     @Override
-    public ResponseDelete delete(String tokenUser)
+    public CompletableFuture<ResponseDelete> delete(String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Membership membership;
+            MembershipState membershipState;
 
-        User user;
-        Membership membership;
-        MembershipState membershipState;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                membershipState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            membershipState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else {
+                membership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), membershipState.getId());
+            }
 
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }else {
-            membership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), membershipState.getId());
-        }
+            if (membership == null) {
+                throw new BadRequestExceptions(Constants.ErrorMembership);
+            }
 
-        if (membership == null) {
-            throw new BadRequestExceptions(Constants.ErrorMembership);
-        }
+            try {
+                MembershipState expiredState = membershipStateRepository.findByNameAndStatusTrue("EXPIRADA");
+                membership.setMembershipState(expiredState);
+                membership.setMembershipStateId(expiredState.getId());
+                membership.setUpdateDate(new Date(System.currentTimeMillis()));
+                membershipRepository.save(membership);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
 
-        try {
-            MembershipState expiredState = membershipStateRepository.findByNameAndStatusTrue("EXPIRADA");
-            membership.setMembershipState(expiredState);
-            membership.setMembershipStateId(expiredState.getId());
-            membership.setUpdateDate(new Date(System.currentTimeMillis()));
-            membershipRepository.save(membership);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<MembershipDTO> list(String user, String membershipState,String subscription , String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<MembershipDTO>> list(String user, String membershipState,String subscription , String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
-        Page<Membership> membershipPage;
-        Long clientId;
-        Long membershipStateId;
-        Long subscriptionId;
+        return CompletableFuture.supplyAsync(()->{
+            Page<Membership> membershipPage;
+            Long clientId;
+            Long membershipStateId;
+            Long subscriptionId;
 
-        if(membershipState != null){
-            membershipStateId = membershipStateRepository.findByNameAndStatusTrue(membershipState.toUpperCase()).getId();
-        }else{
-            membershipStateId = null;
-        }
+            if(membershipState != null){
+                membershipStateId = membershipStateRepository.findByNameAndStatusTrue(membershipState.toUpperCase()).getId();
+            }else{
+                membershipStateId = null;
+            }
 
-        if(subscription != null){
-            subscriptionId = subscriptionRepository.findByNameAndStatusTrue(subscription.toUpperCase()).getId();
-        }else {
-            subscriptionId = null;
-        }
+            if(subscription != null){
+                subscriptionId = subscriptionRepository.findByNameAndStatusTrue(subscription.toUpperCase()).getId();
+            }else {
+                subscriptionId = null;
+            }
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            membershipPage = membershipRepositoryCustom.searchForMembership(clientId,membershipStateId,subscriptionId,sort,sortColumn,pageNumber,pageSize,true);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if (membershipPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        List<MembershipDTO> membershipDTOS = membershipPage.getContent().stream().map(membership -> MembershipDTO.builder()
-                .membershipState(membership.getMembershipState().getName())
-                .subscription(membership.getSubscription().getName())
-                .registrationDate(membership.getRegistrationDate())
-                .expirationDate(membership.getExpirationDate())
-                .build()).toList();
-        return new PageImpl<>(membershipDTOS, membershipPage.getPageable(), membershipPage.getTotalElements());
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                membershipPage = membershipRepositoryCustom.searchForMembership(clientId,membershipStateId,subscriptionId,sort,sortColumn,pageNumber,pageSize,true);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if (membershipPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<MembershipDTO> membershipDTOS = membershipPage.getContent().stream().map(membership -> MembershipDTO.builder()
+                    .membershipState(membership.getMembershipState().getName())
+                    .subscription(membership.getSubscription().getName())
+                    .registrationDate(membership.getRegistrationDate())
+                    .expirationDate(membership.getExpirationDate())
+                    .build()).toList();
+            return new PageImpl<>(membershipDTOS, membershipPage.getPageable(), membershipPage.getTotalElements());
+        });
     }
     @Override
-    public Page<MembershipDTO> listFalse(String user, String membershipState,String subscription , String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<MembershipDTO>> listFalse(String user, String membershipState,String subscription , String sort, String sortColumn, Integer pageNumber,
                                     Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
-        Page<Membership> membershipPage;
-        Long clientId;
-        Long membershipStateId;
-        Long subscriptionId;
+        return CompletableFuture.supplyAsync(()->{
+            Page<Membership> membershipPage;
+            Long clientId;
+            Long membershipStateId;
+            Long subscriptionId;
 
-        if(membershipState != null){
-            membershipStateId = membershipStateRepository.findByNameAndStatusTrue(membershipState.toUpperCase()).getId();
-        }else{
-            membershipStateId = null;
-        }
+            if(membershipState != null){
+                membershipStateId = membershipStateRepository.findByNameAndStatusTrue(membershipState.toUpperCase()).getId();
+            }else{
+                membershipStateId = null;
+            }
 
-        if(subscription != null){
-            subscriptionId = subscriptionRepository.findByNameAndStatusTrue(subscription.toUpperCase()).getId();
-        }else {
-            subscriptionId = null;
-        }
+            if(subscription != null){
+                subscriptionId = subscriptionRepository.findByNameAndStatusTrue(subscription.toUpperCase()).getId();
+            }else {
+                subscriptionId = null;
+            }
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            membershipPage = membershipRepositoryCustom.searchForMembership(clientId,membershipStateId,subscriptionId,sort,sortColumn,pageNumber,pageSize,false);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if (membershipPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        List<MembershipDTO> membershipDTOS = membershipPage.getContent().stream().map(membership -> MembershipDTO.builder()
-                .membershipState(membership.getMembershipState().getName())
-                .subscription(membership.getSubscription().getName())
-                .registrationDate(membership.getRegistrationDate())
-                .expirationDate(membership.getExpirationDate())
-                .build()).toList();
-        return new PageImpl<>(membershipDTOS, membershipPage.getPageable(), membershipPage.getTotalElements());
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                membershipPage = membershipRepositoryCustom.searchForMembership(clientId,membershipStateId,subscriptionId,sort,sortColumn,pageNumber,pageSize,false);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if (membershipPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<MembershipDTO> membershipDTOS = membershipPage.getContent().stream().map(membership -> MembershipDTO.builder()
+                    .membershipState(membership.getMembershipState().getName())
+                    .subscription(membership.getSubscription().getName())
+                    .registrationDate(membership.getRegistrationDate())
+                    .expirationDate(membership.getExpirationDate())
+                    .build()).toList();
+            return new PageImpl<>(membershipDTOS, membershipPage.getPageable(), membershipPage.getTotalElements());
+        });
     }
 }

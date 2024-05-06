@@ -12,13 +12,14 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IMembership {
-    Membership save(User user, MembershipPayment membershipPayment, String subscriptionName, List<String> modules, Boolean demo, String tokenUser)
+    CompletableFuture<Membership> save(User user, MembershipPayment membershipPayment, String subscriptionName, List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
-    ResponseDelete delete(String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    Page<MembershipDTO> list(String user, String membershipState,String subscriptionId, String sort, String sortColumn, Integer pageNumber,
+    CompletableFuture<ResponseDelete> delete(String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<Page<MembershipDTO>> list(String user, String membershipState,String subscriptionId, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
-    Page<MembershipDTO> listFalse(String user, String membershipState,String subscriptionId, String sort, String sortColumn, Integer pageNumber,
+    CompletableFuture<Page<MembershipDTO>> listFalse(String user, String membershipState,String subscriptionId, String sort, String sortColumn, Integer pageNumber,
                              Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
 }
