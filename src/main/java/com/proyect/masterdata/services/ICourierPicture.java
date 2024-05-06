@@ -5,7 +5,8 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface ICourierPicture {
-    public List<String> uploadPicture(List<MultipartFile> pictures, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<List<String>> uploadPicture(List<MultipartFile> pictures, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
 }

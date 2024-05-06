@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -33,56 +34,58 @@ public class CourierPictureImpl implements ICourierPicture {
     private final CourierPictureRepository courierPictureRepository;
     private final IFile iFile;
     @Override
-    public List<String> uploadPicture(List<MultipartFile> pictures, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        Ordering ordering;
-        List<String> picturesUrlList = new ArrayList<>();
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            ordering = orderingRepository.findById(orderId).orElse(null);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if(ordering == null){
-            throw new InternalErrorExceptions(Constants.ErrorOrdering);
-        }
-
-        try{
-            String folder = (user.getClient().getBusiness() + "_PEDIDOS").replace(" ","_");
-            Date currentDate = new Date(System.currentTimeMillis());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-            String dateString = dateFormat.format(currentDate);
-            String formattedString = dateString.replace(" ", "_");
-            String filename = "PEDIDO_" + orderId.toString() + "_" + user.getUsername() + "_" + formattedString;
-            String folderPath = folder + "/" + filename;
-            int pictureNumber = 1;
-            if(pictures.isEmpty()){
-                return Collections.emptyList();
+    public CompletableFuture<List<String>> uploadPicture(List<MultipartFile> pictures, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering ordering;
+            List<String> picturesUrlList = new ArrayList<>();
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                ordering = orderingRepository.findById(orderId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-            for(MultipartFile receipt : pictures){
-                String url = iFile.uploadFile(receipt,folderPath + "_COURIER_" + Integer.toString(pictureNumber));
-                courierPictureRepository.save(CourierPicture.builder()
-                        .pictureUrl(url)
-                        .client(user.getClient())
-                        .clientId(user.getClientId())
-                        .ordering(ordering)
-                        .orderId(ordering.getId())
-                        .registrationDate(currentDate)
-                        .tokenUser(user.getUsername())
-                        .build());
-                picturesUrlList.add(url);
-                pictureNumber++;
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
             }
-            return picturesUrlList;
-        }catch (RuntimeException | IOException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+
+            if(ordering == null){
+                throw new InternalErrorExceptions(Constants.ErrorOrdering);
+            }
+
+            try{
+                String folder = (user.getClient().getBusiness() + "_PEDIDOS").replace(" ","_");
+                Date currentDate = new Date(System.currentTimeMillis());
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+                String dateString = dateFormat.format(currentDate);
+                String formattedString = dateString.replace(" ", "_");
+                String filename = "PEDIDO_" + orderId.toString() + "_" + user.getUsername() + "_" + formattedString;
+                String folderPath = folder + "/" + filename;
+                int pictureNumber = 1;
+                if(pictures.isEmpty()){
+                    return Collections.emptyList();
+                }
+                for(MultipartFile receipt : pictures){
+                    String url = iFile.uploadFile(receipt,folderPath + "_COURIER_" + Integer.toString(pictureNumber));
+                    courierPictureRepository.save(CourierPicture.builder()
+                            .pictureUrl(url)
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
+                            .ordering(ordering)
+                            .orderId(ordering.getId())
+                            .registrationDate(currentDate)
+                            .tokenUser(user.getUsername())
+                            .build());
+                    picturesUrlList.add(url);
+                    pictureNumber++;
+                }
+                return picturesUrlList;
+            }catch (RuntimeException | IOException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }
