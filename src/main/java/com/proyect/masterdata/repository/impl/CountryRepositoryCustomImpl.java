@@ -1,7 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Color;
-import com.proyect.masterdata.repository.ColorRepositoryCustom;
+import com.proyect.masterdata.domain.Country;
+import com.proyect.masterdata.repository.CountryRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -17,40 +17,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
+public class CountryRepositoryCustomImpl implements CountryRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Color> searchForColor(
-            String name,
-            String user,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize,
-            Boolean status) {
-
+    public Page<Country> searchForCountry(String name,String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Color> criteriaQuery = criteriaBuilder.createQuery(Color.class);
-        Root<Color> itemRoot = criteriaQuery.from(Color.class);
+        CriteriaQuery<Country> criteriaQuery = criteriaBuilder.createQuery(Country.class);
+        Root<Country> itemRoot = criteriaQuery.from(Country.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name,user, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
-            List<Order> colorList = new ArrayList<>();
+            List<Order> countryList = new ArrayList<>();
             if (sort.equalsIgnoreCase("ASC")) {
-                colorList = listASC(sortColumn, criteriaBuilder, itemRoot);
+                countryList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
             if (sort.equalsIgnoreCase("DESC")) {
-                colorList = listDESC(sortColumn, criteriaBuilder, itemRoot);
+                countryList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(colorList);
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(countryList);
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<Color> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<Country> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
@@ -58,13 +50,12 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
         long count = getOrderCount(name, user, status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
-
     public List<Predicate> predicateConditions(
             String name,
             String user,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<Color> itemRoot) {
+            Root<Country> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
 
         if (name != null) {
@@ -91,11 +82,10 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
 
         return conditions;
     }
-
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<Color> itemRoot) {
+            Root<Country> itemRoot) {
         List<Order> colorList = new ArrayList<>();
         if (sortColumn.equalsIgnoreCase("NAME")) {
             colorList.add(criteriaBuilder.asc(itemRoot.get("name")));
@@ -105,11 +95,10 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
         }
         return colorList;
     }
-
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<Color> itemRoot) {
+            Root<Country> itemRoot) {
         List<Order> colorList = new ArrayList<>();
         if (sortColumn.equalsIgnoreCase("NAME")) {
             colorList.add(criteriaBuilder.desc(itemRoot.get("name")));
@@ -119,11 +108,10 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
         }
         return colorList;
     }
-
     private long getOrderCount(String name, String user, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Color> itemRoot = criteriaQuery.from(Color.class);
+        Root<Country> itemRoot = criteriaQuery.from(Country.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);

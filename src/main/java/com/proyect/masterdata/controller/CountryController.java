@@ -4,14 +4,14 @@ import com.proyect.masterdata.dto.CountryDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.ICountry;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -20,8 +20,15 @@ import java.util.List;
 public class CountryController {
     private final ICountry iCountry;
     @GetMapping()
-    public ResponseEntity<List<CountryDTO>> listCountry() throws BadRequestExceptions{
-        List<CountryDTO> result = iCountry.listCountry();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<Page<CountryDTO>> listCountry(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<CountryDTO>> result = iCountry.listCountry(name,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }
