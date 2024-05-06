@@ -9,14 +9,14 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IDepartment {
     ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
     ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions, InternalErrorExceptions;
-    DepartmentDTO update(RequestDepartment requestDepartment) throws BadRequestExceptions, InternalErrorExceptions;
-    ResponseDelete delete(Long code,String user) throws BadRequestExceptions, InternalErrorExceptions;
-    List<DepartmentDTO> listDepartment();
-    Page<DepartmentDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    Page<DepartmentDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    DepartmentDTO findByCode(Long code) throws BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(String name,String user) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<DepartmentDTO>> listDepartment();
+    CompletableFuture<Page<DepartmentDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<DepartmentDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
 }

@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -26,41 +28,24 @@ public class DepartmentController {
         //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
         public ResponseEntity<ResponseSuccess> save(
                         @RequestParam("name") String name,
-                        @RequestParam("user") String user) throws BadRequestExceptions {
-                ResponseSuccess result = iDepartment.save(name, user);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-        }
-
-        @PostMapping(value = "departments", consumes = MediaType.APPLICATION_JSON_VALUE)
-        //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
-        public ResponseEntity<ResponseSuccess> saveAll(
-                        @RequestParam("user") String user,
-                        @RequestBody() List<String> names) throws BadRequestExceptions {
-                ResponseSuccess result = iDepartment.saveAll(names, user);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-        }
-
-        @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-        //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
-        public ResponseEntity<DepartmentDTO> update(
-                        @RequestBody() RequestDepartment requestDepartment) throws BadRequestExceptions {
-                DepartmentDTO result = iDepartment.update(requestDepartment);
-                return new ResponseEntity<>(result, HttpStatus.OK);
+                        @RequestParam("user") String user) throws BadRequestExceptions, ExecutionException, InterruptedException {
+                CompletableFuture<ResponseSuccess> result = iDepartment.saveAsync(name, user);
+                return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
 
         @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
         //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_DELETE')")
         public ResponseEntity<ResponseDelete> delete(
-                        @RequestParam("code") Long code,
-                        @RequestParam("user") String user) throws BadRequestExceptions {
-                ResponseDelete result = iDepartment.delete(code, user);
-                return new ResponseEntity<>(result, HttpStatus.OK);
+                        @RequestParam("name") String name,
+                        @RequestParam("user") String user) throws BadRequestExceptions, ExecutionException, InterruptedException {
+                CompletableFuture<ResponseDelete> result = iDepartment.delete(name, user);
+                return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
 
         @GetMapping()
-        public ResponseEntity<List<DepartmentDTO>> listDepartment() throws BadRequestExceptions {
-                List<DepartmentDTO> result = iDepartment.listDepartment();
-                return new ResponseEntity<>(result, HttpStatus.OK);
+        public ResponseEntity<List<DepartmentDTO>> listDepartment() throws BadRequestExceptions, ExecutionException, InterruptedException {
+                CompletableFuture<List<DepartmentDTO>> result = iDepartment.listDepartment();
+                return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
 
         @GetMapping(value = "list")
@@ -71,9 +56,9 @@ public class DepartmentController {
                         @RequestParam(value = "sort", required = false) String sort,
                         @RequestParam(value = "sortColumn", required = false) String sortColumn,
                         @RequestParam("pageNumber") Integer pageNumber,
-                        @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-                Page<DepartmentDTO> result = iDepartment.list(name, user, sort, sortColumn, pageNumber, pageSize);
-                return new ResponseEntity<>(result, HttpStatus.OK);
+                        @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+                CompletableFuture<Page<DepartmentDTO>> result = iDepartment.list(name, user, sort, sortColumn, pageNumber, pageSize);
+                return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
 
         @GetMapping(value = "status-false")
@@ -84,10 +69,10 @@ public class DepartmentController {
                         @RequestParam(value = "sort", required = false) String sort,
                         @RequestParam(value = "sortColumn", required = false) String sortColumn,
                         @RequestParam("pageNumber") Integer pageNumber,
-                        @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-                Page<DepartmentDTO> result = iDepartment.listStatusFalse(name, user, sort, sortColumn, pageNumber,
+                        @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+                CompletableFuture<Page<DepartmentDTO>> result = iDepartment.listStatusFalse(name, user, sort, sortColumn, pageNumber,
                                 pageSize);
-                return new ResponseEntity<>(result, HttpStatus.OK);
+                return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
 
 }

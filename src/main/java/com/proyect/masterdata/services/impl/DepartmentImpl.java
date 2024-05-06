@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @AllArgsConstructor
@@ -69,7 +70,43 @@ public class DepartmentImpl implements IDepartment {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
 
+    @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            Department department;
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                department = departmentRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (department != null) {
+                throw new BadRequestExceptions(Constants.ErrorDepartmentExist.toUpperCase());
+            }
+
+            try {
+                departmentRepository.save(Department.builder()
+                        .name(name.toUpperCase())
+                        .tokenUser(user.toUpperCase())
+                        .status(true)
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
@@ -108,132 +145,99 @@ public class DepartmentImpl implements IDepartment {
         }
     }
 
+
     @Override
-    public DepartmentDTO update(RequestDepartment requestDepartment)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        Department department;
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestDepartment.getUser().toUpperCase());
-            department = departmentRepository.findById(requestDepartment.getCode()).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
+    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            Department department;
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                department = departmentRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (department == null) {
-            throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (department == null) {
+                throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
+            }
 
-        department.setName(requestDepartment.getName().toUpperCase());
-        department.setTokenUser(datauser.getUsername());
-        department.setStatus(requestDepartment.isStatus());
-        department.setRegistrationDate(new Date());
-
-        try {
-            return departmentMapper.departmentToDepartmentDTO(departmentRepository.save(department));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                departmentRepository.save(department);
+                department.setStatus(false);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        Department department;
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            department = departmentRepository.findById(code).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (department == null) {
-            throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
-        }
-
-        department.setStatus(false);
-        try {
-            departmentRepository.save(department);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<List<DepartmentDTO>> listDepartment() {
+        return CompletableFuture.supplyAsync(()->{
+            List<Department> departments = new ArrayList<>();
+            try {
+                departments = departmentRepository.findAllByStatusTrue().stream()
+                        .filter(department -> !department.getName().equals("SISTEMA"))
+                        .filter(department -> !department.getName().equals("NO APLICA"))
+                        .toList();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (departments.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return departmentMapper.listDepartmentToListDepartmentDTO(departments);
+        });
     }
 
     @Override
-    public List<DepartmentDTO> listDepartment() {
-        List<Department> departments = new ArrayList<>();
-        try {
-            departments = departmentRepository.findAllByStatusTrue().stream()
-                    .filter(department -> !department.getName().equals("SISTEMA"))
-                    .filter(department -> !department.getName().equals("NO APLICA"))
-                    .toList();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (departments.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return departmentMapper.listDepartmentToListDepartmentDTO(departments);
-    }
-
-    @Override
-    public Page<DepartmentDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<DepartmentDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<Department> departmentPage;
-        try {
-            departmentPage = departmentRepositoryCustom.searchForDepartment(name, user, sort, sortColumn, pageNumber,
-                    pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+        return CompletableFuture.supplyAsync(()->{
+            Page<Department> departmentPage;
+            try {
+                departmentPage = departmentRepositoryCustom.searchForDepartment(name, user, sort, sortColumn, pageNumber,
+                        pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (departmentPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(departmentMapper.listDepartmentToListDepartmentDTO(departmentPage.getContent()),
-                departmentPage.getPageable(), departmentPage.getTotalElements());
+            if (departmentPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(departmentMapper.listDepartmentToListDepartmentDTO(departmentPage.getContent()),
+                    departmentPage.getPageable(), departmentPage.getTotalElements());
+        });
     }
 
     @Override
-    public Page<DepartmentDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+    public CompletableFuture<Page<DepartmentDTO>> listStatusFalse(String name, String user, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<Department> departmentPage;
-        try {
-            departmentPage = departmentRepositoryCustom.searchForDepartment(name, user, sort, sortColumn, pageNumber,
-                    pageSize, false);
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+        return CompletableFuture.supplyAsync(()->{
+            Page<Department> departmentPage;
+            try {
+                departmentPage = departmentRepositoryCustom.searchForDepartment(name, user, sort, sortColumn, pageNumber,
+                        pageSize, false);
+            } catch (RuntimeException e) {
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (departmentPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(departmentMapper.listDepartmentToListDepartmentDTO(departmentPage.getContent()),
-                departmentPage.getPageable(), departmentPage.getTotalElements());
-    }
-
-    @Override
-    public DepartmentDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return departmentMapper.departmentToDepartmentDTO(departmentRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if (departmentPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(departmentMapper.listDepartmentToListDepartmentDTO(departmentPage.getContent()),
+                    departmentPage.getPageable(), departmentPage.getTotalElements());
+        });
     }
 }
