@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 @RestController
@@ -86,11 +88,11 @@ public class MercadoPagoController {
             @RequestParam(value = "data.id",required = false) Long paymentId,
             @RequestParam(value = "type",required = false) String type,
             @RequestHeader HttpHeaders headers
-            ) throws MPException, MPApiException {
+            ) throws MPException, MPApiException, ExecutionException, InterruptedException {
         String requestIdHeader = headers.getFirst("X-Request-Id");
         String signatureHeader = headers.getFirst("X-Signature");
-        ResponseSuccess result = iMercadoPagoPayment.registerPayment(paymentId,type,requestIdHeader,signatureHeader);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        CompletableFuture<ResponseSuccess> result = iMercadoPagoPayment.registerPayment(paymentId,type,requestIdHeader,signatureHeader);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
 }

@@ -34,6 +34,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,119 +54,123 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
     @Value("${mercadopago.secret.key}")
     private String mercadoPagoSecretKey;
     @Override
-    public String sendPayment(Double netAmount, Subscription subscription,List<String> modules, User user) throws InternalErrorExceptions, BadRequestExceptions {
-        MercadoPagoConfig.setAccessToken(mercadoPagoToken);
-        MercadoPagoConfig.setLoggingLevel(Level.FINEST);
+    public CompletableFuture<String> sendPayment(Double netAmount, Subscription subscription, List<String> modules, User user) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            MercadoPagoConfig.setAccessToken(mercadoPagoToken);
+            MercadoPagoConfig.setLoggingLevel(Level.FINEST);
 
-        try{
-            PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
-                    .title("Pago subscripcion " + subscription.getName() + " powip.")
-                    .quantity(1)
-                    .unitPrice(new BigDecimal(netAmount).setScale(2, RoundingMode.HALF_EVEN))
-                    .currencyId("PEN")
-                    .build();
-            List<PreferenceItemRequest> items = new ArrayList<>();
-            items.add(itemRequest);
+            try{
+                PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
+                        .title("Pago subscripcion " + subscription.getName() + " powip.")
+                        .quantity(1)
+                        .unitPrice(new BigDecimal(netAmount).setScale(2, RoundingMode.HALF_EVEN))
+                        .currencyId("PEN")
+                        .build();
+                List<PreferenceItemRequest> items = new ArrayList<>();
+                items.add(itemRequest);
 
-            PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                    .failure("https://google.com")
-                    .pending("https://youtube.com")
-                    .success("https://youtube.com")
-                    .build();
+                PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
+                        .failure("https://google.com")
+                        .pending("https://youtube.com")
+                        .success("https://youtube.com")
+                        .build();
 
-            Map<String, Object> metadata = new HashMap<>();
+                Map<String, Object> metadata = new HashMap<>();
 
-            metadata.put("userId",user.getUsername());
-            metadata.put("subscriptionName",subscription.getName());
-            metadata.put("modules",modules);
+                metadata.put("userId",user.getUsername());
+                metadata.put("subscriptionName",subscription.getName());
+                metadata.put("modules",modules);
 
-            PreferenceRequest preferenceRequest = PreferenceRequest.builder()
-                    .items(items)
-                    .metadata(metadata)
-                    .backUrls(backUrls)
-                    .binaryMode(true)
-                    .notificationUrl(mercadoPagoNotificationUrl)
-                    .build();
+                PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+                        .items(items)
+                        .metadata(metadata)
+                        .backUrls(backUrls)
+                        .binaryMode(true)
+                        .notificationUrl(mercadoPagoNotificationUrl)
+                        .build();
 
-            PreferenceClient preferenceClient = new PreferenceClient();
+                PreferenceClient preferenceClient = new PreferenceClient();
 
-            Preference preference = preferenceClient.create(preferenceRequest);
-            System.out.println(preference.getResponse().getContent());
-            return preference.getInitPoint();
+                Preference preference = preferenceClient.create(preferenceRequest);
+                System.out.println(preference.getResponse().getContent());
+                return preference.getInitPoint();
 
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        } catch (MPException | MPApiException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            } catch (MPException | MPApiException e) {
+                log.error(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
-    public ResponseSuccess registerPayment(Long paymentId, String type, String requestIdHeader, String signatureHeader) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException {
-        MembershipPayment membershipPayment;
-        try{
-            if(paymentId != null & Objects.equals(type, "payment")){
+    public CompletableFuture<ResponseSuccess> registerPayment(Long paymentId, String type, String requestIdHeader, String signatureHeader) throws InternalErrorExceptions, BadRequestExceptions, MPException, MPApiException {
+        return CompletableFuture.supplyAsync(()->{
+            MembershipPayment membershipPayment;
+            try{
+                if(paymentId != null & Objects.equals(type, "payment")){
 
-                PaymentClient paymentClient = new PaymentClient();
-                Payment newPayment = paymentClient.get(paymentId);
+                    PaymentClient paymentClient = new PaymentClient();
+                    Payment newPayment = paymentClient.get(paymentId);
 
-                System.out.println(newPayment.getStatus());
+                    System.out.println(newPayment.getStatus());
 
-                if(!Objects.equals(newPayment.getStatus(), "approved")){
-                    throw new BadRequestExceptions(Constants.ErrorMercadoPagoPaymentFailed);
+                    if(!Objects.equals(newPayment.getStatus(), "approved")){
+                        throw new BadRequestExceptions(Constants.ErrorMercadoPagoPaymentFailed);
+                    }
+
+                    System.out.println("mercado pago secret key");
+                    System.out.println(mercadoPagoSecretKey);
+                    String exampleSignatureHeader = "ts=1704908010,v1=618c85345248dd820d5fd456117c2ab2ef8eda45a0282ff693eac24131a5e839";
+                    Map<String,String> signatureMap = new HashMap<>();
+                    Pattern pattern = Pattern.compile("(\\w+)=([^,]+)");
+                    Matcher matcher = pattern.matcher(signatureHeader);
+                    while (matcher.find()) {
+                        String key = matcher.group(1);
+                        String value = matcher.group(2);
+                        signatureMap.put(key, value);
+                    }
+                    String template = "id:[{0}];request-id:[{1}];ts:[{2}]";
+                    String formattedString = MessageFormat.format(template, paymentId, requestIdHeader, signatureMap.get("ts"));
+                    System.out.println(formattedString);
+                    String cyphedSignature = new HmacUtils("HmacSHA256", mercadoPagoSecretKey).hmacHex(formattedString);
+                    System.out.println("cyphed signature");
+                    System.out.println(cyphedSignature);
+                    if(!Objects.equals(mercadoPagoSecretKey, cyphedSignature)){
+                        throw new BadRequestExceptions(Constants.ErrorMercadoPagoOrigin);
+                    }
+                    double fee = 0.00;
+                    for(PaymentFeeDetail paymentFeeDetail : newPayment.getFeeDetails()){
+                        fee += paymentFeeDetail.getAmount().doubleValue();
+                    }
+
+                    System.out.println(newPayment.getMetadata());
+                    List<String> moduleNames = (List<String>) newPayment.getMetadata().get("modules");
+                    RequestMembershipPayment requestMembershipPayment = RequestMembershipPayment.builder()
+                            .netAmount(newPayment.getTransactionDetails().getNetReceivedAmount().doubleValue())
+                            .taxAmount(newPayment.getTaxesAmount().doubleValue())
+                            .paymentGatewayFee(fee)
+                            .grossAmount(newPayment.getTransactionDetails().getNetReceivedAmount().doubleValue() + newPayment.getTaxesAmount().doubleValue() + fee)
+                            .subscriptionName(newPayment.getMetadata().get("subscription_name").toString())
+                            .demo(false)
+                            .modules(moduleNames)
+                            .paymentGateway("mercado pago")
+                            .build();
+                    iMembershipPayment.save(requestMembershipPayment,newPayment.getMetadata().get("user_id").toString());
+                }else{
+                    throw new BadRequestExceptions(Constants.ErrorMercadoPagoPayment);
                 }
-
-                System.out.println("mercado pago secret key");
-                System.out.println(mercadoPagoSecretKey);
-                String exampleSignatureHeader = "ts=1704908010,v1=618c85345248dd820d5fd456117c2ab2ef8eda45a0282ff693eac24131a5e839";
-                Map<String,String> signatureMap = new HashMap<>();
-                Pattern pattern = Pattern.compile("(\\w+)=([^,]+)");
-                Matcher matcher = pattern.matcher(signatureHeader);
-                while (matcher.find()) {
-                    String key = matcher.group(1);
-                    String value = matcher.group(2);
-                    signatureMap.put(key, value);
-                }
-                String template = "id:[{0}];request-id:[{1}];ts:[{2}]";
-                String formattedString = MessageFormat.format(template, paymentId, requestIdHeader, signatureMap.get("ts"));
-                System.out.println(formattedString);
-                String cyphedSignature = new HmacUtils("HmacSHA256", mercadoPagoSecretKey).hmacHex(formattedString);
-                System.out.println("cyphed signature");
-                System.out.println(cyphedSignature);
-                if(!Objects.equals(mercadoPagoSecretKey, cyphedSignature)){
-                    throw new BadRequestExceptions(Constants.ErrorMercadoPagoOrigin);
-                }
-                double fee = 0.00;
-                for(PaymentFeeDetail paymentFeeDetail : newPayment.getFeeDetails()){
-                    fee += paymentFeeDetail.getAmount().doubleValue();
-                }
-
-                System.out.println(newPayment.getMetadata());
-                List<String> moduleNames = (List<String>) newPayment.getMetadata().get("modules");
-                RequestMembershipPayment requestMembershipPayment = RequestMembershipPayment.builder()
-                        .netAmount(newPayment.getTransactionDetails().getNetReceivedAmount().doubleValue())
-                        .taxAmount(newPayment.getTaxesAmount().doubleValue())
-                        .paymentGatewayFee(fee)
-                        .grossAmount(newPayment.getTransactionDetails().getNetReceivedAmount().doubleValue() + newPayment.getTaxesAmount().doubleValue() + fee)
-                        .subscriptionName(newPayment.getMetadata().get("subscription_name").toString())
-                        .demo(false)
-                        .modules(moduleNames)
-                        .paymentGateway("mercado pago")
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
                         .build();
-                iMembershipPayment.save(requestMembershipPayment,newPayment.getMetadata().get("user_id").toString());
-            }else{
-                throw new BadRequestExceptions(Constants.ErrorMercadoPagoPayment);
+            }catch (RuntimeException | MPException | MPApiException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        }catch (RuntimeException e){
-            e.printStackTrace();
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+        });
     }
 }
