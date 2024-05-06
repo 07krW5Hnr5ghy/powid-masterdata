@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @AllArgsConstructor
@@ -83,6 +84,53 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String user, String province) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            boolean existsDistrict;
+            Province provinceData;
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                existsDistrict = districtRepository.existsByName(name.toUpperCase());
+                provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+
+            if (existsDistrict) {
+                throw new BadRequestExceptions(Constants.ErrorDistrictExists.toUpperCase());
+            }
+
+            if (provinceData == null) {
+                throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
+            }
+
+            try {
+                districtRepository.save(District.builder()
+                        .name(name.toUpperCase())
+                        .tokenUser(user.toUpperCase())
+                        .province(provinceData)
+                        .provinceId(provinceData.getId())
+                        .status(true)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public ResponseSuccess saveAll(List<String> names, String user, String province)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
@@ -126,168 +174,119 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
-    public DistrictDTO update(RequestDistrict requestDistrict) throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
-        boolean existsprovince;
-        District district;
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(requestDistrict.getUser().toUpperCase());
-            existsprovince = provinceRepository.existsById(requestDistrict.getCodeProvince());
-            district = districtRepository.findByNameAndStatusTrue(requestDistrict.getName().toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            District district;
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                district = districtRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
 
-        if (district == null) {
-            throw new BadRequestExceptions(Constants.ErrorDistrict.toUpperCase());
-        }
+            if (district == null) {
+                throw new BadRequestExceptions(Constants.ErrorDistrict.toUpperCase());
+            }
 
-        if (!existsprovince) {
-            throw new BadRequestExceptions(Constants.ErrorProvince.toUpperCase());
-        }
-
-        try {
-            district.setName(requestDistrict.getName().toUpperCase());
-            district.setTokenUser(requestDistrict.getUser().toUpperCase());
-            district.setRegistrationDate(new Date(System.currentTimeMillis()));
-            district.setStatus(requestDistrict.isStatus());
-            district.setProvinceId(requestDistrict.getCodeProvince());
-            return districtMapper.districtToDistrictDTO(districtRepository.save(district));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
-        }
+            try {
+                district.setRegistrationDate(new Date(System.currentTimeMillis()));
+                district.setStatus(false);
+                districtMapper.districtToDistrictDTO(districtRepository.save(district));
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
+            }
+        });
     }
 
     @Override
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
-        District district;
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            district = districtRepository.findById(code).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        if (district == null) {
-            throw new BadRequestExceptions(Constants.ErrorDistrict.toUpperCase());
-        }
-
-        try {
-            district.setRegistrationDate(new Date(System.currentTimeMillis()));
-            district.setStatus(false);
-            districtMapper.districtToDistrictDTO(districtRepository.save(district));
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
-        }
+    public CompletableFuture<List<DistrictDTO>> listDistrict() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try {
+                return districtMapper.listDistrictToListDistrictDTO(districtRepository.findAllByStatusTrue());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<DistrictDTO> listDistrict() throws BadRequestExceptions {
-        try {
-            return districtMapper.listDistrictToListDistrictDTO(districtRepository.findAllByStatusTrue());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public Page<DistrictDTO> list(String name, String user, Long codeProvince, String nameProvince, String sort,
+    public CompletableFuture<Page<DistrictDTO>> list(String name, String user, Long codeProvince, String nameProvince, String sort,
             String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<District> districtPage;
-        try {
-            districtPage = districtRepositoryCustom.searchForDistrict(name, user, codeProvince, nameProvince, sort,
-                    sortColumn, pageNumber, pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+        return CompletableFuture.supplyAsync(()->{
+            Page<District> districtPage;
+            try {
+                districtPage = districtRepositoryCustom.searchForDistrict(name, user, codeProvince, nameProvince, sort,
+                        sortColumn, pageNumber, pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (districtPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(districtMapper.listDistrictToListDistrictDTO(districtPage.getContent()),
-                districtPage.getPageable(), districtPage.getTotalElements());
+            if (districtPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(districtMapper.listDistrictToListDistrictDTO(districtPage.getContent()),
+                    districtPage.getPageable(), districtPage.getTotalElements());
+        });
     }
 
     @Override
-    public Page<DistrictDTO> listStatusFalse(String name, String user, Long codeProvince, String nameProvince,
+    public CompletableFuture<Page<DistrictDTO>> listStatusFalse(String name, String user, Long codeProvince, String nameProvince,
             String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<District> districtPage;
-        try {
-            districtPage = districtRepositoryCustom.searchForDistrict(name, user, codeProvince, nameProvince, sort,
-                    sortColumn, pageNumber, pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+        return CompletableFuture.supplyAsync(()->{
+            Page<District> districtPage;
+            try {
+                districtPage = districtRepositoryCustom.searchForDistrict(name, user, codeProvince, nameProvince, sort,
+                        sortColumn, pageNumber, pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (districtPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(districtMapper.listDistrictToListDistrictDTO(districtPage.getContent()),
-                districtPage.getPageable(), districtPage.getTotalElements());
+            if (districtPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(districtMapper.listDistrictToListDistrictDTO(districtPage.getContent()),
+                    districtPage.getPageable(), districtPage.getTotalElements());
+        });
     }
 
     @Override
-    public DistrictDTO findByCode(Long code) throws BadRequestExceptions {
-        boolean exists;
-        try {
-            exists = districtRepository.existsById(code);
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if (!exists) {
-            throw new BadRequestExceptions(Constants.ErrorDistrict);
-        }
-
-        try {
-            return districtMapper.districtToDistrictDTO(districtRepository.findById(code).orElse(null));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
-
-    @Override
-    public List<DistrictDTO> listDistrictByProvince(String province)
+    public CompletableFuture<List<DistrictDTO>> listDistrictByProvince(String province)
             throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Province provinceData;
+            List<District> districts;
 
-        Province provinceData;
-        List<District> districts;
+            try {
+                provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (provinceData == null) {
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }
 
-        if (provinceData == null) {
-            throw new BadRequestExceptions(Constants.ErrorProvince);
-        }
-
-        try {
-            districts = districtRepository.findAllByProvinceIdAndStatusTrue(provinceData.getId());
-            return districtMapper.listDistrictToListDistrictDTO(districts);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                districts = districtRepository.findAllByProvinceIdAndStatusTrue(provinceData.getId());
+                return districtMapper.listDistrictToListDistrictDTO(districts);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }
