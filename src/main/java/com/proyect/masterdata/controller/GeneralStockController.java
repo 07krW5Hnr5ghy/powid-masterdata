@@ -18,6 +18,8 @@ import com.proyect.masterdata.services.IGeneralStock;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -34,18 +36,18 @@ public class GeneralStockController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<GeneralStockDTO> result = iGeneralStock.list(user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<GeneralStockDTO>> result = iGeneralStock.list(user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK') and hasAuthority('ACCESS:GENERAL_STOCK_GET')")
     public ResponseEntity<List<GeneralStockDTO>> list(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<GeneralStockDTO> result = iGeneralStock.listGeneralStock(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<GeneralStockDTO>> result = iGeneralStock.listGeneralStock(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
 }

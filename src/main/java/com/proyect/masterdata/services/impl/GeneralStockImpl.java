@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -36,163 +37,169 @@ public class GeneralStockImpl implements IGeneralStock {
     private final GeneralStockRepositoryCustom generalStockRepositoryCustom;
 
     @Override
-    public ResponseSuccess in(String supplierProductSerial, Integer quantity, String tokenUser)
+    public CompletableFuture<ResponseSuccess> in(String supplierProductSerial, Integer quantity, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        SupplierProduct supplierProduct;
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplierProduct supplierProduct;
 
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (supplierProduct == null) {
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
-        }
+            if (supplierProduct == null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
 
-        try {
-            GeneralStock generalStock = generalStockRepository.findByClientIdAndSupplierProductId(user.getClientId(),
-                    supplierProduct.getId());
-            if (generalStock != null) {
-                generalStock.setQuantity(generalStock.getQuantity() + quantity);
-                generalStock.setUpdateDate(new Date(System.currentTimeMillis()));
+            try {
+                GeneralStock generalStock = generalStockRepository.findByClientIdAndSupplierProductId(user.getClientId(),
+                        supplierProduct.getId());
+                if (generalStock != null) {
+                    generalStock.setQuantity(generalStock.getQuantity() + quantity);
+                    generalStock.setUpdateDate(new Date(System.currentTimeMillis()));
+                    generalStockRepository.save(generalStock);
+                } else {
+                    generalStockRepository.save(GeneralStock.builder()
+                            .quantity(quantity)
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
+                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .supplierProduct(supplierProduct)
+                            .supplierProductId(supplierProduct.getId())
+                            .tokenUser(user.getUsername())
+                            .build());
+                }
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> out(String supplierProductSerial, Integer quantity, String tokenUser)
+            throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplierProduct supplierProduct;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (supplierProduct == null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
+
+            try {
+                GeneralStock generalStock = generalStockRepository.findByClientIdAndSupplierProductId(user.getClientId(),
+                        supplierProduct.getId());
+
+                if (generalStock == null) {
+                    throw new BadRequestExceptions(Constants.ErrorGeneralStock);
+                }
+
+                if (quantity > generalStock.getQuantity()) {
+                    throw new BadRequestExceptions(Constants.ErrorGeneralStockLess);
+                }
+
+                generalStock.setQuantity(generalStock.getQuantity() - quantity);
                 generalStockRepository.save(generalStock);
-            } else {
-                generalStockRepository.save(GeneralStock.builder()
-                        .quantity(quantity)
-                        .client(user.getClient())
-                        .clientId(user.getClientId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .supplierProduct(supplierProduct)
-                        .supplierProductId(supplierProduct.getId())
-                        .tokenUser(user.getUsername())
-                        .build());
-            }
 
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public ResponseSuccess out(String supplierProductSerial, Integer quantity, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
-
-        User user;
-        SupplierProduct supplierProduct;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (supplierProduct == null) {
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
-        }
-
-        try {
-            GeneralStock generalStock = generalStockRepository.findByClientIdAndSupplierProductId(user.getClientId(),
-                    supplierProduct.getId());
-
-            if (generalStock == null) {
-                throw new BadRequestExceptions(Constants.ErrorGeneralStock);
-            }
-
-            if (quantity > generalStock.getQuantity()) {
-                throw new BadRequestExceptions(Constants.ErrorGeneralStockLess);
-            }
-
-            generalStock.setQuantity(generalStock.getQuantity() - quantity);
-            generalStockRepository.save(generalStock);
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-    }
-
-    @Override
-    public Page<GeneralStockDTO> list(String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize)
+    public CompletableFuture<Page<GeneralStockDTO>> list(String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize)
             throws InternalErrorExceptions {
-        Page<GeneralStock> generalStockPage;
-        Long clientId;
+        return CompletableFuture.supplyAsync(()->{
+            Page<GeneralStock> generalStockPage;
+            Long clientId;
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            generalStockPage = generalStockRepositoryCustom.searchForGeneralStock(clientId, sort,
-                    sortColumn,
-                    pageNumber,
-                    pageSize);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                generalStockPage = generalStockRepositoryCustom.searchForGeneralStock(clientId, sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (generalStockPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if (generalStockPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        List<GeneralStockDTO> generalStockDTOs = generalStockPage.getContent().stream()
-                .map(generalStock -> GeneralStockDTO.builder()
-                        .quantity(generalStock.getQuantity())
-                        .supplierProductSerial(generalStock.getSupplierProduct().getSerial())
-                        .registrationDate(generalStock.getRegistrationDate())
-                        .updateDate(generalStock.getUpdateDate())
-                        .build())
-                .toList();
+            List<GeneralStockDTO> generalStockDTOs = generalStockPage.getContent().stream()
+                    .map(generalStock -> GeneralStockDTO.builder()
+                            .quantity(generalStock.getQuantity())
+                            .supplierProductSerial(generalStock.getSupplierProduct().getSerial())
+                            .registrationDate(generalStock.getRegistrationDate())
+                            .updateDate(generalStock.getUpdateDate())
+                            .build())
+                    .toList();
 
-        return new PageImpl<>(generalStockDTOs, generalStockPage.getPageable(),
-                generalStockPage.getTotalElements());
+            return new PageImpl<>(generalStockDTOs, generalStockPage.getPageable(),
+                    generalStockPage.getTotalElements());
+        });
     }
 
     @Override
-    public List<GeneralStockDTO> listGeneralStock(String user) throws BadRequestExceptions, InternalErrorExceptions {
-        Long clientId;
-        List<GeneralStock> generalStocks;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            generalStocks = generalStockRepository.findAllByClientId(clientId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<List<GeneralStockDTO>> listGeneralStock(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<GeneralStock> generalStocks;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                generalStocks = generalStockRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(generalStocks.isEmpty()){
-            return Collections.emptyList();
-        }
+            if(generalStocks.isEmpty()){
+                return Collections.emptyList();
+            }
 
-        return generalStocks.stream()
-                .map(generalStock -> GeneralStockDTO.builder()
-                        .quantity(generalStock.getQuantity())
-                        .supplierProductSerial(generalStock.getSupplierProduct().getSerial())
-                        .registrationDate(generalStock.getRegistrationDate())
-                        .updateDate(generalStock.getUpdateDate())
-                        .build())
-                .toList();
+            return generalStocks.stream()
+                    .map(generalStock -> GeneralStockDTO.builder()
+                            .quantity(generalStock.getQuantity())
+                            .supplierProductSerial(generalStock.getSupplierProduct().getSerial())
+                            .registrationDate(generalStock.getRegistrationDate())
+                            .updateDate(generalStock.getUpdateDate())
+                            .build())
+                    .toList();
+        });
     }
 
 }

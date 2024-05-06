@@ -8,14 +8,15 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IGeneralStock {
-        ResponseSuccess in(String supplierProductSerial, Integer quantity, String tokenUser)
+        CompletableFuture<ResponseSuccess> in(String supplierProductSerial, Integer quantity, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        ResponseSuccess out(String supplierProductSerial, Integer quantity, String tokenUser)
+        CompletableFuture<ResponseSuccess> out(String supplierProductSerial, Integer quantity, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        Page<GeneralStockDTO> list(String user, String sort, String sortColumn,
+        CompletableFuture<Page<GeneralStockDTO>> list(String user, String sort, String sortColumn,
                         Integer pageNumber,
                         Integer pageSize) throws InternalErrorExceptions;
-        List<GeneralStockDTO> listGeneralStock(String user) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<GeneralStockDTO>> listGeneralStock(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }
