@@ -8,9 +8,11 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface IMembershipPayment {
-        ResponseSuccess save(RequestMembershipPayment requestMembershipPayment, String tokenUser)
+        CompletableFuture<ResponseSuccess> save(RequestMembershipPayment requestMembershipPayment, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        Page<MembershipPaymentDTO> list(String user, Double grossAmount, Double netAmount, Double paymentGatewayFee, Double taxAmount, String paymentGateway, String sort, String sortColumn,
+        CompletableFuture<Page<MembershipPaymentDTO>> list(String user, Double grossAmount, Double netAmount, Double paymentGatewayFee, Double taxAmount, String paymentGateway, String sort, String sortColumn,
                                         Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
 }

@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("membership-payment")
@@ -29,9 +32,9 @@ public class MembershipPaymentController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<MembershipPaymentDTO> result = iMembershipPayment.list(user,grossAmount,netAmount,paymentGatewayFee,taxAmount,paymentGateway,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<MembershipPaymentDTO>> result = iMembershipPayment.list(user,grossAmount,netAmount,paymentGatewayFee,taxAmount,paymentGateway,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
 }
