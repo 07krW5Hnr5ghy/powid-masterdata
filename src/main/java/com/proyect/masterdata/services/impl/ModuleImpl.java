@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +38,6 @@ public class ModuleImpl implements IModule {
     @Override
     public ResponseSuccess save(String name, double price, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
-
         boolean existsUser;
         boolean existsModule;
 
@@ -77,7 +77,50 @@ public class ModuleImpl implements IModule {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
+    @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, double price, String tokenUser)
+            throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            boolean existsModule;
 
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                existsModule = moduleRepository.existsByName(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (existsModule) {
+                throw new BadRequestExceptions(Constants.ErrorModuleExist);
+            }
+
+            try {
+
+                moduleRepository.save(Module.builder()
+                        .name(name.toUpperCase())
+                        .monthlyPrice(price)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
     @Override
     public ResponseSuccess saveAll(List<RequestModule> moduleList, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -124,139 +167,137 @@ public class ModuleImpl implements IModule {
     }
 
     @Override
-    public ModuleDTO update(RequestModule requestModule, String tokenUser)
+    public CompletableFuture<ModuleDTO> update(RequestModule requestModule, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            Module module;
 
-        boolean existsUser;
-        Module module;
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                module = moduleRepository.findByNameAndStatusTrue(requestModule.getName().toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            module = moduleRepository.findByNameAndStatusTrue(requestModule.getName().toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (module == null) {
+                throw new BadRequestExceptions(Constants.ErrorModule);
+            }
 
-        if (module == null) {
-            throw new BadRequestExceptions(Constants.ErrorModule);
-        }
+            module.setMonthlyPrice(requestModule.getMontlyPrice());
+            module.setUpdateDate(new Date(System.currentTimeMillis()));
 
-        module.setMonthlyPrice(requestModule.getMontlyPrice());
-        module.setUpdateDate(new Date(System.currentTimeMillis()));
-
-        try {
-            return moduleMapper.moduleToModuleDTO(moduleRepository.save(module));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                return moduleMapper.moduleToModuleDTO(moduleRepository.save(module));
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            Module module;
 
-        boolean existsUser;
-        Module module;
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                module = moduleRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            module = moduleRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (module == null) {
+                throw new BadRequestExceptions(Constants.ErrorModule);
+            }
 
-        if (module == null) {
-            throw new BadRequestExceptions(Constants.ErrorModule);
-        }
+            module.setStatus(false);
+            module.setUpdateDate(new Date(System.currentTimeMillis()));
 
-        module.setStatus(false);
-        module.setUpdateDate(new Date(System.currentTimeMillis()));
+            try {
 
-        try {
+                moduleRepository.save(module);
 
-            moduleRepository.save(module);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
 
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<ModuleDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<ModuleDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<Module> modulePage;
-        try {
-            modulePage = moduleRepositoryCustom.searchForModule(name, user, sort, sortColumn, pageNumber, pageSize,
-                    true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (modulePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(moduleMapper.listModuleToListModuleDTO(modulePage.getContent()),
-                modulePage.getPageable(), modulePage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<Module> modulePage;
+            try {
+                modulePage = moduleRepositoryCustom.searchForModule(name, user, sort, sortColumn, pageNumber, pageSize,
+                        true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (modulePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(moduleMapper.listModuleToListModuleDTO(modulePage.getContent()),
+                    modulePage.getPageable(), modulePage.getTotalElements());
+        });
     }
 
     @Override
-    public Page<ModuleDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<ModuleDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<Module> modulePage;
-        try {
-            modulePage = moduleRepositoryCustom.searchForModule(name, user, sort, sortColumn, pageNumber, pageSize,
-                    false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (modulePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(moduleMapper.listModuleToListModuleDTO(modulePage.getContent()),
-                modulePage.getPageable(), modulePage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<Module> modulePage;
+            try {
+                modulePage = moduleRepositoryCustom.searchForModule(name, user, sort, sortColumn, pageNumber, pageSize,
+                        false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (modulePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(moduleMapper.listModuleToListModuleDTO(modulePage.getContent()),
+                    modulePage.getPageable(), modulePage.getTotalElements());
+        });
     }
 
     @Override
-    public ModuleDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return moduleMapper.moduleToModuleDTO(moduleRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
+    public CompletableFuture<List<ModuleDTO>> listModule() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Module> modules = new ArrayList<>();
 
-    @Override
-    public List<ModuleDTO> listModule() throws BadRequestExceptions {
-        List<Module> modules = new ArrayList<>();
+            try {
+                modules = moduleRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        try {
-            modules = moduleRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if (modules.isEmpty()) {
+                return Collections.emptyList();
+            }
 
-        if (modules.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return moduleMapper.listModuleToListModuleDTO(modules);
+            return moduleMapper.listModuleToListModuleDTO(modules);
+        });
     }
 }

@@ -38,7 +38,56 @@ public class ModelImpl implements IModel {
     private final ModelRepositoryCustom modelRepositoryCustom;
 
     @Override
-    public CompletableFuture<ResponseSuccess> save(String name, String brand, String tokenUser)
+    public ResponseSuccess save(String name, String brand, String tokenUser)
+            throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        boolean existsModel;
+        Brand brandData;
+
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            existsModel = modelRepository.existsByName(name.toUpperCase());
+            brandData = brandRepository.findByName(brand.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (user == null) {
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if (existsModel) {
+            throw new BadRequestExceptions(Constants.ErrorModelExists);
+        }
+
+        if (brandData == null) {
+            throw new BadRequestExceptions(Constants.ErrorBrand);
+        }
+
+        try {
+            modelRepository.save(Model.builder()
+                    .name(name.toUpperCase())
+                    .brand(brandData)
+                    .brandId(brandData.getId())
+                    .client(user.getClient())
+                    .clientId(user.getClientId())
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .status(true)
+                    .tokenUser(tokenUser.toUpperCase())
+                    .build());
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String brand, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;

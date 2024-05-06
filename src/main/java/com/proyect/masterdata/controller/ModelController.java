@@ -39,7 +39,7 @@ public class ModelController {
             @RequestParam("name") String name,
             @RequestParam("brand") String brand,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iModel.save(name, brand, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iModel.saveAsync(name, brand, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

@@ -15,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -28,9 +30,9 @@ public class ModuleController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("price") double price,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iModule.save(name, price, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iModule.saveAsync(name, price, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping(value = "modules", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -45,25 +47,25 @@ public class ModuleController {
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ModuleDTO> update(
             @RequestBody() RequestModule requestModule,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ModuleDTO result = iModule.update(requestModule, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ModuleDTO> result = iModule.update(requestModule, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iModule.delete(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iModule.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_GET')")
-    public ResponseEntity<List<ModuleDTO>> listModule() throws BadRequestExceptions {
-        List<ModuleDTO> result = iModule.listModule();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<List<ModuleDTO>> listModule() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ModuleDTO>> result = iModule.listModule();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "list")
@@ -74,9 +76,9 @@ public class ModuleController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<ModuleDTO> result = iModule.list(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<ModuleDTO>> result = iModule.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "status-false")
@@ -87,9 +89,9 @@ public class ModuleController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<ModuleDTO> result = iModule.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<ModuleDTO>> result = iModule.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
 }

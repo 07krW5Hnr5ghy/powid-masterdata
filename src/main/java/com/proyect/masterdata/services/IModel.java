@@ -12,8 +12,10 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IModel {
-        CompletableFuture<ResponseSuccess> save(String name, String brand, String tokenUser)
+        ResponseSuccess save(String name, String brand, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> saveAsync(String name, String brand, String tokenUser)
+                throws InternalErrorExceptions, BadRequestExceptions;
         ResponseSuccess saveAll(List<String> names, String brand, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
