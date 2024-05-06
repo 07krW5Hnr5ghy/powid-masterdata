@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Log4j2
 public class CustomerImpl implements ICustomer {
-
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final DepartmentRepository departmentRepository;
