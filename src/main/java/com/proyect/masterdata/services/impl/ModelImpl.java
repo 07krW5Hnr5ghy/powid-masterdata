@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.User;
 import org.springframework.data.domain.Page;
@@ -37,54 +38,54 @@ public class ModelImpl implements IModel {
     private final ModelRepositoryCustom modelRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String name, String brand, String tokenUser)
+    public CompletableFuture<ResponseSuccess> save(String name, String brand, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            boolean existsModel;
+            Brand brandData;
 
-        User user;
-        boolean existsModel;
-        Brand brandData;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                existsModel = modelRepository.existsByName(name.toUpperCase());
+                brandData = brandRepository.findByName(brand.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            existsModel = modelRepository.existsByName(name.toUpperCase());
-            brandData = brandRepository.findByName(brand.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (existsModel) {
+                throw new BadRequestExceptions(Constants.ErrorModelExists);
+            }
 
-        if (existsModel) {
-            throw new BadRequestExceptions(Constants.ErrorModelExists);
-        }
+            if (brandData == null) {
+                throw new BadRequestExceptions(Constants.ErrorBrand);
+            }
 
-        if (brandData == null) {
-            throw new BadRequestExceptions(Constants.ErrorBrand);
-        }
-
-        try {
-            modelRepository.save(Model.builder()
-                    .name(name.toUpperCase())
-                    .brand(brandData)
-                    .brandId(brandData.getId())
-                            .client(user.getClient())
-                            .clientId(user.getClientId())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
-                    .build());
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
+            try {
+                modelRepository.save(Model.builder()
+                        .name(name.toUpperCase())
+                        .brand(brandData)
+                        .brandId(brandData.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
@@ -137,189 +138,198 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            Model modelData;
 
-        boolean existsUser;
-        Model modelData;
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                modelData = modelRepository.findByName(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            modelData = modelRepository.findByName(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (modelData == null) {
+                throw new BadRequestExceptions(Constants.ErrorModel);
+            }
 
-        if (modelData == null) {
-            throw new BadRequestExceptions(Constants.ErrorModel);
-        }
-
-        try {
-            modelData.setStatus(false);
-            modelData.setUpdateDate(new Date(System.currentTimeMillis()));
-            modelRepository.save(modelData);
-            return ResponseDelete.builder()
-                    .message(Constants.delete)
-                    .code(200)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                modelData.setStatus(false);
+                modelData.setUpdateDate(new Date(System.currentTimeMillis()));
+                modelRepository.save(modelData);
+                return ResponseDelete.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<ModelDTO> list(String name, String brand, String tokenUser, String sort, String columnSort,
+    public CompletableFuture<Page<ModelDTO>> list(String name, String brand, String tokenUser, String sort, String columnSort,
             Integer pageNumber,
             Integer pageSize) {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Model> pageModel;
+            Brand brandData;
+            Long clientId;
 
-        Page<Model> pageModel;
-        Brand brandData;
-        Long clientId;
+            if (brand != null) {
+                brandData = brandRepository.findByName(brand.toUpperCase());
+            } else {
+                brandData = null;
+            }
 
-        if (brand != null) {
-            brandData = brandRepository.findByName(brand.toUpperCase());
-        } else {
-            brandData = null;
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
+                pageModel = modelRepositoryCustom.searchForModel(name, brandData, clientId, sort, columnSort, pageNumber,
+                        pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-            pageModel = modelRepositoryCustom.searchForModel(name, brandData, clientId, sort, columnSort, pageNumber,
-                    pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if (pageModel.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        if (pageModel.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
+                    .name(model.getName())
+                    .brand(model.getBrand().getName())
+                    .user(model.getTokenUser())
+                    .build()).toList();
 
-        List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
-                .name(model.getName())
-                .brand(model.getBrand().getName())
-                .user(model.getTokenUser())
-                .build()).toList();
-
-        return new PageImpl<>(models, pageModel.getPageable(),
-                pageModel.getTotalElements());
+            return new PageImpl<>(models, pageModel.getPageable(),
+                    pageModel.getTotalElements());
+        });
     }
 
     @Override
-    public Page<ModelDTO> listStatusFalse(String name, String brand, String tokenUser, String sort, String columnSort,
+    public CompletableFuture<Page<ModelDTO>> listStatusFalse(String name, String brand, String tokenUser, String sort, String columnSort,
             Integer pageNumber,
             Integer pageSize) {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Model> pageModel;
+            Brand brandData;
+            Long clientId;
 
-        Page<Model> pageModel;
-        Brand brandData;
-        Long clientId;
+            if (brand != null) {
+                brandData = brandRepository.findByName(brand.toUpperCase());
+            } else {
+                brandData = null;
+            }
 
-        if (brand != null) {
-            brandData = brandRepository.findByName(brand.toUpperCase());
-        } else {
-            brandData = null;
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
+                pageModel = modelRepositoryCustom.searchForModel(name, brandData, clientId, sort, columnSort, pageNumber,
+                        pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-            pageModel = modelRepositoryCustom.searchForModel(name, brandData, clientId, sort, columnSort, pageNumber,
-                    pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if (pageModel.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        if (pageModel.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
+                    .name(model.getName())
+                    .brand(model.getBrand().getName())
+                    .user(model.getTokenUser())
+                    .build()).toList();
 
-        List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
-                .name(model.getName())
-                .brand(model.getBrand().getName())
-                .user(model.getTokenUser())
-                .build()).toList();
-
-        return new PageImpl<>(models, pageModel.getPageable(),
-                pageModel.getTotalElements());
+            return new PageImpl<>(models, pageModel.getPageable(),
+                    pageModel.getTotalElements());
+        });
     }
 
     @Override
-    public List<ModelDTO> listModels(String user) throws BadRequestExceptions, InternalErrorExceptions {
-        List<Model> models;
-        Long clientId;
+    public CompletableFuture<List<ModelDTO>> listModels(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Model> models;
+            Long clientId;
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            models = modelRepository.findAllByClientIdAndStatusTrue(clientId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                models = modelRepository.findAllByClientIdAndStatusTrue(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(models.isEmpty()){
-            return Collections.emptyList();
-        }
+            if(models.isEmpty()){
+                return Collections.emptyList();
+            }
 
-        return models.stream().map(model -> ModelDTO.builder()
-                .name(model.getName())
-                .brand(model.getBrand().getName())
-                .user(model.getTokenUser())
-                .build()).toList();
+            return models.stream().map(model -> ModelDTO.builder()
+                    .name(model.getName())
+                    .brand(model.getBrand().getName())
+                    .user(model.getTokenUser())
+                    .build()).toList();
+        });
     }
 
     @Override
-    public List<ModelDTO> listModelsFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
-        List<Model> models;
-        Long clientId;
+    public CompletableFuture<List<ModelDTO>> listModelsFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Model> models;
+            Long clientId;
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            models = modelRepository.findAllByClientIdAndStatusFalse(clientId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                models = modelRepository.findAllByClientIdAndStatusFalse(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(models.isEmpty()){
-            return Collections.emptyList();
-        }
+            if(models.isEmpty()){
+                return Collections.emptyList();
+            }
 
-        return models.stream().map(model -> ModelDTO.builder()
-                .name(model.getName())
-                .brand(model.getBrand().getName())
-                .user(model.getTokenUser())
-                .build()).toList();
+            return models.stream().map(model -> ModelDTO.builder()
+                    .name(model.getName())
+                    .brand(model.getBrand().getName())
+                    .user(model.getTokenUser())
+                    .build()).toList();
+        });
     }
 
     @Override
-    public List<ModelDTO> listModelBrand(String user, String brand) throws BadRequestExceptions, InternalErrorExceptions {
-        List<Model> models;
-        Long clientId;
-        Long brandId;
+    public CompletableFuture<List<ModelDTO>> listModelBrand(String user, String brand) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Model> models;
+            Long clientId;
+            Long brandId;
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            brandId = brandRepository.findByName(brand.toUpperCase()).getId();
-            models = modelRepository.findAllByClientIdAndBrandIdAndStatusTrue(clientId,brandId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                brandId = brandRepository.findByName(brand.toUpperCase()).getId();
+                models = modelRepository.findAllByClientIdAndBrandIdAndStatusTrue(clientId,brandId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(models.isEmpty()){
-            return Collections.emptyList();
-        }
+            if(models.isEmpty()){
+                return Collections.emptyList();
+            }
 
-        return models.stream().map(model -> ModelDTO.builder()
-                .name(model.getName())
-                .brand(model.getBrand().getName())
-                .user(model.getTokenUser())
-                .build()).toList();
+            return models.stream().map(model -> ModelDTO.builder()
+                    .name(model.getName())
+                    .brand(model.getBrand().getName())
+                    .user(model.getTokenUser())
+                    .build()).toList();
+        });
     }
 
 }
