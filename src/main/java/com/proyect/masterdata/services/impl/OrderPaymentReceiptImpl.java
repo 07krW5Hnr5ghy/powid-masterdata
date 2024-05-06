@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +64,7 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
                 return Collections.emptyList();
             }
             for(MultipartFile receipt : receipts){
-                String url = iFile.uploadFile(receipt,folderPath + "_COMPROBANTE_" + Integer.toString(receiptNumber));
+                String url = iFile.uploadFile(receipt,folderPath + "_COMPROBANTE_" + Integer.toString(receiptNumber)).get();
                 orderPaymentReceiptRepository.save(OrderPaymentReceipt.builder()
                                 .paymentReceiptUrl(url)
                                 .client(user.getClient())
@@ -82,6 +83,10 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
             e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
     }

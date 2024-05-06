@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +69,7 @@ public class CourierPictureImpl implements ICourierPicture {
                     return Collections.emptyList();
                 }
                 for(MultipartFile receipt : pictures){
-                    String url = iFile.uploadFile(receipt,folderPath + "_COURIER_" + Integer.toString(pictureNumber));
+                    String url = iFile.uploadFile(receipt,folderPath + "_COURIER_" + Integer.toString(pictureNumber)).get();
                     courierPictureRepository.save(CourierPicture.builder()
                             .pictureUrl(url)
                             .client(user.getClient())
@@ -85,6 +86,10 @@ public class CourierPictureImpl implements ICourierPicture {
             }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
     }

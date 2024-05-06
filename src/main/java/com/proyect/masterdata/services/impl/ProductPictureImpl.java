@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +68,7 @@ public class ProductPictureImpl implements IProductPicture {
                 return Collections.emptyList();
             }
             for (MultipartFile picture : pictures){
-                String url = iFile.uploadFile(picture,folderPath + "_IMAGEN_" + Integer.toString(pictureNumber));
+                String url = iFile.uploadFile(picture,folderPath + "_IMAGEN_" + Integer.toString(pictureNumber)).get();
                 productPictureRepository.save(ProductPicture.builder()
                                 .productPictureUrl(url)
                                 .product(product)
@@ -84,6 +85,8 @@ public class ProductPictureImpl implements IProductPicture {
         }catch (RuntimeException | IOException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }
