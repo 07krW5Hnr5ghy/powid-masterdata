@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Service;
 
@@ -45,123 +46,122 @@ public class OnboardImpl implements IOnboard {
     private final OnboardModuleRepository onboardModuleRepository;
 
     @Override
-    public Onboard save(RequestOnboard requestOnboard) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<Onboard> save(RequestOnboard requestOnboard) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            EntryChannel entryChannel;
+            Client client;
+            Category category;
 
-        EntryChannel entryChannel;
-        Client client;
-        Category category;
+            try {
+                entryChannel = entryChannelRepository
+                        .findByNameAndStatusTrue(requestOnboard.getEntryChannel().toUpperCase());
+                client = clientRepository.findByRucAndStatusTrue(requestOnboard.getBusinessRuc());
+                category = categoryRepository.findByNameAndStatusTrue(requestOnboard.getCategory().toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            entryChannel = entryChannelRepository
-                    .findByNameAndStatusTrue(requestOnboard.getEntryChannel().toUpperCase());
-            client = clientRepository.findByRucAndStatusTrue(requestOnboard.getBusinessRuc());
-            category = categoryRepository.findByNameAndStatusTrue(requestOnboard.getCategory().toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (entryChannel == null) {
+                throw new BadRequestExceptions(Constants.ErrorEntryChannel);
+            }
 
-        if (entryChannel == null) {
-            throw new BadRequestExceptions(Constants.ErrorEntryChannel);
-        }
+            if (client == null) {
+                throw new BadRequestExceptions(Constants.ErrorClient);
+            }
 
-        if (client == null) {
-            throw new BadRequestExceptions(Constants.ErrorClient);
-        }
+            if (category == null) {
+                throw new BadRequestExceptions(Constants.ErrorCategory);
+            }
 
-        if (category == null) {
-            throw new BadRequestExceptions(Constants.ErrorCategory);
-        }
+            try {
 
-        try {
+                String[] users = requestOnboard.getUsers().split("-");
+                Integer usersMinimum = Integer.parseInt(users[0]);
+                Integer usersMaximum = Integer.parseInt(users[1]);
 
-            String[] users = requestOnboard.getUsers().split("-");
-            Integer usersMinimum = Integer.parseInt(users[0]);
-            Integer usersMaximum = Integer.parseInt(users[1]);
+                return onboardRepository.save(Onboard.builder()
+                        .category(category)
+                        .categoryId(category.getId())
+                        .ecommerce(requestOnboard.getEcommerce())
+                        .entryChannel(entryChannel)
+                        .entryChannelId(entryChannel.getId())
+                        .usersMinimum(usersMinimum)
+                        .usersMaximum(usersMaximum)
+                        .client(client)
+                        .clientId(client.getId())
+                        .demo(requestOnboard.getDemo())
+                        .billing(requestOnboard.getBilling())
+                        .comment(requestOnboard.getComments())
+                        .build());
 
-            Onboard onboard = onboardRepository.save(Onboard.builder()
-                    .category(category)
-                    .categoryId(category.getId())
-                    .ecommerce(requestOnboard.getEcommerce())
-                    .entryChannel(entryChannel)
-                    .entryChannelId(entryChannel.getId())
-                    .usersMinimum(usersMinimum)
-                    .usersMaximum(usersMaximum)
-                    .client(client)
-                    .clientId(client.getId())
-                    .demo(requestOnboard.getDemo())
-                    .billing(requestOnboard.getBilling())
-                    .comment(requestOnboard.getComments())
-                    .build());
-
-            return onboard;
-
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<OnboardingDTO> listOnboard() throws BadRequestExceptions {
-        try {
-            List<Onboard> onboards = onboardRepository.findAll();
-            List<OnboardingDTO> onboardingDTOs = onboards.stream().map(onboard -> {
+    public CompletableFuture<List<OnboardingDTO>> listOnboard() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try {
+                List<Onboard> onboards = onboardRepository.findAll();
+                return onboards.stream().map(onboard -> {
 
-                OnboardingDTO onboardingDTO = OnboardingDTO.builder().build();
+                    OnboardingDTO onboardingDTO = OnboardingDTO.builder().build();
 
-                User user = userRepository.findByClientId(onboard.getClientId());
+                    User user = userRepository.findByClientId(onboard.getClientId());
 
-                onboardingDTO.setUsername(user.getUsername());
-                onboardingDTO.setName(onboard.getClient().getName());
-                onboardingDTO.setSurname(onboard.getClient().getSurname());
-                onboardingDTO.setEmail(onboard.getClient().getEmail());
-                onboardingDTO.setAddress(onboard.getClient().getAddress());
-                onboardingDTO.setMobile(onboard.getClient().getMobile());
-                onboardingDTO.setDni(onboard.getClient().getDni());
-                onboardingDTO.setCategory(onboard.getCategory().getName());
-                onboardingDTO.setUsersMinimum(onboard.getUsersMinimum());
-                onboardingDTO.setUsersMaximum(onboard.getUsersMaximum());
-                onboardingDTO.setGender(user.getGender());
-                onboardingDTO.setDistrict(onboard.getClient().getDistrict().getName());
+                    onboardingDTO.setUsername(user.getUsername());
+                    onboardingDTO.setName(onboard.getClient().getName());
+                    onboardingDTO.setSurname(onboard.getClient().getSurname());
+                    onboardingDTO.setEmail(onboard.getClient().getEmail());
+                    onboardingDTO.setAddress(onboard.getClient().getAddress());
+                    onboardingDTO.setMobile(onboard.getClient().getMobile());
+                    onboardingDTO.setDni(onboard.getClient().getDni());
+                    onboardingDTO.setCategory(onboard.getCategory().getName());
+                    onboardingDTO.setUsersMinimum(onboard.getUsersMinimum());
+                    onboardingDTO.setUsersMaximum(onboard.getUsersMaximum());
+                    onboardingDTO.setGender(user.getGender());
+                    onboardingDTO.setDistrict(onboard.getClient().getDistrict().getName());
 
-                if (onboard.getEcommerce()) {
-                    Store store = storeRepository.findByClientId(onboard.getClientId());
-                    onboardingDTO.setStore(store.getName());
-                    onboardingDTO.setStoreUrl(store.getUrl());
-                    onboardingDTO.setStoreType(store.getStoreType().getName());
-                } else {
-                    onboardingDTO.setStore("NO APLICA");
-                    onboardingDTO.setStoreUrl("NO APLICA");
-                    onboardingDTO.setStoreType("NO APLICA");
-                }
+                    if (onboard.getEcommerce()) {
+                        Store store = storeRepository.findByClientId(onboard.getClientId());
+                        onboardingDTO.setStore(store.getName());
+                        onboardingDTO.setStoreUrl(store.getUrl());
+                        onboardingDTO.setStoreType(store.getStoreType().getName());
+                    } else {
+                        onboardingDTO.setStore("NO APLICA");
+                        onboardingDTO.setStoreUrl("NO APLICA");
+                        onboardingDTO.setStoreType("NO APLICA");
+                    }
 
-                onboardingDTO.setComment(onboard.getComment());
-                onboardingDTO.setBilling(onboard.getBilling());
-                onboardingDTO.setBusinessRuc(onboard.getClient().getRuc());
-                onboardingDTO.setBusinessName(onboard.getClient().getBusiness());
+                    onboardingDTO.setComment(onboard.getComment());
+                    onboardingDTO.setBilling(onboard.getBilling());
+                    onboardingDTO.setBusinessRuc(onboard.getClient().getRuc());
+                    onboardingDTO.setBusinessName(onboard.getClient().getBusiness());
 
-                List<OnboardChannel> onboardChannels = onboardChannelRepository.findByOnboardId(onboard.getId());
-                List<String> closingChannels = onboardChannels.stream()
-                        .map(onboardChannel -> onboardChannel.getClosingChannel().getName()).toList();
-                onboardingDTO.setClosingChannels(closingChannels);
+                    List<OnboardChannel> onboardChannels = onboardChannelRepository.findByOnboardId(onboard.getId());
+                    List<String> closingChannels = onboardChannels.stream()
+                            .map(onboardChannel -> onboardChannel.getClosingChannel().getName()).toList();
+                    onboardingDTO.setClosingChannels(closingChannels);
 
-                List<OnboardModule> onboardModules = onboardModuleRepository.findByOnboardId(onboard.getId());
-                List<String> modules = onboardModules.stream().map(onboardModule -> onboardModule.getModule().getName())
-                        .toList();
-                onboardingDTO.setModules(modules);
+                    List<OnboardModule> onboardModules = onboardModuleRepository.findByOnboardId(onboard.getId());
+                    List<String> modules = onboardModules.stream().map(onboardModule -> onboardModule.getModule().getName())
+                            .toList();
+                    onboardingDTO.setModules(modules);
 
-                onboardingDTO.setEntryChannel(onboard.getEntryChannel().getName());
+                    onboardingDTO.setEntryChannel(onboard.getEntryChannel().getName());
 
-                onboardingDTO.setDemo(onboard.getDemo());
+                    onboardingDTO.setDemo(onboard.getDemo());
 
-                return onboardingDTO;
-            }).toList();
-            return onboardingDTOs;
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+                    return onboardingDTO;
+                }).toList();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+        });
     }
-
 }

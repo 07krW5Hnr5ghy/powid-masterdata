@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.domain.Module;
@@ -227,7 +228,7 @@ public class AuthenticationImpl implements IAuthentication {
                         .users(requestOnboarding.getUsers())
                         .comments(requestOnboarding.getComment())
                         .demo(requestOnboarding.getDemo())
-                        .build());
+                        .build()).get();
 
                 for (ClosingChannel closingChannel : closingChannels) {
                     iOnboardChannel.save(onboard, closingChannel);
@@ -260,6 +261,10 @@ public class AuthenticationImpl implements IAuthentication {
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
     }
