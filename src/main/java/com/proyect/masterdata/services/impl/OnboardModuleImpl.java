@@ -13,27 +13,29 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.concurrent.CompletableFuture;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class OnboardModuleImpl implements IOnboardModule {
-
     private final OnboardModuleRepository onboardModuleRepository;
-
     @Override
-    public OnboardModule save(Onboard onboard, Module module) throws InternalErrorExceptions {
-        try {
-            OnboardModule onboardModule = OnboardModule.builder()
-                    .module(module)
-                    .moduleId(module.getId())
-                    .onboard(onboard)
-                    .onboardId(onboard.getId())
-                    .build();
-            return onboardModuleRepository.save(onboardModule);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<OnboardModule> save(Onboard onboard, Module module) throws InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try {
+                OnboardModule onboardModule = OnboardModule.builder()
+                        .module(module)
+                        .moduleId(module.getId())
+                        .onboard(onboard)
+                        .onboardId(onboard.getId())
+                        .build();
+                return onboardModuleRepository.save(onboardModule);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
 }

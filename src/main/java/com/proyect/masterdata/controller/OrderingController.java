@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({"*"})
@@ -30,9 +32,9 @@ public class OrderingController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestOrderSave requestOrderSave,
             @RequestParam("tokenUser") String tokenUser
-    ) throws InternalErrorExceptions, BadRequestExceptions{
-        ResponseSuccess result = iOrdering.save(requestOrderSave,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrdering.saveAsync(requestOrderSave,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination")
@@ -51,9 +53,9 @@ public class OrderingController {
             @RequestParam(value = "sortColumn",required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<OrderDTO> result = iOrdering.list(orderId,user,orderState,courier,paymentState,paymentMethod,saleChannel,managementType,storeName,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<OrderDTO>> result = iOrdering.list(orderId,user,orderState,courier,paymentState,paymentMethod,saleChannel,managementType,storeName,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -62,17 +64,17 @@ public class OrderingController {
             @RequestParam("orderId") Long orderId,
             @RequestBody()RequestOrderUpdate requestOrderUpdate,
             @RequestParam("tokenUser") String tokenUser
-            ) throws BadRequestExceptions{
-        ResponseSuccess result = iOrdering.update(orderId,requestOrderUpdate,tokenUser);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+            ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrdering.updateAsync(orderId,requestOrderUpdate,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK') and hasAuthority('ACCESS:ORDER_GET')")
     public ResponseEntity<List<OrderDTO>> listOrders(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<OrderDTO> result = iOrdering.listOrder(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderDTO>> result = iOrdering.listOrder(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
