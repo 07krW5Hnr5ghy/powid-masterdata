@@ -14,6 +14,8 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.concurrent.CompletableFuture;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -22,22 +24,24 @@ public class OnboardChannelImpl implements IOnboardChannel {
     private final OnboardChannelRepository onboardChannelRepository;
 
     @Override
-    public OnboardChannel save(Onboard onboard, ClosingChannel closingChannel) throws InternalErrorExceptions {
-        try {
+    public CompletableFuture<OnboardChannel> save(Onboard onboard, ClosingChannel closingChannel) throws InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try {
 
-            OnboardChannel onboardChannel = OnboardChannel.builder()
-                    .closingChannel(closingChannel)
-                    .closingChannelId(closingChannel.getId())
-                    .onboard(onboard)
-                    .onboardId(onboard.getId())
-                    .build();
+                OnboardChannel onboardChannel = OnboardChannel.builder()
+                        .closingChannel(closingChannel)
+                        .closingChannelId(closingChannel.getId())
+                        .onboard(onboard)
+                        .onboardId(onboard.getId())
+                        .build();
 
-            return onboardChannelRepository.save(onboardChannel);
+                return onboardChannelRepository.save(onboardChannel);
 
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
 }
