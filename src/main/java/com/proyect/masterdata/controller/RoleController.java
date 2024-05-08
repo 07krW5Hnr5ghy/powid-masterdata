@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -29,9 +31,9 @@ public class RoleController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iRole.save(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iRole.saveAsync(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping(value = "roles", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -47,9 +49,9 @@ public class RoleController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iRole.delete(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iRole.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
@@ -60,9 +62,9 @@ public class RoleController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<RoleDTO> result = iRole.list(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<RoleDTO>> result = iRole.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "status-false")
@@ -73,9 +75,9 @@ public class RoleController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<RoleDTO> result = iRole.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<RoleDTO>> result = iRole.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -83,8 +85,8 @@ public class RoleController {
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iRole.activate(name,tokenUser);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iRole.activate(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
