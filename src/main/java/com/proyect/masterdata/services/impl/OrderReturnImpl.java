@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -30,71 +31,75 @@ public class OrderReturnImpl implements IOrderReturn {
     private final UserRepository userRepository;
     private final IOrderReturnItem iOrderReturnItem;
     @Override
-    public ResponseSuccess save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
-        User user;
-        OrderReturn orderReturn;
-        OrderStock orderStock;
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            orderReturn = orderReturnRepository.findByOrderId(orderId);
-            orderStock = orderStockRepository.findByOrderId(orderId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-        if(orderReturn != null){
-            throw new BadRequestExceptions(Constants.ErrorOrderReturnExists);
-        }
-        if(orderStock == null){
-            throw new BadRequestExceptions(Constants.ErrorOrderStock);
-        }
-        try {
-            OrderReturn newOrderReturn = orderReturnRepository.save(OrderReturn.builder()
-                            .order(orderStock.getOrdering())
-                            .orderId(orderStock.getOrderId())
-                            .orderStock(orderStock)
-                            .orderStockId(orderStock.getId())
-                            .tokenUser(user.getUsername())
-                            .client(user.getClient())
-                            .clientId(user.getClientId())
-                            .status(true)
-                    .build());
-            for(RequestOrderReturnItem requestOrderReturnItem : requestOrderReturnItemList){
-                iOrderReturnItem.save(newOrderReturn.getId(),orderStock.getOrderId(),requestOrderReturnItem,tokenUser);
+    public CompletableFuture<ResponseSuccess> save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            OrderReturn orderReturn;
+            OrderStock orderStock;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                orderReturn = orderReturnRepository.findByOrderId(orderId);
+                orderStock = orderStockRepository.findByOrderId(orderId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            e.printStackTrace();
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(orderReturn != null){
+                throw new BadRequestExceptions(Constants.ErrorOrderReturnExists);
+            }
+            if(orderStock == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderStock);
+            }
+            try {
+                OrderReturn newOrderReturn = orderReturnRepository.save(OrderReturn.builder()
+                        .order(orderStock.getOrdering())
+                        .orderId(orderStock.getOrderId())
+                        .orderStock(orderStock)
+                        .orderStockId(orderStock.getId())
+                        .tokenUser(user.getUsername())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .status(true)
+                        .build());
+                for(RequestOrderReturnItem requestOrderReturnItem : requestOrderReturnItemList){
+                    iOrderReturnItem.save(newOrderReturn.getId(),orderStock.getOrderId(),requestOrderReturnItem,tokenUser);
+                }
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<OrderReturnDTO> list(String user) throws BadRequestExceptions {
-        List<OrderReturn> orderReturns;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            orderReturns = orderReturnRepository.findAllByClientIdAndStatusTrue(clientId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(orderReturns.isEmpty()){
-            return Collections.emptyList();
-        }
-        return orderReturns.stream().map(orderReturn -> OrderReturnDTO.builder()
-                .registrationDate(orderReturn.getRegistrationDate())
-                .updateDate(orderReturn.getUpdateDate())
-                .orderId(orderReturn.getOrderId())
-                .warehouse(orderReturn.getOrderStock().getWarehouse().getName())
-                .build()).toList();
+    public CompletableFuture<List<OrderReturnDTO>> list(String user) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderReturn> orderReturns;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderReturns = orderReturnRepository.findAllByClientIdAndStatusTrue(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(orderReturns.isEmpty()){
+                return Collections.emptyList();
+            }
+            return orderReturns.stream().map(orderReturn -> OrderReturnDTO.builder()
+                    .registrationDate(orderReturn.getRegistrationDate())
+                    .updateDate(orderReturn.getUpdateDate())
+                    .orderId(orderReturn.getOrderId())
+                    .warehouse(orderReturn.getOrderStock().getWarehouse().getName())
+                    .build()).toList();
+        });
     }
 }

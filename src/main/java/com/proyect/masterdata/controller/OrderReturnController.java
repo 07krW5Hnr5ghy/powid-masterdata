@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -24,15 +26,15 @@ public class OrderReturnController {
             @RequestParam("orderId") Long orderId,
             @RequestBody() List<RequestOrderReturnItem> requestOrderReturnItemList,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iOrderReturn.save(orderId,requestOrderReturnItemList,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderReturn.save(orderId,requestOrderReturnItemList,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
     public ResponseEntity<List<OrderReturnDTO>> list(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions{
-        List<OrderReturnDTO> result = iOrderReturn.list(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderReturnDTO>> result = iOrderReturn.list(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

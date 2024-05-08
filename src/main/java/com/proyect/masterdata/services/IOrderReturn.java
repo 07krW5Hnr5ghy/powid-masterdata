@@ -7,8 +7,9 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IOrderReturn {
-    ResponseSuccess save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    List<OrderReturnDTO> list(String user) throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<OrderReturnDTO>> list(String user) throws BadRequestExceptions;
 }
