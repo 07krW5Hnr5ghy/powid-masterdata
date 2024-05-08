@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -63,22 +64,22 @@ public class OrderStockImpl implements IOrderStock {
 
         try{
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
-               Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouseData,requestOrderStockItem);
-               if(!existsStock){
-                   throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
-               }
+                Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouseData,requestOrderStockItem);
+                if(!existsStock){
+                    throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
+                }
             }
             OrderStock orderStock = orderStockRepository.save(OrderStock.builder()
-                            .ordering(ordering)
-                            .orderId(ordering.getId())
-                            .status(true)
-                            .warehouse(warehouseData)
-                            .warehouseId(warehouseData.getId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .client(user.getClient())
-                            .clientId(user.getClientId())
-                            .tokenUser(user.getUsername())
+                    .ordering(ordering)
+                    .orderId(ordering.getId())
+                    .status(true)
+                    .warehouse(warehouseData)
+                    .warehouseId(warehouseData.getId())
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .updateDate(new Date(System.currentTimeMillis()))
+                    .client(user.getClient())
+                    .clientId(user.getClientId())
+                    .tokenUser(user.getUsername())
                     .build());
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
                 iOrderStockItem.save(orderStock.getOrderId(),requestOrderStockItem,user.getUsername());
@@ -95,66 +96,132 @@ public class OrderStockImpl implements IOrderStock {
     }
 
     @Override
-    public Page<OrderStockDTO> list(String warehouse, Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<OrderStock> pageOrderStock;
-        Long warehouseId;
-        Long clientId;
+    public CompletableFuture<ResponseSuccess> saveAsync(Long orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Warehouse warehouseData;
+            Ordering ordering;
 
-        if(warehouse != null){
-            warehouseId = warehouseRepository.findByName(warehouse.toUpperCase()).getId();
-        }else{
-            warehouseId = null;
-        }
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
+                ordering = orderingRepository.findById(orderId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            pageOrderStock = orderStockRepositoryCustom.searchForOrderStock(warehouseId,orderId,clientId,sort,sortColumn,pageNumber,pageSize,true);
-            System.out.println(pageOrderStock.getContent());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if(pageOrderStock.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if(warehouseData == null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouse);
+            }
 
-        List<OrderStockDTO> orderStockDTOS = pageOrderStock.getContent().stream().map(orderStock -> OrderStockDTO.builder()
-                .orderId(orderStock.getId())
-                .warehouse(orderStock.getWarehouse().getName())
-                .registrationDate(orderStock.getRegistrationDate())
-                .build()
-        ).toList();
+            if(ordering == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
 
-        return new PageImpl<>(orderStockDTOS,pageOrderStock.getPageable(),pageOrderStock.getTotalElements());
+            try{
+                for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
+                    Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouseData,requestOrderStockItem);
+                    if(!existsStock){
+                        throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
+                    }
+                }
+                OrderStock orderStock = orderStockRepository.save(OrderStock.builder()
+                        .ordering(ordering)
+                        .orderId(ordering.getId())
+                        .status(true)
+                        .warehouse(warehouseData)
+                        .warehouseId(warehouseData.getId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .tokenUser(user.getUsername())
+                        .build());
+                for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
+                    iOrderStockItem.save(orderStock.getOrderId(),requestOrderStockItem,user.getUsername());
+                }
+                return ResponseSuccess.builder()
+                        .message(Constants.register)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<OrderStockDTO> listOrderStock(String user) throws BadRequestExceptions, InternalErrorExceptions {
-        List<OrderStock> orderStocks;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            orderStocks = orderStockRepository.findAllByClientId(clientId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<Page<OrderStockDTO>> list(String warehouse, Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderStock> pageOrderStock;
+            Long warehouseId;
+            Long clientId;
 
-        if (orderStocks.isEmpty()){
-            return Collections.emptyList();
-        }
+            if(warehouse != null){
+                warehouseId = warehouseRepository.findByName(warehouse.toUpperCase()).getId();
+            }else{
+                warehouseId = null;
+            }
 
-        return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
-                .orderId(orderStock.getId())
-                .warehouse(orderStock.getWarehouse().getName())
-                .registrationDate(orderStock.getRegistrationDate())
-                .build()
-        ).toList();
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                pageOrderStock = orderStockRepositoryCustom.searchForOrderStock(warehouseId,orderId,clientId,sort,sortColumn,pageNumber,pageSize,true);
+                System.out.println(pageOrderStock.getContent());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(pageOrderStock.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<OrderStockDTO> orderStockDTOS = pageOrderStock.getContent().stream().map(orderStock -> OrderStockDTO.builder()
+                    .orderId(orderStock.getId())
+                    .warehouse(orderStock.getWarehouse().getName())
+                    .registrationDate(orderStock.getRegistrationDate())
+                    .build()
+            ).toList();
+
+            return new PageImpl<>(orderStockDTOS,pageOrderStock.getPageable(),pageOrderStock.getTotalElements());
+        });
     }
 
     @Override
-    public List<OrderStockDTO> listOrderStockFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<OrderStockDTO>> listOrderStock(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderStock> orderStocks;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderStocks = orderStockRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (orderStocks.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
+                    .orderId(orderStock.getId())
+                    .warehouse(orderStock.getWarehouse().getName())
+                    .registrationDate(orderStock.getRegistrationDate())
+                    .build()
+            ).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<OrderStockDTO>> listOrderStockFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return null;
     }
 }

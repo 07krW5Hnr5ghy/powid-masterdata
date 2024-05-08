@@ -17,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({"*"})
@@ -33,9 +35,9 @@ public class OrderStockController {
             @RequestParam("warehouse") String warehouse,
             @RequestBody() List<RequestOrderStockItem> requestOrderStockItemList,
             @RequestParam("tokenUser") String tokenUser
-            ) throws InternalErrorExceptions, BadRequestExceptions{
-        ResponseSuccess result = iOrderStock.save(orderId,warehouse, requestOrderStockItemList,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            ) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderStock.saveAsync(orderId,warehouse, requestOrderStockItemList,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination")
@@ -48,18 +50,18 @@ public class OrderStockController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<OrderStockDTO> result = iOrderStock.list(warehouse,orderId,user,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<OrderStockDTO>> result = iOrderStock.list(warehouse,orderId,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STOCK_GET')")
     public ResponseEntity<List<OrderStockDTO>> listOrderStock(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<OrderStockDTO> result = iOrderStock.listOrderStock(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderStockDTO>> result = iOrderStock.listOrderStock(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
 }
