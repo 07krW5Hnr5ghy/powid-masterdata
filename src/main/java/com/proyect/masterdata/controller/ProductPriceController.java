@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @CrossOrigin({"*"})
 @RequestMapping("product-price")
@@ -23,9 +26,9 @@ public class ProductPriceController {
             @RequestParam("productSku") String productSku,
             @RequestParam("unitPrice") Double unitPrice,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions{
-        ResponseSuccess result = iProductPrice.save(productSku,unitPrice,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iProductPrice.saveAsync(productSku,unitPrice,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
 }

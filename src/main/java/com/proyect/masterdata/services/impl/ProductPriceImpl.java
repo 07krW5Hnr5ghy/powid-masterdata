@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -63,5 +64,47 @@ public class ProductPriceImpl implements IProductPrice {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String productSku, Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Product product;
+
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(product == null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+
+            try {
+                productPriceRepository.save(ProductPrice.builder()
+                        .product(product)
+                        .productId(product.getId())
+                        .unitSalePrice(unitPrice)
+                        .status(true)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }
