@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -30,64 +31,63 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
     private final OrderingRepository orderingRepository;
     private final OrderPaymentReceiptRepository orderPaymentReceiptRepository;
     @Override
-    public List<String> uploadReceipt(List<MultipartFile> receipts,Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        Ordering ordering;
-        List<String> receiptUrlList = new ArrayList<>();
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            ordering = orderingRepository.findById(orderId).orElse(null);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if(ordering == null){
-            throw new BadRequestExceptions(Constants.ErrorOrdering);
-        }
-
-        try{
-
-            String folder = (user.getClient().getBusiness() + "_PEDIDOS").replace(" ","_");
-            Date currentDate = new Date(System.currentTimeMillis());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-            String dateString = dateFormat.format(currentDate);
-            String formattedString = dateString.replace(" ", "_");
-            String filename = "PEDIDO_" + orderId.toString() + "_" + user.getUsername() + "_" + formattedString;
-            String folderPath = folder + "/" + filename;
-            int receiptNumber = 1;
-            if(receipts.isEmpty()){
-                return Collections.emptyList();
-            }
-            for(MultipartFile receipt : receipts){
-                String url = iFile.uploadFile(receipt,folderPath + "_COMPROBANTE_" + Integer.toString(receiptNumber)).get();
-                orderPaymentReceiptRepository.save(OrderPaymentReceipt.builder()
-                                .paymentReceiptUrl(url)
-                                .client(user.getClient())
-                                .clientId(user.getClientId())
-                                .ordering(ordering)
-                                .orderId(ordering.getId())
-                                .registrationDate(currentDate)
-                                .tokenUser(user.getUsername())
-                        .build());
-                receiptUrlList.add(url);
-                receiptNumber++;
+    public CompletableFuture<List<String>> uploadReceipt(List<MultipartFile> receipts, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering ordering;
+            List<String> receiptUrlList = new ArrayList<>();
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                ordering = orderingRepository.findById(orderId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            return receiptUrlList;
-        }catch (RuntimeException | IOException e){
-            e.printStackTrace();
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
+            if(ordering == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
+
+            try{
+
+                String folder = (user.getClient().getBusiness() + "_PEDIDOS").replace(" ","_");
+                Date currentDate = new Date(System.currentTimeMillis());
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+                String dateString = dateFormat.format(currentDate);
+                String formattedString = dateString.replace(" ", "_");
+                String filename = "PEDIDO_" + orderId.toString() + "_" + user.getUsername() + "_" + formattedString;
+                String folderPath = folder + "/" + filename;
+                int receiptNumber = 1;
+                if(receipts.isEmpty()){
+                    return Collections.emptyList();
+                }
+                for(MultipartFile receipt : receipts){
+                    String url = iFile.uploadFile(receipt,folderPath + "_COMPROBANTE_" + Integer.toString(receiptNumber)).get();
+                    orderPaymentReceiptRepository.save(OrderPaymentReceipt.builder()
+                            .paymentReceiptUrl(url)
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
+                            .ordering(ordering)
+                            .orderId(ordering.getId())
+                            .registrationDate(currentDate)
+                            .tokenUser(user.getUsername())
+                            .build());
+                    receiptUrlList.add(url);
+                    receiptNumber++;
+                }
+
+                return receiptUrlList;
+            }catch (RuntimeException | IOException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
