@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -38,40 +39,42 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
     private final OrderPaymentMethodRepositoryCustom orderPaymentMethodRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        OrderPaymentMethod orderPaymentMethod;
+    public CompletableFuture<ResponseSuccess> save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            OrderPaymentMethod orderPaymentMethod;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (orderPaymentMethod != null) {
-            throw new BadRequestExceptions(Constants.ErrorPaymentMethodExists.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (orderPaymentMethod != null) {
+                throw new BadRequestExceptions(Constants.ErrorPaymentMethodExists.toUpperCase());
+            }
 
-        try {
-            orderPaymentMethodRepository.save(OrderPaymentMethod.builder()
-                            .tokenUser(user.toUpperCase())
-                            .status(true)
-                            .name(name.toUpperCase())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                    .build());
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                orderPaymentMethodRepository.save(OrderPaymentMethod.builder()
+                        .tokenUser(user.toUpperCase())
+                        .status(true)
+                        .name(name.toUpperCase())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
@@ -114,104 +117,101 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
 
     @Override
     @Transactional
-    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        OrderPaymentMethod orderPaymentMethod;
+    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            OrderPaymentMethod orderPaymentMethod;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (orderPaymentMethod == null) {
-            throw new BadRequestExceptions(Constants.ErrorPaymentMethod.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (orderPaymentMethod == null) {
+                throw new BadRequestExceptions(Constants.ErrorPaymentMethod.toUpperCase());
+            }
 
-        try {
-            orderPaymentMethod.setStatus(false);
-            orderPaymentMethod.setUpdateDate(new Date(System.currentTimeMillis()));
-            orderPaymentMethodRepository.save(orderPaymentMethod);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                orderPaymentMethod.setStatus(false);
+                orderPaymentMethod.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderPaymentMethodRepository.save(orderPaymentMethod);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<OrderPaymentMethodDTO> listPaymentMethod() throws BadRequestExceptions {
-        List<OrderPaymentMethod> orderPaymentMethods = new ArrayList<>();
-        try {
-            orderPaymentMethods = orderPaymentMethodRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (orderPaymentMethods.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(orderPaymentMethods);
+    public CompletableFuture<List<OrderPaymentMethodDTO>> listPaymentMethod() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderPaymentMethod> orderPaymentMethods = new ArrayList<>();
+            try {
+                orderPaymentMethods = orderPaymentMethodRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (orderPaymentMethods.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(orderPaymentMethods);
+        });
     }
 
     @Override
-    public Page<OrderPaymentMethodDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<OrderPaymentMethodDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
                                             Integer pageSize) throws BadRequestExceptions {
-        Page<OrderPaymentMethod> paymentMethodPage;
-        try {
-            paymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
-                    pageNumber, pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderPaymentMethod> paymentMethodPage;
+            try {
+                paymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
+                        pageNumber, pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (paymentMethodPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if (paymentMethodPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        return new PageImpl<>(
-                paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
-                paymentMethodPage.getPageable(), paymentMethodPage.getTotalElements());
+            return new PageImpl<>(
+                    paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
+                    paymentMethodPage.getPageable(), paymentMethodPage.getTotalElements());
+        });
     }
 
     @Override
-    public Page<OrderPaymentMethodDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+    public CompletableFuture<Page<OrderPaymentMethodDTO>> listStatusFalse(String name, String user, String sort, String sortColumn,
                                                        Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<OrderPaymentMethod> paymentMethodPage;
-        try {
-            paymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
-                    pageNumber, pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderPaymentMethod> paymentMethodPage;
+            try {
+                paymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
+                        pageNumber, pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (paymentMethodPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if (paymentMethodPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        return new PageImpl<>(
-                paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
-                paymentMethodPage.getPageable(), paymentMethodPage.getTotalElements());
+            return new PageImpl<>(
+                    paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
+                    paymentMethodPage.getPageable(), paymentMethodPage.getTotalElements());
+        });
     }
-
-    @Override
-    public OrderPaymentMethodDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return paymentMethodMapper
-                    .paymentMethodToPaymentMethodDTO(orderPaymentMethodRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-    }
-
 }
