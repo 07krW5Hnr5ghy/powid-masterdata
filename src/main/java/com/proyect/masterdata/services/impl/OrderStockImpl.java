@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +65,7 @@ public class OrderStockImpl implements IOrderStock {
 
         try{
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
-                Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouseData,requestOrderStockItem);
+                Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouseData,requestOrderStockItem).get();
                 if(!existsStock){
                     throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
                 }
@@ -92,6 +93,8 @@ public class OrderStockImpl implements IOrderStock {
             log.error(e.getMessage());
             e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -125,7 +128,7 @@ public class OrderStockImpl implements IOrderStock {
 
             try{
                 for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
-                    Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouseData,requestOrderStockItem);
+                    Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouseData,requestOrderStockItem).get();
                     if(!existsStock){
                         throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
                     }
@@ -153,6 +156,8 @@ public class OrderStockImpl implements IOrderStock {
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
     }

@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({"*"})
@@ -33,9 +35,9 @@ public class OrderStockItemController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<OrderStockItemDTO> result = iOrderStockItem.list(user,orderId,supplierProductSerial,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<OrderStockItemDTO>> result = iOrderStockItem.list(user,orderId,supplierProductSerial,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "pagination/status-false")
@@ -48,9 +50,9 @@ public class OrderStockItemController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<OrderStockItemDTO> result = iOrderStockItem.listFalse(warehouse,orderId,user,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<OrderStockItemDTO>> result = iOrderStockItem.listFalse(warehouse,orderId,user,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping()
@@ -58,9 +60,9 @@ public class OrderStockItemController {
     public ResponseEntity<List<OrderStockItemDTO>> listOrderStockItem(
             @RequestParam("user") String user,
             @RequestParam(value = "id",required = false) Long id
-    ) throws BadRequestExceptions {
-        List<OrderStockItemDTO> result = iOrderStockItem.listOrderStockItem(user,id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderStockItemDTO>> result = iOrderStockItem.listOrderStockItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping("status-false")
@@ -68,9 +70,9 @@ public class OrderStockItemController {
     public ResponseEntity<List<OrderStockItemDTO>> listOrderStockItemFalse(
             @RequestParam("user") String user,
             @RequestParam(value = "id",required = false) Long id
-    ) throws BadRequestExceptions {
-        List<OrderStockItemDTO> result = iOrderStockItem.listOrderStockItem(user,id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderStockItemDTO>> result = iOrderStockItem.listOrderStockItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @DeleteMapping()
@@ -78,9 +80,9 @@ public class OrderStockItemController {
             @RequestParam("orderId") Long orderId,
             @RequestParam("supplierProduct") String supplierProduct,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iOrderStockItem.delete(orderId,supplierProduct,tokenUser);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iOrderStockItem.delete(orderId,supplierProduct,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @PutMapping()
@@ -89,9 +91,9 @@ public class OrderStockItemController {
             @RequestParam("supplierProduct") String supplierProduct,
             @RequestParam("tokenUser") String tokenUser,
             @RequestParam("quantity") Integer quantity
-    )throws BadRequestExceptions {
-        ResponseSuccess result = iOrderStockItem.update(orderId,supplierProduct,tokenUser,quantity);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderStockItem.update(orderId,supplierProduct,tokenUser,quantity);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @PostMapping()
@@ -99,8 +101,8 @@ public class OrderStockItemController {
             @RequestParam("orderId") Long orderId,
             @RequestParam("tokenUser") String tokenUser,
             @RequestBody()RequestOrderStockItem requestOrderStockItem
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iOrderStockItem.save(orderId,requestOrderStockItem,tokenUser);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderStockItem.save(orderId,requestOrderStockItem,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

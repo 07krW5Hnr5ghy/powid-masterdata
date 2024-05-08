@@ -11,15 +11,16 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IOrderStockItem {
-    ResponseSuccess save(Long orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    Page<OrderStockItemDTO> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    Page<OrderStockItemDTO> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    Boolean checkWarehouseItemStock(Long orderId, Warehouse warehouse, RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions,BadRequestExceptions;
-    List<OrderStockItemDTO> listOrderStockItem(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
-    List<OrderStockItemDTO> listOrderStockItemFalse(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseDelete delete(Long orderId,String supplierProductSerial,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseSuccess update(Long orderId,String supplierProductSerial,String tokenUser,Integer quantity) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<Page<OrderStockItemDTO>> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<OrderStockItemDTO>> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Boolean> checkWarehouseItemStock(Long orderId, Warehouse warehouse, RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<List<OrderStockItemDTO>> listOrderStockItem(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<OrderStockItemDTO>> listOrderStockItemFalse(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> delete(Long orderId,String supplierProductSerial,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> update(Long orderId,String supplierProductSerial,String tokenUser,Integer quantity) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

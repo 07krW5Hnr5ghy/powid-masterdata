@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -36,106 +37,108 @@ public class OrderStockItemImpl implements IOrderStockItem {
     private final ProductRepository productRepository;
     private final OrderStockRepository orderStockRepository;
     @Override
-    public ResponseSuccess save(Long orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering ordering;
+            OrderItem orderItem;
+            SupplierProduct supplierProduct;
+            OrderStock orderStock;
+            Product product;
 
-        User user;
-        Ordering ordering;
-        OrderItem orderItem;
-        SupplierProduct supplierProduct;
-        OrderStock orderStock;
-        Product product;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProductSku().toUpperCase());
+                ordering = orderingRepository.findById(orderId).orElse(null);
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
+                orderStock = orderStockRepository.findByOrderId(orderId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProductSku().toUpperCase());
-            ordering = orderingRepository.findById(orderId).orElse(null);
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
-            orderStock = orderStockRepository.findByOrderId(orderId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if(ordering == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
 
-        if(ordering == null){
-            throw new BadRequestExceptions(Constants.ErrorOrdering);
-        }
+            if(product == null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }else{
+                orderItem = orderItemRepository.findByProductIdAndOrderId(product.getId(), orderId);
+            }
 
-        if(product == null){
-            throw new BadRequestExceptions(Constants.ErrorProduct);
-        }else{
-            orderItem = orderItemRepository.findByProductIdAndOrderId(product.getId(), orderId);
-        }
+            if(orderItem == null){
+                throw new BadRequestExceptions(Constants.ErrorItem);
+            }
 
-        if(orderItem == null){
-            throw new BadRequestExceptions(Constants.ErrorItem);
-        }
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
 
-        if(supplierProduct == null){
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
-        }
+            if(!Objects.equals(supplierProduct.getProduct().getSku(), orderItem.getProduct().getSku())){
+                throw new BadRequestExceptions(Constants.ErrorOrderStockProduct);
+            }
 
-        if(!Objects.equals(supplierProduct.getProduct().getSku(), orderItem.getProduct().getSku())){
-            throw new BadRequestExceptions(Constants.ErrorOrderStockProduct);
-        }
-
-        try{
-            orderStockItemRepository.save(OrderStockItem.builder()
-                            .orderStock(orderStock)
-                            .orderStockId(orderStock.getId())
-                            .orderItem(orderItem)
-                            .orderId(ordering.getId())
-                            .ordering(ordering)
-                            .orderItemId(orderItem.getId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .supplierProduct(supplierProduct)
-                            .supplierProductId(supplierProduct.getId())
-                            .status(true)
-                            .client(user.getClient())
-                            .clientId(user.getClientId())
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .quantity(requestOrderStockItem.getQuantity())
-                            .tokenUser(user.getUsername())
-                    .build());
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        }catch (RuntimeException e){
-            e.printStackTrace();
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try{
+                orderStockItemRepository.save(OrderStockItem.builder()
+                        .orderStock(orderStock)
+                        .orderStockId(orderStock.getId())
+                        .orderItem(orderItem)
+                        .orderId(ordering.getId())
+                        .ordering(ordering)
+                        .orderItemId(orderItem.getId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .supplierProduct(supplierProduct)
+                        .supplierProductId(supplierProduct.getId())
+                        .status(true)
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .quantity(requestOrderStockItem.getQuantity())
+                        .tokenUser(user.getUsername())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<OrderStockItemDTO> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<OrderStockItem> pageOrderStock;
-        Long clientId;
-        Long supplierProductId;
+    public CompletableFuture<Page<OrderStockItemDTO>> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderStockItem> pageOrderStock;
+            Long clientId;
+            Long supplierProductId;
 
-        if (supplierProductSerial != null) {
-            supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
-        } else {
-            supplierProductId = null;
-        }
+            if (supplierProductSerial != null) {
+                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+            } else {
+                supplierProductId = null;
+            }
 
-        try{
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(clientId,orderId,supplierProductId,sort,sortColumn,pageNumber,pageSize,true);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(clientId,orderId,supplierProductId,sort,sortColumn,pageNumber,pageSize,true);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if(pageOrderStock.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if(pageOrderStock.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
+            List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
                     .orderItemId(orderStockItem.getOrderItemId())
@@ -145,237 +148,250 @@ public class OrderStockItemImpl implements IOrderStockItem {
                     .updateDate(orderStockItem.getUpdateDate())
                     .build()).toList();
 
-        return new PageImpl<>(orderStockItemDTOList,pageOrderStock.getPageable(),pageOrderStock.getTotalElements());
+            return new PageImpl<>(orderStockItemDTOList,pageOrderStock.getPageable(),pageOrderStock.getTotalElements());
+        });
     }
 
     @Override
-    public Page<OrderStockItemDTO> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<OrderStockItem> pageOrderStock;
-        Long clientId;
-        Long supplierProductId;
+    public CompletableFuture<Page<OrderStockItemDTO>> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderStockItem> pageOrderStock;
+            Long clientId;
+            Long supplierProductId;
 
-        if (supplierProductSerial != null) {
-            supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
-        } else {
-            supplierProductId = null;
-        }
-
-        try{
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(clientId,orderId,supplierProductId,sort,sortColumn,pageNumber,pageSize,false);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if(pageOrderStock.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
-                .orderId(orderStockItem.getOrderStock().getOrderId())
-                .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                .orderItemId(orderStockItem.getOrderItemId())
-                .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
-                .quantity(orderStockItem.getQuantity())
-                .registrationDate(orderStockItem.getRegistrationDate())
-                .updateDate(orderStockItem.getUpdateDate())
-                .build()).toList();
-
-        return new PageImpl<>(orderStockItemDTOList,pageOrderStock.getPageable(),pageOrderStock.getTotalElements());
-    }
-
-    @Override
-    public Boolean checkWarehouseItemStock(Long orderId,Warehouse warehouse,RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions, BadRequestExceptions {
-        SupplierProduct supplierProduct;
-        OrderItem orderItem;
-        Product product;
-        try{
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProductSku().toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if(product == null){
-            throw new BadRequestExceptions(Constants.ErrorProduct);
-        }else{
-            orderItem = orderItemRepository.findByProductIdAndOrderId(product.getId(), orderId);
-        }
-
-        if(supplierProduct == null){
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
-        }
-
-        if(orderItem == null){
-            throw new BadRequestExceptions(Constants.ErrorItem);
-        }
-
-        try{
-            WarehouseStock warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(),supplierProduct.getId());
-            return warehouseStock.getQuantity() >= orderItem.getQuantity();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public List<OrderStockItemDTO> listOrderStockItem(String user,Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
-        Long clientId;
-        List<OrderStockItem> orderStockItems;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            if(orderId != null){
-                orderStockItems = orderStockItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(clientId,orderId);
-            }else{
-                orderStockItems = orderStockItemRepository.findAllByClientIdAndStatusTrue(clientId);
+            if (supplierProductSerial != null) {
+                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+            } else {
+                supplierProductId = null;
             }
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
 
-        if(orderStockItems.isEmpty()){
-            return Collections.emptyList();
-        }
-
-        return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
-                .orderId(orderStockItem.getOrderStock().getOrderId())
-                .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                .orderItemId(orderStockItem.getOrderItemId())
-                .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
-                .quantity(orderStockItem.getQuantity())
-                .registrationDate(orderStockItem.getRegistrationDate())
-                .updateDate(orderStockItem.getUpdateDate())
-                .productSku(orderStockItem.getOrderItem().getProduct().getSku())
-                .build()).toList();
-    }
-
-    @Override
-    public List<OrderStockItemDTO> listOrderStockItemFalse(String user,Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
-        Long clientId;
-        List<OrderStockItem> orderStockItems;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            if(orderId != null){
-                orderStockItems = orderStockItemRepository.findAllByClientIdAndOrderIdAndStatusFalse(clientId,orderId);
-            }else{
-                orderStockItems = orderStockItemRepository.findAllByClientIdAndStatusFalse(clientId);
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(clientId,orderId,supplierProductId,sort,sortColumn,pageNumber,pageSize,false);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
             }
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
 
-        if(orderStockItems.isEmpty()){
-            return Collections.emptyList();
-        }
+            if(pageOrderStock.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
-                .orderId(orderStockItem.getOrderStock().getOrderId())
-                .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                .orderItemId(orderStockItem.getOrderItemId())
-                .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
-                .quantity(orderStockItem.getQuantity())
-                .registrationDate(orderStockItem.getRegistrationDate())
-                .updateDate(orderStockItem.getUpdateDate())
-                .productSku(orderStockItem.getOrderItem().getProduct().getSku())
-                .build()).toList();
+            List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
+                    .orderId(orderStockItem.getOrderStock().getOrderId())
+                    .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
+                    .orderItemId(orderStockItem.getOrderItemId())
+                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .quantity(orderStockItem.getQuantity())
+                    .registrationDate(orderStockItem.getRegistrationDate())
+                    .updateDate(orderStockItem.getUpdateDate())
+                    .build()).toList();
+
+            return new PageImpl<>(orderStockItemDTOList,pageOrderStock.getPageable(),pageOrderStock.getTotalElements());
+        });
     }
 
     @Override
-    public ResponseDelete delete(Long orderId, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
-        Long clientId;
-        SupplierProduct supplierProduct;
-        OrderStock orderStock;
-        OrderStockItem orderStockItem;
-        try{
-            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClientId();
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-            orderStock = orderStockRepository.findByOrderId(orderId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-        if(clientId == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-        if(supplierProduct == null){
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
-        }
-        if(orderStock == null){
-            throw new BadRequestExceptions(Constants.ErrorOrderStock);
-        }else{
-            orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
-        }
-        if(orderStockItem == null){
-            throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
-        }
-        try{
-            orderStockItem.setStatus(false);
-            orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
-            orderStockItemRepository.save(orderStockItem);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<Boolean> checkWarehouseItemStock(Long orderId,Warehouse warehouse,RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            SupplierProduct supplierProduct;
+            OrderItem orderItem;
+            Product product;
+            try{
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProductSku().toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(product == null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }else{
+                orderItem = orderItemRepository.findByProductIdAndOrderId(product.getId(), orderId);
+            }
+
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
+
+            if(orderItem == null){
+                throw new BadRequestExceptions(Constants.ErrorItem);
+            }
+
+            try{
+                WarehouseStock warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(),supplierProduct.getId());
+                return warehouseStock.getQuantity() >= orderItem.getQuantity();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public ResponseSuccess update(Long orderId, String supplierProductSerial, String tokenUser, Integer quantity) throws BadRequestExceptions, InternalErrorExceptions {
-        Long clientId;
-        SupplierProduct supplierProduct;
-        OrderStock orderStock;
-        OrderStockItem orderStockItem;
-        WarehouseStock warehouseStock;
-        try{
-            clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClientId();
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-            orderStock = orderStockRepository.findByOrderId(orderId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(clientId == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-        if(supplierProduct == null){
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
-        }
-        if(orderStock == null){
-            throw new BadRequestExceptions(Constants.ErrorOrderStock);
-        }else{
-            orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
-        }
-        if(orderStockItem == null){
-            throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
-        }else {
-            warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(orderStock.getWarehouseId(),supplierProduct.getId());
-        }
-        if(orderStockItem.getOrderItem().getQuantity() < quantity){
-            throw new BadRequestExceptions(Constants.ErrorOrderStockItemUpdateOrderQuantity);
-        }
-        if(warehouseStock.getQuantity() < quantity){
-            throw new BadRequestExceptions(Constants.ErrorOrderStockItemUpdateStockQuantity);
-        }
+    public CompletableFuture<List<OrderStockItemDTO>> listOrderStockItem(String user,Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<OrderStockItem> orderStockItems;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(orderId != null){
+                    orderStockItems = orderStockItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(clientId,orderId);
+                }else{
+                    orderStockItems = orderStockItemRepository.findAllByClientIdAndStatusTrue(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            orderStockItem.setQuantity(quantity);
-            orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
-            orderStockItemRepository.save(orderStockItem);
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if(orderStockItems.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
+                    .orderId(orderStockItem.getOrderStock().getOrderId())
+                    .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
+                    .orderItemId(orderStockItem.getOrderItemId())
+                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .quantity(orderStockItem.getQuantity())
+                    .registrationDate(orderStockItem.getRegistrationDate())
+                    .updateDate(orderStockItem.getUpdateDate())
+                    .productSku(orderStockItem.getOrderItem().getProduct().getSku())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<OrderStockItemDTO>> listOrderStockItemFalse(String user,Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<OrderStockItem> orderStockItems;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(orderId != null){
+                    orderStockItems = orderStockItemRepository.findAllByClientIdAndOrderIdAndStatusFalse(clientId,orderId);
+                }else{
+                    orderStockItems = orderStockItemRepository.findAllByClientIdAndStatusFalse(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(orderStockItems.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
+                    .orderId(orderStockItem.getOrderStock().getOrderId())
+                    .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
+                    .orderItemId(orderStockItem.getOrderItemId())
+                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .quantity(orderStockItem.getQuantity())
+                    .registrationDate(orderStockItem.getRegistrationDate())
+                    .updateDate(orderStockItem.getUpdateDate())
+                    .productSku(orderStockItem.getOrderItem().getProduct().getSku())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(Long orderId, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            SupplierProduct supplierProduct;
+            OrderStock orderStock;
+            OrderStockItem orderStockItem;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClientId();
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+                orderStock = orderStockRepository.findByOrderId(orderId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+            if(clientId == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
+            if(orderStock == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderStock);
+            }else{
+                orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
+            }
+            if(orderStockItem == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
+            }
+            try{
+                orderStockItem.setStatus(false);
+                orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderStockItemRepository.save(orderStockItem);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> update(Long orderId, String supplierProductSerial, String tokenUser, Integer quantity) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            SupplierProduct supplierProduct;
+            OrderStock orderStock;
+            OrderStockItem orderStockItem;
+            WarehouseStock warehouseStock;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClientId();
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+                orderStock = orderStockRepository.findByOrderId(orderId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(clientId == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
+            if(orderStock == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderStock);
+            }else{
+                orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
+            }
+            if(orderStockItem == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
+            }else {
+                warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(orderStock.getWarehouseId(),supplierProduct.getId());
+            }
+            if(orderStockItem.getOrderItem().getQuantity() < quantity){
+                throw new BadRequestExceptions(Constants.ErrorOrderStockItemUpdateOrderQuantity);
+            }
+            if(warehouseStock.getQuantity() < quantity){
+                throw new BadRequestExceptions(Constants.ErrorOrderStockItemUpdateStockQuantity);
+            }
+
+            try {
+                orderStockItem.setQuantity(quantity);
+                orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderStockItemRepository.save(orderStockItem);
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }
