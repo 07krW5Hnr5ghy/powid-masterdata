@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -25,96 +26,104 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
     private final OrderReturnTypeRepository orderReturnTypeRepository;
     private final UserRepository userRepository;
     @Override
-    public ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
-        User user;
-        OrderReturnType orderReturnType;
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            orderReturnType = orderReturnTypeRepository.findByName(name.toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-        if(orderReturnType != null){
-            throw new BadRequestExceptions(Constants.ErrorOrderReturnType);
-        }
-        try {
-            orderReturnTypeRepository.save(OrderReturnType.builder()
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .status(true)
-                            .name(name.toUpperCase())
-                    .build());
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            OrderReturnType orderReturnType;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                orderReturnType = orderReturnTypeRepository.findByName(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(orderReturnType != null){
+                throw new BadRequestExceptions(Constants.ErrorOrderReturnType);
+            }
+            try {
+                orderReturnTypeRepository.save(OrderReturnType.builder()
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .name(name.toUpperCase())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<String> list() throws BadRequestExceptions, InternalErrorExceptions {
-        List<OrderReturnType> orderReturnTypeList;
-        try {
-            orderReturnTypeList = orderReturnTypeRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(orderReturnTypeList.isEmpty()){
-            return Collections.emptyList();
-        }
-        return orderReturnTypeList.stream().map(OrderReturnType::getName).toList();
+    public CompletableFuture<List<String>> list() throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderReturnType> orderReturnTypeList;
+            try {
+                orderReturnTypeList = orderReturnTypeRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(orderReturnTypeList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return orderReturnTypeList.stream().map(OrderReturnType::getName).toList();
+        });
     }
 
     @Override
-    public List<String> listFalse() throws BadRequestExceptions, InternalErrorExceptions {
-        List<OrderReturnType> orderReturnTypeList;
-        try {
-            orderReturnTypeList = orderReturnTypeRepository.findAllByStatusFalse();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(orderReturnTypeList.isEmpty()){
-            return Collections.emptyList();
-        }
-        return orderReturnTypeList.stream().map(OrderReturnType::getName).toList();
+    public CompletableFuture<List<String>> listFalse() throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderReturnType> orderReturnTypeList;
+            try {
+                orderReturnTypeList = orderReturnTypeRepository.findAllByStatusFalse();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(orderReturnTypeList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return orderReturnTypeList.stream().map(OrderReturnType::getName).toList();
+        });
     }
 
     @Override
-    public ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
-        OrderReturnType orderReturnType;
-        User user;
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(name.toUpperCase());
-            orderReturnType = orderReturnTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-        if(orderReturnType == null){
-            throw new BadRequestExceptions(Constants.ErrorOrderReturnType);
-        }
-        try {
-            orderReturnType.setStatus(false);
-            orderReturnType.setUpdateDate(new Date(System.currentTimeMillis()));
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            OrderReturnType orderReturnType;
+            User user;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(name.toUpperCase());
+                orderReturnType = orderReturnTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(orderReturnType == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderReturnType);
+            }
+            try {
+                orderReturnType.setStatus(false);
+                orderReturnType.setUpdateDate(new Date(System.currentTimeMillis()));
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }

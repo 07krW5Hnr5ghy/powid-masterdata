@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -22,26 +24,26 @@ public class OrderReturnTypeController {
     public ResponseEntity<ResponseSuccess> save (
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iOrderReturnType.save(name,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderReturnType.save(name,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
-    public ResponseEntity<List<String>> list() throws BadRequestExceptions{
-        List<String> result = iOrderReturnType.list();
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    public ResponseEntity<List<String>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<String>> result = iOrderReturnType.list();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping("status-false")
-    public ResponseEntity<List<String>> listFalse() throws BadRequestExceptions{
-        List<String> result = iOrderReturnType.listFalse();
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    public ResponseEntity<List<String>> listFalse() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<String>> result = iOrderReturnType.listFalse();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions {
-        ResponseDelete result = iOrderReturnType.delete(name,tokenUser);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iOrderReturnType.delete(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

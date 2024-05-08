@@ -6,10 +6,11 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IOrderReturnType {
-    ResponseSuccess save(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    List<String> list() throws BadRequestExceptions,InternalErrorExceptions;
-    List<String> listFalse() throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseDelete delete(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<String>> list() throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<String>> listFalse() throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
 }
