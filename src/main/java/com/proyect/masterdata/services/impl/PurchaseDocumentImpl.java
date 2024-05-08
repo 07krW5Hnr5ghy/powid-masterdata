@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @AllArgsConstructor
@@ -26,91 +27,96 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
     private final PurchaseDocumentRepository purchaseDocumentRepository;
     private final UserRepository userRepository;
     @Override
-    public ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
-        PurchaseDocument purchaseDocument;
-        User user;
-        try {
-            purchaseDocument = purchaseDocumentRepository.findByName(name.toUpperCase());
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            PurchaseDocument purchaseDocument;
+            User user;
+            try {
+                purchaseDocument = purchaseDocumentRepository.findByName(name.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if(purchaseDocument != null){
-            throw new BadRequestExceptions(Constants.ErrorPurchaseDocumentExists);
-        }
+            if(purchaseDocument != null){
+                throw new BadRequestExceptions(Constants.ErrorPurchaseDocumentExists);
+            }
 
-        try {
-            purchaseDocumentRepository.save(PurchaseDocument.builder()
-                            .name(name.toUpperCase())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .status(true)
-                            .tokenUser(user.getUsername())
-                    .build());
-            return ResponseSuccess.builder()
-                    .message(Constants.register)
-                    .code(200)
-                    .build();
-        } catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
+            try {
+                purchaseDocumentRepository.save(PurchaseDocument.builder()
+                        .name(name.toUpperCase())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .tokenUser(user.getUsername())
+                        .build());
+                return ResponseSuccess.builder()
+                        .message(Constants.register)
+                        .code(200)
+                        .build();
+            } catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
-        PurchaseDocument purchaseDocument;
-        User user;
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            PurchaseDocument purchaseDocument;
+            User user;
 
-        try {
-            purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(name.toUpperCase());
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(name.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if(purchaseDocument == null){
-            throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
-        }
+            if(purchaseDocument == null){
+                throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
+            }
 
-        try {
-            purchaseDocument.setStatus(false);
-            purchaseDocument.setUpdateDate(new Date(System.currentTimeMillis()));
-            purchaseDocument.setTokenUser(user.getUsername());
-            purchaseDocumentRepository.save(purchaseDocument);
-            return ResponseDelete.builder()
-                    .message(Constants.delete)
-                    .code(200)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                purchaseDocument.setStatus(false);
+                purchaseDocument.setUpdateDate(new Date(System.currentTimeMillis()));
+                purchaseDocument.setTokenUser(user.getUsername());
+                purchaseDocumentRepository.save(purchaseDocument);
+                return ResponseDelete.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<String> list() throws BadRequestExceptions {
-        List<PurchaseDocument> purchaseDocumentList = new ArrayList<>();
-        try {
-            purchaseDocumentList = purchaseDocumentRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if(purchaseDocumentList.isEmpty()){
-            return Collections.emptyList();
-        }
-        return purchaseDocumentList.stream().map(purchaseDocument -> purchaseDocument.getName().toUpperCase()).toList();
+    public CompletableFuture<List<String>> list() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<PurchaseDocument> purchaseDocumentList = new ArrayList<>();
+            try {
+                purchaseDocumentList = purchaseDocumentRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(purchaseDocumentList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return purchaseDocumentList.stream().map(purchaseDocument -> purchaseDocument.getName().toUpperCase()).toList();
+        });
     }
 }

@@ -6,9 +6,10 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IPurchaseDocument {
-    public ResponseSuccess save(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    public ResponseDelete delete(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    public List<String> list() throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<String>> list() throws BadRequestExceptions;
 }
