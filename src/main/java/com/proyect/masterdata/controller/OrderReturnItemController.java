@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -20,8 +22,8 @@ public class OrderReturnItemController {
     private ResponseEntity<List<OrderReturnItemDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "orderId",required = false) Long orderId
-    ) throws BadRequestExceptions {
-        List<OrderReturnItemDTO> result = iOrderReturnItem.list(user,orderId);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderReturnItemDTO>> result = iOrderReturnItem.list(user,orderId);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }
