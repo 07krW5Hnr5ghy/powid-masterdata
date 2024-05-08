@@ -19,7 +19,6 @@ import java.util.List;
 
 @Repository
 public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
-
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override

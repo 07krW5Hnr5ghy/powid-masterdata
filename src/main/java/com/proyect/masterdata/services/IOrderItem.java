@@ -8,14 +8,17 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IOrderItem {
     ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    ResponseCheckStockItem checkStock(String productSku,Integer quantity,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
-    ResponseDelete delete(Long orderId,String productSku,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
-    ResponseSuccess add(Long orderId,RequestOrderItem requestOrderItem,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
-    ResponseSuccess update(Long orderId,RequestOrderItem requestOrderItem,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
-    List<OrderItemDTO> listOrderItems(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseCheckStockItem> checkStock(String productSku,Integer quantity,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(Long orderId,String productSku,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> add(Long orderId,RequestOrderItem requestOrderItem,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> update(Long orderId,RequestOrderItem requestOrderItem,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<Page<OrderItemDTO>> listOrderItems(String user, Long orderId, String productSku, Integer quantity, Double discount, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
 }
