@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @CrossOrigin({"*"})
 @RequestMapping("payment-gateway")
@@ -21,8 +24,8 @@ public class PaymentGatewayController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iPaymentGateway.save(name,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iPaymentGateway.save(name,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

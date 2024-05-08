@@ -14,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -22,41 +23,42 @@ public class PaymentGatewayImpl implements IPaymentGateway {
     private final PaymentGatewayRepository paymentGatewayRepository;
     private final UserRepository userRepository;
     @Override
-    public ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            PaymentGateway paymentGateway;
 
-        User user;
-        PaymentGateway paymentGateway;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                paymentGateway = paymentGatewayRepository.findByName(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            paymentGateway = paymentGatewayRepository.findByName(name.toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if(paymentGateway != null){
+                throw new BadRequestExceptions(Constants.ErrorPaymentGatewayExists);
+            }
 
-        if(paymentGateway != null){
-            throw new BadRequestExceptions(Constants.ErrorPaymentGatewayExists);
-        }
-
-        try{
-            paymentGatewayRepository.save(PaymentGateway.builder()
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .status(true)
-                            .name(name.toUpperCase())
-                    .build());
-            return ResponseSuccess.builder()
-                    .message(Constants.register)
-                    .code(200)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try{
+                paymentGatewayRepository.save(PaymentGateway.builder()
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .name(name.toUpperCase())
+                        .build());
+                return ResponseSuccess.builder()
+                        .message(Constants.register)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }
