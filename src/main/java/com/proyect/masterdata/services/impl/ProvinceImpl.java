@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @AllArgsConstructor
@@ -83,6 +84,53 @@ public class ProvinceImpl implements IProvince {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String user, String department) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            boolean existsProvince;
+            Department departmentData;
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                existsProvince = provinceRepository.existsByName(name.toUpperCase());
+                departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+
+            if (existsProvince) {
+                throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
+            }
+
+            if (departmentData == null) {
+                throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
+            }
+
+            try {
+                provinceRepository.save(Province.builder()
+                        .name(name.toUpperCase())
+                        .department(departmentData)
+                        .departmentId(departmentData.getId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .tokenUser(user.toUpperCase())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public ResponseSuccess saveAll(List<String> names, String user, String department)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
@@ -127,110 +175,119 @@ public class ProvinceImpl implements IProvince {
     }
 
     @Override
-    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
-        Province province;
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            province = provinceRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            Province province;
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
 
-        if (province == null) {
-            throw new BadRequestExceptions(Constants.ErrorProvince.toUpperCase());
-        }
+            if (province == null) {
+                throw new BadRequestExceptions(Constants.ErrorProvince.toUpperCase());
+            }
 
-        try {
-            province.setRegistrationDate(new Date(System.currentTimeMillis()));
-            province.setStatus(false);
-            provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
-        }
+            try {
+                province.setRegistrationDate(new Date(System.currentTimeMillis()));
+                province.setStatus(false);
+                provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
+            }
+        });
     }
 
     @Override
-    public List<ProvinceDTO> listProvince() throws BadRequestExceptions {
-        try {
-            return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findAllByStatusTrue());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<List<ProvinceDTO>> listProvince() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try {
+                return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findAllByStatusTrue());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<ProvinceDTO> list(String name, String user, Long codeDepartment, String nameDepartment, String sort,
+    public CompletableFuture<Page<ProvinceDTO>> list(String name, String user, Long codeDepartment, String nameDepartment, String sort,
             String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<Province> provincePage;
-        try {
-            provincePage = provinceRepositoryCustom.searchForProvince(name, user, codeDepartment, nameDepartment, sort,
-                    sortColumn, pageNumber, pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+        return CompletableFuture.supplyAsync(()->{
+            Page<Province> provincePage;
+            try {
+                provincePage = provinceRepositoryCustom.searchForProvince(name, user, codeDepartment, nameDepartment, sort,
+                        sortColumn, pageNumber, pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (provincePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(provinceMapper.listProvinceToListProvinceDTO(provincePage.getContent()),
-                provincePage.getPageable(), provincePage.getTotalElements());
+            if (provincePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(provinceMapper.listProvinceToListProvinceDTO(provincePage.getContent()),
+                    provincePage.getPageable(), provincePage.getTotalElements());
+        });
     }
 
     @Override
-    public Page<ProvinceDTO> listStatusFalse(String name, String user, Long codeDepartment, String nameDepartment,
+    public CompletableFuture<Page<ProvinceDTO>> listStatusFalse(String name, String user, Long codeDepartment, String nameDepartment,
             String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<Province> provincePage;
-        try {
-            provincePage = provinceRepositoryCustom.searchForProvince(name, user, codeDepartment, nameDepartment, sort,
-                    sortColumn, pageNumber, pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+        return CompletableFuture.supplyAsync(()->{
+            Page<Province> provincePage;
+            try {
+                provincePage = provinceRepositoryCustom.searchForProvince(name, user, codeDepartment, nameDepartment, sort,
+                        sortColumn, pageNumber, pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (provincePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(provinceMapper.listProvinceToListProvinceDTO(provincePage.getContent()),
-                provincePage.getPageable(), provincePage.getTotalElements());
+            if (provincePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(provinceMapper.listProvinceToListProvinceDTO(provincePage.getContent()),
+                    provincePage.getPageable(), provincePage.getTotalElements());
+        });
     }
 
     @Override
-    public List<ProvinceDTO> listProvinceByDepartment(String department)
+    public CompletableFuture<List<ProvinceDTO>> listProvinceByDepartment(String department)
             throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Department departmentData;
+            List<Province> provinces;
 
-        Department departmentData;
-        List<Province> provinces;
+            try {
+                departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (departmentData == null) {
+                throw new BadRequestExceptions(Constants.ErrorDepartment);
+            }
 
-        if (departmentData == null) {
-            throw new BadRequestExceptions(Constants.ErrorDepartment);
-        }
-
-        try {
-            provinces = provinceRepository.findAllByDepartmentIdAndStatusTrue(departmentData.getId());
-            return provinceMapper.listProvinceToListProvinceDTO(provinces);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                provinces = provinceRepository.findAllByDepartmentIdAndStatusTrue(departmentData.getId());
+                return provinceMapper.listProvinceToListProvinceDTO(provinces);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }

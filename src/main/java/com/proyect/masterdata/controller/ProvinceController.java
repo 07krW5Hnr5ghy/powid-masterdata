@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -46,16 +48,16 @@ public class ProvinceController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iProvince.delete(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iProvince.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
-    public ResponseEntity<List<ProvinceDTO>> listProvince() throws BadRequestExceptions {
-        List<ProvinceDTO> result = iProvince.listProvince();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<List<ProvinceDTO>> listProvince() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProvinceDTO>> result = iProvince.listProvince();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "list")
@@ -68,10 +70,10 @@ public class ProvinceController {
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<ProvinceDTO> result = iProvince.list(name, user, codeDepartment, nameDepartment, sort, sortColumn,
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<ProvinceDTO>> result = iProvince.list(name, user, codeDepartment, nameDepartment, sort, sortColumn,
                 pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "status-false")
@@ -84,16 +86,16 @@ public class ProvinceController {
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<ProvinceDTO> result = iProvince.listStatusFalse(name, user, codeDepartment, nameDepartment, sort,
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<ProvinceDTO>> result = iProvince.listStatusFalse(name, user, codeDepartment, nameDepartment, sort,
                 sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "department")
     public ResponseEntity<List<ProvinceDTO>> findByDepartment(
-            @RequestParam("department") String department) throws BadRequestExceptions {
-        List<ProvinceDTO> result = iProvince.listProvinceByDepartment(department);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("department") String department) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProvinceDTO>> result = iProvince.listProvinceByDepartment(department);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

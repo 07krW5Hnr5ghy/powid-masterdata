@@ -9,19 +9,22 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IProvince {
         ResponseSuccess save(String name, String user, String department)
                         throws BadRequestExceptions, InternalErrorExceptions;
+        CompletableFuture<ResponseSuccess> saveAsync(String name, String user, String department)
+                throws BadRequestExceptions, InternalErrorExceptions;
         ResponseSuccess saveAll(List<String> names, String user, String department)
                         throws BadRequestExceptions, InternalErrorExceptions;
-        ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
-        List<ProvinceDTO> listProvince() throws BadRequestExceptions;
-        Page<ProvinceDTO> list(String name, String user, Long codeDepartment, String nameDepartment, String sort,
+        CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
+        CompletableFuture<List<ProvinceDTO>> listProvince() throws BadRequestExceptions;
+        CompletableFuture<Page<ProvinceDTO>> list(String name, String user, Long codeDepartment, String nameDepartment, String sort,
                         String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-        Page<ProvinceDTO> listStatusFalse(String name, String user, Long codeDepartment, String nameDepartment,
+        CompletableFuture<Page<ProvinceDTO>> listStatusFalse(String name, String user, Long codeDepartment, String nameDepartment,
                         String sort, String sortColumn, Integer pageNumber, Integer pageSize)
                         throws BadRequestExceptions;
-        List<ProvinceDTO> listProvinceByDepartment(String department)
+        CompletableFuture<List<ProvinceDTO>> listProvinceByDepartment(String department)
                         throws InternalErrorExceptions, BadRequestExceptions;
 }
