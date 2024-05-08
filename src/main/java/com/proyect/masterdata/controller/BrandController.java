@@ -68,7 +68,7 @@ public class BrandController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<BrandDTO>> result = iBrand.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<BrandDTO>> result = iBrand.listPagination(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

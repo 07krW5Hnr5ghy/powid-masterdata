@@ -17,7 +17,7 @@ public interface IBrand {
         ResponseSuccess saveAll(List<String> namesList, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<Page<BrandDTO>> list(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
+        CompletableFuture<Page<BrandDTO>> listPagination(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize)
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<BrandDTO>> listStatusFalse(String name, String tokenUser, String sort, String sortColumn,

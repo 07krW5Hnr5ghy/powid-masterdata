@@ -46,18 +46,25 @@ public class AccessController {
 
     @GetMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_GET')")
-    public ResponseEntity<Page<AccessDTO>> list(
+    public ResponseEntity<List<AccessDTO>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<AccessDTO>> result = iAccess.list();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("pagination")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_GET')")
+    public ResponseEntity<Page<AccessDTO>> listPagination(
             @RequestParam(value = "name",required = false) String name,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<AccessDTO>> result = iAccess.list(name,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<AccessDTO>> result = iAccess.listPagination(name,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @GetMapping("status-false")
+    @GetMapping("pagination/status-false")
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_GET')")
     public ResponseEntity<Page<AccessDTO>> listFalse(
             @RequestParam(value = "name",required = false) String name,

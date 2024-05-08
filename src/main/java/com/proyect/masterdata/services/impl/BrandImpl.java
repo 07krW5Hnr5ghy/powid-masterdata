@@ -225,7 +225,7 @@ public class BrandImpl implements IBrand {
     }
 
     @Override
-    public CompletableFuture<Page<BrandDTO>> list(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<BrandDTO>> listPagination(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Brand> brandPage;

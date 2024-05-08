@@ -187,7 +187,26 @@ public class AccessImpl implements IAccess {
     }
 
     @Override
-    public CompletableFuture<Page<AccessDTO>> list(String name, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<List<AccessDTO>> list() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Access> accessList;
+            try {
+                accessList = accessRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(accessList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return accessList.stream().map(access -> AccessDTO.builder()
+                    .name(access.getName())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<AccessDTO>> listPagination(String name, String sort, String sortColumn, Integer pageNumber,
                                 Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<Access> accessPage;
