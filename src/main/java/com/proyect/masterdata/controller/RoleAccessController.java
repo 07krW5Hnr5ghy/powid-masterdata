@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("role-access")
@@ -25,9 +28,9 @@ public class RoleAccessController {
             @RequestParam("roleName") String roleName,
             @RequestParam("accessName") String accessName,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions{
-        ResponseSuccess result = iRoleAccess.save(roleName,accessName,tokenUser);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iRoleAccess.saveAsync(roleName,accessName,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_ACCESS_GET')")
@@ -38,9 +41,9 @@ public class RoleAccessController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<RoleAccessDTO> result = iRoleAccess.list(roleName,accessName,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<RoleAccessDTO>> result = iRoleAccess.list(roleName,accessName,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping("status-false")
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_ACCESS_GET')")
@@ -51,9 +54,9 @@ public class RoleAccessController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<RoleAccessDTO> result = iRoleAccess.listFalse(roleName,accessName,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<RoleAccessDTO>> result = iRoleAccess.listFalse(roleName,accessName,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_ACCESS_DELETE')")
@@ -61,9 +64,9 @@ public class RoleAccessController {
             @RequestParam("roleName") String roleName,
             @RequestParam("accessName") String accessName,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions{
-        ResponseDelete result = iRoleAccess.delete(roleName,accessName,tokenUser);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iRoleAccess.delete(roleName,accessName,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_ACCESS_PUT')")
@@ -71,8 +74,8 @@ public class RoleAccessController {
             @RequestParam("roleName") String roleName,
             @RequestParam("accessName") String accessName,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iRoleAccess.activate(roleName,accessName,tokenUser);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iRoleAccess.activate(roleName,accessName,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

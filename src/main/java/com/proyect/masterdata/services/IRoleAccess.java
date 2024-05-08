@@ -7,13 +7,17 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface IRoleAccess {
     ResponseSuccess save(String roleName, String accessName, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
-    ResponseDelete delete(String roleName,String accessName, String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
-    Page<RoleAccessDTO> list(String roleName, String accessName, String sort, String sortColumn, Integer pageNumber,
+    CompletableFuture<ResponseSuccess> saveAsync(String roleName, String accessName, String tokenUser)
+            throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(String roleName,String accessName, String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<Page<RoleAccessDTO>> list(String roleName, String accessName, String sort, String sortColumn, Integer pageNumber,
                              Integer pageSize);
-    Page<RoleAccessDTO> listFalse(String roleName, String accessName, String sort, String sortColumn, Integer pageNumber,
+    CompletableFuture<Page<RoleAccessDTO>> listFalse(String roleName, String accessName, String sort, String sortColumn, Integer pageNumber,
                              Integer pageSize);
-    ResponseSuccess activate(String roleName,String accessName, String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> activate(String roleName,String accessName, String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
 }

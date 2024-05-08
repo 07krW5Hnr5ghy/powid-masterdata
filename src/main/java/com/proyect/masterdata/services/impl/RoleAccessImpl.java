@@ -23,6 +23,7 @@ import lombok.extern.log4j.Log4j2;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -87,161 +88,222 @@ public class RoleAccessImpl implements IRoleAccess {
     }
 
     @Override
-    public ResponseDelete delete(String roleName, String accessName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        Role role;
-        Access access;
-        RoleAccess roleAccess;
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            role = roleRepository.findByNameAndStatusTrue(roleName.toUpperCase());
-            access = accessRepository.findByNameAndStatusTrue(accessName.toUpperCase());
-        } catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<ResponseSuccess> saveAsync(String roleName, String accessName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Access access;
+            Role role;
+            RoleAccess roleAccess;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                access = accessRepository.findByNameAndStatusTrue(accessName.toUpperCase());
+                role = roleRepository.findByNameAndStatusTrue(roleName.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if(role == null){
-            throw new BadRequestExceptions(Constants.ErrorRole);
-        }
+            if(access == null){
+                throw new BadRequestExceptions(Constants.ErrorAccess);
+            }
 
-        if(access == null){
-            throw new BadRequestExceptions(Constants.ErrorAccess);
-        }else {
-            roleAccess = roleAccessRepository.findByRoleIdAndAccessIdAndStatusTrue(role.getId(), access.getId());
-        }
+            if(role == null){
+                throw new BadRequestExceptions(Constants.ErrorRole);
+            }else {
+                roleAccess = roleAccessRepository.findByRoleIdAndAccessId(role.getId(), access.getId());
+            }
 
-        if(roleAccess == null){
-            throw new BadRequestExceptions(Constants.ErrorRoleAccess);
-        }
+            if(roleAccess != null ){
+                throw new BadRequestExceptions(Constants.ErrorRoleAccessExists);
+            }
 
-        try {
-            roleAccess.setStatus(false);
-            roleAccess.setUpdateDate(new Date(System.currentTimeMillis()));
-            roleAccess.setTokenUser(user.getUsername());
-            roleAccessRepository.save(roleAccess);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                roleAccessRepository.save(RoleAccess.builder()
+                        .accessId(access.getId())
+                        .roleId(role.getId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(tokenUser.toUpperCase())
+                        .status(true)
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<RoleAccessDTO> list(String roleName, String accessName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
-        Page<RoleAccess> pageRoleAccess;
-        Long roleId;
-        Long accessId;
+    public CompletableFuture<ResponseDelete> delete(String roleName, String accessName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Role role;
+            Access access;
+            RoleAccess roleAccess;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                role = roleRepository.findByNameAndStatusTrue(roleName.toUpperCase());
+                access = accessRepository.findByNameAndStatusTrue(accessName.toUpperCase());
+            } catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            roleId = roleRepository.findByNameAndStatusTrue(roleName.toUpperCase()).getId();
-            accessId = accessRepository.findByNameAndStatusTrue(accessName.toUpperCase()).getId();
-            pageRoleAccess = roleAccessRepositoryCustom.searchForRoleAccess(roleId,accessId,sort,sortColumn,pageNumber,pageSize,true);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if(pageRoleAccess.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if(role == null){
+                throw new BadRequestExceptions(Constants.ErrorRole);
+            }
 
-        List<RoleAccessDTO> roleAccessDTOS = pageRoleAccess.stream().map(roleAccess -> {
-            Role role = roleRepository.findById(roleId).orElse(null);
-            Access access = accessRepository.findById(accessId).orElse(null);
-            return RoleAccessDTO.builder()
-                    .roleName(role.getName())
-                    .accessName(access.getName())
-                    .build();
-        }).toList();
+            if(access == null){
+                throw new BadRequestExceptions(Constants.ErrorAccess);
+            }else {
+                roleAccess = roleAccessRepository.findByRoleIdAndAccessIdAndStatusTrue(role.getId(), access.getId());
+            }
 
-        return new PageImpl<>(roleAccessDTOS,pageRoleAccess.getPageable(),pageRoleAccess.getTotalElements());
+            if(roleAccess == null){
+                throw new BadRequestExceptions(Constants.ErrorRoleAccess);
+            }
+
+            try {
+                roleAccess.setStatus(false);
+                roleAccess.setUpdateDate(new Date(System.currentTimeMillis()));
+                roleAccess.setTokenUser(user.getUsername());
+                roleAccessRepository.save(roleAccess);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<RoleAccessDTO> listFalse(String roleName, String accessName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
-        Page<RoleAccess> pageRoleAccess;
-        Long roleId;
-        Long accessId;
+    public CompletableFuture<Page<RoleAccessDTO>> list(String roleName, String accessName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+        return CompletableFuture.supplyAsync(()->{
+            Page<RoleAccess> pageRoleAccess;
+            Long roleId;
+            Long accessId;
 
-        try {
-            roleId = roleRepository.findByNameAndStatusTrue(roleName.toUpperCase()).getId();
-            accessId = accessRepository.findByNameAndStatusTrue(accessName.toUpperCase()).getId();
-            pageRoleAccess = roleAccessRepositoryCustom.searchForRoleAccess(roleId,accessId,sort,sortColumn,pageNumber,pageSize,false);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                roleId = roleRepository.findByNameAndStatusTrue(roleName.toUpperCase()).getId();
+                accessId = accessRepository.findByNameAndStatusTrue(accessName.toUpperCase()).getId();
+                pageRoleAccess = roleAccessRepositoryCustom.searchForRoleAccess(roleId,accessId,sort,sortColumn,pageNumber,pageSize,true);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(pageRoleAccess.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if(pageRoleAccess.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        List<RoleAccessDTO> roleAccessDTOS = pageRoleAccess.stream().map(roleAccess -> {
-            Role role = roleRepository.findById(roleId).orElse(null);
-            Access access = accessRepository.findById(accessId).orElse(null);
-            return RoleAccessDTO.builder()
-                    .roleName(role.getName())
-                    .accessName(access.getName())
-                    .build();
-        }).toList();
+            List<RoleAccessDTO> roleAccessDTOS = pageRoleAccess.stream().map(roleAccess -> {
+                Role role = roleRepository.findById(roleId).orElse(null);
+                Access access = accessRepository.findById(accessId).orElse(null);
+                return RoleAccessDTO.builder()
+                        .roleName(role.getName())
+                        .accessName(access.getName())
+                        .build();
+            }).toList();
 
-        return new PageImpl<>(roleAccessDTOS,pageRoleAccess.getPageable(),pageRoleAccess.getTotalElements());
+            return new PageImpl<>(roleAccessDTOS,pageRoleAccess.getPageable(),pageRoleAccess.getTotalElements());
+        });
     }
 
     @Override
-    public ResponseSuccess activate(String roleName, String accessName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        Role role;
-        Access access;
-        RoleAccess roleAccess;
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            role = roleRepository.findByNameAndStatusFalse(roleName.toUpperCase());
-            access = accessRepository.findByNameAndStatusTrue(accessName.toUpperCase());
-        } catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<Page<RoleAccessDTO>> listFalse(String roleName, String accessName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+        return CompletableFuture.supplyAsync(()->{
+            Page<RoleAccess> pageRoleAccess;
+            Long roleId;
+            Long accessId;
 
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            try {
+                roleId = roleRepository.findByNameAndStatusTrue(roleName.toUpperCase()).getId();
+                accessId = accessRepository.findByNameAndStatusTrue(accessName.toUpperCase()).getId();
+                pageRoleAccess = roleAccessRepositoryCustom.searchForRoleAccess(roleId,accessId,sort,sortColumn,pageNumber,pageSize,false);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(role == null){
-            throw new BadRequestExceptions(Constants.ErrorRole);
-        }
+            if(pageRoleAccess.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        if(access == null){
-            throw new BadRequestExceptions(Constants.ErrorAccess);
-        }else {
-            roleAccess = roleAccessRepository.findByRoleIdAndAccessIdAndStatusTrue(role.getId(), access.getId());
-        }
+            List<RoleAccessDTO> roleAccessDTOS = pageRoleAccess.stream().map(roleAccess -> {
+                Role role = roleRepository.findById(roleId).orElse(null);
+                Access access = accessRepository.findById(accessId).orElse(null);
+                return RoleAccessDTO.builder()
+                        .roleName(role.getName())
+                        .accessName(access.getName())
+                        .build();
+            }).toList();
 
-        if(roleAccess == null){
-            throw new BadRequestExceptions(Constants.ErrorRoleAccess);
-        }
-
-        try {
-            roleAccess.setStatus(true);
-            roleAccess.setUpdateDate(new Date(System.currentTimeMillis()));
-            roleAccess.setTokenUser(user.getUsername());
-            roleAccessRepository.save(roleAccess);
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.update)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            return new PageImpl<>(roleAccessDTOS,pageRoleAccess.getPageable(),pageRoleAccess.getTotalElements());
+        });
     }
 
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String roleName, String accessName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Role role;
+            Access access;
+            RoleAccess roleAccess;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                role = roleRepository.findByNameAndStatusFalse(roleName.toUpperCase());
+                access = accessRepository.findByNameAndStatusTrue(accessName.toUpperCase());
+            } catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(role == null){
+                throw new BadRequestExceptions(Constants.ErrorRole);
+            }
+
+            if(access == null){
+                throw new BadRequestExceptions(Constants.ErrorAccess);
+            }else {
+                roleAccess = roleAccessRepository.findByRoleIdAndAccessIdAndStatusTrue(role.getId(), access.getId());
+            }
+
+            if(roleAccess == null){
+                throw new BadRequestExceptions(Constants.ErrorRoleAccess);
+            }
+
+            try {
+                roleAccess.setStatus(true);
+                roleAccess.setUpdateDate(new Date(System.currentTimeMillis()));
+                roleAccess.setTokenUser(user.getUsername());
+                roleAccessRepository.save(roleAccess);
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 }
