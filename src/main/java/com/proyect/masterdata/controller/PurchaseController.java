@@ -1,6 +1,8 @@
 package com.proyect.masterdata.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import com.proyect.masterdata.dto.PurchaseDTO;
 import com.proyect.masterdata.dto.request.RequestPurchase;
@@ -32,9 +34,9 @@ public class PurchaseController {
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:PURCHASE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody()RequestPurchase requestPurchase
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iPurchase.save(requestPurchase);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iPurchase.saveAsync(requestPurchase);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination")
@@ -47,27 +49,27 @@ public class PurchaseController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<PurchaseDTO> result = iPurchase.list(serial,user,documentName,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<PurchaseDTO>> result = iPurchase.list(serial,user,documentName,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
     public ResponseEntity<List<PurchaseDTO>> listPurchase(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<PurchaseDTO> result = iPurchase.listPurchase(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<PurchaseDTO>> result = iPurchase.listPurchase(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping("status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
     public ResponseEntity<List<PurchaseDTO>> listPurchaseFalse(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<PurchaseDTO> result = iPurchase.listPurchaseFalse(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<PurchaseDTO>> result = iPurchase.listPurchaseFalse(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
 }

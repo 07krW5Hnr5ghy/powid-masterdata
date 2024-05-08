@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -91,88 +92,152 @@ public class PurchaseImpl implements IPurchase {
     }
 
     @Override
-    public Page<PurchaseDTO> list(String serial, String user,String documentName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
-        Page<Purchase> pagePurchase;
-        Long clientId;
-        String serialData;
-        Long purchaseDocumentId;
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestPurchase requestPurchase) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Purchase purchase;
+            PurchaseDocument purchaseDocument;
+            Supplier supplier;
 
-        if(serial != null){
-            serialData = serial.toUpperCase();
-        }else {
-            serialData = null;
-        }
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(requestPurchase.getTokenUser().toUpperCase());
+                purchase = purchaseRepository.findBySerial(requestPurchase.getSerial().toUpperCase());
+                purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestPurchase.getDocumentName().toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            purchaseDocumentId = purchaseDocumentRepository.findByNameAndStatusTrue(documentName.toUpperCase()).getId();
-            pagePurchase = purchaseRepositoryCustom.searchForPurchase(clientId,serialData,purchaseDocumentId,sort,sortColumn,pageNumber,pageSize,true);
-        }catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                supplier = supplierRepository.findByClientIdAndRucAndStatusTrue(user.getClientId(), requestPurchase.getSupplierRuc().toUpperCase());
+            }
 
-        if(pagePurchase.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if(purchase != null){
+                throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
+            }
 
-        List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> {
-            PurchaseDocument purchaseDocument = purchaseDocumentRepository.findById(purchase.getPurchaseDocumentId()).orElse(null);
-            return PurchaseDTO.builder()
-                    .serial(purchase.getSerial())
-                    .registrationDate(purchase.getRegistrationDate())
-                    .purchaseDocument(purchaseDocument.getName())
-                .build();
-        }).toList();
+            if(purchaseDocument == null){
+                throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
+            }
 
-        return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
+            try{
+                Purchase newPurchase = purchaseRepository.save(Purchase.builder()
+                        .serial(requestPurchase.getSerial().toUpperCase())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .tokenUser(user.getUsername())
+                        .purchaseDocument(purchaseDocument)
+                        .purchaseDocumentId(purchaseDocument.getId())
+                        .supplier(supplier)
+                        .supplierId(supplier.getId())
+                        .build());
+                for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getPurchaseItemsList()){
+                    iPurchaseItem.save(newPurchase.getId(),requestPurchaseItem,user.getUsername());
+                }
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<PurchaseDTO> listPurchase(String user) throws BadRequestExceptions, InternalErrorExceptions {
-        List<Purchase> purchases;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            purchases = purchaseRepository.findAllByClientIdAndStatusTrue(clientId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(purchases.isEmpty()){
-            return Collections.emptyList();
-        }
+    public CompletableFuture<Page<PurchaseDTO>> list(String serial, String user,String documentName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Purchase> pagePurchase;
+            Long clientId;
+            String serialData;
+            Long purchaseDocumentId;
 
-        return purchases.stream().map(purchase -> PurchaseDTO.builder()
+            if(serial != null){
+                serialData = serial.toUpperCase();
+            }else {
+                serialData = null;
+            }
+
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                purchaseDocumentId = purchaseDocumentRepository.findByNameAndStatusTrue(documentName.toUpperCase()).getId();
+                pagePurchase = purchaseRepositoryCustom.searchForPurchase(clientId,serialData,purchaseDocumentId,sort,sortColumn,pageNumber,pageSize,true);
+            }catch (RuntimeException e){
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(pagePurchase.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> {
+                PurchaseDocument purchaseDocument = purchaseDocumentRepository.findById(purchase.getPurchaseDocumentId()).orElse(null);
+                return PurchaseDTO.builder()
+                        .serial(purchase.getSerial())
+                        .registrationDate(purchase.getRegistrationDate())
+                        .purchaseDocument(purchaseDocument.getName())
+                        .build();
+            }).toList();
+
+            return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<PurchaseDTO>> listPurchase(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Purchase> purchases;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                purchases = purchaseRepository.findAllByClientIdAndStatusTrue(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(purchases.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return purchases.stream().map(purchase -> PurchaseDTO.builder()
                     .serial(purchase.getSerial())
                     .registrationDate(purchase.getRegistrationDate())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
                     .supplierName(purchase.getSupplier().getBusinessName())
                     .id(purchase.getId())
                     .build()
-        ).toList();
+            ).toList();
+        });
     }
 
     @Override
-    public List<PurchaseDTO> listPurchaseFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
-        List<Purchase> purchases;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            purchases = purchaseRepository.findAllByClientIdAndStatusFalse(clientId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(purchases.isEmpty()){
-            return Collections.emptyList();
-        }
-        return purchases.stream().map(purchase -> PurchaseDTO.builder()
-                .serial(purchase.getSerial())
-                .registrationDate(purchase.getRegistrationDate())
-                .purchaseDocument(purchase.getPurchaseDocument().getName())
-                .supplierName(purchase.getSupplier().getBusinessName())
-                .id(purchase.getId())
-                .build()
-        ).toList();
+    public CompletableFuture<List<PurchaseDTO>> listPurchaseFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Purchase> purchases;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                purchases = purchaseRepository.findAllByClientIdAndStatusFalse(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(purchases.isEmpty()){
+                return Collections.emptyList();
+            }
+            return purchases.stream().map(purchase -> PurchaseDTO.builder()
+                    .serial(purchase.getSerial())
+                    .registrationDate(purchase.getRegistrationDate())
+                    .purchaseDocument(purchase.getPurchaseDocument().getName())
+                    .supplierName(purchase.getSupplier().getBusinessName())
+                    .id(purchase.getId())
+                    .build()
+            ).toList();
+        });
     }
 }
