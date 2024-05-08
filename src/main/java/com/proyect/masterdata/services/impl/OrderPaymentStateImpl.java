@@ -26,6 +26,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -38,40 +39,42 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
     private final OrderPaymentStateRepositoryCustom orderPaymentStateRepositoryCustom;
 
     @Override
-    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        OrderPaymentState orderPaymentState;
+    public CompletableFuture<ResponseSuccess> save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            OrderPaymentState orderPaymentState;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (orderPaymentState != null) {
-            throw new BadRequestExceptions(Constants.ErrorPaymentStateExists.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (orderPaymentState != null) {
+                throw new BadRequestExceptions(Constants.ErrorPaymentStateExists.toUpperCase());
+            }
 
-        try {
-            orderPaymentStateRepository.save(OrderPaymentState.builder()
-                            .name(name.toUpperCase())
-                            .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(user.toUpperCase())
-                    .build());
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                orderPaymentStateRepository.save(OrderPaymentState.builder()
+                        .name(name.toUpperCase())
+                        .status(true)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(user.toUpperCase())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
@@ -115,88 +118,96 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
 
     @Override
     @Transactional
-    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        OrderPaymentState orderPaymentState;
+    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            OrderPaymentState orderPaymentState;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (orderPaymentState == null) {
-            throw new BadRequestExceptions(Constants.ErrorPaymentState.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (orderPaymentState == null) {
+                throw new BadRequestExceptions(Constants.ErrorPaymentState.toUpperCase());
+            }
 
-        try {
-            orderPaymentState.setStatus(false);
-            orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
-            orderPaymentStateRepository.save(orderPaymentState);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
-        }
+            try {
+                orderPaymentState.setStatus(false);
+                orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderPaymentStateRepository.save(orderPaymentState);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+            }
+        });
     }
 
     @Override
-    public Page<OrderPaymentStateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<OrderPaymentStateDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
                                            Integer pageSize) throws BadRequestExceptions {
-        Page<OrderPaymentState> paymentStatePage;
-        try {
-            paymentStatePage = orderPaymentStateRepositoryCustom.searchForPaymentState(name, user, sort, sortColumn,
-                    pageNumber, pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (paymentStatePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStatePage.getContent()),
-                paymentStatePage.getPageable(), paymentStatePage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderPaymentState> paymentStatePage;
+            try {
+                paymentStatePage = orderPaymentStateRepositoryCustom.searchForPaymentState(name, user, sort, sortColumn,
+                        pageNumber, pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (paymentStatePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStatePage.getContent()),
+                    paymentStatePage.getPageable(), paymentStatePage.getTotalElements());
+        });
     }
 
     @Override
-    public List<OrderPaymentStateDTO> listPaymentState() throws BadRequestExceptions {
-        List<OrderPaymentState> orderPaymentStates = new ArrayList<>();
-        try {
-            orderPaymentStates = orderPaymentStateRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (orderPaymentStates.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return paymentStateMapper.listPaymentStateToListPaymentStateDTO(orderPaymentStates);
+    public CompletableFuture<List<OrderPaymentStateDTO>> listPaymentState() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderPaymentState> orderPaymentStates = new ArrayList<>();
+            try {
+                orderPaymentStates = orderPaymentStateRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (orderPaymentStates.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return paymentStateMapper.listPaymentStateToListPaymentStateDTO(orderPaymentStates);
+        });
     }
 
     @Override
-    public Page<OrderPaymentStateDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+    public CompletableFuture<Page<OrderPaymentStateDTO>> listStatusFalse(String name, String user, String sort, String sortColumn,
                                                       Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<OrderPaymentState> paymentStatePage;
-        try {
-            paymentStatePage = orderPaymentStateRepositoryCustom.searchForPaymentState(name, user, sort, sortColumn,
-                    pageNumber, pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (paymentStatePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStatePage.getContent()),
-                paymentStatePage.getPageable(), paymentStatePage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderPaymentState> paymentStatePage;
+            try {
+                paymentStatePage = orderPaymentStateRepositoryCustom.searchForPaymentState(name, user, sort, sortColumn,
+                        pageNumber, pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (paymentStatePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(paymentStateMapper.listPaymentStateToListPaymentStateDTO(paymentStatePage.getContent()),
+                    paymentStatePage.getPageable(), paymentStatePage.getTotalElements());
+        });
     }
 
 }

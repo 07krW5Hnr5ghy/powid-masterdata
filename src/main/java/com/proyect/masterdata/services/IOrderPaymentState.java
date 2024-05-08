@@ -9,12 +9,13 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IOrderPaymentState {
-    ResponseSuccess save(String name,String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> save(String name, String user) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseSuccess saveAll(List<String> names,String user) throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseDelete delete(String name,String user) throws BadRequestExceptions, InternalErrorExceptions;
-    List<OrderPaymentStateDTO> listPaymentState() throws BadRequestExceptions;
-    Page<OrderPaymentStateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    Page<OrderPaymentStateDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(String name,String user) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<OrderPaymentStateDTO>> listPaymentState() throws BadRequestExceptions;
+    CompletableFuture<Page<OrderPaymentStateDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<OrderPaymentStateDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
 }
