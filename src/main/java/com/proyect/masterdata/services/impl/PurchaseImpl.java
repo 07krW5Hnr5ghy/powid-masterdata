@@ -136,7 +136,7 @@ public class PurchaseImpl implements IPurchase {
                         .supplierId(supplier.getId())
                         .build());
                 for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getPurchaseItemsList()){
-                    iPurchaseItem.save(newPurchase.getId(),requestPurchaseItem,user.getUsername());
+                    iPurchaseItem.saveAsync(newPurchase.getId(),requestPurchaseItem,user.getUsername());
                 }
                 return ResponseSuccess.builder()
                         .code(200)
