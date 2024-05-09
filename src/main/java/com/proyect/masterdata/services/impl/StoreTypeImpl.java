@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Service;
 
@@ -76,21 +77,69 @@ public class StoreTypeImpl implements IStoreType {
     }
 
     @Override
-    public List<StoreTypeDTO> listStoreType() throws BadRequestExceptions {
-        List<StoreType> storeTypes;
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsStoreType;
+            boolean existsUser;
 
-        try {
-            storeTypes = storeTypeRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                existsStoreType = storeTypeRepository.existsByName(name.toUpperCase());
+                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (storeTypes.isEmpty()) {
-            return Collections.emptyList();
-        }
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        return storeTypeMapper.listStoreTypeToListStoreTypeDTO(storeTypes);
+            if (existsStoreType) {
+                throw new BadRequestExceptions(Constants.ErrorStoreTypeExists);
+            }
+
+            try {
+
+                storeTypeRepository.save(StoreType.builder()
+                        .name(name.toUpperCase())
+                        .status(true)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+
+            } catch (RuntimeException e) {
+
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<StoreTypeDTO>> listStoreType() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<StoreType> storeTypes;
+
+            try {
+                storeTypes = storeTypeRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (storeTypes.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return storeTypeMapper.listStoreTypeToListStoreTypeDTO(storeTypes);
+        });
     }
 
 }

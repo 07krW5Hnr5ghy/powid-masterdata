@@ -1,6 +1,8 @@
 package com.proyect.masterdata.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,16 +34,16 @@ public class StoreTypeController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:STORE_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iStoreType.save(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iStoreType.saveAsync(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_TYPE_GET')")
-    public ResponseEntity<List<StoreTypeDTO>> listStoreType() throws BadRequestExceptions {
-        List<StoreTypeDTO> result = iStoreType.listStoreType();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<List<StoreTypeDTO>> listStoreType() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StoreTypeDTO>> result = iStoreType.listStoreType();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
 }
