@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -125,196 +126,295 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public UserDTO update(RequestUserSave requestUserSave, String tokenUser)
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            User tokenUser;
+            boolean existsDni;
+            boolean existsEmail;
+            boolean existsMobile;
+            District district;
+            Role role;
+
+            try {
+                existsUser = userRepository.existsByUsername(requestUser.getUser().toUpperCase());
+                tokenUser = userRepository.findByUsernameAndStatusTrue(requestUser.getTokenUser().toUpperCase());
+                existsDni = userRepository.existsByDni(requestUser.getDni());
+                existsEmail = userRepository.existsByEmail(requestUser.getEmail());
+                existsMobile = userRepository.existsByMobile(requestUser.getMobile());
+                district = districtRepository.findByNameAndStatusTrue(requestUser.getDistrict().toUpperCase());
+                role = roleRepository.findByNameAndStatusTrue(requestUser.getRoleName().toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUserExist);
+            }
+
+            if (tokenUser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (existsDni) {
+                throw new BadRequestExceptions(Constants.ErrorUserDniExist);
+            }
+
+            if (existsEmail) {
+                throw new BadRequestExceptions(Constants.ErrorUserEmailExist);
+            }
+
+            if (existsMobile) {
+                throw new BadRequestExceptions(Constants.ErrorUserMobileExist);
+            }
+
+            if (district == null) {
+                throw new BadRequestExceptions(Constants.ErrorDistrict);
+            }
+
+            if(role == null){
+                throw new BadRequestExceptions(Constants.ErrorRole);
+            }
+
+            try {
+                User newUser = userRepository.save(User.builder()
+                        .username(requestUser.getUser().toUpperCase())
+                        .name(requestUser.getName().toUpperCase())
+                        .surname(requestUser.getSurname().toUpperCase())
+                        .dni(requestUser.getDni())
+                        .address(requestUser.getAddress().toUpperCase())
+                        .email(requestUser.getEmail())
+                        .mobile(requestUser.getMobile())
+                        .gender(requestUser.getGender().toUpperCase())
+                        .password(passwordEncoder.encode(requestUser.getPassword()))
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .districtId(district.getId())
+                        .district(district)
+                        .clientId(tokenUser.getClientId())
+                        .client(tokenUser.getClient())
+                        .tokenUser(requestUser.getTokenUser())
+                        .status(true)
+                        .build());
+                userRoleRepository.save(UserRole.builder()
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .userId(newUser.getId())
+                        .roleId(role.getId())
+                        .tokenUser(tokenUser.getUsername())
+                        .build());
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<UserDTO> update(RequestUserSave requestUserSave, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
 
-        boolean existsUser;
-        User userData;
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            User userData;
 
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            userData = userRepository.findByUsernameAndStatusTrue(requestUserSave.getUser().toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                userData = userRepository.findByUsernameAndStatusTrue(requestUserSave.getUser().toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (userData == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (userData == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        try {
-            userData.setName(requestUserSave.getName().toUpperCase());
-            userData.setSurname(requestUserSave.getSurname().toUpperCase());
-            userData.setDni(requestUserSave.getDni());
-            userData.setAddress(requestUserSave.getAddress());
-            userData.setUpdateDate(new Date(System.currentTimeMillis()));
-            userData.setEmail(requestUserSave.getEmail());
-            userData.setMobile(requestUserSave.getMobile());
-            userData.setPassword(requestUserSave.getPassword());
-            userData.setTokenUser(tokenUser.toUpperCase());
-            User updatedUser = userRepository.save(userData);
-            return UserDTO.builder()
-                    .username(updatedUser.getUsername().toUpperCase())
-                    .name(updatedUser.getName().toUpperCase())
-                    .surname(updatedUser.getSurname().toUpperCase())
-                    .email(updatedUser.getEmail())
-                    .gender(updatedUser.getGender().toUpperCase())
-                    .password(updatedUser.getPassword())
-                    .address(updatedUser.getAddress().toUpperCase())
-                    .mobile(updatedUser.getMobile())
-                    .dni(updatedUser.getDni())
-                    .district(updatedUser.getDistrict().getName().toUpperCase())
-                    .status(updatedUser.getStatus())
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                userData.setName(requestUserSave.getName().toUpperCase());
+                userData.setSurname(requestUserSave.getSurname().toUpperCase());
+                userData.setDni(requestUserSave.getDni());
+                userData.setAddress(requestUserSave.getAddress());
+                userData.setUpdateDate(new Date(System.currentTimeMillis()));
+                userData.setEmail(requestUserSave.getEmail());
+                userData.setMobile(requestUserSave.getMobile());
+                userData.setPassword(requestUserSave.getPassword());
+                userData.setTokenUser(tokenUser.toUpperCase());
+                User updatedUser = userRepository.save(userData);
+                return UserDTO.builder()
+                        .username(updatedUser.getUsername().toUpperCase())
+                        .name(updatedUser.getName().toUpperCase())
+                        .surname(updatedUser.getSurname().toUpperCase())
+                        .email(updatedUser.getEmail())
+                        .gender(updatedUser.getGender().toUpperCase())
+                        .password(updatedUser.getPassword())
+                        .address(updatedUser.getAddress().toUpperCase())
+                        .mobile(updatedUser.getMobile())
+                        .dni(updatedUser.getDni())
+                        .district(updatedUser.getDistrict().getName().toUpperCase())
+                        .status(updatedUser.getStatus())
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public ResponseDelete delete(String username,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        User datauser;
+    public CompletableFuture<ResponseDelete> delete(String username,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        try {
-            datauser.setUpdateDate(new Date(System.currentTimeMillis()));
-            datauser.setStatus(false);
-            datauser.setTokenUser(username.toUpperCase());
-            userRepository.save(datauser);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser.setUpdateDate(new Date(System.currentTimeMillis()));
+                datauser.setStatus(false);
+                datauser.setTokenUser(username.toUpperCase());
+                userRepository.save(datauser);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<UserQueryDTO> list(String user, String clientRuc, String dni, String email, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<UserQueryDTO>> list(String user, String clientRuc, String dni, String email, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<User> userPage;
-        Long clientId;
-        try {
-            clientId = clientRepository.findByRucAndStatusTrue(clientRuc).getId();
-            userPage = userRepositoryCustom.searchForUser(user, clientId, dni, email, sort, sortColumn, pageNumber,
-                    pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (userPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
-            List<UserRole> userRoles = userRoleRepository.findByUserId(userData.getId());
-            return UserQueryDTO.builder()
-                    .address(userData.getAddress())
-                    .district(userData.getDistrict().getName())
-                    .dni(userData.getDni())
-                    .email(userData.getEmail())
-                    .gender(userData.getGender())
-                    .mobile(userData.getMobile())
-                    .name(userData.getName())
-                    .surname(userData.getSurname())
-                    .user(userData.getUsername())
-                    .roleNames(userRoles.stream().map(userRole -> {
-                        Role role = roleRepository.findById(userRole.getRoleId()).orElse(null);
-                        return role.getName();
-                    }).toList())
-                    .build();
-        }).toList();
-        return new PageImpl<>(userDTOList,
-                userPage.getPageable(), userPage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<User> userPage;
+            Long clientId;
+            try {
+                clientId = clientRepository.findByRucAndStatusTrue(clientRuc).getId();
+                userPage = userRepositoryCustom.searchForUser(user, clientId, dni, email, sort, sortColumn, pageNumber,
+                        pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (userPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
+                List<UserRole> userRoles = userRoleRepository.findByUserId(userData.getId());
+                return UserQueryDTO.builder()
+                        .address(userData.getAddress())
+                        .district(userData.getDistrict().getName())
+                        .dni(userData.getDni())
+                        .email(userData.getEmail())
+                        .gender(userData.getGender())
+                        .mobile(userData.getMobile())
+                        .name(userData.getName())
+                        .surname(userData.getSurname())
+                        .user(userData.getUsername())
+                        .roleNames(userRoles.stream().map(userRole -> {
+                            Role role = roleRepository.findById(userRole.getRoleId()).orElse(null);
+                            return role.getName();
+                        }).toList())
+                        .build();
+            }).toList();
+            return new PageImpl<>(userDTOList,
+                    userPage.getPageable(), userPage.getTotalElements());
+        });
     }
 
     @Override
-    public Page<UserQueryDTO> listFalse(String user, String clientRuc, String dni, String email, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<UserQueryDTO>> listFalse(String user, String clientRuc, String dni, String email, String sort, String sortColumn, Integer pageNumber,
                                    Integer pageSize) throws BadRequestExceptions {
-        Page<User> userPage;
-        Long clientId;
-        try {
-            clientId = clientRepository.findByRucAndStatusTrue(clientRuc).getId();
-            userPage = userRepositoryCustom.searchForUser(user, clientId, dni, email, sort, sortColumn, pageNumber,
-                    pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (userPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
-            List<UserRole> userRoles = userRoleRepository.findByUserId(userData.getId());
-            return UserQueryDTO.builder()
-                    .address(userData.getAddress())
-                    .district(userData.getDistrict().getName())
-                    .dni(userData.getDni())
-                    .email(userData.getEmail())
-                    .gender(userData.getGender())
-                    .mobile(userData.getMobile())
-                    .name(userData.getName())
-                    .surname(userData.getSurname())
-                    .user(userData.getUsername())
-                    .roleNames(userRoles.stream().map(userRole -> {
-                        Role role = roleRepository.findById(userRole.getRoleId()).orElse(null);
-                        return role.getName();
-                    }).toList())
-                    .build();
-        }).toList();
-        return new PageImpl<>(userDTOList,
-                userPage.getPageable(), userPage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<User> userPage;
+            Long clientId;
+            try {
+                clientId = clientRepository.findByRucAndStatusTrue(clientRuc).getId();
+                userPage = userRepositoryCustom.searchForUser(user, clientId, dni, email, sort, sortColumn, pageNumber,
+                        pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (userPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
+                List<UserRole> userRoles = userRoleRepository.findByUserId(userData.getId());
+                return UserQueryDTO.builder()
+                        .address(userData.getAddress())
+                        .district(userData.getDistrict().getName())
+                        .dni(userData.getDni())
+                        .email(userData.getEmail())
+                        .gender(userData.getGender())
+                        .mobile(userData.getMobile())
+                        .name(userData.getName())
+                        .surname(userData.getSurname())
+                        .user(userData.getUsername())
+                        .roleNames(userRoles.stream().map(userRole -> {
+                            Role role = roleRepository.findById(userRole.getRoleId()).orElse(null);
+                            return role.getName();
+                        }).toList())
+                        .build();
+            }).toList();
+            return new PageImpl<>(userDTOList,
+                    userPage.getPageable(), userPage.getTotalElements());
+        });
     }
 
     @Override
-    public ResponseSuccess activate(String username, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        User tokenUserData;
-        try {
-            datauser = userRepository.findByUsernameAndStatusFalse(username.toUpperCase());
-            tokenUserData = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<ResponseSuccess> activate(String username, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            User tokenUserData;
+            try {
+                datauser = userRepository.findByUsernameAndStatusFalse(username.toUpperCase());
+                tokenUserData = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (tokenUserData == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (tokenUserData == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        try {
-            datauser.setUpdateDate(new Date(System.currentTimeMillis()));
-            datauser.setStatus(true);
-            datauser.setTokenUser(tokenUserData.getUsername());
-            userRepository.save(datauser);
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.update)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser.setUpdateDate(new Date(System.currentTimeMillis()));
+                datauser.setStatus(true);
+                datauser.setTokenUser(tokenUserData.getUsername());
+                userRepository.save(datauser);
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }
