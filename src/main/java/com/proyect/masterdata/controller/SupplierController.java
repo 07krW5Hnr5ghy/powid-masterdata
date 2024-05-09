@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -38,18 +40,18 @@ public class SupplierController {
     //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestSupplier requestSupplier,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iSupplier.save(requestSupplier, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iSupplier.saveAsync(requestSupplier, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("ruc") String ruc,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iSupplier.delete(ruc, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iSupplier.delete(ruc, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination")
@@ -61,27 +63,27 @@ public class SupplierController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<SupplierDTO> result = iSupplier.list(name, ruc, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<SupplierDTO>> result = iSupplier.list(name, ruc, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:STOCK','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUPPLIER_GET')")
     public ResponseEntity<List<SupplierDTO>> listSupplier(
             @RequestParam(value = "user") String user
-    ) throws BadRequestExceptions {
-        List<SupplierDTO> result = iSupplier.listSuppliers(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SupplierDTO>> result = iSupplier.listSuppliers(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping("status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:STOCK','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUPPLIER_GET')")
     public ResponseEntity<List<SupplierDTO>> listSupplierFalse(
             @RequestParam(value = "user") String user
-    ) throws BadRequestExceptions {
-        List<SupplierDTO> result = iSupplier.listSuppliers(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SupplierDTO>> result = iSupplier.listSuppliers(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
 }

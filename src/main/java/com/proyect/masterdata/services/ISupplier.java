@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.domain.Page;
 
@@ -14,9 +15,11 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 public interface ISupplier {
         ResponseSuccess save(RequestSupplier requestSupplier, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        ResponseDelete delete(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        Page<SupplierDTO> list(String name, String ruc, String user, String sort, String sortColumn, Integer pageNumber,
+        CompletableFuture<ResponseSuccess> saveAsync(RequestSupplier requestSupplier, String tokenUser)
+                throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseDelete> delete(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<Page<SupplierDTO>> list(String name, String ruc, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws BadRequestExceptions;
-        List<SupplierDTO> listSuppliers(String user) throws InternalErrorExceptions,BadRequestExceptions;
-        List<SupplierDTO> listSuppliersFalse(String user) throws InternalErrorExceptions,BadRequestExceptions;
+        CompletableFuture<List<SupplierDTO>> listSuppliers(String user) throws InternalErrorExceptions,BadRequestExceptions;
+        CompletableFuture<List<SupplierDTO>> listSuppliersFalse(String user) throws InternalErrorExceptions,BadRequestExceptions;
 }
