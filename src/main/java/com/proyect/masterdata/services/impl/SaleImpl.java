@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -74,5 +75,57 @@ public class SaleImpl implements ISale {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(Ordering ordering, RequestSale requestSale, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            ManagementType managementType;
+
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                managementType = managementTypeRepository.findByNameAndStatusTrue(requestSale.getManagementType().toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(managementType == null){
+                throw new BadRequestExceptions(Constants.ErrorManagementType);
+            }
+
+            try{
+                Double duePayment = (requestSale.getSaleAmount() + requestSale.getDeliveryAmount()) - requestSale.getAdvancedPayment();
+                saleRepository.save(Sale.builder()
+                        .tokenUser(user.getUsername())
+                        .advancePayment(requestSale.getAdvancedPayment())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .deliveryAddress(requestSale.getDeliveryAddress().toUpperCase())
+                        .ordering(ordering)
+                        .orderId(ordering.getId())
+                        .duePayment(duePayment)
+                        .observations(requestSale.getObservations().toUpperCase())
+                        .saleAmount(requestSale.getSaleAmount())
+                        .deliveryAmount(requestSale.getDeliveryAmount())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .seller(requestSale.getSeller().toUpperCase())
+                        .tokenUser(user.getUsername())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }
