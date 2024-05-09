@@ -11,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -28,16 +30,16 @@ public class StockReplenishmentItemController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<StockReplenishmentItemDTO> result = iStockReplenishmentItem.list(user,orderId,productSku,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<StockReplenishmentItemDTO>> result = iStockReplenishmentItem.list(user,orderId,productSku,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_ITEM_GET')")
     public ResponseEntity<List<StockReplenishmentItemDTO>> listStockReplenishmentItems(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<StockReplenishmentItemDTO> result = iStockReplenishmentItem.listStockReplenishmentItem(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockReplenishmentItemDTO>> result = iStockReplenishmentItem.listStockReplenishmentItem(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
