@@ -17,6 +17,8 @@ import com.proyect.masterdata.services.IWarehouseStock;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -34,9 +36,9 @@ public class WarehouseStockController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<WarehouseStockDTO> result = iWarehouseStock.list(warehouse, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<WarehouseStockDTO>> result = iWarehouseStock.list(warehouse, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
@@ -44,8 +46,8 @@ public class WarehouseStockController {
     public ResponseEntity<List<WarehouseStockDTO>> listWarehouseStock(
             @RequestParam("user") String user,
             @RequestParam(value = "warehouseId",required = false) Long warehouseId
-    ) throws BadRequestExceptions {
-        List<WarehouseStockDTO> result = iWarehouseStock.listWarehouse(user,warehouseId);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<WarehouseStockDTO>> result = iWarehouseStock.listWarehouse(user,warehouseId);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -143,74 +144,78 @@ public class WarehouseStockImpl implements IWarehouseStock {
     }
 
     @Override
-    public Page<WarehouseStockDTO> list(String warehouse, String user, String sort, String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions {
-        Page<WarehouseStock> warehouseStockPage;
-        Long clientId;
-        Long warehouseId;
+    public CompletableFuture<Page<WarehouseStockDTO>> list(String warehouse, String user, String sort, String sortColumn,
+                                                          Integer pageNumber,
+                                                          Integer pageSize) throws InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<WarehouseStock> warehouseStockPage;
+            Long clientId;
+            Long warehouseId;
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
-            warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(clientId, warehouseId, sort,
-                    sortColumn,
-                    pageNumber,
-                    pageSize);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+                warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(clientId, warehouseId, sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (warehouseStockPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if (warehouseStockPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        List<WarehouseStockDTO> warehouseStockDTOs = warehouseStockPage.getContent().stream()
-                .map(warehouseStock -> WarehouseStockDTO.builder()
-                        .quantity(warehouseStock.getQuantity())
-                        .supplierProductSerial(warehouseStock.getSupplierProduct().getSerial())
-                        .warehouse(warehouseStock.getWarehouse().getName())
-                        .registrationDate(warehouseStock.getRegistrationDate())
-                        .updateDate(warehouseStock.getUpdateDate())
-                        .build())
-                .toList();
+            List<WarehouseStockDTO> warehouseStockDTOs = warehouseStockPage.getContent().stream()
+                    .map(warehouseStock -> WarehouseStockDTO.builder()
+                            .quantity(warehouseStock.getQuantity())
+                            .supplierProductSerial(warehouseStock.getSupplierProduct().getSerial())
+                            .warehouse(warehouseStock.getWarehouse().getName())
+                            .registrationDate(warehouseStock.getRegistrationDate())
+                            .updateDate(warehouseStock.getUpdateDate())
+                            .build())
+                    .toList();
 
-        return new PageImpl<>(warehouseStockDTOs, warehouseStockPage.getPageable(),
-                warehouseStockPage.getTotalElements());
+            return new PageImpl<>(warehouseStockDTOs, warehouseStockPage.getPageable(),
+                    warehouseStockPage.getTotalElements());
+        });
     }
 
     @Override
-    public List<WarehouseStockDTO> listWarehouse(String user,Long warehouseId) throws BadRequestExceptions, InternalErrorExceptions {
-        List<WarehouseStock> warehouseStocks;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user).getClientId();
-            if(warehouseId != null){
-                warehouseStocks = warehouseStockRepository.findAllByClientIdAndWarehouseId(clientId, warehouseId);
-            }else{
-                warehouseStocks = warehouseStockRepository.findAllByClientId(clientId);
+    public CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,Long warehouseId) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<WarehouseStock> warehouseStocks;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user).getClientId();
+                if(warehouseId != null){
+                    warehouseStocks = warehouseStockRepository.findAllByClientIdAndWarehouseId(clientId, warehouseId);
+                }else{
+                    warehouseStocks = warehouseStockRepository.findAllByClientId(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
 
-        if(warehouseStocks.isEmpty()){
-            return Collections.emptyList();
-        }
+            if(warehouseStocks.isEmpty()){
+                return Collections.emptyList();
+            }
 
-        return warehouseStocks.stream()
-                .map(warehouseStock -> WarehouseStockDTO.builder()
-                        .quantity(warehouseStock.getQuantity())
-                        .supplierProductSerial(warehouseStock.getSupplierProduct().getSerial())
-                        .warehouse(warehouseStock.getWarehouse().getName())
-                        .registrationDate(warehouseStock.getRegistrationDate())
-                        .updateDate(warehouseStock.getUpdateDate())
-                        .id(warehouseStock.getId())
-                        .productSku(warehouseStock.getSupplierProduct().getProduct().getSku())
-                        .build())
-                .toList();
+            return warehouseStocks.stream()
+                    .map(warehouseStock -> WarehouseStockDTO.builder()
+                            .quantity(warehouseStock.getQuantity())
+                            .supplierProductSerial(warehouseStock.getSupplierProduct().getSerial())
+                            .warehouse(warehouseStock.getWarehouse().getName())
+                            .registrationDate(warehouseStock.getRegistrationDate())
+                            .updateDate(warehouseStock.getUpdateDate())
+                            .id(warehouseStock.getId())
+                            .productSku(warehouseStock.getSupplierProduct().getProduct().getSku())
+                            .build())
+                    .toList();
+        });
     }
 
 }

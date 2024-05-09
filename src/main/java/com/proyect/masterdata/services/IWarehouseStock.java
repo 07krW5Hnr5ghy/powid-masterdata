@@ -11,15 +11,16 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IWarehouseStock {
         ResponseSuccess in(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
                         throws InternalErrorExceptions, BadRequestExceptions;
         ResponseSuccess out(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        Page<WarehouseStockDTO> list(String warehouse, String user, String sort, String sortColumn,
-                        Integer pageNumber,
-                        Integer pageSize) throws InternalErrorExceptions;
-        List<WarehouseStockDTO> listWarehouse(String user,Long warehouseId) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<Page<WarehouseStockDTO>> list(String warehouse, String user, String sort, String sortColumn,
+                                                       Integer pageNumber,
+                                                       Integer pageSize) throws InternalErrorExceptions;
+        CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,Long warehouseId) throws BadRequestExceptions,InternalErrorExceptions;
 
 }
