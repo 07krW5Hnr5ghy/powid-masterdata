@@ -15,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -22,14 +24,13 @@ import java.util.List;
 @AllArgsConstructor
 public class SaleChannelController {
     private final ISaleChannel iSaleChannel;
-
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iSaleChannel.save(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iSaleChannel.saveAsync(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping(value = "sale-channels", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -44,15 +45,15 @@ public class SaleChannelController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("tokenUser") String tokenUser,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iSaleChannel.delete(tokenUser, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("user") String user) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iSaleChannel.delete(tokenUser, user);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
-    public ResponseEntity<List<SaleChannelDTO>> listSaleChannel() throws BadRequestExceptions {
-        List<SaleChannelDTO> result = iSaleChannel.listSaleChannel();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<List<SaleChannelDTO>> listSaleChannel() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SaleChannelDTO>> result = iSaleChannel.listSaleChannel();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination")
@@ -62,9 +63,9 @@ public class SaleChannelController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<SaleChannelDTO> result = iSaleChannel.list(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<SaleChannelDTO>> result = iSaleChannel.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "pagination/status-false")
@@ -74,9 +75,9 @@ public class SaleChannelController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<SaleChannelDTO> result = iSaleChannel.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<SaleChannelDTO>> result = iSaleChannel.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
 }
