@@ -11,9 +11,11 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IStockTransferItem {
     StockTransferItem save(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions;
-    Page<StockTransferItemDTO> list(String user,Long stockTransferId,String supplierProductSerial,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
-    List<StockTransferItemDTO> listStockTransferItem(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<StockTransferItem> saveAsync(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<Page<StockTransferItemDTO>> list(String user,Long stockTransferId,String supplierProductSerial,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<List<StockTransferItemDTO>> listStockTransferItem(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
 }

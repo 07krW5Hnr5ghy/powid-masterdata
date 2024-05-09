@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -55,68 +56,94 @@ public class StockTransferItemImpl implements IStockTransferItem {
     }
 
     @Override
-    public Page<StockTransferItemDTO> list(String user, Long stockTransferId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-
-        Page<StockTransferItem> pageStockTransferItem;
-        Long clientId;
-        Long supplierProductId;
-
-        if(supplierProductSerial != null){
-            supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
-        }else{
-            supplierProductId = null;
-        }
-
-        try{
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            pageStockTransferItem = stockTransferItemRepositoryCustom.searchForStockTransferItem(clientId,stockTransferId,supplierProductId,sort,sortColumn,pageNumber,pageSize);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if(pageStockTransferItem.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        List<StockTransferItemDTO> stockTransferItemDTOS = pageStockTransferItem.getContent().stream().map(stockTransferItem -> StockTransferItemDTO.builder()
-                .stockTransferId(stockTransferItem.getStockTransferId())
-                .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
-                .quantity(stockTransferItem.getQuantity())
-                .registrationDate(stockTransferItem.getRegistrationDate())
-                .build()
-        ).toList();
-
-        return new PageImpl<>(stockTransferItemDTOS,pageStockTransferItem.getPageable(),pageStockTransferItem.getTotalElements());
+    public CompletableFuture<StockTransferItem> saveAsync(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try{
+                return stockTransferItemRepository.save(StockTransferItem.builder()
+                        .stockTransfer(stockTransfer)
+                        .stockTransferId(stockTransfer.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .quantity(requestStockTransferItem.getQuantity())
+                        .supplierProduct(supplierProduct)
+                        .supplierProductId(supplierProduct.getId())
+                        .tokenUser(user.getUsername())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .build());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<StockTransferItemDTO> listStockTransferItem(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
-        List<StockTransferItem> stockTransferItems;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            if(id != null){
-                stockTransferItems = stockTransferItemRepository.findAllByClientIdAndStockTransferId(clientId,id);
+    public CompletableFuture<Page<StockTransferItemDTO>> list(String user, Long stockTransferId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<StockTransferItem> pageStockTransferItem;
+            Long clientId;
+            Long supplierProductId;
+
+            if(supplierProductSerial != null){
+                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
             }else{
-                stockTransferItems = stockTransferItemRepository.findAllByClientId(clientId);
+                supplierProductId = null;
             }
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if (stockTransferItems.isEmpty()){
-            return Collections.emptyList();
-        }
-        return stockTransferItems.stream().map(stockTransferItem -> StockTransferItemDTO.builder()
-                .serial(stockTransferItem.getStockTransfer().getSerial())
-                .stockTransferId(stockTransferItem.getStockTransferId())
-                .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
-                .quantity(stockTransferItem.getQuantity())
-                .originWarehouse(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
-                .destinationWarehouse(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())
-                .registrationDate(stockTransferItem.getRegistrationDate())
-                .build()
-        ).toList();
+
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                pageStockTransferItem = stockTransferItemRepositoryCustom.searchForStockTransferItem(clientId,stockTransferId,supplierProductId,sort,sortColumn,pageNumber,pageSize);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(pageStockTransferItem.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<StockTransferItemDTO> stockTransferItemDTOS = pageStockTransferItem.getContent().stream().map(stockTransferItem -> StockTransferItemDTO.builder()
+                    .stockTransferId(stockTransferItem.getStockTransferId())
+                    .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
+                    .quantity(stockTransferItem.getQuantity())
+                    .registrationDate(stockTransferItem.getRegistrationDate())
+                    .build()
+            ).toList();
+
+            return new PageImpl<>(stockTransferItemDTOS,pageStockTransferItem.getPageable(),pageStockTransferItem.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<StockTransferItemDTO>> listStockTransferItem(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<StockTransferItem> stockTransferItems;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(id != null){
+                    stockTransferItems = stockTransferItemRepository.findAllByClientIdAndStockTransferId(clientId,id);
+                }else{
+                    stockTransferItems = stockTransferItemRepository.findAllByClientId(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if (stockTransferItems.isEmpty()){
+                return Collections.emptyList();
+            }
+            return stockTransferItems.stream().map(stockTransferItem -> StockTransferItemDTO.builder()
+                    .serial(stockTransferItem.getStockTransfer().getSerial())
+                    .stockTransferId(stockTransferItem.getStockTransferId())
+                    .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
+                    .quantity(stockTransferItem.getQuantity())
+                    .originWarehouse(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
+                    .destinationWarehouse(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())
+                    .registrationDate(stockTransferItem.getRegistrationDate())
+                    .build()
+            ).toList();
+        });
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -30,17 +32,17 @@ public class StockTransferItemController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<StockTransferItemDTO> result = iStockTransferItem.list(user,stockTransferId,supplierProductSerial,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<StockTransferItemDTO>> result = iStockTransferItem.list(user,stockTransferId,supplierProductSerial,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_ITEM_GET')")
     public ResponseEntity<List<StockTransferItemDTO>> listStockTransferItem(
             @RequestParam("user") String user,
             @RequestParam(value = "id",required = false) Long id
-    ) throws BadRequestExceptions {
-        List<StockTransferItemDTO> result = iStockTransferItem.listStockTransferItem(user,id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockTransferItemDTO>> result = iStockTransferItem.listStockTransferItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
