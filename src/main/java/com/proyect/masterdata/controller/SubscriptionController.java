@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -38,9 +40,9 @@ public class SubscriptionController {
             @RequestParam("name") String name,
             @RequestParam("months") Integer months,
             @RequestParam("discountPercent") Double discountPercent,
-            @RequestParam("tokenUser") String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        ResponseSuccess result = iSubscription.save(name, months, discountPercent, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iSubscription.saveAsync(name, months, discountPercent, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination")
@@ -51,14 +53,14 @@ public class SubscriptionController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
-        Page<SubscriptionDTO> result = iSubscription.list(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("pageSize") Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<SubscriptionDTO>> result = iSubscription.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "plans")
-    public ResponseEntity<List<PlanDTO>> listPlans() throws InternalErrorExceptions {
-        List<PlanDTO> result = iSubscription.listPlans();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<List<PlanDTO>> listPlans() throws InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<PlanDTO>> result = iSubscription.listPlans();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }
