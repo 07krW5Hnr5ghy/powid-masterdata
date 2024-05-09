@@ -17,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("user-role")
@@ -30,8 +33,8 @@ public class UserRoleController {
     ResponseEntity<ResponseSuccess> save(
             @RequestParam(value = "username") String username,
             @RequestParam(value = "role") String role,
-            @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iUserRole.save(username, role, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iUserRole.saveAsync(username, role, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

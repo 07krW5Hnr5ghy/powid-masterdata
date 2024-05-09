@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Service;
 
@@ -74,6 +75,53 @@ public class UserRoleImpl implements IUserRole {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String username, String role, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            User userData;
+            Role roleData;
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                userData = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                roleData = roleRepository.findByNameAndStatusTrue(role.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (userData == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (roleData == null) {
+                throw new BadRequestExceptions(Constants.ErrorRole);
+            }
+
+            try {
+
+                userRoleRepository.save(UserRole.builder()
+                        .userId(userData.getId())
+                        .roleId(roleData.getId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
 }
