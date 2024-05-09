@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("subscription-payment")
@@ -24,17 +27,17 @@ public class SubscriptionPaymentController {
     public ResponseEntity<String> sendPayment(
             @RequestBody()RequestSubscriptionPayment requestSubscriptionPayment,
             @RequestParam("tokenUser") String tokenUser
-            ) throws BadRequestExceptions {
-        String result = iSubscriptionPayment.send(requestSubscriptionPayment,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<String> result = iSubscriptionPayment.send(requestSubscriptionPayment,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping(value = "demo")
     //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUBSCRIPTION_PAYMENT_POST')")
     public ResponseEntity<ResponseSuccess> activeDemo(
             @RequestParam("username") String username
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iSubscriptionPayment.activateDemo(username);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iSubscriptionPayment.activateDemo(username);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

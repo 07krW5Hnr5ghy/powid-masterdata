@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -32,109 +33,112 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
     private final MembershipRepository membershipRepository;
     private final IMembershipPayment iMembershipPayment;
     @Override
-    public String send(RequestSubscriptionPayment requestSubscriptionPayment, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<String> send(RequestSubscriptionPayment requestSubscriptionPayment, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Subscription subscription;
+            MembershipState payedState;
 
-        User user;
-        Subscription subscription;
-        MembershipState payedState;
-
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            subscription = subscriptionRepository.findByNameAndStatusTrue(requestSubscriptionPayment.getSubscriptionName().toUpperCase());
-            payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if(subscription == null){
-            throw new BadRequestExceptions(Constants.ErrorSubscription);
-        }
-
-        try{
-
-            Membership payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getId(), payedState.getId());
-            if(payedMembership != null){
-                throw new BadRequestExceptions(Constants.ErrorMembershipActivePayed);
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                subscription = subscriptionRepository.findByNameAndStatusTrue(requestSubscriptionPayment.getSubscriptionName().toUpperCase());
+                payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            double netAmount = 0.00;
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-            for(String moduleName : requestSubscriptionPayment.getModules()){
-                Module module = moduleRepository.findByNameAndStatusTrue(moduleName.toUpperCase());
-                if(module == null){
-                    throw new BadRequestExceptions(Constants.ErrorModule);
+            if(subscription == null){
+                throw new BadRequestExceptions(Constants.ErrorSubscription);
+            }
+
+            try{
+
+                Membership payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getId(), payedState.getId());
+                if(payedMembership != null){
+                    throw new BadRequestExceptions(Constants.ErrorMembershipActivePayed);
                 }
-                double discount = ((module.getMonthlyPrice() * subscription.getMonths())
-                        * subscription.getDiscountPercent()) / 100;
-                netAmount += (module.getMonthlyPrice() * subscription.getMonths()) -
-                        discount;
+
+                double netAmount = 0.00;
+
+                for(String moduleName : requestSubscriptionPayment.getModules()){
+                    Module module = moduleRepository.findByNameAndStatusTrue(moduleName.toUpperCase());
+                    if(module == null){
+                        throw new BadRequestExceptions(Constants.ErrorModule);
+                    }
+                    double discount = ((module.getMonthlyPrice() * subscription.getMonths())
+                            * subscription.getDiscountPercent()) / 100;
+                    netAmount += (module.getMonthlyPrice() * subscription.getMonths()) -
+                            discount;
+                }
+
+                return iMercadoPagoPayment.sendPayment(netAmount,subscription,requestSubscriptionPayment.getModules(),user).get();
+
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
             }
-
-            return iMercadoPagoPayment.sendPayment(netAmount,subscription,requestSubscriptionPayment.getModules(),user).get();
-
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
 
     @Override
-    public ResponseSuccess activateDemo(String username) throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        Membership demoMembership;
+    public CompletableFuture<ResponseSuccess> activateDemo(String username) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Membership demoMembership;
 
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }else {
-            demoMembership = membershipRepository.findByClientIdAndDemoTrue(user.getClientId());
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else {
+                demoMembership = membershipRepository.findByClientIdAndDemoTrue(user.getClientId());
+            }
 
-        if(demoMembership != null){
-            throw new BadRequestExceptions(Constants.ErrorMembershipDemo);
-        }
+            if(demoMembership != null){
+                throw new BadRequestExceptions(Constants.ErrorMembershipDemo);
+            }
 
-        try{
-            List<String> moduleNames = new ArrayList<>();
-            moduleNames.add("MÓDULO DE VENTAS");
-            moduleNames.add("MÓDULO DE GESTIÓN");
-            moduleNames.add("MÓDULO DE ALMACÉN");
-            RequestSubscriptionPayment.builder()
-                    .paymentGateway("DEMO")
-                    .subscriptionName("MENSUAL")
-                    .modules(moduleNames)
-                    .build();
+            try{
+                List<String> moduleNames = new ArrayList<>();
+                moduleNames.add("MÓDULO DE VENTAS");
+                moduleNames.add("MÓDULO DE GESTIÓN");
+                moduleNames.add("MÓDULO DE ALMACÉN");
+                RequestSubscriptionPayment.builder()
+                        .paymentGateway("DEMO")
+                        .subscriptionName("MENSUAL")
+                        .modules(moduleNames)
+                        .build();
 
-            iMembershipPayment.save(RequestMembershipPayment.builder()
-                            .paymentGateway("DEMO")
-                            .demo(true)
-                            .modules(moduleNames)
-                            .subscriptionName("MENSUAL")
-                            .grossAmount(0.00)
-                            .paymentGatewayFee(0.00)
-                            .netAmount(0.00)
-                            .taxAmount(0.00)
-                    .build(), user.getUsername());
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+                iMembershipPayment.save(RequestMembershipPayment.builder()
+                        .paymentGateway("DEMO")
+                        .demo(true)
+                        .modules(moduleNames)
+                        .subscriptionName("MENSUAL")
+                        .grossAmount(0.00)
+                        .paymentGatewayFee(0.00)
+                        .netAmount(0.00)
+                        .taxAmount(0.00)
+                        .build(), user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }
