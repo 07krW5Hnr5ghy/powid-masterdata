@@ -10,11 +10,13 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IStockReturnItem {
-    public StockReturnItem save(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
-    Page<StockReturnItemDTO> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn,
+    StockReturnItem save(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<Page<StockReturnItemDTO>> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn,
                                   Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    List<StockReturnItemDTO> listStockReturnItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
-    List<StockReturnItemDTO> listStockReturnItemFalse(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<List<StockReturnItemDTO>> listStockReturnItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<List<StockReturnItemDTO>> listStockReturnItemFalse(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
 }

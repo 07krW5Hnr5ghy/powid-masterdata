@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -58,37 +59,66 @@ public class StockReturnItemImpl implements IStockReturnItem {
     }
 
     @Override
-    public Page<StockReturnItemDTO> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<StockReturnItem> pageStockReturn;
-        Long clientId;
-        Long purchaseId;
-        Long supplierProductId;
+    public CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try{
+                return stockReturnItemRepository.save(StockReturnItem.builder()
+                        .purchaseItem(purchaseItem)
+                        .purchaseItemId(purchaseItem.getId())
+                        .tokenUser(user.getUsername())
+                        .quantity(requestStockReturnItem.getQuantity())
+                        .supplierProduct(purchaseItem.getSupplierProduct())
+                        .supplierProductId(purchaseItem.getSupplierProductId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .purchase(purchaseItem.getPurchase())
+                        .purchaseId(purchaseItem.getPurchaseId())
+                        .stockReturn(stockReturn)
+                        .stockReturnId(stockReturn.getId())
+                        .observations(requestStockReturnItem.getObservations())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .build());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 
-        if(purchaseSerial != null){
-            purchaseId = purchaseRepository.findBySerial(purchaseSerial.toUpperCase()).getId();
-        }else {
-            purchaseId = null;
-        }
+    @Override
+    public CompletableFuture<Page<StockReturnItemDTO>> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<StockReturnItem> pageStockReturn;
+            Long clientId;
+            Long purchaseId;
+            Long supplierProductId;
 
-        if(supplierProductSerial != null){
-            supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
-        }else {
-            supplierProductId = null;
-        }
+            if(purchaseSerial != null){
+                purchaseId = purchaseRepository.findBySerial(purchaseSerial.toUpperCase()).getId();
+            }else {
+                purchaseId = null;
+            }
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            pageStockReturn = stockReturnItemRepositoryCustom.searchForStockReturnItem(purchaseId,clientId,supplierProductId,sort,sortColumn,pageNumber,pageSize);
-        } catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if(supplierProductSerial != null){
+                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+            }else {
+                supplierProductId = null;
+            }
 
-        if(pageStockReturn.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                pageStockReturn = stockReturnItemRepositoryCustom.searchForStockReturnItem(purchaseId,clientId,supplierProductId,sort,sortColumn,pageNumber,pageSize);
+            } catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        List<StockReturnItemDTO> stockReturnDTOS = pageStockReturn.getContent().stream().map(stockReturnItem -> StockReturnItemDTO.builder()
+            if(pageStockReturn.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<StockReturnItemDTO> stockReturnDTOS = pageStockReturn.getContent().stream().map(stockReturnItem -> StockReturnItemDTO.builder()
                     .purchaseSerial(stockReturnItem.getPurchase().getSerial())
                     .supplierProductSerial(stockReturnItem.getSupplierProduct().getSerial())
                     .registrationDate(stockReturnItem.getRegistrationDate())
@@ -96,69 +126,74 @@ public class StockReturnItemImpl implements IStockReturnItem {
                     .observations(stockReturnItem.getObservations())
                     .id(stockReturnItem.getId())
                     .build()
-        ).toList();
-        return new PageImpl<>(stockReturnDTOS,pageStockReturn.getPageable(),pageStockReturn.getTotalElements());
+            ).toList();
+            return new PageImpl<>(stockReturnDTOS,pageStockReturn.getPageable(),pageStockReturn.getTotalElements());
+        });
     }
 
     @Override
-    public List<StockReturnItemDTO> listStockReturnItem(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
-        List<StockReturnItem> stockReturnItems;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            if(id != null){
-                stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStockReturnIdAndStatusTrue(clientId,id);
-            }else{
-                stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStatusTrue(clientId);
+    public CompletableFuture<List<StockReturnItemDTO>> listStockReturnItem(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<StockReturnItem> stockReturnItems;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(id != null){
+                    stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStockReturnIdAndStatusTrue(clientId,id);
+                }else{
+                    stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStatusTrue(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(stockReturnItems.isEmpty()){
-            return Collections.emptyList();
-        }
-        return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
-                .purchaseSerial(stockReturnItem.getPurchase().getSerial())
-                .supplierProductSerial(stockReturnItem.getSupplierProduct().getSerial())
-                .registrationDate(stockReturnItem.getRegistrationDate())
-                .quantity(stockReturnItem.getQuantity())
-                .observations(stockReturnItem.getObservations())
-                .supplier(stockReturnItem.getSupplierProduct().getSupplier().getBusinessName())
-                .id(stockReturnItem.getId())
-                .serial(stockReturnItem.getStockReturn().getSerial())
-                .build()
-        ).toList();
+            if(stockReturnItems.isEmpty()){
+                return Collections.emptyList();
+            }
+            return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
+                    .purchaseSerial(stockReturnItem.getPurchase().getSerial())
+                    .supplierProductSerial(stockReturnItem.getSupplierProduct().getSerial())
+                    .registrationDate(stockReturnItem.getRegistrationDate())
+                    .quantity(stockReturnItem.getQuantity())
+                    .observations(stockReturnItem.getObservations())
+                    .supplier(stockReturnItem.getSupplierProduct().getSupplier().getBusinessName())
+                    .id(stockReturnItem.getId())
+                    .serial(stockReturnItem.getStockReturn().getSerial())
+                    .build()
+            ).toList();
+        });
     }
 
     @Override
-    public List<StockReturnItemDTO> listStockReturnItemFalse(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
-        List<StockReturnItem> stockReturnItems;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            if(id != null){
-                stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStockReturnIdAndStatusFalse(clientId,id);
-            }else{
-                stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStatusFalse(clientId);
+    public CompletableFuture<List<StockReturnItemDTO>> listStockReturnItemFalse(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<StockReturnItem> stockReturnItems;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(id != null){
+                    stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStockReturnIdAndStatusFalse(clientId,id);
+                }else{
+                    stockReturnItems = stockReturnItemRepository.findAllByClientIdAndStatusFalse(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(stockReturnItems.isEmpty()){
-            return Collections.emptyList();
-        }
-        return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
-                .purchaseSerial(stockReturnItem.getPurchase().getSerial())
-                .supplierProductSerial(stockReturnItem.getSupplierProduct().getSerial())
-                .registrationDate(stockReturnItem.getRegistrationDate())
-                .quantity(stockReturnItem.getQuantity())
-                .observations(stockReturnItem.getObservations())
-                .supplier(stockReturnItem.getSupplierProduct().getSupplier().getBusinessName())
-                .serial(stockReturnItem.getStockReturn().getSerial())
-                .build()
-        ).toList();
+            if(stockReturnItems.isEmpty()){
+                return Collections.emptyList();
+            }
+            return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
+                    .purchaseSerial(stockReturnItem.getPurchase().getSerial())
+                    .supplierProductSerial(stockReturnItem.getSupplierProduct().getSerial())
+                    .registrationDate(stockReturnItem.getRegistrationDate())
+                    .quantity(stockReturnItem.getQuantity())
+                    .observations(stockReturnItem.getObservations())
+                    .supplier(stockReturnItem.getSupplierProduct().getSupplier().getBusinessName())
+                    .serial(stockReturnItem.getStockReturn().getSerial())
+                    .build()
+            ).toList();
+        });
     }
 
 }

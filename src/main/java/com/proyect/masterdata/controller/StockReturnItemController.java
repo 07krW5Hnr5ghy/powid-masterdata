@@ -12,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -29,27 +31,27 @@ public class StockReturnItemController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<StockReturnItemDTO> result = iStockReturnItem.list(purchaseSerial, user,supplierProductSerial, sort, sortColumn, pageNumber,
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<StockReturnItemDTO>> result = iStockReturnItem.list(purchaseSerial, user,supplierProductSerial, sort, sortColumn, pageNumber,
                 pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_ITEM_GET')")
     public ResponseEntity<List<StockReturnItemDTO>> listStockReturnItem(
             @RequestParam("user") String user,
             @RequestParam(value = "id", required = false) Long id
-    ) throws InternalErrorExceptions,BadRequestExceptions {
-        List<StockReturnItemDTO> result = iStockReturnItem.listStockReturnItem(user,id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockReturnItemDTO>> result = iStockReturnItem.listStockReturnItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping("status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_ITEM_GET')")
     public ResponseEntity<List<StockReturnItemDTO>> listStockReturnItemFalse(
             @RequestParam("user") String user,
             @RequestParam(value = "id",required = false) Long id
-    ) throws InternalErrorExceptions,BadRequestExceptions {
-        List<StockReturnItemDTO> result = iStockReturnItem.listStockReturnItemFalse(user,id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockReturnItemDTO>> result = iStockReturnItem.listStockReturnItemFalse(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
