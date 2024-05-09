@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -85,6 +86,54 @@ public class SizeImpl implements ISize {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String sizeType, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            boolean existsSize;
+            SizeType sizeTypeData;
+
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                existsSize = sizeRepository.existsByName(name.toUpperCase());
+                sizeTypeData = sizeTypeRepository.findByName(sizeType.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+
+            if (existsSize) {
+                throw new BadRequestExceptions(Constants.ErrorSizeExists.toUpperCase());
+            }
+
+            if (sizeTypeData == null) {
+                throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
+            }
+
+            try {
+                sizeRepository.save(Size.builder()
+                        .name(name.toUpperCase())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .sizeType(sizeTypeData)
+                        .sizeTypeId(sizeTypeData.getId())
+                        .status(true)
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public ResponseSuccess saveAll(List<String> names, String sizeType, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
         boolean existsUser;
@@ -131,130 +180,133 @@ public class SizeImpl implements ISize {
 
     @Override
     @Transactional
-    public ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
-        Size size;
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            boolean existsUser;
+            Size size;
 
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            size = sizeRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                size = sizeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (size == null) {
-            throw new BadRequestExceptions(Constants.ErrorSize.toUpperCase());
-        }
+            if (!existsUser) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (size == null) {
+                throw new BadRequestExceptions(Constants.ErrorSize.toUpperCase());
+            }
 
-        try {
-            size.setStatus(false);
-            size.setUpdateDate(new Date(System.currentTimeMillis()));
-            sizeRepository.save(size);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                size.setStatus(false);
+                size.setUpdateDate(new Date(System.currentTimeMillis()));
+                sizeRepository.save(size);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<SizeDTO> listSize() throws BadRequestExceptions {
+    public CompletableFuture<List<SizeDTO>> listSize() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Size> sizes = new ArrayList<>();
 
-        List<Size> sizes = new ArrayList<>();
+            try {
+                sizes = sizeRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        try {
-            sizes = sizeRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if (sizes.isEmpty()) {
+                return Collections.emptyList();
+            }
 
-        if (sizes.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<SizeDTO> sizeDTOs = sizes.stream().map(size -> SizeDTO.builder()
-                .name(size.getName())
-                .sizeType(size.getSizeType().getName())
-                .build()).toList();
-
-        return sizeDTOs;
+            return sizes.stream().map(size -> SizeDTO.builder()
+                    .name(size.getName())
+                    .sizeType(size.getSizeType().getName())
+                    .build()).toList();
+        });
     }
 
     @Override
-    public Page<SizeDTO> list(String name, String user, String sort,
+    public CompletableFuture<Page<SizeDTO>> list(String name, String user, String sort,
             String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Size> sizePage;
 
-        Page<Size> sizePage;
+            try {
+                sizePage = sizeRepositoryCustom.searchForSize(name, user, sort, sortColumn,
+                        pageNumber, pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        try {
-            sizePage = sizeRepositoryCustom.searchForSize(name, user, sort, sortColumn,
-                    pageNumber, pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if (sizePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        if (sizePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
-                .name(size.getName())
-                .sizeType(size.getSizeType().getName())
-                .build()).toList();
-
-        return new PageImpl<>(sizeDTOs,
-                sizePage.getPageable(), sizePage.getTotalElements());
-    }
-
-    public Page<SizeDTO> listStatusFalse(String name, String user, String sort,
-            String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-
-        Page<Size> sizePage;
-
-        try {
-            sizePage = sizeRepositoryCustom.searchForSize(name, user, sort, sortColumn,
-                    pageNumber, pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if (sizePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
-                .name(size.getName())
-                .sizeType(size.getSizeType().getName())
-                .build()).toList();
-
-        return new PageImpl<>(sizeDTOs,
-                sizePage.getPageable(), sizePage.getTotalElements());
-    }
-
-    @Override
-    public List<SizeDTO> findAllSizeTypeName(String nameSizeType) throws BadRequestExceptions {
-        try {
-
-            List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType.toUpperCase());
-
-            List<SizeDTO> sizeDTOs = sizes.stream().map(size -> SizeDTO.builder()
+            List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
                     .name(size.getName())
                     .sizeType(size.getSizeType().getName())
                     .build()).toList();
 
-            return sizeDTOs;
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            return new PageImpl<>(sizeDTOs,
+                    sizePage.getPageable(), sizePage.getTotalElements());
+        });
+    }
+
+    public CompletableFuture<Page<SizeDTO>> listStatusFalse(String name, String user, String sort,
+            String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Size> sizePage;
+
+            try {
+                sizePage = sizeRepositoryCustom.searchForSize(name, user, sort, sortColumn,
+                        pageNumber, pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (sizePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
+                    .name(size.getName())
+                    .sizeType(size.getSizeType().getName())
+                    .build()).toList();
+
+            return new PageImpl<>(sizeDTOs,
+                    sizePage.getPageable(), sizePage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SizeDTO>> findAllSizeTypeName(String nameSizeType) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try {
+
+                List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType.toUpperCase());
+
+                return sizes.stream().map(size -> SizeDTO.builder()
+                        .name(size.getName())
+                        .sizeType(size.getSizeType().getName())
+                        .build()).toList();
+            } catch (RuntimeException e) {
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+        });
     }
 }

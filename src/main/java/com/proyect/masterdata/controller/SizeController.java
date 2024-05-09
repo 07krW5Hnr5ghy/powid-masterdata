@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -47,16 +49,16 @@ public class SizeController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SIZE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iSize.delete(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iSize.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
-    public ResponseEntity<List<SizeDTO>> listSize() throws BadRequestExceptions {
-        List<SizeDTO> result = iSize.listSize();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<List<SizeDTO>> listSize() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SizeDTO>> result = iSize.listSize();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination")
@@ -67,10 +69,10 @@ public class SizeController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<SizeDTO> result = iSize.list(name, user, sort, sortColumn, pageNumber,
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<SizeDTO>> result = iSize.list(name, user, sort, sortColumn, pageNumber,
                 pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "pagination/status-false")
@@ -81,18 +83,18 @@ public class SizeController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<SizeDTO> result = iSize.listStatusFalse(name, user, sort, sortColumn,
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<SizeDTO>> result = iSize.listStatusFalse(name, user, sort, sortColumn,
                 pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "size-type")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
     public ResponseEntity<List<SizeDTO>> findAllSizeTypeName(
-            @RequestParam("nameSizeType") String nameSizeType) throws BadRequestExceptions {
-        List<SizeDTO> result = iSize.findAllSizeTypeName(nameSizeType);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("nameSizeType") String nameSizeType) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SizeDTO>> result = iSize.findAllSizeTypeName(nameSizeType);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
 }
