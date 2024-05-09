@@ -15,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -27,9 +29,9 @@ public class StockTransferController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestStockTransfer requestStockTransfer,
             @RequestParam() String tokenUser
-            ) throws BadRequestExceptions {
-        ResponseSuccess result = iStockTransfer.save(requestStockTransfer,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iStockTransfer.saveAsync(requestStockTransfer,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination")
@@ -42,17 +44,17 @@ public class StockTransferController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<StockTransferDTO> result = iStockTransfer.list(user,originWarehouse,destinationWarehouse,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<StockTransferDTO>> result = iStockTransfer.list(user,originWarehouse,destinationWarehouse,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_GET')")
     public ResponseEntity<List<StockTransferDTO>> listStockTransfer(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<StockTransferDTO> result = iStockTransfer.listStockTransfer(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockTransferDTO>> result = iStockTransfer.listStockTransfer(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

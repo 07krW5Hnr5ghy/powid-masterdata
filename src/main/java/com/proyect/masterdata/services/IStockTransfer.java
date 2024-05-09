@@ -9,10 +9,12 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IStockTransfer {
     ResponseSuccess save(RequestStockTransfer requestStockTransfer, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    Page<StockTransferDTO> list(String user,String originWarehouse,String destinationWarehouse,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
-    List<StockTransferDTO> listStockTransfer(String user) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(RequestStockTransfer requestStockTransfer, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<Page<StockTransferDTO>> list(String user,String originWarehouse,String destinationWarehouse,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<List<StockTransferDTO>> listStockTransfer(String user) throws InternalErrorExceptions,BadRequestExceptions;
 
 }
