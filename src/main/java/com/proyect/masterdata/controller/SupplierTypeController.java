@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -20,13 +22,13 @@ public class SupplierTypeController {
     private ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions{
-        ResponseSuccess result = iSupplierType.save(name,tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iSupplierType.saveAsync(name,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
-    private ResponseEntity<List<String>> listSupplierTypes() throws BadRequestExceptions{
-        List<String> result = iSupplierType.listSupplierType();
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    private ResponseEntity<List<String>> listSupplierTypes() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<String>> result = iSupplierType.listSupplierType();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

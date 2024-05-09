@@ -5,8 +5,10 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface ISupplierType {
     ResponseSuccess save(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    List<String> listSupplierType() throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<String>> listSupplierType() throws BadRequestExceptions;
 }

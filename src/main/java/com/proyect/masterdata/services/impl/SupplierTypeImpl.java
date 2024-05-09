@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -58,17 +59,56 @@ public class SupplierTypeImpl implements ISupplierType {
     }
 
     @Override
-    public List<String> listSupplierType() throws BadRequestExceptions {
-        List<SupplierType> supplierTypes;
-        try {
-            supplierTypes = supplierTypeRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(supplierTypes.isEmpty()){
-            return Collections.emptyList();
-        }
-        return supplierTypes.stream().map(SupplierType::getName).toList();
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplierType supplierType;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                supplierType = supplierTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(supplierType != null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierTypeExists);
+            }
+            try {
+                supplierTypeRepository.save(SupplierType.builder()
+                        .name(name.toUpperCase())
+                        .status(true)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .build());
+                return ResponseSuccess.builder()
+                        .message(Constants.register)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<String>> listSupplierType() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierType> supplierTypes;
+            try {
+                supplierTypes = supplierTypeRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(supplierTypes.isEmpty()){
+                return Collections.emptyList();
+            }
+            return supplierTypes.stream().map(SupplierType::getName).toList();
+        });
+
     }
 }
