@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -85,73 +86,129 @@ public class StockTransactionImpl implements IStockTransaction {
     }
 
     @Override
-    public Page<StockTransactionDTO> list(String user, String serial, String warehouse, String stockTransactionType, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<StockTransaction> pageStockTransaction;
-        Long clientId;
-        Long warehouseId;
-        String stockTransactionSerial;
-        Long stockTransactionTypeId;
+    public CompletableFuture<StockTransaction> saveAsync(String serial, Warehouse warehouse, List<RequestStockTransactionItem> requestStockTransactionItemList, String stockTransactionType, User user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            StockTransaction stockTransaction;
+            StockTransactionType stockTransactionTypeData;
 
-        if(serial != null){
-            stockTransactionSerial = serial.toUpperCase();
-        }else{
-            stockTransactionSerial = null;
-        }
+            try{
+                stockTransaction = stockTransactionRepository.findBySerial(serial.toUpperCase());
+                stockTransactionTypeData = stockTransactionTypeRepository.findByNameAndStatusTrue(stockTransactionType.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(warehouse != null){
-            warehouseId = warehouseRepository.findByName(warehouse.toUpperCase()).getId();
-        }else {
-            warehouseId = null;
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if(stockTransactionType != null){
-            stockTransactionTypeId = stockTransactionTypeRepository.findByName(stockTransactionType.toUpperCase()).getId();
-        }else {
-            stockTransactionTypeId = null;
-        }
+            if(stockTransaction != null){
+                throw new BadRequestExceptions(Constants.ErrorStockTransactionExists);
+            }
 
-        try{
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            pageStockTransaction = stockTransactionRepositoryCustom.searchForStockTransaction(clientId,stockTransactionSerial,warehouseId,stockTransactionTypeId,sort,sortColumn,pageNumber,pageSize);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if(stockTransactionTypeData == null){
+                throw new BadRequestExceptions(Constants.ErrorStockTransactionType);
+            }
 
-        if(pageStockTransaction.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
+            try{
 
-        List<StockTransactionDTO> stockTransactionDTOS = pageStockTransaction.getContent().stream().map(stockTransaction -> StockTransactionDTO.builder()
-                .serial(stockTransaction.getSerial())
-                .warehouse(stockTransaction.getWarehouse().getName())
-                .stockTransactionType(stockTransaction.getStockTransactionType().getName())
-                .registrationDate(stockTransaction.getRegistrationDate())
-                .build()).toList();
+                StockTransaction newStockTransaction = stockTransactionRepository.save(StockTransaction.builder()
+                        .serial(serial.toUpperCase())
+                        .stockTransactionType(stockTransactionTypeData)
+                        .stockTransactionTypeId(stockTransactionTypeData.getId())
+                        .warehouse(warehouse)
+                        .warehouseId(warehouse.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(user.getUsername())
+                        .build());
 
-        return new PageImpl<>(stockTransactionDTOS,pageStockTransaction.getPageable(),pageStockTransaction.getTotalElements());
+                for(RequestStockTransactionItem requestStockTransactionItem : requestStockTransactionItemList){
+                    iStockTransactionItem.save(newStockTransaction,requestStockTransactionItem,user.getUsername());
+                }
+
+                return newStockTransaction;
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<StockTransactionDTO> listStockTransaction(String user) throws InternalErrorExceptions, BadRequestExceptions {
-        List<StockTransaction> stockTransactions;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            stockTransactions = stockTransactionRepository.findAllByClientId(clientId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if (stockTransactions.isEmpty()){
-            return Collections.emptyList();
-        }
-        return stockTransactions.stream().map(stockTransaction -> StockTransactionDTO.builder()
-                .serial(stockTransaction.getSerial())
-                .warehouse(stockTransaction.getWarehouse().getName())
-                .stockTransactionType(stockTransaction.getStockTransactionType().getName())
-                .registrationDate(stockTransaction.getRegistrationDate())
-                .id(stockTransaction.getId())
-                .build()).toList();
+    public CompletableFuture<Page<StockTransactionDTO>> list(String user, String serial, String warehouse, String stockTransactionType, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<StockTransaction> pageStockTransaction;
+            Long clientId;
+            Long warehouseId;
+            String stockTransactionSerial;
+            Long stockTransactionTypeId;
+
+            if(serial != null){
+                stockTransactionSerial = serial.toUpperCase();
+            }else{
+                stockTransactionSerial = null;
+            }
+
+            if(warehouse != null){
+                warehouseId = warehouseRepository.findByName(warehouse.toUpperCase()).getId();
+            }else {
+                warehouseId = null;
+            }
+
+            if(stockTransactionType != null){
+                stockTransactionTypeId = stockTransactionTypeRepository.findByName(stockTransactionType.toUpperCase()).getId();
+            }else {
+                stockTransactionTypeId = null;
+            }
+
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                pageStockTransaction = stockTransactionRepositoryCustom.searchForStockTransaction(clientId,stockTransactionSerial,warehouseId,stockTransactionTypeId,sort,sortColumn,pageNumber,pageSize);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(pageStockTransaction.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<StockTransactionDTO> stockTransactionDTOS = pageStockTransaction.getContent().stream().map(stockTransaction -> StockTransactionDTO.builder()
+                    .serial(stockTransaction.getSerial())
+                    .warehouse(stockTransaction.getWarehouse().getName())
+                    .stockTransactionType(stockTransaction.getStockTransactionType().getName())
+                    .registrationDate(stockTransaction.getRegistrationDate())
+                    .build()).toList();
+
+            return new PageImpl<>(stockTransactionDTOS,pageStockTransaction.getPageable(),pageStockTransaction.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<StockTransactionDTO>> listStockTransaction(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<StockTransaction> stockTransactions;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                stockTransactions = stockTransactionRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if (stockTransactions.isEmpty()){
+                return Collections.emptyList();
+            }
+            return stockTransactions.stream().map(stockTransaction -> StockTransactionDTO.builder()
+                    .serial(stockTransaction.getSerial())
+                    .warehouse(stockTransaction.getWarehouse().getName())
+                    .stockTransactionType(stockTransaction.getStockTransactionType().getName())
+                    .registrationDate(stockTransaction.getRegistrationDate())
+                    .id(stockTransaction.getId())
+                    .build()).toList();
+        });
     }
 }
