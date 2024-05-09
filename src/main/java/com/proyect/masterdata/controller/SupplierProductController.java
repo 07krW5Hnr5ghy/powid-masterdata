@@ -1,6 +1,8 @@
 package com.proyect.masterdata.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -38,9 +40,9 @@ public class SupplierProductController {
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestSupplierProduct requestSupplierProduct,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iSupplierProduct.save(requestSupplierProduct, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iSupplierProduct.saveAsync(requestSupplierProduct, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping(value = "supplier-products", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -56,9 +58,9 @@ public class SupplierProductController {
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("serial") String serial,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iSupplierProduct.delete(serial, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iSupplierProduct.delete(serial, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination")
@@ -72,10 +74,10 @@ public class SupplierProductController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
 
-        Page<SupplierProductDTO> result = iSupplierProduct.list(serial, user,productSku,supplierRuc,purchasePrice, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        CompletableFuture<Page<SupplierProductDTO>> result = iSupplierProduct.list(serial, user,productSku,supplierRuc,purchasePrice, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "pagination-status-false")
@@ -89,9 +91,9 @@ public class SupplierProductController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<SupplierProductDTO> result = iSupplierProduct.listFalse(serial, user,productSku,supplierRuc,purchasePrice, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<SupplierProductDTO>> result = iSupplierProduct.listFalse(serial, user,productSku,supplierRuc,purchasePrice, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
@@ -99,9 +101,9 @@ public class SupplierProductController {
     public ResponseEntity<List<SupplierProductDTO>> listSupplierProduct(
             @RequestParam("user") String user,
             @RequestParam(value = "id",required = false) Long id
-    ) throws BadRequestExceptions {
-        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProduct(user,id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SupplierProductDTO>> result = iSupplierProduct.listSupplierProduct(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping("status-false")
@@ -109,9 +111,9 @@ public class SupplierProductController {
     public ResponseEntity<List<SupplierProductDTO>> listSupplierProductFalse(
             @RequestParam("user") String user,
             @RequestParam(value = "id",required = false) Long id
-    ) throws BadRequestExceptions {
-        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProductFalse(user,id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SupplierProductDTO>> result = iSupplierProduct.listSupplierProductFalse(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping("product")
@@ -119,9 +121,9 @@ public class SupplierProductController {
     public ResponseEntity<List<SupplierProductDTO>> listSupplierProductProduct(
             @RequestParam("user") String user,
             @RequestParam(value = "productSku") String productSku
-    ) throws BadRequestExceptions {
-        List<SupplierProductDTO> result = iSupplierProduct.listSupplierProductByProduct(user,productSku);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SupplierProductDTO>> result = iSupplierProduct.listSupplierProductByProduct(user,productSku);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
 }

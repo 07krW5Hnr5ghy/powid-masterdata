@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -103,6 +104,67 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestSupplierProduct requestSupplierProduct, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Supplier supplier;
+            Product product;
+            SupplierProduct supplierProduct;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProductSku());
+                supplierProduct = supplierProductRepository.findBySerial(requestSupplierProduct.getSerial());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else {
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplierProduct.getSupplierRuc(), user.getClientId());
+            }
+
+            if (supplier == null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }
+
+            if (product == null) {
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+
+            if (supplierProduct != null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplierProductExists);
+            }
+
+            try {
+                supplierProductRepository.save(SupplierProduct.builder()
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .product(product)
+                        .productId(product.getId())
+                        .purchasePrice(requestSupplierProduct.getPurchasePrice())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .serial(requestSupplierProduct.getSerial())
+                        .status(true)
+                        .supplier(supplier)
+                        .supplierId(supplier.getId())
+                        .tokenUser(user.getUsername())
+                        .build());
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public ResponseSuccess saveAll(List<RequestSupplierProduct> requestSupplierProducts, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -169,225 +231,234 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public ResponseDelete delete(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplierProduct supplierProduct;
 
-        User user;
-        SupplierProduct supplierProduct;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(serial);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(serial);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (supplierProduct == null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }
 
-        if (supplierProduct == null) {
-            throw new BadRequestExceptions(Constants.ErrorSupplier);
-        }
+            try {
 
-        try {
+                supplierProduct.setStatus(false);
+                supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
+                supplierProductRepository.save(supplierProduct);
 
-            supplierProduct.setStatus(false);
-            supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
-            supplierProductRepository.save(supplierProduct);
-
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<SupplierProductDTO> list(String serial, String user, String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<SupplierProductDTO>> list(String serial, String user, String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<SupplierProduct> supplierProductPage;
+            Long clientId;
+            Long productId;
+            Long supplierId;
 
-        Page<SupplierProduct> supplierProductPage;
-        Long clientId;
-        Long productId;
-        Long supplierId;
-
-        if(productSku != null){
-            productId = productRepository.findBySku(productSku.toUpperCase()).getId();
-        }else {
-            productId = null;
-        }
-
-        if(supplierRuc != null){
-            supplierId = supplierRepository.findByRuc(supplierRuc.toUpperCase()).getId();
-        }else{
-            supplierId = null;
-        }
-
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, productId, supplierId, purchasePrice, sort,
-                    sortColumn, pageNumber, pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if (supplierProductPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
-                .map(supplierProduct -> SupplierProductDTO.builder()
-                        .productSku(supplierProduct.getProduct().getSku())
-                        .purchasePrice(supplierProduct.getPurchasePrice())
-                        .serial(supplierProduct.getSerial())
-                        .supplierName(supplierProduct.getSupplier().getBusinessName())
-                        .build())
-                .toList();
-
-        return new PageImpl<>(supplierProductDTOs, supplierProductPage.getPageable(),
-                supplierProductPage.getTotalElements());
-    }
-
-    @Override
-    public Page<SupplierProductDTO> listFalse(String serial, String user, String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
-                                         Integer pageSize) throws BadRequestExceptions {
-
-        Page<SupplierProduct> supplierProductPage;
-        Long clientId;
-        Long productId;
-        Long supplierId;
-
-        if(productSku != null){
-            productId = productRepository.findBySku(productSku.toUpperCase()).getId();
-        }else {
-            productId = null;
-        }
-
-        if(supplierRuc != null){
-            supplierId = supplierRepository.findByRuc(supplierRuc.toUpperCase()).getId();
-        }else{
-            supplierId = null;
-        }
-
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, productId, supplierId, purchasePrice, sort,
-                    sortColumn, pageNumber, pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if (supplierProductPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
-                .map(supplierProduct -> SupplierProductDTO.builder()
-                        .productSku(supplierProduct.getProduct().getSku())
-                        .purchasePrice(supplierProduct.getPurchasePrice())
-                        .serial(supplierProduct.getSerial())
-                        .supplierName(supplierProduct.getSupplier().getBusinessName())
-                        .build())
-                .toList();
-
-        return new PageImpl<>(supplierProductDTOs, supplierProductPage.getPageable(),
-                supplierProductPage.getTotalElements());
-    }
-
-    @Override
-    public List<SupplierProductDTO> listSupplierProduct(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
-        List<SupplierProduct> supplierProducts;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            if(id != null){
-                supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(clientId,id);
+            if(productSku != null){
+                productId = productRepository.findBySku(productSku.toUpperCase()).getId();
             }else {
-                supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+                productId = null;
             }
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
 
-        if(supplierProducts.isEmpty()){
-            return Collections.emptyList();
-        }
-
-        return supplierProducts.stream()
-                .map(supplierProduct -> SupplierProductDTO.builder()
-                        .productSku(supplierProduct.getProduct().getSku())
-                        .purchasePrice(supplierProduct.getPurchasePrice())
-                        .serial(supplierProduct.getSerial())
-                        .supplierName(supplierProduct.getSupplier().getBusinessName())
-                        .supplierProductId(supplierProduct.getId())
-                        .build())
-                .toList();
-    }
-
-    @Override
-    public List<SupplierProductDTO> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
-        List<SupplierProduct> supplierProducts;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
-            if(id != null){
-                supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusFalse(clientId,id);
+            if(supplierRuc != null){
+                supplierId = supplierRepository.findByRuc(supplierRuc.toUpperCase()).getId();
             }else{
-                supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+                supplierId = null;
             }
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
 
-        if(supplierProducts.isEmpty()){
-            return Collections.emptyList();
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, productId, supplierId, purchasePrice, sort,
+                        sortColumn, pageNumber, pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        return supplierProducts.stream()
-                .map(supplierProduct -> SupplierProductDTO.builder()
-                        .productSku(supplierProduct.getProduct().getSku())
-                        .purchasePrice(supplierProduct.getPurchasePrice())
-                        .serial(supplierProduct.getSerial())
-                        .supplierName(supplierProduct.getSupplier().getBusinessName())
-                        .supplierProductId(supplierProduct.getId())
-                        .build())
-                .toList();
+            if (supplierProductPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplierName(supplierProduct.getSupplier().getBusinessName())
+                            .build())
+                    .toList();
+
+            return new PageImpl<>(supplierProductDTOs, supplierProductPage.getPageable(),
+                    supplierProductPage.getTotalElements());
+        });
     }
 
     @Override
-    public List<SupplierProductDTO> listSupplierProductByProduct(String user, String productSku) throws BadRequestExceptions, InternalErrorExceptions {
-        List<SupplierProduct> supplierProducts;
-        Long clientId;
-        Long productId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
-            productId = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase()).getId();
-            supplierProducts = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(clientId,productId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<Page<SupplierProductDTO>> listFalse(String serial, String user, String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
+                                         Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<SupplierProduct> supplierProductPage;
+            Long clientId;
+            Long productId;
+            Long supplierId;
 
-        if(supplierProducts.isEmpty()){
-            return Collections.emptyList();
-        }
+            if(productSku != null){
+                productId = productRepository.findBySku(productSku.toUpperCase()).getId();
+            }else {
+                productId = null;
+            }
 
-        return supplierProducts.stream()
-                .map(supplierProduct -> SupplierProductDTO.builder()
-                        .productSku(supplierProduct.getProduct().getSku())
-                        .purchasePrice(supplierProduct.getPurchasePrice())
-                        .serial(supplierProduct.getSerial())
-                        .supplierName(supplierProduct.getSupplier().getBusinessName())
-                        .supplierProductId(supplierProduct.getId())
-                        .build())
-                .toList();
+            if(supplierRuc != null){
+                supplierId = supplierRepository.findByRuc(supplierRuc.toUpperCase()).getId();
+            }else{
+                supplierId = null;
+            }
+
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, productId, supplierId, purchasePrice, sort,
+                        sortColumn, pageNumber, pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (supplierProductPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplierName(supplierProduct.getSupplier().getBusinessName())
+                            .build())
+                    .toList();
+
+            return new PageImpl<>(supplierProductDTOs, supplierProductPage.getPageable(),
+                    supplierProductPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierProduct> supplierProducts;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(id != null){
+                    supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(clientId,id);
+                }else {
+                    supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(supplierProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return supplierProducts.stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplierName(supplierProduct.getSupplier().getBusinessName())
+                            .supplierProductId(supplierProduct.getId())
+                            .build())
+                    .toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierProduct> supplierProducts;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
+                if(id != null){
+                    supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusFalse(clientId,id);
+                }else{
+                    supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(supplierProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return supplierProducts.stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplierName(supplierProduct.getSupplier().getBusinessName())
+                            .supplierProductId(supplierProduct.getId())
+                            .build())
+                    .toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user, String productSku) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierProduct> supplierProducts;
+            Long clientId;
+            Long productId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
+                productId = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase()).getId();
+                supplierProducts = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(clientId,productId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(supplierProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return supplierProducts.stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplierName(supplierProduct.getSupplier().getBusinessName())
+                            .supplierProductId(supplierProduct.getId())
+                            .build())
+                    .toList();
+        });
     }
 
 }

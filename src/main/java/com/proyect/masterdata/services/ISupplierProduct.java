@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.domain.Page;
 
@@ -14,15 +15,17 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 public interface ISupplierProduct {
         ResponseSuccess save(RequestSupplierProduct requestSupplierProduct, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> saveAsync(RequestSupplierProduct requestSupplierProduct, String tokenUser)
+                throws InternalErrorExceptions, BadRequestExceptions;
         ResponseSuccess saveAll(List<RequestSupplierProduct> requestSupplierProducts, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        ResponseDelete delete(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        Page<SupplierProductDTO> list(String serial, String user,String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
+        CompletableFuture<ResponseDelete> delete(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<Page<SupplierProductDTO>> list(String serial, String user,String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws BadRequestExceptions;
-        Page<SupplierProductDTO> listFalse(String serial, String user,String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
+        CompletableFuture<Page<SupplierProductDTO>> listFalse(String serial, String user,String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
                                       Integer pageSize) throws BadRequestExceptions;
-        List<SupplierProductDTO> listSupplierProduct(String user, Long id) throws BadRequestExceptions,InternalErrorExceptions;
-        List<SupplierProductDTO> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
-        List<SupplierProductDTO> listSupplierProductByProduct(String user,String productSku) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user, Long id) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user,String productSku) throws BadRequestExceptions,InternalErrorExceptions;
 
 }
