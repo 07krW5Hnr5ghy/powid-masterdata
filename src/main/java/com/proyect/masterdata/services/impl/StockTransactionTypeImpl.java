@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Service;
 
@@ -70,6 +71,47 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            StockTransactionType stockTransactionType;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                stockTransactionType = stockTransactionTypeRepository.findByName(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (stockTransactionType != null) {
+                throw new BadRequestExceptions(Constants.ErrorStockTransactionTypeExists);
+            }
+
+            try {
+                stockTransactionTypeRepository.save(StockTransactionType.builder()
+                        .name(name.toUpperCase())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public ResponseSuccess saveAll(List<String> names, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -111,62 +153,66 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
     }
 
     @Override
-    public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        StockTransactionType stockTransactionType;
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            StockTransactionType stockTransactionType;
 
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            stockTransactionType = stockTransactionTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                stockTransactionType = stockTransactionTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (stockTransactionType == null) {
-            throw new BadRequestExceptions(Constants.ErrorStockTransactionType);
-        }
+            if (stockTransactionType == null) {
+                throw new BadRequestExceptions(Constants.ErrorStockTransactionType);
+            }
 
-        try {
-            stockTransactionType.setUpdateDate(new Date(System.currentTimeMillis()));
-            stockTransactionType.setStatus(false);
+            try {
+                stockTransactionType.setUpdateDate(new Date(System.currentTimeMillis()));
+                stockTransactionType.setStatus(false);
 
-            stockTransactionTypeRepository.save(stockTransactionType);
+                stockTransactionTypeRepository.save(stockTransactionType);
 
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<StockTransactionTypeDTO> list() throws BadRequestExceptions {
-        List<StockTransactionTypeDTO> stockTransactionTypeList = new ArrayList<>();
+    public CompletableFuture<List<StockTransactionTypeDTO>> list() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<StockTransactionTypeDTO> stockTransactionTypeList = new ArrayList<>();
 
-        try {
-            stockTransactionTypeList = stockTransactionTypeRepository.findAllByStatusTrue().stream()
-                    .map(stockTransactionType -> StockTransactionTypeDTO.builder()
-                            .name(stockTransactionType.getName())
-                            .build())
-                    .toList();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                stockTransactionTypeList = stockTransactionTypeRepository.findAllByStatusTrue().stream()
+                        .map(stockTransactionType -> StockTransactionTypeDTO.builder()
+                                .name(stockTransactionType.getName())
+                                .build())
+                        .toList();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (stockTransactionTypeList.isEmpty()) {
-            return Collections.emptyList();
-        }
+            if (stockTransactionTypeList.isEmpty()) {
+                return Collections.emptyList();
+            }
 
-        return stockTransactionTypeList;
+            return stockTransactionTypeList;
+        });
     }
 
 }
