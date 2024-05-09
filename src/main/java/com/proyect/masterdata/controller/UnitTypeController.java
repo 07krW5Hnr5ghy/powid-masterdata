@@ -13,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({"*"})
@@ -27,9 +29,9 @@ public class UnitTypeController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions {
-        ResponseSuccess result = iUnitType.save(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iUnitType.saveAsync(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping(value = "unit-types", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -45,16 +47,16 @@ public class UnitTypeController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_TYPE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iUnitType.delete(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iUnitType.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_TYPE_GET')")
-    public ResponseEntity<List<UnitTypeDTO>> list() throws BadRequestExceptions {
-        List<UnitTypeDTO> result = iUnitType.listUnitType();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<List<UnitTypeDTO>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<UnitTypeDTO>> result = iUnitType.listUnitType();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
 }

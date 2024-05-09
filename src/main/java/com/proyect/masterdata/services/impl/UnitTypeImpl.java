@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -67,6 +68,48 @@ public class UnitTypeImpl implements IUnitType {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            UnitType unitType;
+
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                unitType = unitTypeRepository.findByName(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(unitType != null){
+                throw new BadRequestExceptions(Constants.ErrorUnitTypeExists);
+            }
+
+            try {
+                unitTypeRepository.save(UnitType.builder()
+                        .name(name.toUpperCase())
+                        .status(true)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(user.getUsername())
+                        .build());
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public ResponseSuccess saveAll(List<String> names, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
 
@@ -110,59 +153,61 @@ public class UnitTypeImpl implements IUnitType {
     }
 
     @Override
-    public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            UnitType unitType;
 
-        User user;
-        UnitType unitType;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                unitType = unitTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            unitType = unitTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if(unitType == null){
+                throw new BadRequestExceptions(Constants.ErrorUnitType);
+            }
 
-        if(unitType == null){
-            throw new BadRequestExceptions(Constants.ErrorUnitType);
-        }
-
-        try {
-            unitType.setStatus(false);
-            unitType.setUpdateDate(new Date(System.currentTimeMillis()));
-            unitTypeRepository.save(unitType);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                unitType.setStatus(false);
+                unitType.setUpdateDate(new Date(System.currentTimeMillis()));
+                unitTypeRepository.save(unitType);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<UnitTypeDTO> listUnitType() throws BadRequestExceptions {
+    public CompletableFuture<List<UnitTypeDTO>> listUnitType() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<UnitType> unitTypes;
 
-        List<UnitType> unitTypes;
+            try{
+                unitTypes = unitTypeRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        try{
-            unitTypes = unitTypeRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if(unitTypes.isEmpty()){
+                return Collections.emptyList();
+            }
 
-        if(unitTypes.isEmpty()){
-            return Collections.emptyList();
-        }
-
-        return unitTypes.stream().map(unitType -> UnitTypeDTO.builder()
-                .name(unitType.getName())
-                .build()).toList();
+            return unitTypes.stream().map(unitType -> UnitTypeDTO.builder()
+                    .name(unitType.getName())
+                    .build()).toList();
+        });
     }
 }
