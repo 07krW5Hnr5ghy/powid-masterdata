@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -64,21 +65,62 @@ public class ShipmentTypeImpl implements IShipmentType {
     }
 
     @Override
-    public List<String> list() throws BadRequestExceptions {
-        List<ShipmentType> shipmentTypeList;
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            ShipmentType shipmentType;
 
-        try{
-            shipmentTypeList = shipmentTypeRepository.findAllByStatusTrue();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                shipmentType = shipmentTypeRepository.findByName(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if(shipmentTypeList.isEmpty()){
-            return Collections.emptyList();
-        }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        List<String> shipmentTypes = shipmentTypeList.stream().map(ShipmentType::getName).toList();
-        return shipmentTypes;
+            if(shipmentType != null){
+                throw new BadRequestExceptions(Constants.ErrorShipmentTypeExists);
+            }
+
+            try{
+                shipmentTypeRepository.save(ShipmentType.builder()
+                        .name(name.toUpperCase())
+                        .status(true)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(user.getUsername())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<String>> list() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<ShipmentType> shipmentTypeList;
+
+            try{
+                shipmentTypeList = shipmentTypeRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(shipmentTypeList.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return shipmentTypeList.stream().map(ShipmentType::getName).toList();
+        });
     }
 }
