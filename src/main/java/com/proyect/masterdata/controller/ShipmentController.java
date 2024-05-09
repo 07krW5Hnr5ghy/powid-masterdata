@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -27,9 +29,9 @@ public class ShipmentController {
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SHIPMENT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestShipment requestShipment,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iShipment.save(requestShipment, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iShipment.saveAsync(requestShipment, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
@@ -42,17 +44,17 @@ public class ShipmentController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize
-    ) throws BadRequestExceptions{
-        Page<ShipmentDTO> result = iShipment.list(purchaseSerial,user,warehouse,shipmentType,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<ShipmentDTO>> result = iShipment.list(purchaseSerial,user,warehouse,shipmentType,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
     public ResponseEntity<List<ShipmentDTO>> listShipment(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions{
-        List<ShipmentDTO> result = iShipment.listShipment(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ShipmentDTO>> result = iShipment.listShipment(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
 }

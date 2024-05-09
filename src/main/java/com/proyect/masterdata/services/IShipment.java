@@ -9,12 +9,14 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IShipment {
     ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    Page<ShipmentDTO> list(String serialPurchase, String user, String warehouse, String shipmentType, String sort, String sortColumn,
+    CompletableFuture<ResponseSuccess> saveAsync(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<Page<ShipmentDTO>> list(String serialPurchase, String user, String warehouse, String shipmentType, String sort, String sortColumn,
                                   Integer pageNumber, Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
-    Page<ShipmentDTO> listFalse(String serialPurchase, String user, String warehouse, String shipmentType, String sort, String sortColumn,
+    CompletableFuture<Page<ShipmentDTO>> listFalse(String serialPurchase, String user, String warehouse, String shipmentType, String sort, String sortColumn,
                                   Integer pageNumber, Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
-    List<ShipmentDTO> listShipment(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<ShipmentDTO>> listShipment(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }
