@@ -56,5 +56,4 @@ public class ShipmentController {
         CompletableFuture<List<ShipmentDTO>> result = iShipment.listShipment(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
-
 }

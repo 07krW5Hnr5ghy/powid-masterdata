@@ -11,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -27,17 +29,17 @@ public class ShipmentItemController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<ShipmentItemDTO> result = iShipmentItem.list(purchaseSerial, user, supplierProductSerial, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<ShipmentItemDTO>> result = iShipmentItem.list(purchaseSerial, user, supplierProductSerial, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_ITEM_GET')")
     public ResponseEntity<List<ShipmentItemDTO>> listShipment(
             @RequestParam("user") String user,
             @RequestParam(value = "id", required = false) Long id
-    ) throws BadRequestExceptions {
-        List<ShipmentItemDTO> result = iShipmentItem.listShipmentItem(user,id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ShipmentItemDTO>> result = iShipmentItem.listShipmentItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
