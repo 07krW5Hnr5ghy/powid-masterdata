@@ -11,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -29,18 +31,18 @@ public class StockTransactionItemController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<StockTransactionItemDTO> result = iStockTransactionItem.list(user, stockTransactionSerial, supplierProductSerial, sort, sortColumn, pageNumber,
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<StockTransactionItemDTO>> result = iStockTransactionItem.list(user, stockTransactionSerial, supplierProductSerial, sort, sortColumn, pageNumber,
                 pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_ITEM_GET')")
     public ResponseEntity<List<StockTransactionItemDTO>> listStockTransactionItem(
             @RequestParam("user") String user,
             @RequestParam(value = "id",required = false) Long id
-    ) throws BadRequestExceptions {
-        List<StockTransactionItemDTO> result = iStockTransactionItem.listStockTransactionItem(user,id);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockTransactionItemDTO>> result = iStockTransactionItem.listStockTransactionItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
