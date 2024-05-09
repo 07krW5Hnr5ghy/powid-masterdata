@@ -24,6 +24,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -72,6 +73,45 @@ public class SizeTypeImpl implements ISizeType {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            SizeType sizeType;
+
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                sizeType = sizeTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (sizeType != null) {
+                throw new BadRequestExceptions(Constants.ErrorSizeTypeExists.toUpperCase());
+            }
+
+            try {
+                sizeTypeRepository.save(SizeType.builder()
+                        .name(name.toUpperCase())
+                        .status(true)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public ResponseSuccess saveAll(List<String> names, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -113,90 +153,98 @@ public class SizeTypeImpl implements ISizeType {
 
     @Override
     @Transactional
-    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        SizeType sizeType;
+    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            SizeType sizeType;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            sizeType = sizeTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                sizeType = sizeTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (sizeType == null) {
-            throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (sizeType == null) {
+                throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
+            }
 
-        try {
-            sizeType.setStatus(false);
-            sizeType.setUpdateDate(new Date(System.currentTimeMillis()));
-            sizeTypeRepository.save(sizeType);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                sizeType.setStatus(false);
+                sizeType.setUpdateDate(new Date(System.currentTimeMillis()));
+                sizeTypeRepository.save(sizeType);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<SizeTypeDTO> listSizeType() throws BadRequestExceptions {
-        List<SizeType> sizeTypes = new ArrayList<>();
+    public CompletableFuture<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SizeType> sizeTypes = new ArrayList<>();
 
-        try {
-            sizeTypes = sizeTypeRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                sizeTypes = sizeTypeRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (sizeTypes.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypes);
+            if (sizeTypes.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypes);
+        });
     }
 
     @Override
-    public Page<SizeTypeDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<SizeTypeDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<SizeType> sizeTypePage;
-        try {
-            sizeTypePage = sizeTypeRepositoryCustom.searchForSizeType(name, user, sort, sortColumn, pageNumber,
-                    pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (sizeTypePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypePage.getContent()),
-                sizeTypePage.getPageable(), sizeTypePage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<SizeType> sizeTypePage;
+            try {
+                sizeTypePage = sizeTypeRepositoryCustom.searchForSizeType(name, user, sort, sortColumn, pageNumber,
+                        pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (sizeTypePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypePage.getContent()),
+                    sizeTypePage.getPageable(), sizeTypePage.getTotalElements());
+        });
     }
 
     @Override
-    public Page<SizeTypeDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+    public CompletableFuture<Page<SizeTypeDTO>> listStatusFalse(String name, String user, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<SizeType> sizeTypePage;
-        try {
-            sizeTypePage = sizeTypeRepositoryCustom.searchForSizeType(name, user, sort, sortColumn, pageNumber,
-                    pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (sizeTypePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypePage.getContent()),
-                sizeTypePage.getPageable(), sizeTypePage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<SizeType> sizeTypePage;
+            try {
+                sizeTypePage = sizeTypeRepositoryCustom.searchForSizeType(name, user, sort, sortColumn, pageNumber,
+                        pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (sizeTypePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypePage.getContent()),
+                    sizeTypePage.getPageable(), sizeTypePage.getTotalElements());
+        });
     }
 
 }
