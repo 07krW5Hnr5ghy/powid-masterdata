@@ -19,6 +19,8 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IUnit;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,9 +39,9 @@ public class UnitController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestUnit requestUnit,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iUnit.save(requestUnit, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iUnit.saveAsync(requestUnit, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping(value = "units", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -56,25 +58,25 @@ public class UnitController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseDelete result = iUnit.delete(name, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iUnit.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_GET')")
-    public ResponseEntity<List<UnitDTO>> list() throws BadRequestExceptions {
-        List<UnitDTO> result = iUnit.listUnit();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<List<UnitDTO>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<UnitDTO>> result = iUnit.listUnit();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("unit-type")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_GET')")
     public ResponseEntity<List<UnitDTO>> list(
             @RequestParam("unitTypeName") String unitTypeName
-    ) throws BadRequestExceptions {
-        List<UnitDTO> result = iUnit.listUnitByType(unitTypeName);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<UnitDTO>> result = iUnit.listUnitByType(unitTypeName);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
 }

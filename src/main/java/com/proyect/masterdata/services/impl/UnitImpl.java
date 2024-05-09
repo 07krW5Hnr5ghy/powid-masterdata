@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.UnitType;
 import com.proyect.masterdata.dto.request.RequestUnit;
@@ -84,6 +85,56 @@ public class UnitImpl implements IUnit {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestUnit requestUnit, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Unit unit;
+            UnitType unitType;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                unit = unitRepository.findByNameAndStatusTrue(requestUnit.getName().toUpperCase());
+                unitType = unitTypeRepository.findByNameAndStatusTrue(requestUnit.getUnitType().toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (unit != null) {
+                throw new BadRequestExceptions(Constants.ErrorUnitExists);
+            }
+
+            if(unitType == null){
+                throw new BadRequestExceptions(Constants.ErrorUnitType);
+            }
+
+            try {
+                unitRepository.save(Unit.builder()
+                        .name(requestUnit.getName().toUpperCase())
+                        .unitType(unitType)
+                        .unitTypeId(unitType.getId())
+                        .status(true)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public ResponseSuccess saveAll(List<String> names,String unitType, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -132,85 +183,90 @@ public class UnitImpl implements IUnit {
     }
 
     @Override
-    public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        Unit unit;
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Unit unit;
 
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            unit = unitRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                unit = unitRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (user != null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (user != null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (unit == null) {
-            throw new BadRequestExceptions(Constants.ErrorUnit);
-        }
+            if (unit == null) {
+                throw new BadRequestExceptions(Constants.ErrorUnit);
+            }
 
-        try {
-            unit.setStatus(false);
-            unit.setUpdateDate(new Date(System.currentTimeMillis()));
-            unitRepository.save(unit);
+            try {
+                unit.setStatus(false);
+                unit.setUpdateDate(new Date(System.currentTimeMillis()));
+                unitRepository.save(unit);
 
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
 
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<UnitDTO> listUnit() throws BadRequestExceptions {
+    public CompletableFuture<List<UnitDTO>> listUnit() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Unit> units;
 
-        List<Unit> units;
+            try {
+                units = unitRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        try {
-            units = unitRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if (units.isEmpty()) {
+                return Collections.emptyList();
+            }
 
-        if (units.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return units.stream().map(unit -> UnitDTO.builder()
-                .name(unit.getName())
-                .unitType(unit.getUnitType().getName())
-                .build()).toList();
+            return units.stream().map(unit -> UnitDTO.builder()
+                    .name(unit.getName())
+                    .unitType(unit.getUnitType().getName())
+                    .build()).toList();
+        });
     }
 
     @Override
-    public List<UnitDTO> listUnitByType(String unitTypeName) throws BadRequestExceptions {
-        List<Unit> units;
-        Long unitTypeId;
+    public CompletableFuture<List<UnitDTO>> listUnitByType(String unitTypeName) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Unit> units;
+            Long unitTypeId;
 
-        try {
-            unitTypeId = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase()).getId();
-            units = unitRepository.findAllByUnitTypeIdAndStatusTrue(unitTypeId);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                unitTypeId = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase()).getId();
+                units = unitRepository.findAllByUnitTypeIdAndStatusTrue(unitTypeId);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (units.isEmpty()) {
-            return Collections.emptyList();
-        }
+            if (units.isEmpty()) {
+                return Collections.emptyList();
+            }
 
-        return units.stream().map(unit -> UnitDTO.builder()
-                .name(unit.getName())
-                .unitType(unit.getUnitType().getName())
-                .build()).toList();
+            return units.stream().map(unit -> UnitDTO.builder()
+                    .name(unit.getName())
+                    .unitType(unit.getUnitType().getName())
+                    .build()).toList();
+        });
     }
 
 }
