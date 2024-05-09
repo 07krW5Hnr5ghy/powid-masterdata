@@ -1,6 +1,8 @@
 package com.proyect.masterdata.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -29,9 +31,9 @@ public class WarehouseController {
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestWarehouse requestWarehouse,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iWarehouse.save(requestWarehouse, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iWarehouse.saveAsync(requestWarehouse, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping(value = "warehouses", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -51,27 +53,27 @@ public class WarehouseController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<WarehouseDTO> result = iWarehouse.list(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<WarehouseDTO>> result = iWarehouse.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_GET')")
     public ResponseEntity<List<WarehouseDTO>> listWarehouse(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<WarehouseDTO> result = iWarehouse.listWarehouse(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<WarehouseDTO>> result = iWarehouse.listWarehouse(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping("status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_GET')")
     public ResponseEntity<List<WarehouseDTO>> listWarehouseFalse(
             @RequestParam("user") String user
-    ) throws BadRequestExceptions {
-        List<WarehouseDTO> result = iWarehouse.listWarehouseFalse(user);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<WarehouseDTO>> result = iWarehouse.listWarehouseFalse(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
 }
