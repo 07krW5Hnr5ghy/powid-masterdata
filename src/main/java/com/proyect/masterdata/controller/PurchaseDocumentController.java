@@ -40,7 +40,8 @@ public class PurchaseDocumentController {
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_DOCUMENT_DELETE')")
-    public List<String> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        return iPurchaseDocument.list().get();
+    public ResponseEntity<List<String>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<String>> result = iPurchaseDocument.list();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
