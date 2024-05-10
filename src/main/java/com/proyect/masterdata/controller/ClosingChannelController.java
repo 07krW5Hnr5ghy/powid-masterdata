@@ -41,7 +41,7 @@ public class ClosingChannelController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     public ResponseEntity<Page<ClosingChannelDTO>> listClosingChannel(
             @RequestParam(value = "name",required = false) String name,
             @RequestParam(value = "sort", required = false) String sort,
@@ -51,5 +51,11 @@ public class ClosingChannelController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ClosingChannelDTO>> result = iClosingChannel.listClosingChannel(name, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<ClosingChannelDTO>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ClosingChannelDTO>> result = iClosingChannel.list();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

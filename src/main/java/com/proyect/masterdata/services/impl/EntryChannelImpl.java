@@ -96,4 +96,20 @@ public class EntryChannelImpl implements IEntryChannel {
             return new PageImpl<>(entryChannelDTOS,entryChannelPage.getPageable(),entryChannelPage.getTotalElements());
         });
     }
+
+    @Override
+    public CompletableFuture<List<EntryChannelDTO>> list() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<EntryChannel> entryChannelList;
+            try {
+                entryChannelList = entryChannelRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(entryChannelList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return entryChannelMapper.listEntryChannelToListEntryChannelDTO(entryChannelList);
+        });
+    }
 }

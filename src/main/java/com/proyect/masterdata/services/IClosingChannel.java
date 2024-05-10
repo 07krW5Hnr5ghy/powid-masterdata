@@ -13,4 +13,5 @@ public interface IClosingChannel {
     CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<Page<ClosingChannelDTO>> listClosingChannel(String name, String sort, String sortColumn, Integer pageNumber,
                                                                   Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<List<ClosingChannelDTO>> list() throws BadRequestExceptions;
 }

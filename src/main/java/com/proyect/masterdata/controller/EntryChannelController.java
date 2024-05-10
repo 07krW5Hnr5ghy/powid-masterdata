@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -29,7 +30,7 @@ public class EntryChannelController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     public ResponseEntity<Page<EntryChannelDTO>> listEntryChannel(
             @RequestParam(value = "name",required = false) String name,
             @RequestParam(value = "sort", required = false) String sort,
@@ -39,5 +40,11 @@ public class EntryChannelController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<EntryChannelDTO>> result = iEntryChannel.listEntryChannel(name,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<EntryChannelDTO>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<EntryChannelDTO>> result = iEntryChannel.list();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

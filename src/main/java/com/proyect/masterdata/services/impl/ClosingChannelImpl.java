@@ -99,4 +99,23 @@ public class ClosingChannelImpl implements IClosingChannel {
 
     }
 
+    @Override
+    public CompletableFuture<List<ClosingChannelDTO>> list() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<ClosingChannel> closingChannelList;
+            try{
+                closingChannelList = closingChannelRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(closingChannelList.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return closingChannelMapper.listClosingChannelToListClosindChannelDTO(closingChannelList);
+        });
+    }
+
 }
