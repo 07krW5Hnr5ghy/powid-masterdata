@@ -107,6 +107,8 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                         .orderReturnType(orderReturnType)
                         .orderReturnTypeId(orderReturnType.getId())
                         .product(product)
+                                .order(orderStockItem.getOrdering())
+                                .orderId(orderStockItem.getOrderId())
                         .productId(product.getId())
                         .quantity(requestOrderReturnItem.getQuantity())
                         .supplierProduct(supplierProduct)

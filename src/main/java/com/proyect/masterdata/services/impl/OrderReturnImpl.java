@@ -31,7 +31,54 @@ public class OrderReturnImpl implements IOrderReturn {
     private final UserRepository userRepository;
     private final IOrderReturnItem iOrderReturnItem;
     @Override
-    public CompletableFuture<ResponseSuccess> save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        User user;
+        OrderReturn orderReturn;
+        OrderStock orderStock;
+        try{
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            orderReturn = orderReturnRepository.findByOrderId(orderId);
+            orderStock = orderStockRepository.findByOrderId(orderId);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+        if(orderReturn != null){
+            throw new BadRequestExceptions(Constants.ErrorOrderReturnExists);
+        }
+        if(orderStock == null){
+            throw new BadRequestExceptions(Constants.ErrorOrderStock);
+        }
+        try {
+            OrderReturn newOrderReturn = orderReturnRepository.save(OrderReturn.builder()
+                    .order(orderStock.getOrdering())
+                    .orderId(orderStock.getOrderId())
+                    .orderStock(orderStock)
+                    .orderStockId(orderStock.getId())
+                    .tokenUser(user.getUsername())
+                    .client(user.getClient())
+                    .clientId(user.getClientId())
+                    .status(true)
+                    .build());
+            for(RequestOrderReturnItem requestOrderReturnItem : requestOrderReturnItemList){
+                iOrderReturnItem.save(newOrderReturn.getId(),orderStock.getOrderId(),requestOrderReturnItem,tokenUser);
+            }
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            e.printStackTrace();
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderReturn orderReturn;

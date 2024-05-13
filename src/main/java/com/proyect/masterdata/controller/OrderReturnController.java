@@ -27,7 +27,7 @@ public class OrderReturnController {
             @RequestBody() List<RequestOrderReturnItem> requestOrderReturnItemList,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrderReturn.save(orderId,requestOrderReturnItemList,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iOrderReturn.saveAsync(orderId,requestOrderReturnItemList,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
