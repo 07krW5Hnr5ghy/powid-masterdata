@@ -9,4 +9,5 @@ public interface OrderReturnItemRepository extends JpaRepository<OrderReturnItem
     OrderReturnItem findBySupplierProductIdAndProductIdAndOrderItemId(Long supplierProductId,Long productId,Long orderId);
     List<OrderReturnItem> findAllByClientIdAndOrderIdAndStatusTrue(Long clientId,Long orderId);
     List<OrderReturnItem> findAllByClientIdAndStatusTrue(Long clientId);
+    OrderReturnItem findBySupplierProductIdAndOrderId(Long supplierProductId,Long orderId);
 }

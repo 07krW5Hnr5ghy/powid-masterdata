@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderReturnItemDTO;
 import com.proyect.masterdata.dto.request.RequestOrderReturnItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -129,6 +130,46 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(Long orderId, String supplierProductSerial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            OrderReturn orderReturn;
+            SupplierProduct supplierProduct;
+            OrderReturnItem orderReturnItem;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                orderReturn = orderReturnRepository.findByOrderId(orderId);
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
+            if(orderReturn==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderReturn);
+            }else{
+                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderId(supplierProduct.getId(), orderReturn.getOrderId());
+            }
+            try{
+                orderReturnItem.setStatus(false);
+                orderReturnItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                return ResponseDelete.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
