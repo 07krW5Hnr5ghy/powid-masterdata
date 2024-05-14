@@ -164,6 +164,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             try{
                 orderReturnItem.setStatus(false);
                 orderReturnItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderReturnItemRepository.save(orderReturnItem);
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
