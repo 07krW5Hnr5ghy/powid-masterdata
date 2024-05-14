@@ -147,6 +147,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 orderReturn = orderReturnRepository.findByOrderId(orderId);
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
@@ -170,6 +171,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                         .code(200)
                         .build();
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

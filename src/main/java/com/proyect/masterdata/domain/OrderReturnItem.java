@@ -63,35 +63,35 @@ public class OrderReturnItem {
     @Column(name = "client_id")
     private Long clientId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_return_id",columnDefinition = "orderReturnId",insertable = false,updatable = false)
     private OrderReturn orderReturn;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_stock_item_id",columnDefinition = "orderStockItemId",insertable = false,updatable = false)
     private OrderStockItem orderStockItem;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id",columnDefinition = "productId",insertable = false,updatable = false)
     private Product product;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_return_type_id",columnDefinition = "orderReturnTypeId",insertable = false,updatable = false)
     private OrderReturnType orderReturnType;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_item_id",columnDefinition = "orderItemId",insertable = false,updatable = false)
     private OrderItem orderItem;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_product_id",columnDefinition = "supplierProductId",insertable = false,updatable = false)
     private SupplierProduct supplierProduct;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
     private Ordering order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 }
