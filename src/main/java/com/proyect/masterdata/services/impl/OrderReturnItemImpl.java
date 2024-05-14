@@ -86,7 +86,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             if(orderStockItem == null){
                 throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
             }else{
-                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndProductIdAndOrderItemId(supplierProduct.getId(), product.getId(),orderItem.getId());
+                orderReturnItem = orderReturnItemRepository.findByClientIdAndOrderIdAndSupplierProductIdAndStatusTrue(user.getClientId(),orderId,supplierProduct.getId());
             }
             if(orderReturnItem != null){
                 throw new BadRequestExceptions(Constants.ErrorOrderItemExists);
@@ -99,17 +99,12 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             }
             try {
                 orderReturnItemRepository.save(OrderReturnItem.builder()
-                        .orderItem(orderItem)
-                        .orderItemId(orderItem.getId())
                         .orderReturn(orderReturn)
                         .orderReturnId(orderReturn.getId())
-                        .orderStockItem(orderStockItem)
-                        .orderStockItemId(orderStockItem.getId())
                         .orderReturnType(orderReturnType)
                         .orderReturnTypeId(orderReturnType.getId())
                         .product(product)
-                                .order(orderStockItem.getOrdering())
-                                .orderId(orderStockItem.getOrderId())
+                        .orderId(orderStockItem.getOrderId())
                         .productId(product.getId())
                         .quantity(requestOrderReturnItem.getQuantity())
                         .supplierProduct(supplierProduct)
@@ -198,14 +193,14 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 return Collections.emptyList();
             }
             return orderReturnItemList.stream().map(orderReturnItem -> OrderReturnItemDTO.builder()
-                    .orderId(orderReturnItem.getOrderItem().getOrderId())
+                    .orderId(orderReturnItem.getOrderId())
                     .productSku(orderReturnItem.getProduct().getSku())
                     .supplierProduct(orderReturnItem.getSupplierProduct().getSerial())
                     .returnType(orderReturnItem.getOrderReturnType().getName())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .updateDate(new Date(System.currentTimeMillis()))
                     .quantity(orderReturnItem.getQuantity())
-                    .warehouse(orderReturnItem.getOrderStockItem().getOrderStock().getWarehouse().getName())
+                    .warehouse(orderReturnItem.getOrderReturn().getOrderStock().getWarehouse().getName())
                     .build()).toList();
         });
     }
