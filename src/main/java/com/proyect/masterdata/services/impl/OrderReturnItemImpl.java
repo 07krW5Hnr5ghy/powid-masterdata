@@ -38,7 +38,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     private final IGeneralStock iGeneralStock;
     private final IWarehouseStock iWarehouseStock;
     @Override
-    public CompletableFuture<ResponseSuccess> save(Long orderReturnId, Long orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             SupplierProduct supplierProduct;
@@ -54,7 +54,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderReturnItem.getSupplierProductSerial().toUpperCase());
                 orderReturnType = orderReturnTypeRepository.findByNameAndStatusTrue(requestOrderReturnItem.getOrderReturnType().toUpperCase());
                 product = productRepository.findBySkuAndStatusTrue(requestOrderReturnItem.getProductSku().toUpperCase());
-                orderReturn = orderReturnRepository.findByOrderId(orderReturnId);
+                orderReturn = orderReturnRepository.findByOrderId(orderId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

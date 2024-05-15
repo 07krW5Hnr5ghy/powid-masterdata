@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface IOrderReturnItem {
-    CompletableFuture<ResponseSuccess> save(Long orderReturnId, Long orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(Long orderId,String supplierProductSerial,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<OrderReturnItemDTO>> list(String user,Long orderId) throws BadRequestExceptions;
 }

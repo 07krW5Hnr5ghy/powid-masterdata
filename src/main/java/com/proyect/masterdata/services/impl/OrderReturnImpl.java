@@ -64,7 +64,7 @@ public class OrderReturnImpl implements IOrderReturn {
                     .status(true)
                     .build());
             for(RequestOrderReturnItem requestOrderReturnItem : requestOrderReturnItemList){
-                iOrderReturnItem.save(newOrderReturn.getId(),orderStock.getOrderId(),requestOrderReturnItem,tokenUser);
+                iOrderReturnItem.save(orderStock.getOrderId(),requestOrderReturnItem,tokenUser);
             }
             return ResponseSuccess.builder()
                     .code(200)
@@ -112,7 +112,7 @@ public class OrderReturnImpl implements IOrderReturn {
                         .status(true)
                         .build());
                 for(RequestOrderReturnItem requestOrderReturnItem : requestOrderReturnItemList){
-                    iOrderReturnItem.save(newOrderReturn.getId(),orderStock.getOrderId(),requestOrderReturnItem,tokenUser);
+                    iOrderReturnItem.save(orderStock.getOrderId(),requestOrderReturnItem,tokenUser);
                 }
                 return ResponseSuccess.builder()
                         .code(200)
