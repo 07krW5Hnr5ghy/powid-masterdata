@@ -174,6 +174,49 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> update(Long orderId, String supplierProductSerial, Integer quantity, String tokenUser) throws InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            OrderReturn orderReturn;
+            SupplierProduct supplierProduct;
+            OrderReturnItem orderReturnItem;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                orderReturn = orderReturnRepository.findByOrderId(orderId);
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
+            if(orderReturn==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderReturn);
+            }else{
+                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderId(supplierProduct.getId(), orderReturn.getOrderId());
+            }
+            try{
+                orderReturnItem.setQuantity(quantity);
+                orderReturnItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderReturnItemRepository.save(orderReturnItem);
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public CompletableFuture<List<OrderReturnItemDTO>> list(String user, Long orderId) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Long clientId;
