@@ -70,6 +70,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
             if (warehouseStock != null) {
                 warehouseStock.setQuantity(warehouseStock.getQuantity() + quantity);
                 warehouseStock.setUpdateDate(new Date(System.currentTimeMillis()));
+                warehouseStock.setTokenUser(user.getUsername());
                 warehouseStockRepository.save(warehouseStock);
             } else {
                 warehouseStockRepository.save(WarehouseStock.builder()

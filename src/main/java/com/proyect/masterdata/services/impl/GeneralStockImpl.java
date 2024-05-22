@@ -65,6 +65,7 @@ public class GeneralStockImpl implements IGeneralStock {
                 if (generalStock != null) {
                     generalStock.setQuantity(generalStock.getQuantity() + quantity);
                     generalStock.setUpdateDate(new Date(System.currentTimeMillis()));
+                    generalStock.setTokenUser(user.getUsername());
                     generalStockRepository.save(generalStock);
                 } else {
                     generalStockRepository.save(GeneralStock.builder()

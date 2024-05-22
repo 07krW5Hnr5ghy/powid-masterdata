@@ -3,11 +3,15 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.request.RequestPurchaseExcel;
 import com.proyect.masterdata.dto.request.RequestShipmentExcel;
+import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IExcel;
+import com.proyect.masterdata.services.IGeneralStock;
+import com.proyect.masterdata.services.IStockTransaction;
+import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -38,6 +42,9 @@ public class ExcelImpl implements IExcel {
     private final WarehouseRepository warehouseRepository;
     private final StockReturnRepository stockReturnRepository;
     private final ShipmentItemRepository shipmentItemRepository;
+    private final IStockTransaction iStockTransaction;
+    private final IWarehouseStock iWarehouseStock;
+    private final IGeneralStock iGeneralStock;
     @Override
     public CompletableFuture<ResponseSuccess> purchase(RequestPurchaseExcel requestPurchaseExcel,MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -107,7 +114,6 @@ public class ExcelImpl implements IExcel {
                     purchaseItem.setPurchase(newPurchase);
                     purchaseItem.setPurchaseId(newPurchase.getId());
                     data.put(j,new ArrayList<>());
-                    System.out.println(i);
                     for(Cell cell:row){
                         if(j>=1 && (cell.getCellType()==STRING)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
@@ -206,6 +212,7 @@ public class ExcelImpl implements IExcel {
                 Workbook workbook = WorkbookFactory.create(inputStream);
                 Sheet sheet = workbook.getSheetAt(0);
                 int i = 0;
+                List<RequestStockTransactionItem> stockTransactionItemList = new ArrayList<>();
                 for(Row row:sheet){
                     SupplierProduct supplierProduct;
                     PurchaseItem purchaseItem;
@@ -241,19 +248,18 @@ public class ExcelImpl implements IExcel {
                         .tokenUser(user.getUsername())
                         .build());
                 int j = 0;
-                System.out.println(j);
                 for(Row row: sheet){
-                    if(j>=1){}
                     ShipmentItem shipmentItem = ShipmentItem.builder().build();
                     SupplierProduct supplierProduct;
                     PurchaseItem purchaseItem;
+                    RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder().build();
                     int ji = 0;
                     for(Cell cell:row){
                         System.out.println(ji);
                         if(j>=1 && (cell.getCellType() == STRING) && (ji == 0)){
-                            System.out.println(cell);
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
+                            requestStockTransactionItem.setSupplierProductSerial(cell.getRichStringCellValue().getString().toUpperCase());
                             shipmentItem.setSupplierProduct(supplierProduct);
                             shipmentItem.setSupplierProductId(supplierProduct.getId());
                             shipmentItem.setPurchaseItem(purchaseItem);
@@ -261,10 +267,13 @@ public class ExcelImpl implements IExcel {
                         }
                         if(j>=1 && (cell.getCellType()==NUMERIC)){
                             shipmentItem.setQuantity((int) cell.getNumericCellValue());
+                            requestStockTransactionItem.setQuantity((int) cell.getNumericCellValue());
+
                         }
                         if(j>=1 && (cell.getCellType() == STRING) && (ji == 2)){
                             shipmentItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
                         }
+
                         ji++;
                     }
                     if(j>=1){
@@ -274,16 +283,22 @@ public class ExcelImpl implements IExcel {
                         shipmentItem.setClientId(user.getClientId());
                         shipmentItem.setStatus(true);
                         shipmentItem.setTokenUser(user.getUsername());
+                        stockTransactionItemList.add(requestStockTransactionItem);
                         shipmentItemRepository.save(shipmentItem);
+                        iWarehouseStock.in(warehouse,shipmentItem.getSupplierProduct(),shipmentItem.getQuantity(),user);
+                        iGeneralStock.in(shipmentItem.getSupplierProduct().getSerial(),shipmentItem.getQuantity(),user.getUsername());
                     }
                     j++;
                 }
+                StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipmentExcel.getPurchaseSerial().toUpperCase(), warehouse,stockTransactionItemList,"ENTRADA",user);
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
                         .build();
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            }catch (RuntimeException e){
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
     }
