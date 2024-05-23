@@ -109,8 +109,8 @@ public class StockTransferImpl implements IStockTransfer {
                 iWarehouseStock.in(destinationWarehouse,supplierProduct, requestStockTransferItem.getQuantity(), user);
             }
 
-            iStockTransaction.save("STI"+newStockTransfer.getId(),originWarehouse,requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
-            iStockTransaction.save("STO"+newStockTransfer.getId(), destinationWarehouse, requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
+            iStockTransaction.save("STO"+newStockTransfer.getId(),originWarehouse,requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
+            iStockTransaction.save("STI"+newStockTransfer.getId(), destinationWarehouse, requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -192,8 +192,8 @@ public class StockTransferImpl implements IStockTransfer {
                     iWarehouseStock.in(destinationWarehouse,supplierProduct, requestStockTransferItem.getQuantity(), user);
                 }
 
-                iStockTransaction.save("STI"+newStockTransfer.getId(),originWarehouse,requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
-                iStockTransaction.save("STO"+newStockTransfer.getId(), destinationWarehouse, requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
+                iStockTransaction.save("STO"+newStockTransfer.getId(),originWarehouse,requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
+                iStockTransaction.save("STI"+newStockTransfer.getId(), destinationWarehouse, requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

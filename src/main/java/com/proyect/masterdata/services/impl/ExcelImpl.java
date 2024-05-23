@@ -1,9 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
-import com.proyect.masterdata.dto.request.RequestPurchaseExcel;
-import com.proyect.masterdata.dto.request.RequestShipmentExcel;
-import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
+import com.proyect.masterdata.dto.request.*;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -45,6 +43,9 @@ public class ExcelImpl implements IExcel {
     private final IStockTransaction iStockTransaction;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
+    private final StockTransferRepository stockTransferRepository;
+    private final WarehouseStockRepository warehouseStockRepository;
+    private final StockTransferItemRepository stockTransferItemRepository;
     @Override
     public CompletableFuture<ResponseSuccess> purchase(RequestPurchaseExcel requestPurchaseExcel,MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -299,6 +300,131 @@ public class ExcelImpl implements IExcel {
                 throw new RuntimeException(e);
             }catch (RuntimeException e){
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> stockTransfer(RequestStockTransferExcel requestStockTransferExcel, MultipartFile multipartFile) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Warehouse originWarehouse;
+            Warehouse destinationWarehouse;
+            StockTransfer stockTransfer;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(requestStockTransferExcel.getTokenUser().toUpperCase());
+                originWarehouse = warehouseRepository.findByNameAndStatusTrue(requestStockTransferExcel.getOriginWarehouse().toUpperCase());
+                destinationWarehouse = warehouseRepository.findByNameAndStatusTrue(requestStockTransferExcel.getDestinationWarehouse().toUpperCase());
+                stockTransfer = stockTransferRepository.findBySerial(requestStockTransferExcel.getSerial().toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(stockTransfer != null){
+                throw new BadRequestExceptions(Constants.ErrorStockTransferExists);
+            }
+
+            if(originWarehouse == null){
+                throw new BadRequestExceptions(Constants.ErrorOriginWarehouse);
+            }
+
+            if(destinationWarehouse == null){
+                throw new BadRequestExceptions(Constants.ErrorDestinationWarehouse);
+            }
+
+            try{
+                InputStream inputStream = multipartFile.getInputStream();
+                Workbook workbook = WorkbookFactory.create(inputStream);
+                Sheet sheet = workbook.getSheetAt(0);
+                int i = 0;
+                for(Row row:sheet){
+
+                    WarehouseStock originWarehouseStock;
+                    int ii = 0;
+                    for(Cell cell:row){
+                        SupplierProduct supplierProduct = null;
+                        if(i>=1 && (cell.getCellType() == STRING) && (ii==0)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            if(supplierProduct == null){
+                                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                            }
+                        }
+                        if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==1) && (supplierProduct != null)){
+                            originWarehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(originWarehouse.getId(),supplierProduct.getId());
+                            if(originWarehouseStock.getQuantity() < ((int) cell.getNumericCellValue())){
+                                throw new BadRequestExceptions(Constants.ErrorOriginWarehouseStock);
+                            }
+                        }
+                        ii++;
+                    }
+                    i++;
+                }
+
+                StockTransfer newStockTransfer = stockTransferRepository.save(StockTransfer.builder()
+                        .serial(requestStockTransferExcel.getSerial().toUpperCase())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .originWarehouse(originWarehouse)
+                        .originWarehouseId(originWarehouse.getId())
+                        .destinationWarehouse(destinationWarehouse)
+                        .destinationWarehouseId(destinationWarehouse.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .tokenUser(user.getUsername())
+                        .build());
+
+                List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
+                int j = 0;
+                for(Row row:sheet){
+                    SupplierProduct supplierProduct;
+                    StockTransferItem stockTransferItem = StockTransferItem.builder().build();
+                    RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder().build();
+                    int ji = 0;
+                    for(Cell cell:row){
+                        if(j>=1 && (cell.getCellType() == STRING) && (ji==0)){
+                            System.out.println(cell.getRichStringCellValue().getString().toUpperCase());
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            stockTransferItem.setSupplierProduct(supplierProduct);
+                            stockTransferItem.setSupplierProductId(supplierProduct.getId());
+                            requestStockTransactionItem.setSupplierProductSerial(supplierProduct.getSerial());
+                        }
+                        if(j>=1 && (cell.getCellType() == NUMERIC) && (ji==1)){
+                            stockTransferItem.setQuantity((int) cell.getNumericCellValue());
+                            requestStockTransactionItem.setQuantity(stockTransferItem.getQuantity());
+                        }
+                        ji++;
+                    }
+                    if(j>=1){
+                        stockTransferItem.setStockTransfer(newStockTransfer);
+                        stockTransferItem.setStockTransferId(newStockTransfer.getId());
+                        stockTransferItem.setClient(user.getClient());
+                        stockTransferItem.setClientId(user.getClientId());
+                        stockTransferItem.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        stockTransferItem.setTokenUser(user.getUsername());
+                        requestStockTransactionItemList.add(requestStockTransactionItem);
+                        stockTransferItemRepository.save(stockTransferItem);
+                        iWarehouseStock.out(newStockTransfer.getOriginWarehouse(),stockTransferItem.getSupplierProduct(),stockTransferItem.getQuantity(),user);
+                        iWarehouseStock.in(newStockTransfer.getDestinationWarehouse(),stockTransferItem.getSupplierProduct(),stockTransferItem.getQuantity(),user);
+                    }
+                    j++;
+                }
+                iStockTransaction.save("STO"+newStockTransfer.getId(),newStockTransfer.getOriginWarehouse(),requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
+                iStockTransaction.save("STI"+newStockTransfer.getId(),newStockTransfer.getDestinationWarehouse(),requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
     }
