@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.request.RequestPurchaseExcel;
 import com.proyect.masterdata.dto.request.RequestShipmentExcel;
+import com.proyect.masterdata.dto.request.RequestStockReturnExcel;
 import com.proyect.masterdata.dto.request.RequestStockTransferExcel;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -44,6 +45,15 @@ public class ExcelController {
             @RequestPart("multipartFile") MultipartFile multipartFile
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iExcel.stockTransfer(requestStockTransferExcel,multipartFile);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @PostMapping("return")
+    public ResponseEntity<ResponseSuccess> stockReturn(
+            @RequestPart("requestStockReturnExcel") RequestStockReturnExcel requestStockReturnExcel,
+            @RequestPart("multipartFile") MultipartFile multipartFile
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iExcel.stockReturn(requestStockReturnExcel,multipartFile);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }
