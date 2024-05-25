@@ -47,6 +47,11 @@ public class ExcelImpl implements IExcel {
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockTransferItemRepository stockTransferItemRepository;
     private final StockReturnItemRepository stockReturnItemRepository;
+    private final StockReplenishmentRepository stockReplenishmentRepository;
+    private final OrderingRepository orderingRepository;
+    private final ProductRepository productRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final StockReplenishmentItemRepository stockReplenishmentItemRepository;
     @Override
     public CompletableFuture<ResponseSuccess> purchase(RequestPurchaseExcel requestPurchaseExcel,MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -567,6 +572,118 @@ public class ExcelImpl implements IExcel {
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> stockReplenishment(Long orderId, MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            StockReplenishment stockReplenishment;
+            Ordering ordering;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                stockReplenishment = stockReplenishmentRepository.findByOrderId(orderId);
+                ordering = orderingRepository.findById(orderId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(stockReplenishment != null){
+                throw new BadRequestExceptions(Constants.ErrorStockReplenishmentExists);
+            }
+
+            if(ordering == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
+
+            if(!ordering.getOrderState().getName().equals("NO HAY STOCK")){
+                throw new BadRequestExceptions(Constants.ErrorStockReplenishmentOrderState);
+            }
+
+            try{
+                InputStream inputStream = multipartFile.getInputStream();
+                Workbook workbook = WorkbookFactory.create(inputStream);
+                Sheet sheet = workbook.getSheetAt(0);
+                int i = 0;
+                for(Row row : sheet){
+                    int ii = 0;
+                    Product product;
+                    OrderItem orderItem = null;
+                    for(Cell cell:row){
+                        if(i>=1 && (cell.getCellType() == STRING) && (ii==0)){
+                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            if(product == null){
+                                throw new BadRequestExceptions(Constants.ErrorProduct);
+                            }
+                            orderItem = orderItemRepository.findByOrderIdAndProductId(orderId,product.getId());
+                            if(orderItem == null){
+                                throw new BadRequestExceptions(Constants.ErrorOrderItem);
+                            }
+                        }
+                        if(i>=1 && (cell.getCellType()==NUMERIC)&&(ii==1)&&(orderItem != null)){
+                            if((cell.getNumericCellValue())>orderItem.getQuantity()){
+                                throw new BadRequestExceptions(Constants.ErrorStockReplenishmentQuantity);
+                            }
+                        }
+                        ii++;
+                    }
+                    i++;
+                }
+                StockReplenishment newStockReplenishment = stockReplenishmentRepository.save(StockReplenishment.builder()
+                        .ordering(ordering)
+                        .orderId(ordering.getId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .tokenUser(user.getUsername())
+                        .build());
+                int j = 0;
+                for(Row row:sheet){
+                    int ji = 0;
+                    Product product;
+                    StockReplenishmentItem stockReplenishmentItem = StockReplenishmentItem.builder().build();
+                    for(Cell cell:row){
+                        if(j>=1 && (cell.getCellType()==STRING)&&(ji==0)){
+                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            stockReplenishmentItem.setProduct(product);
+                            stockReplenishmentItem.setProductId(product.getId());
+                            stockReplenishmentItem.setOrdering(ordering);
+                            stockReplenishmentItem.setOrderId(ordering.getId());
+                        }
+                        if(j>=1 && (cell.getCellType() == NUMERIC) && (ji==1)){
+                            stockReplenishmentItem.setQuantity((int) cell.getNumericCellValue());
+                        }
+                        ji++;
+                    }
+                    if(j>=1){
+                        stockReplenishmentItem.setClient(user.getClient());
+                        stockReplenishmentItem.setClientId(user.getClientId());
+                        stockReplenishmentItem.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        stockReplenishmentItem.setStatus(true);
+                        stockReplenishmentItem.setTokenUser(user.getUsername());
+                        stockReplenishmentItem.setStockReplenishment(newStockReplenishment);
+                        stockReplenishmentItem.setStockReplenishmentId(newStockReplenishment.getId());
+                        stockReplenishmentItemRepository.save(stockReplenishmentItem);
+                    }
+                    j++;
+                }
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             } catch (IOException e) {
                 throw new RuntimeException(e);

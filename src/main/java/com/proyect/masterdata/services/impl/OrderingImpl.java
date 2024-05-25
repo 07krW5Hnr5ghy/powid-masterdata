@@ -451,6 +451,7 @@ public class OrderingImpl implements IOrdering {
             }
             return orderingList.stream().map(order -> {
                 Sale sale = saleRepository.findByOrderId(order.getId());
+                System.out.println(order.getId());
                 Customer customer = customerRepository.findByOrderId(order.getId());
                 List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
                 List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();

@@ -56,4 +56,14 @@ public class ExcelController {
         CompletableFuture<ResponseSuccess> result = iExcel.stockReturn(requestStockReturnExcel,multipartFile);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
+
+    @PostMapping("replenishment")
+    public ResponseEntity<ResponseSuccess> stockReplenishment(
+            @RequestParam("orderId") Long orderId,
+            @RequestPart("multipartFile") MultipartFile multipartFile,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iExcel.stockReplenishment(orderId,multipartFile,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
 }
