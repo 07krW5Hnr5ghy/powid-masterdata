@@ -590,6 +590,7 @@ public class ExcelImpl implements IExcel {
                 stockReplenishment = stockReplenishmentRepository.findByOrderId(orderId);
                 ordering = orderingRepository.findById(orderId).orElse(null);
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
@@ -684,6 +685,7 @@ public class ExcelImpl implements IExcel {
                         .message(Constants.register)
                         .build();
             }catch (RuntimeException e){
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             } catch (IOException e) {
                 throw new RuntimeException(e);
