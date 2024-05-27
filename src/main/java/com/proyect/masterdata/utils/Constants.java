@@ -233,6 +233,8 @@ public class Constants {
     public static final String ErrorOrderStockQuantity = "There is not enough stock in the warehouse for the order";
     public static final String ErrorOrderStock = "The order stock does not exist";
     public static final String ErrorOrderStockItem = "The order stock item does not exist";
+    public static final String ErrorOrderStockItemQuantity = "The order stock item quantity can't be greater than the order item quantity";
+    public static final String ErrorOrderStockProductQuantity = "The order stock items can't be greater than the order item quantity";
     public static final String ErrorOrderStockProduct = "The supplier product does not belong to product";
     public static final String ErrorOrderStockItemUpdateOrderQuantity = "The order stock can't have more quantity than order item";
     public static final String ErrorOrderStockItemUpdateStockQuantity = "The order stock can't have more quantity than warehouse stock";
@@ -272,6 +274,7 @@ public class Constants {
     public static final String ErrorOrderReturn = "Order return does not exist";
     public static final String ErrorOrderReturnExists = "Order return already exists";
     public static final String ErrorOrderReturnItem = "Order return item does not exist";
+    public static final String ErrorOrderReturnQuantity = "Order return Quantity can't be greater than order stock";
     public static final String ErrorOrderReturnItemExists = "Order return item already exists";
     public static final String ErrorOrderReturnItemQuantity = "Quantity is greater than the order stock quantity";
 }

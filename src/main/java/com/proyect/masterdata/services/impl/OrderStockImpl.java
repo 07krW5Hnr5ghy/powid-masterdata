@@ -1,9 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.OrderStock;
-import com.proyect.masterdata.domain.Ordering;
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.Warehouse;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderStockDTO;
 import com.proyect.masterdata.dto.request.RequestOrderStockItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -22,8 +19,10 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,16 +34,18 @@ public class OrderStockImpl implements IOrderStock {
     private final OrderingRepository orderingRepository;
     private final IOrderStockItem iOrderStockItem;
     private final OrderStockRepositoryCustom orderStockRepositoryCustom;
+    private final ProductRepository productRepository;
+    private final OrderItemRepository orderItemRepository;
     @Override
-    public ResponseSuccess save(Long orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(Long orderId, String warehouseName, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
-        Warehouse warehouseData;
+        Warehouse warehouse;
         Ordering ordering;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
+            warehouse = warehouseRepository.findByNameAndStatusTrue(warehouseName.toUpperCase());
             ordering = orderingRepository.findById(orderId).orElse(null);
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -55,7 +56,7 @@ public class OrderStockImpl implements IOrderStock {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if(warehouseData == null){
+        if(warehouse == null){
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
@@ -65,17 +66,25 @@ public class OrderStockImpl implements IOrderStock {
 
         try{
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
-                Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouseData,requestOrderStockItem).get();
+                Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouse,requestOrderStockItem).get();
                 if(!existsStock){
                     throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
                 }
             }
+            Map<String,Integer> checkCount = requestOrderStockItemList.stream().collect(Collectors.groupingBy(RequestOrderStockItem::getProductSku,Collectors.summingInt(RequestOrderStockItem::getQuantity)));
+            checkCount.forEach((key,value)->{
+                Product product = productRepository.findBySkuAndStatusTrue(key);
+                OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
+                if(value > orderItem.getQuantity()){
+                    throw new BadRequestExceptions(Constants.ErrorOrderStockProductQuantity);
+                }
+            });
             OrderStock orderStock = orderStockRepository.save(OrderStock.builder()
                     .ordering(ordering)
                     .orderId(ordering.getId())
                     .status(true)
-                    .warehouse(warehouseData)
-                    .warehouseId(warehouseData.getId())
+                    .warehouse(warehouse)
+                    .warehouseId(warehouse.getId())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .updateDate(new Date(System.currentTimeMillis()))
                     .client(user.getClient())
@@ -99,15 +108,15 @@ public class OrderStockImpl implements IOrderStock {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(Long orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(Long orderId, String warehouseName, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Warehouse warehouseData;
+            Warehouse warehouse;
             Ordering ordering;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                warehouseData = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase());
+                warehouse = warehouseRepository.findByNameAndStatusTrue(warehouseName.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -118,7 +127,7 @@ public class OrderStockImpl implements IOrderStock {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(warehouseData == null){
+            if(warehouse == null){
                 throw new BadRequestExceptions(Constants.ErrorWarehouse);
             }
 
@@ -128,17 +137,25 @@ public class OrderStockImpl implements IOrderStock {
 
             try{
                 for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
-                    Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouseData,requestOrderStockItem).get();
+                    Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouse,requestOrderStockItem).get();
                     if(!existsStock){
                         throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
                     }
                 }
+                Map<String,Integer> checkCount = requestOrderStockItemList.stream().collect(Collectors.groupingBy(RequestOrderStockItem::getProductSku,Collectors.summingInt(RequestOrderStockItem::getQuantity)));
+                checkCount.forEach((key,value)->{
+                    Product product = productRepository.findBySkuAndStatusTrue(key);
+                    OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
+                    if(value > orderItem.getQuantity()){
+                        throw new BadRequestExceptions(Constants.ErrorOrderStockProductQuantity);
+                    }
+                });
                 OrderStock orderStock = orderStockRepository.save(OrderStock.builder()
                         .ordering(ordering)
                         .orderId(ordering.getId())
                         .status(true)
-                        .warehouse(warehouseData)
-                        .warehouseId(warehouseData.getId())
+                        .warehouse(warehouse)
+                        .warehouseId(warehouse.getId())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .client(user.getClient())

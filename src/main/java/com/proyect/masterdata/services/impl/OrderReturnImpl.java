@@ -1,26 +1,27 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.OrderReturn;
-import com.proyect.masterdata.domain.OrderStock;
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderReturnDTO;
 import com.proyect.masterdata.dto.request.RequestOrderReturnItem;
+import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.OrderReturnRepository;
-import com.proyect.masterdata.repository.OrderStockRepository;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IOrderReturn;
 import com.proyect.masterdata.services.IOrderReturnItem;
+import com.proyect.masterdata.services.IStockTransaction;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,9 @@ public class OrderReturnImpl implements IOrderReturn {
     private final OrderStockRepository orderStockRepository;
     private final UserRepository userRepository;
     private final IOrderReturnItem iOrderReturnItem;
+    private final SupplierProductRepository supplierProductRepository;
+    private final OrderStockItemRepository orderStockItemRepository;
+    private final IStockTransaction iStockTransaction;
     @Override
     public ResponseSuccess save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -53,6 +57,19 @@ public class OrderReturnImpl implements IOrderReturn {
             throw new BadRequestExceptions(Constants.ErrorOrderStock);
         }
         try {
+            Map<String,Integer> checkCount = requestOrderReturnItemList.stream().collect(
+                    Collectors.groupingBy(
+                            RequestOrderReturnItem::getSupplierProductSerial,
+                            Collectors.summingInt(RequestOrderReturnItem::getQuantity)
+                    )
+            );
+            checkCount.forEach((key,value)->{
+                SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(key);
+                OrderStockItem orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
+                if(value > orderStockItem.getQuantity()){
+                    throw new BadRequestExceptions(Constants.ErrorOrderStockProductQuantity);
+                }
+            });
             OrderReturn newOrderReturn = orderReturnRepository.save(OrderReturn.builder()
                     .order(orderStock.getOrdering())
                     .orderId(orderStock.getOrderId())
@@ -63,9 +80,15 @@ public class OrderReturnImpl implements IOrderReturn {
                     .clientId(user.getClientId())
                     .status(true)
                     .build());
+            List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
             for(RequestOrderReturnItem requestOrderReturnItem : requestOrderReturnItemList){
+                RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder().build();
                 iOrderReturnItem.save(orderStock.getOrderId(),requestOrderReturnItem,tokenUser);
+                requestStockTransactionItem.setQuantity(requestOrderReturnItem.getQuantity());
+                requestStockTransactionItem.setSupplierProductSerial(requestOrderReturnItem.getSupplierProductSerial());
+                requestStockTransactionItemList.add(requestStockTransactionItem);
             }
+            iStockTransaction.save("OR"+orderStock.getOrdering().getId(),orderStock.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-COMPRADOR",user);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -101,6 +124,19 @@ public class OrderReturnImpl implements IOrderReturn {
                 throw new BadRequestExceptions(Constants.ErrorOrderStock);
             }
             try {
+                Map<String,Integer> checkCount = requestOrderReturnItemList.stream().collect(
+                        Collectors.groupingBy(
+                                RequestOrderReturnItem::getSupplierProductSerial,
+                                Collectors.summingInt(RequestOrderReturnItem::getQuantity)
+                        )
+                );
+                checkCount.forEach((key,value)->{
+                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(key);
+                    OrderStockItem orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
+                    if(value > orderStockItem.getQuantity()){
+                        throw new BadRequestExceptions(Constants.ErrorOrderStockProductQuantity);
+                    }
+                });
                 OrderReturn newOrderReturn = orderReturnRepository.save(OrderReturn.builder()
                         .order(orderStock.getOrdering())
                         .orderId(orderStock.getOrderId())
@@ -111,9 +147,15 @@ public class OrderReturnImpl implements IOrderReturn {
                         .clientId(user.getClientId())
                         .status(true)
                         .build());
+                List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
                 for(RequestOrderReturnItem requestOrderReturnItem : requestOrderReturnItemList){
+                    RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder().build();
                     iOrderReturnItem.save(orderStock.getOrderId(),requestOrderReturnItem,tokenUser);
+                    requestStockTransactionItem.setQuantity(requestOrderReturnItem.getQuantity());
+                    requestStockTransactionItem.setSupplierProductSerial(requestOrderReturnItem.getSupplierProductSerial());
+                    requestStockTransactionItemList.add(requestStockTransactionItem);
                 }
+                iStockTransaction.save("OR"+orderStock.getOrdering().getId(),orderStock.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-COMPRADOR",user);
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

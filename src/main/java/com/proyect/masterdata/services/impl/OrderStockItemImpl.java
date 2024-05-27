@@ -83,6 +83,10 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 throw new BadRequestExceptions(Constants.ErrorOrderStockProduct);
             }
 
+            if(requestOrderStockItem.getQuantity() > orderItem.getQuantity()){
+                throw new BadRequestExceptions(Constants.ErrorOrderStockItemQuantity);
+            }
+
             try{
                 orderStockItemRepository.save(OrderStockItem.builder()
                         .orderStock(orderStock)

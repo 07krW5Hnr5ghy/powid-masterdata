@@ -16,4 +16,6 @@ public interface IExcel {
     CompletableFuture<ResponseSuccess> stockTransfer(RequestStockTransferExcel requestStockTransferExcel,MultipartFile multipartFile) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> stockReturn(RequestStockReturnExcel requestStockReturnExcel,MultipartFile multipartFile) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> stockReplenishment(Long orderId,MultipartFile multipartFile,String tokenUser) throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> orderStock(Long orderId,String warehouseName,MultipartFile multipartFile,String tokenUser) throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> orderReturn(Long orderId,MultipartFile multipartFile,String tokenUser) throws BadRequestExceptions;
 }
