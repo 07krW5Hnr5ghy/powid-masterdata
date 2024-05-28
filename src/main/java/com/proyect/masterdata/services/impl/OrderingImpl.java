@@ -108,6 +108,17 @@ public class OrderingImpl implements IOrdering {
         }
 
         try{
+            requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
+                Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
+
+                if(product == null){
+                    throw new BadRequestExceptions(Constants.ErrorProduct);
+                }
+
+                if(requestOrderItem.getQuantity() < 1){
+                    throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
+                }
+            });
             Ordering ordering = orderingRepository.save(Ordering.builder()
                     .cancellation(false)
                     .orderState(orderState)
@@ -245,6 +256,17 @@ public class OrderingImpl implements IOrdering {
             }
 
             try{
+                requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
+                    Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
+
+                    if(product == null){
+                        throw new BadRequestExceptions(Constants.ErrorProduct);
+                    }
+
+                    if(requestOrderItem.getQuantity() < 1){
+                        throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
+                    }
+                });
                 Ordering ordering = orderingRepository.save(Ordering.builder()
                         .cancellation(false)
                         .orderState(orderState)

@@ -284,4 +284,5 @@ public class Constants {
     public static final String ErrorStockReplenishmentItemZero = "Quantity of stock replenishment item can't be less than one";
     public static final String ErrorOrderStockItemZero = "Quantity of order stock item can't be less than one";
     public static final String ErrorOrderReturnItemZero = "Quantity of order return item can't be less than one";
+    public static final String ErrorOrderItemZero = "Quantity of order item can't be less than one";
 }

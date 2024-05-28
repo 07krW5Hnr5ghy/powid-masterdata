@@ -61,6 +61,10 @@ public class OrderItemImpl implements IOrderItem {
             throw new BadRequestExceptions(Constants.ErrorProduct);
         }
 
+        if(requestOrderItem.getQuantity()<1){
+            throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
+        }
+
         try{
             orderItemRepository.save(OrderItem.builder()
                             .discount(requestOrderItem.getDiscount())
@@ -107,6 +111,10 @@ public class OrderItemImpl implements IOrderItem {
 
             if (product == null){
                 throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+
+            if(requestOrderItem.getQuantity()<1){
+                throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
             }
 
             try{

@@ -9,4 +9,5 @@ public interface ITemplate {
     CompletableFuture<ByteArrayInputStream> purchase(Integer quantity, String username) throws BadRequestExceptions;
     CompletableFuture<ByteArrayInputStream> shipment(Integer quantity, String purchaseSerial,String username) throws BadRequestExceptions;
     CompletableFuture<ByteArrayInputStream> stockTransfer(Integer quantity,String warehouseName,String username) throws BadRequestExceptions;
+    CompletableFuture<ByteArrayInputStream> stockReturn(Integer quantity,String purchaseSerial,String username) throws BadRequestExceptions;
 }
