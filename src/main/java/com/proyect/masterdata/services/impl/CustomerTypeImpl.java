@@ -63,8 +63,26 @@ public class CustomerTypeImpl implements ICustomerType {
             }
         });
     }
+
     @Override
-    public CompletableFuture<Page<String>> list(String name, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<List<String>> list() throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<CustomerType> customerTypeList;
+            try{
+                customerTypeList = customerTypeRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(customerTypeList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return customerTypeList.stream().map(CustomerType::getName).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<String>> listPaginated(String name, String sort, String sortColumn, Integer pageNumber,
                                                 Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<CustomerType> customerTypePage;

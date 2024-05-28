@@ -67,7 +67,7 @@ public class ManagementTypeImpl implements IManagementType {
     }
 
     @Override
-    public CompletableFuture<Page<String>> list(String name, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<String>> listPaginated(String name, String sort, String sortColumn, Integer pageNumber,
                                                 Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<ManagementType> managementTypePage;
@@ -82,6 +82,23 @@ public class ManagementTypeImpl implements IManagementType {
             }
             List<String> managementTypeDTOs = managementTypePage.getContent().stream().map(ManagementType::getName).toList();
             return new PageImpl<>(managementTypeDTOs,managementTypePage.getPageable(),managementTypePage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<String>> list() throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<ManagementType> managementTypeList;
+            try {
+                managementTypeList = managementTypeRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(managementTypeList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return managementTypeList.stream().map(ManagementType::getName).toList();
         });
     }
 }

@@ -10,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IManagementType {
     CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<Page<String>> list(String name, String sort, String sortColumn, Integer pageNumber,
+    CompletableFuture<Page<String>> listPaginated(String name, String sort, String sortColumn, Integer pageNumber,
                                          Integer pageSize) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<List<String>> list() throws InternalErrorExceptions,BadRequestExceptions;
 }
