@@ -29,14 +29,8 @@ public class ManagementTypeController {
     }
 
     @GetMapping()
-    public ResponseEntity<Page<String>> list(
-            @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam(value = "pageNumber") Integer pageNumber,
-            @RequestParam(value = "pageSize") Integer pageSize
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<String>> result = iManagementType.list(name,sort,sortColumn,pageNumber,pageSize);
+    public ResponseEntity<List<String>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<String>> result = iManagementType.list();
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
