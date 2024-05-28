@@ -26,9 +26,24 @@ public class TemplateController {
             @RequestParam("quantity") Integer quantity,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ByteArrayInputStream> result = iTemplate.createPurchase(quantity,user);
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.purchase(quantity,user);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=purchase.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=compra.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(result.get().readAllBytes());
+    }
+
+    @GetMapping("shipment")
+    private ResponseEntity<byte[]> purchase(
+            @RequestParam("quantity") Integer quantity,
+            @RequestParam("serial") String serial,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.shipment(quantity,serial,user);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=embarque.xlsx");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)

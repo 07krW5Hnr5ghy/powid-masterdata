@@ -6,5 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.util.concurrent.CompletableFuture;
 
 public interface ITemplate {
-    CompletableFuture<ByteArrayInputStream> createPurchase(Integer quantity, String tokenUser) throws BadRequestExceptions;
+    CompletableFuture<ByteArrayInputStream> purchase(Integer quantity, String username) throws BadRequestExceptions;
+    CompletableFuture<ByteArrayInputStream> shipment(Integer quantity, String purchaseSerial,String username) throws BadRequestExceptions;
 }
