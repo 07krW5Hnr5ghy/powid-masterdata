@@ -66,6 +66,9 @@ public class OrderStockImpl implements IOrderStock {
 
         try{
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
+                if(requestOrderStockItem.getQuantity() < 1){
+                    throw new BadRequestExceptions(Constants.ErrorOrderStockItemZero);
+                }
                 Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouse,requestOrderStockItem).get();
                 if(!existsStock){
                     throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
@@ -137,6 +140,9 @@ public class OrderStockImpl implements IOrderStock {
 
             try{
                 for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
+                    if(requestOrderStockItem.getQuantity() < 1){
+                        throw new BadRequestExceptions(Constants.ErrorOrderStockItemZero);
+                    }
                     Boolean existsStock = iOrderStockItem.checkWarehouseItemStock(ordering.getId(),warehouse,requestOrderStockItem).get();
                     if(!existsStock){
                         throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);

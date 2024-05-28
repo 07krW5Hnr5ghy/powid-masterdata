@@ -49,4 +49,19 @@ public class TemplateController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(result.get().readAllBytes());
     }
+
+    @GetMapping("stock-transfer")
+    private ResponseEntity<byte[]> stockTransfer(
+            @RequestParam("quantity") Integer quantity,
+            @RequestParam("warehouse") String warehouse,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.stockTransfer(quantity,warehouse,user);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=transferencia.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(result.get().readAllBytes());
+    }
 }

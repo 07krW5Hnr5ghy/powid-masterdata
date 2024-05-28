@@ -80,8 +80,17 @@ public class StockReturnImpl implements IStockReturn {
         try {
             for(RequestStockReturnItem requestStockReturnItem : requestStockReturn.getRequestStockReturnItemList()){
                 SupplierProduct supplierProduct = supplierProductRepository.findBySerial(requestStockReturnItem.getSupplierProductSerial());
+                if(supplierProduct == null){
+                    throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                }
                 PurchaseItem purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
+                if(purchaseItem == null){
+                    throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
+                }
                 WarehouseStock warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(), supplierProduct.getId());
+                if(requestStockReturnItem.getQuantity()<1){
+                    throw new BadRequestExceptions(Constants.ErrorStockReturnItemZero);
+                }
                 if(requestStockReturnItem.getQuantity() > purchaseItem.getQuantity()){
                     throw new BadRequestExceptions(Constants.ErrorStockReturnQuantity);
                 }
@@ -167,8 +176,17 @@ public class StockReturnImpl implements IStockReturn {
             try {
                 for(RequestStockReturnItem requestStockReturnItem : requestStockReturn.getRequestStockReturnItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findBySerial(requestStockReturnItem.getSupplierProductSerial());
+                    if(supplierProduct == null){
+                        throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                    }
                     PurchaseItem purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
+                    if(purchaseItem == null){
+                        throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
+                    }
                     WarehouseStock warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(), supplierProduct.getId());
+                    if(requestStockReturnItem.getQuantity()<1){
+                        throw new BadRequestExceptions(Constants.ErrorStockReturnItemZero);
+                    }
                     if(requestStockReturnItem.getQuantity() > purchaseItem.getQuantity()){
                         throw new BadRequestExceptions(Constants.ErrorStockReturnQuantity);
                     }

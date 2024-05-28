@@ -1,9 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Purchase;
-import com.proyect.masterdata.domain.PurchaseDocument;
-import com.proyect.masterdata.domain.Supplier;
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.PurchaseDTO;
 import com.proyect.masterdata.dto.request.RequestPurchase;
 import com.proyect.masterdata.dto.request.RequestPurchaseItem;
@@ -35,6 +32,7 @@ public class PurchaseImpl implements IPurchase {
     private final PurchaseRepositoryCustom purchaseRepositoryCustom;
     private final PurchaseDocumentRepository purchaseDocumentRepository;
     private final SupplierRepository supplierRepository;
+    private final SupplierProductRepository supplierProductRepository;
     @Override
     public ResponseSuccess save(RequestPurchase requestPurchase) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -66,6 +64,15 @@ public class PurchaseImpl implements IPurchase {
         }
 
         try{
+            requestPurchase.getPurchaseItemsList().forEach(requestPurchaseItem -> {
+                SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProductSerial().toUpperCase());
+                if(supplierProduct == null){
+                    throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                }
+                if(requestPurchaseItem.getQuantity() < 1){
+                    throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
+                }
+            });
             Purchase newPurchase = purchaseRepository.save(Purchase.builder()
                             .serial(requestPurchase.getSerial().toUpperCase())
                             .registrationDate(new Date(System.currentTimeMillis()))
@@ -123,6 +130,15 @@ public class PurchaseImpl implements IPurchase {
             }
 
             try{
+                requestPurchase.getPurchaseItemsList().forEach(requestPurchaseItem -> {
+                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProductSerial().toUpperCase());
+                    if(supplierProduct == null){
+                        throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                    }
+                    if(requestPurchaseItem.getQuantity() < 1){
+                        throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
+                    }
+                });
                 Purchase newPurchase = purchaseRepository.save(Purchase.builder()
                         .serial(requestPurchase.getSerial().toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))

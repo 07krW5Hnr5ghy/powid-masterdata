@@ -76,8 +76,13 @@ public class StockTransferImpl implements IStockTransfer {
         try{
             for(RequestStockTransferItem requestStockTransferItem : requestStockTransfer.getRequestStockTransferItemList()){
                 SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransferItem.getSupplierProductSerial());
+                if(supplierProduct == null){
+                    throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                }
+                if(requestStockTransferItem.getQuantity() < 1){
+                    throw new BadRequestExceptions(Constants.ErrorStockTransferItemZero);
+                }
                 WarehouseStock originWarehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(originWarehouse.getId(), supplierProduct.getId());
-
                 if(originWarehouseStock.getQuantity() < requestStockTransferItem.getQuantity()){
                     throw new BadRequestExceptions(Constants.ErrorOriginWarehouseStock);
                 }
@@ -159,8 +164,13 @@ public class StockTransferImpl implements IStockTransfer {
             try{
                 for(RequestStockTransferItem requestStockTransferItem : requestStockTransfer.getRequestStockTransferItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransferItem.getSupplierProductSerial());
+                    if(supplierProduct == null){
+                        throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                    }
+                    if(requestStockTransferItem.getQuantity() < 1){
+                        throw new BadRequestExceptions(Constants.ErrorStockTransferItemZero);
+                    }
                     WarehouseStock originWarehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(originWarehouse.getId(), supplierProduct.getId());
-
                     if(originWarehouseStock.getQuantity() < requestStockTransferItem.getQuantity()){
                         throw new BadRequestExceptions(Constants.ErrorOriginWarehouseStock);
                     }

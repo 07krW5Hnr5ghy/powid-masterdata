@@ -34,6 +34,8 @@ public class OrderReturnImpl implements IOrderReturn {
     private final SupplierProductRepository supplierProductRepository;
     private final OrderStockItemRepository orderStockItemRepository;
     private final IStockTransaction iStockTransaction;
+    private final ProductRepository productRepository;
+    private final OrderReturnTypeRepository orderReturnTypeRepository;
     @Override
     public ResponseSuccess save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -57,6 +59,23 @@ public class OrderReturnImpl implements IOrderReturn {
             throw new BadRequestExceptions(Constants.ErrorOrderStock);
         }
         try {
+            requestOrderReturnItemList.forEach(requestOrderReturnItem -> {
+                Product product = productRepository.findBySkuAndStatusTrue(requestOrderReturnItem.getProductSku().toUpperCase());
+                if(product == null){
+                    throw new BadRequestExceptions(Constants.ErrorProduct);
+                }
+                SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderReturnItem.getSupplierProductSerial().toUpperCase());
+                if(supplierProduct==null){
+                    throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                }
+                if(requestOrderReturnItem.getQuantity() < 1){
+                    throw new BadRequestExceptions(Constants.ErrorOrderReturnItemZero);
+                }
+                OrderReturnType orderReturnType = orderReturnTypeRepository.findByNameAndStatusTrue(requestOrderReturnItem.getOrderReturnType().toUpperCase());
+                if(orderReturnType==null){
+                    throw new BadRequestExceptions(Constants.ErrorOrderReturnType);
+                }
+            });
             Map<String,Integer> checkCount = requestOrderReturnItemList.stream().collect(
                     Collectors.groupingBy(
                             RequestOrderReturnItem::getSupplierProductSerial,
@@ -124,6 +143,23 @@ public class OrderReturnImpl implements IOrderReturn {
                 throw new BadRequestExceptions(Constants.ErrorOrderStock);
             }
             try {
+                requestOrderReturnItemList.forEach(requestOrderReturnItem -> {
+                    Product product = productRepository.findBySkuAndStatusTrue(requestOrderReturnItem.getProductSku().toUpperCase());
+                    if(product == null){
+                        throw new BadRequestExceptions(Constants.ErrorProduct);
+                    }
+                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderReturnItem.getSupplierProductSerial().toUpperCase());
+                    if(supplierProduct==null){
+                        throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                    }
+                    if(requestOrderReturnItem.getQuantity() < 1){
+                        throw new BadRequestExceptions(Constants.ErrorOrderReturnItemZero);
+                    }
+                    OrderReturnType orderReturnType = orderReturnTypeRepository.findByNameAndStatusTrue(requestOrderReturnItem.getOrderReturnType().toUpperCase());
+                    if(orderReturnType==null){
+                        throw new BadRequestExceptions(Constants.ErrorOrderReturnType);
+                    }
+                });
                 Map<String,Integer> checkCount = requestOrderReturnItemList.stream().collect(
                         Collectors.groupingBy(
                                 RequestOrderReturnItem::getSupplierProductSerial,

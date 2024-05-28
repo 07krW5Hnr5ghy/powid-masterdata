@@ -64,7 +64,13 @@ public class StockReplenishmentImpl implements IStockReplenishment {
 
         try{
             for (RequestStockReplenishmentItem requestStockReplenishmentItem : requestStockReplenishmentItems){
+                if(requestStockReplenishmentItem.getQuantity() < 1){
+                    throw new BadRequestExceptions(Constants.ErrorStockReplenishmentItemZero);
+                }
                 Product product = productRepository.findBySku(requestStockReplenishmentItem.getProductSku().toUpperCase());
+                if(product == null){
+                    throw new BadRequestExceptions(Constants.ErrorProduct);
+                }
                 OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
                 if(requestStockReplenishmentItem.getQuantity() > orderItem.getQuantity()){
                     throw new BadRequestExceptions(Constants.ErrorStockReplenishmentQuantity);
@@ -127,7 +133,13 @@ public class StockReplenishmentImpl implements IStockReplenishment {
 
             try{
                 for (RequestStockReplenishmentItem requestStockReplenishmentItem : requestStockReplenishmentItems){
+                    if(requestStockReplenishmentItem.getQuantity() < 1){
+                        throw new BadRequestExceptions(Constants.ErrorStockReplenishmentItemZero);
+                    }
                     Product product = productRepository.findBySku(requestStockReplenishmentItem.getProductSku().toUpperCase());
+                    if(product == null){
+                        throw new BadRequestExceptions(Constants.ErrorProduct);
+                    }
                     OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
                     if(requestStockReplenishmentItem.getQuantity() > orderItem.getQuantity()){
                         throw new BadRequestExceptions(Constants.ErrorStockReplenishmentQuantity);

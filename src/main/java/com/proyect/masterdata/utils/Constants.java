@@ -277,4 +277,11 @@ public class Constants {
     public static final String ErrorOrderReturnQuantity = "Order return Quantity can't be greater than order stock";
     public static final String ErrorOrderReturnItemExists = "Order return item already exists";
     public static final String ErrorOrderReturnItemQuantity = "Quantity is greater than the order stock quantity";
+    public static final String ErrorPurchaseItemZero = "Quantity of purchase item can't be less than one";
+    public static final String ErrorShipmentItemZero = "Quantity of shipment item can't be less than one";
+    public static final String ErrorStockTransferItemZero = "Quantity of stock transfer item can't be less than one";
+    public static final String ErrorStockReturnItemZero = "Quantity of stock return item can't be less than one";
+    public static final String ErrorStockReplenishmentItemZero = "Quantity of stock replenishment item can't be less than one";
+    public static final String ErrorOrderStockItemZero = "Quantity of order stock item can't be less than one";
+    public static final String ErrorOrderReturnItemZero = "Quantity of order return item can't be less than one";
 }

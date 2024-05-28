@@ -99,6 +99,9 @@ public class ShipmentImpl implements IShipment {
                 if(supplierProduct == null){
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                 }
+                if(requestShipmentItem.getQuantity() < 1){
+                    throw new BadRequestExceptions(Constants.ErrorShipmentItemZero);
+                }
             }
             List<RequestStockTransactionItem> requestStockTransactionItemList = requestShipment.getRequestShipmentItemList().stream().map(shipmentItem -> RequestStockTransactionItem.builder()
                     .quantity(shipmentItem.getQuantity())
@@ -194,6 +197,9 @@ public class ShipmentImpl implements IShipment {
                     SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProductSerial());
                     if(supplierProduct == null){
                         throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                    }
+                    if(requestShipmentItem.getQuantity() < 1){
+                        throw new BadRequestExceptions(Constants.ErrorShipmentItemZero);
                     }
                 }
                 List<RequestStockTransactionItem> requestStockTransactionItemList = requestShipment.getRequestShipmentItemList().stream().map(shipmentItem -> RequestStockTransactionItem.builder()
