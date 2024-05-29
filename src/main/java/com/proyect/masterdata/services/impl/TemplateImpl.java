@@ -281,7 +281,7 @@ public class TemplateImpl implements ITemplate {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> stockReplenishment(Integer quantity, Long orderId, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> stockReplenishment(Long orderId, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -327,7 +327,7 @@ public class TemplateImpl implements ITemplate {
                 String[] serialList = supplierProductList.stream().map(SupplierProduct::getSerial).toList().toArray(new String[0]);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
                 DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
-                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);
+                CellRangeAddressList addressList = new CellRangeAddressList(1,serialList.length,0,0);
                 DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
                 sheet.addValidationData(dataValidation);
 
