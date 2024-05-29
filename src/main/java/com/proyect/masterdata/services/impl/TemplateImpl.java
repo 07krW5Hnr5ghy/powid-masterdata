@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -32,6 +33,8 @@ public class TemplateImpl implements ITemplate {
     private final WarehouseStockRepository warehouseStockRepository;
     private final ShipmentRepository shipmentRepository;
     private final ShipmentItemRepository shipmentItemRepository;
+    private final OrderingRepository orderingRepository;
+    private final OrderItemRepository orderItemRepository;
     @Override
     public CompletableFuture<ByteArrayInputStream> purchase(Integer quantity, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -270,6 +273,70 @@ public class TemplateImpl implements ITemplate {
                 return new ByteArrayInputStream(out.toByteArray());
             }catch (RuntimeException e){
                 e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ByteArrayInputStream> stockReplenishment(Integer quantity, Long orderId, String username) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering ordering;
+            List<OrderItem> orderItems;
+            List<SupplierProduct> supplierProductList = new ArrayList<>();
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                ordering = orderingRepository.findByClientIdAndId(user.getClientId(), orderId);
+            }
+            if(ordering == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }else{
+                orderItems = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(user.getClientId(),ordering.getId());
+            }
+            try {
+                orderItems.forEach(orderItem -> {
+                    List<SupplierProduct> supplierProductInnerList = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(user.getClientId(), orderItem.getProductId());
+                    supplierProductList.addAll(supplierProductInnerList);
+                });
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                XSSFSheet sheet = workbook.createSheet("devolucion_inventario");
+
+                CellStyle style = workbook.createCellStyle();
+                style.setFillBackgroundColor(IndexedColors.YELLOW.getIndex());
+                style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+                Row headerRow = sheet.createRow(0);
+                Cell cell = headerRow.createCell(0);
+                cell.setCellValue("INVENTARIO SKU");
+                cell.setCellStyle(style);
+
+                cell = headerRow.createCell(1);
+                cell.setCellValue("CANTIDAD");
+                cell.setCellStyle(style);
+
+                String[] serialList = supplierProductList.stream().map(SupplierProduct::getSerial).toList().toArray(new String[0]);
+                DataValidationHelper validationHelper = sheet.getDataValidationHelper();
+                DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
+                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);
+                DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
+                sheet.addValidationData(dataValidation);
+
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                workbook.write(out);
+                workbook.close();
+                return new ByteArrayInputStream(out.toByteArray());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             } catch (IOException e) {
                 throw new RuntimeException(e);

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface OrderingRepository extends JpaRepository<Ordering,Long> {
     List<Ordering> findAllByClientId(Long clientId);
+    Ordering findByClientIdAndId(Long clientId,Long id);
 }
