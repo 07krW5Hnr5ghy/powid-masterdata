@@ -93,8 +93,10 @@ public class ExcelImpl implements IExcel {
                 Workbook workbook = WorkbookFactory.create(inputStream);
                 Sheet sheet = workbook.getSheetAt(0);
                 int i = 0;
+                List<RequestPurchaseItem> requestPurchaseItemList = new ArrayList<>();
                 for(Row row:sheet){
                     SupplierProduct supplierProduct;
+                    RequestPurchaseItem requestPurchaseItem = RequestPurchaseItem.builder().build();
                     int ii = 0;
                     for(Cell cell:row){
                         if(i>=1 && (cell.getCellType()==STRING) && (ii==0)){
@@ -102,6 +104,7 @@ public class ExcelImpl implements IExcel {
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
+                            requestPurchaseItem.setSupplierProductSerial(supplierProduct.getSerial());
                             System.out.println(cell);
                         }
                         if(i>=1 && (cell.getCellType()==NUMERIC)&&(ii==1)){
@@ -111,7 +114,18 @@ public class ExcelImpl implements IExcel {
                         }
                         ii++;
                     }
+                    requestPurchaseItemList.add(requestPurchaseItem);
                     i++;
+                }
+                Set<String> serials = new HashSet<>();
+                boolean hasDuplicate = false;
+                for(RequestPurchaseItem requestPurchaseItem : requestPurchaseItemList){
+                    if(!serials.add(requestPurchaseItem.getSupplierProductSerial())){
+                        hasDuplicate = true;
+                    }
+                    if(hasDuplicate){
+                        throw new BadRequestExceptions(Constants.ErrorPurchaseDuplicateItem);
+                    }
                 }
                 Purchase newPurchase = purchaseRepository.save(Purchase.builder()
                         .serial(requestPurchaseExcel.getSerial().toUpperCase())
@@ -228,9 +242,11 @@ public class ExcelImpl implements IExcel {
                 Sheet sheet = workbook.getSheetAt(0);
                 int i = 0;
                 List<RequestStockTransactionItem> stockTransactionItemList = new ArrayList<>();
+                List<RequestShipmentItem> requestShipmentItemList = new ArrayList<>();
                 for(Row row:sheet){
                     SupplierProduct supplierProduct;
                     PurchaseItem purchaseItem;
+                    RequestShipmentItem requestShipmentItem = RequestShipmentItem.builder().build();
                     int ii = 0;
                     for(Cell cell:row){
                         if(i>=1 && (cell.getCellType() == STRING) && (ii == 0)){
@@ -238,6 +254,7 @@ public class ExcelImpl implements IExcel {
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
+                            requestShipmentItem.setSupplierProductSerial(supplierProduct.getSerial());
                             purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
                             if(purchaseItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
@@ -250,7 +267,18 @@ public class ExcelImpl implements IExcel {
                         }
                         ii++;
                     }
+                    requestShipmentItemList.add(requestShipmentItem);
                     i++;
+                }
+                Set<String> serials = new HashSet<>();
+                boolean hasDuplicate = false;
+                for(RequestShipmentItem requestShipmentItem : requestShipmentItemList){
+                    if(!serials.add(requestShipmentItem.getSupplierProductSerial())){
+                        hasDuplicate = true;
+                    }
+                    if(hasDuplicate){
+                        throw new BadRequestExceptions(Constants.ErrorShipmentDuplicateItem);
+                    }
                 }
                 Shipment newShipment = shipmentRepository.save(Shipment.builder()
                         .purchaseSerial(requestShipmentExcel.getPurchaseSerial().toUpperCase())
@@ -330,6 +358,7 @@ public class ExcelImpl implements IExcel {
             Warehouse originWarehouse;
             Warehouse destinationWarehouse;
             StockTransfer stockTransfer;
+            List<RequestStockTransferItem> requestStockTransferItemList = new ArrayList<>();
             try{
                 user = userRepository.findByUsernameAndStatusTrue(requestStockTransferExcel.getTokenUser().toUpperCase());
                 originWarehouse = warehouseRepository.findByNameAndStatusTrue(requestStockTransferExcel.getOriginWarehouse().toUpperCase());
@@ -364,6 +393,7 @@ public class ExcelImpl implements IExcel {
                 for(Row row:sheet){
                     WarehouseStock originWarehouseStock = null;
                     SupplierProduct supplierProduct;
+                    RequestStockTransferItem requestStockTransferItem = RequestStockTransferItem.builder().build();
                     int ii = 0;
                     for(Cell cell:row){
                         if(i>=1 && (cell.getCellType() == STRING) && (ii==0)){
@@ -371,6 +401,7 @@ public class ExcelImpl implements IExcel {
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
+                            requestStockTransferItem.setSupplierProductSerial(supplierProduct.getSerial());
                             originWarehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(originWarehouse.getId(),supplierProduct.getId());
                         }
                         if((i>=1) && (cell.getCellType() == NUMERIC) && (ii==1) && (originWarehouseStock != null)){
@@ -383,9 +414,19 @@ public class ExcelImpl implements IExcel {
                         }
                         ii++;
                     }
+                    requestStockTransferItemList.add(requestStockTransferItem);
                     i++;
                 }
-
+                Set<String> skus = new HashSet<>();
+                boolean hasDuplicate = false;
+                for(RequestStockTransferItem requestStockTransferItem : requestStockTransferItemList){
+                    if(!skus.add(requestStockTransferItem.getSupplierProductSerial())){
+                        hasDuplicate = true;
+                    }
+                    if(hasDuplicate){
+                        throw new BadRequestExceptions(Constants.ErrorStockTransferDuplicateItem);
+                    }
+                }
                 StockTransfer newStockTransfer = stockTransferRepository.save(StockTransfer.builder()
                         .serial(requestStockTransferExcel.getSerial().toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
@@ -458,6 +499,7 @@ public class ExcelImpl implements IExcel {
             StockReturn stockReturn;
             Warehouse warehouse;
             Shipment shipment;
+            List<RequestStockReturnItem> requestStockReturnItemList = new ArrayList<>();
             try{
                 user = userRepository.findByUsernameAndStatusTrue(requestStockReturnExcel.getTokenUser().toUpperCase());
                 purchase = purchaseRepository.findBySerial(requestStockReturnExcel.getPurchaseSerial().toUpperCase());
@@ -496,6 +538,7 @@ public class ExcelImpl implements IExcel {
                     SupplierProduct supplierProduct = null;
                     PurchaseItem purchaseItem = null;
                     WarehouseStock warehouseStock;
+                    RequestStockReturnItem requestStockReturnItem = RequestStockReturnItem.builder().build();
                     int ii = 0;
                     for(Cell cell:row){
                         if(i>=1 && (cell.getCellType() == STRING) && (ii==0)){
@@ -503,6 +546,7 @@ public class ExcelImpl implements IExcel {
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
+                            requestStockReturnItem.setSupplierProductSerial(supplierProduct.getSerial());
                             purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
                             if(purchaseItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
@@ -520,11 +564,21 @@ public class ExcelImpl implements IExcel {
                                 throw new BadRequestExceptions(Constants.ErrorStockReturnQuantity);
                             }
                         }
+                        requestStockReturnItemList.add(requestStockReturnItem);
                         ii++;
                     }
                     i++;
                 }
-
+                Set<String> skus = new HashSet<>();
+                boolean hasDuplicate = false;
+                for(RequestStockReturnItem requestStockReturnItem : requestStockReturnItemList){
+                    if(!skus.add(requestStockReturnItem.getSupplierProductSerial())){
+                        hasDuplicate = true;
+                    }
+                    if(hasDuplicate){
+                        throw new BadRequestExceptions(Constants.ErrorStockReturnDuplicateItem);
+                    }
+                }
                 StockReturn newStockReturn = stockReturnRepository.save(StockReturn.builder()
                         .serial(requestStockReturnExcel.getSerial().toUpperCase())
                         .purchase(purchase)
@@ -603,6 +657,7 @@ public class ExcelImpl implements IExcel {
             User user;
             StockReplenishment stockReplenishment;
             Ordering ordering;
+            List<RequestStockReplenishmentItem> requestStockReplenishmentItemList = new ArrayList<>();
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 stockReplenishment = stockReplenishmentRepository.findByOrderId(orderId);
@@ -638,12 +693,14 @@ public class ExcelImpl implements IExcel {
                     int ii = 0;
                     Product product;
                     OrderItem orderItem = null;
+                    RequestStockReplenishmentItem requestStockReplenishmentItem = RequestStockReplenishmentItem.builder().build();
                     for(Cell cell:row){
                         if(i>=1 && (cell.getCellType() == STRING) && (ii==0)){
                             product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             if(product == null){
                                 throw new BadRequestExceptions(Constants.ErrorProduct);
                             }
+                            requestStockReplenishmentItem.setProductSku(product.getSku());
                             orderItem = orderItemRepository.findByOrderIdAndProductId(orderId,product.getId());
                             if(orderItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
@@ -656,10 +713,22 @@ public class ExcelImpl implements IExcel {
                             if(((int)cell.getNumericCellValue())>orderItem.getQuantity()){
                                 throw new BadRequestExceptions(Constants.ErrorStockReplenishmentQuantity);
                             }
+                            requestStockReplenishmentItem.setQuantity((int)cell.getNumericCellValue());
                         }
+                        requestStockReplenishmentItemList.add(requestStockReplenishmentItem);
                         ii++;
                     }
                     i++;
+                }
+                Set<String> skus = new HashSet<>();
+                boolean hasDuplicate = false;
+                for(RequestStockReplenishmentItem requestStockReplenishmentItem : requestStockReplenishmentItemList){
+                    if(!skus.add(requestStockReplenishmentItem.getProductSku())){
+                        hasDuplicate = true;
+                    }
+                    if(hasDuplicate){
+                        throw new BadRequestExceptions(Constants.ErrorStockReplenishmentDuplicateItem);
+                    }
                 }
                 StockReplenishment newStockReplenishment = stockReplenishmentRepository.save(StockReplenishment.builder()
                         .ordering(ordering)
@@ -794,6 +863,16 @@ public class ExcelImpl implements IExcel {
                     }
                     i++;
                 }
+                Set<String> serials = new HashSet<>();
+                boolean hasDuplicate = false;
+                for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
+                    if(!serials.add(requestOrderStockItem.getSupplierProductSerial())){
+                        hasDuplicate = true;
+                    }
+                    if(hasDuplicate){
+                        throw new BadRequestExceptions(Constants.ErrorOrderStockDuplicateItem);
+                    }
+                }
                 System.out.println(requestOrderStockItemList);
                 Map<String,Integer> checkCount = requestOrderStockItemList.stream().collect(
                         Collectors.groupingBy(
@@ -862,12 +941,10 @@ public class ExcelImpl implements IExcel {
                         .message(Constants.register)
                         .code(200)
                         .build();
-            }catch (RuntimeException e){
+            } catch (ExecutionException | InterruptedException | IOException | RuntimeException e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (ExecutionException | InterruptedException | IOException e) {
-                throw new RuntimeException(e);
             }
         });
     }

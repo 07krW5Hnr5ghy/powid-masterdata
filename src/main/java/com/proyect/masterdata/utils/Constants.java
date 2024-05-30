@@ -285,4 +285,10 @@ public class Constants {
     public static final String ErrorOrderStockItemZero = "Quantity of order stock item can't be less than one";
     public static final String ErrorOrderReturnItemZero = "Quantity of order return item can't be less than one";
     public static final String ErrorOrderItemZero = "Quantity of order item can't be less than one";
+    public static final String ErrorOrderStockDuplicateItem = "Duplicated order stock item can't be registered";
+    public static final String ErrorStockReplenishmentDuplicateItem = "Duplicated stock replenishment item can't be registered";
+    public static final String ErrorStockReturnDuplicateItem = "Duplicated stock return item can't be registered";
+    public static final String ErrorStockTransferDuplicateItem = "Duplicated stock transfer item can't be registered";
+    public static final String ErrorShipmentDuplicateItem = "Duplicated shipment item can't be registered";
+    public static final String ErrorPurchaseDuplicateItem = "Duplicated purchase item can't be registered";
 }
