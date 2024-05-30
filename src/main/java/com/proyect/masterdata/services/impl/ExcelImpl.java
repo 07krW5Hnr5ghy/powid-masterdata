@@ -757,7 +757,7 @@ public class ExcelImpl implements IExcel {
                     RequestOrderStockItem requestOrderStockItem = RequestOrderStockItem.builder().build();
                     for(Cell cell:row){
                         if(i>=1 && (cell.getCellType() == STRING) && ii==0){
-                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase().substring(1));
                             if(product == null){
                                 throw new BadRequestExceptions(Constants.ErrorProduct);
                             }
@@ -801,7 +801,6 @@ public class ExcelImpl implements IExcel {
                                 Collectors.summingInt(RequestOrderStockItem::getQuantity)
                         )
                 );
-                System.out.println(checkCount);
                 checkCount.forEach((key,value)->{
                     Product product = productRepository.findBySkuAndStatusTrue(key);
                     OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
@@ -830,7 +829,7 @@ public class ExcelImpl implements IExcel {
                     OrderStockItem orderStockItem = OrderStockItem.builder().build();
                     for(Cell cell:row){
                         if(j>=1 && (cell.getCellType() == STRING) && ji==0){
-                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase().substring(1));
                             orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
                             orderStockItem.setOrderItem(orderItem);
                             orderStockItem.setOrderItemId(orderItem.getId());
