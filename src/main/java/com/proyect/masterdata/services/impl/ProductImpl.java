@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.*;
@@ -86,6 +87,10 @@ public class ProductImpl implements IProduct {
 
         if (categoryProductData == null) {
             throw new BadRequestExceptions(Constants.ErrorCategory);
+        }
+
+        if(!Objects.equals(sizeData.getSizeTypeId(), categoryProductData.getSizeTypeId())){
+            throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
         }
 
         if (colorData == null) {
@@ -172,6 +177,10 @@ public class ProductImpl implements IProduct {
                 throw new BadRequestExceptions(Constants.ErrorCategory);
             }
 
+            if(!Objects.equals(sizeData.getSizeTypeId(), categoryProductData.getSizeTypeId())){
+                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
+            }
+
             if (colorData == null) {
                 throw new BadRequestExceptions(Constants.ErrorColor);
             }
@@ -210,102 +219,6 @@ public class ProductImpl implements IProduct {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<RequestProductSave> products, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
-
-        User user;
-        List<Product> productList;
-
-        try {
-            user = userRepository
-                    .findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            productList = productRepository
-                    .findBySkuIn(products.stream().map(product -> product.getSku().toUpperCase()).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (!productList.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorProductExists);
-        }
-
-        try {
-
-            List<Product> newProducts = products.stream().map(product -> {
-
-                Model model = modelRepository.findByNameAndStatusTrue(product.getModel().toUpperCase());
-
-                if (model == null) {
-                    throw new BadRequestExceptions(Constants.ErrorModel);
-                }
-
-                Size size = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
-
-                if (size == null) {
-                    throw new BadRequestExceptions(Constants.ErrorSize);
-                }
-
-                CategoryProduct categoryProduct = categoryProductRepository
-                        .findByNameAndStatusTrue(product.getCategory().toUpperCase());
-
-                if (categoryProduct == null) {
-                    throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
-                }
-
-                Color color = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
-
-                if (color == null) {
-                    throw new BadRequestExceptions(Constants.ErrorColor);
-                }
-
-                Unit unit = unitRepository.findByNameAndStatusTrue(product.getUnit().toUpperCase());
-
-                if(unit == null){
-                    throw new BadRequestExceptions(Constants.ErrorUnit);
-                }
-
-                Product productData = Product.builder()
-                        .sku(product.getSku().toUpperCase())
-                        .model(model)
-                        .modelId(model.getId())
-                        .size(size)
-                        .sizeId(size.getId())
-                        .categoryProduct(categoryProduct)
-                        .categoryProductId(categoryProduct.getId())
-                        .color(color)
-                        .colorId(color.getId())
-                        .unit(unit)
-                        .unitId(unit.getId())
-                        .client(user.getClient())
-                        .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .status(true)
-                        .build();
-                iProductPicture.uploadPicture(product.getPictures(),productData.getId(),user.getUsername());
-                iProductPrice.save(productData.getSku(), product.getPrice(), user.getUsername());
-                return productData;
-            }).toList();
-
-            productRepository.saveAll(newProducts);
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
     }
 
     @Override

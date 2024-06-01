@@ -45,15 +45,6 @@ public class ProductController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping(value = "products", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<RequestProductSave> productList,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iProduct.saveAll(productList, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(

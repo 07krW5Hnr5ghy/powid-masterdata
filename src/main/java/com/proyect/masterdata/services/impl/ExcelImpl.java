@@ -1292,7 +1292,7 @@ public class ExcelImpl implements IExcel {
                     Product product;
                     Model model;
                     Color color;
-                    CategoryProduct categoryProduct;
+                    CategoryProduct categoryProduct=null;
                     Size size;
                     Unit unit;
                     Product newProduct = Product.builder().build();
@@ -1305,7 +1305,7 @@ public class ExcelImpl implements IExcel {
                             }
                             newProduct.setSku(cell.getRichStringCellValue().getString().toUpperCase());
                         }
-                        if((i>=1)&&(cell.getCellType() == STRING) && (ii==1)){
+                        if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
                             model = modelRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             if(model == null){
                                 throw new BadRequestExceptions(Constants.ErrorModel);
@@ -1313,7 +1313,7 @@ public class ExcelImpl implements IExcel {
                             newProduct.setModel(model);
                             newProduct.setModelId(model.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==2)){
+                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==3)){
                             color = colorRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             if(color==null){
                                 throw new BadRequestExceptions(Constants.ErrorColor);
@@ -1321,7 +1321,7 @@ public class ExcelImpl implements IExcel {
                             newProduct.setColor(color);
                             newProduct.setColorId(color.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==3)){
+                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==4)){
                             categoryProduct = categoryProductRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             if(categoryProduct==null){
                                 throw new BadRequestExceptions(Constants.ErrorCategory);
@@ -1329,10 +1329,24 @@ public class ExcelImpl implements IExcel {
                             newProduct.setCategoryProduct(categoryProduct);
                             newProduct.setCategoryProductId(categoryProduct.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==5)){
+                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==5)&&(categoryProduct!=null)){
                             size = sizeRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             if(size==null){
                                 throw new BadRequestExceptions(Constants.ErrorSize);
+                            }
+                            if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
+                                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
+                            }
+                            newProduct.setSize(size);
+                            newProduct.setSizeId(size.getId());
+                        }
+                        if((i>=1)&&(cell.getCellType()==NUMERIC)&&(ii==5)&&(categoryProduct!=null)){
+                            size = sizeRepository.findByNameAndStatusTrue(String.valueOf((int) cell.getNumericCellValue()));
+                            if(size==null){
+                                throw new BadRequestExceptions(Constants.ErrorSize);
+                            }
+                            if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
+                                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
                             }
                             newProduct.setSize(size);
                             newProduct.setSizeId(size.getId());
@@ -1365,6 +1379,8 @@ public class ExcelImpl implements IExcel {
                         newProduct.setStatus(true);
                         newProduct.setRegistrationDate(new Date(System.currentTimeMillis()));
                         newProduct.setTokenUser(user.getUsername());
+                        newProduct.setClient(user.getClient());
+                        newProduct.setClientId(user.getClientId());
                         productPrice.setProduct(newProduct);
                         productPrice.setProductId(newProduct.getId());
                         productPrice.setTokenUser(user.getUsername());
@@ -1400,6 +1416,7 @@ public class ExcelImpl implements IExcel {
                         .message(Constants.register)
                         .build();
             } catch (RuntimeException | IOException e) {
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

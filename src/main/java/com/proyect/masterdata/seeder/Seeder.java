@@ -633,13 +633,6 @@ public class Seeder implements CommandLineRunner {
                         iCategory.save("Cosmeticos", "Cosmeticos", "admin1");
                         iCategory.save("Otro", "Otro", "admin1");
 
-                        // mock category products
-                        iCategoryProduct.save("camisetas", "camisetas", "admin1");
-                        iCategoryProduct.save("jeans", "jeans", "admin1");
-                        iCategoryProduct.save("tennis", "tennis", "admin1");
-                        iCategoryProduct.save("botas", "botas", "admin1");
-                        iCategoryProduct.save("blusas", "blusas", "admin1");
-
                         // mock closing channels
                         iClosingChannel.save("whatsapp", "admin1");
                         iClosingChannel.save("instagram", "admin1");
@@ -682,6 +675,14 @@ public class Seeder implements CommandLineRunner {
                         iSizeType.save("calzado", "admin1");
                         iSizeType.save("accesorios", "admin1");
 
+                        // mock category products
+                        iCategoryProduct.save("camisetas", "camisetas","ropa", "admin1");
+                        iCategoryProduct.save("jeans", "jeans","ropa", "admin1");
+                        iCategoryProduct.save("tennis", "tennis","calzado", "admin1");
+                        iCategoryProduct.save("botas", "botas","calzado", "admin1");
+                        iCategoryProduct.save("blusas", "blusas", "ropa","admin1");
+                        iCategoryProduct.save("bisuteria", "adornos", "accesorios","admin1");
+
                         // mock size
                         iSize.save("s", "ropa", "admin1");
                         iSize.save("m", "ropa", "admin1");
@@ -692,10 +693,12 @@ public class Seeder implements CommandLineRunner {
 
                         iSize.save("12", "calzado", "admin1");
                         iSize.save("18", "calzado", "admin1");
-                        iSize.save("24", "calzado", "admin1");
                         iSize.save("28", "calzado", "admin1");
-                        iSize.save("32", "calzado", "admin1");
+                        iSize.save("32","calzado", "admin1");
+                        iSize.save("24",  "calzado", "admin1");
                         iSize.save("40", "calzado", "admin1");
+
+                        iSize.save("accesorios", "accesorios", "admin1");
 
                         // order state
                         iOrderState.save("pendiente","admin1");
@@ -748,6 +751,7 @@ public class Seeder implements CommandLineRunner {
                         //unit type
                         iUnitType.save("ropa","admin1");
                         iUnitType.save("calzado","admin1");
+                        iUnitType.save("accessorio","admin1");
 
                         // unit
                         RequestUnit requestUnit1 = RequestUnit.builder()
@@ -763,6 +767,13 @@ public class Seeder implements CommandLineRunner {
                                 .build();
 
                         iUnit.save(requestUnit2,"admin1");
+
+                        RequestUnit requestUnit3 = RequestUnit.builder()
+                                .name("accesorio")
+                                        .unitType("accessorio")
+                                                .build();
+
+                        iUnit.save(requestUnit3,"admin1");
 
                         // shipment type
                         iShipmentType.save("embarque","admin1");

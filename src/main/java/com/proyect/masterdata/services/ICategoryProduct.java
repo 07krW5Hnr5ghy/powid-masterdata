@@ -12,11 +12,9 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface ICategoryProduct {
-    ResponseSuccess save(String name, String description, String tokenUser)
+    ResponseSuccess save(String name, String description,String sizeTypeName, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> saveAsync(String name, String description, String tokenUser)
-            throws BadRequestExceptions, InternalErrorExceptions;
-    ResponseSuccess saveAll(List<RequestCategoryProduct> categoryProducts, String tokenUser)
+    CompletableFuture<ResponseSuccess> saveAsync(String name, String description, String sizeTypeName, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<Page<CategoryProductDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;

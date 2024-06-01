@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.domain.SizeType;
+import com.proyect.masterdata.repository.SizeTypeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -33,17 +35,20 @@ public class CategoryProductImpl implements ICategoryProduct {
     private final UserRepository userRepository;
     private final CategoryProductRepository categoryProductRepository;
     private final CategoryProductRepositoryCustom categoryProductRepositoryCustom;
+    private final SizeTypeRepository sizeTypeRepository;
 
     @Override
-    public ResponseSuccess save(String name, String description, String tokenUser)
+    public ResponseSuccess save(String name, String description,String sizeTypeName, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
         CategoryProduct categoryProduct;
+        SizeType sizeType;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             categoryProduct = categoryProductRepository.findByName(name.toUpperCase());
+            sizeType = sizeTypeRepository.findByNameAndStatusTrue(sizeTypeName.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -57,6 +62,10 @@ public class CategoryProductImpl implements ICategoryProduct {
             throw new BadRequestExceptions(Constants.ErrorCategoryProductExists);
         }
 
+        if(sizeType == null){
+            throw new BadRequestExceptions(Constants.ErrorSizeType);
+        }
+
         try {
             categoryProductRepository.save(CategoryProduct.builder()
                     .description(description.toUpperCase())
@@ -64,6 +73,8 @@ public class CategoryProductImpl implements ICategoryProduct {
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
+                            .sizeType(sizeType)
+                            .sizeTypeId(sizeType.getId())
                     .build());
 
             return ResponseSuccess.builder()
@@ -77,14 +88,16 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String description, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String description,String sizeTypeName, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             CategoryProduct categoryProduct;
+            SizeType sizeType;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 categoryProduct = categoryProductRepository.findByName(name.toUpperCase());
+                sizeType = sizeTypeRepository.findByNameAndStatusTrue(sizeTypeName.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -98,6 +111,10 @@ public class CategoryProductImpl implements ICategoryProduct {
                 throw new BadRequestExceptions(Constants.ErrorCategoryProductExists);
             }
 
+            if(sizeType == null){
+                throw new BadRequestExceptions(Constants.ErrorSizeType);
+            }
+
             try {
                 categoryProductRepository.save(CategoryProduct.builder()
                         .description(description.toUpperCase())
@@ -105,6 +122,8 @@ public class CategoryProductImpl implements ICategoryProduct {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
+                                .sizeType(sizeType)
+                                .sizeTypeId(sizeType.getId())
                         .build());
 
                 return ResponseSuccess.builder()
@@ -116,52 +135,6 @@ public class CategoryProductImpl implements ICategoryProduct {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<RequestCategoryProduct> categoryProductList, String tokenUser)
-            throws BadRequestExceptions, InternalErrorExceptions {
-
-        User user;
-        List<CategoryProduct> categoryProducts;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            categoryProducts = categoryProductRepository.findByNameIn(categoryProductList.stream()
-                    .map(categoryProduct -> categoryProduct.getName().toUpperCase()).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (!categoryProducts.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorCategoryProductExists);
-        }
-
-        try {
-            categoryProductRepository.saveAll(categoryProductList.stream()
-                    .map(categoryProduct -> CategoryProduct.builder()
-                            .description(categoryProduct.getDescription().toUpperCase())
-                            .name(categoryProduct.getName().toUpperCase())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .status(true)
-                            .tokenUser(tokenUser.toUpperCase())
-                            .build())
-                    .toList());
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
     }
 
     @Override

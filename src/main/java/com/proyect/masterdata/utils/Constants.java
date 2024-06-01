@@ -292,4 +292,5 @@ public class Constants {
     public static final String ErrorShipmentDuplicateItem = "Duplicated shipment item can't be registered";
     public static final String ErrorPurchaseDuplicateItem = "Duplicated purchase item can't be registered";
     public static final String ErrorProductPriceZero = "Product price can't be less than $0.01";
+    public static final String ErrorSizeTypeCategoryProduct = "Size type does not belong to the category";
 }

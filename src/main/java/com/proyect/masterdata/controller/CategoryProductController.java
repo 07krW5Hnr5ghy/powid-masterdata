@@ -39,18 +39,10 @@ public class CategoryProductController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
+            @RequestParam("sizeType") String sizeType,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iCategoryProduct.saveAsync(name, description, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iCategoryProduct.saveAsync(name, description,sizeType, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
-    @PostMapping(value = "category-products", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_PRODUCT_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<RequestCategoryProduct> categoryProducts,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iCategoryProduct.saveAll(categoryProducts, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("pagination")
