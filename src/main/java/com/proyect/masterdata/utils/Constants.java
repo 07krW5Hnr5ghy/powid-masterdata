@@ -99,6 +99,8 @@ public class Constants {
     public static final String tableOrderReturn = "order_return";
     public static final String tableOrderReturnItem = "order_return_item";
     public static final String tableOrderReturnType = "order_return_type";
+    public static final String tableAudit = "audit";
+    public static final String tableAuditEvent = "audit_event";
     // messages
     public static final String register = "registration correctly";
     public static final String update = "correctly updated";
@@ -293,4 +295,6 @@ public class Constants {
     public static final String ErrorPurchaseDuplicateItem = "Duplicated purchase item can't be registered";
     public static final String ErrorProductPriceZero = "Product price can't be less than $0.01";
     public static final String ErrorSizeTypeCategoryProduct = "Size type does not belong to the category";
+    public static final String ErrorAuditEvent = "audit event does not exist";
+    public static final String ErrorAuditEventExists = "audit event already exists";
 }

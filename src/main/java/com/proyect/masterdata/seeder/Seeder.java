@@ -94,6 +94,7 @@ public class Seeder implements CommandLineRunner {
         private final IOrderReturnType iOrderReturnType;
         private final IOrderReturn iOrderReturn;
         private final ResourceLoader resourceLoader;
+        private final IAuditEvent iAuditEvent;
         @Override
         public void run(String... args) throws Exception {
 
@@ -213,6 +214,16 @@ public class Seeder implements CommandLineRunner {
                         for(CountryDTO country : listCountry){
                                 iCountry.save(country.getValue(),"ADMIN1");
                         }
+
+                        // audit events
+                        iAuditEvent.save("inicio sesion","ADMIN1");
+                        iAuditEvent.save("cierre sesion","ADMIN1");
+                        iAuditEvent.save("creacion pedido","ADMIN1");
+                        iAuditEvent.save("creacion usuario","ADMIN1");
+                        iAuditEvent.save("eliminacion usuario","ADMIN1");
+                        iAuditEvent.save("creacion item pedido","ADMIN1");
+                        iAuditEvent.save("eliminacion item pedido","ADMIN1");
+                        iAuditEvent.save("modificacion item pedido","ADMIN1");
 
                         // supplier types
                         iSupplierType.save("INTERNO","ADMIN1");
