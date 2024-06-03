@@ -14,6 +14,7 @@ import com.proyect.masterdata.mapper.CategoryMapper;
 import com.proyect.masterdata.repository.CategoryRepository;
 import com.proyect.masterdata.repository.CategoryRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICategory;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class CategoryImpl implements ICategory {
     private final CategoryMapper categoryMapper;
     private final UserRepository userRepository;
     private final CategoryRepositoryCustom categoryRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String description, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -66,11 +68,12 @@ public class CategoryImpl implements ICategory {
         }
 
         try {
-            categoryRepository.save(Category.builder()
+            Category category = categoryRepository.save(Category.builder()
                     .name(name.toUpperCase())
                     .description(description.toUpperCase())
                     .status(true)
                     .tokenUser(datauser.getUsername().toUpperCase()).build());
+            iAudit.save("ADD_CATEGORY","ADD CATEGORY "+category.getName()+".",datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -108,11 +111,12 @@ public class CategoryImpl implements ICategory {
             }
 
             try {
-                categoryRepository.save(Category.builder()
+                Category category = categoryRepository.save(Category.builder()
                         .name(name.toUpperCase())
                         .description(description.toUpperCase())
                         .status(true)
                         .tokenUser(datauser.getUsername().toUpperCase()).build());
+                iAudit.save("ADD_CATEGORY","ADD CATEGORY "+category.getName()+".",datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -124,56 +128,6 @@ public class CategoryImpl implements ICategory {
         });
     }
 
-    @Override
-    public ResponseSuccess saveAll(List<RequestCreateCategory> categories, String tokenUser)
-            throws BadRequestExceptions {
-
-        User datauser;
-        List<Category> categoryListNames;
-        List<Category> categoryListDescriptions;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            categoryListNames = categoryRepository.findByNameIn(categories
-                    .stream()
-                    .map(category -> category.getName().toUpperCase())
-                    .collect(Collectors.toList()));
-            categoryListDescriptions = categoryRepository.findByDescriptionIn(categories
-                    .stream()
-                    .map(category -> category.getDescription().toUpperCase())
-                    .collect(Collectors.toList()));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!categoryListNames.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorCategoryList.toUpperCase());
-        }
-        if (!categoryListDescriptions.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorCategoryListDescription.toUpperCase());
-        }
-
-        try {
-            List<Category> categorySaves = categories.stream().map(data -> Category.builder()
-                    .tokenUser(tokenUser.toUpperCase())
-                    .name(data.getName().toUpperCase())
-                    .description(data.getDescription().toUpperCase())
-                    .status(true)
-                    .build()).toList();
-            categoryRepository.saveAll(categorySaves);
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
     @Override
     public CompletableFuture<CategoryDTO> update(RequestCategory requestCategory, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -197,11 +151,11 @@ public class CategoryImpl implements ICategory {
                 throw new BadRequestExceptions(Constants.ErrorCategory.toUpperCase());
             }
 
-            category.setDescription(requestCategory.getDescription().toUpperCase());
-            category.setTokenUser(datauser.getUsername().toUpperCase());
-            category.setUpdateDate(new Date(System.currentTimeMillis()));
-
             try {
+                category.setDescription(requestCategory.getDescription().toUpperCase());
+                category.setTokenUser(datauser.getUsername().toUpperCase());
+                category.setUpdateDate(new Date(System.currentTimeMillis()));
+                iAudit.save("UPDATE_CATEGORY","UPDATE CATEGORY "+category.getName()+".",datauser.getUsername());
                 return categoryMapper.categoryToCategoryDTO(categoryRepository.save(category));
             } catch (RuntimeException e) {
                 log.error(e);
@@ -237,6 +191,7 @@ public class CategoryImpl implements ICategory {
                 category.setStatus(false);
                 category.setRegistrationDate(new Date(System.currentTimeMillis()));
                 categoryRepository.save(category);
+                iAudit.save("DELETE_CATEGORY","DELETE CATEGORY "+category.getName()+".",datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -330,6 +285,7 @@ public class CategoryImpl implements ICategory {
                 category.setStatus(false);
                 category.setUpdateDate(new Date(System.currentTimeMillis()));
                 category.setTokenUser(user.getUsername());
+                iAudit.save("ACTIVATE_CATEGORY","ACTIVATE CATEGORY "+category.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

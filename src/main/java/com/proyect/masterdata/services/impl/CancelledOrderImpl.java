@@ -37,8 +37,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
     private final OrderStockItemRepository orderStockItemRepository;
     private final WarehouseRepository warehouseRepository;
     private final OrderStockRepository orderStockRepository;
-    private final IWarehouseStock iWarehouseStock;
-    private final IGeneralStock iGeneralStock;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestCancelledOrder requestCancelledOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -116,6 +115,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
                 ordering.setOrderStateId(orderState.getId());
                 ordering.setCancellation(true);
                 orderingRepository.save(ordering);
+                iAudit.save("ADD_CANCELLED_ORDER","ADD CANCELLED ORDER " + ordering.getId() + ".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

@@ -17,8 +17,6 @@ public interface ICategory {
             throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(String name, String description, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
-    ResponseSuccess saveAll(List<RequestCreateCategory> categories, String tokenUser)
-            throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<CategoryDTO> update(RequestCategory requestCategory, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;

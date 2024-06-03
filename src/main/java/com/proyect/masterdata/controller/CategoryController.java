@@ -33,14 +33,6 @@ public class CategoryController {
         CompletableFuture<ResponseSuccess> result = iCategory.saveAsync(name, description, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @PostMapping(value = "categories")
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<RequestCreateCategory> categories,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iCategory.saveAll(categories, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
     @PutMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_PUT')")
     public ResponseEntity<CategoryDTO> update(
