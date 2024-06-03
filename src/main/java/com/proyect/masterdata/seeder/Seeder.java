@@ -215,15 +215,25 @@ public class Seeder implements CommandLineRunner {
                                 iCountry.save(country.getValue(),"ADMIN1");
                         }
 
-                        // audit events
-                        iAuditEvent.save("inicio sesion","ADMIN1");
-                        iAuditEvent.save("cierre sesion","ADMIN1");
-                        iAuditEvent.save("creacion pedido","ADMIN1");
-                        iAuditEvent.save("creacion usuario","ADMIN1");
-                        iAuditEvent.save("eliminacion usuario","ADMIN1");
-                        iAuditEvent.save("creacion item pedido","ADMIN1");
-                        iAuditEvent.save("eliminacion item pedido","ADMIN1");
-                        iAuditEvent.save("modificacion item pedido","ADMIN1");
+                        // audit
+                        iAuditEvent.save("ACTIVATE_ACCESS","ADMIN1");
+                        iAuditEvent.save("ACTIVATE_BRAND","ADMIN1");
+                        iAuditEvent.save("ACTIVATE_CANCELLATION_REASON","ADMIN1");
+                        iAuditEvent.save("ADD_ACCESS","ADMIN1");
+                        iAuditEvent.save("ADD_BRAND","ADMIN1");
+                        iAuditEvent.save("ADD_CANCELLATION_REASON","ADMIN1");
+                        iAuditEvent.save("ADD_ORDER","ADMIN1");
+                        iAuditEvent.save("ADD_ORDER_ITEM","ADMIN1");
+                        iAuditEvent.save("ADD_USER","ADMIN1");
+                        iAuditEvent.save("DELETE_ACCESS","ADMIN1");
+                        iAuditEvent.save("DELETE_BRAND","ADMIN1");
+                        iAuditEvent.save("DELETE_CANCELLATION_REASON","ADMIN1");
+                        iAuditEvent.save("DELETE_ORDER_ITEM","ADMIN1");
+                        iAuditEvent.save("DELETE_USER","ADMIN1");
+                        iAuditEvent.save("LOG_IN","ADMIN1");
+                        iAuditEvent.save("LOG_OUT","ADMIN1");
+                        iAuditEvent.save("REGISTER_CLIENT","ADMIN1");
+                        iAuditEvent.save("UPDATE_ORDER_ITEM","ADMIN1");
 
                         // supplier types
                         iSupplierType.save("INTERNO","ADMIN1");

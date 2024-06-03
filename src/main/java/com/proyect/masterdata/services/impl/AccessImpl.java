@@ -11,6 +11,7 @@ import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.AccessRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAccess;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,7 +34,7 @@ public class AccessImpl implements IAccess {
     private final UserRepository userRepository;
     private final AccessRepository accessRepository;
     private final AccessRepositoryCustom accessRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -56,12 +57,13 @@ public class AccessImpl implements IAccess {
         }
 
         try {
-            accessRepository.save(Access.builder()
+            Access newAccess = accessRepository.save(Access.builder()
                     .name(name.toUpperCase())
                     .status(true)
                     .dateRegistration(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
+            iAudit.save("ADD_ACCESS","ADD ACCESS " + newAccess.getName() + " .",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -95,12 +97,13 @@ public class AccessImpl implements IAccess {
             }
 
             try {
-                accessRepository.save(Access.builder()
+                Access newAccess = accessRepository.save(Access.builder()
                         .name(name.toUpperCase())
                         .status(true)
                         .dateRegistration(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
+                iAudit.save("ADD_ACCESS","ADD ACCESS " + newAccess.getName() + " .",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -138,6 +141,7 @@ public class AccessImpl implements IAccess {
             access.setDateUpDate(new Date(System.currentTimeMillis()));
             access.setTokenUser(tokenUser.toUpperCase());
             accessRepository.save(access);
+            iAudit.save("DELETE_ACCESS","DELETE ACCESS "+access.getName()+" .",user.getUsername());
             return ResponseDelete.builder()
                     .message(Constants.delete)
                     .code(200)
@@ -175,6 +179,7 @@ public class AccessImpl implements IAccess {
                 access.setDateUpDate(new Date(System.currentTimeMillis()));
                 access.setTokenUser(tokenUser.toUpperCase());
                 accessRepository.save(access);
+                iAudit.save("DELETE_ACCESS","DELETE ACCESS "+access.getName()+" .",user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -285,6 +290,7 @@ public class AccessImpl implements IAccess {
                 access.setDateUpDate(new Date(System.currentTimeMillis()));
                 access.setTokenUser(tokenUser.toUpperCase());
                 accessRepository.save(access);
+                iAudit.save("ACTIVATE_ACCESS","ACTIVATE ACCESS " +  access.getName() + " .",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

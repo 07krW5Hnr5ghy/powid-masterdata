@@ -53,6 +53,7 @@ public class AuthenticationImpl implements IAuthentication {
     private final IMembership iMembership;
     private final MembershipRepository membershipRepository;
     private final MembershipStateRepository membershipStateRepository;
+    private final IAudit iAudit;
 
     public CompletableFuture<ResponseLogin> loginUser(String username, String password) {
         return CompletableFuture.supplyAsync(() -> {
@@ -91,7 +92,7 @@ public class AuthenticationImpl implements IAuthentication {
                         new UsernamePasswordAuthenticationToken(username.toUpperCase(), password));
 
                 String token = iToken.generateJwt(auth);
-
+                iAudit.save("LOG_IN","USER " + user.getUsername() + " LOGGED IN.",user.getUsername());
                 return new ResponseLogin(userRepository.findByUsernameAndStatusTrue(username.toUpperCase()), token);
 
             } catch (AuthenticationException e) {
@@ -102,7 +103,7 @@ public class AuthenticationImpl implements IAuthentication {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> registerUser(RequestOnboarding requestOnboarding)
+    public CompletableFuture<ResponseSuccess> registerNewClient(RequestOnboarding requestOnboarding)
             throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             boolean existsUser = false;
@@ -252,7 +253,7 @@ public class AuthenticationImpl implements IAuthentication {
                     iOnboardStore.save(store, onboard);
 
                 }
-
+                iAudit.save("REGISTER_CLIENT","REGISTER NEW CLIENT RUC : " + requestClientSave.getRuc() + " .",requestUser.getUser());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

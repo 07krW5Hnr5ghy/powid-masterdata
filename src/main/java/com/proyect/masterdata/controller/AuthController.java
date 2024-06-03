@@ -32,7 +32,7 @@ public class AuthController {
     @PostMapping(value = "register", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseSuccess> register(
             @RequestBody() RequestOnboarding requestOnboarding) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iAuthentication.registerUser(requestOnboarding);
+        CompletableFuture<ResponseSuccess> result = iAuthentication.registerNewClient(requestOnboarding);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

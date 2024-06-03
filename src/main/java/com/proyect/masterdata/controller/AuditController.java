@@ -20,16 +20,6 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class AuditController {
     private final IAudit iAudit;
-    @PostMapping()
-    public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("event") String event,
-            @RequestParam("detail") String detail,
-            @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iAudit.save(event,detail,tokenUser);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
     @GetMapping()
     public ResponseEntity<Page<AuditDTO>> list(
             @RequestParam(value = "user",required = false) String user,

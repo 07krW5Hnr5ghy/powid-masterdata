@@ -14,8 +14,6 @@ import org.springframework.data.domain.Page;
 public interface IBrand {
         ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        ResponseSuccess saveAll(List<String> namesList, String tokenUser)
-                        throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<BrandDTO>> listPagination(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize)

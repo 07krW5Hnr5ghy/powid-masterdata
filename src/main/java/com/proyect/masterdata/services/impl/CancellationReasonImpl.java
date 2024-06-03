@@ -9,6 +9,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.CancellationReasonRepository;
 import com.proyect.masterdata.repository.CancellationReasonRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICancellationReason;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class CancellationReasonImpl implements ICancellationReason {
     private final CancellationReasonRepository cancellationReasonRepository;
     private final UserRepository userRepository;
     private final CancellationReasonRepositoryCustom cancellationReasonRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -53,14 +55,14 @@ public class CancellationReasonImpl implements ICancellationReason {
 
         try{
 
-            cancellationReasonRepository.save(CancellationReason.builder()
+            CancellationReason newCancellationReason = cancellationReasonRepository.save(CancellationReason.builder()
                             .name(name.toUpperCase())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .status(true)
                             .tokenUser(tokenUser.toUpperCase())
                     .build());
-
+            iAudit.save("ADD_CANCELLATION_REASON","ADD CANCELLATION REASON "+newCancellationReason.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -96,14 +98,14 @@ public class CancellationReasonImpl implements ICancellationReason {
 
             try{
 
-                cancellationReasonRepository.save(CancellationReason.builder()
+                CancellationReason newCancellationReason = cancellationReasonRepository.save(CancellationReason.builder()
                         .name(name.toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-
+                iAudit.save("ADD_CANCELLATION_REASON","ADD CANCELLATION REASON "+newCancellationReason.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -190,6 +192,7 @@ public class CancellationReasonImpl implements ICancellationReason {
                 cancellationReason.setUpdateDate(new Date(System.currentTimeMillis()));
                 cancellationReason.setTokenUser(tokenUser.toUpperCase());
                 cancellationReasonRepository.save(cancellationReason);
+                iAudit.save("DELETE_CANCELLATION_REASON","DELETE CANCELLATION REASON "+cancellationReason.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -227,6 +230,7 @@ public class CancellationReasonImpl implements ICancellationReason {
                 cancellationReason.setUpdateDate(new Date(System.currentTimeMillis()));
                 cancellationReason.setTokenUser(tokenUser.toUpperCase());
                 cancellationReasonRepository.save(cancellationReason);
+                iAudit.save("ACTIVATE_CANCELLATION_REASON","ACTIVATE CANCELLATION REASON "+cancellationReason.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

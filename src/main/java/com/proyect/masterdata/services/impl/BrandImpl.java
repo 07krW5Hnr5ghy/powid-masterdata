@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Membership;
 import com.proyect.masterdata.domain.MembershipState;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class BrandImpl implements IBrand {
     private final BrandRepositoryCustom brandRepositoryCustom;
     private final MembershipRepository membershipRepository;
     private final MembershipStateRepository membershipStateRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -67,7 +69,7 @@ public class BrandImpl implements IBrand {
         }
 
         try {
-            brandRepository.save(Brand.builder()
+            Brand newBrand = brandRepository.save(Brand.builder()
                     .name(name.toUpperCase())
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
@@ -75,6 +77,7 @@ public class BrandImpl implements IBrand {
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .build());
+            iAudit.save("ADD_BRAND","ADD BRAND "+newBrand.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -117,7 +120,7 @@ public class BrandImpl implements IBrand {
             }
 
             try {
-                brandRepository.save(Brand.builder()
+                Brand newBrand = brandRepository.save(Brand.builder()
                         .name(name.toUpperCase())
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
@@ -125,6 +128,7 @@ public class BrandImpl implements IBrand {
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .build());
+                iAudit.save("ADD_BRAND","ADD BRAND "+newBrand.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -134,57 +138,6 @@ public class BrandImpl implements IBrand {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<String> namesList, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
-
-        User user;
-        List<Brand> brandList;
-        Membership membership;
-        MembershipState membershipState;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            brandList = brandRepository.findByNameIn(namesList);
-            membershipState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }else{
-            membership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), membershipState.getId());
-        }
-
-        if(membership == null){
-            throw new BadRequestExceptions(Constants.ErrorMembershipExpired);
-        }
-
-        if (!brandList.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorBrandExists);
-        }
-
-        try {
-            brandRepository.saveAll(namesList.stream().map(name -> Brand.builder()
-                    .name(name.toUpperCase())
-                    .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(tokenUser.toUpperCase())
-                    .client(user.getClient())
-                    .clientId(user.getClientId())
-                    .build()).toList());
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
     }
 
     @Override
@@ -213,6 +166,7 @@ public class BrandImpl implements IBrand {
                 brand.setUpdateDate(new Date(System.currentTimeMillis()));
                 brand.setTokenUser(tokenUser.toUpperCase());
                 brandRepository.save(brand);
+                iAudit.save("DELETE_BRAND","DELETE BRAND "+brand.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -312,6 +266,7 @@ public class BrandImpl implements IBrand {
                 brand.setUpdateDate(new Date(System.currentTimeMillis()));
                 brand.setTokenUser(tokenUser.toUpperCase());
                 brandRepository.save(brand);
+                iAudit.save("ACTIVATE_BRAND","ACTIVATE BRAND "+brand.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
