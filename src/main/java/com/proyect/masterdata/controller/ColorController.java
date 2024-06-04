@@ -32,14 +32,6 @@ public class ColorController {
         CompletableFuture<ResponseSuccess> result = iColor.save(name, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @PostMapping(value = "colors", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<String> names, @RequestParam("tokenUser") String tokenUser)
-            throws BadRequestExceptions {
-        ResponseSuccess result = iColor.saveAll(names, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
@@ -77,5 +69,13 @@ public class ColorController {
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ColorDTO>> result = iColor.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iColor.activate(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

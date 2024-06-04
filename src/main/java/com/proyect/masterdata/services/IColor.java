@@ -13,10 +13,8 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IColor {
         CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-        ResponseSuccess saveAll(List<String> names, String tokenUser)
-                        throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-
+        CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<List<ColorDTO>> listColor() throws BadRequestExceptions;
 
         CompletableFuture<Page<ColorDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,

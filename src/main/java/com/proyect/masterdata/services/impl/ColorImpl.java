@@ -11,6 +11,7 @@ import com.proyect.masterdata.mapper.ColorMapper;
 import com.proyect.masterdata.repository.ColorRepository;
 import com.proyect.masterdata.repository.ColorRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IColor;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class ColorImpl implements IColor {
     private final ColorMapper colorMapper;
     private final UserRepository userRepository;
     private final ColorRepositoryCustom colorRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -58,14 +59,13 @@ public class ColorImpl implements IColor {
             }
 
             try {
-
-                colorRepository.save(Color.builder()
+                Color newColor = colorRepository.save(Color.builder()
                         .name(name.toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-
+                iAudit.save("ADD_COLOR","ADD COLOR "+newColor.getName()+".",datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -75,49 +75,6 @@ public class ColorImpl implements IColor {
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
             }
         });
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<String> names, String tokenUser)
-            throws BadRequestExceptions, InternalErrorExceptions {
-
-        User datauser;
-        List<Color> colors;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            colors = colorRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!colors.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorColorList.toUpperCase());
-        }
-
-        try {
-
-            List<Color> colorSaves = names.stream().map(data -> Color.builder()
-                    .tokenUser(tokenUser.toUpperCase())
-                    .name(data.toUpperCase())
-                    .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .build()).toList();
-
-            colorRepository.saveAll(colorSaves);
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
     }
 
     @Override
@@ -145,10 +102,50 @@ public class ColorImpl implements IColor {
             try {
                 color.setStatus(false);
                 color.setUpdateDate(new Date(System.currentTimeMillis()));
+                color.setTokenUser(datauser.getUsername());
                 colorRepository.save(color);
+                iAudit.save("DELETE_COLOR","DELETE COLOR "+color.getName()+".",datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            Color color;
+
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                color = colorRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (color == null) {
+                throw new BadRequestExceptions(Constants.ErrorColor.toUpperCase());
+            }
+
+            try {
+                color.setStatus(true);
+                color.setUpdateDate(new Date(System.currentTimeMillis()));
+                color.setTokenUser(datauser.getUsername());
+                colorRepository.save(color);
+                iAudit.save("ACTIVATE_COLOR","ACTIVATE COLOR "+color.getName()+".",datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e);
