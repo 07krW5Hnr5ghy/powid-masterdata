@@ -3,6 +3,7 @@ package com.proyect.masterdata.services;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.dto.CategoryProductDTO;
@@ -19,4 +20,7 @@ public interface ICategoryProduct {
     CompletableFuture<Page<CategoryProductDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<List<CategoryProductDTO>> listCategoryProducts() throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> update(String name,String description,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
 }

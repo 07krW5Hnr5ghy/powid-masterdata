@@ -1,13 +1,9 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.proyect.masterdata.dto.CategoryProductDTO;
 import com.proyect.masterdata.dto.request.RequestCategoryProduct;
@@ -22,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import lombok.AllArgsConstructor;
 
@@ -62,6 +57,34 @@ public class CategoryProductController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:CATEGORY_PRODUCT_GET')")
     public ResponseEntity<List<CategoryProductDTO>> listCategoryProducts() throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<CategoryProductDTO>> result = iCategoryProduct.listCategoryProducts();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iCategoryProduct.delete(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iCategoryProduct.activate(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @PutMapping()
+    public ResponseEntity<ResponseSuccess> update(
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iCategoryProduct.update(name,description,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.SizeType;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.repository.SizeTypeRepository;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,7 @@ public class CategoryProductImpl implements ICategoryProduct {
     private final CategoryProductRepository categoryProductRepository;
     private final CategoryProductRepositoryCustom categoryProductRepositoryCustom;
     private final SizeTypeRepository sizeTypeRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String description,String sizeTypeName, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -67,7 +69,7 @@ public class CategoryProductImpl implements ICategoryProduct {
         }
 
         try {
-            categoryProductRepository.save(CategoryProduct.builder()
+            CategoryProduct newCategoryProduct = categoryProductRepository.save(CategoryProduct.builder()
                     .description(description.toUpperCase())
                     .name(name.toUpperCase())
                     .registrationDate(new Date(System.currentTimeMillis()))
@@ -76,7 +78,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .sizeType(sizeType)
                             .sizeTypeId(sizeType.getId())
                     .build());
-
+            iAudit.save("ADD_CATEGORY_PRODUCT","ADD CATEGORY PRODUCT "+newCategoryProduct.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -116,7 +118,7 @@ public class CategoryProductImpl implements ICategoryProduct {
             }
 
             try {
-                categoryProductRepository.save(CategoryProduct.builder()
+                CategoryProduct newCategoryProduct = categoryProductRepository.save(CategoryProduct.builder()
                         .description(description.toUpperCase())
                         .name(name.toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
@@ -125,7 +127,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                                 .sizeType(sizeType)
                                 .sizeTypeId(sizeType.getId())
                         .build());
-
+                iAudit.save("ADD_CATEGORY_PRODUCT","ADD CATEGORY PRODUCT "+newCategoryProduct.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -187,6 +189,110 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .name(categoryProduct.getName())
                             .build())
                     .toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            CategoryProduct categoryProduct;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                categoryProduct = categoryProductRepository.findByNameAndStatusTrue(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(categoryProduct==null){
+                throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
+            }
+            try {
+                categoryProduct.setStatus(false);
+                categoryProduct.setUpdateDate(new Date(System.currentTimeMillis()));
+                categoryProduct.setTokenUser(user.getUsername());
+                categoryProductRepository.save(categoryProduct);
+                iAudit.save("DELETE_CATEGORY_PRODUCT","DELETE CATEGORY PRODUCT "+categoryProduct.getName()+".",user.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            CategoryProduct categoryProduct;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                categoryProduct = categoryProductRepository.findByNameAndStatusFalse(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(categoryProduct==null){
+                throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
+            }
+            try {
+                categoryProduct.setStatus(true);
+                categoryProduct.setUpdateDate(new Date(System.currentTimeMillis()));
+                categoryProduct.setTokenUser(user.getUsername());
+                iAudit.save("ACTIVATE_CATEGORY_PRODUCT","ACTIVATE CATEGORY PRODUCT "+categoryProduct.getName()+".",user.getUsername());
+                categoryProductRepository.save(categoryProduct);
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> update(String name, String description, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            CategoryProduct categoryProduct;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                categoryProduct = categoryProductRepository.findByNameAndStatusTrue(name);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(categoryProduct==null){
+                throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
+            }
+            try {
+                categoryProduct.setDescription(description.toUpperCase());
+                categoryProduct.setUpdateDate(new Date(System.currentTimeMillis()));
+                categoryProduct.setTokenUser(user.getUsername());
+                categoryProductRepository.save(categoryProduct);
+                iAudit.save("UPDATE_CATEGORY_PRODUCT","UPDATE CATEGORY PRODUCT "+categoryProduct.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 }
