@@ -64,4 +64,13 @@ public class ClientController {
         CompletableFuture<Page<ClientDTO>> result = iClient.list(ruc, business, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
+
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("ruc") String ruc,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iClient.activate(ruc,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

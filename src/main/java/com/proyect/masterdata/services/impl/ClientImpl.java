@@ -258,4 +258,37 @@ public class ClientImpl implements IClient {
                     clientPage.getPageable(), clientPage.getTotalElements());
         });
     }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String ruc, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Client client;
+            try {
+               user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+               client = clientRepository.findByRucAndStatusFalse(ruc.toUpperCase());
+            }catch (RuntimeException e){
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(client==null){
+                throw new BadRequestExceptions(Constants.ErrorClient);
+            }
+            try {
+                client.setStatus(true);
+                client.setRegistrationDate(new Date(System.currentTimeMillis()));
+                clientRepository.save(client);
+                iAudit.save("ACTIVATE_CLIENT","ACTIVATE CLIENT "+client.getRuc()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 }

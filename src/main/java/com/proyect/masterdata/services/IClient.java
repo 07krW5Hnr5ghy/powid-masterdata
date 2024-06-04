@@ -21,4 +21,5 @@ public interface IClient {
         CompletableFuture<ResponseDelete> delete(String ruc, String user) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<ClientDTO>> list(String ruc, String business, String user, String sort, String sortColumn,
                         Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> activate(String ruc,String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

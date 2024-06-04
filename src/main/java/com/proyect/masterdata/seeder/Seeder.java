@@ -221,6 +221,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_CANCELLATION_REASON","ADMIN1");
                         iAuditEvent.save("ACTIVATE_CATEGORY","ADMIN1");
                         iAuditEvent.save("ACTIVATE_CATEGORY_PRODUCT","ADMIN1");
+                        iAuditEvent.save("ACTIVATE_CLIENT","ADMIN1");
                         iAuditEvent.save("ADD_ACCESS","ADMIN1");
                         iAuditEvent.save("ADD_BRAND","ADMIN1");
                         iAuditEvent.save("ADD_CANCELLATION_REASON","ADMIN1");
