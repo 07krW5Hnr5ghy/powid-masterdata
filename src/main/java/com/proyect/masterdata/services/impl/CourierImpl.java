@@ -9,6 +9,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICourier;
 import com.proyect.masterdata.services.ICourierPicture;
 import com.proyect.masterdata.utils.Constants;
@@ -36,6 +37,7 @@ public class CourierImpl implements ICourier {
     private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     private final SaleRepository saleRepository;
     private final ICourierPicture iCourierPicture;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -59,7 +61,7 @@ public class CourierImpl implements ICourier {
             }
 
             try {
-                courierRepository.save(Courier.builder()
+                Courier newCourier = courierRepository.save(Courier.builder()
                         .name(requestCourier.getCourier().toUpperCase())
                         .phoneNumber(requestCourier.getPhoneNumber())
                         .registrationDate(new Date(System.currentTimeMillis()))
@@ -69,6 +71,7 @@ public class CourierImpl implements ICourier {
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
+                iAudit.save("ADD_COURIER","ADD COURIER "+newCourier+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -106,9 +109,48 @@ public class CourierImpl implements ICourier {
                 courier.setStatus(false);
                 courier.setUpdateDate(new Date(System.currentTimeMillis()));
                 courierRepository.save(courier);
+                iAudit.save("DELETE_COURIER","DELETE COURIER "+courier.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Courier courier;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                courier = courierRepository.findByNameAndStatusFalse(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(courier == null){
+                throw new BadRequestExceptions(Constants.ErrorCourier);
+            }
+
+            try {
+                courier.setStatus(true);
+                courier.setUpdateDate(new Date(System.currentTimeMillis()));
+                courierRepository.save(courier);
+                iAudit.save("DELETE_COURIER","DELETE COURIER "+courier.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -216,7 +258,7 @@ public class CourierImpl implements ICourier {
 
                 iCourierPicture.uploadPicture(requestCourierOrder.getOrderPictures(),ordering.getId(),user.getUsername());
                 orderingRepository.save(ordering);
-
+                iAudit.save("UPDATE_COURIER_ORDER","UPDATE ORDER "+ordering.getId()+" WITH COURIER DATA.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

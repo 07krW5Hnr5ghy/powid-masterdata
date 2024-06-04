@@ -10,6 +10,7 @@ import java.util.List;
 public interface CourierRepository extends JpaRepository<Courier,Long> {
     Courier findByName(String name);
     Courier findByNameAndStatusTrue(String name);
+    Courier findByNameAndStatusFalse(String name);
     List<Courier> findAllByClientIdAndStatusTrue(Long clientId);
     List<Courier> findAllByClientIdAndStatusFalse(Long clientId);
 }
