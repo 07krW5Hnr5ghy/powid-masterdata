@@ -222,12 +222,14 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_CATEGORY","ADMIN1");
                         iAuditEvent.save("ACTIVATE_CATEGORY_PRODUCT","ADMIN1");
                         iAuditEvent.save("ACTIVATE_CLIENT","ADMIN1");
+                        iAuditEvent.save("ACTIVATE_CLOSING_CHANNEL","ADMIN1");
                         iAuditEvent.save("ADD_ACCESS","ADMIN1");
                         iAuditEvent.save("ADD_BRAND","ADMIN1");
                         iAuditEvent.save("ADD_CANCELLATION_REASON","ADMIN1");
                         iAuditEvent.save("ADD_CANCELLED_ORDER","ADMIN1");
                         iAuditEvent.save("ADD_CATEGORY","ADMIN1");
                         iAuditEvent.save("ADD_CATEGORY_PRODUCT","ADMIN1");
+                        iAuditEvent.save("ADD_CLOSING_CHANNEL","ADMIN1");
                         iAuditEvent.save("ADD_ORDER","ADMIN1");
                         iAuditEvent.save("ADD_ORDER_ITEM","ADMIN1");
                         iAuditEvent.save("ADD_USER","ADMIN1");
@@ -237,6 +239,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_CATEGORY","ADMIN1");
                         iAuditEvent.save("DELETE_CATEGORY_PRODUCT","ADMIN1");
                         iAuditEvent.save("DELETE_CLIENT","ADMIN1");
+                        iAuditEvent.save("DELETE_CLOSING_CHANNEL","ADMIN1");
                         iAuditEvent.save("DELETE_ORDER_ITEM","ADMIN1");
                         iAuditEvent.save("DELETE_USER","ADMIN1");
                         iAuditEvent.save("LOG_IN","ADMIN1");
@@ -246,7 +249,6 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("UPDATE_CATEGORY_PRODUCT","ADMIN1");
                         iAuditEvent.save("UPDATE_CLIENT","ADMIN1");
                         iAuditEvent.save("UPDATE_ORDER_ITEM","ADMIN1");
-
 
                         // supplier types
                         iSupplierType.save("INTERNO","ADMIN1");

@@ -6,7 +6,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.repository.ClosingChannelRepositoryCustom;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -34,38 +37,79 @@ public class ClosingChannelImpl implements IClosingChannel {
     private final UserRepository userRepository;
     private final ClosingChannelMapper closingChannelMapper;
     private final ClosingChannelRepositoryCustom closingChannelRepositoryCustom;
+    private final IAudit iAudit;
 
     @Override
-    public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        ClosingChannel closingChannel;
+
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            closingChannel = closingChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if (user==null) {
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if (closingChannel!=null) {
+            throw new BadRequestExceptions(Constants.ErrorClosingChannelExists);
+        }
+
+        try {
+            ClosingChannel newClosingChannel = closingChannelRepository.save(ClosingChannel.builder()
+                    .name(name.toUpperCase())
+                    .status(true)
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .updateDate(new Date(System.currentTimeMillis()))
+                    .tokenUser(tokenUser.toUpperCase())
+                    .build());
+            iAudit.save("ADD_CLOSING_CHANNEL","CLOSING CHANNEL "+newClosingChannel.getName()+".",user.getUsername());
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
-            boolean existsClosingChannel;
+            User user;
+            ClosingChannel closingChannel;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                existsClosingChannel = closingChannelRepository.existsByNameAndStatusTrue(name.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                closingChannel = closingChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if (existsClosingChannel) {
+            if (closingChannel!=null) {
                 throw new BadRequestExceptions(Constants.ErrorClosingChannelExists);
             }
 
             try {
-                closingChannelRepository.save(ClosingChannel.builder()
+                ClosingChannel newClosingChannel = closingChannelRepository.save(ClosingChannel.builder()
                         .name(name.toUpperCase())
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-
+                iAudit.save("ADD_CLOSING_CHANNEL","CLOSING CHANNEL "+newClosingChannel.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -115,6 +159,76 @@ public class ClosingChannelImpl implements IClosingChannel {
             }
 
             return closingChannelMapper.listClosingChannelToListClosindChannelDTO(closingChannelList);
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            ClosingChannel closingChannel;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                closingChannel = closingChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if (closingChannel==null){
+                throw new BadRequestExceptions(Constants.ErrorClosingChannel);
+            }
+            try {
+                closingChannel.setStatus(false);
+                closingChannel.setUpdateDate(new Date(System.currentTimeMillis()));
+                closingChannel.setTokenUser(user.getUsername());
+                closingChannelRepository.save(closingChannel);
+                iAudit.save("DELETE_CLOSING_CHANNEL","DELETE CLOSING CHANNEL "+closingChannel.getName()+".",user.getUsername());
+                return ResponseDelete.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            ClosingChannel closingChannel;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                closingChannel = closingChannelRepository.findByNameAndStatusFalse(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(closingChannel==null){
+                throw new BadRequestExceptions(Constants.ErrorClosingChannel);
+            }
+            try {
+                closingChannel.setStatus(true);
+                closingChannel.setUpdateDate(new Date(System.currentTimeMillis()));
+                closingChannel.setTokenUser(user.getUsername());
+                closingChannelRepository.save(closingChannel);
+                iAudit.save("ACTIVATE_CLOSING_CHANNEL","ACTIVATE CLOSING CHANNEL "+closingChannel.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 

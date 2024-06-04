@@ -1,13 +1,9 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -37,7 +33,7 @@ public class ClosingChannelController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String user) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iClosingChannel.save(name, user);
+        CompletableFuture<ResponseSuccess> result = iClosingChannel.saveAsync(name, user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -56,6 +52,24 @@ public class ClosingChannelController {
     @GetMapping()
     public ResponseEntity<List<ClosingChannelDTO>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<ClosingChannelDTO>> result = iClosingChannel.list();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iClosingChannel.delete(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iClosingChannel.activate(name,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
