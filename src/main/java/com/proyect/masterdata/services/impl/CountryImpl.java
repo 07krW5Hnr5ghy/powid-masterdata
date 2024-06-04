@@ -9,6 +9,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.CountryRepository;
 import com.proyect.masterdata.repository.CountryRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICountry;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class CountryImpl implements ICountry {
     private final UserRepository userRepository;
     private final CountryRepository countryRepository;
     private final CountryRepositoryCustom countryRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -53,12 +55,13 @@ public class CountryImpl implements ICountry {
             }
 
             try {
-                countryRepository.save(Country.builder()
+                Country newCountry = countryRepository.save(Country.builder()
                         .name(name.toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
+                iAudit.save("ADD_COUNTRY","ADD COUNTRY "+newCountry.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
