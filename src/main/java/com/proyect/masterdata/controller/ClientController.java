@@ -32,14 +32,6 @@ public class ClientController {
         CompletableFuture<ResponseSuccess> result = iClient.saveAsync(requestClientSave);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @PostMapping(value = "clients", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<RequestClientSave> requestClientSaveList,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseSuccess result = iClient.saveAll(requestClientSaveList, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_PUT')")

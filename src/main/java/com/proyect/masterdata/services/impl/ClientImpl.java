@@ -15,6 +15,7 @@ import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.ClientRepositoryCustom;
 import com.proyect.masterdata.repository.DistrictRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IClient;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class ClientImpl implements IClient {
     private final DistrictRepository districtRepository;
     private final ClientMapper clientMapper;
     private final ClientRepositoryCustom clientRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestClientSave requestClientSave)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -73,7 +74,6 @@ public class ClientImpl implements IClient {
                     .ruc(requestClientSave.getRuc())
                     .address(requestClientSave.getAddress().toUpperCase())
                     .mobile(requestClientSave.getMobile())
-                    .ruc(requestClientSave.getRuc())
                     .district(district)
                     .districtId(district.getId())
                     .status(true)
@@ -140,77 +140,15 @@ public class ClientImpl implements IClient {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestClientSave> requestClientSaveList, String user)
-            throws InternalErrorExceptions, BadRequestExceptions {
-
-        boolean existsUser;
-        List<Client> clientList;
-        List<District> districtList;
-
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            clientList = clientRepository
-                    .findByRucIn(requestClientSaveList.stream().map(client -> client.getRuc()).toList());
-            districtList = districtRepository.findByNameIn(
-                    requestClientSaveList.stream().map(client -> client.getDistrict().toUpperCase()).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (!clientList.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorClient);
-        }
-
-        if (districtList.size() != requestClientSaveList.size()) {
-            throw new BadRequestExceptions(Constants.ErrorDistrict);
-        }
-
-        try {
-            clientRepository.saveAll(requestClientSaveList.stream().map(client -> {
-
-                District district = districtRepository.findByNameAndStatusTrue(client.getDistrict().toUpperCase());
-
-                return Client.builder()
-                        .name(client.getName().toUpperCase())
-                        .surname(client.getSurname().toUpperCase())
-                        .business(client.getBusiness().toUpperCase())
-                        .dni(client.getDni())
-                        .email(client.getEmail())
-                        .ruc(client.getRuc())
-                        .address(client.getAddress().toUpperCase())
-                        .mobile(client.getMobile())
-                        .ruc(client.getRuc())
-                        .districtId(district.getId())
-                        .district(district)
-                        .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .build();
-            }).toList());
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public CompletableFuture<ClientDTO> update(RequestClient requestClient, String user)
+    public CompletableFuture<ClientDTO> update(RequestClient requestClient, String username)
             throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             Client client;
             District district;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 client = clientRepository.findByRucAndStatusTrue(requestClient.getRuc());
                 district = districtRepository.findByNameAndStatusTrue(requestClient.getDistrict());
             } catch (RuntimeException e) {
@@ -218,7 +156,7 @@ public class ClientImpl implements IClient {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -231,7 +169,7 @@ public class ClientImpl implements IClient {
                 client.setName(requestClient.getName().toUpperCase());
                 client.setSurname(requestClient.getSurname().toUpperCase());
                 client.setDni(requestClient.getDni());
-                client.setRegistrationDate(new Date(System.currentTimeMillis()));
+                client.setUpdateDate(new Date(System.currentTimeMillis()));
                 client.setMobile(requestClient.getMobile());
                 client.setAddress(requestClient.getAddress().toUpperCase());
                 client.setEmail(requestClient.getEmail());
@@ -240,8 +178,8 @@ public class ClientImpl implements IClient {
                 clientRepository.save(client);
                 ClientDTO clientDTO = clientMapper.clientToClientDTO(client);
                 clientDTO.setDistrict(district.getName());
+                iAudit.save("UPDATE_CLIENT","UPDATE CLIENT "+client.getRuc()+".",user.getUsername());
                 return clientDTO;
-
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -251,18 +189,18 @@ public class ClientImpl implements IClient {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String ruc, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String ruc, String username) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             Client client;
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 client = clientRepository.findByRucAndStatusTrue(ruc);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
             if (client == null) {
@@ -270,7 +208,9 @@ public class ClientImpl implements IClient {
             }
             try {
                 client.setStatus(false);
+                client.setUpdateDate(new Date(System.currentTimeMillis()));
                 clientRepository.save(client);
+                iAudit.save("DELETE_CLIENT","DELETE CLIENT "+client.getRuc()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
