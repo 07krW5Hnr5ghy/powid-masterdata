@@ -5,7 +5,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.repository.EntryChannelRepositoryCustom;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -33,22 +36,22 @@ public class EntryChannelImpl implements IEntryChannel {
     private final EntryChannelRepository entryChannelRepository;
     private final EntryChannelMapper entryChannelMapper;
     private final EntryChannelRepositoryCustom entryChannelRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             boolean existsEntryChannel;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 existsEntryChannel = entryChannelRepository.existsByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -57,13 +60,13 @@ public class EntryChannelImpl implements IEntryChannel {
             }
 
             try {
-                entryChannelRepository.save(EntryChannel.builder()
+                EntryChannel newEntryChannel = entryChannelRepository.save(EntryChannel.builder()
                         .name(name.toUpperCase())
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-
+                iAudit.save("ADD_ENTRY_CHANNEL","ENTRY CHANNEL "+newEntryChannel.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -110,6 +113,76 @@ public class EntryChannelImpl implements IEntryChannel {
                 return Collections.emptyList();
             }
             return entryChannelMapper.listEntryChannelToListEntryChannelDTO(entryChannelList);
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            EntryChannel entryChannel;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                entryChannel = entryChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(entryChannel==null){
+                throw new BadRequestExceptions(Constants.ErrorEntryChannel);
+            }
+            try {
+                entryChannel.setStatus(false);
+                entryChannel.setUpdateDate(new Date(System.currentTimeMillis()));
+                entryChannel.setTokenUser(user.getUsername());
+                entryChannelRepository.save(entryChannel);
+                iAudit.save("DELETE_ENTRY_CHANNEL","DELETE ENTRY CHANNEL "+entryChannel.getName()+".",user.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            EntryChannel entryChannel;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                entryChannel = entryChannelRepository.findByNameAndStatusFalse(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(entryChannel==null){
+                throw new BadRequestExceptions(Constants.ErrorEntryChannel);
+            }
+            try {
+                entryChannel.setStatus(true);
+                entryChannel.setUpdateDate(new Date(System.currentTimeMillis()));
+                entryChannel.setTokenUser(user.getUsername());
+                entryChannelRepository.save(entryChannel);
+                iAudit.save("ACTIVATE_ENTRY_CHANNEL","DELETE ENTRY CHANNEL "+entryChannel.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 }

@@ -39,7 +39,7 @@ public class Audit {
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "detail")
+    @Column(name = "detail",length = 1024)
     private String detail;
 
     @ManyToOne

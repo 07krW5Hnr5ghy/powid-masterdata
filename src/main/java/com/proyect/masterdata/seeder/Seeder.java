@@ -227,6 +227,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_COURIER","ADMIN1");
                         iAuditEvent.save("ACTIVATE_CUSTOMER_TYPE","ADMIN1");
                         iAuditEvent.save("ACTIVATE_DISTRICT","ADMIN1");
+                        iAuditEvent.save("ACTIVATE_ENTRY_CHANNEL","ADMIN1");
                         iAuditEvent.save("ADD_ACCESS","ADMIN1");
                         iAuditEvent.save("ADD_BRAND","ADMIN1");
                         iAuditEvent.save("ADD_CANCELLATION_REASON","ADMIN1");
@@ -240,6 +241,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_CUSTOMER_TYPE","ADMIN1");
                         iAuditEvent.save("ADD_DEPARTMENT","ADMIN1");
                         iAuditEvent.save("ADD_DISTRICT","ADMIN1");
+                        iAuditEvent.save("ADD_ENTRY_CHANNEL","ADMIN1");
                         iAuditEvent.save("ADD_ORDER","ADMIN1");
                         iAuditEvent.save("ADD_ORDER_ITEM","ADMIN1");
                         iAuditEvent.save("ADD_USER","ADMIN1");
@@ -255,6 +257,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_CUSTOMER_TYPE","ADMIN1");
                         iAuditEvent.save("DELETE_DEPARTMENT","ADMIN1");
                         iAuditEvent.save("DELETE_DISTRICT","ADMIN1");
+                        iAuditEvent.save("DELETE_ENTRY_CHANNEL","ADMIN1");
                         iAuditEvent.save("DELETE_ORDER_ITEM","ADMIN1");
                         iAuditEvent.save("DELETE_USER","ADMIN1");
                         iAuditEvent.save("LOG_IN","ADMIN1");
