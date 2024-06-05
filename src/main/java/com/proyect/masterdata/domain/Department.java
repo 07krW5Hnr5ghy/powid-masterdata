@@ -33,6 +33,10 @@ public class Department {
         @CreationTimestamp
         private Date registrationDate;
 
+        @Column(name = "update_date")
+        @CreationTimestamp
+        private Date updateDate;
+
         @Column(name = "token_user")
         private String tokenUser;
 

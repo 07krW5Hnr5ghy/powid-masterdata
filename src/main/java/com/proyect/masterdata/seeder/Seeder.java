@@ -112,7 +112,7 @@ public class Seeder implements CommandLineRunner {
                         // department, province and district to create system user
 
                         Department department = departmentRepository
-                                .save(new Department(1L, "SISTEMA", true, new Date(System.currentTimeMillis()),
+                                .save(new Department(1L, "SISTEMA", true, new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()),
                                         "SISTEMA"));
 
                         Province province = provinceRepository.save(new Province(1L, "SISTEMA", true,
@@ -237,6 +237,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_COUNTRY","ADMIN1");
                         iAuditEvent.save("ADD_COURIER","ADMIN1");
                         iAuditEvent.save("ADD_CUSTOMER_TYPE","ADMIN1");
+                        iAuditEvent.save("ADD_DEPARTMENT","ADMIN1");
                         iAuditEvent.save("ADD_ORDER","ADMIN1");
                         iAuditEvent.save("ADD_ORDER_ITEM","ADMIN1");
                         iAuditEvent.save("ADD_USER","ADMIN1");
@@ -250,6 +251,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_COLOR","ADMIN1");
                         iAuditEvent.save("DELETE_COURIER","ADMIN1");
                         iAuditEvent.save("DELETE_CUSTOMER_TYPE","ADMIN1");
+                        iAuditEvent.save("DELETE_DEPARTMENT","ADMIN1");
                         iAuditEvent.save("DELETE_ORDER_ITEM","ADMIN1");
                         iAuditEvent.save("DELETE_USER","ADMIN1");
                         iAuditEvent.save("LOG_IN","ADMIN1");

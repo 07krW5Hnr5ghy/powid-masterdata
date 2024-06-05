@@ -28,8 +28,8 @@ public class DepartmentController {
         //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
         public ResponseEntity<ResponseSuccess> save(
                         @RequestParam("name") String name,
-                        @RequestParam("user") String user) throws BadRequestExceptions, ExecutionException, InterruptedException {
-                CompletableFuture<ResponseSuccess> result = iDepartment.saveAsync(name, user);
+                        @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+                CompletableFuture<ResponseSuccess> result = iDepartment.saveAsync(name, tokenUser);
                 return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
 
@@ -37,9 +37,18 @@ public class DepartmentController {
         //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_DELETE')")
         public ResponseEntity<ResponseDelete> delete(
                         @RequestParam("name") String name,
-                        @RequestParam("user") String user) throws BadRequestExceptions, ExecutionException, InterruptedException {
-                CompletableFuture<ResponseDelete> result = iDepartment.delete(name, user);
+                        @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+                CompletableFuture<ResponseDelete> result = iDepartment.delete(name, tokenUser);
                 return new ResponseEntity<>(result.get(), HttpStatus.OK);
+        }
+
+        @PostMapping("activate")
+        public ResponseEntity<ResponseSuccess> activate(
+                @RequestParam("name") String name,
+                @RequestParam("tokenUser") String tokenUser
+        ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+                CompletableFuture<ResponseSuccess> result = iDepartment.activate(name, tokenUser);
+                return new ResponseEntity<>(result.get(),HttpStatus.OK);
         }
 
         @GetMapping()

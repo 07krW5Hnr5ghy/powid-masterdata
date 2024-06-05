@@ -13,6 +13,7 @@ import com.proyect.masterdata.mapper.DepartmentMapper;
 import com.proyect.masterdata.repository.DepartmentRepository;
 import com.proyect.masterdata.repository.DepartmentRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IDepartment;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,7 @@ public class DepartmentImpl implements IDepartment {
     private final DepartmentRepositoryCustom departmentRepositoryCustom;
     private final DepartmentMapper departmentMapper;
     private final UserRepository userRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
@@ -57,11 +58,13 @@ public class DepartmentImpl implements IDepartment {
         }
 
         try {
-            departmentRepository.save(Department.builder()
+            Department newDepartment = departmentRepository.save(Department.builder()
                     .name(name.toUpperCase())
+                            .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(user.toUpperCase())
                     .status(true)
                     .build());
+            iAudit.save("ADD_DEPARTMENT","ADD DEPARTMENT "+newDepartment.getName()+".",datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -93,11 +96,13 @@ public class DepartmentImpl implements IDepartment {
             }
 
             try {
-                departmentRepository.save(Department.builder()
+                Department newDepartment = departmentRepository.save(Department.builder()
                         .name(name.toUpperCase())
+                        .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.toUpperCase())
                         .status(true)
                         .build());
+                iAudit.save("ADD_DEPARTMENT","ADD DEPARTMENT "+newDepartment.getName()+".",datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -108,43 +113,6 @@ public class DepartmentImpl implements IDepartment {
             }
         });
     }
-
-    @Override
-    public ResponseSuccess saveAll(List<String> names, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        List<Department> departments;
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            departments = departmentRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!departments.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorDepartmentList.toUpperCase());
-        }
-
-        List<RequestDepartmentSave> departmentSaves = names.stream().map(data -> RequestDepartmentSave.builder()
-                .user(user.toUpperCase())
-                .name(data.toUpperCase())
-                .build()).toList();
-        try {
-            departmentRepository.saveAll(departmentMapper.listDepartmentToListName(departmentSaves));
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
 
     @Override
     public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
@@ -167,11 +135,51 @@ public class DepartmentImpl implements IDepartment {
             }
 
             try {
-                departmentRepository.save(department);
                 department.setStatus(false);
+                department.setUpdateDate(new Date(System.currentTimeMillis()));
+                department.setTokenUser(datauser.getUsername());
+                departmentRepository.save(department);
+                iAudit.save("DELETE_DEPARTMENT","DELETE DEPARTMENT "+department.getName()+".",datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            Department department;
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                department = departmentRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (department == null) {
+                throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
+            }
+
+            try {
+                department.setStatus(true);
+                department.setUpdateDate(new Date(System.currentTimeMillis()));
+                department.setTokenUser(datauser.getUsername());
+                departmentRepository.save(department);
+                iAudit.save("ACTIVATE_DEPARTMENT","ACTIVATE DEPARTMENT "+department.getName()+".",datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e);
