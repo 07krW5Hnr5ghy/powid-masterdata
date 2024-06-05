@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface ManagementTypeRepository extends JpaRepository<ManagementType,Long> {
     ManagementType findByNameAndStatusTrue(String name);
+    ManagementType findByNameAndStatusFalse(String name);
     ManagementType findByName(String name);
     List<ManagementType> findAllByStatusTrue();
 }

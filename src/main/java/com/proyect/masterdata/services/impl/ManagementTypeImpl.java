@@ -2,12 +2,14 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.ManagementType;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.ManagementTypeRepository;
 import com.proyect.masterdata.repository.ManagementTypeRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IManagementType;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class ManagementTypeImpl implements IManagementType {
     private final UserRepository userRepository;
     private final ManagementTypeRepository managementTypeRepository;
     private final ManagementTypeRepositoryCustom managementTypeRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -50,17 +53,88 @@ public class ManagementTypeImpl implements IManagementType {
             }
 
             try{
-                managementTypeRepository.save(ManagementType.builder()
+                ManagementType newManagement = managementTypeRepository.save(ManagementType.builder()
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .name(name.toUpperCase())
                         .tokenUser(user.getUsername())
                         .build());
+                iAudit.save("ADD_MANAGEMENT_TYPE","ADD MANAGEMENT TYPE "+newManagement+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
                         .build();
             }catch (RuntimeException e){
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            ManagementType managementType;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(name.toUpperCase());
+                managementType = managementTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(managementType==null){
+                throw new BadRequestExceptions(Constants.ErrorManagementType);
+            }
+            try {
+                managementType.setStatus(false);
+                managementType.setUpdateDate(new Date(System.currentTimeMillis()));
+                managementType.setTokenUser(user.getUsername());
+                managementTypeRepository.save(managementType);
+                iAudit.save("DELETE_MANAGEMENT_TYPE","DELETE MANAGEMENT TYPE "+managementType.getName()+".",user.getUsername());
+                return ResponseDelete.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            ManagementType managementType;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(name.toUpperCase());
+                managementType = managementTypeRepository.findByNameAndStatusFalse(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(managementType==null){
+                throw new BadRequestExceptions(Constants.ErrorManagementType);
+            }
+            try {
+                managementType.setStatus(true);
+                managementType.setUpdateDate(new Date(System.currentTimeMillis()));
+                managementType.setTokenUser(user.getUsername());
+                managementTypeRepository.save(managementType);
+                iAudit.save("ACTIVATE_MANAGEMENT_TYPE","DELETE MANAGEMENT TYPE "+managementType.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
