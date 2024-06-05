@@ -21,6 +21,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.MembershipPaymentRepository;
 import com.proyect.masterdata.repository.MembershipRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IMembershipPayment;
 import com.proyect.masterdata.services.IMercadoPagoPayment;
 import com.proyect.masterdata.utils.Constants;
@@ -49,6 +50,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
     private final MembershipRepository membershipRepository;
     private final UserRepository userRepository;
     private final MembershipPaymentRepository membershipPaymentRepository;
+    private final IAudit iAudit;
     @Value("${mercadopago.notification.url}")
     private String mercadoPagoNotificationUrl;
     @Value("${mercadopago.secret.key}")
@@ -92,7 +94,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                 PreferenceClient preferenceClient = new PreferenceClient();
 
                 Preference preference = preferenceClient.create(preferenceRequest);
-                System.out.println(preference.getResponse().getContent());
+                iAudit.save("SEND_MERCADO_PAGO_PAYMENT","SEND MERCADO PAGO PAYMENT "+preference.getId()+".",user.getUsername());
                 return preference.getInitPoint();
 
             }catch (RuntimeException e){
@@ -111,10 +113,12 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
             MembershipPayment membershipPayment;
             try{
                 if(paymentId != null & Objects.equals(type, "payment")){
-
                     PaymentClient paymentClient = new PaymentClient();
                     Payment newPayment = paymentClient.get(paymentId);
-
+                    User user = userRepository.findById(Long.parseLong(newPayment.getMetadata().get("user_id").toString())).orElse(null);
+                    if(user==null){
+                        throw new BadRequestExceptions(Constants.ErrorUser);
+                    }
                     System.out.println(newPayment.getStatus());
 
                     if(!Objects.equals(newPayment.getStatus(), "approved")){
@@ -159,6 +163,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                             .paymentGateway("mercado pago")
                             .build();
                     iMembershipPayment.save(requestMembershipPayment,newPayment.getMetadata().get("user_id").toString());
+                    iAudit.save("ADD_MERCADO_PAGO_PAYMENT","ADD MERCADO PAGO PAYMENT "+paymentId+".",user.getUsername());
                 }else{
                     throw new BadRequestExceptions(Constants.ErrorMercadoPagoPayment);
                 }
