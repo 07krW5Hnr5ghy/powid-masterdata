@@ -15,9 +15,8 @@ public interface IDistrict {
         ResponseSuccess save(String name, String user, String province)
                         throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(String name,String user,String province) throws BadRequestExceptions,InternalErrorExceptions;
-        ResponseSuccess saveAll(List<String> names, String user, String province)
-                        throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
+        CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<List<DistrictDTO>> listDistrict() throws BadRequestExceptions;
         CompletableFuture<Page<DistrictDTO>> list(String name, String user, Long codeProvince, String nameProvince, String sort,
                         String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;

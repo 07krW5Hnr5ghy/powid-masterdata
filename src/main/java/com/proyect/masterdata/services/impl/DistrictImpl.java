@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Province;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.DistrictDTO;
 import com.proyect.masterdata.dto.request.RequestDistrict;
 import com.proyect.masterdata.dto.request.RequestDistrictSave;
@@ -14,6 +15,7 @@ import com.proyect.masterdata.repository.DistrictRepository;
 import com.proyect.masterdata.repository.DistrictRepositoryCustom;
 import com.proyect.masterdata.repository.ProvinceRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IDistrict;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
@@ -36,7 +38,7 @@ public class DistrictImpl implements IDistrict {
     private final ProvinceRepository provinceRepository;
     private final DistrictMapper districtMapper;
     private final UserRepository userRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String user, String province)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -65,7 +67,7 @@ public class DistrictImpl implements IDistrict {
         }
 
         try {
-            districtRepository.save(District.builder()
+            District newDistrict = districtRepository.save(District.builder()
                     .name(name.toUpperCase())
                     .tokenUser(user.toUpperCase())
                     .province(provinceData)
@@ -73,6 +75,7 @@ public class DistrictImpl implements IDistrict {
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
+            iAudit.save("ADD_DISTRICT","ADD DISTRICT "+newDistrict.getName()+".",user.toUpperCase());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -111,7 +114,7 @@ public class DistrictImpl implements IDistrict {
             }
 
             try {
-                districtRepository.save(District.builder()
+                District newDistrict = districtRepository.save(District.builder()
                         .name(name.toUpperCase())
                         .tokenUser(user.toUpperCase())
                         .province(provinceData)
@@ -119,6 +122,7 @@ public class DistrictImpl implements IDistrict {
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .build());
+                iAudit.save("ADD_DISTRICT","ADD DISTRICT "+newDistrict.getName()+".",user.toUpperCase());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -131,62 +135,19 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user, String province)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
-        Province provinceData;
-        List<District> districts;
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
-            districts = districtRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (provinceData == null) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
-        }
-        if (!districts.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorDistrict.toUpperCase());
-        }
-
-        List<RequestDistrictSave> provinceSaves = names.stream().map(data -> RequestDistrictSave.builder()
-                .user(user.toUpperCase())
-                .province(provinceData)
-                .codeProvince(provinceData.getId())
-                .name(data.toUpperCase())
-                .build()).toList();
-
-        try {
-            districtRepository.saveAll(districtMapper.listDistrictToListName(provinceSaves));
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
-        }
-    }
-
-    @Override
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             District district;
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 district = districtRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
 
@@ -195,12 +156,51 @@ public class DistrictImpl implements IDistrict {
             }
 
             try {
-                district.setRegistrationDate(new Date(System.currentTimeMillis()));
                 district.setStatus(false);
-                districtMapper.districtToDistrictDTO(districtRepository.save(district));
+                district.setUpdateDate(new Date(System.currentTimeMillis()));
+                district.setTokenUser(user.getUsername());
+                districtRepository.save(district);
+                iAudit.save("DELETE_DISTRICT","DELETE DISTRICT "+district.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            District district;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                district = districtRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+
+            if (district == null) {
+                throw new BadRequestExceptions(Constants.ErrorDistrict.toUpperCase());
+            }
+
+            try {
+                district.setStatus(false);
+                district.setUpdateDate(new Date(System.currentTimeMillis()));
+                district.setTokenUser(user.getUsername());
+                districtRepository.save(district);
+                iAudit.save("ACTIVATE_DISTRICT","ACTIVATE DISTRICT "+district.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
