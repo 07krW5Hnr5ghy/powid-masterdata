@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface MembershipStateRepository extends JpaRepository<MembershipState,Long> {
     MembershipState findByName(String name);
     MembershipState findByNameAndStatusTrue(String name);
+    MembershipState findByNameAndStatusFalse(String name);
 }

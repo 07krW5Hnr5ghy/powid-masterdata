@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IMembershipState;
@@ -36,6 +37,24 @@ public class MembershipStateController {
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<String>> result = iMembershipState.list(name,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iMembershipState.delete(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iMembershipState.activate(name,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
