@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class GeneralStockImpl implements IGeneralStock {
     private final SupplierProductRepository supplierProductRepository;
     private final GeneralStockRepository generalStockRepository;
     private final GeneralStockRepositoryCustom generalStockRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> in(String supplierProductSerial, Integer quantity, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -78,7 +79,7 @@ public class GeneralStockImpl implements IGeneralStock {
                             .tokenUser(user.getUsername())
                             .build());
                 }
-
+                iAudit.save("ADD_GENERAL_STOCK","ADD GENERAL STOCK FOR SUPPLIER PRODUCT "+supplierProduct.getSerial()+" WITH " + quantity +" UNITS.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -127,7 +128,7 @@ public class GeneralStockImpl implements IGeneralStock {
 
                 generalStock.setQuantity(generalStock.getQuantity() - quantity);
                 generalStockRepository.save(generalStock);
-
+                iAudit.save("DELETE_GENERAL_STOCK","DELETE GENERAL STOCK FOR SUPPLIER PRODUCT "+supplierProduct.getSerial()+" WITH " + quantity +" UNITS.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
