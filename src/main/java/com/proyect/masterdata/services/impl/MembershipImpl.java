@@ -7,6 +7,7 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IMembership;
 import com.proyect.masterdata.services.IUserRole;
 import com.proyect.masterdata.utils.Constants;
@@ -38,6 +39,7 @@ public class MembershipImpl implements IMembership {
     private final UserRoleRepository userRoleRepository;
     private final RoleRepository roleRepository;
     private final IUserRole iUserRole;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<Membership> save(User user, MembershipPayment membershipPayment, String subscriptionName, List<String> modules, Boolean demo, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -112,6 +114,7 @@ public class MembershipImpl implements IMembership {
                 if(userRole == null){
                     iUserRole.save(user.getUsername(),"BUSINESS",user.getUsername());
                 }
+                iAudit.save("ADD_MEMBERSHIP","ADD MEMBERSHIP WITH SUBSCRIPTION "+newMembership.getSubscription()+".",user.getUsername());
                 return newMembership;
             } catch (RuntimeException e) {
                 e.printStackTrace();
@@ -153,11 +156,11 @@ public class MembershipImpl implements IMembership {
                 membership.setMembershipStateId(expiredState.getId());
                 membership.setUpdateDate(new Date(System.currentTimeMillis()));
                 membershipRepository.save(membership);
+                iAudit.save("DELETE_MEMBERSHIP","DELETE MEMBERSHIP WITH SUBSCRIPTION "+membership.getSubscription()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
                         .build();
-
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
