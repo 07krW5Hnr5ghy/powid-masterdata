@@ -9,6 +9,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IMembership;
 import com.proyect.masterdata.services.IMembershipPayment;
 import com.proyect.masterdata.utils.Constants;
@@ -36,6 +37,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
     private final OrderPaymentStateRepository orderPaymentStateRepository;
     private final IMembership iMembership;
     private final PaymentGatewayRepository paymentGatewayRepository;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestMembershipPayment requestMembershipPayment, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -69,7 +71,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
                         .build());
 
                 iMembership.save(user,newMembershipPayment, requestMembershipPayment.getSubscriptionName(), requestMembershipPayment.getModules(),requestMembershipPayment.getDemo(),user.getUsername());
-
+                iAudit.save("ADD_MEMBERSHIP_PAYMENT","ADD MEMBERSHIP PAYMENT FOR $"+newMembershipPayment.getGrossAmount()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
