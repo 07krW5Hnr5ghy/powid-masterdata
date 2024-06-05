@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class ModelImpl implements IModel {
     private final UserRepository userRepository;
     private final BrandRepository brandRepository;
     private final ModelRepositoryCustom modelRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String brand, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -66,7 +67,7 @@ public class ModelImpl implements IModel {
         }
 
         try {
-            modelRepository.save(Model.builder()
+            Model newModel = modelRepository.save(Model.builder()
                     .name(name.toUpperCase())
                     .brand(brandData)
                     .brandId(brandData.getId())
@@ -76,6 +77,7 @@ public class ModelImpl implements IModel {
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
+            iAudit.save("ADD_MODEL","ADD MODEL "+newModel.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -116,7 +118,7 @@ public class ModelImpl implements IModel {
             }
 
             try {
-                modelRepository.save(Model.builder()
+                Model newModel = modelRepository.save(Model.builder()
                         .name(name.toUpperCase())
                         .brand(brandData)
                         .brandId(brandData.getId())
@@ -126,6 +128,7 @@ public class ModelImpl implements IModel {
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
+                iAudit.save("ADD_MODEL","ADD MODEL "+newModel.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -138,69 +141,20 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String brand, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
-
-        boolean existsUser;
-        Brand brandData;
-        List<Model> models;
-
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            brandData = brandRepository.findByName(brand.toUpperCase());
-            models = modelRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (brandData == null) {
-            throw new BadRequestExceptions(Constants.ErrorBrand);
-        }
-
-        if (!models.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorModelExists);
-        }
-
-        try {
-            modelRepository.saveAll(names.stream().map(model -> Model.builder()
-                    .name(model.toUpperCase())
-                    .brand(brandData)
-                    .brandId(brandData.getId())
-                    .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(tokenUser.toUpperCase())
-                    .build()).toList());
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-    }
-
-    @Override
     public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             Model modelData;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                modelData = modelRepository.findByName(name.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                modelData = modelRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -211,9 +165,50 @@ public class ModelImpl implements IModel {
             try {
                 modelData.setStatus(false);
                 modelData.setUpdateDate(new Date(System.currentTimeMillis()));
+                modelData.setTokenUser(user.getUsername());
                 modelRepository.save(modelData);
+                iAudit.save("DELETE_MODEL","DELETE MODEL "+modelData.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
+                        .code(200)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Model modelData;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                modelData = modelRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (modelData == null) {
+                throw new BadRequestExceptions(Constants.ErrorModel);
+            }
+
+            try {
+                modelData.setStatus(true);
+                modelData.setUpdateDate(new Date(System.currentTimeMillis()));
+                modelData.setTokenUser(user.getUsername());
+                modelRepository.save(modelData);
+                iAudit.save("ACTIVATE_MODEL","ACTIVATE MODEL "+modelData.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
                         .code(200)
                         .build();
             } catch (RuntimeException e) {

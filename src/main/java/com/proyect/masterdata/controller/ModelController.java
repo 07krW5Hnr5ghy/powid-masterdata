@@ -52,6 +52,15 @@ public class ModelController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iModel.activate(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> list(

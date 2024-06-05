@@ -12,6 +12,7 @@ public interface ModelRepository extends JpaRepository<Model, Long> {
     boolean existsByName(String name);
     Model findByName(String name);
     Model findByNameAndStatusTrue(String name);
+    Model findByNameAndStatusFalse(String name);
     List<Model> findByNameIn(List<String> names);
     List<Model> findAllByClientIdAndStatusTrue(Long clientId);
     List<Model> findAllByClientIdAndStatusFalse(Long clientId);

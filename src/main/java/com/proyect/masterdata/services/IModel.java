@@ -16,9 +16,8 @@ public interface IModel {
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(String name, String brand, String tokenUser)
                 throws InternalErrorExceptions, BadRequestExceptions;
-        ResponseSuccess saveAll(List<String> names, String brand, String tokenUser)
-                        throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<ModelDTO>> list(String name, String brand, String tokenUser, String sort, String columnSort,
                         Integer pageNumber,
                         Integer pageSize);
