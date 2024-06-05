@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface CustomerTypeRepository extends JpaRepository<CustomerType,Long> {
     CustomerType findByNameAndStatusTrue(String name);
+    CustomerType findByNameAndStatusFalse(String name);
     List<CustomerType> findAllByStatusTrue();
 }
