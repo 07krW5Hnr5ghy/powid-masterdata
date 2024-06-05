@@ -71,7 +71,7 @@ public class CourierImpl implements ICourier {
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_COURIER","ADD COURIER "+newCourier+".",user.getUsername());
+                iAudit.save("ADD_COURIER","ADD COURIER "+newCourier.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

@@ -63,6 +63,7 @@ public class ExcelImpl implements IExcel {
     private final CategoryProductRepository categoryProductRepository;
     private final SizeRepository sizeRepository;
     private final UnitRepository unitRepository;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> purchase(RequestPurchaseExcel requestPurchaseExcel,MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -192,6 +193,7 @@ public class ExcelImpl implements IExcel {
                     }
                     j++;
                 }
+                iAudit.save("ADD_PURCHASE_EXCEL","ADD PURCHASE "+newPurchase.getSerial()+" USING EXCEL FILE.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -384,6 +386,7 @@ public class ExcelImpl implements IExcel {
                     j++;
                 }
                 iStockTransaction.save("S"+requestShipmentExcel.getPurchaseSerial().toUpperCase(), warehouse,stockTransactionItemList,"ENTRADA",user);
+                iAudit.save("ADD_SHIPMENT_EXCEL","ADD SHIPMENT OF PURCHASE "+newShipment.getPurchaseSerial()+" USING EXCEL FILE.",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -539,6 +542,7 @@ public class ExcelImpl implements IExcel {
                 }
                 iStockTransaction.save("STO"+newStockTransfer.getId(),newStockTransfer.getOriginWarehouse(),requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
                 iStockTransaction.save("STI"+newStockTransfer.getId(),newStockTransfer.getDestinationWarehouse(),requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
+                iAudit.save("ADD_STOCK_TRANSFER_EXCEL","ADD STOCK TRANSFER "+newStockTransfer.getSerial()+" USING EXCEL FILE.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -723,7 +727,7 @@ public class ExcelImpl implements IExcel {
                 }
 
                 iStockTransaction.save("SR"+newStockReturn.getId(),shipment.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-PROVEEDOR",user);
-
+                iAudit.save("ADD_STOCK_RETURN_EXCEL","ADD STOCK RETURN "+newStockReturn.getSerial()+" USING EXCEL FILE.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -870,6 +874,7 @@ public class ExcelImpl implements IExcel {
                     }
                     j++;
                 }
+                iAudit.save("ADD_STOCK_REPLENISHMENT_EXCEL","ADD STOCK REPLENISHMENT OF ORDER "+newStockReplenishment.getOrderId()+" USING EXCEL FILE.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -1054,6 +1059,7 @@ public class ExcelImpl implements IExcel {
                     }
                     j++;
                 }
+                iAudit.save("ADD_ORDER_STOCK_EXCEL","ADD ORDER STOCK OF ORDER "+orderStock.getOrderId()+" USING EXCEL FILE.",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -1250,6 +1256,7 @@ public class ExcelImpl implements IExcel {
                     j++;
                 }
                 iStockTransaction.save("OR"+orderStock.getOrdering().getId(),orderStock.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-COMPRADOR",user);
+                iAudit.save("ADD_ORDER_RETURN_EXCEL","ADD ORDER RETURN OF ORDER "+newOrderReturn.getOrderId()+" USING EXCEL FILE.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -1408,9 +1415,11 @@ public class ExcelImpl implements IExcel {
                     }
                     if(hasDuplicate){
                         throw new BadRequestExceptions(Constants.ErrorOrderStockDuplicateItem);
+                    }else {
+                        productRepository.save(product);
+                        iAudit.save("ADD_PRODUCT_EXCEL","ADD PRODUCT "+product.getSku()+" USING EXCEL FILE.",user.getUsername());
                     }
                 }
-                productRepository.saveAll(products);
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
