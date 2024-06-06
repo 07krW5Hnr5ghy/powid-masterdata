@@ -16,11 +16,10 @@ public interface IModule {
                         throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(String name, double price, String tokenUser)
                 throws BadRequestExceptions, InternalErrorExceptions;
-        ResponseSuccess saveAll(List<RequestModule> moduleList, String tokenUser)
-                        throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ModuleDTO> update(RequestModule requestModule, String tokenUser)
                         throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+        CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<List<ModuleDTO>> listModule() throws BadRequestExceptions;
         CompletableFuture<Page<ModuleDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize)

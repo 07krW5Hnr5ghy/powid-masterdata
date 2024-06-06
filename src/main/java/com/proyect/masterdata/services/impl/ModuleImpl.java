@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Module;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.ModuleDTO;
 import com.proyect.masterdata.dto.request.RequestModule;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -11,6 +12,7 @@ import com.proyect.masterdata.mapper.ModuleMapper;
 import com.proyect.masterdata.repository.ModuleRepository;
 import com.proyect.masterdata.repository.ModuleRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IModule;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -34,22 +36,22 @@ public class ModuleImpl implements IModule {
     private final ModuleRepositoryCustom moduleRepositoryCustom;
     private final ModuleMapper moduleMapper;
     private final UserRepository userRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, double price, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
+        User user;
         boolean existsModule;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsModule = moduleRepository.existsByName(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user==null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
@@ -59,14 +61,14 @@ public class ModuleImpl implements IModule {
 
         try {
 
-            moduleRepository.save(Module.builder()
+            Module newModule = moduleRepository.save(Module.builder()
                     .name(name.toUpperCase())
                     .monthlyPrice(price)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-
+            iAudit.save("ADD_MODULE","ADD MODULE "+newModule.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -81,18 +83,18 @@ public class ModuleImpl implements IModule {
     public CompletableFuture<ResponseSuccess> saveAsync(String name, double price, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             boolean existsModule;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 existsModule = moduleRepository.existsByName(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -102,14 +104,14 @@ public class ModuleImpl implements IModule {
 
             try {
 
-                moduleRepository.save(Module.builder()
+                Module newModule = moduleRepository.save(Module.builder()
                         .name(name.toUpperCase())
                         .monthlyPrice(price)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-
+                iAudit.save("ADD_MODULE","ADD MODULE "+newModule.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -121,67 +123,23 @@ public class ModuleImpl implements IModule {
             }
         });
     }
-    @Override
-    public ResponseSuccess saveAll(List<RequestModule> moduleList, String tokenUser)
-            throws BadRequestExceptions, InternalErrorExceptions {
-
-        boolean existsUser;
-        List<Module> modules;
-
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            modules = moduleRepository.findByNameIn(
-                    moduleList.stream().map(module -> module.getName().toUpperCase()).collect(Collectors.toList()));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (!modules.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorModuleExist);
-        }
-
-        try {
-
-            moduleRepository.saveAll(moduleList.stream().map(module -> Module.builder()
-                    .name(module.getName().toUpperCase())
-                    .monthlyPrice(module.getMontlyPrice())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
-                    .build()).toList());
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
 
     @Override
     public CompletableFuture<ModuleDTO> update(RequestModule requestModule, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             Module module;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 module = moduleRepository.findByNameAndStatusTrue(requestModule.getName().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -191,7 +149,7 @@ public class ModuleImpl implements IModule {
 
             module.setMonthlyPrice(requestModule.getMontlyPrice());
             module.setUpdateDate(new Date(System.currentTimeMillis()));
-
+            iAudit.save("UPDATE_MODULE","UPDATE MODULE "+module.getName()+" WITH PRICE "+module.getMonthlyPrice()+".",user.getUsername());
             try {
                 return moduleMapper.moduleToModuleDTO(moduleRepository.save(module));
             } catch (RuntimeException e) {
@@ -204,18 +162,18 @@ public class ModuleImpl implements IModule {
     @Override
     public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             Module module;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 module = moduleRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -223,18 +181,56 @@ public class ModuleImpl implements IModule {
                 throw new BadRequestExceptions(Constants.ErrorModule);
             }
 
-            module.setStatus(false);
-            module.setUpdateDate(new Date(System.currentTimeMillis()));
-
             try {
-
+                module.setStatus(false);
+                module.setUpdateDate(new Date(System.currentTimeMillis()));
+                module.setTokenUser(user.getUsername());
                 moduleRepository.save(module);
-
+                iAudit.save("DELETE_MODULE","DELETE MODULE "+module.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
                         .build();
 
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Module module;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                module = moduleRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (module == null) {
+                throw new BadRequestExceptions(Constants.ErrorModule);
+            }
+
+            try {
+                module.setStatus(true);
+                module.setTokenUser(user.getUsername());
+                module.setUpdateDate(new Date(System.currentTimeMillis()));
+                moduleRepository.save(module);
+                iAudit.save("ACTIVATE_MODULE","ACTIVATE MODULE "+module.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

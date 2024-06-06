@@ -35,15 +35,6 @@ public class ModuleController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping(value = "modules", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<RequestModule> modules,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iModule.saveAll(modules, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ModuleDTO> update(
             @RequestBody() RequestModule requestModule,
@@ -59,6 +50,15 @@ public class ModuleController {
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseDelete> result = iModule.delete(name, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iModule.activate(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping()
