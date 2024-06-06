@@ -10,6 +10,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderItem;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class OrderItemImpl implements IOrderItem {
     private final ProductPriceRepository productPriceRepository;
     private final ProductPictureRepository productPictureRepository;
     private final OrderItemRepositoryCustom orderItemRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -66,7 +68,7 @@ public class OrderItemImpl implements IOrderItem {
         }
 
         try{
-            orderItemRepository.save(OrderItem.builder()
+            OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
                             .discount(requestOrderItem.getDiscount())
                             .ordering(ordering)
                             .orderId(ordering.getId())
@@ -81,6 +83,7 @@ public class OrderItemImpl implements IOrderItem {
                             .updateDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
                     .build());
+            iAudit.save("ADD_ORDER_ITEM","ADD ORDER ITEM "+newOrderItem.getProduct().getSku()+" FOR ORDER "+newOrderItem.getOrderId()+" WITH "+newOrderItem.getQuantity()+" UNITS.",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -118,7 +121,7 @@ public class OrderItemImpl implements IOrderItem {
             }
 
             try{
-                orderItemRepository.save(OrderItem.builder()
+                OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
                         .discount(requestOrderItem.getDiscount())
                         .ordering(ordering)
                         .orderId(ordering.getId())
@@ -133,6 +136,7 @@ public class OrderItemImpl implements IOrderItem {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.getUsername())
                         .build());
+                iAudit.save("ADD_ORDER_ITEM","ADD ORDER ITEM "+newOrderItem.getProduct().getSku()+" FOR ORDER "+newOrderItem.getOrderId()+" WITH "+newOrderItem.getQuantity()+" UNITS.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -257,6 +261,7 @@ public class OrderItemImpl implements IOrderItem {
                 sale.setSaleAmount(newSaleAmount);
                 sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());
                 saleRepository.save(sale);
+                iAudit.save("DELETE_ORDER_ITEM","DELETE ORDER ITEM "+orderItem.getProduct().getSku()+" FOR ORDER "+orderItem.getOrderId()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -304,7 +309,7 @@ public class OrderItemImpl implements IOrderItem {
 
             try{
                 Sale sale = saleRepository.findByOrderId(ordering.getId());
-                orderItemRepository.save(OrderItem.builder()
+                OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
                         .ordering(ordering)
                         .orderId(ordering.getId())
                         .status(true)
@@ -328,6 +333,7 @@ public class OrderItemImpl implements IOrderItem {
                 sale.setSaleAmount(newSaleAmount);
                 sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());
                 saleRepository.save(sale);
+                iAudit.save("ADD_ORDER_ITEM","ADD ORDER ITEM "+newOrderItem.getProduct().getSku()+" FOR ORDER "+newOrderItem.getOrderId()+" WITH "+newOrderItem.getQuantity()+" UNITS.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -390,6 +396,7 @@ public class OrderItemImpl implements IOrderItem {
                 sale.setSaleAmount(newSaleAmount);
                 sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());
                 saleRepository.save(sale);
+                iAudit.save("UPDATE_ORDER_ITEM","UPDATE ORDER ITEM "+orderItem.getProduct().getSku()+" FOR ORDER "+orderItem.getOrderId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
