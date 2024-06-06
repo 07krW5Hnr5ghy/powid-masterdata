@@ -24,46 +24,39 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class OrderStateController {
 
-    private final IOrderState iState;
+    private final IOrderState iOrderState;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iState.save(name, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iOrderState.save(name, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping(value = "order-states", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<String> names,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iState.saveAll(names, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OrderStateDTO> update(
-            @RequestBody() RequestState requestState) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<OrderStateDTO> result = iState.update(requestState);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iState.delete(name, tokenUser);
+        CompletableFuture<ResponseDelete> result = iOrderState.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @PostMapping("activate")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_DELETE')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderState.activate(name, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_GET')")
     public ResponseEntity<List<OrderStateDTO>> listState() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<OrderStateDTO>> result = iState.listState();
+        CompletableFuture<List<OrderStateDTO>> result = iOrderState.listState();
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -76,7 +69,7 @@ public class OrderStateController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<OrderStateDTO>> result = iState.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<OrderStateDTO>> result = iOrderState.list(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -89,7 +82,7 @@ public class OrderStateController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<OrderStateDTO>> result = iState.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<OrderStateDTO>> result = iOrderState.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

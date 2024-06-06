@@ -13,6 +13,7 @@ import com.proyect.masterdata.mapper.OrderStateMapper;
 import com.proyect.masterdata.repository.OrderStateRepository;
 import com.proyect.masterdata.repository.OrderStateRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderState;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -32,20 +33,20 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Log4j2
 public class OrderStateImpl implements IOrderState {
-    private final OrderStateRepository stateRepository;
+    private final OrderStateRepository orderStateRepository;
     private final OrderStateMapper stateMapper;
     private final UserRepository userRepository;
     private final OrderStateRepositoryCustom orderStateRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User datauser;
-            OrderState state;
+            OrderState orderState;
 
             try {
                 datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-                state = stateRepository.findByNameAndStatusTrue(name.toUpperCase());
+                orderState = orderStateRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -54,13 +55,14 @@ public class OrderStateImpl implements IOrderState {
             if (datauser == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
-            if (state != null) {
+            if (orderState != null) {
                 throw new BadRequestExceptions(Constants.ErrorStateExist.toUpperCase());
             }
 
             try {
-                stateRepository.save(stateMapper.stateToName(RequestStateSave.builder()
+                OrderState newOrderState = orderStateRepository.save(stateMapper.stateToName(RequestStateSave.builder()
                         .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
+                iAudit.save("ADD_ORDER_STATE","ADD ORDER STATE "+newOrderState.getName()+".",datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -73,51 +75,15 @@ public class OrderStateImpl implements IOrderState {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        List<OrderState> states;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            states = stateRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!states.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorStateList.toUpperCase());
-        }
-
-        try {
-            List<RequestStateSave> stateSaves = names.stream().map(data -> RequestStateSave.builder()
-                    .user(user.toUpperCase())
-                    .name(data.toUpperCase())
-                    .build()).toList();
-            stateRepository.saveAll(stateMapper.listStateToListName(stateSaves));
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public CompletableFuture<OrderStateDTO> update(RequestState requestState) throws BadRequestExceptions, InternalErrorExceptions {
+    @Transactional
+    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User datauser;
-            OrderState state;
+            OrderState orderState;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(requestState.getUser().toUpperCase());
-                state = stateRepository.findById(requestState.getCode()).orElse(null);
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                orderState = orderStateRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -126,16 +92,20 @@ public class OrderStateImpl implements IOrderState {
             if (datauser == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
-            if (state == null) {
+            if (orderState == null) {
                 throw new BadRequestExceptions(Constants.ErrorState.toUpperCase());
             }
 
             try {
-                state.setName(requestState.getName().toUpperCase());
-                state.setStatus(requestState.isStatus());
-                state.setRegistrationDate(new Date(System.currentTimeMillis()));
-                state.setTokenUser(datauser.getUsername().toUpperCase());
-                return stateMapper.stateToStateDTO(stateRepository.save(state));
+                orderState.setStatus(false);
+                orderState.setRegistrationDate(new Date(System.currentTimeMillis()));
+                orderState.setTokenUser(datauser.getUsername());
+                orderStateRepository.save(orderState);
+                iAudit.save("DELETE_ORDER_STATE","DELETE ORDER STATE "+orderState.getName()+".",datauser.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
@@ -144,15 +114,14 @@ public class OrderStateImpl implements IOrderState {
     }
 
     @Override
-    @Transactional
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User datauser;
-            OrderState state;
+            OrderState orderState;
 
             try {
                 datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-                state = stateRepository.findByNameAndStatusTrue(name.toUpperCase());
+                orderState = orderStateRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -161,17 +130,19 @@ public class OrderStateImpl implements IOrderState {
             if (datauser == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
-            if (state == null) {
+            if (orderState == null) {
                 throw new BadRequestExceptions(Constants.ErrorState.toUpperCase());
             }
 
             try {
-                state.setStatus(false);
-                state.setRegistrationDate(new Date(System.currentTimeMillis()));
-                stateRepository.save(state);
-                return ResponseDelete.builder()
+                orderState.setStatus(true);
+                orderState.setRegistrationDate(new Date(System.currentTimeMillis()));
+                orderState.setTokenUser(datauser.getUsername());
+                orderStateRepository.save(orderState);
+                iAudit.save("ACTIVATE_ORDER_STATE","ACTIVATE ORDER STATE "+orderState.getName()+".",datauser.getUsername());
+                return ResponseSuccess.builder()
                         .code(200)
-                        .message(Constants.delete)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e);
@@ -185,7 +156,7 @@ public class OrderStateImpl implements IOrderState {
         return CompletableFuture.supplyAsync(()->{
             List<OrderState> states = new ArrayList<>();
             try {
-                states = stateRepository.findAllByStatusTrue();
+                states = orderStateRepository.findAllByStatusTrue();
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
