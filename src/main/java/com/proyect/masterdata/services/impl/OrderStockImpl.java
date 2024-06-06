@@ -7,6 +7,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderStock;
 import com.proyect.masterdata.services.IOrderStockItem;
 import com.proyect.masterdata.utils.Constants;
@@ -36,6 +37,7 @@ public class OrderStockImpl implements IOrderStock {
     private final OrderStockRepositoryCustom orderStockRepositoryCustom;
     private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(Long orderId, String warehouseName, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -97,6 +99,7 @@ public class OrderStockImpl implements IOrderStock {
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
                 iOrderStockItem.save(orderStock.getOrderId(),requestOrderStockItem,user.getUsername());
             }
+            iAudit.save("ADD_ORDER_STOCK","ADD ORDER STOCK "+orderStock.getOrderId()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .message(Constants.register)
                     .code(200)
@@ -171,6 +174,7 @@ public class OrderStockImpl implements IOrderStock {
                 for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
                     iOrderStockItem.save(orderStock.getOrderId(),requestOrderStockItem,user.getUsername());
                 }
+                iAudit.save("ADD_ORDER_STOCK","ADD ORDER STOCK "+orderStock.getOrderId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
