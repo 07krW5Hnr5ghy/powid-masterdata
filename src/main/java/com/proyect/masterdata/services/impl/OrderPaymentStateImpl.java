@@ -13,6 +13,7 @@ import com.proyect.masterdata.mapper.PaymentStateMapper;
 import com.proyect.masterdata.repository.OrderPaymentStateRepository;
 import com.proyect.masterdata.repository.OrderPaymentStateRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderPaymentState;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
     private final PaymentStateMapper paymentStateMapper;
     private final UserRepository userRepository;
     private final OrderPaymentStateRepositoryCustom orderPaymentStateRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -60,12 +61,13 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
             }
 
             try {
-                orderPaymentStateRepository.save(OrderPaymentState.builder()
+                OrderPaymentState newOrderPaymentState = orderPaymentStateRepository.save(OrderPaymentState.builder()
                         .name(name.toUpperCase())
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.toUpperCase())
                         .build());
+                iAudit.save("ADD_ORDER_PAYMENT_STATE","ADD ORDER PAYMENT STATE "+newOrderPaymentState.getName()+".", datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -75,45 +77,6 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
             }
         });
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<String> names, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        List<OrderPaymentState> orderPaymentStates;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            orderPaymentStates = orderPaymentStateRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!orderPaymentStates.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorPaymentStateList.toUpperCase());
-        }
-
-        try {
-            List<RequestOrderPaymentStateSave> requestOrderPaymentStateSaves = names.stream()
-                    .map(data -> RequestOrderPaymentStateSave.builder()
-                            .user(user.toUpperCase())
-                            .name(data.toUpperCase())
-                            .build())
-                    .toList();
-            orderPaymentStateRepository.saveAll(paymentStateMapper.listPaymentStateToListName(requestOrderPaymentStateSaves));
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
     }
 
     @Override
@@ -141,10 +104,50 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
             try {
                 orderPaymentState.setStatus(false);
                 orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderPaymentState.setTokenUser(datauser.getUsername());
                 orderPaymentStateRepository.save(orderPaymentState);
+                iAudit.save("DELETE_ORDER_PAYMENT_STATE","DELETE ORDER PAYMENT STATE "+orderPaymentState.getName()+".", datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ErrorWhenDeleting);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            OrderPaymentState orderPaymentState;
+
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                orderPaymentState = orderPaymentStateRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (orderPaymentState == null) {
+                throw new BadRequestExceptions(Constants.ErrorPaymentState.toUpperCase());
+            }
+
+            try {
+                orderPaymentState.setStatus(true);
+                orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderPaymentState.setTokenUser(datauser.getUsername());
+                orderPaymentStateRepository.save(orderPaymentState);
+                iAudit.save("ACTIVATE_ORDER_PAYMENT_STATE","ACTIVATE ORDER PAYMENT STATE "+orderPaymentState.getName()+".", datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e);

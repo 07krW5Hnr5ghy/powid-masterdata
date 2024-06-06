@@ -12,6 +12,7 @@ public interface OrderPaymentStateRepository extends JpaRepository<OrderPaymentS
     List<OrderPaymentState> findAllByStatusFalse();
     OrderPaymentState findByIdAndStatusTrue(Long id);
     OrderPaymentState findByNameAndStatusTrue(String name);
+    OrderPaymentState findByNameAndStatusFalse(String name);
     List<OrderPaymentState> findByNameIn(List<String> names);
     OrderPaymentState findByName(String name);
 }
