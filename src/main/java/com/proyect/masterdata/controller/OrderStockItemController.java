@@ -75,6 +75,16 @@ public class OrderStockItemController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
+    @PostMapping()
+    public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestBody()RequestOrderStockItem requestOrderStockItem
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderStockItem.save(orderId,requestOrderStockItem,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("orderId") Long orderId,
@@ -96,13 +106,14 @@ public class OrderStockItemController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @PostMapping()
-    public ResponseEntity<ResponseSuccess> save(
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("orderId") Long orderId,
-            @RequestParam("tokenUser") String tokenUser,
-            @RequestBody()RequestOrderStockItem requestOrderStockItem
+            @RequestParam("supplierProduct") String supplierProduct,
+            @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrderStockItem.save(orderId,requestOrderStockItem,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iOrderStockItem.activate(orderId,supplierProduct,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
 }
