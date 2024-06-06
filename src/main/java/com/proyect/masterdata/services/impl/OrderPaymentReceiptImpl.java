@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.OrderPaymentReceiptRepository;
 import com.proyect.masterdata.repository.OrderingRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IFile;
 import com.proyect.masterdata.services.IOrderPaymentReceipt;
 import com.proyect.masterdata.utils.Constants;
@@ -30,6 +31,7 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
     private final IFile iFile;
     private final OrderingRepository orderingRepository;
     private final OrderPaymentReceiptRepository orderPaymentReceiptRepository;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<List<String>> uploadReceipt(List<MultipartFile> receipts, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -79,7 +81,7 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
                     receiptUrlList.add(url);
                     receiptNumber++;
                 }
-
+                iAudit.save("ADD_ORDER_PAYMENT_RECEIPT","ADD ORDER PAYMENT RECEIPT FOR ORDER "+ordering.getId()+".",user.getUsername());
                 return receiptUrlList;
             }catch (RuntimeException | IOException e){
                 e.printStackTrace();

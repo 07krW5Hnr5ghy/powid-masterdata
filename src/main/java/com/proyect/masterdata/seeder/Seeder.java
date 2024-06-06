@@ -258,6 +258,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_ORDER","ADMIN1");
                         iAuditEvent.save("ADD_ORDER_ITEM","ADMIN1");
                         iAuditEvent.save("ADD_ORDER_PAYMENT_METHOD","ADMIN1");
+                        iAuditEvent.save("ADD_ORDER_PAYMENT_RECEIPT","ADMIN1");
                         iAuditEvent.save("ADD_ORDER_RETURN_EXCEL","ADMIN1");
                         iAuditEvent.save("ADD_ORDER_STOCK_EXCEL","ADMIN1");
                         iAuditEvent.save("ADD_PRODUCT_EXCEL","ADMIN1");
