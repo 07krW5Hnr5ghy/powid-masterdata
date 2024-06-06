@@ -13,6 +13,7 @@ import com.proyect.masterdata.mapper.PaymentMethodMapper;
 import com.proyect.masterdata.repository.OrderPaymentMethodRepository;
 import com.proyect.masterdata.repository.OrderPaymentMethodRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderPaymentMethod;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
     private final PaymentMethodMapper paymentMethodMapper;
     private final UserRepository userRepository;
     private final OrderPaymentMethodRepositoryCustom orderPaymentMethodRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -60,12 +61,13 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
             }
 
             try {
-                orderPaymentMethodRepository.save(OrderPaymentMethod.builder()
+                OrderPaymentMethod newOrderPaymentMethod = orderPaymentMethodRepository.save(OrderPaymentMethod.builder()
                         .tokenUser(user.toUpperCase())
                         .status(true)
                         .name(name.toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .build());
+                iAudit.save("ADD_ORDER_PAYMENT_METHOD","ADD ORDER PAYMENT METHOD "+newOrderPaymentMethod.getName()+".",datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -75,44 +77,6 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<String> names, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        List<OrderPaymentMethod> orderPaymentMethods;
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            orderPaymentMethods = orderPaymentMethodRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!orderPaymentMethods.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorPaymentMethodList.toUpperCase());
-        }
-
-        try {
-            List<RequestOrderPaymentMethodSave> paymentMethodSaves = names.stream()
-                    .map(data -> RequestOrderPaymentMethodSave.builder()
-                            .user(user.toUpperCase())
-                            .name(data.toUpperCase())
-                            .build())
-                    .toList();
-            orderPaymentMethodRepository.saveAll(paymentMethodMapper.listPaymentMethodToListName(paymentMethodSaves));
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
     }
 
     @Override
@@ -140,10 +104,50 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
             try {
                 orderPaymentMethod.setStatus(false);
                 orderPaymentMethod.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderPaymentMethod.setTokenUser(datauser.getUsername());
                 orderPaymentMethodRepository.save(orderPaymentMethod);
+                iAudit.save("DELETE_ORDER_PAYMENT_METHOD","DELETE ORDER PAYMENT METHOD "+orderPaymentMethod.getName()+".",datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            OrderPaymentMethod orderPaymentMethod;
+
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (orderPaymentMethod == null) {
+                throw new BadRequestExceptions(Constants.ErrorPaymentMethod.toUpperCase());
+            }
+
+            try {
+                orderPaymentMethod.setStatus(true);
+                orderPaymentMethod.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderPaymentMethod.setTokenUser(datauser.getUsername());
+                orderPaymentMethodRepository.save(orderPaymentMethod);
+                iAudit.save("ACTIVATE_ORDER_PAYMENT_METHOD","ACTIVATE ORDER PAYMENT METHOD "+orderPaymentMethod.getName()+".",datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e);
