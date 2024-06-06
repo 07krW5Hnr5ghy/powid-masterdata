@@ -11,6 +11,5 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IOnboard {
     CompletableFuture<Onboard> save(RequestOnboard requestOnboard) throws InternalErrorExceptions, BadRequestExceptions;
-
     CompletableFuture<List<OnboardingDTO>> listOnboard() throws BadRequestExceptions;
 }

@@ -55,6 +55,7 @@ public class OrderingImpl implements IOrdering {
     private final StoreRepository storeRepository;
     private final ClosingChannelRepository closingChannelRepository;
     private final CustomerTypeRepository customerTypeRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -189,7 +190,7 @@ public class OrderingImpl implements IOrdering {
                     .build();
 
             iCustomer.save(ordering,requestCustomer,tokenUser);
-
+            iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -337,7 +338,7 @@ public class OrderingImpl implements IOrdering {
                         .build();
 
                 iCustomer.save(ordering,requestCustomer,tokenUser);
-
+                iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -604,7 +605,7 @@ public class OrderingImpl implements IOrdering {
             saleRepository.save(sale);
             iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
             iCourierPicture.uploadPicture(requestOrderUpdate.getPictures(),ordering.getId(),user.getUsername());
-
+            iAudit.save("UPDATE_ORDER","UPDATE ORDER "+ordering.getId()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.update)
@@ -707,7 +708,7 @@ public class OrderingImpl implements IOrdering {
                 saleRepository.save(sale);
                 iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
                 iCourierPicture.uploadPicture(requestOrderUpdate.getPictures(),ordering.getId(),user.getUsername());
-
+                iAudit.save("UPDATE_ORDER","UPDATE ORDER "+ordering.getId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

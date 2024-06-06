@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Category;
@@ -44,7 +45,7 @@ public class OnboardImpl implements IOnboard {
     private final StoreRepository storeRepository;
     private final OnboardChannelRepository onboardChannelRepository;
     private final OnboardModuleRepository onboardModuleRepository;
-
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<Onboard> save(RequestOnboard requestOnboard) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -80,7 +81,7 @@ public class OnboardImpl implements IOnboard {
                 Integer usersMinimum = Integer.parseInt(users[0]);
                 Integer usersMaximum = Integer.parseInt(users[1]);
 
-                return onboardRepository.save(Onboard.builder()
+                Onboard newOnboard = onboardRepository.save(Onboard.builder()
                         .category(category)
                         .categoryId(category.getId())
                         .ecommerce(requestOnboard.getEcommerce())
@@ -94,6 +95,7 @@ public class OnboardImpl implements IOnboard {
                         .billing(requestOnboard.getBilling())
                         .comment(requestOnboard.getComments())
                         .build());
+                return newOnboard;
 
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
