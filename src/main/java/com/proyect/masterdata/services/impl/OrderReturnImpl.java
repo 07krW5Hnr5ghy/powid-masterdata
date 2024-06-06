@@ -8,6 +8,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderReturn;
 import com.proyect.masterdata.services.IOrderReturnItem;
 import com.proyect.masterdata.services.IStockTransaction;
@@ -36,6 +37,7 @@ public class OrderReturnImpl implements IOrderReturn {
     private final IStockTransaction iStockTransaction;
     private final ProductRepository productRepository;
     private final OrderReturnTypeRepository orderReturnTypeRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -108,6 +110,7 @@ public class OrderReturnImpl implements IOrderReturn {
                 requestStockTransactionItemList.add(requestStockTransactionItem);
             }
             iStockTransaction.save("OR"+orderStock.getOrdering().getId(),orderStock.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-COMPRADOR",user);
+            iAudit.save("ADD_ORDER_RETURN","ADD ORDER RETURN "+newOrderReturn.getOrderId()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -192,6 +195,7 @@ public class OrderReturnImpl implements IOrderReturn {
                     requestStockTransactionItemList.add(requestStockTransactionItem);
                 }
                 iStockTransaction.save("OR"+orderStock.getOrdering().getId(),orderStock.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-COMPRADOR",user);
+                iAudit.save("ADD_ORDER_RETURN","ADD ORDER RETURN "+newOrderReturn.getOrderId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

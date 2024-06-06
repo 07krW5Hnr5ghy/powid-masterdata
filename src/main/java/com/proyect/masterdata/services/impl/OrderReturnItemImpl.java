@@ -8,6 +8,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IGeneralStock;
 import com.proyect.masterdata.services.IOrderReturnItem;
 import com.proyect.masterdata.services.IWarehouseStock;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -37,6 +39,9 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     private final OrderStockItemRepository orderStockItemRepository;
     private final IGeneralStock iGeneralStock;
     private final IWarehouseStock iWarehouseStock;
+    private final GeneralStockRepository generalStockRepository;
+    private final WarehouseStockRepository warehouseStockRepository;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -98,7 +103,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 throw new BadRequestExceptions(Constants.ErrorOrderReturnItemQuantity);
             }
             try {
-                orderReturnItemRepository.save(OrderReturnItem.builder()
+                OrderReturnItem newOrderReturnItem = orderReturnItemRepository.save(OrderReturnItem.builder()
                         .orderReturn(orderReturn)
                         .orderReturnId(orderReturn.getId())
                         .orderReturnType(orderReturnType)
@@ -118,6 +123,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                         .build());
                 iGeneralStock.in(supplierProduct.getSerial(), requestOrderReturnItem.getQuantity(), user.getUsername());
                 iWarehouseStock.in(orderStock.getWarehouse(),supplierProduct, requestOrderReturnItem.getQuantity(), user);
+                iAudit.save("ADD_ORDER_RETURN_ITEM","ADD ORDER RETURN ITEM WITH SUPPLIER PRODUCT "+newOrderReturnItem.getSupplierProduct().getSerial()+" WITH "+newOrderReturnItem.getQuantity()+" UNITS.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -155,12 +161,16 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             if(orderReturn==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderReturn);
             }else{
-                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderId(supplierProduct.getId(), orderReturn.getOrderId());
+                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderIdAndStatusTrue(supplierProduct.getId(), orderReturn.getOrderId());
             }
             try{
                 orderReturnItem.setStatus(false);
                 orderReturnItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderReturnItem.setTokenUser(user.getUsername());
                 orderReturnItemRepository.save(orderReturnItem);
+                iGeneralStock.out(supplierProduct.getSerial(), orderReturnItem.getQuantity(), user.getUsername());
+                iWarehouseStock.out(orderReturn.getOrderStock().getWarehouse(),supplierProduct, orderReturnItem.getQuantity(), user);
+                iAudit.save("DELETE_ORDER_RETURN_ITEM","DELETE ORDER RETURN ITEM WITH SUPPLIER PRODUCT "+orderReturnItem.getSupplierProduct().getSerial()+" WITH "+orderReturnItem.getQuantity()+" UNITS.",user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -174,7 +184,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> update(Long orderId, String supplierProductSerial, Integer quantity, String tokenUser) throws InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(Long orderId, String supplierProductSerial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderReturn orderReturn;
@@ -198,12 +208,80 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             if(orderReturn==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderReturn);
             }else{
-                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderId(supplierProduct.getId(), orderReturn.getOrderId());
+                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderIdAndStatusFalse(supplierProduct.getId(), orderReturn.getOrderId());
             }
             try{
+                orderReturnItem.setStatus(true);
+                orderReturnItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderReturnItem.setTokenUser(user.getUsername());
+                orderReturnItemRepository.save(orderReturnItem);
+                iGeneralStock.in(supplierProduct.getSerial(), orderReturnItem.getQuantity(), user.getUsername());
+                iWarehouseStock.in(orderReturn.getOrderStock().getWarehouse(),supplierProduct, orderReturnItem.getQuantity(), user);
+                iAudit.save("ACTIVATE_ORDER_RETURN_ITEM","ACTIVATE ORDER RETURN ITEM WITH SUPPLIER PRODUCT "+orderReturnItem.getSupplierProduct().getSerial()+" WITH "+orderReturnItem.getQuantity()+" UNITS.",user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> update(Long orderId, String supplierProductSerial, Integer quantity, String tokenUser) throws InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            OrderReturn orderReturn;
+            SupplierProduct supplierProduct;
+            OrderReturnItem orderReturnItem;
+            GeneralStock generalStock;
+            WarehouseStock warehouseStock;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                orderReturn = orderReturnRepository.findByOrderId(orderId);
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
+            if(orderReturn==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderReturn);
+            }else{
+                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderIdAndStatusTrue(supplierProduct.getId(), orderReturn.getOrderId());
+            }
+            if(orderReturnItem==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderReturnItem);
+            }else{
+                generalStock = generalStockRepository.findByClientIdAndSupplierProductId(user.getClientId(),supplierProduct.getId());
+                warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(orderReturn.getOrderStock().getWarehouseId(),supplierProduct.getId());
+            }
+            if(Objects.equals(quantity, orderReturnItem.getQuantity())){
+                throw new BadRequestExceptions(Constants.ErrorOrderReturnItemQuantityNotChange);
+            }
+            try{
+                if(quantity>orderReturnItem.getQuantity()){
+                    generalStock.setQuantity(generalStock.getQuantity()+(quantity-orderReturnItem.getQuantity()));
+                    warehouseStock.setQuantity(warehouseStock.getQuantity()+(quantity-orderReturnItem.getQuantity()));
+                }
+                if(quantity<orderReturnItem.getQuantity()){
+                    generalStock.setQuantity(generalStock.getQuantity()-(orderReturnItem.getQuantity()-quantity));
+                    warehouseStock.setQuantity(warehouseStock.getQuantity()+(orderReturnItem.getQuantity()-quantity));
+                }
                 orderReturnItem.setQuantity(quantity);
                 orderReturnItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderReturnItem.setTokenUser(user.getUsername());
                 orderReturnItemRepository.save(orderReturnItem);
+                iAudit.save("UPDATE_ORDER_RETURN_ITEM","UPDATE ORDER RETURN ITEM WITH SUPPLIER PRODUCT "+orderReturnItem.getSupplierProduct().getSerial()+" WITH "+orderReturnItem.getQuantity()+" UNITS.",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)
@@ -225,7 +303,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(orderId!=null){
                     orderReturnItemList = orderReturnItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(clientId,orderId);
-                }else {
+                }else{
                     orderReturnItemList = orderReturnItemRepository.findAllByClientIdAndStatusTrue(clientId);
                 }
             }catch (RuntimeException e){

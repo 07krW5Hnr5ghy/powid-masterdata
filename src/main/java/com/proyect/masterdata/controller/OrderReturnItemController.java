@@ -58,4 +58,13 @@ public class OrderReturnItemController {
         CompletableFuture<ResponseSuccess> result = iOrderReturnItem.update(orderId,supplierProductSerial,quantity,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+    @PostMapping("activate")
+    private ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("supplierProduct") String supplierProductSerial
+            ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderReturnItem.activate(orderId,supplierProductSerial,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

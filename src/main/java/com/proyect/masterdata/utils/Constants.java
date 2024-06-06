@@ -297,4 +297,5 @@ public class Constants {
     public static final String ErrorSizeTypeCategoryProduct = "Size type does not belong to the category";
     public static final String ErrorAuditEvent = "audit event does not exist";
     public static final String ErrorAuditEventExists = "audit event already exists";
+    public static final String ErrorOrderReturnItemQuantityNotChange = "The quantity is the same of the order return item";
 }

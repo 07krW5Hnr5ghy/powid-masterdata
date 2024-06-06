@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 public interface IOrderReturnItem {
     CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(Long orderId,String supplierProductSerial,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> activate(Long orderId,String supplierProductSerial,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseSuccess> update(Long orderId,String supplierProductSerial,Integer quantity,String tokenUser) throws InternalErrorExceptions;
     CompletableFuture<List<OrderReturnItemDTO>> list(String user,Long orderId) throws BadRequestExceptions;
 }
