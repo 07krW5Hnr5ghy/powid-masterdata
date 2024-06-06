@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.OrderReturnTypeRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderReturnType;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 public class OrderReturnTypeImpl implements IOrderReturnType {
     private final OrderReturnTypeRepository orderReturnTypeRepository;
     private final UserRepository userRepository;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -44,12 +46,14 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
                 throw new BadRequestExceptions(Constants.ErrorOrderReturnType);
             }
             try {
-                orderReturnTypeRepository.save(OrderReturnType.builder()
+                OrderReturnType newOrderReturnType = orderReturnTypeRepository.save(OrderReturnType.builder()
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .status(true)
+                                .tokenUser(user.getUsername())
                         .name(name.toUpperCase())
                         .build());
+                iAudit.save("ADD_ORDER_RETURN_TYPE","ADD ORDER RETURN TYPE "+newOrderReturnType.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -116,7 +120,43 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
             try {
                 orderReturnType.setStatus(false);
                 orderReturnType.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderReturnType.setTokenUser(user.getUsername());
+                iAudit.save("DELETE_ORDER_RETURN_TYPE","DELETE ORDER RETURN TYPE "+orderReturnType.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            OrderReturnType orderReturnType;
+            User user;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(name.toUpperCase());
+                orderReturnType = orderReturnTypeRepository.findByNameAndStatusFalse(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(orderReturnType == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderReturnType);
+            }
+            try {
+                orderReturnType.setStatus(true);
+                orderReturnType.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderReturnType.setTokenUser(user.getUsername());
+                iAudit.save("ACTIVATE_ORDER_RETURN_TYPE","ACTIVATE ORDER RETURN TYPE "+orderReturnType.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.delete)
                         .build();

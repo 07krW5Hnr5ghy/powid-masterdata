@@ -46,4 +46,12 @@ public class OrderReturnTypeController {
         CompletableFuture<ResponseDelete> result = iOrderReturnType.delete(name,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderReturnType.activate(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

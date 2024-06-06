@@ -35,4 +35,7 @@ public class OrderReturnType {
 
     @Column(name = "status")
     private Boolean status;
+
+    @Column(name = "tokenUser")
+    private String tokenUser;
 }
