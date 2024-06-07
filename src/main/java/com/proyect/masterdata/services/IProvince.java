@@ -16,9 +16,8 @@ public interface IProvince {
                         throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(String name, String user, String department)
                 throws BadRequestExceptions, InternalErrorExceptions;
-        ResponseSuccess saveAll(List<String> names, String user, String department)
-                        throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
+        CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<List<ProvinceDTO>> listProvince() throws BadRequestExceptions;
         CompletableFuture<Page<ProvinceDTO>> list(String name, String user, Long codeDepartment, String nameDepartment, String sort,
                         String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;

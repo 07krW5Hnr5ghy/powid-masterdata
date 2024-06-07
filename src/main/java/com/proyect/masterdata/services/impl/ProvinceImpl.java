@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Department;
 import com.proyect.masterdata.domain.Province;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.ProvinceDTO;
 import com.proyect.masterdata.dto.request.RequestProvince;
 import com.proyect.masterdata.dto.request.RequestProvinceSave;
@@ -14,6 +15,7 @@ import com.proyect.masterdata.repository.DepartmentRepository;
 import com.proyect.masterdata.repository.ProvinceRepository;
 import com.proyect.masterdata.repository.ProvinceRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IProvince;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
@@ -36,15 +38,15 @@ public class ProvinceImpl implements IProvince {
     private final DepartmentRepository departmentRepository;
     private final ProvinceMapper provinceMapper;
     private final UserRepository userRepository;
-
+    private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(String name, String user, String department)
+    public ResponseSuccess save(String name, String username, String department)
             throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
+        User user;
         boolean existsProvince;
         Department departmentData;
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             existsProvince = provinceRepository.existsByName(name.toUpperCase());
             departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
         } catch (RuntimeException e) {
@@ -52,7 +54,7 @@ public class ProvinceImpl implements IProvince {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user==null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
 
@@ -65,14 +67,15 @@ public class ProvinceImpl implements IProvince {
         }
 
         try {
-            provinceRepository.save(Province.builder()
+            Province newProvince = provinceRepository.save(Province.builder()
                     .name(name.toUpperCase())
                     .department(departmentData)
                     .departmentId(departmentData.getId())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
-                    .tokenUser(user.toUpperCase())
+                    .tokenUser(user.getUsername())
                     .build());
+            iAudit.save("ADD_PROVINCE","ADD PROVINCE "+newProvince.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -84,13 +87,13 @@ public class ProvinceImpl implements IProvince {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String user, String department) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String username, String department) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             boolean existsProvince;
             Department departmentData;
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 existsProvince = provinceRepository.existsByName(name.toUpperCase());
                 departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
             } catch (RuntimeException e) {
@@ -98,7 +101,7 @@ public class ProvinceImpl implements IProvince {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
 
@@ -111,14 +114,15 @@ public class ProvinceImpl implements IProvince {
             }
 
             try {
-                provinceRepository.save(Province.builder()
+                Province newProvince = provinceRepository.save(Province.builder()
                         .name(name.toUpperCase())
                         .department(departmentData)
                         .departmentId(departmentData.getId())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
-                        .tokenUser(user.toUpperCase())
+                        .tokenUser(user.getUsername())
                         .build());
+                iAudit.save("ADD_PROVINCE","ADD PROVINCE "+newProvince.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -131,63 +135,19 @@ public class ProvinceImpl implements IProvince {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user, String department)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
-        Department departmentData;
-        List<Province> provinces;
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            departmentData = departmentRepository.findByNameAndStatusTrue(department.toUpperCase());
-            provinces = provinceRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        if (departmentData == null) {
-            throw new BadRequestExceptions(Constants.ErrorDepartment.toUpperCase());
-        }
-
-        if (!provinces.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorProvinceList.toUpperCase());
-        }
-
-        List<RequestProvinceSave> provinceSaves = names.stream().map(data -> RequestProvinceSave.builder()
-                .user(user.toUpperCase())
-                .codeDepartment(departmentData.getId())
-                .name(data.toUpperCase())
-                .build()).toList();
-
-        try {
-            provinceRepository.saveAll(provinceMapper.listProvinceToListName(provinceSaves));
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ErrorWhileRegistering);
-        }
-    }
-
-    @Override
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             Province province;
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 province = provinceRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
 
@@ -198,10 +158,49 @@ public class ProvinceImpl implements IProvince {
             try {
                 province.setRegistrationDate(new Date(System.currentTimeMillis()));
                 province.setStatus(false);
+                province.setTokenUser(user.getUsername());
                 provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
+                iAudit.save("DELETE_PROVINCE","DELETE PROVINCE "+province.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Province province;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                province = provinceRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+
+            if (province == null) {
+                throw new BadRequestExceptions(Constants.ErrorProvince.toUpperCase());
+            }
+
+            try {
+                province.setRegistrationDate(new Date(System.currentTimeMillis()));
+                province.setStatus(true);
+                province.setTokenUser(user.getUsername());
+                provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
+                iAudit.save("ACTIVATE_PROVINCE","ACTIVATE PROVINCE "+province.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 throw new BadRequestExceptions(Constants.ErrorWhileUpdating);
