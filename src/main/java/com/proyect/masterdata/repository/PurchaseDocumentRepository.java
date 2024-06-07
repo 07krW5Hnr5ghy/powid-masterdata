@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface PurchaseDocumentRepository extends JpaRepository<PurchaseDocument,Long> {
     PurchaseDocument findByNameAndStatusTrue(String name);
+    PurchaseDocument findByNameAndStatusFalse(String name);
     PurchaseDocument findByName(String name);
     List<PurchaseDocument> findAllByStatusTrue();
 }

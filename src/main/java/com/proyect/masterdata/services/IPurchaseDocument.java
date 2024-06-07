@@ -11,5 +11,6 @@ import java.util.concurrent.CompletableFuture;
 public interface IPurchaseDocument {
     CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<String>> list() throws BadRequestExceptions;
 }

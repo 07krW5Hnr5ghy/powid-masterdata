@@ -38,6 +38,15 @@ public class PurchaseDocumentController {
         CompletableFuture<ResponseDelete> result = iPurchaseDocument.delete(name,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+    @PostMapping("activate")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_DOCUMENT_DELETE')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iPurchaseDocument.activate(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_DOCUMENT_DELETE')")
     public ResponseEntity<List<String>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {

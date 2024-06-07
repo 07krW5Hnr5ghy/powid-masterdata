@@ -105,6 +105,44 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
     }
 
     @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            PurchaseDocument purchaseDocument;
+            User user;
+
+            try {
+                purchaseDocument = purchaseDocumentRepository.findByNameAndStatusFalse(name.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(purchaseDocument == null){
+                throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
+            }
+
+            try {
+                purchaseDocument.setStatus(true);
+                purchaseDocument.setUpdateDate(new Date(System.currentTimeMillis()));
+                purchaseDocument.setTokenUser(user.getUsername());
+                purchaseDocumentRepository.save(purchaseDocument);
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
     public CompletableFuture<List<String>> list() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<PurchaseDocument> purchaseDocumentList = new ArrayList<>();
