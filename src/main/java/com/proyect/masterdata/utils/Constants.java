@@ -298,4 +298,6 @@ public class Constants {
     public static final String ErrorAuditEvent = "audit event does not exist";
     public static final String ErrorAuditEventExists = "audit event already exists";
     public static final String ErrorOrderReturnItemQuantityNotChange = "The quantity is the same of the order return item";
+    public static final String ErrorProductPriceExist = "Product price already exists";
+    public static final String ErrorProductPrice = "Product price does not exist";
 }

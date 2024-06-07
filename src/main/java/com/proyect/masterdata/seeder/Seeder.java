@@ -279,6 +279,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_PRODUCT","ADMIN1");
                         iAuditEvent.save("ADD_PRODUCT_EXCEL","ADMIN1");
                         iAuditEvent.save("ADD_PRODUCT_PICTURE","ADMIN1");
+                        iAuditEvent.save("ADD_PRODUCT_PRICE","ADMIN1");
                         iAuditEvent.save("ADD_PURCHASE_EXCEL","ADMIN1");
                         iAuditEvent.save("ADD_SHIPMENT_EXCEL","ADMIN1");
                         iAuditEvent.save("ADD_STOCK_REPLENISHMENT_EXCEL","ADMIN1");
@@ -313,6 +314,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_ORDER_STOCK_ITEM","ADMIN1");
                         iAuditEvent.save("DELETE_PAYMENT_GATEWAY","ADMIN1");
                         iAuditEvent.save("DELETE_PRODUCT","ADMIN1");
+                        iAuditEvent.save("DELETE_PRODUCT_PRICE","ADMIN1");
                         iAuditEvent.save("DELETE_USER","ADMIN1");
                         iAuditEvent.save("LOG_IN","ADMIN1");
                         iAuditEvent.save("LOG_OUT","ADMIN1");

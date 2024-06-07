@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IProductPrice;
@@ -29,6 +30,14 @@ public class ProductPriceController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iProductPrice.saveAsync(productSku,unitPrice,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("productSku") String productSku,
+            @RequestParam("tokenUSer") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iProductPrice.delete(productSku,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
 }
