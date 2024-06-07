@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.PurchaseDocumentRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IPurchaseDocument;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 public class PurchaseDocumentImpl implements IPurchaseDocument {
     private final PurchaseDocumentRepository purchaseDocumentRepository;
     private final UserRepository userRepository;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -48,13 +50,14 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
             }
 
             try {
-                purchaseDocumentRepository.save(PurchaseDocument.builder()
+                PurchaseDocument newPurchaseDocument=purchaseDocumentRepository.save(PurchaseDocument.builder()
                         .name(name.toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
+                iAudit.save("ADD_PURCHASE_DOCUMENT","ADD PURCHASE DOCUMENT "+newPurchaseDocument.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -93,6 +96,7 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
                 purchaseDocument.setUpdateDate(new Date(System.currentTimeMillis()));
                 purchaseDocument.setTokenUser(user.getUsername());
                 purchaseDocumentRepository.save(purchaseDocument);
+                iAudit.save("DELETE_PURCHASE_DOCUMENT","DELETE PURCHASE DOCUMENT "+purchaseDocument.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -131,6 +135,7 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
                 purchaseDocument.setUpdateDate(new Date(System.currentTimeMillis()));
                 purchaseDocument.setTokenUser(user.getUsername());
                 purchaseDocumentRepository.save(purchaseDocument);
+                iAudit.save("ACTIVATE_PURCHASE_DOCUMENT","ACTIVATE PURCHASE DOCUMENT "+purchaseDocument.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

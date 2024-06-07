@@ -9,6 +9,7 @@ import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.PurchaseItem;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
     private final PurchaseItemRepository purchaseItemRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final PurchaseItemRepositoryCustom purchaseItemRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(Long purchaseId, RequestPurchaseItem requestPurchaseItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -74,8 +76,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
         }
 
         try {
-
-            purchaseItemRepository.save(PurchaseItem.builder()
+            PurchaseItem newPurchaseItem = purchaseItemRepository.save(PurchaseItem.builder()
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .quantity(requestPurchaseItem.getQuantity())
@@ -87,7 +88,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
                     .supplierProductId(supplierProduct.getId())
                     .tokenUser(user.getUsername())
                     .build());
-
+            iAudit.save("ADD_PURCHASE_ITEM","ADD PURCHASE ITEM "+newPurchaseItem.getSupplierProduct().getSerial()+" FOR PURCHASE "+newPurchaseItem.getPurchase().getSerial()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -136,7 +137,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
 
             try {
 
-                purchaseItemRepository.save(PurchaseItem.builder()
+                PurchaseItem newPurchaseItem = purchaseItemRepository.save(PurchaseItem.builder()
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .quantity(requestPurchaseItem.getQuantity())
@@ -148,7 +149,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
                         .supplierProductId(supplierProduct.getId())
                         .tokenUser(user.getUsername())
                         .build());
-
+                iAudit.save("ADD_PURCHASE_ITEM","ADD PURCHASE ITEM "+newPurchaseItem.getSupplierProduct().getSerial()+" FOR PURCHASE "+newPurchaseItem.getPurchase().getSerial()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -233,17 +234,68 @@ public class PurchaseItemImpl implements IPurchaseItem {
 
             if(supplierProduct == null){
                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }else {
+                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductIdAndStatusTrue(purchase.getId(),supplierProduct.getId());
+            }
+
+            try{
+                purchaseItem.setStatus(false);
+                purchaseItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                purchaseItem.setTokenUser(user.getUsername());
+                purchaseItemRepository.save(purchaseItem);
+                iAudit.save("DELETE_PURCHASE_ITEM","DELETE PURCHASE ITEM "+purchaseItem.getSupplierProduct().getSerial()+" FOR PURCHASE "+purchaseItem.getPurchase().getSerial()+".",user.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String purchaseSerial, String serialSupplierProduct, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplierProduct supplierProduct;
+            Purchase purchase;
+            PurchaseItem purchaseItem;
+
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                purchase = purchaseRepository.findBySerial(purchaseSerial.toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(serialSupplierProduct.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(purchase == null){
+                throw new BadRequestExceptions(Constants.ErrorPurchase);
+            }
+
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }else{
+                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductIdAndStatusFalse(purchase.getId(),supplierProduct.getId());
             }
 
 
             try{
-                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
-                purchaseItem.setStatus(false);
+                purchaseItem.setStatus(true);
                 purchaseItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                purchaseItem.setTokenUser(user.getUsername());
                 purchaseItemRepository.save(purchaseItem);
-                return ResponseDelete.builder()
+                iAudit.save("ACTIVATE_PURCHASE_ITEM","ACTIVATE PURCHASE ITEM "+purchaseItem.getSupplierProduct().getSerial()+" FOR PURCHASE "+purchaseItem.getPurchase().getSerial()+".",user.getUsername());
+                return ResponseSuccess.builder()
                         .code(200)
-                        .message(Constants.delete)
+                        .message(Constants.update)
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());

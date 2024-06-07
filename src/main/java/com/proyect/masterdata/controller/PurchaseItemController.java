@@ -1,6 +1,8 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.PurchaseItemDTO;
+import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IPurchaseItem;
 import lombok.AllArgsConstructor;
@@ -43,6 +45,26 @@ public class PurchaseItemController {
             @RequestParam(value = "id",required = false) Long id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<PurchaseItemDTO>> result = iPurchaseItem.listPurchaseItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("purchaseSerial") String purchaseSerial,
+            @RequestParam("supplierProduct") String supplierProduct,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iPurchaseItem.delete(purchaseSerial,supplierProduct,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("purchaseSerial") String purchaseSerial,
+            @RequestParam("supplierProduct") String supplierProduct,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iPurchaseItem.activate(purchaseSerial,supplierProduct,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

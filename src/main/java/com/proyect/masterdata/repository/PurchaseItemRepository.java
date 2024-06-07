@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface PurchaseItemRepository extends JpaRepository<PurchaseItem, Long> {
     PurchaseItem findByPurchaseIdAndSupplierProductId(Long purchaseId, Long supplierProductId);
+    PurchaseItem findByPurchaseIdAndSupplierProductIdAndStatusTrue(Long purchaseId, Long supplierProductId);
+    PurchaseItem findByPurchaseIdAndSupplierProductIdAndStatusFalse(Long purchaseId, Long supplierProductId);
     List<PurchaseItem> findAllByClientIdAndStatusTrue(Long clientId);
     List<PurchaseItem> findAllByClientIdAndStatusFalse(Long clientId);
     List<PurchaseItem> findAllByClientIdAndPurchaseIdAndStatusTrue(Long clientId,Long purchaseId);
