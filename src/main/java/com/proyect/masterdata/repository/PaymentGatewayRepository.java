@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface PaymentGatewayRepository extends JpaRepository<PaymentGateway,Long> {
     PaymentGateway findByName(String name);
     PaymentGateway findByNameAndStatusTrue(String name);
+    PaymentGateway findByNameAndStatusFalse(String name);
 }
