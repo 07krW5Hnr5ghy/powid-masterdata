@@ -54,6 +54,15 @@ public class ProductController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
+    @PostMapping("activate")
+    //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_DELETE')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("sku") String sku,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iProduct.activate(sku, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> list(

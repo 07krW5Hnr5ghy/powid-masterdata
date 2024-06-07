@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IProductPicture;
 import com.proyect.masterdata.services.IProductPrice;
 import org.springframework.data.domain.Page;
@@ -30,7 +31,6 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class ProductImpl implements IProduct {
-
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ModelRepository modelRepository;
@@ -44,6 +44,7 @@ public class ProductImpl implements IProduct {
     private final ProductPriceRepository productPriceRepository;
     private final IProductPicture iProductPicture;
     private final ProductPictureRepository productPictureRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestProductSave product, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -122,6 +123,7 @@ public class ProductImpl implements IProduct {
                     .build());
             iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
             iProductPicture.uploadPicture(product.getPictures(),productData.getId(),user.getUsername());
+            iAudit.save("ADD_PRODUCT","ADD PRODUCT "+productData.getSku()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -210,6 +212,7 @@ public class ProductImpl implements IProduct {
                         .build());
                 iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
                 iProductPicture.uploadPicture(product.getPictures(),productData.getId(),user.getUsername());
+                iAudit.save("ADD_PRODUCT","ADD PRODUCT "+productData.getSku()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -222,20 +225,20 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String sku, String user) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String sku, String username) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             Product product;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 product = productRepository.findBySkuAndStatusTrue(sku.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -246,10 +249,51 @@ public class ProductImpl implements IProduct {
             try {
                 product.setStatus(false);
                 product.setUpdateDate(new Date(System.currentTimeMillis()));
+                product.setTokenUser(user.getUsername());
                 productRepository.save(product);
+                iAudit.save("DELETE_PRODUCT","DELETE PRODUCT "+product.getSku()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Product product;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                product = productRepository.findBySkuAndStatusFalse(sku.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (product == null) {
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+
+            try {
+                product.setStatus(true);
+                product.setUpdateDate(new Date(System.currentTimeMillis()));
+                product.setTokenUser(user.getUsername());
+                productRepository.save(product);
+                iAudit.save("ACTIVATE_PRODUCT","ACTIVATE PRODUCT "+product.getSku()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e.getMessage());

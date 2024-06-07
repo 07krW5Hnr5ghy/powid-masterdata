@@ -19,6 +19,7 @@ public interface IProduct {
         CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product, String tokenUser)
                 throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> activate(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<ProductDTO>> list(String sku, String model, String tokenUser, String sort, String sortColumn, Integer pageNumber,
                               Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<Page<ProductDTO>> listFalse(String sku, String model, String tokenUser, String sort, String sortColumn, Integer pageNumber,
