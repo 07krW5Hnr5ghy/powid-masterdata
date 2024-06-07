@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.ProductPictureRepository;
 import com.proyect.masterdata.repository.ProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IFile;
 import com.proyect.masterdata.services.IProductPicture;
 import com.proyect.masterdata.utils.Constants;
@@ -33,6 +34,7 @@ public class ProductPictureImpl implements IProductPicture {
     private final IFile iFile;
     private final ProductPictureRepository productPictureRepository;
     private final ProductRepository productRepository;
+    private final IAudit iAudit;
     @Override
     public List<String> uploadPicture(List<MultipartFile> pictures, Long productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -81,6 +83,7 @@ public class ProductPictureImpl implements IProductPicture {
                 pictureUrlList.add(url);
                 pictureNumber++;
             }
+            iAudit.save("ADD_PRODUCT_PICTURE","ADD "+pictures.size()+" PRODUCT PICTURES.",user.getUsername());
             return pictureUrlList;
         }catch (RuntimeException | IOException e){
             log.error(e.getMessage());
@@ -139,6 +142,7 @@ public class ProductPictureImpl implements IProductPicture {
                     pictureUrlList.add(url);
                     pictureNumber++;
                 }
+                iAudit.save("ADD_PRODUCT_PICTURE","ADD "+pictures.size()+" PRODUCT PICTURES.",user.getUsername());
                 return pictureUrlList;
             }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
