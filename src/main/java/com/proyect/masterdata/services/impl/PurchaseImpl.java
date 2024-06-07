@@ -8,6 +8,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IPurchase;
 import com.proyect.masterdata.services.IPurchaseItem;
 import com.proyect.masterdata.utils.Constants;
@@ -33,6 +34,7 @@ public class PurchaseImpl implements IPurchase {
     private final PurchaseDocumentRepository purchaseDocumentRepository;
     private final SupplierRepository supplierRepository;
     private final SupplierProductRepository supplierProductRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestPurchase requestPurchase) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -88,6 +90,7 @@ public class PurchaseImpl implements IPurchase {
             for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getPurchaseItemsList()){
                 iPurchaseItem.save(newPurchase.getId(),requestPurchaseItem,user.getUsername());
             }
+            iAudit.save("ADD_PURCHASE","ADD PURCHASE "+newPurchase.getSerial()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -154,6 +157,7 @@ public class PurchaseImpl implements IPurchase {
                 for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getPurchaseItemsList()){
                     iPurchaseItem.saveAsync(newPurchase.getId(),requestPurchaseItem,user.getUsername());
                 }
+                iAudit.save("ADD_PURCHASE","ADD PURCHASE "+newPurchase.getSerial()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
