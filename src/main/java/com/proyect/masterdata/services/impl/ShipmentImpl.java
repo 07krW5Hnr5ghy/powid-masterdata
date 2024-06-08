@@ -40,7 +40,7 @@ public class ShipmentImpl implements IShipment {
     private final ShipmentRepositoryCustom shipmentRepositoryCustom;
     private final SupplierProductRepository supplierProductRepository;
     private final StockReturnRepository stockReturnRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -53,9 +53,7 @@ public class ShipmentImpl implements IShipment {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
             warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipment.getWarehouse().toUpperCase());
-            shipment = shipmentRepository.findByPurchaseSerialAndShipmentTypeId(requestShipment.getPurchaseSerial().toUpperCase(),shipmentType.getId());
             purchase = purchaseRepository.findBySerialAndStatusTrue(requestShipment.getPurchaseSerial().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -74,16 +72,20 @@ public class ShipmentImpl implements IShipment {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
-        if (shipment != null) {
-            throw new BadRequestExceptions(Constants.ErrorShipmentExists);
-        }
-
         if(purchase == null){
             throw new BadRequestExceptions(Constants.ErrorPurchase);
+        }else {
+            shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
         }
 
         if(shipmentType == null){
             throw new BadRequestExceptions(Constants.ErrorShipmentType);
+        }else{
+            shipment = shipmentRepository.findByPurchaseSerialAndShipmentTypeId(requestShipment.getPurchaseSerial().toUpperCase(),shipmentType.getId());
+        }
+
+        if (shipment != null) {
+            throw new BadRequestExceptions(Constants.ErrorShipmentExists);
         }
 
         try{
@@ -129,6 +131,7 @@ public class ShipmentImpl implements IShipment {
                   iWarehouseStock.in(warehouse,supplierProduct,requestShipmentItem.getQuantity(),user);
                   iGeneralStock.in(requestShipmentItem.getSupplierProductSerial(),requestShipmentItem.getQuantity(),user.getUsername());
             }
+            iAudit.save("ADD_SHIPMENT","ADD SHIPMENT FOR PURCHASE "+newShipment.getPurchaseSerial()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -228,6 +231,7 @@ public class ShipmentImpl implements IShipment {
                     iWarehouseStock.in(warehouse,supplierProduct,requestShipmentItem.getQuantity(),user);
                     iGeneralStock.in(requestShipmentItem.getSupplierProductSerial(),requestShipmentItem.getQuantity(),user.getUsername());
                 }
+                iAudit.save("ADD_SHIPMENT","ADD SHIPMENT FOR PURCHASE "+newShipment.getPurchaseSerial()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

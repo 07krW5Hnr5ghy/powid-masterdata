@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.Shipment;
 import com.proyect.masterdata.domain.ShipmentItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.dto.ShipmentItemDTO;
@@ -19,6 +20,8 @@ public interface IShipmentItem {
             throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ShipmentItem> saveAsync(Shipment shipment, Purchase purchase, String warehouse, RequestShipmentItem requestShipmentItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(String purchaseSerial, String supplierProduct, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(String purchaseSerial, String supplierProduct, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<ShipmentItemDTO>> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn,
                                Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<List<ShipmentItemDTO>> listShipmentItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;

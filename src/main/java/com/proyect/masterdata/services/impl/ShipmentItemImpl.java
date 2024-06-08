@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -37,7 +40,7 @@ public class ShipmentItemImpl implements IShipmentItem {
     private final ShipmentRepository shipmentRepository;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
-
+    private final IAudit iAudit;
     @Override
     public ShipmentItem save(Shipment shipment,Purchase purchase, String warehouse, RequestShipmentItem requestShipmentItem,
             String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -94,7 +97,7 @@ public class ShipmentItemImpl implements IShipmentItem {
 
             iWarehouseStock.in(shipment.getWarehouse(),supplierProduct, requestShipmentItem.getQuantity(), user);
             iGeneralStock.in(supplierProduct.getSerial(), requestShipmentItem.getQuantity(), user.getUsername());
-
+            iAudit.save("ADD_SHIPMENT_ITEM","ADD SHIPMENT ITEM "+newShipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+newShipmentItem.getShipment().getPurchaseSerial()+".",user.getUsername());
             return newShipmentItem;
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -157,8 +160,120 @@ public class ShipmentItemImpl implements IShipmentItem {
 
                 iWarehouseStock.in(shipment.getWarehouse(),supplierProduct, requestShipmentItem.getQuantity(), user);
                 iGeneralStock.in(supplierProduct.getSerial(), requestShipmentItem.getQuantity(), user.getUsername());
-
+                iAudit.save("ADD_SHIPMENT_ITEM","ADD SHIPMENT ITEM "+newShipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+newShipmentItem.getShipment().getPurchaseSerial()+".",user.getUsername());
                 return newShipmentItem;
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(String purchaseSerial, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplierProduct supplierProduct;
+            Shipment shipment;
+            ShipmentItem shipmentItem;
+            PurchaseItem purchaseItem;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                shipment = shipmentRepository.findByPurchaseSerial(purchaseSerial.toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }else {
+                shipmentItem = shipmentItemRepository.findByShipmentIdAndSupplierProductId(shipment.getId(),supplierProduct.getId());
+            }
+
+            if (shipmentItem == null) {
+                throw new BadRequestExceptions(Constants.ErrorShipmentExists);
+            }else {
+                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(shipment.getPurchase().getId(),supplierProduct.getId());
+            }
+
+            if(purchaseItem == null){
+                throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
+            }
+
+            try {
+                shipmentItem.setStatus(false);
+                shipmentItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                shipmentItem.setTokenUser(user.getUsername());
+                iWarehouseStock.out(shipment.getWarehouse(),supplierProduct, shipmentItem.getQuantity(), user);
+                iGeneralStock.out(supplierProduct.getSerial(), shipmentItem.getQuantity(), user.getUsername());
+                iAudit.save("DELETE_SHIPMENT_ITEM","DELETE SHIPMENT ITEM "+shipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+shipmentItem.getShipment().getPurchaseSerial()+".",user.getUsername());
+                return ResponseDelete.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String purchaseSerial, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplierProduct supplierProduct;
+            Shipment shipment;
+            ShipmentItem shipmentItem;
+            PurchaseItem purchaseItem;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                shipment = shipmentRepository.findByPurchaseSerial(purchaseSerial.toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }else {
+                shipmentItem = shipmentItemRepository.findByShipmentIdAndSupplierProductId(shipment.getId(),supplierProduct.getId());
+            }
+
+            if (shipmentItem == null) {
+                throw new BadRequestExceptions(Constants.ErrorShipmentExists);
+            }else {
+                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(shipment.getPurchase().getId(),supplierProduct.getId());
+            }
+
+            if(purchaseItem == null){
+                throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
+            }
+
+            try {
+                shipmentItem.setStatus(true);
+                shipmentItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                shipmentItem.setTokenUser(user.getUsername());
+                iWarehouseStock.in(shipment.getWarehouse(),supplierProduct, shipmentItem.getQuantity(), user);
+                iGeneralStock.in(supplierProduct.getSerial(), shipmentItem.getQuantity(), user.getUsername());
+                iAudit.save("ACTIVATE_SHIPMENT_ITEM","ACTIVATE SHIPMENT ITEM "+shipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+shipmentItem.getShipment().getPurchaseSerial()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
