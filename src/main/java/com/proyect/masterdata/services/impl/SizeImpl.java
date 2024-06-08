@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Size;
 import com.proyect.masterdata.domain.SizeType;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.SizeDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -41,12 +42,12 @@ public class SizeImpl implements ISize {
     @Override
     public ResponseSuccess save(String name, String sizeType, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
+        User user;
         boolean existsSize;
         SizeType sizeTypeData;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsSize = sizeRepository.existsByName(name.toUpperCase());
             sizeTypeData = sizeTypeRepository.findByName(sizeType.toUpperCase());
         } catch (RuntimeException e) {
@@ -54,16 +55,16 @@ public class SizeImpl implements ISize {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+        if (user==null) {
+            throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (existsSize) {
-            throw new BadRequestExceptions(Constants.ErrorSizeExists.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorSizeExists);
         }
 
         if (sizeTypeData == null) {
-            throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
+            throw new BadRequestExceptions(Constants.ErrorSizeType);
         }
 
         try {
@@ -88,12 +89,12 @@ public class SizeImpl implements ISize {
     @Override
     public CompletableFuture<ResponseSuccess> saveAsync(String name, String sizeType, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             boolean existsSize;
             SizeType sizeTypeData;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 existsSize = sizeRepository.existsByName(name.toUpperCase());
                 sizeTypeData = sizeTypeRepository.findByName(sizeType.toUpperCase());
             } catch (RuntimeException e) {
@@ -101,16 +102,16 @@ public class SizeImpl implements ISize {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
-                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
             if (existsSize) {
-                throw new BadRequestExceptions(Constants.ErrorSizeExists.toUpperCase());
+                throw new BadRequestExceptions(Constants.ErrorSizeExists);
             }
 
             if (sizeTypeData == null) {
-                throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
+                throw new BadRequestExceptions(Constants.ErrorSizeType);
             }
 
             try {
@@ -134,60 +135,52 @@ public class SizeImpl implements ISize {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String sizeType, String tokenUser)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
-        SizeType sizeTypeData;
-        List<Size> sizes;
+    @Transactional
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Size size;
 
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            sizeTypeData = sizeTypeRepository.findByNameAndStatusTrue(sizeType.toUpperCase());
-            sizes = sizeRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                size = sizeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (sizeTypeData == null) {
-            throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
-        }
-        if (!sizes.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorSizeList.toUpperCase());
-        }
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (size == null) {
+                throw new BadRequestExceptions(Constants.ErrorSize.toUpperCase());
+            }
 
-        try {
-            List<Size> sizeSaves = names.stream().map(data -> Size.builder()
-                    .tokenUser(tokenUser.toUpperCase())
-                    .sizeType(sizeTypeData)
-                    .sizeTypeId(sizeTypeData.getId())
-                    .name(data.toUpperCase())
-                    .status(true)
-                    .build()).toList();
-            sizeRepository.saveAll(sizeSaves);
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                size.setStatus(false);
+                size.setUpdateDate(new Date(System.currentTimeMillis()));
+                size.setTokenUser(user.getUsername());
+                sizeRepository.save(size);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    @Transactional
-    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             boolean existsUser;
             Size size;
 
             try {
                 existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                size = sizeRepository.findByNameAndStatusTrue(name.toUpperCase());
+                size = sizeRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -201,12 +194,12 @@ public class SizeImpl implements ISize {
             }
 
             try {
-                size.setStatus(false);
+                size.setStatus(true);
                 size.setUpdateDate(new Date(System.currentTimeMillis()));
                 sizeRepository.save(size);
-                return ResponseDelete.builder()
+                return ResponseSuccess.builder()
                         .code(200)
-                        .message(Constants.delete)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e);

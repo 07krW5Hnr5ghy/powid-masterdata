@@ -15,9 +15,8 @@ public interface ISize {
                         throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(String name, String sizeType, String tokenUser)
                 throws BadRequestExceptions, InternalErrorExceptions;
-        ResponseSuccess saveAll(List<String> names, String sizeType, String tokenUser)
-                        throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+        CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<List<SizeDTO>> listSize() throws BadRequestExceptions;
         CompletableFuture<Page<SizeDTO>> list(String name, String user, String sort,
                         String sortColumn,
