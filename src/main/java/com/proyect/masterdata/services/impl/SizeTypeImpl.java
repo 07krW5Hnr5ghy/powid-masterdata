@@ -11,6 +11,7 @@ import com.proyect.masterdata.mapper.SizeTypeMapper;
 import com.proyect.masterdata.repository.SizeTypeRepository;
 import com.proyect.masterdata.repository.SizeTypeRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ISizeType;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class SizeTypeImpl implements ISizeType {
     private final SizeTypeMapper sizeTypeMapper;
     private final UserRepository userRepository;
     private final SizeTypeRepositoryCustom sizeTypeRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
@@ -56,12 +57,13 @@ public class SizeTypeImpl implements ISizeType {
         }
 
         try {
-            sizeTypeRepository.save(SizeType.builder()
+            SizeType newSizeType = sizeTypeRepository.save(SizeType.builder()
                     .name(name.toUpperCase())
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
+            iAudit.save("ADD_SIZE_TYPE","ADD SIZE TYPE "+newSizeType.getName()+".",datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -94,12 +96,13 @@ public class SizeTypeImpl implements ISizeType {
             }
 
             try {
-                sizeTypeRepository.save(SizeType.builder()
+                SizeType newSizeType = sizeTypeRepository.save(SizeType.builder()
                         .name(name.toUpperCase())
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
+                iAudit.save("ADD_SIZE_TYPE","ADD SIZE TYPE "+newSizeType.getName()+".",datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -112,54 +115,14 @@ public class SizeTypeImpl implements ISizeType {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String tokenUser)
-            throws BadRequestExceptions, InternalErrorExceptions {
-
-        User datauser;
-        List<SizeType> sizeTypes;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            sizeTypes = sizeTypeRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!sizeTypes.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorSizeTypeList.toUpperCase());
-        }
-
-        try {
-            List<SizeType> sizeTypeSaves = names.stream().map(data -> SizeType.builder()
-                    .name(data.toUpperCase())
-                    .tokenUser(tokenUser.toUpperCase())
-                    .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .build()).toList();
-            sizeTypeRepository.saveAll(sizeTypeSaves);
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
     @Transactional
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User datauser;
             SizeType sizeType;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 sizeType = sizeTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
@@ -176,10 +139,50 @@ public class SizeTypeImpl implements ISizeType {
             try {
                 sizeType.setStatus(false);
                 sizeType.setUpdateDate(new Date(System.currentTimeMillis()));
+                sizeType.setTokenUser(datauser.getUsername());
                 sizeTypeRepository.save(sizeType);
+                iAudit.save("DELETE_SIZE_TYPE","DELETE SIZE TYPE "+sizeType.getName()+".",datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            SizeType sizeType;
+
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                sizeType = sizeTypeRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (sizeType == null) {
+                throw new BadRequestExceptions(Constants.ErrorSizeType.toUpperCase());
+            }
+
+            try {
+                sizeType.setStatus(true);
+                sizeType.setUpdateDate(new Date(System.currentTimeMillis()));
+                sizeType.setTokenUser(datauser.getUsername());
+                sizeTypeRepository.save(sizeType);
+                iAudit.save("ACTIVATE_SIZE_TYPE","ACTIVATE SIZE TYPE "+sizeType.getName()+".",datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e);

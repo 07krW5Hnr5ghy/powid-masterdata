@@ -13,8 +13,8 @@ import java.util.concurrent.CompletableFuture;
 public interface ISizeType {
     ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    ResponseSuccess saveAll(List<String> name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions;
 
     CompletableFuture<Page<SizeTypeDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
