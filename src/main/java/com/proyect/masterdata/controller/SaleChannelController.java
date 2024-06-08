@@ -33,15 +33,7 @@ public class SaleChannelController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping(value = "sale-channels", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<String> names, @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iSaleChannel.saveAll(names, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("tokenUser") String tokenUser,
@@ -77,6 +69,15 @@ public class SaleChannelController {
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<SaleChannelDTO>> result = iSaleChannel.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @PostMapping("activate")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_DELETE')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestParam("user") String user) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iSaleChannel.activate(tokenUser, user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

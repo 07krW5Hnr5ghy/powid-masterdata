@@ -6,6 +6,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ISale;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class SaleImpl implements ISale {
     private final SaleChannelRepository saleChannelRepository;
     private final ManagementTypeRepository managementTypeRepository;
     private final SaleRepository saleRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestSale requestSale, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -67,6 +69,7 @@ public class SaleImpl implements ISale {
                             .seller(requestSale.getSeller().toUpperCase())
                             .tokenUser(user.getUsername())
                     .build());
+            iAudit.save("ADD_SALE","ADD SALE FOR ORDER "+ordering.getId()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -118,6 +121,7 @@ public class SaleImpl implements ISale {
                         .seller(requestSale.getSeller().toUpperCase())
                         .tokenUser(user.getUsername())
                         .build());
+                iAudit.save("ADD_SALE","ADD SALE FOR ORDER "+ordering.getId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
