@@ -10,5 +10,6 @@ import java.util.List;
 public interface ShipmentTypeRepository extends JpaRepository<ShipmentType,Long> {
     ShipmentType findByName(String name);
     ShipmentType findByNameAndStatusTrue(String name);
+    ShipmentType findByNameAndStatusFalse(String name);
     List<ShipmentType> findAllByStatusTrue();
 }

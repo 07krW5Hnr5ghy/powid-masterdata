@@ -198,7 +198,7 @@ public class ShipmentItemImpl implements IShipmentItem {
             }
 
             if (shipmentItem == null) {
-                throw new BadRequestExceptions(Constants.ErrorShipmentExists);
+                throw new BadRequestExceptions(Constants.ErrorShipment);
             }else {
                 purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(shipment.getPurchase().getId(),supplierProduct.getId());
             }
@@ -254,7 +254,7 @@ public class ShipmentItemImpl implements IShipmentItem {
             }
 
             if (shipmentItem == null) {
-                throw new BadRequestExceptions(Constants.ErrorShipmentExists);
+                throw new BadRequestExceptions(Constants.ErrorShipment);
             }else {
                 purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(shipment.getPurchase().getId(),supplierProduct.getId());
             }

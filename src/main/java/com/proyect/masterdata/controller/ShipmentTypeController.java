@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IShipmentType;
@@ -29,6 +30,26 @@ public class ShipmentTypeController {
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iShipmentType.saveAsync(name,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SHIPMENT_TYPE_POST')")
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iShipmentType.delete(name,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @PostMapping("activate")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SHIPMENT_TYPE_POST')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iShipmentType.activate(name,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
