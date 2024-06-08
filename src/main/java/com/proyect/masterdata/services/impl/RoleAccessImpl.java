@@ -7,6 +7,7 @@ import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.RoleAccessDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.utils.Constants;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -34,6 +35,7 @@ public class RoleAccessImpl implements IRoleAccess {
     private final RoleAccessRepository roleAccessRepository;
     private final UserRepository userRepository;
     private final RoleAccessRepositoryCustom roleAccessRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String roleName, String accessName, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -69,19 +71,23 @@ public class RoleAccessImpl implements IRoleAccess {
         }
 
         try {
-            roleAccessRepository.save(RoleAccess.builder()
+            RoleAccess newRoleAccess = roleAccessRepository.save(RoleAccess.builder()
                             .accessId(access.getId())
                             .roleId(role.getId())
+                            .role(role)
+                            .access(access)
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .tokenUser(tokenUser.toUpperCase())
                             .status(true)
                     .build());
+            iAudit.save("ADD_ROLE_ACCESS","ADD ROLE ACCESS WITH ROLE "+newRoleAccess.getRole().getName()+" AND ACCESS "+newRoleAccess.getAccess().getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -122,14 +128,17 @@ public class RoleAccessImpl implements IRoleAccess {
             }
 
             try {
-                roleAccessRepository.save(RoleAccess.builder()
+                RoleAccess newRoleAccess = roleAccessRepository.save(RoleAccess.builder()
                         .accessId(access.getId())
                         .roleId(role.getId())
+                                .role(role)
+                                .access(access)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .status(true)
                         .build());
+                iAudit.save("ADD_ROLE_ACCESS","ADD ROLE ACCESS WITH ROLE "+newRoleAccess.getRole().getName()+" AND ACCESS "+newRoleAccess.getAccess().getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -180,6 +189,7 @@ public class RoleAccessImpl implements IRoleAccess {
                 roleAccess.setUpdateDate(new Date(System.currentTimeMillis()));
                 roleAccess.setTokenUser(user.getUsername());
                 roleAccessRepository.save(roleAccess);
+                iAudit.save("DELETE_ROLE_ACCESS","DELETE ROLE ACCESS WITH ROLE "+roleAccess.getRole().getName()+" AND ACCESS "+roleAccess.getAccess().getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -296,6 +306,7 @@ public class RoleAccessImpl implements IRoleAccess {
                 roleAccess.setUpdateDate(new Date(System.currentTimeMillis()));
                 roleAccess.setTokenUser(user.getUsername());
                 roleAccessRepository.save(roleAccess);
+                iAudit.save("ACTIVATE_ROLE_ACCESS","ACTIVATE ROLE ACCESS WITH ROLE "+roleAccess.getRole().getName()+" AND ACCESS "+roleAccess.getAccess().getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

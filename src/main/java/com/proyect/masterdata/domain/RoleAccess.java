@@ -4,12 +4,7 @@ import java.util.Date;
 
 import com.proyect.masterdata.utils.Constants;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,4 +43,12 @@ public class RoleAccess {
 
     @Column(name = "status")
     private Boolean status;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", columnDefinition = "roleId", insertable = false, updatable = false)
+    private Role role;
+
+    @ManyToOne
+    @JoinColumn(name = "access_id", columnDefinition = "accessId", insertable = false, updatable = false)
+    private Access access;
 }
