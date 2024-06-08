@@ -11,6 +11,7 @@ import com.proyect.masterdata.mapper.RoleMapper;
 import com.proyect.masterdata.repository.RoleRepository;
 import com.proyect.masterdata.repository.RoleRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IRole;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class RoleImpl implements IRole {
     private final RoleMapper roleMapper;
     private final UserRepository userRepository;
     private final RoleRepositoryCustom roleRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
@@ -55,13 +56,12 @@ public class RoleImpl implements IRole {
         }
 
         try {
-
-            roleRepository.save(Role.builder()
+            Role newRole = roleRepository.save(Role.builder()
                     .name(name.toUpperCase())
                     .status(true)
                     .tokenUser(datauser.getUsername().toUpperCase())
                     .build());
-
+            iAudit.save("ADD_ROLE","ADD ROLE "+newRole.getName()+".",datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -95,13 +95,12 @@ public class RoleImpl implements IRole {
             }
 
             try {
-
-                roleRepository.save(Role.builder()
+                Role newRole = roleRepository.save(Role.builder()
                         .name(name.toUpperCase())
                         .status(true)
                         .tokenUser(datauser.getUsername().toUpperCase())
                         .build());
-
+                iAudit.save("ADD_ROLE","ADD ROLE "+newRole.getName()+".",datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -112,48 +111,6 @@ public class RoleImpl implements IRole {
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
             }
         });
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<String> names, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        List<Role> roles;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            roles = roleRepository.findRoleByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!roles.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorRoleList.toUpperCase());
-        }
-
-        try {
-
-            List<Role> roleSaves = names.stream().map(data -> Role.builder()
-                    .tokenUser(user.toUpperCase())
-                    .name(data.toUpperCase())
-                    .status(true)
-                    .build()).toList();
-
-            roleRepository.saveAll(roleSaves);
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
     }
 
     @Override
@@ -182,6 +139,7 @@ public class RoleImpl implements IRole {
                 role.setStatus(false);
                 role.setRegistrationDate(new Date(System.currentTimeMillis()));
                 roleRepository.save(role);
+                iAudit.save("DELETE_ROLE","DELETE ROLE "+role.getName()+".",datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -265,6 +223,7 @@ public class RoleImpl implements IRole {
                 role.setStatus(true);
                 role.setRegistrationDate(new Date(System.currentTimeMillis()));
                 roleRepository.save(role);
+                iAudit.save("ACTIVATE_ROLE","ACTIVATE ROLE "+role.getName()+".",datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

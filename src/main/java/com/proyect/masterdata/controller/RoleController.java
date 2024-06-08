@@ -36,15 +36,6 @@ public class RoleController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping(value = "roles", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<String> names,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iRole.saveAll(names, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
@@ -80,7 +71,7 @@ public class RoleController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("activate")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_PUT')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,

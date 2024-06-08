@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture;
 public interface IRole {
         ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
-        ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<Page<RoleDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize)
