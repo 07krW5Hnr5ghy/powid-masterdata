@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface SupplierTypeRepository extends JpaRepository<SupplierType,Long> {
     SupplierType findByNameAndStatusTrue(String name);
+    SupplierType findByNameAndStatusFalse(String name);
     List<SupplierType> findAllByStatusTrue();
 }

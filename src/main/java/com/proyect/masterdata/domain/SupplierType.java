@@ -28,11 +28,14 @@ public class SupplierType {
     @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "registrationDate")
+    @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
 
-    @Column(name = "updateDate")
+    @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
+
+    @Column(name="token_user")
+    private String tokenUser;
 }
