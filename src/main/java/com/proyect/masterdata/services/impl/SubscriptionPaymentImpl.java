@@ -8,6 +8,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IMembershipPayment;
 import com.proyect.masterdata.services.IMercadoPagoPayment;
 import com.proyect.masterdata.services.ISubscriptionPayment;
@@ -17,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -32,6 +34,8 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
     private final MembershipStateRepository membershipStateRepository;
     private final MembershipRepository membershipRepository;
     private final IMembershipPayment iMembershipPayment;
+    private final IAudit iAudit;
+    private final PaymentGatewayRepository paymentGatewayRepository;
     @Override
     public CompletableFuture<String> send(RequestSubscriptionPayment requestSubscriptionPayment, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -76,6 +80,8 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
                             discount;
                 }
 
+                iAudit.save("SEND_SUBSCRIPTION_PAYMENT","SEND SUBSCRIPTION PAYMENT FOR SUBSCRIPTION "+subscription.getName()+".",user.getUsername());
+
                 return iMercadoPagoPayment.sendPayment(netAmount,subscription,requestSubscriptionPayment.getModules(),user).get();
 
             }catch (RuntimeException e){
@@ -92,9 +98,11 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Membership demoMembership;
+            PaymentGateway paymentGateway;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                paymentGateway = paymentGatewayRepository.findByNameAndStatusTrue("DEMO");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -104,6 +112,10 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else {
                 demoMembership = membershipRepository.findByClientIdAndDemoTrue(user.getClientId());
+            }
+
+            if(paymentGateway==null){
+                throw new BadRequestExceptions(Constants.ErrorPaymentGateway);
             }
 
             if(demoMembership != null){
@@ -131,6 +143,7 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
                         .netAmount(0.00)
                         .taxAmount(0.00)
                         .build(), user.getUsername());
+                iAudit.save("ACTIVATE_DEMO_ACCOUNT","ACTIVATE DEMO ACCOUNT FOR CLIENT WITH RUT "+user.getClient().getRuc()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

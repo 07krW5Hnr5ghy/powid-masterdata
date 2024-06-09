@@ -49,6 +49,9 @@ public class MembershipPayment {
         @Column(name = "client_id")
         private Long clientId;
 
+        @Column(name="token_user")
+        private String tokenUser;
+
         @ManyToOne()
         @JoinColumn(name = "payment_gateway_id",columnDefinition = "paymentGatewayId",insertable = false,updatable = false)
         private PaymentGateway paymentGateway;
