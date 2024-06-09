@@ -1,6 +1,9 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.StockReplenishmentItemDTO;
+import com.proyect.masterdata.dto.request.RequestStockReplenishmentItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IStockReplenishmentItem;
 import lombok.AllArgsConstructor;
@@ -33,6 +36,43 @@ public class StockReplenishmentItemController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<StockReplenishmentItemDTO>> result = iStockReplenishmentItem.list(user,orderId,productSku,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PostMapping()
+    public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestBody()RequestStockReplenishmentItem requestStockReplenishmentItem
+            ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iStockReplenishmentItem.add(orderId,requestStockReplenishmentItem,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @DeleteMapping()
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("productSku") String productSku,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iStockReplenishmentItem.delete(orderId,productSku,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @PutMapping()
+    public ResponseEntity<ResponseSuccess> update(
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("productSku") String productSku,
+            @RequestParam("quantity") Integer quantity,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iStockReplenishmentItem.update(orderId,productSku,quantity,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("productSku") String productSku,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iStockReplenishmentItem.activate(orderId,productSku,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_ITEM_GET')")

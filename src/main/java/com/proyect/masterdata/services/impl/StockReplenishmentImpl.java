@@ -7,6 +7,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStockReplenishment;
 import com.proyect.masterdata.services.IStockReplenishmentItem;
 import com.proyect.masterdata.utils.Constants;
@@ -32,6 +33,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
     private final ProductRepository productRepository;
     private final IStockReplenishmentItem iStockReplenishmentItem;
     private final StockReplenishmentRepositoryCustom stockReplenishmentRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(Long orderId, List<RequestStockReplenishmentItem> requestStockReplenishmentItems, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -91,6 +93,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
                 OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
                 iStockReplenishmentItem.save(orderItem,requestStockReplenishmentItem,user,newStockReplenishment);
             }
+            iAudit.save("ADD_STOCK_REPLENISHMENT","ADD STOCK REPLENISHMENT FOR ORDER "+newStockReplenishment.getOrderId()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -160,6 +163,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
                     OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
                     iStockReplenishmentItem.save(orderItem,requestStockReplenishmentItem,user,newStockReplenishment);
                 }
+                iAudit.save("ADD_STOCK_REPLENISHMENT","ADD STOCK REPLENISHMENT FOR ORDER "+newStockReplenishment.getOrderId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

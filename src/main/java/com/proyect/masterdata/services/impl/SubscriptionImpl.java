@@ -1,5 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -120,6 +122,39 @@ public class SubscriptionImpl implements ISubscription {
                         .message(Constants.register)
                         .build();
             } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Subscription subscription;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                subscription = subscriptionRepository.findByNameAndStatusTrue(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(subscription==null){
+                throw new BadRequestExceptions(Constants.ErrorSubscription);
+            }
+            try {
+                subscription.setStatus(false);
+                subscription.setUpdateDate(new Date(System.currentTimeMillis()));
+                subscription.setTokenUser(user.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
