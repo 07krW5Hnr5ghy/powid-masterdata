@@ -252,6 +252,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_SIZE_TYPE","ADMIN1");
                         iAuditEvent.save("ACTIVATE_STOCK_REPLENISHMENT_ITEM","ADMIN1");
                         iAuditEvent.save("ACTIVATE_STOCK_TRANSACTION_TYPE","ADMIN1");
+                        iAuditEvent.save("ACTIVATE_STORE","ADMIN1");
                         iAuditEvent.save("ADD_ACCESS","ADMIN1");
                         iAuditEvent.save("ADD_BRAND","ADMIN1");
                         iAuditEvent.save("ADD_CANCELLATION_REASON","ADMIN1");
@@ -318,6 +319,8 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_STOCK_TRANSACTION_ITEM","ADMIN1");
                         iAuditEvent.save("ADD_STOCK_TRANSACTION_TYPE","ADMIN1");
                         iAuditEvent.save("ADD_STOCK_TRANSFER","ADMIN1");
+                        iAuditEvent.save("ADD_STOCK_TRANSFER_ITEM","ADMIN1");
+                        iAuditEvent.save("ADD_STORE","ADMIN1");
                         iAuditEvent.save("ADD_USER","ADMIN1");
                         iAuditEvent.save("DELETE_ACCESS","ADMIN1");
                         iAuditEvent.save("DELETE_BRAND","ADMIN1");
@@ -360,6 +363,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_SIZE_TYPE","ADMIN1");
                         iAuditEvent.save("DELETE_STOCK_REPLENISMENT_ITEM","ADMIN1");
                         iAuditEvent.save("DELETE_STOCK_TRANSACTION_TYPE","ADMIN1");
+                        iAuditEvent.save("DELETE_STORE","ADMIN1");
                         iAuditEvent.save("DELETE_USER","ADMIN1");
                         iAuditEvent.save("LOG_IN","ADMIN1");
                         iAuditEvent.save("LOG_OUT","ADMIN1");
@@ -375,6 +379,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("UPDATE_ORDER_RETURN_ITEM","ADMIN1");
                         iAuditEvent.save("UPDATE_ORDER_STOCK_ITEM","ADMIN1");
                         iAuditEvent.save("UPDATE_STOCK_REPLENISHMENT_ITEM","ADMIN1");
+                        iAuditEvent.save("UPDATE_STORE","ADMIN1");
                         // supplier types
                         iSupplierType.save("INTERNO","ADMIN1");
                         iSupplierType.save("DISTRIBUIDOR","ADMIN1");

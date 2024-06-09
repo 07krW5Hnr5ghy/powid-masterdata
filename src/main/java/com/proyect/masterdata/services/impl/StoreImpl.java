@@ -17,6 +17,7 @@ import com.proyect.masterdata.repository.StoreRepositoryCustom;
 import com.proyect.masterdata.repository.StoreTypeRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStore;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class StoreImpl implements IStore {
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     private final StoreTypeRepository storeTypeRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestStoreSave requestStoreSave, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -75,7 +76,7 @@ public class StoreImpl implements IStore {
 
         try {
 
-            storeRepository.save(Store.builder()
+            Store newStore = storeRepository.save(Store.builder()
                     .name(requestStoreSave.getName().toUpperCase())
                     .url(requestStoreSave.getUrl())
                     .clientId(user.getClientId())
@@ -86,7 +87,7 @@ public class StoreImpl implements IStore {
                     .status(true)
                     .tokenUser(user.getUsername())
                     .build());
-
+            iAudit.save("ADD_STORE","ADD STORE "+newStore.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -129,7 +130,7 @@ public class StoreImpl implements IStore {
 
             try {
 
-                storeRepository.save(Store.builder()
+                Store newStore = storeRepository.save(Store.builder()
                         .name(requestStoreSave.getName().toUpperCase())
                         .url(requestStoreSave.getUrl())
                         .clientId(user.getClientId())
@@ -140,7 +141,7 @@ public class StoreImpl implements IStore {
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
-
+                iAudit.save("ADD_STORE","ADD STORE "+newStore.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -157,18 +158,18 @@ public class StoreImpl implements IStore {
     public CompletableFuture<StoreDTO> update(RequestStore requestStore)
             throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             Store store;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(requestStore.getTokenUser().toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(requestStore.getTokenUser().toUpperCase());
                 store = storeRepository.findByNameAndStatusTrue(requestStore.getName().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -181,7 +182,7 @@ public class StoreImpl implements IStore {
                 store.setUrl(requestStore.getUrl());
                 store.setTokenUser(requestStore.getTokenUser().toUpperCase());
                 store.setUpdateDate(new Date(System.currentTimeMillis()));
-
+                iAudit.save("UPDATE_STORE","UPDATE STORE "+store.getName()+".",user.getUsername());
                 return StoreDTO.builder()
                         .name(store.getName())
                         .url(store.getUrl())
@@ -197,20 +198,20 @@ public class StoreImpl implements IStore {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             Store store;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 store = storeRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -221,12 +222,51 @@ public class StoreImpl implements IStore {
             try {
                 store.setStatus(false);
                 store.setRegistrationDate(new Date(System.currentTimeMillis()));
-                store.setTokenUser(user.toUpperCase());
+                store.setTokenUser(user.getUsername());
                 storeRepository.save(store);
-
+                iAudit.save("DELETE_STORE","DELETE STORE "+store.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Store store;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                store = storeRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (store == null) {
+                throw new BadRequestExceptions(Constants.ErrorStore);
+            }
+
+            try {
+                store.setStatus(true);
+                store.setRegistrationDate(new Date(System.currentTimeMillis()));
+                store.setTokenUser(user.getUsername());
+                storeRepository.save(store);
+                iAudit.save("ACTIVATE_STORE","ACTIVATE STORE "+store.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e);
