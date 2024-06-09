@@ -18,6 +18,7 @@ public interface ISubscription {
     CompletableFuture<ResponseSuccess> saveAsync(String name, Integer months, Double discountPercent, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<SubscriptionDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<List<PlanDTO>> listPlans() throws InternalErrorExceptions;

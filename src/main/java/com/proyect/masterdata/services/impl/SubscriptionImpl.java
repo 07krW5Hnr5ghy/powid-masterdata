@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -35,28 +36,27 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Log4j2
 public class SubscriptionImpl implements ISubscription {
-
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final SubscriptionRepositoryCustom subscriptionRepositoryCustom;
     private final ModuleRepository moduleRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, Integer months, Double discountPercent, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
-        boolean existsUser;
+        User user;
         boolean existsSubscription;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsSubscription = subscriptionRepository.existsByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user==null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
@@ -65,7 +65,7 @@ public class SubscriptionImpl implements ISubscription {
         }
 
         try {
-            subscriptionRepository.save(Subscription.builder()
+            Subscription newSubscription = subscriptionRepository.save(Subscription.builder()
                     .name(name.toUpperCase())
                     .months(months)
                     .discountPercent(discountPercent)
@@ -73,7 +73,7 @@ public class SubscriptionImpl implements ISubscription {
                     .tokenUser(tokenUser.toUpperCase())
                     .status(true)
                     .build());
-
+            iAudit.save("ADD_SUBSCRIPTION","ADD SUBSCRIPTION "+newSubscription.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -88,18 +88,18 @@ public class SubscriptionImpl implements ISubscription {
     @Override
     public CompletableFuture<ResponseSuccess> saveAsync(String name, Integer months, Double discountPercent, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             boolean existsSubscription;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 existsSubscription = subscriptionRepository.existsByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -108,7 +108,7 @@ public class SubscriptionImpl implements ISubscription {
             }
 
             try {
-                subscriptionRepository.save(Subscription.builder()
+                Subscription newSubscription = subscriptionRepository.save(Subscription.builder()
                         .name(name.toUpperCase())
                         .months(months)
                         .discountPercent(discountPercent)
@@ -116,7 +116,7 @@ public class SubscriptionImpl implements ISubscription {
                         .tokenUser(tokenUser.toUpperCase())
                         .status(true)
                         .build());
-
+                iAudit.save("ADD_SUBSCRIPTION","ADD SUBSCRIPTION "+newSubscription.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -150,9 +150,44 @@ public class SubscriptionImpl implements ISubscription {
                 subscription.setStatus(false);
                 subscription.setUpdateDate(new Date(System.currentTimeMillis()));
                 subscription.setTokenUser(user.getUsername());
+                iAudit.save("DELETE_SUBSCRIPTION","DELETE SUBSCRIPTION "+subscription.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Subscription subscription;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                subscription = subscriptionRepository.findByNameAndStatusFalse(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(subscription==null){
+                throw new BadRequestExceptions(Constants.ErrorSubscription);
+            }
+            try {
+                subscription.setStatus(true);
+                subscription.setUpdateDate(new Date(System.currentTimeMillis()));
+                subscription.setTokenUser(user.getUsername());
+                iAudit.save("ACTIVATE_SUBSCRIPTION","ACTIVATE SUBSCRIPTION "+subscription.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
