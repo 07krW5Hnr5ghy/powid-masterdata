@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class SupplierImpl implements ISupplier {
     private final SupplierTypeRepository supplierTypeRepository;
     private final DistrictRepository districtRepository;
     private final CountryRepository countryRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestSupplier requestSupplier, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -82,7 +84,7 @@ public class SupplierImpl implements ISupplier {
         }
 
         try {
-            supplierRepository.save(Supplier.builder()
+            Supplier newSupplier = supplierRepository.save(Supplier.builder()
                     .businessName(requestSupplier.getBusinessName().toUpperCase())
                     .client(user.getClient())
                     .clientId(user.getClientId())
@@ -100,7 +102,7 @@ public class SupplierImpl implements ISupplier {
                     .districtId(district.getId())
                     .tokenUser(user.getUsername().toUpperCase())
                     .build());
-
+            iAudit.save("ADD_SUPPLIER","ADD SUPPLIER WITH RUC "+newSupplier.getRuc()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -159,7 +161,7 @@ public class SupplierImpl implements ISupplier {
             }
 
             try {
-                supplierRepository.save(Supplier.builder()
+                Supplier newSupplier = supplierRepository.save(Supplier.builder()
                         .businessName(requestSupplier.getBusinessName().toUpperCase())
                         .client(user.getClient())
                         .clientId(user.getClientId())
@@ -177,7 +179,7 @@ public class SupplierImpl implements ISupplier {
                         .districtId(district.getId())
                         .tokenUser(user.getUsername().toUpperCase())
                         .build());
-
+                iAudit.save("ADD_SUPPLIER","ADD SUPPLIER WITH RUC "+newSupplier.getRuc()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -215,11 +217,52 @@ public class SupplierImpl implements ISupplier {
             try {
                 supplier.setStatus(false);
                 supplier.setUpdateDate(new Date(System.currentTimeMillis()));
+                supplier.setTokenUser(user.getUsername());
                 supplierRepository.save(supplier);
-
+                iAudit.save("DELETE_SUPPLIER","DELETE SUPPLIER WITH RUC "+supplier.getRuc()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Supplier supplier;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }else {
+                supplier = supplierRepository.findByRucAndClientIdAndStatusFalse(ruc, user.getClientId());
+            }
+
+            if (supplier == null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }
+
+            try {
+                supplier.setStatus(true);
+                supplier.setUpdateDate(new Date(System.currentTimeMillis()));
+                supplier.setTokenUser(user.getUsername());
+                supplierRepository.save(supplier);
+                iAudit.save("ACTIVATE_SUPPLIER","ACTIVATE SUPPLIER WITH RUC "+supplier.getRuc()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e.getMessage());

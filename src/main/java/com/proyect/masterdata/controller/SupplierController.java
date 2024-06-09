@@ -54,6 +54,15 @@ public class SupplierController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
+    @PostMapping("activate")
+    //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_DELETE')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("ruc") String ruc,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iSupplier.activate(ruc, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:STOCK','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUPPLIER_GET')")
     public ResponseEntity<Page<SupplierDTO>> list(
