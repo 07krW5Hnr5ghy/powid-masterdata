@@ -10,6 +10,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStockTransaction;
 import com.proyect.masterdata.services.IStockTransactionItem;
 import com.proyect.masterdata.utils.Constants;
@@ -35,6 +36,7 @@ public class StockTransactionImpl implements IStockTransaction {
     private final StockTransactionTypeRepository stockTransactionTypeRepository;
     private final IStockTransactionItem iStockTransactionItem;
     private final StockTransactionRepositoryCustom stockTransactionRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public StockTransaction save(String serial, Warehouse warehouse, List<RequestStockTransactionItem> requestStockTransactionItemList,String stockTransactionType, User user) throws BadRequestExceptions, InternalErrorExceptions {
         StockTransaction stockTransaction;
@@ -77,7 +79,7 @@ public class StockTransactionImpl implements IStockTransaction {
             for(RequestStockTransactionItem requestStockTransactionItem : requestStockTransactionItemList){
                 iStockTransactionItem.save(newStockTransaction,requestStockTransactionItem,user.getUsername());
             }
-
+            iAudit.save("ADD_STOCK_TRANSACTION","ADD STOCK TRANSACTION "+newStockTransaction.getSerial()+".",user.getUsername());
             return newStockTransaction;
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -128,7 +130,7 @@ public class StockTransactionImpl implements IStockTransaction {
                 for(RequestStockTransactionItem requestStockTransactionItem : requestStockTransactionItemList){
                     iStockTransactionItem.save(newStockTransaction,requestStockTransactionItem,user.getUsername());
                 }
-
+                iAudit.save("ADD_STOCK_TRANSACTION","ADD STOCK TRANSACTION "+newStockTransaction.getSerial()+".",user.getUsername());
                 return newStockTransaction;
             }catch (RuntimeException e){
                 log.error(e.getMessage());

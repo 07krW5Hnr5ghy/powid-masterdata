@@ -40,6 +40,7 @@ public class StockReturnImpl implements IStockReturn {
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final IGeneralStock iGeneralStock;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestStockReturn requestStockReturn) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -124,7 +125,7 @@ public class StockReturnImpl implements IStockReturn {
             }
 
             iStockTransaction.save("SR"+newStockReturn.getId(),shipment.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-PROVEEDOR",user);
-
+            iAudit.save("ADD_STOCK_RETURN","ADD STOCK RETURN "+newStockReturn.getSerial()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -220,7 +221,7 @@ public class StockReturnImpl implements IStockReturn {
                 }
 
                 iStockTransaction.save("SR"+newStockReturn.getId(),shipment.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-PROVEEDOR",user);
-
+                iAudit.save("ADD_STOCK_RETURN","ADD STOCK RETURN "+newStockReturn.getSerial()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
