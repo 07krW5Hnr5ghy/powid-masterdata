@@ -10,5 +10,6 @@ import java.util.List;
 public interface UnitTypeRepository extends JpaRepository<UnitType,Long> {
     UnitType findByName(String name);
     UnitType findByNameAndStatusTrue(String name);
+    UnitType findByNameAndStatusFalse(String name);
     List<UnitType> findAllByStatusTrue();
 }

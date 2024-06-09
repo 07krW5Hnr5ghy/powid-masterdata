@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 public interface IUnitType {
     ResponseSuccess save(String name,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    ResponseSuccess saveAll(List<String> names, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<List<UnitTypeDTO>> listUnitType() throws BadRequestExceptions;
 }
