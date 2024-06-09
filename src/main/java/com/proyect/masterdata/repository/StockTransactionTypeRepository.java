@@ -10,10 +10,8 @@ import com.proyect.masterdata.domain.StockTransactionType;
 @Repository
 public interface StockTransactionTypeRepository extends JpaRepository<StockTransactionType, Long> {
     StockTransactionType findByName(String name);
-
     StockTransactionType findByNameAndStatusTrue(String name);
-
+    StockTransactionType findByNameAndStatusFalse(String name);
     List<StockTransactionType> findByNameIn(List<String> names);
-
     List<StockTransactionType> findAllByStatusTrue();
 }
