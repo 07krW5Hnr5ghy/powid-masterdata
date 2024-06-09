@@ -9,10 +9,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.IStockTransaction;
-import com.proyect.masterdata.services.IStockTransfer;
-import com.proyect.masterdata.services.IStockTransferItem;
-import com.proyect.masterdata.services.IWarehouseStock;
+import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -39,6 +36,7 @@ public class StockTransferImpl implements IStockTransfer {
     private final IStockTransaction iStockTransaction;
     private final IWarehouseStock iWarehouseStock;
     private final StockTransferRepositoryCustom stockTransferRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestStockTransfer requestStockTransfer,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -116,6 +114,7 @@ public class StockTransferImpl implements IStockTransfer {
 
             iStockTransaction.save("STO"+newStockTransfer.getId(),originWarehouse,requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
             iStockTransaction.save("STI"+newStockTransfer.getId(), destinationWarehouse, requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
+            iAudit.save("ADD_STOCK_TRANSFER","ADD STOCK TRANSFER "+newStockTransfer.getSerial()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -204,6 +203,7 @@ public class StockTransferImpl implements IStockTransfer {
 
                 iStockTransaction.save("STO"+newStockTransfer.getId(),originWarehouse,requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
                 iStockTransaction.save("STI"+newStockTransfer.getId(), destinationWarehouse, requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
+                iAudit.save("ADD_STOCK_TRANSFER","ADD STOCK TRANSFER "+newStockTransfer.getSerial()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

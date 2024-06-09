@@ -12,6 +12,7 @@ import com.proyect.masterdata.repository.StockTransferItemRepository;
 import com.proyect.masterdata.repository.StockTransferItemRepositoryCustom;
 import com.proyect.masterdata.repository.SupplierProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStockTransferItem;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +34,12 @@ public class StockTransferItemImpl implements IStockTransferItem {
     private final UserRepository userRepository;
     private final StockTransferItemRepositoryCustom stockTransferItemRepositoryCustom;
     private final SupplierProductRepository supplierProductRepository;
+    private final IAudit iAudit;
     @Override
     public StockTransferItem save(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions {
 
         try{
-            return stockTransferItemRepository.save(StockTransferItem.builder()
+            StockTransferItem newStockTransferItem = stockTransferItemRepository.save(StockTransferItem.builder()
                             .stockTransfer(stockTransfer)
                             .stockTransferId(stockTransfer.getId())
                             .client(user.getClient())
@@ -49,6 +51,8 @@ public class StockTransferItemImpl implements IStockTransferItem {
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                     .build());
+            iAudit.save("ADD_STOCK_TRANSFER_ITEM","ADD STOCK TRANSFER ITEM "+newStockTransferItem.getSupplierProduct().getSerial()+" FOR STOCK TRANSFER "+newStockTransferItem.getStockTransferId()+".", user.getUsername());
+            return newStockTransferItem;
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new BadRequestExceptions(Constants.InternalErrorExceptions);
@@ -59,7 +63,7 @@ public class StockTransferItemImpl implements IStockTransferItem {
     public CompletableFuture<StockTransferItem> saveAsync(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             try{
-                return stockTransferItemRepository.save(StockTransferItem.builder()
+                StockTransferItem newStockTransferItem = stockTransferItemRepository.save(StockTransferItem.builder()
                         .stockTransfer(stockTransfer)
                         .stockTransferId(stockTransfer.getId())
                         .client(user.getClient())
@@ -71,6 +75,8 @@ public class StockTransferItemImpl implements IStockTransferItem {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .build());
+                iAudit.save("ADD_STOCK_TRANSFER_ITEM","ADD STOCK TRANSFER ITEM "+newStockTransferItem.getSupplierProduct().getSerial()+" FOR STOCK TRANSFER "+newStockTransferItem.getStockTransferId()+".", user.getUsername());
+                return newStockTransferItem;
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
