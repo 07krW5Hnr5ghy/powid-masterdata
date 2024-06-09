@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     private final SupplierProductRepository supplierProductRepository;
     private final StockTransactionItemRepositoryCustom stockTransactionItemRepositoryCustom;
     private final StockTransactionRepository stockTransactionRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(StockTransaction stockTransaction,RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -57,7 +58,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
         }
 
         try {
-            stockTransactionItemRepository.save(StockTransactionItem.builder()
+            StockTransactionItem newStockTransactionItem = stockTransactionItemRepository.save(StockTransactionItem.builder()
                             .stockTransaction(stockTransaction)
                             .stockTransactionId(stockTransaction.getId())
                             .supplierProduct(supplierProduct)
@@ -68,7 +69,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                             .quantity(requestStockTransactionItem.getQuantity())
                             .tokenUser(user.getUsername())
                     .build());
-
+            iAudit.save("ADD_STOCK_TRANSACTION_ITEM","ADD STOCK TRANSACTION ITEM "+newStockTransactionItem.getSupplierProduct().getSerial()+" FOR STOCK TRANSACTION "+newStockTransactionItem.getStockTransactionId()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .message(Constants.register)
                     .code(200)
@@ -102,7 +103,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
             }
 
             try {
-                stockTransactionItemRepository.save(StockTransactionItem.builder()
+                StockTransactionItem newStockTransactionItem = stockTransactionItemRepository.save(StockTransactionItem.builder()
                         .stockTransaction(stockTransaction)
                         .stockTransactionId(stockTransaction.getId())
                         .supplierProduct(supplierProduct)
@@ -113,7 +114,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                         .quantity(requestStockTransactionItem.getQuantity())
                         .tokenUser(user.getUsername())
                         .build());
-
+                iAudit.save("ADD_STOCK_TRANSACTION_ITEM","ADD STOCK TRANSACTION ITEM "+newStockTransactionItem.getSupplierProduct().getSerial()+" FOR STOCK TRANSACTION "+newStockTransactionItem.getStockTransactionId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
