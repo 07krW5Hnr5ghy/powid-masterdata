@@ -33,7 +33,7 @@ public class UnitTypeController {
         CompletableFuture<ResponseSuccess> result = iUnitType.saveAsync(name, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    
+
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_TYPE_DELETE')")
     public ResponseEntity<ResponseDelete> delete(

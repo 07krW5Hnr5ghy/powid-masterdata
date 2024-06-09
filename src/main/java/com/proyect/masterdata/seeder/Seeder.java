@@ -261,6 +261,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_SUPPLIER_TYPE","ADMIN1");
                         iAuditEvent.save("ACTIVATE_UNIT","ADMIN1");
                         iAuditEvent.save("ACTIVATE_UNIT_TYPE","ADMIN1");
+                        iAuditEvent.save("ACTIVATE_USER","ADMIN1");
                         iAuditEvent.save("ADD_ACCESS","ADMIN1");
                         iAuditEvent.save("ADD_BRAND","ADMIN1");
                         iAuditEvent.save("ADD_CANCELLATION_REASON","ADMIN1");
@@ -403,6 +404,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("UPDATE_ORDER_STOCK_ITEM","ADMIN1");
                         iAuditEvent.save("UPDATE_STOCK_REPLENISHMENT_ITEM","ADMIN1");
                         iAuditEvent.save("UPDATE_STORE","ADMIN1");
+                        iAuditEvent.save("UPDATE_USER","ADMIN1");
                         // supplier types
                         iSupplierType.save("INTERNO","ADMIN1");
                         iSupplierType.save("DISTRIBUIDOR","ADMIN1");

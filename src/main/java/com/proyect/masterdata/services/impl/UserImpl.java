@@ -10,6 +10,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +37,11 @@ public class UserImpl implements IUser {
     private final ClientRepository clientRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
 
-        boolean existsUser;
+        User user;
         User tokenUser;
         boolean existsDni;
         boolean existsEmail;
@@ -49,7 +50,7 @@ public class UserImpl implements IUser {
         Role role;
 
         try {
-            existsUser = userRepository.existsByUsername(requestUser.getUser().toUpperCase());
+            user = userRepository.findByUsername(requestUser.getUser().toUpperCase());
             tokenUser = userRepository.findByUsernameAndStatusTrue(requestUser.getTokenUser().toUpperCase());
             existsDni = userRepository.existsByDni(requestUser.getDni());
             existsEmail = userRepository.existsByEmail(requestUser.getEmail());
@@ -61,7 +62,7 @@ public class UserImpl implements IUser {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (existsUser) {
+        if (user!=null) {
             throw new BadRequestExceptions(Constants.ErrorUserExist);
         }
 
@@ -114,7 +115,7 @@ public class UserImpl implements IUser {
                             .roleId(role.getId())
                             .tokenUser(tokenUser.getUsername())
                     .build());
-
+            iAudit.save("ADD_USER","ADD USER "+newUser.getUsername()+".",tokenUser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -128,7 +129,7 @@ public class UserImpl implements IUser {
     @Override
     public CompletableFuture<ResponseSuccess> saveAsync(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             User tokenUser;
             boolean existsDni;
             boolean existsEmail;
@@ -137,7 +138,7 @@ public class UserImpl implements IUser {
             Role role;
 
             try {
-                existsUser = userRepository.existsByUsername(requestUser.getUser().toUpperCase());
+                user = userRepository.findByUsername(requestUser.getUser().toUpperCase());
                 tokenUser = userRepository.findByUsernameAndStatusTrue(requestUser.getTokenUser().toUpperCase());
                 existsDni = userRepository.existsByDni(requestUser.getDni());
                 existsEmail = userRepository.existsByEmail(requestUser.getEmail());
@@ -149,7 +150,7 @@ public class UserImpl implements IUser {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (existsUser) {
+            if (user!=null) {
                 throw new BadRequestExceptions(Constants.ErrorUserExist);
             }
 
@@ -202,7 +203,7 @@ public class UserImpl implements IUser {
                         .roleId(role.getId())
                         .tokenUser(tokenUser.getUsername())
                         .build());
-
+                iAudit.save("ADD_USER","ADD USER "+newUser.getUsername()+".",tokenUser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -219,18 +220,18 @@ public class UserImpl implements IUser {
             throws BadRequestExceptions, InternalErrorExceptions {
 
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             User userData;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 userData = userRepository.findByUsernameAndStatusTrue(requestUserSave.getUser().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -249,6 +250,7 @@ public class UserImpl implements IUser {
                 userData.setPassword(requestUserSave.getPassword());
                 userData.setTokenUser(tokenUser.toUpperCase());
                 User updatedUser = userRepository.save(userData);
+                iAudit.save("UPDATE_USER","UPDATE USER "+updatedUser.getUsername()+".",user.getUsername());
                 return UserDTO.builder()
                         .username(updatedUser.getUsername().toUpperCase())
                         .name(updatedUser.getName().toUpperCase())
@@ -272,24 +274,31 @@ public class UserImpl implements IUser {
     @Override
     public CompletableFuture<ResponseDelete> delete(String username,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User dataUser;
+            User tokenUserData;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                dataUser = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                tokenUserData = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (dataUser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(tokenUserData==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
             try {
-                datauser.setUpdateDate(new Date(System.currentTimeMillis()));
-                datauser.setStatus(false);
-                datauser.setTokenUser(username.toUpperCase());
-                userRepository.save(datauser);
+                dataUser.setUpdateDate(new Date(System.currentTimeMillis()));
+                dataUser.setStatus(false);
+                dataUser.setTokenUser(username.toUpperCase());
+                userRepository.save(dataUser);
+                iAudit.save("DELETE_USER","DELETE USER "+dataUser.getUsername()+".",tokenUserData.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -384,17 +393,17 @@ public class UserImpl implements IUser {
     @Override
     public CompletableFuture<ResponseSuccess> activate(String username, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User dataUser;
             User tokenUserData;
             try {
-                datauser = userRepository.findByUsernameAndStatusFalse(username.toUpperCase());
+                dataUser = userRepository.findByUsernameAndStatusFalse(username.toUpperCase());
                 tokenUserData = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (dataUser == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -403,10 +412,11 @@ public class UserImpl implements IUser {
             }
 
             try {
-                datauser.setUpdateDate(new Date(System.currentTimeMillis()));
-                datauser.setStatus(true);
-                datauser.setTokenUser(tokenUserData.getUsername());
-                userRepository.save(datauser);
+                dataUser.setUpdateDate(new Date(System.currentTimeMillis()));
+                dataUser.setStatus(true);
+                dataUser.setTokenUser(tokenUserData.getUsername());
+                userRepository.save(dataUser);
+                iAudit.save("ACTIVATE_USER","ACTIVATE USER "+dataUser.getUsername()+".",tokenUserData.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
