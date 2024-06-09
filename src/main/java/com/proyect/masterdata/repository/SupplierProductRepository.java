@@ -11,6 +11,7 @@ import com.proyect.masterdata.domain.SupplierProduct;
 public interface SupplierProductRepository extends JpaRepository<SupplierProduct, Long> {
     SupplierProduct findBySerial(String serial);
     SupplierProduct findBySerialAndStatusTrue(String serial);
+    SupplierProduct findBySerialAndStatusFalse(String serial);
     List<SupplierProduct> findBySerialIn(List<String> serials);
     List<SupplierProduct> findAllByProductIdAndStatusTrue(Long id);
     List<SupplierProduct> findAllByClientIdAndStatusTrue(Long clientId);

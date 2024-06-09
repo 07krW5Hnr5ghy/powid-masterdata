@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class SupplierProductImpl implements ISupplierProduct {
     private final ProductRepository productRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final SupplierProductRepositoryCustom supplierProductRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestSupplierProduct requestSupplierProduct, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -78,7 +79,7 @@ public class SupplierProductImpl implements ISupplierProduct {
         }
 
         try {
-            supplierProductRepository.save(SupplierProduct.builder()
+            SupplierProduct newSupplierProduct = supplierProductRepository.save(SupplierProduct.builder()
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .product(product)
@@ -91,7 +92,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                     .supplierId(supplier.getId())
                     .tokenUser(user.getUsername())
                     .build());
-
+            iAudit.save("ADD_SUPPLIER_PRODUCT","ADD SUPPLIER PRODUCT "+newSupplierProduct.getSerial()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -139,7 +140,7 @@ public class SupplierProductImpl implements ISupplierProduct {
             }
 
             try {
-                supplierProductRepository.save(SupplierProduct.builder()
+                SupplierProduct newSupplierProduct = supplierProductRepository.save(SupplierProduct.builder()
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .product(product)
@@ -152,7 +153,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                         .supplierId(supplier.getId())
                         .tokenUser(user.getUsername())
                         .build());
-
+                iAudit.save("ADD_SUPPLIER_PRODUCT","ADD SUPPLIER PRODUCT "+newSupplierProduct.getSerial()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -162,72 +163,6 @@ public class SupplierProductImpl implements ISupplierProduct {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<RequestSupplierProduct> requestSupplierProducts, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
-
-        User user;
-        List<SupplierProduct> supplierProducts;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProducts = supplierProductRepository.findBySerialIn(
-                    requestSupplierProducts.stream().map(RequestSupplierProduct::getSerial).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (supplierProducts.size() > 0) {
-            throw new BadRequestExceptions(Constants.ErrorSupplierExists);
-        }
-
-        try {
-            List<SupplierProduct> supplierProductsList = requestSupplierProducts.stream().map(supplierProduct -> {
-
-                Supplier supplier = supplierRepository.findByRucAndStatusTrue(supplierProduct.getSupplierRuc());
-
-                if (supplier == null) {
-                    throw new BadRequestExceptions(Constants.ErrorSupplier);
-                }
-
-                Product product = productRepository.findBySkuAndStatusTrue(supplierProduct.getProductSku());
-
-                if (product == null) {
-                    throw new BadRequestExceptions(Constants.ErrorProduct);
-                }
-
-                return SupplierProduct.builder()
-                        .product(product)
-                        .productId(product.getId())
-                        .client(user.getClient())
-                        .clientId(user.getClientId())
-                        .purchasePrice(supplierProduct.getPurchasePrice())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .serial(supplierProduct.getSerial())
-                        .status(true)
-                        .supplier(supplier)
-                        .supplierId(supplier.getId())
-                        .tokenUser(tokenUser.toUpperCase())
-                        .build();
-            }).toList();
-
-            supplierProductRepository.saveAll(supplierProductsList);
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
     }
 
     @Override
@@ -256,11 +191,50 @@ public class SupplierProductImpl implements ISupplierProduct {
 
                 supplierProduct.setStatus(false);
                 supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
+                supplierProduct.setTokenUser(user.getUsername());
                 supplierProductRepository.save(supplierProduct);
-
+                iAudit.save("DELETE_SUPPLIER_PRODUCT","DELETE SUPPLIER PRODUCT "+supplierProduct.getSerial()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplierProduct supplierProduct;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusFalse(serial);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (supplierProduct == null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }
+
+            try {
+                supplierProduct.setStatus(true);
+                supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
+                supplierProduct.setTokenUser(user.getUsername());
+                supplierProductRepository.save(supplierProduct);
+                iAudit.save("ACTIVATE_SUPPLIER_PRODUCT","ACTIVATE SUPPLIER PRODUCT "+supplierProduct.getSerial()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             } catch (RuntimeException e) {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

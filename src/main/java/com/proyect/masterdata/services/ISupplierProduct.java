@@ -17,9 +17,8 @@ public interface ISupplierProduct {
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(RequestSupplierProduct requestSupplierProduct, String tokenUser)
                 throws InternalErrorExceptions, BadRequestExceptions;
-        ResponseSuccess saveAll(List<RequestSupplierProduct> requestSupplierProducts, String tokenUser)
-                        throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> activate(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<SupplierProductDTO>> list(String serial, String user,String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<Page<SupplierProductDTO>> listFalse(String serial, String user,String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
