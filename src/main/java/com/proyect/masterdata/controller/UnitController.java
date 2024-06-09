@@ -44,22 +44,21 @@ public class UnitController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping(value = "units", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_POST')")
-    public ResponseEntity<ResponseSuccess> saveAll(
-            @RequestBody() List<String> names,
-            @RequestParam("unitType") String unitType,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iUnit.saveAll(names,unitType, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseDelete> result = iUnit.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @PostMapping("activate")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_DELETE')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iUnit.activate(name, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

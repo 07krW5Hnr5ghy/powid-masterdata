@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import com.proyect.masterdata.domain.UnitType;
 import com.proyect.masterdata.dto.request.RequestUnit;
 import com.proyect.masterdata.repository.UnitTypeRepository;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.domain.Unit;
@@ -33,7 +34,7 @@ public class UnitImpl implements IUnit {
     private final UserRepository userRepository;
     private final UnitRepository unitRepository;
     private final UnitTypeRepository unitTypeRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestUnit requestUnit, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -63,7 +64,7 @@ public class UnitImpl implements IUnit {
         }
 
         try {
-            unitRepository.save(Unit.builder()
+            Unit newUnit = unitRepository.save(Unit.builder()
                     .name(requestUnit.getName().toUpperCase())
                     .unitType(unitType)
                     .unitTypeId(unitType.getId())
@@ -72,7 +73,7 @@ public class UnitImpl implements IUnit {
                     .updateDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-
+            iAudit.save("ADD_UNIT","ADD UNIT "+newUnit.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -113,7 +114,7 @@ public class UnitImpl implements IUnit {
             }
 
             try {
-                unitRepository.save(Unit.builder()
+                Unit newUnit = unitRepository.save(Unit.builder()
                         .name(requestUnit.getName().toUpperCase())
                         .unitType(unitType)
                         .unitTypeId(unitType.getId())
@@ -122,7 +123,7 @@ public class UnitImpl implements IUnit {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-
+                iAudit.save("ADD_UNIT","ADD UNIT "+newUnit.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -132,54 +133,6 @@ public class UnitImpl implements IUnit {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<String> names,String unitType, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        List<Unit> units;
-        UnitType unitTypeData;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            units = unitRepository.findByNameInAndStatusTrue(names.stream().map(String::toUpperCase).toList());
-            unitTypeData = unitTypeRepository.findByNameAndStatusTrue(unitType.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (!units.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorUnitExists);
-        }
-
-        if(unitTypeData == null){
-            throw new BadRequestExceptions(Constants.ErrorUnitType);
-        }
-
-        try {
-            unitRepository.saveAll(names.stream().map(name -> Unit.builder()
-                    .name(name.toUpperCase())
-                    .unitType(unitTypeData)
-                    .unitTypeId(unitTypeData.getId())
-                    .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(tokenUser)
-                    .build()).toList());
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
     }
 
     @Override
@@ -196,7 +149,7 @@ public class UnitImpl implements IUnit {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (user != null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
@@ -207,11 +160,52 @@ public class UnitImpl implements IUnit {
             try {
                 unit.setStatus(false);
                 unit.setUpdateDate(new Date(System.currentTimeMillis()));
+                unit.setTokenUser(user.getUsername());
                 unitRepository.save(unit);
-
+                iAudit.save("DELETE","DELETE UNIT "+unit.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
+                        .build();
+
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Unit unit;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                unit = unitRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (unit == null) {
+                throw new BadRequestExceptions(Constants.ErrorUnit);
+            }
+
+            try {
+                unit.setStatus(true);
+                unit.setUpdateDate(new Date(System.currentTimeMillis()));
+                unit.setTokenUser(user.getUsername());
+                unitRepository.save(unit);
+                iAudit.save("ACTIVATE_UNIT","ACTIVATE UNIT "+unit.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
 
             } catch (RuntimeException e) {

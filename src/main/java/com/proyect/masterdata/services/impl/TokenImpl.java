@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
 public class TokenImpl implements IToken {
 
     private final JwtEncoder jwtEncoder;
-
     private final JwtDecoder jwtDecoder;
 
     public String generateJwt(Authentication auth) {
@@ -40,7 +40,6 @@ public class TokenImpl implements IToken {
 
         JwtClaimsSet claims = JwtClaimsSet.builder().issuer("self").issuedAt(now).subject(auth.getName())
                 .claim("authorities", scope).expiresAt(expiration).build();
-
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 }

@@ -13,8 +13,8 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 public interface IUnit {
     ResponseSuccess save(RequestUnit requestUnit, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(RequestUnit requestUnit, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    ResponseSuccess saveAll(List<String> names,String unitType, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<List<UnitDTO>> listUnit() throws BadRequestExceptions;
     CompletableFuture<List<UnitDTO>> listUnitByType(String unitTypeName) throws BadRequestExceptions;
 }
