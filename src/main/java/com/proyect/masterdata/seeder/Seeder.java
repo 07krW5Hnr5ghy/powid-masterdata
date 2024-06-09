@@ -253,6 +253,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_STOCK_REPLENISHMENT_ITEM","ADMIN1");
                         iAuditEvent.save("ACTIVATE_STOCK_TRANSACTION_TYPE","ADMIN1");
                         iAuditEvent.save("ACTIVATE_STORE","ADMIN1");
+                        iAuditEvent.save("ACTIVATE_STORE_TYPE","ADMIN1");
                         iAuditEvent.save("ADD_ACCESS","ADMIN1");
                         iAuditEvent.save("ADD_BRAND","ADMIN1");
                         iAuditEvent.save("ADD_CANCELLATION_REASON","ADMIN1");
@@ -321,6 +322,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_STOCK_TRANSFER","ADMIN1");
                         iAuditEvent.save("ADD_STOCK_TRANSFER_ITEM","ADMIN1");
                         iAuditEvent.save("ADD_STORE","ADMIN1");
+                        iAuditEvent.save("ADD_STORE_TYPE","ADMIN1");
                         iAuditEvent.save("ADD_USER","ADMIN1");
                         iAuditEvent.save("DELETE_ACCESS","ADMIN1");
                         iAuditEvent.save("DELETE_BRAND","ADMIN1");
@@ -364,6 +366,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_STOCK_REPLENISMENT_ITEM","ADMIN1");
                         iAuditEvent.save("DELETE_STOCK_TRANSACTION_TYPE","ADMIN1");
                         iAuditEvent.save("DELETE_STORE","ADMIN1");
+                        iAuditEvent.save("DELETE_STORE_TYPE","ADMIN1");
                         iAuditEvent.save("DELETE_USER","ADMIN1");
                         iAuditEvent.save("LOG_IN","ADMIN1");
                         iAuditEvent.save("LOG_OUT","ADMIN1");
