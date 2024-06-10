@@ -206,6 +206,8 @@ public class AccessImpl implements IAccess {
             }
             return accessList.stream().map(access -> AccessDTO.builder()
                     .name(access.getName())
+                    .registrationDate(access.getRegistrationDate())
+                    .updateDate(access.getUpdateDate())
                     .build()).toList();
         });
     }
