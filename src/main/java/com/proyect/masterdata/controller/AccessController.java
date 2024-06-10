@@ -7,12 +7,14 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IAccess;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -55,12 +57,16 @@ public class AccessController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_GET')")
     public ResponseEntity<Page<AccessDTO>> listPagination(
             @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<AccessDTO>> result = iAccess.listPagination(name,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<AccessDTO>> result = iAccess.listPagination(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
@@ -68,12 +74,16 @@ public class AccessController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_GET')")
     public ResponseEntity<Page<AccessDTO>> listFalse(
             @RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "registrationStartDate",required = false) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) Date updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<AccessDTO>> result = iAccess.listFalse(name,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<AccessDTO>> result = iAccess.listFalse(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

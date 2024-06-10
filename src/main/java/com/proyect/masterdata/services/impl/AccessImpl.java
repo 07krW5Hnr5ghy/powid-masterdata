@@ -60,7 +60,7 @@ public class AccessImpl implements IAccess {
             Access newAccess = accessRepository.save(Access.builder()
                     .name(name.toUpperCase())
                     .status(true)
-                    .dateRegistration(new Date(System.currentTimeMillis()))
+                    .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
             iAudit.save("ADD_ACCESS","ADD ACCESS " + newAccess.getName() + " .",user.getUsername());
@@ -100,7 +100,7 @@ public class AccessImpl implements IAccess {
                 Access newAccess = accessRepository.save(Access.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .dateRegistration(new Date(System.currentTimeMillis()))
+                        .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
                 iAudit.save("ADD_ACCESS","ADD ACCESS " + newAccess.getName() + " .",user.getUsername());
@@ -138,7 +138,7 @@ public class AccessImpl implements IAccess {
 
         try {
             access.setStatus(false);
-            access.setDateUpDate(new Date(System.currentTimeMillis()));
+            access.setUpdateDate(new Date(System.currentTimeMillis()));
             access.setTokenUser(tokenUser.toUpperCase());
             accessRepository.save(access);
             iAudit.save("DELETE_ACCESS","DELETE ACCESS "+access.getName()+" .",user.getUsername());
@@ -176,7 +176,7 @@ public class AccessImpl implements IAccess {
 
             try {
                 access.setStatus(false);
-                access.setDateUpDate(new Date(System.currentTimeMillis()));
+                access.setUpdateDate(new Date(System.currentTimeMillis()));
                 access.setTokenUser(tokenUser.toUpperCase());
                 accessRepository.save(access);
                 iAudit.save("DELETE_ACCESS","DELETE ACCESS "+access.getName()+" .",user.getUsername());
@@ -211,13 +211,13 @@ public class AccessImpl implements IAccess {
     }
 
     @Override
-    public CompletableFuture<Page<AccessDTO>> listPagination(String name, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<AccessDTO>> listPagination(String name,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
                                 Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<Access> accessPage;
 
             try {
-                accessPage = accessRepositoryCustom.searchForAccess(name, sort, sortColumn, pageNumber, pageSize, true);
+                accessPage = accessRepositoryCustom.searchForAccess(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate,sort, sortColumn, pageNumber, pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -229,6 +229,8 @@ public class AccessImpl implements IAccess {
 
             List<AccessDTO> accessDTOs = accessPage.getContent().stream().map(access -> AccessDTO.builder()
                     .name(access.getName())
+                    .registrationDate(access.getRegistrationDate())
+                    .updateDate(access.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(accessDTOs, accessPage.getPageable(),
@@ -238,13 +240,13 @@ public class AccessImpl implements IAccess {
     }
 
     @Override
-    public CompletableFuture<Page<AccessDTO>> listFalse(String name, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<AccessDTO>> listFalse(String name,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
                                                         Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<Access> accessPage;
 
             try {
-                accessPage = accessRepositoryCustom.searchForAccess(name, sort, sortColumn, pageNumber, pageSize, false);
+                accessPage = accessRepositoryCustom.searchForAccess(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate,sort, sortColumn, pageNumber, pageSize, false);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -256,6 +258,8 @@ public class AccessImpl implements IAccess {
 
             List<AccessDTO> accessDTOs = accessPage.getContent().stream().map(access -> AccessDTO.builder()
                     .name(access.getName())
+                    .registrationDate(access.getRegistrationDate())
+                    .updateDate(access.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(accessDTOs, accessPage.getPageable(),
@@ -287,7 +291,7 @@ public class AccessImpl implements IAccess {
 
             try {
                 access.setStatus(true);
-                access.setDateUpDate(new Date(System.currentTimeMillis()));
+                access.setUpdateDate(new Date(System.currentTimeMillis()));
                 access.setTokenUser(tokenUser.toUpperCase());
                 accessRepository.save(access);
                 iAudit.save("ACTIVATE_ACCESS","ACTIVATE ACCESS " +  access.getName() + " .",user.getUsername());
