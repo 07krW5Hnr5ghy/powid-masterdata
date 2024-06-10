@@ -302,4 +302,5 @@ public class Constants {
     public static final String ErrorProductPrice = "Product price does not exist";
     public static final String ErrorStockReplenishmentItemExists = "Stock replenishment item already exists";
     public static final String ErrorStockReplenishmentItemQuantity = "Stock replenishment item quantity can't be greater than order item quantity";
+    public static final String ErrorUserRole = "User role does not exist";
 }

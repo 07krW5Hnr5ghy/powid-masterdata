@@ -1,11 +1,8 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -35,6 +32,26 @@ public class UserRoleController {
             @RequestParam(value = "role") String role,
             @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iUserRole.saveAsync(username, role, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+        //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:USER_ROLE_POST')")
+    ResponseEntity<ResponseDelete> delete(
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "role") String role,
+            @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iUserRole.delete(username, role, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @PostMapping("activate")
+        //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:USER_ROLE_POST')")
+    ResponseEntity<ResponseSuccess> activate(
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "role") String role,
+            @RequestParam(value = "tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iUserRole.activate(username, role, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

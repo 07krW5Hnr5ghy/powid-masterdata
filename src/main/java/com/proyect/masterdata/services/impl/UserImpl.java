@@ -328,7 +328,7 @@ public class UserImpl implements IUser {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
-                List<UserRole> userRoles = userRoleRepository.findByUserId(userData.getId());
+                List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(userData.getId());
                 return UserQueryDTO.builder()
                         .address(userData.getAddress())
                         .district(userData.getDistrict().getName())
@@ -368,7 +368,7 @@ public class UserImpl implements IUser {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
-                List<UserRole> userRoles = userRoleRepository.findByUserId(userData.getId());
+                List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(userData.getId());
                 return UserQueryDTO.builder()
                         .address(userData.getAddress())
                         .district(userData.getDistrict().getName())

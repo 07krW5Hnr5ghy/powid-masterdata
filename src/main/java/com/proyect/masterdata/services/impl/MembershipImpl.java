@@ -65,7 +65,7 @@ public class MembershipImpl implements IMembership {
             }
 
             if(role != null){
-                userRole = userRoleRepository.findByUserIdAndRoleId(user.getId(),role.getId());
+                userRole = userRoleRepository.findByUserIdAndRoleIdAndStatusTrue(user.getId(),role.getId());
             }
 
             try {

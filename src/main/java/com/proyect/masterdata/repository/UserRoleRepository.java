@@ -9,6 +9,7 @@ import com.proyect.masterdata.domain.UserRole;
 
 @Repository
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
-    List<UserRole> findByUserId(Long userId);
-    UserRole findByUserIdAndRoleId(Long userId,Long roleId);
+    List<UserRole> findByUserIdAndStatusTrue(Long userId);
+    UserRole findByUserIdAndRoleIdAndStatusTrue(Long userId,Long roleId);
+    UserRole findByUserIdAndRoleIdAndStatusFalse(Long userId,Long roleId);
 }

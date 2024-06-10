@@ -26,7 +26,7 @@ public class SecurityUser implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        List<UserRole> userRoles = userRoleRepository.findByUserId(user.getId());
+        List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(user.getId());
         List<Role> roles = roleRepository
                 .findAllById(userRoles.stream().map(UserRole::getRoleId).toList());
         List<GrantedAuthority> authoritiesList = new ArrayList<>();

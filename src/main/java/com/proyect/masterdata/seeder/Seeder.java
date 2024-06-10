@@ -137,8 +137,8 @@ public class Seeder implements CommandLineRunner {
                                         district, systemClient));
 
                         userRoleRepository.save(
-                                new UserRole(1L, adminUser.getId(), role.getId(), "SISTEMA",
-                                        new Date(System.currentTimeMillis())));
+                                new UserRole(1L, adminUser.getId(), role.getId(), adminUser.getUsername(),true,
+                                        new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()),role,adminUser));
 
                         roleAccessRepository.save(
                                 new RoleAccess(1L, role.getId(), access.getId(), "SISTEMA",
@@ -262,6 +262,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_UNIT","ADMIN1");
                         iAuditEvent.save("ACTIVATE_UNIT_TYPE","ADMIN1");
                         iAuditEvent.save("ACTIVATE_USER","ADMIN1");
+                        iAuditEvent.save("ACTIVATE_USER_ROLE","ADMIN1");
                         iAuditEvent.save("ADD_ACCESS","ADMIN1");
                         iAuditEvent.save("ADD_BRAND","ADMIN1");
                         iAuditEvent.save("ADD_CANCELLATION_REASON","ADMIN1");
@@ -338,6 +339,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_UNIT","ADMIN1");
                         iAuditEvent.save("ADD_UNIT_TYPE","ADMIN1");
                         iAuditEvent.save("ADD_USER","ADMIN1");
+                        iAuditEvent.save("ADD_USER_ROLE","ADMIN1");
                         iAuditEvent.save("DELETE_ACCESS","ADMIN1");
                         iAuditEvent.save("DELETE_BRAND","ADMIN1");
                         iAuditEvent.save("DELETE_CANCELLATION_REASON","ADMIN1");
@@ -388,6 +390,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_UNIT","ADMIN1");
                         iAuditEvent.save("DELETE_UNIT_TYPE","ADMIN1");
                         iAuditEvent.save("DELETE_USER","ADMIN1");
+                        iAuditEvent.save("DELETE_USER_ROLE","ADMIN1");
                         iAuditEvent.save("LOG_IN","ADMIN1");
                         iAuditEvent.save("LOG_OUT","ADMIN1");
                         iAuditEvent.save("REGISTER_CLIENT","ADMIN1");
