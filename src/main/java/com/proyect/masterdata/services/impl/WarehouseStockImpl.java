@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
     private final SupplierProductRepository supplierProductRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepositoryCustom warehouseStockRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess in(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -85,7 +86,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
                         .tokenUser(user.getUsername())
                         .build());
             }
-
+            iAudit.save("ADD_WAREHOUSE_STOCK","ADD "+quantity+" UNITS OF STOCK FOR SUPPLIER PRODUCT "+supplierProduct.getSerial()+" IN WAREHOUSE "+warehouse.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -132,12 +133,11 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
             warehouseStock.setQuantity(warehouseStock.getQuantity() - quantity);
             warehouseStockRepository.save(warehouseStock);
-
+            iAudit.save("DELETE_WAREHOUSE_STOCK","DELETE "+quantity+" UNITS OF STOCK FOR SUPPLIER PRODUCT "+supplierProduct.getSerial()+" IN WAREHOUSE "+warehouse.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
