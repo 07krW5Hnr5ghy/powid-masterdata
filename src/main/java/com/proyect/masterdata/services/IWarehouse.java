@@ -3,6 +3,7 @@ package com.proyect.masterdata.services;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.dto.WarehouseDTO;
@@ -16,8 +17,8 @@ public interface IWarehouse {
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(RequestWarehouse requestWarehouse, String tokenUser)
                 throws InternalErrorExceptions, BadRequestExceptions;
-        ResponseSuccess saveAll(List<RequestWarehouse> requestWarehousesList, String tokenUser)
-                        throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseDelete> delete(String warehouse,String tokenUser) throws BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> activate(String warehouse,String tokenUser) throws BadRequestExceptions;
         CompletableFuture<Page<WarehouseDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<List<WarehouseDTO>> listWarehouse(String user) throws BadRequestExceptions,InternalErrorExceptions;

@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -34,7 +36,7 @@ public class WarehouseImpl implements IWarehouse {
     private final UserRepository userRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseRepositoryCustom warehouseRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestWarehouse requestWarehouse, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -60,7 +62,7 @@ public class WarehouseImpl implements IWarehouse {
         }
 
         try {
-            warehouseRepository.save(Warehouse.builder()
+            Warehouse newWarehouse = warehouseRepository.save(Warehouse.builder()
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .location(requestWarehouse.getLocation().toUpperCase())
@@ -69,7 +71,7 @@ public class WarehouseImpl implements IWarehouse {
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-
+            iAudit.save("ADD_WAREHOUSE","ADD WAREHOUSE "+newWarehouse.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -106,7 +108,7 @@ public class WarehouseImpl implements IWarehouse {
             }
 
             try {
-                warehouseRepository.save(Warehouse.builder()
+                Warehouse newWarehouse = warehouseRepository.save(Warehouse.builder()
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .location(requestWarehouse.getLocation().toUpperCase())
@@ -115,7 +117,7 @@ public class WarehouseImpl implements IWarehouse {
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-
+                iAudit.save("ADD_WAREHOUSE","ADD WAREHOUSE "+newWarehouse.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -129,49 +131,73 @@ public class WarehouseImpl implements IWarehouse {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestWarehouse> requestWarehousesList, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String warehouseName, String tokenUser) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Warehouse warehouse;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(),warehouseName.toUpperCase());
+            }
+            if(warehouse==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouse);
+            }
+            try {
+                warehouse.setStatus(false);
+                warehouse.setUpdateDate(new Date(System.currentTimeMillis()));
+                warehouse.setTokenUser(user.getUsername());
+                iAudit.save("DELETE_WAREHOUSE","DELETE WAREHOUSE "+warehouse.getName()+".",user.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 
-        User user;
-        List<Warehouse> warehouseList;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            warehouseList = warehouseRepository.findByNameIn(
-                    requestWarehousesList.stream().map(warehouse -> warehouse.getName().toUpperCase()).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (!warehouseList.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorWarehouseExists);
-        }
-
-        try {
-            warehouseRepository.saveAll(requestWarehousesList.stream().map(warehouse -> Warehouse.builder()
-                    .client(user.getClient())
-                    .clientId(user.getClientId())
-                    .location(warehouse.getLocation().toUpperCase())
-                    .name(warehouse.getName().toUpperCase())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
-                    .build()).toList());
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String warehouseName, String tokenUser) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Warehouse warehouse;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(),warehouseName.toUpperCase());
+            }
+            if(warehouse==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouse);
+            }
+            try {
+                warehouse.setStatus(false);
+                warehouse.setUpdateDate(new Date(System.currentTimeMillis()));
+                warehouse.setTokenUser(user.getUsername());
+                iAudit.save("ACTIVATE_WAREHOUSE","ACTIVATE WAREHOUSE "+warehouse.getName()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
