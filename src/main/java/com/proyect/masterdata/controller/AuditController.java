@@ -7,6 +7,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.services.IAudit;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +27,10 @@ public class AuditController {
             @RequestParam(value = "user",required = false) String user,
             @RequestParam(value = "event",required = false) String event,
             @RequestParam(value = "ruc",required = false) String ruc,
-            @RequestParam(value = "registrationStartDate",required = false) Date registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) Date registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) Date updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) Date updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
             @RequestParam(value = "sort",required = false) String sort,
             @RequestParam(value = "sortColumn",required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,

@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.services.IAuditEvent;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,10 +50,10 @@ public class AuditEventController {
     @GetMapping("pagination")
     public ResponseEntity<Page<AuditEventDTO>> listPagination(
             @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "registrationStartDate",required = false) Date registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) Date registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) Date updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) Date updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
@@ -65,10 +66,10 @@ public class AuditEventController {
     @GetMapping("pagination/false")
     public ResponseEntity<Page<AuditEventDTO>> listFalse(
             @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "registrationStartDate",required = false) Date registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) Date registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) Date updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) Date updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,

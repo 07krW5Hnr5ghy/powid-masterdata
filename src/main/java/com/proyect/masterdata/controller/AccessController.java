@@ -74,10 +74,10 @@ public class AccessController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_GET')")
     public ResponseEntity<Page<AccessDTO>> listFalse(
             @RequestParam(value = "name",required = false) String name,
-            @RequestParam(value = "registrationStartDate",required = false) Date registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) Date registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) Date updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) Date updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,

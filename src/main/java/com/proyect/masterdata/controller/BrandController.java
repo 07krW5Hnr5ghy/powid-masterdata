@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -56,10 +57,10 @@ public class BrandController {
     public ResponseEntity<Page<BrandDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "registrationStartDate",required = false) Date registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) Date registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) Date updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) Date updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
@@ -73,10 +74,10 @@ public class BrandController {
     public ResponseEntity<Page<BrandDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "registrationStartDate",required = false) Date registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) Date registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) Date updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) Date updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,

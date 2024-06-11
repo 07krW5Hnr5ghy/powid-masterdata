@@ -115,14 +115,6 @@ public class CancellationReasonRepositoryCustomImpl implements CancellationReaso
             conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
 
-        if (status) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
-        }
-
-        if (!status) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
-        }
-
         return conditions;
     }
 
