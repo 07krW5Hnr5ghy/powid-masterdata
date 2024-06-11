@@ -261,6 +261,8 @@ public class ClientImpl implements IClient {
                     .ruc(client.getRuc())
                     .district(client.getDistrict().getName())
                     .status(client.getStatus())
+                    .registrationDate(client.getRegistrationDate())
+                    .updateDate(client.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(clientDTOList,
@@ -297,6 +299,8 @@ public class ClientImpl implements IClient {
                     .ruc(client.getRuc())
                     .district(client.getDistrict().getName())
                     .status(client.getStatus())
+                    .registrationDate(client.getRegistrationDate())
+                    .updateDate(client.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(clientDTOList,

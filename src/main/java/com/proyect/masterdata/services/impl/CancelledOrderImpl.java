@@ -149,6 +149,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
                     .orderId(cancelledOrder.getOrderingId())
                     .cancellationReason(cancelledOrder.getCancellationReason().getName())
                     .registrationDate(cancelledOrder.getRegistrationDate())
+                    .updateDate(cancelledOrder.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(cancelledOrderDTOS,pageCancelledOrder.getPageable(),pageCancelledOrder.getTotalElements());

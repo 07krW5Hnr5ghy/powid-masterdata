@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -21,14 +22,32 @@ public class EntryChannelRepositoryCustomImpl implements EntryChannelRepositoryC
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<EntryChannel> searchEntryChannel(String name, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<EntryChannel> searchEntryChannel(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<EntryChannel> criteriaQuery = criteriaBuilder.createQuery(EntryChannel.class);
         Root<EntryChannel> itemRoot = criteriaQuery.from(EntryChannel.class);
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(name, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -52,11 +71,21 @@ public class EntryChannelRepositoryCustomImpl implements EntryChannelRepositoryC
         orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, status);
+        long count = getOrderCount(
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
     public List<Predicate> predicateConditions(
             String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<EntryChannel> itemRoot) {
@@ -107,14 +136,28 @@ public class EntryChannelRepositoryCustomImpl implements EntryChannelRepositoryC
         return entryChannelList;
     }
 
-    private long getOrderCount(String name, Boolean status) {
+    private long getOrderCount(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<EntryChannel> itemRoot = criteriaQuery.from(EntryChannel.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

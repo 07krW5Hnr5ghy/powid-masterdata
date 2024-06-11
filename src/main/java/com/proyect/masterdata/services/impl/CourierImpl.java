@@ -334,6 +334,8 @@ public class CourierImpl implements ICourier {
             return couriers.stream().map(courier -> CourierDTO.builder()
                     .courier(courier.getName())
                     .phoneNumber(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
                     .build()).toList();
         });
     }
@@ -356,6 +358,8 @@ public class CourierImpl implements ICourier {
             return couriers.stream().map(courier -> CourierDTO.builder()
                     .courier(courier.getName())
                     .phoneNumber(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
                     .build()).toList();
         });
     }

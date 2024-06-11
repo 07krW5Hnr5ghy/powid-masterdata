@@ -162,6 +162,8 @@ public class CategoryProductImpl implements ICategoryProduct {
                     .map(categoryProduct -> CategoryProductDTO.builder()
                             .description(categoryProduct.getDescription())
                             .name(categoryProduct.getName())
+                            .registrationDate(categoryProduct.getRegistrationDate())
+                            .updateDate(categoryProduct.getUpdateDate())
                             .build())
                     .toList();
 
@@ -192,6 +194,8 @@ public class CategoryProductImpl implements ICategoryProduct {
                     .map(categoryProduct -> CategoryProductDTO.builder()
                             .description(categoryProduct.getDescription())
                             .name(categoryProduct.getName())
+                            .registrationDate(categoryProduct.getRegistrationDate())
+                            .updateDate(categoryProduct.getUpdateDate())
                             .build())
                     .toList();
 
@@ -217,6 +221,8 @@ public class CategoryProductImpl implements ICategoryProduct {
                     .map(categoryProduct -> CategoryProductDTO.builder()
                             .description(categoryProduct.getDescription())
                             .name(categoryProduct.getName())
+                            .registrationDate(categoryProduct.getRegistrationDate())
+                            .updateDate(categoryProduct.getUpdateDate())
                             .build())
                     .toList();
         });
