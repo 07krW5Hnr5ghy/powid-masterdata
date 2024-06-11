@@ -179,7 +179,7 @@ public class BrandImpl implements IBrand {
     }
 
     @Override
-    public CompletableFuture<Page<BrandDTO>> listPagination(String name, String tokenUser, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<BrandDTO>> listPagination(String name, String tokenUser,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Brand> brandPage;
@@ -187,7 +187,7 @@ public class BrandImpl implements IBrand {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                brandPage = brandRepositoryCustom.searchForBrand(name, clientId, sort, sortColumn, pageNumber, pageSize, true);
+                brandPage = brandRepositoryCustom.searchForBrand(name, clientId,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber, pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -209,7 +209,7 @@ public class BrandImpl implements IBrand {
     }
 
     @Override
-    public CompletableFuture<Page<BrandDTO>> listStatusFalse(String name, String tokenUser, String sort, String sortColumn,
+    public CompletableFuture<Page<BrandDTO>> listStatusFalse(String name, String tokenUser,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
@@ -218,7 +218,7 @@ public class BrandImpl implements IBrand {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                brandPage = brandRepositoryCustom.searchForBrand(name, clientId, sort, sortColumn, pageNumber, pageSize,
+                brandPage = brandRepositoryCustom.searchForBrand(name, clientId,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber, pageSize,
                         false);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());

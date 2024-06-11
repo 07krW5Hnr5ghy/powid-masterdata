@@ -1,27 +1,21 @@
 package com.proyect.masterdata.repository.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.Brand;
+import com.proyect.masterdata.repository.BrandRepositoryCustom;
+import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.proyect.masterdata.domain.Brand;
-import com.proyect.masterdata.repository.BrandRepositoryCustom;
-
-import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Repository
 public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
@@ -30,7 +24,7 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Brand> searchForBrand(String name, Long clientId, String sort, String sortColumn, Integer pageNumber,
+    public Page<Brand> searchForBrand(String name, Long clientId, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
                                       Integer pageSize, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -39,7 +33,7 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(name, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, clientId,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -63,13 +57,17 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
         orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, clientId, status);
+        long count = getOrderCount(name, clientId,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, status);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             String name,
             Long clientId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Brand> itemRoot) {
@@ -84,6 +82,38 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
 
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         if (status) {
@@ -112,6 +142,22 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
             brandList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            brandList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            brandList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            brandList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            brandList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
         return brandList;
     }
 
@@ -129,17 +175,33 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
             brandList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            brandList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            brandList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            brandList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            brandList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
         return brandList;
     }
 
-    private long getOrderCount(String name, Long clientId, Boolean status) {
+    private long getOrderCount(String name, Long clientId,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Brand> itemRoot = criteriaQuery.from(Brand.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, clientId,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, status, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

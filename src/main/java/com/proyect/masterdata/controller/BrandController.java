@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 
 import lombok.AllArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -55,11 +56,15 @@ public class BrandController {
     public ResponseEntity<Page<BrandDTO>> list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,
+            @RequestParam(value = "registrationStartDate",required = false) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) Date updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<BrandDTO>> result = iBrand.listPagination(name, user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<BrandDTO>> result = iBrand.listPagination(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -68,11 +73,15 @@ public class BrandController {
     public ResponseEntity<Page<BrandDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,
+            @RequestParam(value = "registrationStartDate",required = false) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) Date updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<BrandDTO>> result = iBrand.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<BrandDTO>> result = iBrand.listStatusFalse(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
