@@ -193,19 +193,19 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
         }
 
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
-            courierList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+            courierList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
-            courierList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+            courierList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateStartDate")) {
-            courierList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+            courierList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateEndDate")) {
-            courierList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+            courierList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
 
         return courierList;

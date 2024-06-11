@@ -200,6 +200,8 @@ public class CourierImpl implements ICourier {
             List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
                     .courier(courier.getName())
                     .phoneNumber(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
@@ -248,6 +250,8 @@ public class CourierImpl implements ICourier {
             List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
                     .courier(courier.getName())
                     .phoneNumber(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());

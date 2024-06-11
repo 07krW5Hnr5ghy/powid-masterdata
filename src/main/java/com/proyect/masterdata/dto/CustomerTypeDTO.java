@@ -11,9 +11,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CourierDTO {
-    private String courier;
-    private String phoneNumber;
+public class CustomerTypeDTO {
+    private String name;
     private Date registrationDate;
     private Date updateDate;
 }
