@@ -140,15 +140,45 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
-    public CompletableFuture<Page<CategoryProductDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<CategoryProductDTO>> list(String name, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
 
             Page<CategoryProduct> categoryProductPage;
 
             try {
-                categoryProductPage = categoryProductRepositoryCustom.searchForCategoryProduct(name, user, sort, sortColumn,
+                categoryProductPage = categoryProductRepositoryCustom.searchForCategoryProduct(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn,
                         pageNumber, pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (categoryProductPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
+                    .map(categoryProduct -> CategoryProductDTO.builder()
+                            .description(categoryProduct.getDescription())
+                            .name(categoryProduct.getName())
+                            .build())
+                    .toList();
+
+            return new PageImpl<>(categoryProductDTOs, categoryProductPage.getPageable(),
+                    categoryProductPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<CategoryProductDTO>> listFalse(String name, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+
+            Page<CategoryProduct> categoryProductPage;
+
+            try {
+                categoryProductPage = categoryProductRepositoryCustom.searchForCategoryProduct(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn,
+                        pageNumber, pageSize, false);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

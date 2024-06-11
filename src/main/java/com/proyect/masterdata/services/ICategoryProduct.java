@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,8 +18,10 @@ public interface ICategoryProduct {
             throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(String name, String description, String sizeTypeName, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions;
-    CompletableFuture<Page<CategoryProductDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<CategoryProductDTO>> list(String name, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
+                                                     Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<CategoryProductDTO>> listFalse(String name, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
+                                                     Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<List<CategoryProductDTO>> listCategoryProducts() throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
