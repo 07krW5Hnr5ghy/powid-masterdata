@@ -143,10 +143,6 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
         if (sortColumn.equalsIgnoreCase("tokenUser")) {
             categoryList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
         }
-        if (sortColumn.equalsIgnoreCase("tokenUser")) {
-            categoryList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
-        }
-
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
             categoryList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
         }
@@ -174,7 +170,7 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
             categoryList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
         if (sortColumn.equalsIgnoreCase("tokenUser")) {
-            categoryList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
+            categoryList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
         }
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
             categoryList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
