@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -21,14 +22,14 @@ public class CancellationReasonRepositoryCustomImpl implements CancellationReaso
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<CancellationReason> searchForCancellationReason(String name, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<CancellationReason> searchForCancellationReason(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<CancellationReason> criteriaQuery = criteriaBuilder.createQuery(CancellationReason.class);
         Root<CancellationReason> itemRoot = criteriaQuery.from(CancellationReason.class);
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(name, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -52,12 +53,16 @@ public class CancellationReasonRepositoryCustomImpl implements CancellationReaso
         orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, status);
+        long count = getOrderCount(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, status);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<CancellationReason> itemRoot) {
@@ -68,6 +73,46 @@ public class CancellationReasonRepositoryCustomImpl implements CancellationReaso
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
+        }
+
+        if (status) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
+        }
+
+        if (!status) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
 
         if (status) {
@@ -86,36 +131,68 @@ public class CancellationReasonRepositoryCustomImpl implements CancellationReaso
             CriteriaBuilder criteriaBuilder,
             Root<CancellationReason> itemRoot) {
 
-        List<Order> accessList = new ArrayList<>();
+        List<Order> cancellationReasonList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("NAME")) {
-            accessList.add(criteriaBuilder.asc(itemRoot.get("name")));
+            cancellationReasonList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
 
-        return accessList;
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            cancellationReasonList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            cancellationReasonList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            cancellationReasonList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            cancellationReasonList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+        
+        return cancellationReasonList;
     }
 
     List<Order> listDesc(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
             Root<CancellationReason> itemRoot) {
-        List<Order> accessList = new ArrayList<>();
+        List<Order> cancellationReasonList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("NAME")) {
-            accessList.add(criteriaBuilder.desc(itemRoot.get("name")));
+            cancellationReasonList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
 
-        return accessList;
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            cancellationReasonList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            cancellationReasonList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            cancellationReasonList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            cancellationReasonList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        return cancellationReasonList;
     }
 
-    private long getOrderCount(String name, Boolean status) {
+    private long getOrderCount(String name,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<CancellationReason> itemRoot = criteriaQuery.from(CancellationReason.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, status, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
