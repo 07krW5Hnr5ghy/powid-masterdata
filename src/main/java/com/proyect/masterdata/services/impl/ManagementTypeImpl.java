@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.ManagementType;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.ManagementTypeDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -141,12 +142,30 @@ public class ManagementTypeImpl implements IManagementType {
     }
 
     @Override
-    public CompletableFuture<Page<String>> listPaginated(String name, String sort, String sortColumn, Integer pageNumber,
-                                                Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<Page<ManagementTypeDTO>> listPagination(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<ManagementType> managementTypePage;
             try {
-                managementTypePage = managementTypeRepositoryCustom.searchForManagementType(name,sort,sortColumn,pageNumber,pageSize,true);
+                managementTypePage = managementTypeRepositoryCustom.searchForManagementType(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -154,7 +173,45 @@ public class ManagementTypeImpl implements IManagementType {
             if(managementTypePage.isEmpty()){
                 return new PageImpl<>(Collections.emptyList());
             }
-            List<String> managementTypeDTOs = managementTypePage.getContent().stream().map(ManagementType::getName).toList();
+            List<ManagementTypeDTO> managementTypeDTOs = managementTypePage.getContent().stream().map(managementType -> ManagementTypeDTO.builder()
+                    .name(managementType.getName())
+                    .registrationDate(managementType.getRegistrationDate())
+                    .updateDate(managementType.getUpdateDate())
+                    .build()
+            ).toList();
+            return new PageImpl<>(managementTypeDTOs,managementTypePage.getPageable(),managementTypePage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<ManagementTypeDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<ManagementType> managementTypePage;
+            try {
+                managementTypePage = managementTypeRepositoryCustom.searchForManagementType(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(managementTypePage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<ManagementTypeDTO> managementTypeDTOs = managementTypePage.getContent().stream().map(managementType -> ManagementTypeDTO.builder()
+                    .name(managementType.getName())
+                    .registrationDate(managementType.getRegistrationDate())
+                    .updateDate(managementType.getUpdateDate())
+                    .build()
+            ).toList();
             return new PageImpl<>(managementTypeDTOs,managementTypePage.getPageable(),managementTypePage.getTotalElements());
         });
     }
