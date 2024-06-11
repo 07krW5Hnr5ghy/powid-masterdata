@@ -98,6 +98,38 @@ public class EntryChannelRepositoryCustomImpl implements EntryChannelRepositoryC
                             criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
         }
 
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
+        }
+
         if (status) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
@@ -120,6 +152,22 @@ public class EntryChannelRepositoryCustomImpl implements EntryChannelRepositoryC
             entryChannelList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            entryChannelList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            entryChannelList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            entryChannelList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            entryChannelList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
         return entryChannelList;
     }
 
@@ -131,6 +179,22 @@ public class EntryChannelRepositoryCustomImpl implements EntryChannelRepositoryC
 
         if (sortColumn.equalsIgnoreCase("NAME")) {
             entryChannelList.add(criteriaBuilder.desc(itemRoot.get("name")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            entryChannelList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            entryChannelList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            entryChannelList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            entryChannelList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
 
         return entryChannelList;

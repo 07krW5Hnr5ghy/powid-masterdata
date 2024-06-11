@@ -141,15 +141,38 @@ public class GeneralStockImpl implements IGeneralStock {
     }
 
     @Override
-    public CompletableFuture<Page<GeneralStockDTO>> list(String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize)
+    public CompletableFuture<Page<GeneralStockDTO>> list(
+            String user,
+            String supplierProductSerial,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize)
             throws InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<GeneralStock> generalStockPage;
             Long clientId;
+            Long supplierProductId;
+            if(supplierProductSerial==null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }else{
+                supplierProductId = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase()).getId();
+            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                generalStockPage = generalStockRepositoryCustom.searchForGeneralStock(clientId, sort,
+                generalStockPage = generalStockRepositoryCustom.searchForGeneralStock(
+                        clientId,
+                        supplierProductId,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
                         sortColumn,
                         pageNumber,
                         pageSize);
