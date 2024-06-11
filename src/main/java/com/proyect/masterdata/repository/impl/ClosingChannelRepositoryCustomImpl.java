@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -21,14 +22,24 @@ public class ClosingChannelRepositoryCustomImpl implements ClosingChannelReposit
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<ClosingChannel> searchForClosingChannel(String name, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<ClosingChannel> searchForClosingChannel(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<ClosingChannel> criteriaQuery = criteriaBuilder.createQuery(ClosingChannel.class);
         Root<ClosingChannel> itemRoot = criteriaQuery.from(ClosingChannel.class);
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(name, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -52,12 +63,16 @@ public class ClosingChannelRepositoryCustomImpl implements ClosingChannelReposit
         orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, status);
+        long count = getOrderCount(name,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<ClosingChannel> itemRoot) {
@@ -68,6 +83,38 @@ public class ClosingChannelRepositoryCustomImpl implements ClosingChannelReposit
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         if (status) {
@@ -86,36 +133,71 @@ public class ClosingChannelRepositoryCustomImpl implements ClosingChannelReposit
             CriteriaBuilder criteriaBuilder,
             Root<ClosingChannel> itemRoot) {
 
-        List<Order> accessList = new ArrayList<>();
+        List<Order> closingChannelList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("NAME")) {
-            accessList.add(criteriaBuilder.asc(itemRoot.get("name")));
+            closingChannelList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
 
-        return accessList;
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            closingChannelList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            closingChannelList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            closingChannelList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            closingChannelList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        return closingChannelList;
     }
 
     List<Order> listDesc(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
             Root<ClosingChannel> itemRoot) {
-        List<Order> accessList = new ArrayList<>();
+        List<Order> closingChannelList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("NAME")) {
-            accessList.add(criteriaBuilder.desc(itemRoot.get("name")));
+            closingChannelList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
 
-        return accessList;
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            closingChannelList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            closingChannelList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            closingChannelList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            closingChannelList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        return closingChannelList;
     }
 
-    private long getOrderCount(String name, Boolean status) {
+    private long getOrderCount(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<ClosingChannel> itemRoot = criteriaQuery.from(ClosingChannel.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

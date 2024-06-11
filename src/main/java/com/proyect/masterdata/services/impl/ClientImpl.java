@@ -229,7 +229,16 @@ public class ClientImpl implements IClient {
             Page<Client> clientPage;
 
             try {
-                clientPage = clientRepositoryCustom.searchForClient(ruc, business,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber,
+                clientPage = clientRepositoryCustom.searchForClient(
+                        ruc,
+                        business,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
                         pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());

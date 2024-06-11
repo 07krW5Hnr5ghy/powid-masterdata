@@ -32,7 +32,6 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class ClosingChannelImpl implements IClosingChannel {
-
     private final ClosingChannelRepository closingChannelRepository;
     private final UserRepository userRepository;
     private final ClosingChannelMapper closingChannelMapper;
@@ -122,12 +121,30 @@ public class ClosingChannelImpl implements IClosingChannel {
     }
 
     @Override
-    public CompletableFuture<Page<ClosingChannelDTO>> listClosingChannel(String name, String sort, String sortColumn, Integer pageNumber,
-                                                                         Integer pageSize) throws InternalErrorExceptions {
+    public CompletableFuture<Page<ClosingChannelDTO>> listClosingChannel(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<ClosingChannel> closingChannelPage;
             try {
-                closingChannelPage = closingChannelRepositoryCustom.searchForClosingChannel(name, sort, sortColumn, pageNumber, pageSize,true);
+                closingChannelPage = closingChannelRepositoryCustom.searchForClosingChannel(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -141,6 +158,36 @@ public class ClosingChannelImpl implements IClosingChannel {
             return new PageImpl<>(closingChannelDTOS,closingChannelPage.getPageable(),closingChannelPage.getTotalElements());
         });
 
+    }
+
+    @Override
+    public CompletableFuture<Page<ClosingChannelDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<ClosingChannel> closingChannelPage;
+            try {
+                closingChannelPage = closingChannelRepositoryCustom.searchForClosingChannel(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(closingChannelPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<ClosingChannelDTO> closingChannelDTOS = closingChannelMapper.listClosingChannelToListClosindChannelDTO(closingChannelPage.getContent());
+            return new PageImpl<>(closingChannelDTOS,closingChannelPage.getPageable(),closingChannelPage.getTotalElements());
+        });
     }
 
     @Override
