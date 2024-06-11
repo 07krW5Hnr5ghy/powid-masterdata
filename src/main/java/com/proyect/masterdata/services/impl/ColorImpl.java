@@ -172,12 +172,30 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public CompletableFuture<Page<ColorDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<ColorDTO>> list(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Color> colorPage;
             try {
-                colorPage = colorRepositoryCustom.searchForColor(name, user, sort, sortColumn, pageNumber, pageSize, true);
+                colorPage = colorRepositoryCustom.searchForColor(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -191,12 +209,30 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public CompletableFuture<Page<ColorDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<ColorDTO>> listStatusFalse(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Color> colorPage;
             try {
-                colorPage = colorRepositoryCustom.searchForColor(name, user, sort, sortColumn, pageNumber, pageSize, false);
+                colorPage = colorRepositoryCustom.searchForColor(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);

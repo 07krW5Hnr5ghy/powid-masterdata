@@ -39,7 +39,15 @@ public class ClosingChannelRepositoryCustomImpl implements ClosingChannelReposit
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(name,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
