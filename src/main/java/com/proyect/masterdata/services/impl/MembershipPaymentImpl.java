@@ -85,9 +85,21 @@ public class MembershipPaymentImpl implements IMembershipPayment {
     }
 
     @Override
-    public CompletableFuture<Page<MembershipPaymentDTO>> list(String user, Double grossAmount, Double netAmount, Double paymentGatewayFee, Double taxAmount, String paymentGateway, String sort,
-                                           String sortColumn,
-                                           Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<MembershipPaymentDTO>> list(
+            String user,
+            Double grossAmount,
+            Double netAmount,
+            Double paymentGatewayFee,
+            Double taxAmount,
+            String paymentGateway,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<MembershipPayment> membershipPaymentPage;
             Long clientId;
@@ -101,8 +113,21 @@ public class MembershipPaymentImpl implements IMembershipPayment {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                membershipPaymentPage = membershipPaymentRepositoryCustom.searchForMembershipPayment(clientId, grossAmount, netAmount, paymentGatewayFee, taxAmount,paymentGatewayId, sort,
-                        sortColumn, pageNumber, pageSize);
+                membershipPaymentPage = membershipPaymentRepositoryCustom.searchForMembershipPayment(
+                        clientId,
+                        grossAmount,
+                        netAmount,
+                        paymentGatewayFee,
+                        taxAmount,
+                        paymentGatewayId,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -110,7 +135,6 @@ public class MembershipPaymentImpl implements IMembershipPayment {
             if (membershipPaymentPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-
             List<MembershipPaymentDTO> membershipPaymentDTOS = membershipPaymentPage.getContent().stream().map(membershipPayment -> MembershipPaymentDTO.builder()
                     .grossAmount(membershipPayment.getGrossAmount())
                     .netAmount(membershipPayment.getNetAmount())
