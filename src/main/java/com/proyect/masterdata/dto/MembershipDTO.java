@@ -15,5 +15,6 @@ public class MembershipDTO {
     private String membershipState;
     private String subscription;
     private Date registrationDate;
+    private Date updateDate;
     private Date expirationDate;
 }

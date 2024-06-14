@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -21,13 +22,35 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
     @PersistenceContext(name="entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Membership> searchForMembership(Long clientId, Long membershipStateId,Long subscriptionId, String sort, String sortColumn, Integer pageNumber, Integer pageSize,Boolean status) {
+    public Page<Membership> searchForMembership(
+            Long clientId, 
+            Long membershipStateId,
+            Long subscriptionId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort, 
+            String sortColumn, 
+            Integer pageNumber, 
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Membership> criteriaQuery = criteriaBuilder.createQuery(Membership.class);
         Root<Membership> itemRoot = criteriaQuery.from(Membership.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(clientId,membershipStateId,subscriptionId,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                membershipStateId,
+                subscriptionId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
             List<Order> membershipList = new ArrayList<>();
@@ -47,7 +70,15 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        long count = getOrderCount(clientId,membershipStateId,subscriptionId,status);
+        long count = getOrderCount(
+                clientId,
+                membershipStateId,
+                subscriptionId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(),pageable,count);
     }
 
@@ -55,6 +86,10 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
             Long clientId,
             Long stateId,
             Long subscriptionId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Membership> itemRoot
@@ -82,6 +117,38 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
                                     itemRoot.get("subscriptionId"),subscriptionId)));
         }
 
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
+        }
+
         if (status) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
@@ -107,6 +174,21 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
         if(sortColumn.equalsIgnoreCase("subscriptionId")){
             membershipList.add(criteriaBuilder.asc(itemRoot.get("subscriptionId")));
         }
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            membershipList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            membershipList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            membershipList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            membershipList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
         return membershipList;
     }
     List<Order> listDESC(
@@ -124,16 +206,49 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
         if(sortColumn.equalsIgnoreCase("subscriptionId")){
             membershipList.add(criteriaBuilder.desc(itemRoot.get("subscriptionId")));
         }
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            membershipList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            membershipList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            membershipList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            membershipList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
         return membershipList;
     }
 
-    private long getOrderCount(Long clientId,Long stateId,Long subscriptionId,Boolean status){
+    private long getOrderCount(
+            Long clientId,
+            Long stateId,
+            Long subscriptionId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Membership> itemRoot = criteriaQuery.from(Membership.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(clientId,stateId,subscriptionId,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                stateId,
+                subscriptionId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[]{}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
