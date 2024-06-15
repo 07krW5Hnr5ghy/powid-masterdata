@@ -270,6 +270,8 @@ public class ModelImpl implements IModel {
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .user(model.getTokenUser())
+                    .registrationDate(model.getRegistrationDate())
+                    .updateDate(model.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(models, pageModel.getPageable(),
@@ -329,6 +331,8 @@ public class ModelImpl implements IModel {
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .user(model.getTokenUser())
+                    .registrationDate(model.getRegistrationDate())
+                    .updateDate(model.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(models, pageModel.getPageable(),
