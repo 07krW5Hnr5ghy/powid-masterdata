@@ -1,6 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.proyect.masterdata.domain.User;
@@ -31,16 +32,36 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Model> searchForModel(String name, Brand brand, Long clientId, String sort, String sortColumn,
-                                      Integer pageNumber,
-                                      Integer pageSize, Boolean status) {
+    public Page<Model> searchForModel(
+            String name,
+            Brand brand,
+            Long clientId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Model> criteriaQuery = criteriaBuilder.createQuery(Model.class);
         Root<Model> itemRoot = criteriaQuery.from(Model.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name, brand, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                name,
+                brand,
+                clientId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -65,7 +86,15 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
         orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, brand, clientId, status);
+        long count = getOrderCount(
+                name,
+                brand,
+                clientId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
 
@@ -73,6 +102,10 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
             String name,
             Brand brand,
             Long clientId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Model> itemRoot) {
@@ -90,6 +123,38 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
 
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         if (status) {
@@ -122,6 +187,22 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
             modelList.add(criteriaBuilder.asc(itemRoot.get("brandId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            modelList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            modelList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            modelList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            modelList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
         return modelList;
     }
 
@@ -143,17 +224,51 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
             modelList.add(criteriaBuilder.asc(itemRoot.get("brandId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            modelList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            modelList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            modelList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            modelList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
         return modelList;
     }
 
-    private long getOrderCount(String name, Brand brand, Long clientId, Boolean status) {
+    private long getOrderCount(
+            String name,
+            Brand brand,
+            Long clientId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Model> itemRoot = criteriaQuery.from(Model.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, brand, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                name,
+                brand,
+                clientId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

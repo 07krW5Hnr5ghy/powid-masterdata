@@ -219,7 +219,16 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public CompletableFuture<Page<ModelDTO>> list(String name, String brand, String tokenUser, String sort, String columnSort,
+    public CompletableFuture<Page<ModelDTO>> list(
+            String name,
+            String brand,
+            String user,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String columnSort,
             Integer pageNumber,
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
@@ -234,9 +243,20 @@ public class ModelImpl implements IModel {
             }
 
             try {
-                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                pageModel = modelRepositoryCustom.searchForModel(name, brandData, clientId, sort, columnSort, pageNumber,
-                        pageSize, true);
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                pageModel = modelRepositoryCustom.searchForModel(
+                        name,
+                        brandData,
+                        clientId,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        columnSort,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -258,7 +278,16 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public CompletableFuture<Page<ModelDTO>> listStatusFalse(String name, String brand, String tokenUser, String sort, String columnSort,
+    public CompletableFuture<Page<ModelDTO>> listStatusFalse(
+            String name,
+            String brand,
+            String user,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String columnSort,
             Integer pageNumber,
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
@@ -273,9 +302,20 @@ public class ModelImpl implements IModel {
             }
 
             try {
-                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                pageModel = modelRepositoryCustom.searchForModel(name, brandData, clientId, sort, columnSort, pageNumber,
-                        pageSize, false);
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                pageModel = modelRepositoryCustom.searchForModel(
+                        name,
+                        brandData,
+                        clientId,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        columnSort,
+                        pageNumber,
+                        pageSize,
+                        false);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
