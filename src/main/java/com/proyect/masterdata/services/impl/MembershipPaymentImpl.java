@@ -142,6 +142,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
                     .taxAmount(membershipPayment.getTaxAmount())
                     .paymentGateway(membershipPayment.getPaymentGateway().getName())
                     .registrationDate(membershipPayment.getRegistrationDate())
+                    .updateDate(membershipPayment.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(membershipPaymentDTOS,

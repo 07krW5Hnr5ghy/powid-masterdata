@@ -11,12 +11,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class MembershipPaymentDTO {
-    private Double grossAmount;
-    private Double netAmount;
-    private Double paymentGatewayFee;
-    private Double taxAmount;
-    private String paymentGateway;
+public class MembershipStateDTO {
+    private String name;
     private Date registrationDate;
     private Date updateDate;
 }
