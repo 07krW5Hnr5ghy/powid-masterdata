@@ -74,20 +74,19 @@ public class CountryImpl implements ICountry {
     }
 
     @Override
-    public CompletableFuture<Page<CountryDTO>> listCountry(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<CountryDTO>> listCountry(String name, String sort, String sortColumn, Integer pageNumber,
                                         Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Country> countryPage;
             try {
-                countryPage = countryRepositoryCustom.searchForCountry(name,user,sort,sortColumn,pageNumber,pageSize,true);
+                countryPage = countryRepositoryCustom.searchForCountry(name,sort,sortColumn,pageNumber,pageSize,true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if (countryPage.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
+                throw new BadRequestExceptions("No hay nada");
             }
-
             List<CountryDTO> countryDTOS = countryPage.getContent().stream().map(country -> CountryDTO.builder()
                     .id(country.getId().toString())
                     .value(country.getName())

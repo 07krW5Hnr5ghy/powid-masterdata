@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface CountryRepositoryCustom {
     Page<Country> searchForCountry(
             String name,
-            String user,
             String sort,
             String sortColumn,
             Integer pageNumber,
