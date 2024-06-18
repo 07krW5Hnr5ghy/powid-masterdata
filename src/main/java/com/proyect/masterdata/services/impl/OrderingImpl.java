@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -429,17 +431,15 @@ public class OrderingImpl implements IOrdering {
                         .customerName(customer.getName())
                         .customerPhone(customer.getPhone())
                         .customerType(customer.getCustomerType().getName())
+                        .closingChannel(order.getClosingChannel().getName())
                         .orderStatus(order.getOrderState().getName())
                         .department(customer.getDepartment().getName())
                         .province(customer.getProvince().getName())
                         .district(customer.getDistrict().getName())
                         .address(customer.getAddress())
                         .instagram(customer.getInstagram())
-                        .deliveryAmount(sale.getDeliveryAmount())
-                        .advancedPayment(sale.getAdvancePayment())
                         .managementType(order.getManagementType().getName())
                         .reference(customer.getReference())
-                        .duePayment((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment())
                         .saleChannel(order.getSaleChannel().getName())
                         .sellerName(sale.getSeller())
                         .registrationDate(order.getRegistrationDate())
@@ -449,7 +449,7 @@ public class OrderingImpl implements IOrdering {
                         .courier(order.getCourier().getName())
                         .paymentReceipts(paymentReceipts)
                         .courierPictures(courierPictures)
-                        .saleAmount(sale.getSaleAmount())
+                        .saleAmount(BigDecimal.valueOf(sale.getSaleAmount()).setScale(2, RoundingMode.HALF_EVEN))
                         .build();
             }).toList();
 
@@ -491,11 +491,8 @@ public class OrderingImpl implements IOrdering {
                         .district(customer.getDistrict().getName())
                         .address(customer.getAddress())
                         .instagram(customer.getInstagram())
-                        .deliveryAmount(sale.getDeliveryAmount())
-                        .advancedPayment(sale.getAdvancePayment())
                         .managementType(order.getManagementType().getName())
                         .reference(customer.getReference())
-                        .duePayment((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment())
                         .saleChannel(order.getSaleChannel().getName())
                         .sellerName(sale.getSeller())
                         .registrationDate(order.getRegistrationDate())
@@ -506,9 +503,12 @@ public class OrderingImpl implements IOrdering {
                         .courier(order.getCourier().getName())
                         .paymentReceipts(paymentReceipts)
                         .courierPictures(courierPictures)
-                        .saleAmount(sale.getSaleAmount())
                         .observations(sale.getObservations())
                         .closingChannel(order.getClosingChannel().getName())
+                        .saleAmount(BigDecimal.valueOf(sale.getSaleAmount()).setScale(2, RoundingMode.HALF_EVEN))
+                        .advancedPayment(BigDecimal.valueOf(sale.getAdvancePayment()).setScale(2, RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment()).setScale(2,RoundingMode.HALF_EVEN))
+                        .deliveryAmount(BigDecimal.valueOf(sale.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
                         .build();
             }).toList();
         });
