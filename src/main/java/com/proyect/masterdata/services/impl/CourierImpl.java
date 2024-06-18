@@ -35,7 +35,6 @@ public class CourierImpl implements ICourier {
     private final OrderingRepository orderingRepository;
     private final OrderStateRepository orderStateRepository;
     private final OrderPaymentMethodRepository orderPaymentMethodRepository;
-    private final SaleRepository saleRepository;
     private final ICourierPicture iCourierPicture;
     private final IAudit iAudit;
     @Override

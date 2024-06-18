@@ -1,10 +1,11 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
-import com.proyect.masterdata.dto.OrderItemDTO;
 import com.proyect.masterdata.dto.OrderDTO;
-import com.proyect.masterdata.dto.ProductDTO;
-import com.proyect.masterdata.dto.request.*;
+import com.proyect.masterdata.dto.request.RequestOrderItem;
+import com.proyect.masterdata.dto.request.RequestOrderSave;
+import com.proyect.masterdata.dto.request.RequestOrderUpdate;
+import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -30,14 +31,9 @@ public class OrderingImpl implements IOrdering {
     private final UserRepository userRepository;
     private final OrderingRepository orderingRepository;
     private final OrderStateRepository orderStateRepository;
-    private final ISale iSale;
-    private final ICustomer iCustomer;
     private final IOrderItem iOrderItem;
     private final OrderingRepositoryCustom orderingRepositoryCustom;
-    private final SaleRepository saleRepository;
-    private final CustomerRepository customerRepository;
     private final OrderItemRepository orderItemRepository;
-    private final ProductPriceRepository productPriceRepository;
     private final ProductRepository productRepository;
     private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     private final OrderPaymentStateRepository orderPaymentStateRepository;
@@ -53,10 +49,12 @@ public class OrderingImpl implements IOrdering {
     private final SaleChannelRepository saleChannelRepository;
     private final ManagementTypeRepository managementTypeRepository;
     private final CourierPictureRepository courierPictureRepository;
-    private final ProductPictureRepository productPictureRepository;
     private final StoreRepository storeRepository;
     private final ClosingChannelRepository closingChannelRepository;
     private final CustomerTypeRepository customerTypeRepository;
+    private final DepartmentRepository departmentRepository;
+    private final ProvinceRepository provinceRepository;
+    private final DistrictRepository districtRepository;
     private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -69,7 +67,10 @@ public class OrderingImpl implements IOrdering {
         OrderPaymentMethod orderPaymentMethod;
         Store store;
         ClosingChannel closingChannel;
-
+        Department department;
+        Province province;
+        District district;
+        CustomerType customerType;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
@@ -80,6 +81,10 @@ public class OrderingImpl implements IOrdering {
             orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
             store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
             closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
+            department = departmentRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerDepartment().toUpperCase());
+            province = provinceRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerProvince().toUpperCase());
+            district = districtRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerDistrict().toUpperCase());
+            customerType = customerTypeRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerType().toUpperCase());
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -110,6 +115,22 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorClosingChannel);
         }
 
+        if(department == null){
+            throw new BadRequestExceptions(Constants.ErrorDepartment);
+        }
+
+        if(province == null){
+            throw new BadRequestExceptions(Constants.ErrorProvince);
+        }
+
+        if(district == null){
+            throw new BadRequestExceptions(Constants.ErrorDistrict);
+        }
+
+        if(customerType == null){
+            throw new BadRequestExceptions(Constants.ErrorCustomerType);
+        }
+
         try{
             requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
                 Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
@@ -124,6 +145,24 @@ public class OrderingImpl implements IOrdering {
             });
             Ordering ordering = orderingRepository.save(Ordering.builder()
                     .cancellation(false)
+                            .department(department)
+                            .departmentId(department.getId())
+                            .province(province)
+                            .provinceId(province.getId())
+                            .district(district)
+                            .districtId(district.getId())
+                            .customerType(customerType)
+                            .customerTypeId(customerType.getId())
+                            .customerName(requestOrderSave.getCustomerName().toUpperCase())
+                            .address(requestOrderSave.getCustomerAddress().toUpperCase())
+                            .instagram(requestOrderSave.getInstagram())
+                            .phone(requestOrderSave.getCustomerPhone())
+                            .reference(requestOrderSave.getCustomerReference().toUpperCase())
+                    .seller(user.getName() + " " + user.getSurname())
+                    .observations(requestOrderSave.getObservations().toUpperCase())
+                    .deliveryAddress(requestOrderSave.getDeliveryAddress())
+                    .deliveryAmount(requestOrderSave.getDeliveryAmount())
+                    .advancePayment(requestOrderSave.getAdvancedPayment())
                     .orderState(orderState)
                     .orderStateId(orderState.getId())
                     .client(user.getClient())
@@ -149,49 +188,10 @@ public class OrderingImpl implements IOrdering {
 
             iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
 
-            double saleAmount = 0.00;
-
             for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
-
-                Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
-
-                if(product == null){
-                    throw new BadRequestExceptions(Constants.ErrorProduct);
-                }
-
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
-
-                saleAmount += (productPrice.getUnitSalePrice() * requestOrderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * requestOrderItem.getQuantity()) * (requestOrderItem.getDiscount()/100));
                 iOrderItem.save(ordering, requestOrderItem,tokenUser);
             }
 
-            RequestSale requestSale = RequestSale.builder()
-                    .saleChannel(requestOrderSave.getSaleChannel())
-                    .seller(user.getName() + " " + user.getSurname())
-                    .paymentMethod(requestOrderSave.getPaymentMethod())
-                    .observations(requestOrderSave.getObservations())
-                    .managementType(requestOrderSave.getManagementType())
-                    .deliveryAmount(requestOrderSave.getDeliveryAmount())
-                    .deliveryAddress(requestOrderSave.getDeliveryAddress())
-                    .saleAmount(saleAmount)
-                    .advancedPayment(requestOrderSave.getAdvancedPayment())
-                    .build();
-
-            iSale.save(ordering,requestSale,tokenUser);
-
-            RequestCustomer requestCustomer = RequestCustomer.builder()
-                    .phone(requestOrderSave.getCustomerPhone())
-                    .name(requestOrderSave.getCustomerName())
-                    .type(requestOrderSave.getCustomerType().toUpperCase())
-                    .district(requestOrderSave.getCustomerDistrict())
-                    .province(requestOrderSave.getCustomerProvince())
-                    .department(requestOrderSave.getCustomerDepartment())
-                    .instagram(requestOrderSave.getInstagram())
-                    .reference(requestOrderSave.getCustomerReference())
-                    .address(requestOrderSave.getCustomerAddress())
-                    .build();
-
-            iCustomer.save(ordering,requestCustomer,tokenUser);
             iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -217,7 +217,10 @@ public class OrderingImpl implements IOrdering {
             OrderPaymentMethod orderPaymentMethod;
             Store store;
             ClosingChannel closingChannel;
-
+            Department department;
+            Province province;
+            District district;
+            CustomerType customerType;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
@@ -228,6 +231,10 @@ public class OrderingImpl implements IOrdering {
                 orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
                 store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
                 closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
+                department = departmentRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerDepartment().toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerProvince().toUpperCase());
+                district = districtRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerDistrict().toUpperCase());
+                customerType = customerTypeRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerType().toUpperCase());
             }catch (RuntimeException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -258,6 +265,22 @@ public class OrderingImpl implements IOrdering {
                 throw new BadRequestExceptions(Constants.ErrorClosingChannel);
             }
 
+            if(department == null){
+                throw new BadRequestExceptions(Constants.ErrorDepartment);
+            }
+
+            if(province == null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }
+
+            if(district == null){
+                throw new BadRequestExceptions(Constants.ErrorDistrict);
+            }
+
+            if(customerType == null){
+                throw new BadRequestExceptions(Constants.ErrorCustomerType);
+            }
+
             try{
                 requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
                     Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
@@ -272,6 +295,24 @@ public class OrderingImpl implements IOrdering {
                 });
                 Ordering ordering = orderingRepository.save(Ordering.builder()
                         .cancellation(false)
+                        .department(department)
+                        .departmentId(department.getId())
+                        .province(province)
+                        .provinceId(province.getId())
+                        .district(district)
+                        .districtId(district.getId())
+                        .customerType(customerType)
+                        .customerTypeId(customerType.getId())
+                        .seller(user.getName() + " " + user.getSurname())
+                        .customerName(requestOrderSave.getCustomerName().toUpperCase())
+                        .address(requestOrderSave.getCustomerAddress().toUpperCase())
+                        .instagram(requestOrderSave.getInstagram())
+                        .phone(requestOrderSave.getCustomerPhone())
+                        .reference(requestOrderSave.getCustomerReference().toUpperCase())
+                        .observations(requestOrderSave.getObservations().toUpperCase())
+                        .deliveryAddress(requestOrderSave.getDeliveryAddress())
+                        .deliveryAmount(requestOrderSave.getDeliveryAmount())
+                        .advancePayment(requestOrderSave.getAdvancedPayment())
                         .orderState(orderState)
                         .orderStateId(orderState.getId())
                         .client(user.getClient())
@@ -297,49 +338,10 @@ public class OrderingImpl implements IOrdering {
 
                 iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
 
-                double saleAmount = 0.00;
-
                 for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
-
-                    Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
-
-                    if(product == null){
-                        throw new BadRequestExceptions(Constants.ErrorProduct);
-                    }
-
-                    ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
-
-                    saleAmount += (productPrice.getUnitSalePrice() * requestOrderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * requestOrderItem.getQuantity()) * (requestOrderItem.getDiscount()/100));
                     iOrderItem.save(ordering, requestOrderItem,tokenUser);
                 }
 
-                RequestSale requestSale = RequestSale.builder()
-                        .saleChannel(requestOrderSave.getSaleChannel())
-                        .seller(user.getName() + " " + user.getSurname())
-                        .paymentMethod(requestOrderSave.getPaymentMethod())
-                        .observations(requestOrderSave.getObservations())
-                        .managementType(requestOrderSave.getManagementType())
-                        .deliveryAmount(requestOrderSave.getDeliveryAmount())
-                        .deliveryAddress(requestOrderSave.getDeliveryAddress())
-                        .saleAmount(saleAmount)
-                        .advancedPayment(requestOrderSave.getAdvancedPayment())
-                        .build();
-
-                iSale.save(ordering,requestSale,tokenUser);
-
-                RequestCustomer requestCustomer = RequestCustomer.builder()
-                        .phone(requestOrderSave.getCustomerPhone())
-                        .name(requestOrderSave.getCustomerName())
-                        .type(requestOrderSave.getCustomerType().toUpperCase())
-                        .district(requestOrderSave.getCustomerDistrict())
-                        .province(requestOrderSave.getCustomerProvince())
-                        .department(requestOrderSave.getCustomerDepartment())
-                        .instagram(requestOrderSave.getInstagram())
-                        .reference(requestOrderSave.getCustomerReference())
-                        .address(requestOrderSave.getCustomerAddress())
-                        .build();
-
-                iCustomer.save(ordering,requestCustomer,tokenUser);
                 iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -421,38 +423,42 @@ public class OrderingImpl implements IOrdering {
             }
 
             List<OrderDTO> orderDTOS = pageOrdering.getContent().stream().map(order -> {
-                Sale sale = saleRepository.findByOrderId(order.getId());
-                Customer customer = customerRepository.findByOrderId(order.getId());
                 List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
                 List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
-
+                List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
+                double saleAmount = 0.00;
+                for(OrderItem orderItem : orderItems){
+                    saleAmount += (orderItem.getQuantity()*orderItem.getQuantity()) - ((orderItem.getQuantity()*orderItem.getQuantity())*(orderItem.getDiscount()/100));
+                }
                 return OrderDTO.builder()
                         .id(order.getId())
-                        .customerName(customer.getName())
-                        .customerPhone(customer.getPhone())
-                        .customerType(customer.getCustomerType().getName())
+                        .customerName(order.getCustomerName())
+                        .customerPhone(order.getPhone())
+                        .customerType(order.getCustomerType().getName())
                         .closingChannel(order.getClosingChannel().getName())
                         .orderStatus(order.getOrderState().getName())
-                        .department(customer.getDepartment().getName())
-                        .province(customer.getProvince().getName())
-                        .district(customer.getDistrict().getName())
-                        .address(customer.getAddress())
-                        .instagram(customer.getInstagram())
+                        .department(order.getDepartment().getName())
+                        .province(order.getProvince().getName())
+                        .district(order.getDistrict().getName())
+                        .address(order.getAddress())
+                        .instagram(order.getInstagram())
                         .managementType(order.getManagementType().getName())
-                        .reference(customer.getReference())
+                        .reference(order.getReference())
                         .saleChannel(order.getSaleChannel().getName())
-                        .sellerName(sale.getSeller())
+                        .sellerName(order.getSeller())
                         .registrationDate(order.getRegistrationDate())
                         .updateDate(order.getUpdateDate())
                         .paymentMethod(order.getOrderPaymentMethod().getName())
-                        .deliveryAddress(sale.getDeliveryAddress())
+                        .paymentState(order.getOrderPaymentState().getName())
+                        .deliveryAddress(order.getDeliveryAddress())
                         .courier(order.getCourier().getName())
                         .paymentReceipts(paymentReceipts)
                         .courierPictures(courierPictures)
-                        .saleAmount(BigDecimal.valueOf(sale.getSaleAmount()).setScale(2, RoundingMode.HALF_EVEN))
-                        .advancedPayment(BigDecimal.valueOf(sale.getAdvancePayment()).setScale(2, RoundingMode.HALF_EVEN))
-                        .duePayment(BigDecimal.valueOf((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment()).setScale(2,RoundingMode.HALF_EVEN))
-                        .deliveryAmount(BigDecimal.valueOf(sale.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
+                        .observations(order.getObservations())
+                        .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
+                        .advancedPayment(BigDecimal.valueOf(order.getAdvancePayment()).setScale(2, RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf((saleAmount+order.getDeliveryAmount())-order.getAdvancePayment()).setScale(2,RoundingMode.HALF_EVEN))
+                        .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
                         .build();
             }).toList();
 
@@ -476,42 +482,43 @@ public class OrderingImpl implements IOrdering {
                 return Collections.emptyList();
             }
             return orderingList.stream().map(order -> {
-                Sale sale = saleRepository.findByOrderId(order.getId());
-                System.out.println(order.getId());
-                Customer customer = customerRepository.findByOrderId(order.getId());
                 List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
                 List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
-
+                List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
+                double saleAmount = 0.00;
+                for(OrderItem orderItem : orderItems){
+                    saleAmount += (orderItem.getQuantity()*orderItem.getQuantity()) - ((orderItem.getQuantity()*orderItem.getQuantity())*(orderItem.getDiscount()/100));
+                }
                 return OrderDTO.builder()
                         .id(order.getId())
                         .serial(order.getId())
-                        .customerName(customer.getName())
-                        .customerPhone(customer.getPhone())
-                        .customerType(customer.getCustomerType().getName())
+                        .customerName(order.getCustomerName())
+                        .customerPhone(order.getPhone())
+                        .customerType(order.getCustomerType().getName())
                         .orderStatus(order.getOrderState().getName())
-                        .department(customer.getDepartment().getName())
-                        .province(customer.getProvince().getName())
-                        .district(customer.getDistrict().getName())
-                        .address(customer.getAddress())
-                        .instagram(customer.getInstagram())
+                        .department(order.getDepartment().getName())
+                        .province(order.getProvince().getName())
+                        .district(order.getDistrict().getName())
+                        .address(order.getAddress())
+                        .instagram(order.getInstagram())
                         .managementType(order.getManagementType().getName())
-                        .reference(customer.getReference())
+                        .reference(order.getReference())
                         .saleChannel(order.getSaleChannel().getName())
-                        .sellerName(sale.getSeller())
+                        .sellerName(order.getSeller())
                         .registrationDate(order.getRegistrationDate())
                         .updateDate(order.getUpdateDate())
                         .paymentMethod(order.getOrderPaymentMethod().getName())
                         .paymentState(order.getOrderPaymentState().getName())
-                        .deliveryAddress(sale.getDeliveryAddress())
+                        .deliveryAddress(order.getDeliveryAddress())
                         .courier(order.getCourier().getName())
                         .paymentReceipts(paymentReceipts)
                         .courierPictures(courierPictures)
-                        .observations(sale.getObservations())
+                        .observations(order.getObservations())
                         .closingChannel(order.getClosingChannel().getName())
-                        .saleAmount(BigDecimal.valueOf(sale.getSaleAmount()).setScale(2, RoundingMode.HALF_EVEN))
-                        .advancedPayment(BigDecimal.valueOf(sale.getAdvancePayment()).setScale(2, RoundingMode.HALF_EVEN))
-                        .duePayment(BigDecimal.valueOf((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment()).setScale(2,RoundingMode.HALF_EVEN))
-                        .deliveryAmount(BigDecimal.valueOf(sale.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
+                        .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
+                        .advancedPayment(BigDecimal.valueOf(order.getAdvancePayment()).setScale(2, RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf((saleAmount+order.getDeliveryAmount())-order.getAdvancePayment()).setScale(2,RoundingMode.HALF_EVEN))
+                        .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
                         .build();
             }).toList();
         });
@@ -522,7 +529,6 @@ public class OrderingImpl implements IOrdering {
         User user;
         Ordering ordering;
         OrderState orderState;
-        Sale sale;
         OrderPaymentMethod orderPaymentMethod;
         OrderPaymentState orderPaymentState;
         Courier courier;
@@ -556,7 +562,6 @@ public class OrderingImpl implements IOrdering {
         if(ordering == null){
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }else {
-            sale = saleRepository.findByOrderId(ordering.getId());
             orderStock = orderStockRepository.findByOrderId(ordering.getId());
         }
 
@@ -567,9 +572,9 @@ public class OrderingImpl implements IOrdering {
                 ordering.setOrderStateId(orderState.getId());
             }
 
-            if(!Objects.equals(requestOrderUpdate.getObservations(),sale.getObservations()))
+            if(!Objects.equals(requestOrderUpdate.getObservations().toUpperCase(),ordering.getObservations().toUpperCase()))
             {
-                sale.setObservations(requestOrderUpdate.getObservations());
+                ordering.setObservations(requestOrderUpdate.getObservations().toUpperCase());
             }
 
             if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
@@ -605,7 +610,6 @@ public class OrderingImpl implements IOrdering {
             }
 
             orderingRepository.save(ordering);
-            saleRepository.save(sale);
             iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
             iCourierPicture.uploadPicture(requestOrderUpdate.getPictures(),ordering.getId(),user.getUsername());
             iAudit.save("UPDATE_ORDER","UPDATE ORDER "+ordering.getId()+".",user.getUsername());
@@ -625,7 +629,6 @@ public class OrderingImpl implements IOrdering {
             User user;
             Ordering ordering;
             OrderState orderState;
-            Sale sale;
             OrderPaymentMethod orderPaymentMethod;
             OrderPaymentState orderPaymentState;
             Courier courier;
@@ -659,7 +662,6 @@ public class OrderingImpl implements IOrdering {
             if(ordering == null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
             }else {
-                sale = saleRepository.findByOrderId(ordering.getId());
                 orderStock = orderStockRepository.findByOrderId(ordering.getId());
             }
 
@@ -670,9 +672,9 @@ public class OrderingImpl implements IOrdering {
                     ordering.setOrderStateId(orderState.getId());
                 }
 
-                if(!Objects.equals(requestOrderUpdate.getObservations(),sale.getObservations()))
+                if(!Objects.equals(requestOrderUpdate.getObservations().toUpperCase(),ordering.getObservations().toUpperCase()))
                 {
-                    sale.setObservations(requestOrderUpdate.getObservations());
+                    ordering.setObservations(requestOrderUpdate.getObservations().toUpperCase());
                 }
 
                 if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
@@ -708,7 +710,6 @@ public class OrderingImpl implements IOrdering {
                 }
 
                 orderingRepository.save(ordering);
-                saleRepository.save(sale);
                 iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
                 iCourierPicture.uploadPicture(requestOrderUpdate.getPictures(),ordering.getId(),user.getUsername());
                 iAudit.save("UPDATE_ORDER","UPDATE ORDER "+ordering.getId()+".",user.getUsername());

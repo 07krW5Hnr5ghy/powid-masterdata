@@ -36,7 +36,6 @@ public class OrderItemImpl implements IOrderItem {
     private final SupplierProductRepository supplierProductRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final OrderingRepository orderingRepository;
-    private final SaleRepository saleRepository;
     private final ProductPriceRepository productPriceRepository;
     private final ProductPictureRepository productPictureRepository;
     private final OrderItemRepositoryCustom orderItemRepositoryCustom;
@@ -247,20 +246,10 @@ public class OrderItemImpl implements IOrderItem {
             }
 
             try{
-                Sale sale = saleRepository.findByOrderId(ordering.getId());
                 orderItem.setStatus(false);
                 orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderItem.setTokenUser(user.getUsername());
                 orderItemRepository.save(orderItem);
-                List<OrderItem> orderItemList = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
-                double newSaleAmount = 0.00;
-                for(OrderItem orderProduct : orderItemList ){
-                    ProductPrice productPrice = productPriceRepository.findByProductId(orderProduct.getProductId());
-                    newSaleAmount += (productPrice.getUnitSalePrice() * orderProduct.getQuantity()) - ((productPrice.getUnitSalePrice() * orderProduct.getQuantity())*(orderProduct.getDiscount()/100));
-                }
-                sale.setSaleAmount(newSaleAmount);
-                sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());
-                saleRepository.save(sale);
                 iAudit.save("DELETE_ORDER_ITEM","DELETE ORDER ITEM "+orderItem.getProduct().getSku()+" FOR ORDER "+orderItem.getOrderId()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
@@ -308,7 +297,6 @@ public class OrderItemImpl implements IOrderItem {
             }
 
             try{
-                Sale sale = saleRepository.findByOrderId(ordering.getId());
                 OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
                         .ordering(ordering)
                         .orderId(ordering.getId())
@@ -324,15 +312,6 @@ public class OrderItemImpl implements IOrderItem {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.getUsername())
                         .build());
-                List<OrderItem> orderItemList = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
-                double newSaleAmount = 0.00;
-                for(OrderItem orderProduct : orderItemList ){
-                    ProductPrice productPrice = productPriceRepository.findByProductId(orderProduct.getProductId());
-                    newSaleAmount += (productPrice.getUnitSalePrice() * orderProduct.getQuantity()) - ((productPrice.getUnitSalePrice() * orderProduct.getQuantity())*(requestOrderItem.getDiscount()/100));
-                }
-                sale.setSaleAmount(newSaleAmount);
-                sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());
-                saleRepository.save(sale);
                 iAudit.save("ADD_ORDER_ITEM","ADD ORDER ITEM "+newOrderItem.getProduct().getSku()+" FOR ORDER "+newOrderItem.getOrderId()+" WITH "+newOrderItem.getQuantity()+" UNITS.",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -381,21 +360,11 @@ public class OrderItemImpl implements IOrderItem {
             }
 
             try{
-                Sale sale = saleRepository.findByOrderId(ordering.getId());
                 orderItem.setQuantity(requestOrderItem.getQuantity());
                 orderItem.setDiscount(requestOrderItem.getDiscount());
                 orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderItem.setObservations(requestOrderItem.getObservations().toUpperCase());
                 orderItemRepository.save(orderItem);
-                List<OrderItem> orderItemList = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
-                double newSaleAmount = 0.00;
-                for(OrderItem orderProduct : orderItemList ){
-                    ProductPrice productPrice = productPriceRepository.findByProductId(orderProduct.getProductId());
-                    newSaleAmount += (productPrice.getUnitSalePrice() * orderProduct.getQuantity()) - ((productPrice.getUnitSalePrice() * orderProduct.getQuantity())*(requestOrderItem.getDiscount()/100));
-                }
-                sale.setSaleAmount(newSaleAmount);
-                sale.setDuePayment((newSaleAmount + sale.getDeliveryAmount()) - sale.getAdvancePayment());
-                saleRepository.save(sale);
                 iAudit.save("UPDATE_ORDER_ITEM","UPDATE ORDER ITEM "+orderItem.getProduct().getSku()+" FOR ORDER "+orderItem.getOrderId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
