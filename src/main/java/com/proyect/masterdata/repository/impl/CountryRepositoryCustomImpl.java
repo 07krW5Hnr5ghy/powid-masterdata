@@ -1,6 +1,5 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.domain.Country;
 import com.proyect.masterdata.repository.CountryRepositoryCustom;
 import jakarta.persistence.EntityManager;
@@ -8,7 +7,6 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.Count;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Repository
