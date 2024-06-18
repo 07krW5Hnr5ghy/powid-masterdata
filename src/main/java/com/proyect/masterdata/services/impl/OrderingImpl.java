@@ -450,6 +450,9 @@ public class OrderingImpl implements IOrdering {
                         .paymentReceipts(paymentReceipts)
                         .courierPictures(courierPictures)
                         .saleAmount(BigDecimal.valueOf(sale.getSaleAmount()).setScale(2, RoundingMode.HALF_EVEN))
+                        .advancedPayment(BigDecimal.valueOf(sale.getAdvancePayment()).setScale(2, RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment()).setScale(2,RoundingMode.HALF_EVEN))
+                        .deliveryAmount(BigDecimal.valueOf(sale.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
                         .build();
             }).toList();
 
