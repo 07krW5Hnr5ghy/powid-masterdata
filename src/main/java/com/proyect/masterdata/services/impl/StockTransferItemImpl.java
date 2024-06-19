@@ -110,8 +110,10 @@ public class StockTransferItemImpl implements IStockTransferItem {
             }
 
             List<StockTransferItemDTO> stockTransferItemDTOS = pageStockTransferItem.getContent().stream().map(stockTransferItem -> StockTransferItemDTO.builder()
-                    .stockTransferId(stockTransferItem.getStockTransferId())
-                    .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
+                    .serial(stockTransferItem.getStockTransfer().getSerial())
+                    .origin(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
+                    .destination(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())
+                    .supplierProduct(stockTransferItem.getSupplierProduct().getSerial())
                     .quantity(stockTransferItem.getQuantity())
                     .registrationDate(stockTransferItem.getRegistrationDate())
                     .build()
@@ -142,11 +144,10 @@ public class StockTransferItemImpl implements IStockTransferItem {
             }
             return stockTransferItems.stream().map(stockTransferItem -> StockTransferItemDTO.builder()
                     .serial(stockTransferItem.getStockTransfer().getSerial())
-                    .stockTransferId(stockTransferItem.getStockTransferId())
-                    .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
+                    .supplierProduct(stockTransferItem.getSupplierProduct().getSerial())
                     .quantity(stockTransferItem.getQuantity())
-                    .originWarehouse(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
-                    .destinationWarehouse(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())
+                    .origin(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
+                    .destination(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())
                     .registrationDate(stockTransferItem.getRegistrationDate())
                     .build()
             ).toList();
