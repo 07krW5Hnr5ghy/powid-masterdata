@@ -250,10 +250,9 @@ public class StockTransferImpl implements IStockTransfer {
 
             List<StockTransferDTO> stockTransferDTOS = pageStockTransfer.getContent().stream().map(stockTransfer -> StockTransferDTO.builder()
                     .serial(stockTransfer.getSerial())
-                    .originWarehouse(stockTransfer.getOriginWarehouse().getName())
-                    .destinationWarehouse(stockTransfer.getDestinationWarehouse().getName())
+                    .origin(stockTransfer.getOriginWarehouse().getName())
+                    .destination(stockTransfer.getDestinationWarehouse().getName())
                     .registrationDate(stockTransfer.getRegistrationDate())
-                    .stockTransferId(stockTransfer.getId())
                     .build()).toList();
 
             return new PageImpl<>(stockTransferDTOS,pageStockTransfer.getPageable(),pageStockTransfer.getTotalElements());
@@ -277,10 +276,9 @@ public class StockTransferImpl implements IStockTransfer {
             }
             return stockTransfers.stream().map(stockTransfer -> StockTransferDTO.builder()
                     .serial(stockTransfer.getSerial())
-                    .originWarehouse(stockTransfer.getOriginWarehouse().getName())
-                    .destinationWarehouse(stockTransfer.getDestinationWarehouse().getName())
+                    .origin(stockTransfer.getOriginWarehouse().getName())
+                    .destination(stockTransfer.getDestinationWarehouse().getName())
                     .registrationDate(stockTransfer.getRegistrationDate())
-                    .stockTransferId(stockTransfer.getId())
                     .build()).toList();
         });
     }

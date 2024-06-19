@@ -12,9 +12,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class StockTransferDTO {
-    private Long stockTransferId;
     private String serial;
-    private String originWarehouse;
-    private String destinationWarehouse;
+    private String origin;
+    private String destination;
     private Date registrationDate;
 }
