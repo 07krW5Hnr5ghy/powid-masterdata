@@ -277,7 +277,7 @@ public class ShipmentImpl implements IShipment {
             }
 
             List<ShipmentDTO> shipmentDTOS = pageShipment.getContent().stream().map(shipment -> ShipmentDTO.builder()
-                    .purchaseSerial(shipment.getPurchaseSerial())
+                    .purchase(shipment.getPurchaseSerial())
                     .warehouse(shipment.getWarehouse().getName())
                     .shipmentType(shipment.getShipmentType().getName())
                     .registrationDate(shipment.getRegistrationDate())
@@ -320,7 +320,7 @@ public class ShipmentImpl implements IShipment {
             }
 
             List<ShipmentDTO> shipmentDTOS = pageShipment.getContent().stream().map(shipment -> ShipmentDTO.builder()
-                    .purchaseSerial(shipment.getPurchaseSerial())
+                    .purchase(shipment.getPurchaseSerial())
                     .warehouse(shipment.getWarehouse().getName())
                     .shipmentType(shipment.getShipmentType().getName())
                     .registrationDate(shipment.getRegistrationDate())
@@ -348,7 +348,7 @@ public class ShipmentImpl implements IShipment {
             }
 
             return shipments.stream().map(shipment -> ShipmentDTO.builder()
-                    .purchaseSerial(shipment.getPurchaseSerial())
+                    .purchase(shipment.getPurchaseSerial())
                     .warehouse(shipment.getWarehouse().getName())
                     .shipmentType(shipment.getShipmentType().getName())
                     .registrationDate(shipment.getRegistrationDate())

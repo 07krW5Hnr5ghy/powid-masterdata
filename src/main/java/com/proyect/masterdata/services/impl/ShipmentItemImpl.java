@@ -316,12 +316,11 @@ public class ShipmentItemImpl implements IShipmentItem {
             }
 
             List<ShipmentItemDTO> shipmentItemDTOS = pageShipmentItem.getContent().stream().map(shipmentItem -> ShipmentItemDTO.builder()
-                    .purchaseSerial(shipmentItem.getPurchaseItem().getPurchase().getSerial())
+                    .purchase(shipmentItem.getPurchaseItem().getPurchase().getSerial())
                     .quantity(shipmentItem.getQuantity())
-                    .supplierProductSerial(shipmentItem.getSupplierProduct().getSerial())
+                    .supplierProduct(shipmentItem.getSupplierProduct().getSerial())
                     .warehouse(shipmentItem.getShipment().getWarehouse().getName())
                     .registrationDate(shipmentItem.getRegistrationDate())
-                    .id(shipmentItem.getId())
                     .build()).toList();
 
             return new PageImpl<>(shipmentItemDTOS, pageShipmentItem.getPageable(), pageShipmentItem.getTotalElements());
@@ -350,12 +349,11 @@ public class ShipmentItemImpl implements IShipmentItem {
             }
 
             return shipmentItems.stream().map(shipmentItem -> ShipmentItemDTO.builder()
-                    .purchaseSerial(shipmentItem.getPurchaseItem().getPurchase().getSerial())
+                    .purchase(shipmentItem.getPurchaseItem().getPurchase().getSerial())
                     .quantity(shipmentItem.getQuantity())
-                    .supplierProductSerial(shipmentItem.getSupplierProduct().getSerial())
+                    .supplierProduct(shipmentItem.getSupplierProduct().getSerial())
                     .warehouse(shipmentItem.getShipment().getWarehouse().getName())
                     .registrationDate(shipmentItem.getRegistrationDate())
-                    .id(shipmentItem.getId())
                     .build()).toList();
         });
     }
