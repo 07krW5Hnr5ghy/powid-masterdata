@@ -14,9 +14,8 @@ import lombok.NoArgsConstructor;
 public class PurchaseItemDTO {
     private String serial;
     private Integer quantity;
-    private String supplierProductSerial;
+    private String supplierProduct;
     private String supplier;
     private Double unitPrice;
     private Date registrationDate;
-    private Long id;
 }
