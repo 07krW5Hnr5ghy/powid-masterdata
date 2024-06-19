@@ -157,10 +157,10 @@ public class GeneralStockImpl implements IGeneralStock {
             Page<GeneralStock> generalStockPage;
             Long clientId;
             Long supplierProductId;
-            if(supplierProductSerial==null){
-                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
-            }else{
+            if(supplierProductSerial!=null){
                 supplierProductId = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase()).getId();
+            }else{
+                supplierProductId = null;
             }
 
             try {
@@ -188,7 +188,7 @@ public class GeneralStockImpl implements IGeneralStock {
             List<GeneralStockDTO> generalStockDTOs = generalStockPage.getContent().stream()
                     .map(generalStock -> GeneralStockDTO.builder()
                             .quantity(generalStock.getQuantity())
-                            .supplierProductSerial(generalStock.getSupplierProduct().getSerial())
+                            .supplierProduct(generalStock.getSupplierProduct().getSerial())
                             .registrationDate(generalStock.getRegistrationDate())
                             .updateDate(generalStock.getUpdateDate())
                             .build())
@@ -219,7 +219,7 @@ public class GeneralStockImpl implements IGeneralStock {
             return generalStocks.stream()
                     .map(generalStock -> GeneralStockDTO.builder()
                             .quantity(generalStock.getQuantity())
-                            .supplierProductSerial(generalStock.getSupplierProduct().getSerial())
+                            .supplierProduct(generalStock.getSupplierProduct().getSerial())
                             .registrationDate(generalStock.getRegistrationDate())
                             .updateDate(generalStock.getUpdateDate())
                             .build())
