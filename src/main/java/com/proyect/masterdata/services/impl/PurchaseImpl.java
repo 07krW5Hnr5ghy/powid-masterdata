@@ -183,11 +183,17 @@ public class PurchaseImpl implements IPurchase {
                 serialData = null;
             }
 
+            if(documentName!=null){
+                purchaseDocumentId = purchaseDocumentRepository.findByNameAndStatusTrue(documentName.toUpperCase()).getId();
+            }else{
+                purchaseDocumentId = null;
+            }
+
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                purchaseDocumentId = purchaseDocumentRepository.findByNameAndStatusTrue(documentName.toUpperCase()).getId();
                 pagePurchase = purchaseRepositoryCustom.searchForPurchase(clientId,serialData,purchaseDocumentId,sort,sortColumn,pageNumber,pageSize,true);
             }catch (RuntimeException e){
+                e.printStackTrace();
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
 
@@ -201,6 +207,7 @@ public class PurchaseImpl implements IPurchase {
                         .serial(purchase.getSerial())
                         .registrationDate(purchase.getRegistrationDate())
                         .purchaseDocument(purchaseDocument.getName())
+                        .supplier(purchase.getSupplier().getBusinessName())
                         .build();
             }).toList();
 
@@ -228,8 +235,7 @@ public class PurchaseImpl implements IPurchase {
                     .serial(purchase.getSerial())
                     .registrationDate(purchase.getRegistrationDate())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
-                    .supplierName(purchase.getSupplier().getBusinessName())
-                    .id(purchase.getId())
+                    .supplier(purchase.getSupplier().getBusinessName())
                     .build()
             ).toList();
         });
@@ -254,8 +260,7 @@ public class PurchaseImpl implements IPurchase {
                     .serial(purchase.getSerial())
                     .registrationDate(purchase.getRegistrationDate())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
-                    .supplierName(purchase.getSupplier().getBusinessName())
-                    .id(purchase.getId())
+                    .supplier(purchase.getSupplier().getBusinessName())
                     .build()
             ).toList();
         });
