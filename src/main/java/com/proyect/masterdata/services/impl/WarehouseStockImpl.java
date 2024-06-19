@@ -153,9 +153,14 @@ public class WarehouseStockImpl implements IWarehouseStock {
             Long clientId;
             Long warehouseId;
 
+            if(warehouse != null){
+                warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+            }else{
+                warehouseId = null;
+            }
+
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
                 warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(clientId, warehouseId, sort,
                         sortColumn,
                         pageNumber,
@@ -172,7 +177,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
             List<WarehouseStockDTO> warehouseStockDTOs = warehouseStockPage.getContent().stream()
                     .map(warehouseStock -> WarehouseStockDTO.builder()
                             .quantity(warehouseStock.getQuantity())
-                            .supplierProductSerial(warehouseStock.getSupplierProduct().getSerial())
+                            .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
                             .warehouse(warehouseStock.getWarehouse().getName())
                             .registrationDate(warehouseStock.getRegistrationDate())
                             .updateDate(warehouseStock.getUpdateDate())
@@ -208,12 +213,10 @@ public class WarehouseStockImpl implements IWarehouseStock {
             return warehouseStocks.stream()
                     .map(warehouseStock -> WarehouseStockDTO.builder()
                             .quantity(warehouseStock.getQuantity())
-                            .supplierProductSerial(warehouseStock.getSupplierProduct().getSerial())
+                            .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
                             .warehouse(warehouseStock.getWarehouse().getName())
                             .registrationDate(warehouseStock.getRegistrationDate())
                             .updateDate(warehouseStock.getUpdateDate())
-                            .id(warehouseStock.getId())
-                            .productSku(warehouseStock.getSupplierProduct().getProduct().getSku())
                             .build())
                     .toList();
         });

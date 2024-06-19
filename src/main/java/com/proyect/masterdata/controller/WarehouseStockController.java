@@ -31,7 +31,7 @@ public class WarehouseStockController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
     public ResponseEntity<Page<WarehouseStockDTO>> list(
-            @RequestParam(value = "warehouse", required = true) String warehouse,
+            @RequestParam(value = "warehouse", required = false) String warehouse,
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,

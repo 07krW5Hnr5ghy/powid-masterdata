@@ -13,10 +13,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class WarehouseStockDTO {
     public String warehouse;
-    public String supplierProductSerial;
+    public String supplierProduct;
     public Integer quantity;
     public Date registrationDate;
     public Date updateDate;
-    public Long id;
-    public String productSku;
 }
