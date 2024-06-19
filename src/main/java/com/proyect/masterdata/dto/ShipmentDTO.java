@@ -16,5 +16,4 @@ public class ShipmentDTO {
     private String warehouse;
     private String shipmentType;
     private Date registrationDate;
-    private Long id;
 }

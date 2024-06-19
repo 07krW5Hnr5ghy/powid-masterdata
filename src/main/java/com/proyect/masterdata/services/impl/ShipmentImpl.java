@@ -352,7 +352,6 @@ public class ShipmentImpl implements IShipment {
                     .warehouse(shipment.getWarehouse().getName())
                     .shipmentType(shipment.getShipmentType().getName())
                     .registrationDate(shipment.getRegistrationDate())
-                    .id(shipment.getId())
                     .build()).toList();
         });
     }
