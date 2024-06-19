@@ -181,7 +181,7 @@ public class StockTransactionImpl implements IStockTransaction {
             List<StockTransactionDTO> stockTransactionDTOS = pageStockTransaction.getContent().stream().map(stockTransaction -> StockTransactionDTO.builder()
                     .serial(stockTransaction.getSerial())
                     .warehouse(stockTransaction.getWarehouse().getName())
-                    .stockTransactionType(stockTransaction.getStockTransactionType().getName())
+                    .transactionType(stockTransaction.getStockTransactionType().getName())
                     .registrationDate(stockTransaction.getRegistrationDate())
                     .build()).toList();
 
@@ -207,9 +207,8 @@ public class StockTransactionImpl implements IStockTransaction {
             return stockTransactions.stream().map(stockTransaction -> StockTransactionDTO.builder()
                     .serial(stockTransaction.getSerial())
                     .warehouse(stockTransaction.getWarehouse().getName())
-                    .stockTransactionType(stockTransaction.getStockTransactionType().getName())
+                    .transactionType(stockTransaction.getStockTransactionType().getName())
                     .registrationDate(stockTransaction.getRegistrationDate())
-                    .id(stockTransaction.getId())
                     .build()).toList();
         });
     }

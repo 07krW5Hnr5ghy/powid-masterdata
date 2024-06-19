@@ -1,6 +1,5 @@
 package com.proyect.masterdata.seeder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CountryDTO;
 import com.proyect.masterdata.dto.LocationDTO;
@@ -17,9 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -1840,8 +1836,8 @@ public class Seeder implements CommandLineRunner {
                         iSupplierProduct.save(requestSupplierProduct36, "NTORRES");
 
                         // stock transaction types mocks
-                        iStockTransactionType.save("entrada", "admin1");
-                        iStockTransactionType.save("salida", "admin1");
+                        iStockTransactionType.save("embarque", "admin1");
+                        iStockTransactionType.save("pedido", "admin1");
                         iStockTransactionType.save("transferencia-entrada", "admin1");
                         iStockTransactionType.save("transferencia-salida", "admin1");
                         iStockTransactionType.save("devolucion-comprador","admin1");
