@@ -335,6 +335,7 @@ public class ProductImpl implements IProduct {
                 List<String> productImages = productPictureRepository.findAllByProductId(product.getId()).stream().map(ProductPicture::getProductPictureUrl).toList();
                 return ProductDTO.builder()
                         .sku(product.getSku())
+                        .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
                         .category(product.getCategoryProduct().getName())
                         .color(product.getColor().getName())
@@ -342,6 +343,8 @@ public class ProductImpl implements IProduct {
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
                         .pictures(productImages)
+                        .registrationDate(product.getRegistrationDate())
+                        .updateDate(product.getUpdateDate())
                         .build();
             }).toList();
 
@@ -379,12 +382,15 @@ public class ProductImpl implements IProduct {
                 ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
+                        .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
                         .category(product.getCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
+                        .registrationDate(product.getRegistrationDate())
+                        .updateDate(product.getUpdateDate())
                         .build();
             }).toList();
 
@@ -413,12 +419,15 @@ public class ProductImpl implements IProduct {
                 ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
+                        .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
                         .category(product.getCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
+                        .registrationDate(product.getRegistrationDate())
+                        .updateDate(product.getUpdateDate())
                         .build();
             }).toList();
         });
@@ -445,12 +454,15 @@ public class ProductImpl implements IProduct {
                 ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
+                        .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
                         .category(product.getCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
+                        .registrationDate(product.getRegistrationDate())
+                        .updateDate(product.getUpdateDate())
                         .build();
             }).toList();
         });
@@ -479,12 +491,15 @@ public class ProductImpl implements IProduct {
                 ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
+                        .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
                         .category(product.getCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
+                        .registrationDate(product.getRegistrationDate())
+                        .updateDate(product.getUpdateDate())
                         .build();
             }).toList();
         });
