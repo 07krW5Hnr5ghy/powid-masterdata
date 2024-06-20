@@ -15,12 +15,11 @@ import com.proyect.masterdata.services.IStockTransaction;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -37,6 +36,7 @@ public class OrderReturnImpl implements IOrderReturn {
     private final IStockTransaction iStockTransaction;
     private final ProductRepository productRepository;
     private final OrderReturnTypeRepository orderReturnTypeRepository;
+    private final OrderReturnRepositoryCustom orderReturnRepositoryCustom;
     private final IAudit iAudit;
     @Override
     public ResponseSuccess save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -229,6 +229,86 @@ public class OrderReturnImpl implements IOrderReturn {
                     .orderId(orderReturn.getOrderId())
                     .warehouse(orderReturn.getOrderStock().getWarehouse().getName())
                     .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<OrderReturnDTO>> listPagination(Long orderId, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderReturn> orderReturnPage;
+            Long clientId;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderReturnPage = orderReturnRepositoryCustom.searchForOrderReturn(
+                        orderId,
+                        clientId,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true
+                );
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(orderReturnPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<OrderReturnDTO> orderReturnDTOS = orderReturnPage.getContent().stream().map(orderReturn -> OrderReturnDTO.builder()
+                    .orderId(orderReturn.getOrderId())
+                    .warehouse(orderReturn.getOrderStock().getWarehouse().getName())
+                    .registrationDate(orderReturn.getRegistrationDate())
+                    .updateDate(orderReturn.getUpdateDate())
+                    .build()).toList();
+
+            return new PageImpl<>(orderReturnDTOS,orderReturnPage.getPageable(),orderReturnPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<OrderReturnDTO>> listFalse(Long orderId, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderReturn> orderReturnPage;
+            Long clientId;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderReturnPage = orderReturnRepositoryCustom.searchForOrderReturn(
+                        orderId,
+                        clientId,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false
+                );
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(orderReturnPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<OrderReturnDTO> orderReturnDTOS = orderReturnPage.getContent().stream().map(orderReturn -> OrderReturnDTO.builder()
+                    .orderId(orderReturn.getOrderId())
+                    .warehouse(orderReturn.getOrderStock().getWarehouse().getName())
+                    .registrationDate(orderReturn.getRegistrationDate())
+                    .updateDate(orderReturn.getUpdateDate())
+                    .build()).toList();
+
+            return new PageImpl<>(orderReturnDTOS,orderReturnPage.getPageable(),orderReturnPage.getTotalElements());
         });
     }
 }
