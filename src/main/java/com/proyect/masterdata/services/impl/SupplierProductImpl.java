@@ -279,9 +279,11 @@ public class SupplierProductImpl implements ISupplierProduct {
             List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
-                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
-                            .supplierName(supplierProduct.getSupplier().getBusinessName())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
                             .build())
                     .toList();
 
@@ -327,9 +329,11 @@ public class SupplierProductImpl implements ISupplierProduct {
             List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
-                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
-                            .supplierName(supplierProduct.getSupplier().getBusinessName())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
                             .build())
                     .toList();
 
@@ -362,10 +366,11 @@ public class SupplierProductImpl implements ISupplierProduct {
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
-                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
-                            .supplierName(supplierProduct.getSupplier().getBusinessName())
-                            .supplierProductId(supplierProduct.getId())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
                             .build())
                     .toList();
         });
@@ -395,10 +400,11 @@ public class SupplierProductImpl implements ISupplierProduct {
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
-                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
-                            .supplierName(supplierProduct.getSupplier().getBusinessName())
-                            .supplierProductId(supplierProduct.getId())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
                             .build())
                     .toList();
         });
@@ -426,10 +432,11 @@ public class SupplierProductImpl implements ISupplierProduct {
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
-                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
-                            .supplierName(supplierProduct.getSupplier().getBusinessName())
-                            .supplierProductId(supplierProduct.getId())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
                             .build())
                     .toList();
         });
