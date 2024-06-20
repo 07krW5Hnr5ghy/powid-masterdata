@@ -48,7 +48,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                             .purchaseId(purchaseItem.getPurchaseId())
                             .stockReturn(stockReturn)
                             .stockReturnId(stockReturn.getId())
-                            .observations(requestStockReturnItem.getObservations())
+                            .observations(requestStockReturnItem.getObservations().toUpperCase())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .status(true)
                     .build());
@@ -75,7 +75,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                         .purchaseId(purchaseItem.getPurchaseId())
                         .stockReturn(stockReturn)
                         .stockReturnId(stockReturn.getId())
-                        .observations(requestStockReturnItem.getObservations())
+                        .observations(requestStockReturnItem.getObservations().toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .build());
@@ -119,12 +119,13 @@ public class StockReturnItemImpl implements IStockReturnItem {
             }
 
             List<StockReturnItemDTO> stockReturnDTOS = pageStockReturn.getContent().stream().map(stockReturnItem -> StockReturnItemDTO.builder()
-                    .purchaseSerial(stockReturnItem.getPurchase().getSerial())
-                    .supplierProductSerial(stockReturnItem.getSupplierProduct().getSerial())
+                    .serial(stockReturnItem.getStockReturn().getSerial())
+                    .supplier(stockReturnItem.getStockReturn().getPurchase().getSupplier().getBusinessName())
+                    .purchase(stockReturnItem.getPurchase().getSerial())
+                    .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
                     .registrationDate(stockReturnItem.getRegistrationDate())
                     .quantity(stockReturnItem.getQuantity())
                     .observations(stockReturnItem.getObservations())
-                    .id(stockReturnItem.getId())
                     .build()
             ).toList();
             return new PageImpl<>(stockReturnDTOS,pageStockReturn.getPageable(),pageStockReturn.getTotalElements());
@@ -151,13 +152,12 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 return Collections.emptyList();
             }
             return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
-                    .purchaseSerial(stockReturnItem.getPurchase().getSerial())
-                    .supplierProductSerial(stockReturnItem.getSupplierProduct().getSerial())
+                    .purchase(stockReturnItem.getPurchase().getSerial())
+                    .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
                     .registrationDate(stockReturnItem.getRegistrationDate())
                     .quantity(stockReturnItem.getQuantity())
                     .observations(stockReturnItem.getObservations())
                     .supplier(stockReturnItem.getSupplierProduct().getSupplier().getBusinessName())
-                    .id(stockReturnItem.getId())
                     .serial(stockReturnItem.getStockReturn().getSerial())
                     .build()
             ).toList();
@@ -184,8 +184,8 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 return Collections.emptyList();
             }
             return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
-                    .purchaseSerial(stockReturnItem.getPurchase().getSerial())
-                    .supplierProductSerial(stockReturnItem.getSupplierProduct().getSerial())
+                    .purchase(stockReturnItem.getPurchase().getSerial())
+                    .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
                     .registrationDate(stockReturnItem.getRegistrationDate())
                     .quantity(stockReturnItem.getQuantity())
                     .observations(stockReturnItem.getObservations())
