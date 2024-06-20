@@ -261,7 +261,8 @@ public class StockReturnImpl implements IStockReturn {
             List<StockReturnDTO> stockReturnDTOS = pageStockReturn.getContent().stream().map(stockReturn -> StockReturnDTO.builder()
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
-                    .purchaseSerial(stockReturn.getPurchase().getSerial())
+                    .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
+                    .purchase(stockReturn.getPurchase().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
                     .build()).toList();
             return new PageImpl<>(stockReturnDTOS,pageStockReturn.getPageable(),pageStockReturn.getTotalElements());
@@ -288,9 +289,8 @@ public class StockReturnImpl implements IStockReturn {
             return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
-                    .purchaseSerial(stockReturn.getPurchase().getSerial())
+                    .purchase(stockReturn.getPurchase().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
-                    .id(stockReturn.getId())
                     .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
                     .build()).toList();
         });
@@ -316,9 +316,8 @@ public class StockReturnImpl implements IStockReturn {
             return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
-                    .purchaseSerial(stockReturn.getPurchase().getSerial())
+                    .purchase(stockReturn.getPurchase().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
-                    .id(stockReturn.getId())
                     .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
                     .build()).toList();
         });
