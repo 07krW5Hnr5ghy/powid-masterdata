@@ -200,6 +200,8 @@ public class BrandImpl implements IBrand {
             List<BrandDTO> brandDTOs = brandPage.getContent().stream().map(brand -> BrandDTO.builder()
                     .name(brand.getName())
                     .client(brand.getClient().getBusiness())
+                    .registrationDate(brand.getRegistrationDate())
+                    .updateDate(brand.getUpdateDate())
                     .tokenUser(brand.getTokenUser())
                     .build()).toList();
 
@@ -232,6 +234,8 @@ public class BrandImpl implements IBrand {
             List<BrandDTO> brandDTOs = brandPage.getContent().stream().map(brand -> BrandDTO.builder()
                     .name(brand.getName())
                     .client(brand.getClient().getBusiness())
+                    .registrationDate(brand.getRegistrationDate())
+                    .updateDate(brand.getUpdateDate())
                     .tokenUser(brand.getTokenUser())
                     .build()).toList();
 
@@ -299,6 +303,8 @@ public class BrandImpl implements IBrand {
             return brands.stream().map(brand -> BrandDTO.builder()
                     .name(brand.getName())
                     .client(brand.getClient().getBusiness())
+                    .registrationDate(brand.getRegistrationDate())
+                    .updateDate(brand.getUpdateDate())
                     .tokenUser(brand.getTokenUser())
                     .build()).toList();
         });
@@ -325,6 +331,8 @@ public class BrandImpl implements IBrand {
             return brands.stream().map(brand -> BrandDTO.builder()
                     .name(brand.getName())
                     .client(brand.getClient().getBusiness())
+                    .registrationDate(brand.getRegistrationDate())
+                    .updateDate(brand.getUpdateDate())
                     .tokenUser(brand.getTokenUser())
                     .build()).toList();
         });
