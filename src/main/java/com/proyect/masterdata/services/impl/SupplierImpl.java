@@ -293,12 +293,18 @@ public class SupplierImpl implements ISupplier {
             }
 
             List<SupplierDTO> supplierDTOs = supplierPage.getContent().stream().map(supplier -> SupplierDTO.builder()
-                    .businessName(supplier.getBusinessName())
+                    .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
                     .location(supplier.getLocation())
-                    .phoneNumber(supplier.getPhoneNumber())
+                    .phone(supplier.getPhoneNumber())
                     .ruc(supplier.getRuc())
+                    .department(supplier.getDistrict().getProvince().getDepartment().getName())
+                    .province(supplier.getDistrict().getProvince().getName())
+                    .district(supplier.getDistrict().getName())
+                    .supplierType(supplier.getSupplierType().getName())
+                    .registrationDate(supplier.getRegistrationDate())
+                    .updateDate(supplier.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(supplierDTOs, supplierPage.getPageable(), supplierPage.getTotalElements());
@@ -323,17 +329,18 @@ public class SupplierImpl implements ISupplier {
             }
 
             return suppliers.stream().map(supplier -> SupplierDTO.builder()
-                    .id(supplier.getId())
-                    .businessName(supplier.getBusinessName())
+                    .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
                     .location(supplier.getLocation())
-                    .phoneNumber(supplier.getPhoneNumber())
+                    .phone(supplier.getPhoneNumber())
                     .ruc(supplier.getRuc())
                     .department(supplier.getDistrict().getProvince().getDepartment().getName())
                     .province(supplier.getDistrict().getProvince().getName())
                     .district(supplier.getDistrict().getName())
                     .supplierType(supplier.getSupplierType().getName())
+                    .registrationDate(supplier.getRegistrationDate())
+                    .updateDate(supplier.getUpdateDate())
                     .build()).toList();
         });
     }
@@ -356,17 +363,18 @@ public class SupplierImpl implements ISupplier {
             }
 
             return suppliers.stream().map(supplier -> SupplierDTO.builder()
-                    .id(supplier.getId())
-                    .businessName(supplier.getBusinessName())
+                    .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
                     .location(supplier.getLocation())
-                    .phoneNumber(supplier.getPhoneNumber())
+                    .phone(supplier.getPhoneNumber())
                     .ruc(supplier.getRuc())
                     .department(supplier.getDistrict().getProvince().getDepartment().getName())
                     .province(supplier.getDistrict().getProvince().getName())
                     .district(supplier.getDistrict().getName())
                     .supplierType(supplier.getSupplierType().getName())
+                    .registrationDate(supplier.getRegistrationDate())
+                    .updateDate(supplier.getUpdateDate())
                     .build()).toList();
         });
     }
