@@ -223,6 +223,8 @@ public class WarehouseImpl implements IWarehouse {
             List<WarehouseDTO> warehouseDTOs = warehousePage.getContent().stream().map(warehouse -> WarehouseDTO.builder()
                     .location(warehouse.getLocation())
                     .name(warehouse.getName())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(warehouseDTOs, warehousePage.getPageable(), warehousePage.getTotalElements());
@@ -249,7 +251,8 @@ public class WarehouseImpl implements IWarehouse {
             return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
                     .location(warehouse.getLocation())
                     .name(warehouse.getName())
-                    .id(warehouse.getId())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
                     .build()).toList();
         });
     }
@@ -274,7 +277,8 @@ public class WarehouseImpl implements IWarehouse {
             return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
                     .location(warehouse.getLocation())
                     .name(warehouse.getName())
-                    .id(warehouse.getId())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
                     .build()).toList();
         });
     }

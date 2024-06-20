@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,5 +14,6 @@ import lombok.NoArgsConstructor;
 public class WarehouseDTO {
     private String name;
     private String location;
-    private Long id;
+    private Date registrationDate;
+    private Date updateDate;
 }
