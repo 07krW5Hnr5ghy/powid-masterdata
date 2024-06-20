@@ -403,8 +403,6 @@ public class OrderItemImpl implements IOrderItem {
                 ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
                 Double totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscount()/100));
                 return OrderItemDTO.builder()
-                        .productId(orderItem.getProductId())
-                        .orderItemId(orderItem.getId())
                         .unit(orderItem.getProduct().getUnit().getName())
                         .color(orderItem.getProduct().getColor().getName())
                         .size(orderItem.getProduct().getSize().getName())
@@ -417,6 +415,8 @@ public class OrderItemImpl implements IOrderItem {
                         .orderId(orderItem.getOrderId())
                         .totalPrice(totalPrice)
                         .observations(orderItem.getObservations())
+                        .registrationDate(orderItem.getRegistrationDate())
+                        .updateDate(orderItem.getUpdateDate())
                         .build();
             }).toList();
             return new PageImpl<>(orderItemDTOS,pageOrderItem.getPageable(),pageOrderItem.getTotalElements());
