@@ -148,8 +148,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .orderItemId(orderStockItem.getOrderItemId())
-                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
+                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
@@ -187,8 +187,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .orderItemId(orderStockItem.getOrderItemId())
-                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
@@ -260,12 +260,11 @@ public class OrderStockItemImpl implements IOrderStockItem {
             return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .orderItemId(orderStockItem.getOrderItemId())
-                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
-                    .productSku(orderStockItem.getOrderItem().getProduct().getSku())
                     .build()).toList();
         });
     }
@@ -294,12 +293,12 @@ public class OrderStockItemImpl implements IOrderStockItem {
             return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .orderItemId(orderStockItem.getOrderItemId())
-                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
-                    .productSku(orderStockItem.getOrderItem().getProduct().getSku())
+                    .product(orderStockItem.getOrderItem().getProduct().getSku())
                     .build()).toList();
         });
     }
