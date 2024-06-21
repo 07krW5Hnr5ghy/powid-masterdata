@@ -1,17 +1,20 @@
 package com.proyect.masterdata.repository;
 
-import com.proyect.masterdata.domain.OrderReturn;
+import com.proyect.masterdata.domain.OrderReturnItem;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 
 @Repository
-public interface OrderReturnRepositoryCustom {
-    Page<OrderReturn> searchForOrderReturn(
+public interface OrderReturnItemRepositoryCustom {
+    Page<OrderReturnItem> searchForOrderReturnItem(
             Long orderId,
             Long clientId,
+            Long productId,
+            Long supplierProductId,
             Long warehouseId,
+            Long orderReturnTypeId,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,

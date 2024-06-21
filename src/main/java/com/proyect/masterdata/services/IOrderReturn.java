@@ -18,6 +18,7 @@ public interface IOrderReturn {
     CompletableFuture<Page<OrderReturnDTO>> listPagination(
             Long orderId,
             String user,
+            String warehouse,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -30,6 +31,7 @@ public interface IOrderReturn {
     CompletableFuture<Page<OrderReturnDTO>> listFalse(
             Long orderId,
             String user,
+            String warehouse,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,

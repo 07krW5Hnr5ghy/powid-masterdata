@@ -38,6 +38,7 @@ public class OrderReturnImpl implements IOrderReturn {
     private final OrderReturnTypeRepository orderReturnTypeRepository;
     private final OrderReturnRepositoryCustom orderReturnRepositoryCustom;
     private final IAudit iAudit;
+    private final WarehouseRepository warehouseRepository;
     @Override
     public ResponseSuccess save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -233,15 +234,33 @@ public class OrderReturnImpl implements IOrderReturn {
     }
 
     @Override
-    public CompletableFuture<Page<OrderReturnDTO>> listPagination(Long orderId, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<OrderReturnDTO>> listPagination(
+            Long orderId,
+            String user,
+            String warehouse,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderReturn> orderReturnPage;
             Long clientId;
+            Long warehouseId;
+            if(warehouse != null){
+                warehouseId = warehouseRepository.findByName(warehouse.toUpperCase()).getId();
+            }else{
+                warehouseId = null;
+            }
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 orderReturnPage = orderReturnRepositoryCustom.searchForOrderReturn(
                         orderId,
                         clientId,
+                        warehouseId,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
@@ -273,15 +292,33 @@ public class OrderReturnImpl implements IOrderReturn {
     }
 
     @Override
-    public CompletableFuture<Page<OrderReturnDTO>> listFalse(Long orderId, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<OrderReturnDTO>> listFalse(
+            Long orderId,
+            String user,
+            String warehouse,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderReturn> orderReturnPage;
             Long clientId;
+            Long warehouseId;
+            if(warehouse != null){
+                warehouseId = warehouseRepository.findByName(warehouse.toUpperCase()).getId();
+            }else{
+                warehouseId = null;
+            }
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 orderReturnPage = orderReturnRepositoryCustom.searchForOrderReturn(
                         orderId,
                         clientId,
+                        warehouseId,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,

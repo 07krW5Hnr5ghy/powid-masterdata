@@ -44,6 +44,7 @@ public class OrderReturnController {
     public ResponseEntity<Page<OrderReturnDTO>> listPagination(
             @RequestParam(value = "orderId",required = false) Long orderId,
             @RequestParam(value = "user") String user,
+            @RequestParam(value = "warehouse",required = false) String warehouse,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -56,6 +57,7 @@ public class OrderReturnController {
         CompletableFuture<Page<OrderReturnDTO>> result = iOrderReturn.listPagination(
                 orderId,
                 user,
+                warehouse,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -71,6 +73,7 @@ public class OrderReturnController {
     public ResponseEntity<Page<OrderReturnDTO>> listFalse(
             @RequestParam(value = "orderId",required = false) Long orderId,
             @RequestParam(value = "user") String user,
+            @RequestParam(value = "warehouse",required = false) String warehouse,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -83,6 +86,7 @@ public class OrderReturnController {
         CompletableFuture<Page<OrderReturnDTO>> result = iOrderReturn.listFalse(
                 orderId,
                 user,
+                warehouse,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,

@@ -1,7 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.OrderReturn;
-import com.proyect.masterdata.repository.OrderReturnRepositoryCustom;
+import com.proyect.masterdata.domain.OrderReturnItem;
+import com.proyect.masterdata.repository.OrderReturnItemRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -18,14 +18,17 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCustom {
+public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<OrderReturn> searchForOrderReturn(
+    public Page<OrderReturnItem> searchForOrderReturnItem(
             Long orderId,
             Long clientId,
+            Long productId,
+            Long supplierProductId,
             Long warehouseId,
+            Long orderReturnTypeId,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -36,14 +39,17 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
             Integer pageSize,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<OrderReturn> criteriaQuery = criteriaBuilder.createQuery(OrderReturn.class);
-        Root<OrderReturn> itemRoot = criteriaQuery.from(OrderReturn.class);
-        
+        CriteriaQuery<OrderReturnItem> criteriaQuery = criteriaBuilder.createQuery(OrderReturnItem.class);
+        Root<OrderReturnItem> itemRoot = criteriaQuery.from(OrderReturnItem.class);
+
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
                 orderId,
                 clientId,
+                productId,
+                supplierProductId,
                 warehouseId,
+                orderReturnTypeId,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -53,19 +59,19 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
                 itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
-            List<Order> orderReturnList = new ArrayList<>();
+            List<Order> orderReturnItemList = new ArrayList<>();
             if (sort.equalsIgnoreCase("ASC")) {
-                orderReturnList = listASC(sortColumn, criteriaBuilder, itemRoot);
+                orderReturnItemList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
             if (sort.equalsIgnoreCase("DESC")) {
-                orderReturnList = listDESC(sortColumn, criteriaBuilder, itemRoot);
+                orderReturnItemList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(orderReturnList);
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(orderReturnItemList);
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<OrderReturn> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<OrderReturnItem> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
@@ -73,7 +79,10 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
         long count = getOrderCount(
                 orderId,
                 clientId,
+                productId,
+                supplierProductId,
                 warehouseId,
+                orderReturnTypeId,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -81,18 +90,20 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
-    
     List<Predicate> predicateConditions(
             Long orderId,
             Long clientId,
+            Long productId,
+            Long supplierProductId,
             Long warehouseId,
+            Long orderReturnTypeId,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
             Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<OrderReturn> itemRoot
+            Root<OrderReturnItem> itemRoot
     ) {
         List<Predicate> conditions = new ArrayList<>();
 
@@ -104,8 +115,20 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
+        if(productId != null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("productId"), productId)));
+        }
+
+        if(supplierProductId != null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("supplierProductId"), supplierProductId)));
+        }
+
         if (warehouseId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("warehouseId"), clientId)));
+        }
+
+        if (orderReturnTypeId != null) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderReturnTypeId"), orderReturnTypeId)));
         }
 
         if(registrationStartDate!=null){
@@ -154,71 +177,92 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<OrderReturn> itemRoot) {
-        List<Order> orderReturnList = new ArrayList<>();
+            Root<OrderReturnItem> itemRoot) {
+        List<Order> orderReturnItemList = new ArrayList<>();
         if (sortColumn.equalsIgnoreCase("orderId")) {
-            orderReturnList.add(criteriaBuilder.asc(itemRoot.get("orderId")));
+            orderReturnItemList.add(criteriaBuilder.asc(itemRoot.get("orderId")));
         }
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            orderReturnList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
+            orderReturnItemList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
+        }
+        if (sortColumn.equalsIgnoreCase("productId")) {
+            orderReturnItemList.add(criteriaBuilder.asc(itemRoot.get("productId")));
+        }
+        if (sortColumn.equalsIgnoreCase("supplierProductId")) {
+            orderReturnItemList.add(criteriaBuilder.asc(itemRoot.get("supplierProductId")));
         }
         if (sortColumn.equalsIgnoreCase("warehouseId")) {
-            orderReturnList.add(criteriaBuilder.asc(itemRoot.get("warehouseId")));
+            orderReturnItemList.add(criteriaBuilder.asc(itemRoot.get("warehouseId")));
+        }
+        if (sortColumn.equalsIgnoreCase("orderReturnTypeId")) {
+            orderReturnItemList.add(criteriaBuilder.asc(itemRoot.get("orderReturnTypeId")));
         }
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
-            orderReturnList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+            orderReturnItemList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
-            orderReturnList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+            orderReturnItemList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateStartDate")) {
-            orderReturnList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+            orderReturnItemList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateEndDate")) {
-            orderReturnList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+            orderReturnItemList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
         }
-        return orderReturnList;
+        return orderReturnItemList;
     }
 
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<OrderReturn> itemRoot) {
-        List<Order> orderReturnList = new ArrayList<>();
+            Root<OrderReturnItem> itemRoot) {
+        List<Order> orderReturnItemList = new ArrayList<>();
         if (sortColumn.equalsIgnoreCase("orderId")) {
-            orderReturnList.add(criteriaBuilder.desc(itemRoot.get("orderId")));
+            orderReturnItemList.add(criteriaBuilder.desc(itemRoot.get("orderId")));
         }
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            orderReturnList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
+            orderReturnItemList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
+        }
+        if (sortColumn.equalsIgnoreCase("productId")) {
+            orderReturnItemList.add(criteriaBuilder.desc(itemRoot.get("productId")));
+        }
+        if (sortColumn.equalsIgnoreCase("supplierProductId")) {
+            orderReturnItemList.add(criteriaBuilder.desc(itemRoot.get("supplierProductId")));
         }
         if (sortColumn.equalsIgnoreCase("warehouseId")) {
-            orderReturnList.add(criteriaBuilder.desc(itemRoot.get("warehouseId")));
+            orderReturnItemList.add(criteriaBuilder.desc(itemRoot.get("warehouseId")));
+        }
+        if (sortColumn.equalsIgnoreCase("orderReturnTypeId")) {
+            orderReturnItemList.add(criteriaBuilder.desc(itemRoot.get("orderReturnTypeId")));
         }
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
-            orderReturnList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+            orderReturnItemList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
-            orderReturnList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+            orderReturnItemList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateStartDate")) {
-            orderReturnList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+            orderReturnItemList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateEndDate")) {
-            orderReturnList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+            orderReturnItemList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
-        return orderReturnList;
+        return orderReturnItemList;
     }
 
     private long getOrderCount(
             Long orderId,
             Long clientId,
+            Long productId,
+            Long supplierProductId,
             Long warehouseId,
+            Long orderReturnTypeId,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -226,13 +270,16 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<OrderReturn> itemRoot = criteriaQuery.from(OrderReturn.class);
+        Root<OrderReturnItem> itemRoot = criteriaQuery.from(OrderReturnItem.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
                 orderId,
                 clientId,
+                productId,
+                supplierProductId,
                 warehouseId,
+                orderReturnTypeId,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
