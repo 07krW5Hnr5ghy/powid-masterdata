@@ -312,7 +312,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
             }
 
             List<StockReplenishmentItemDTO> stockReplenishmentItemDTOS = pageStockReplenishmentItem.getContent().stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
-                    .productSku(stockReplenishmentItem.getProduct().getSku())
+                    .product(stockReplenishmentItem.getProduct().getSku())
                     .orderId(stockReplenishmentItem.getOrderId())
                     .quantity(stockReplenishmentItem.getQuantity())
                     .registrationDate(stockReplenishmentItem.getRegistrationDate())
@@ -339,7 +339,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 return Collections.emptyList();
             }
             return stockReplenishmentItems.stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
-                    .productSku(stockReplenishmentItem.getProduct().getSku())
+                    .product(stockReplenishmentItem.getProduct().getSku())
                     .orderId(stockReplenishmentItem.getOrderId())
                     .quantity(stockReplenishmentItem.getQuantity())
                     .registrationDate(stockReplenishmentItem.getRegistrationDate())
@@ -364,7 +364,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 return Collections.emptyList();
             }
             return stockReplenishmentItems.stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
-                    .productSku(stockReplenishmentItem.getProduct().getSku())
+                    .product(stockReplenishmentItem.getProduct().getSku())
                     .orderId(stockReplenishmentItem.getOrderId())
                     .quantity(stockReplenishmentItem.getQuantity())
                     .registrationDate(stockReplenishmentItem.getRegistrationDate())
