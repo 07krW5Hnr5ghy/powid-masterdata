@@ -197,8 +197,8 @@ public class CourierImpl implements ICourier {
             }
 
             List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
-                    .courier(courier.getName())
-                    .phoneNumber(courier.getPhoneNumber())
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .build()).toList();
@@ -247,8 +247,8 @@ public class CourierImpl implements ICourier {
             }
 
             List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
-                    .courier(courier.getName())
-                    .phoneNumber(courier.getPhoneNumber())
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .build()).toList();
@@ -331,8 +331,8 @@ public class CourierImpl implements ICourier {
                 return Collections.emptyList();
             }
             return couriers.stream().map(courier -> CourierDTO.builder()
-                    .courier(courier.getName())
-                    .phoneNumber(courier.getPhoneNumber())
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .build()).toList();
@@ -355,8 +355,8 @@ public class CourierImpl implements ICourier {
                 return Collections.emptyList();
             }
             return couriers.stream().map(courier -> CourierDTO.builder()
-                    .courier(courier.getName())
-                    .phoneNumber(courier.getPhoneNumber())
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .build()).toList();

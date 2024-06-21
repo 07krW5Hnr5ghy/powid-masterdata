@@ -12,8 +12,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class CourierDTO {
-    private String courier;
-    private String phoneNumber;
+    private String name;
+    private String phone;
     private Date registrationDate;
     private Date updateDate;
 }
