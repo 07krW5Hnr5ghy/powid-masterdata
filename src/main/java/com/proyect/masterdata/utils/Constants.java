@@ -8,6 +8,7 @@ public class Constants {
     public static final String schemaPayment = "payment";
     public static final String schemaStock = "stock";
     public static final String schemaOrder = "ordering";
+    public static final String schemaLogistics = "logistics";
     // tables
     public static final String tableDepartment = "department";
     public static final String tableProvince = "province";
