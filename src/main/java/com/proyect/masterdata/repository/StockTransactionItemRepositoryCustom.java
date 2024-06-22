@@ -14,6 +14,7 @@ public interface StockTransactionItemRepositoryCustom {
             Long stockTransactionId,
             Long supplierProductId,
             List<Long> warehouseIds,
+            List<Long> stockTransactionTypeIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

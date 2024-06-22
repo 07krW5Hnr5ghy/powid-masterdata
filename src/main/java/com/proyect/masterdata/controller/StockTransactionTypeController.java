@@ -64,4 +64,11 @@ public class StockTransactionTypeController {
         CompletableFuture<List<StockTransactionTypeDTO>> result = iStockTransactionType.list();
         return result.get();
     }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK') and hasAuthority('ACCESS:TRANSACTION_TYPE_GET')")
+    public List<StockTransactionTypeDTO> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockTransactionTypeDTO>> result = iStockTransactionType.listFilter();
+        return result.get();
+    }
 }

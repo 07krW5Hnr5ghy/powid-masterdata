@@ -17,7 +17,15 @@ public interface IStockTransactionItem {
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(StockTransaction stockTransaction, RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
                 throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<Page<StockTransactionItemDTO>> list(String user, String stockTransaction,String supplierProduct,List<String> warehouses, String sort, String sortColumn,
-                                           Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+        CompletableFuture<Page<StockTransactionItemDTO>> list(
+                String user,
+                String stockTransaction,
+                String supplierProduct,
+                List<String> warehouses,
+                List<String> stockTransactionTypes,
+                String sort,
+                String sortColumn,
+                Integer pageNumber,
+                Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<List<StockTransactionItemDTO>> listStockTransactionItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
 }

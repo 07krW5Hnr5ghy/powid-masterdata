@@ -36,6 +36,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     private final StockTransactionRepository stockTransactionRepository;
     private final IAudit iAudit;
     private final WarehouseRepository warehouseRepository;
+    private final StockTransactionTypeRepository stockTransactionTypeRepository;
     @Override
     public ResponseSuccess save(StockTransaction stockTransaction,RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -134,6 +135,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
             String stockTransaction,
             String supplierProduct,
             List<String> warehouses,
+            List<String> stockTransactionTypes,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -143,6 +145,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
             Long stockTransactionId;
             Long supplierProductId;
             List<Long> warehouseIds;
+            List<Long> stockTransactionTypeIds;
             Page<StockTransactionItem> stockTransactionItemPage;
 
             if (stockTransaction != null) {
@@ -166,6 +169,14 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                 warehouseIds = new ArrayList<>();
             }
 
+            if(stockTransactionTypes!=null&&!stockTransactionTypes.isEmpty()){
+                stockTransactionTypeIds = stockTransactionTypeRepository.findByNameIn(
+                        stockTransactionTypes.stream().map(String::toUpperCase).toList()
+                ).stream().map(StockTransactionType::getId).toList();
+            }else{
+                stockTransactionTypeIds = new ArrayList<>();
+            }
+
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stockTransactionItemPage = stockTransactionItemRepositoryCustom.searchForStockTransactionItem(
@@ -173,6 +184,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                         stockTransactionId,
                         supplierProductId,
                         warehouseIds,
+                        stockTransactionTypeIds,
                         sort,
                         sortColumn,
                         pageNumber,
