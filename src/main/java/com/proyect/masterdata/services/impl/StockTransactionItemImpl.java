@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     private final StockTransactionItemRepositoryCustom stockTransactionItemRepositoryCustom;
     private final StockTransactionRepository stockTransactionRepository;
     private final IAudit iAudit;
+    private final WarehouseRepository warehouseRepository;
     @Override
     public ResponseSuccess save(StockTransaction stockTransaction,RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -127,40 +129,65 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     }
 
     @Override
-    public CompletableFuture<Page<StockTransactionItemDTO>> list(String user, String stockTransactionSerial, String supplierProductSerial, String sort, String sortColumn,
-                                              Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<StockTransactionItemDTO>> list(
+            String user,
+            String stockTransaction,
+            String supplierProduct,
+            List<String> warehouses,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Long clientId;
             Long stockTransactionId;
             Long supplierProductId;
-            Page<StockTransactionItem> stockTransactionPage;
+            List<Long> warehouseIds;
+            Page<StockTransactionItem> stockTransactionItemPage;
 
-            if (stockTransactionSerial != null) {
-                stockTransactionId = stockTransactionRepository.findBySerial(stockTransactionSerial.toUpperCase()).getId();
+            if (stockTransaction != null) {
+                stockTransactionId = stockTransactionRepository.findBySerial(stockTransaction.toUpperCase()).getId();
             } else {
                 stockTransactionId = null;
             }
 
-            if(supplierProductSerial != null){
-                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+            if(supplierProduct != null){
+                supplierProductId = supplierProductRepository.findBySerial(supplierProduct.toUpperCase()).getId();
             }else{
                 supplierProductId = null;
             }
 
+            if(warehouses!=null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository
+                        .findByNameIn(
+                                warehouses.stream().map(String::toUpperCase).toList()
+                        ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
+
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                stockTransactionPage = stockTransactionItemRepositoryCustom.searchForStockTransactionItem(clientId, stockTransactionId, supplierProductId,
-                        sort, sortColumn, pageNumber, pageSize);
+                stockTransactionItemPage = stockTransactionItemRepositoryCustom.searchForStockTransactionItem(
+                        clientId,
+                        stockTransactionId,
+                        supplierProductId,
+                        warehouseIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
             } catch (RuntimeException e) {
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
 
-            if (stockTransactionPage.isEmpty()) {
+            if (stockTransactionItemPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<StockTransactionItemDTO> stockTransactionItemDTOS = stockTransactionPage.getContent().stream()
+            List<StockTransactionItemDTO> stockTransactionItemDTOS = stockTransactionItemPage.getContent().stream()
                     .map(stockTransactionItem -> StockTransactionItemDTO.builder()
                             .quantity(stockTransactionItem.getQuantity())
                             .warehouse(stockTransactionItem.getStockTransaction().getWarehouse().getName())
@@ -171,8 +198,10 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                             .build())
                     .toList();
 
-            return new PageImpl<>(stockTransactionItemDTOS, stockTransactionPage.getPageable(),
-                    stockTransactionPage.getTotalElements());
+            return new PageImpl<>(
+                    stockTransactionItemDTOS,
+                    stockTransactionItemPage.getPageable(),
+                    stockTransactionItemPage.getTotalElements());
         });
     }
 

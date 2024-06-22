@@ -282,4 +282,30 @@ public class WarehouseImpl implements IWarehouse {
                     .build()).toList();
         });
     }
+
+    @Override
+    public CompletableFuture<List<WarehouseDTO>> listFilters(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Warehouse> warehouses;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                warehouses = warehouseRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (warehouses.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
+                    .location(warehouse.getLocation())
+                    .name(warehouse.getName())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
+                    .build()).toList();
+        });
+    }
 }

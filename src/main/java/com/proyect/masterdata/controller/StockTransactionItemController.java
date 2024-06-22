@@ -26,13 +26,21 @@ public class StockTransactionItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_ITEM_GET')")
     public ResponseEntity<Page<StockTransactionItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "stockTransactionSerial", required = false) String stockTransactionSerial,
-            @RequestParam(value = "supplierProductSerial", required = false) String supplierProductSerial,
+            @RequestParam(value = "stockTransaction", required = false) String stockTransaction,
+            @RequestParam(value = "supplierProduct", required = false) String supplierProduct,
+            @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<StockTransactionItemDTO>> result = iStockTransactionItem.list(user, stockTransactionSerial, supplierProductSerial, sort, sortColumn, pageNumber,
+        CompletableFuture<Page<StockTransactionItemDTO>> result = iStockTransactionItem.list(
+                user,
+                stockTransaction,
+                supplierProduct,
+                warehouses,
+                sort,
+                sortColumn,
+                pageNumber,
                 pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }

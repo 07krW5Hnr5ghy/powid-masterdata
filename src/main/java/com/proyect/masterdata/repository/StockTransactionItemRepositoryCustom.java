@@ -5,12 +5,15 @@ import org.springframework.stereotype.Repository;
 
 import com.proyect.masterdata.domain.StockTransactionItem;
 
+import java.util.List;
+
 @Repository
 public interface StockTransactionItemRepositoryCustom {
-    public Page<StockTransactionItem> searchForStockTransactionItem(
+    Page<StockTransactionItem> searchForStockTransactionItem(
             Long clientId,
             Long stockTransactionId,
             Long supplierProductId,
+            List<Long> warehouseIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

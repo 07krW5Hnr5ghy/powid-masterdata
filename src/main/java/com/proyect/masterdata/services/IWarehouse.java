@@ -23,4 +23,5 @@ public interface IWarehouse {
                         Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<List<WarehouseDTO>> listWarehouse(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<WarehouseDTO>> listWarehouseFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<WarehouseDTO>> listFilters(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

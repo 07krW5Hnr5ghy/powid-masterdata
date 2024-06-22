@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import com.proyect.masterdata.dto.response.ResponseDelete;
+import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -77,12 +78,20 @@ public class WarehouseController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @GetMapping("status-false")
+    @GetMapping("false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_GET')")
     public ResponseEntity<List<WarehouseDTO>> listWarehouseFalse(
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<WarehouseDTO>> result = iWarehouse.listWarehouseFalse(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<WarehouseDTO>> listWarehouseFilters(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions,ExecutionException,InterruptedException{
+        CompletableFuture<List<WarehouseDTO>> result = iWarehouse.listFilters(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
