@@ -18,7 +18,7 @@ public interface IGeneralStock {
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<GeneralStockDTO>> list(
                 String user,
-                String supplierProductSerial,
+                List<String> supplierProducts,
                 Date registrationStartDate,
                 Date registrationEndDate,
                 Date updateStartDate,

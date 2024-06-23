@@ -32,7 +32,7 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
     @Override
     public Page<GeneralStock> searchForGeneralStock(
             Long clientId,
-            Long supplierProductId,
+            List<Long> supplierProductIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -49,7 +49,7 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
 
         List<Predicate> conditions = predicate(
                 clientId,
-                supplierProductId,
+                supplierProductIds,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -81,7 +81,7 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                supplierProductId,
+                supplierProductIds,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -94,7 +94,7 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
 
     private List<Predicate> predicate(
             Long clientId,
-            Long supplierProductId,
+            List<Long> supplierProductIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -108,8 +108,8 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (supplierProductId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("supplierProductId"), clientId)));
+        if(!supplierProductIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("supplierProduct").get("id").in(supplierProductIds)));
         }
 
         if(registrationStartDate!=null){
@@ -213,7 +213,7 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
 
     private Long getOrderCount(
             Long clientId,
-            Long supplierProductId,
+            List<Long> supplierProductIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -225,7 +225,7 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
-                supplierProductId,
+                supplierProductIds,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,

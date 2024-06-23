@@ -124,9 +124,7 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
         if (stockTransactionId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("stockTransactionId"), stockTransactionId)));
         }
-
-        System.out.println(supplierProductIds);
-
+        
         return conditions;
 
     }

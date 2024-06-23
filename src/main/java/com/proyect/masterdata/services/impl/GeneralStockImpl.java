@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -143,7 +144,7 @@ public class GeneralStockImpl implements IGeneralStock {
     @Override
     public CompletableFuture<Page<GeneralStockDTO>> list(
             String user,
-            String supplierProductSerial,
+            List<String> supplierProducts,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -156,22 +157,25 @@ public class GeneralStockImpl implements IGeneralStock {
         return CompletableFuture.supplyAsync(()->{
             Page<GeneralStock> generalStockPage;
             Long clientId;
-            Long supplierProductId;
-            if(supplierProductSerial!=null){
-                supplierProductId = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase()).getId();
+            List<Long> supplierProductIds;
+
+            if(supplierProducts != null && !supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
             }else{
-                supplierProductId = null;
+                supplierProductIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 generalStockPage = generalStockRepositoryCustom.searchForGeneralStock(
                         clientId,
-                        supplierProductId,
+                        supplierProductIds,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
-                        updateStartDate,
+                        updateEndDate,
                         sort,
                         sortColumn,
                         pageNumber,

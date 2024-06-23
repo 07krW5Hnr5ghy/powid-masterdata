@@ -35,7 +35,7 @@ public class GeneralStockController {
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK') and hasAuthority('ACCESS:GENERAL_STOCK_GET')")
     public ResponseEntity<Page<GeneralStockDTO>> list(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "supplierProduct",required = false) String supplierProduct,
+            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -46,7 +46,7 @@ public class GeneralStockController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<GeneralStockDTO>> result = iGeneralStock.list(
                 user,
-                supplierProduct,
+                supplierProducts,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,

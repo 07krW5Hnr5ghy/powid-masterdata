@@ -5,11 +5,12 @@ import org.springframework.data.domain.Page;
 import com.proyect.masterdata.domain.GeneralStock;
 
 import java.util.Date;
+import java.util.List;
 
 public interface GeneralStockRepositoryCustom {
     Page<GeneralStock> searchForGeneralStock(
             Long clientId,
-            Long supplierProductId,
+            List<Long> supplierProductIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
