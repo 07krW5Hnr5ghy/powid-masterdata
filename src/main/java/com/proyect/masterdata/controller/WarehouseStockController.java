@@ -31,13 +31,14 @@ public class WarehouseStockController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
     public ResponseEntity<Page<WarehouseStockDTO>> list(
-            @RequestParam(value = "warehouse", required = false) String warehouse,
+            @RequestParam(value = "warehouses", required = false) List<String> warehouses,
+            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<WarehouseStockDTO>> result = iWarehouseStock.list(warehouse, user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<WarehouseStockDTO>> result = iWarehouseStock.list(warehouses,supplierProducts, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

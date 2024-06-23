@@ -3,6 +3,9 @@ package com.proyect.masterdata.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.proyect.masterdata.domain.SupplierProduct;
+import com.proyect.masterdata.domain.Warehouse;
+import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,11 +19,6 @@ import com.proyect.masterdata.repository.WarehouseStockRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 
 @Repository
 public class WarehouseStockRepositoryCustomImpl implements WarehouseStockRepositoryCustom {
@@ -29,15 +27,31 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
     private EntityManager entityManager;
 
     @Override
-    public Page<WarehouseStock> searchForWarehouseStock(Long clientId, Long warehouseId, String sort, String sortColumn,
-            Integer pageNumber, Integer pageSize) {
+    public Page<WarehouseStock> searchForWarehouseStock(
+            Long clientId,
+            List<Long> warehouseIds,
+            List<Long> supplierProductIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<WarehouseStock> criteriaQuery = criteriaBuilder.createQuery(WarehouseStock.class);
         Root<WarehouseStock> itemRoot = criteriaQuery.from(WarehouseStock.class);
+        Join<WarehouseStock, Warehouse> warehouseStockWarehouseJoin = itemRoot.join("warehouse");
+        Join<WarehouseStock, SupplierProduct> warehouseStockSupplierProductJoin = itemRoot.join("supplierProduct");
+
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicate(warehouseId, clientId, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                warehouseIds,
+                supplierProductIds,
+                clientId,
+                criteriaBuilder,
+                itemRoot,
+                warehouseStockWarehouseJoin,
+                warehouseStockSupplierProductJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -61,14 +75,23 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(warehouseId, clientId);
+        Long count = getOrderCount(
+                warehouseIds,
+                supplierProductIds,
+                clientId);
 
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
 
     }
 
-    private List<Predicate> predicate(Long warehouseId, Long clientId, CriteriaBuilder criteriaBuilder,
-            Root<WarehouseStock> itemRoot) {
+    private List<Predicate> predicate(
+            List<Long> warehouseIds,
+            List<Long> supplierProductIds,
+            Long clientId,
+            CriteriaBuilder criteriaBuilder,
+            Root<WarehouseStock> itemRoot,
+            Join<WarehouseStock,Warehouse> warehouseStockWarehouseJoin,
+            Join<WarehouseStock,SupplierProduct> warehouseStockSupplierProductJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -76,8 +99,12 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (warehouseId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("warehouseId"), warehouseId)));
+        if(!warehouseIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(warehouseStockWarehouseJoin.get("id").in(warehouseIds)));
+        }
+
+        if(!supplierProductIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(warehouseStockSupplierProductJoin.get("id").in(supplierProductIds)));
         }
 
         return conditions;
@@ -115,12 +142,24 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
 
     }
 
-    private Long getOrderCount(Long warehouseId, Long clientId) {
+    private Long getOrderCount(
+            List<Long> warehouseIds,
+            List<Long> supplierProductIds,
+            Long clientId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<WarehouseStock> itemRoot = criteriaQuery.from(WarehouseStock.class);
+        Join<WarehouseStock,Warehouse> warehouseStockWarehouseJoin = itemRoot.join("warehouse");
+        Join<WarehouseStock, SupplierProduct> warehouseStockSupplierProductJoin = itemRoot.join("supplierProduct");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(warehouseId, clientId, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                warehouseIds,
+                supplierProductIds,
+                clientId,
+                criteriaBuilder,
+                itemRoot,
+                warehouseStockWarehouseJoin,
+                warehouseStockSupplierProductJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

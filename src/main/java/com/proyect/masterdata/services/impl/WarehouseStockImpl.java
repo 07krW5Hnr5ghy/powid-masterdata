@@ -1,9 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.services.IAudit;
@@ -145,23 +142,44 @@ public class WarehouseStockImpl implements IWarehouseStock {
     }
 
     @Override
-    public CompletableFuture<Page<WarehouseStockDTO>> list(String warehouse, String user, String sort, String sortColumn,
-                                                          Integer pageNumber,
-                                                          Integer pageSize) throws InternalErrorExceptions {
+    public CompletableFuture<Page<WarehouseStockDTO>> list(
+            List<String> warehouses,
+            List<String> supplierProducts,
+            String user,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<WarehouseStock> warehouseStockPage;
             Long clientId;
-            Long warehouseId;
+            List<Long> warehouseIds;
+            List<Long> supplierProductIds;
 
-            if(warehouse != null){
-                warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+            if(supplierProducts != null && !supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
             }else{
-                warehouseId = null;
+                supplierProductIds = new ArrayList<>();
+            }
+
+            if(warehouses!=null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository
+                        .findByNameIn(
+                                warehouses.stream().map(String::toUpperCase).toList()
+                        ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(clientId, warehouseId, sort,
+                warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(
+                        clientId,
+                        warehouseIds,
+                        supplierProductIds,
+                        sort,
                         sortColumn,
                         pageNumber,
                         pageSize);
