@@ -12,7 +12,7 @@ public interface StockTransactionItemRepositoryCustom {
     Page<StockTransactionItem> searchForStockTransactionItem(
             Long clientId,
             Long stockTransactionId,
-            Long supplierProductId,
+            List<Long> supplierProductsIds,
             List<Long> warehouseIds,
             List<Long> stockTransactionTypeIds,
             String sort,

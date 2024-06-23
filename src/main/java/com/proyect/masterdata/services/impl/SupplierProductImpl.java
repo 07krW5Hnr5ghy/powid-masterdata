@@ -377,6 +377,36 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
+    public CompletableFuture<List<SupplierProductDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierProduct> supplierProducts;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                supplierProducts = supplierProductRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(supplierProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return supplierProducts.stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .price(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
+                            .build())
+                    .toList();
+        });
+    }
+
+    @Override
     public CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<SupplierProduct> supplierProducts;

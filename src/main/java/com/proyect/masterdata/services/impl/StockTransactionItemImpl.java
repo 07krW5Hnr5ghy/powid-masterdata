@@ -133,7 +133,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     public CompletableFuture<Page<StockTransactionItemDTO>> list(
             String user,
             String stockTransaction,
-            String supplierProduct,
+            List<String> supplierProducts,
             List<String> warehouses,
             List<String> stockTransactionTypes,
             String sort,
@@ -143,7 +143,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
         return CompletableFuture.supplyAsync(()->{
             Long clientId;
             Long stockTransactionId;
-            Long supplierProductId;
+            List<Long> supplierProductIds;
             List<Long> warehouseIds;
             List<Long> stockTransactionTypeIds;
             Page<StockTransactionItem> stockTransactionItemPage;
@@ -154,10 +154,12 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                 stockTransactionId = null;
             }
 
-            if(supplierProduct != null){
-                supplierProductId = supplierProductRepository.findBySerial(supplierProduct.toUpperCase()).getId();
+            if(supplierProducts != null && !supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
             }else{
-                supplierProductId = null;
+                supplierProductIds = new ArrayList<>();
             }
 
             if(warehouses!=null && !warehouses.isEmpty()){
@@ -182,7 +184,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                 stockTransactionItemPage = stockTransactionItemRepositoryCustom.searchForStockTransactionItem(
                         clientId,
                         stockTransactionId,
-                        supplierProductId,
+                        supplierProductIds,
                         warehouseIds,
                         stockTransactionTypeIds,
                         sort,

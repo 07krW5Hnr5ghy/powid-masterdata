@@ -126,4 +126,12 @@ public class SupplierProductController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
+    @GetMapping("filter")
+    public ResponseEntity<List<SupplierProductDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SupplierProductDTO>> result = iSupplierProduct.listFilter(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
 }
