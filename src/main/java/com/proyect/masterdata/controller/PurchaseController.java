@@ -42,15 +42,26 @@ public class PurchaseController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
     public ResponseEntity<Page<PurchaseDTO>> list(
-            @RequestParam(value = "serial", required = false) String serial,
+            @RequestParam(value = "serials", required = false) List<String> serials,
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "documentName", required = false) String documentName,
+            @RequestParam(value = "documents", required = false) List<String> documents,
+            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
+            @RequestParam(value = "rucs",required = false) List<String> rucs,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<PurchaseDTO>> result = iPurchase.list(serial,user,documentName,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<PurchaseDTO>> result = iPurchase.list(
+                serials,
+                user,
+                documents,
+                supplierProducts,
+                rucs,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
@@ -69,6 +80,15 @@ public class PurchaseController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<PurchaseDTO>> result = iPurchase.listPurchaseFalse(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filters")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
+    public ResponseEntity<List<PurchaseDTO>> listFilters(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<PurchaseDTO>> result = iPurchase.listPurchaseFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

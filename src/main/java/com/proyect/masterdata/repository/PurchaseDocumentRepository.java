@@ -11,5 +11,6 @@ public interface PurchaseDocumentRepository extends JpaRepository<PurchaseDocume
     PurchaseDocument findByNameAndStatusTrue(String name);
     PurchaseDocument findByNameAndStatusFalse(String name);
     PurchaseDocument findByName(String name);
+    List<PurchaseDocument> findByNameIn(List<String> names);
     List<PurchaseDocument> findAllByStatusTrue();
 }

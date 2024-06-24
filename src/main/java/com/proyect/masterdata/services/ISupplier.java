@@ -23,4 +23,5 @@ public interface ISupplier {
                         Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<List<SupplierDTO>> listSuppliers(String user) throws InternalErrorExceptions,BadRequestExceptions;
         CompletableFuture<List<SupplierDTO>> listSuppliersFalse(String user) throws InternalErrorExceptions,BadRequestExceptions;
+        CompletableFuture<List<SupplierDTO>> listSuppliersFilter(String user) throws InternalErrorExceptions,BadRequestExceptions;
 }

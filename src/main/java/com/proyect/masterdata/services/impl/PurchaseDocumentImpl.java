@@ -150,9 +150,25 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
     @Override
     public CompletableFuture<List<String>> list() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<PurchaseDocument> purchaseDocumentList = new ArrayList<>();
+            List<PurchaseDocument> purchaseDocumentList;
             try {
                 purchaseDocumentList = purchaseDocumentRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(purchaseDocumentList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return purchaseDocumentList.stream().map(purchaseDocument -> purchaseDocument.getName().toUpperCase()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<String>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<PurchaseDocument> purchaseDocumentList;
+            try {
+                purchaseDocumentList = purchaseDocumentRepository.findAll();
             }catch (RuntimeException e){
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }

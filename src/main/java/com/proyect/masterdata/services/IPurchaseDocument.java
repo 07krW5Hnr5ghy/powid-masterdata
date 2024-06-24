@@ -13,4 +13,5 @@ public interface IPurchaseDocument {
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<String>> list() throws BadRequestExceptions;
+    CompletableFuture<List<String>> listFilter() throws BadRequestExceptions;
 }

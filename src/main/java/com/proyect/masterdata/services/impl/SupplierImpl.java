@@ -378,4 +378,38 @@ public class SupplierImpl implements ISupplier {
                     .build()).toList();
         });
     }
+
+    @Override
+    public CompletableFuture<List<SupplierDTO>> listSuppliersFilter(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<Supplier> suppliers;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                suppliers = supplierRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(suppliers.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return suppliers.stream().map(supplier -> SupplierDTO.builder()
+                    .name(supplier.getBusinessName())
+                    .country(supplier.getCountry().getName())
+                    .email(supplier.getEmail())
+                    .location(supplier.getLocation())
+                    .phone(supplier.getPhoneNumber())
+                    .ruc(supplier.getRuc())
+                    .department(supplier.getDistrict().getProvince().getDepartment().getName())
+                    .province(supplier.getDistrict().getProvince().getName())
+                    .district(supplier.getDistrict().getName())
+                    .supplierType(supplier.getSupplierType().getName())
+                    .registrationDate(supplier.getRegistrationDate())
+                    .updateDate(supplier.getUpdateDate())
+                    .build()).toList();
+        });
+    }
 }

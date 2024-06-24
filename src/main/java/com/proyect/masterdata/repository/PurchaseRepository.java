@@ -12,4 +12,5 @@ public interface PurchaseRepository extends JpaRepository<Purchase,Long> {
     Purchase findBySerialAndStatusTrue(String serial);
     List<Purchase> findAllByClientIdAndStatusTrue(Long clientId);
     List<Purchase> findAllByClientIdAndStatusFalse(Long clientId);
+    List<Purchase> findAllByClientId(Long clientId);
 }
