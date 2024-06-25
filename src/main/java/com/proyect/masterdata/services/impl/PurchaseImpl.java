@@ -175,7 +175,6 @@ public class PurchaseImpl implements IPurchase {
             List<String> serials,
             String user,
             List<String> documents,
-            List<String> supplierProducts,
             List<String> suppliers,
             String sort,
             String sortColumn,
@@ -185,8 +184,8 @@ public class PurchaseImpl implements IPurchase {
             Page<Purchase> pagePurchase;
             Long clientId;
             List<Long> purchaseDocumentIds;
-            List<Long> supplierProductIds;
             List<Long> supplierIds;
+            List<String> serialsUppercase;
 
             if(documents!=null && !documents.isEmpty()){
                 purchaseDocumentIds = purchaseDocumentRepository.findByNameIn(
@@ -194,14 +193,6 @@ public class PurchaseImpl implements IPurchase {
                 ).stream().map(PurchaseDocument::getId).toList();
             }else{
                 purchaseDocumentIds = new ArrayList<>();
-            }
-
-            if(supplierProducts != null && !supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else{
-                supplierProductIds = new ArrayList<>();
             }
 
             if(suppliers != null && !suppliers.isEmpty()){
@@ -212,13 +203,18 @@ public class PurchaseImpl implements IPurchase {
                 supplierIds = new ArrayList<>();
             }
 
+            if(serials != null && !serials.isEmpty()){
+                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
+            }else{
+                serialsUppercase = new ArrayList<>();
+            }
+
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pagePurchase = purchaseRepositoryCustom.searchForPurchase(
                         clientId,
-                        serials.stream().map(String::toUpperCase).toList(),
+                        serialsUppercase,
                         purchaseDocumentIds,
-                        supplierProductIds,
                         supplierIds,
                         sort,
                         sortColumn,

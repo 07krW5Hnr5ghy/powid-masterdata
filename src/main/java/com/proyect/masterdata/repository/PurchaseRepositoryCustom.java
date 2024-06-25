@@ -12,7 +12,6 @@ public interface PurchaseRepositoryCustom {
             Long clientId,
             List<String> serial,
             List<Long> purchaseDocumentIds,
-            List<Long> supplierProductIds,
             List<Long> supplierIds,
             String sort,
             String sortColumn,

@@ -18,7 +18,6 @@ public interface IPurchase {
             List<String> serials,
             String user,
             List<String> documents,
-            List<String> supplierProducts,
             List<String> suppliers,
             String sort,
             String sortColumn,

@@ -26,7 +26,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             Long clientId,
             List<String> serials,
             List<Long> purchaseDocumentIds,
-            List<Long> supplierProductIds,
             List<Long> supplierIds,
             String sort,
             String sortColumn,
@@ -45,7 +44,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
                 clientId,
                 serials,
                 purchaseDocumentIds,
-                supplierProductIds,
                 supplierIds,
                 status,
                 criteriaBuilder,
@@ -78,7 +76,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
                 clientId,
                 serials,
                 purchaseDocumentIds,
-                supplierProductIds,
                 supplierIds,
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
@@ -88,7 +85,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             Long clientId,
             List<String> serials,
             List<Long> purchaseDocumentIds,
-            List<Long> supplierProductsIds,
             List<Long> supplierIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
@@ -107,10 +103,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
 
         if(!serials.isEmpty()){
             conditions.add(criteriaBuilder.and(itemRoot.get("serial").in(serials)));
-        }
-
-        if(!supplierProductsIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("supplierProduct").in(supplierProductsIds)));
         }
 
         if(!supplierIds.isEmpty()){
@@ -171,7 +163,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             Long clientId,
             List<String> serials,
             List<Long> purchaseDocumentIds,
-            List<Long> supplierProductIds,
             List<Long> supplierIds,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -182,7 +173,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
                 clientId,
                 serials,
                 purchaseDocumentIds,
-                supplierProductIds,
                 supplierIds,
                 status,
                 criteriaBuilder,

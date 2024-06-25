@@ -45,8 +45,7 @@ public class PurchaseController {
             @RequestParam(value = "serials", required = false) List<String> serials,
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "documents", required = false) List<String> documents,
-            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
-            @RequestParam(value = "rucs",required = false) List<String> rucs,
+            @RequestParam(value = "suppliers",required = false) List<String> suppliers,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
@@ -56,8 +55,7 @@ public class PurchaseController {
                 serials,
                 user,
                 documents,
-                supplierProducts,
-                rucs,
+                suppliers,
                 sort,
                 sortColumn,
                 pageNumber,
@@ -83,7 +81,7 @@ public class PurchaseController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @GetMapping("filters")
+    @GetMapping("filter")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_GET')")
     public ResponseEntity<List<PurchaseDTO>> listFilters(
             @RequestParam("user") String user
