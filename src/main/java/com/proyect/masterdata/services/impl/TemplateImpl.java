@@ -237,16 +237,22 @@ public class TemplateImpl implements ITemplate {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Shipment shipment;
+            Purchase purchase;
             List<ShipmentItem> shipmentItemList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                shipment = shipmentRepository.findByPurchaseSerial(purchaseSerial.toUpperCase());
+                purchase = purchaseRepository.findBySerialAndStatusTrue(purchaseSerial.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(purchase == null){
+                throw new BadRequestExceptions(Constants.ErrorPurchase);
+            }else{
+                shipment = shipmentRepository.findBySerial(purchaseSerial.toUpperCase());
             }
             if(shipment==null){
                 throw new BadRequestExceptions(Constants.ErrorShipment);

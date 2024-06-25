@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface ShipmentRepository extends JpaRepository<Shipment,Long> {
     Shipment findByPurchaseSerialAndShipmentTypeId(String serial,Long shipmentTypeId);
-    Shipment findByPurchaseSerial(String serial);
+    Shipment findBySerial(String serial);
     Shipment findByPurchaseIdAndShipmentTypeName(Long purchaseId,String shipmentTypeName);
     List<Shipment> findAllByClientId(Long clientId);
 }

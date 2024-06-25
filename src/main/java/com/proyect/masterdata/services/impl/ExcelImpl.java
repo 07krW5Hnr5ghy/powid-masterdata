@@ -219,7 +219,7 @@ public class ExcelImpl implements IExcel {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(requestShipmentExcel.getTokenUser().toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipmentExcel.getWarehouse().toUpperCase());
-                shipment = shipmentRepository.findByPurchaseSerialAndShipmentTypeId(requestShipmentExcel.getPurchaseSerial().toUpperCase(),shipmentType.getId());
+                shipment = shipmentRepository.findBySerial(requestShipmentExcel.getSerial());
                 purchase = purchaseRepository.findBySerialAndStatusTrue(requestShipmentExcel.getPurchaseSerial().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -228,6 +228,16 @@ public class ExcelImpl implements IExcel {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(shipment != null){
+                throw new BadRequestExceptions(Constants.ErrorShipmentExists);
+            }
+
+            if(purchase == null){
+                throw new BadRequestExceptions(Constants.ErrorPurchase);
+            }else{
+                shipment = shipmentRepository.findByPurchaseSerialAndShipmentTypeId(requestShipmentExcel.getPurchaseSerial().toUpperCase(),shipmentType.getId());
             }
 
             if (warehouse == null) {
@@ -244,9 +254,7 @@ public class ExcelImpl implements IExcel {
                 shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipmentExcel.getShipmentType().toUpperCase());
             }
 
-            if(purchase == null){
-                throw new BadRequestExceptions(Constants.ErrorPurchase);
-            }
+
 
             if(shipmentType == null){
                 throw new BadRequestExceptions(Constants.ErrorShipmentType);
@@ -320,7 +328,6 @@ public class ExcelImpl implements IExcel {
                     }
                 }
                 Shipment newShipment = shipmentRepository.save(Shipment.builder()
-                        .purchaseSerial(requestShipmentExcel.getPurchaseSerial().toUpperCase())
                         .status(true)
                         .purchase(purchase)
                         .purchaseId(purchase.getId())
@@ -386,7 +393,7 @@ public class ExcelImpl implements IExcel {
                     j++;
                 }
                 iStockTransaction.save("S"+requestShipmentExcel.getPurchaseSerial().toUpperCase(), warehouse,stockTransactionItemList,"ENTRADA",user);
-                iAudit.save("ADD_SHIPMENT_EXCEL","ADD SHIPMENT OF PURCHASE "+newShipment.getPurchaseSerial()+" USING EXCEL FILE.",user.getUsername());
+                iAudit.save("ADD_SHIPMENT_EXCEL","ADD SHIPMENT "+newShipment.getSerial()+" OF PURCHASE "+newShipment.getPurchase().getSerial()+" USING EXCEL FILE.",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)

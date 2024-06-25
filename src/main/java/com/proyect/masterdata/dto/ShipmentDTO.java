@@ -12,6 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class ShipmentDTO {
+    private String serial;
     private String purchase;
     private String warehouse;
     private String shipmentType;

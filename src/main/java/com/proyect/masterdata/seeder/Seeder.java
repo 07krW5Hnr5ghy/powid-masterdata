@@ -2071,6 +2071,7 @@ public class Seeder implements CommandLineRunner {
                         requestShipmentItemList1.add(requestShipmentItem6);
 
                         RequestShipment requestShipment1 = RequestShipment.builder()
+                                .serial("SA00001")
                                 .shipmentType("embarque")
                                 .requestShipmentItemList(requestShipmentItemList1)
                                 .warehouse("luminous")
@@ -2131,6 +2132,7 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipment requestShipment2 = RequestShipment.builder()
                                 .shipmentType("embarque")
+                                .serial("SB00001")
                                 .purchaseSerial("BB00001")
                                 .requestShipmentItemList(requestShipmentItemList2)
                                 .warehouse("alcazar")

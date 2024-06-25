@@ -23,8 +23,8 @@ public class Shipment {
     @Column(name = "shipment_id")
     private Long id;
 
-    @Column(name = "purchaseSerial")
-    private String purchaseSerial;
+    @Column(name = "serial")
+    private String serial;
 
     @Column(name = "registration_date")
     @CreationTimestamp

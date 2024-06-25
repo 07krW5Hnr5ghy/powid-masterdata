@@ -97,7 +97,7 @@ public class ShipmentItemImpl implements IShipmentItem {
 
             iWarehouseStock.in(shipment.getWarehouse(),supplierProduct, requestShipmentItem.getQuantity(), user);
             iGeneralStock.in(supplierProduct.getSerial(), requestShipmentItem.getQuantity(), user.getUsername());
-            iAudit.save("ADD_SHIPMENT_ITEM","ADD SHIPMENT ITEM "+newShipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+newShipmentItem.getShipment().getPurchaseSerial()+".",user.getUsername());
+            iAudit.save("ADD_SHIPMENT_ITEM","ADD SHIPMENT ITEM "+newShipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+newShipmentItem.getPurchaseItem().getPurchase().getSerial()+".",user.getUsername());
             return newShipmentItem;
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -160,7 +160,7 @@ public class ShipmentItemImpl implements IShipmentItem {
 
                 iWarehouseStock.in(shipment.getWarehouse(),supplierProduct, requestShipmentItem.getQuantity(), user);
                 iGeneralStock.in(supplierProduct.getSerial(), requestShipmentItem.getQuantity(), user.getUsername());
-                iAudit.save("ADD_SHIPMENT_ITEM","ADD SHIPMENT ITEM "+newShipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+newShipmentItem.getShipment().getPurchaseSerial()+".",user.getUsername());
+                iAudit.save("ADD_SHIPMENT_ITEM","ADD SHIPMENT ITEM "+newShipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+newShipmentItem.getShipment().getPurchase().getSerial()+".",user.getUsername());
                 return newShipmentItem;
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -180,7 +180,7 @@ public class ShipmentItemImpl implements IShipmentItem {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                shipment = shipmentRepository.findByPurchaseSerial(purchaseSerial.toUpperCase());
+                shipment = shipmentRepository.findBySerial(purchaseSerial.toUpperCase());
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -213,7 +213,7 @@ public class ShipmentItemImpl implements IShipmentItem {
                 shipmentItem.setTokenUser(user.getUsername());
                 iWarehouseStock.out(shipment.getWarehouse(),supplierProduct, shipmentItem.getQuantity(), user);
                 iGeneralStock.out(supplierProduct.getSerial(), shipmentItem.getQuantity(), user.getUsername());
-                iAudit.save("DELETE_SHIPMENT_ITEM","DELETE SHIPMENT ITEM "+shipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+shipmentItem.getShipment().getPurchaseSerial()+".",user.getUsername());
+                iAudit.save("DELETE_SHIPMENT_ITEM","DELETE SHIPMENT ITEM "+shipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+shipmentItem.getShipment().getPurchase().getSerial()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -236,7 +236,7 @@ public class ShipmentItemImpl implements IShipmentItem {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                shipment = shipmentRepository.findByPurchaseSerial(purchaseSerial.toUpperCase());
+                shipment = shipmentRepository.findBySerial(purchaseSerial.toUpperCase());
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -269,7 +269,7 @@ public class ShipmentItemImpl implements IShipmentItem {
                 shipmentItem.setTokenUser(user.getUsername());
                 iWarehouseStock.in(shipment.getWarehouse(),supplierProduct, shipmentItem.getQuantity(), user);
                 iGeneralStock.in(supplierProduct.getSerial(), shipmentItem.getQuantity(), user.getUsername());
-                iAudit.save("ACTIVATE_SHIPMENT_ITEM","ACTIVATE SHIPMENT ITEM "+shipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+shipmentItem.getShipment().getPurchaseSerial()+".",user.getUsername());
+                iAudit.save("ACTIVATE_SHIPMENT_ITEM","ACTIVATE SHIPMENT ITEM "+shipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+shipmentItem.getShipment().getPurchase().getSerial()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)
@@ -291,7 +291,7 @@ public class ShipmentItemImpl implements IShipmentItem {
             Long supplierProductId;
 
             if (purchaseSerial != null) {
-                shipmentId = shipmentRepository.findByPurchaseSerial(purchaseSerial.toUpperCase()).getId();
+                shipmentId = shipmentRepository.findBySerial(purchaseSerial.toUpperCase()).getId();
             } else {
                 shipmentId = null;
             }
