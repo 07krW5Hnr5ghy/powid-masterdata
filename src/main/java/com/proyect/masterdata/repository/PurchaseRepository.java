@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface PurchaseRepository extends JpaRepository<Purchase,Long> {
     Purchase findBySerial(String serial);
+    List<Purchase> findBySerialIn(List<String> serials);
     Purchase findBySerialAndStatusTrue(String serial);
     List<Purchase> findAllByClientIdAndStatusTrue(Long clientId);
     List<Purchase> findAllByClientIdAndStatusFalse(Long clientId);

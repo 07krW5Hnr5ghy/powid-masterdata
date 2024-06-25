@@ -1,12 +1,12 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import com.proyect.masterdata.domain.Purchase;
-import com.proyect.masterdata.domain.PurchaseItem;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
@@ -14,8 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import com.proyect.masterdata.domain.SupplierProduct;
-import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.PurchaseItemDTO;
 import com.proyect.masterdata.dto.request.RequestPurchaseItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -37,6 +35,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
     private final SupplierProductRepository supplierProductRepository;
     private final PurchaseItemRepositoryCustom purchaseItemRepositoryCustom;
     private final IAudit iAudit;
+    private final SupplierRepository supplierRepository;
     @Override
     public ResponseSuccess save(Long purchaseId, RequestPurchaseItem requestPurchaseItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -161,30 +160,60 @@ public class PurchaseItemImpl implements IPurchaseItem {
     }
 
     @Override
-    public CompletableFuture<Page<PurchaseItemDTO>> list(String serial, String user, String supplierProductSerial, String sort, String sortColumn,
-                                      Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<Page<PurchaseItemDTO>> list(
+            List<String> serials,
+            String user,
+            List<String> suppliers,
+            List<String> supplierProducts,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<PurchaseItem> pagePurchase;
             Long clientId;
-            Long supplierProductId;
-            Long purchaseId;
+            List<Long> serialIds;
+            List<Long> supplierIds;
+            List<Long> supplierProductIds;
 
-            if(serial != null){
-                purchaseId = purchaseRepository.findBySerial(serial.toUpperCase()).getId();
+            if(serials != null && !serials.isEmpty()){
+                serialIds = purchaseRepository.findBySerialIn(
+                        serials.stream().map(String::toUpperCase).toList()
+                ).stream().map(Purchase::getId).toList();
             }else {
-                purchaseId = null;
+                serialIds = new ArrayList<>();
             }
 
-            if(supplierProductSerial != null){
-                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+            if(suppliers != null && !suppliers.isEmpty()){
+                supplierIds = supplierRepository.findByRucIn(
+                        suppliers.stream().map(String::toUpperCase).toList()
+                ).stream().map(Supplier::getId).toList();
             }else {
-                supplierProductId = null;
+                supplierIds = new ArrayList<>();
             }
+
+            if(supplierProducts != null && !supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
+            }else{
+                supplierProductIds = new ArrayList<>();
+            }
+
+            System.out.println(supplierProductIds);
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pagePurchase = purchaseItemRepositoryCustom.searchForPurchaseItem(clientId, purchaseId,supplierProductId, sort, sortColumn,
-                        pageNumber, pageSize, true);
+                pagePurchase = purchaseItemRepositoryCustom.searchForPurchaseItem(
+                        clientId,
+                        serialIds,
+                        supplierIds,
+                        supplierProductIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.ResultsFound);

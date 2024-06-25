@@ -17,8 +17,15 @@ public interface IPurchaseItem {
             throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(Long purchaseId, RequestPurchaseItem requestPurchaseItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<Page<PurchaseItemDTO>> list(String serial, String user, String supplierProductSerial, String sort, String sortColumn,
-                               Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<Page<PurchaseItemDTO>> list(
+            List<String> serials,
+            String user,
+            List<String> suppliers,
+            List<String> supplierProducts,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String purchaseSerial,String serialSupplierProduct,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String purchaseSerial,String serialSupplierProduct,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<PurchaseItemDTO>> listPurchaseItem(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;

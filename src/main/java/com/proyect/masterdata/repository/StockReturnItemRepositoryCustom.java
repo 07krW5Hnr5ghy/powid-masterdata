@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StockReturnItemRepositoryCustom {
-    public Page<StockReturnItem> searchForStockReturnItem(
+    Page<StockReturnItem> searchForStockReturnItem(
             Long purchaseId,
             Long clientId,
             Long supplierProductId,

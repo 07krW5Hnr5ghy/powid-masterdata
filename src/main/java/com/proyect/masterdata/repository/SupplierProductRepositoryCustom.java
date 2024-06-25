@@ -7,7 +7,7 @@ import com.proyect.masterdata.domain.SupplierProduct;
 
 @Repository
 public interface SupplierProductRepositoryCustom {
-    public Page<SupplierProduct> searchForSupplierProduct(
+    Page<SupplierProduct> searchForSupplierProduct(
             String serial,
             Long clientId,
             Long productId,
@@ -18,4 +18,4 @@ public interface SupplierProductRepositoryCustom {
             Integer pageNumber,
             Integer pageSize,
             Boolean status);
-}
+    }

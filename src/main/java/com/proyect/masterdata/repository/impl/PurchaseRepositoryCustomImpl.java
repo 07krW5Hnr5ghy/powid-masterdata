@@ -2,6 +2,7 @@ package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.PurchaseDocument;
+import com.proyect.masterdata.domain.Supplier;
 import com.proyect.masterdata.repository.PurchaseRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -98,7 +99,7 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
         }
 
         if(!purchaseDocumentIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("purchaseDocument").in(purchaseDocumentIds)));
+            conditions.add(criteriaBuilder.and(itemRoot.get("purchaseDocumentId").in(purchaseDocumentIds)));
         }
 
         if(!serials.isEmpty()){
@@ -106,7 +107,7 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
         }
 
         if(!supplierIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("supplier").in(supplierIds)));
+            conditions.add(criteriaBuilder.and(itemRoot.get("supplierId").in(supplierIds)));
         }
 
         if (status) {
