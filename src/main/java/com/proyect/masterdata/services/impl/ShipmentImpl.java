@@ -17,10 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -257,28 +254,69 @@ public class ShipmentImpl implements IShipment {
     }
 
     @Override
-    public CompletableFuture<Page<ShipmentDTO>> list(String purchaseSerial, String user, String warehouse, String shipmentType, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<ShipmentDTO>> list(
+            List<String> serials,
+            List<String> purchases,
+            String user,
+            List<String> warehouses,
+            List<String> shipmentTypes,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Shipment> pageShipment;
+            List<String> serialsUppercase;
             Long clientId;
-            Long warehouseId;
-            Long shipmentTypeId;
+            List<Long> purchaseIds;
+            List<Long> warehouseIds;
+            List<Long> shipmentTypeIds;
 
-            if (warehouse != null) {
-                warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
-            } else {
-                warehouseId = null;
+            if(serials != null && !serials.isEmpty()){
+                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
+            }else{
+                serialsUppercase = new ArrayList<>();
             }
 
-            if (shipmentType != null){
-                shipmentTypeId = shipmentTypeRepository.findByNameAndStatusTrue(shipmentType.toUpperCase()).getId();
+            if(purchases != null && !purchases.isEmpty()){
+                purchaseIds = purchaseRepository.findBySerialIn(purchases.stream().map(
+                        String::toUpperCase
+                ).toList()).stream().map(
+                        Purchase::getId
+                ).toList();
+            }else{
+                purchaseIds = new ArrayList<>();
+            }
+
+            if(warehouses != null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository.findByNameIn(
+                        warehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
+
+            if (shipmentTypes != null && !shipmentTypes.isEmpty()){
+                shipmentTypeIds = shipmentTypeRepository.findByNameIn(
+                        shipmentTypes.stream().map(String::toUpperCase).toList()
+                ).stream().map(ShipmentType::getId).toList();
             }else {
-                shipmentTypeId = null;
+                shipmentTypeIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageShipment = shipmentRepositoryCustom.searchForShipment(clientId,purchaseSerial,warehouseId,shipmentTypeId,sort,sortColumn,pageNumber,pageSize,true);
+                pageShipment = shipmentRepositoryCustom.searchForShipment(
+                        clientId,
+                        serialsUppercase,
+                        purchaseIds,
+                        warehouseIds,
+                        shipmentTypeIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.ResultsFound);
@@ -301,28 +339,69 @@ public class ShipmentImpl implements IShipment {
     }
 
     @Override
-    public CompletableFuture<Page<ShipmentDTO>> listFalse(String purchaseSerial, String user, String warehouse, String shipmentType, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<ShipmentDTO>> listFalse(
+            List<String> serials,
+            List<String> purchases,
+            String user,
+            List<String> warehouses,
+            List<String> shipmentTypes,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Shipment> pageShipment;
             Long clientId;
-            Long warehouseId;
-            Long shipmentTypeId;
+            List<String> serialsUppercase;
+            List<Long> purchaseIds;
+            List<Long> warehouseIds;
+            List<Long> shipmentTypeIds;
 
-            if (warehouse != null) {
-                warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
-            } else {
-                warehouseId = null;
+            if(serials != null && !serials.isEmpty()){
+                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
+            }else{
+                serialsUppercase = new ArrayList<>();
             }
 
-            if (shipmentType != null){
-                shipmentTypeId = shipmentTypeRepository.findByNameAndStatusTrue(shipmentType.toUpperCase()).getId();
+            if(purchases != null && !purchases.isEmpty()){
+                purchaseIds = purchaseRepository.findBySerialIn(purchases.stream().map(
+                        String::toUpperCase
+                ).toList()).stream().map(
+                        Purchase::getId
+                ).toList();
+            }else{
+                purchaseIds = new ArrayList<>();
+            }
+
+            if(warehouses != null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository.findByNameIn(
+                        warehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
+
+            if (shipmentTypes != null && !shipmentTypes.isEmpty()){
+                shipmentTypeIds = shipmentTypeRepository.findByNameIn(
+                        shipmentTypes.stream().map(String::toUpperCase).toList()
+                ).stream().map(ShipmentType::getId).toList();
             }else {
-                shipmentTypeId = null;
+                shipmentTypeIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageShipment = shipmentRepositoryCustom.searchForShipment(clientId,purchaseSerial,warehouseId,shipmentTypeId,sort,sortColumn,pageNumber,pageSize,false);
+                pageShipment = shipmentRepositoryCustom.searchForShipment(
+                        clientId,
+                        serialsUppercase,
+                        purchaseIds,
+                        warehouseIds,
+                        shipmentTypeIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.ResultsFound);
@@ -346,6 +425,33 @@ public class ShipmentImpl implements IShipment {
 
     @Override
     public CompletableFuture<List<ShipmentDTO>> listShipment(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Shipment> shipments;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                shipments = shipmentRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(shipments.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return shipments.stream().map(shipment -> ShipmentDTO.builder()
+                    .serial(shipment.getSerial())
+                    .purchase(shipment.getPurchase().getSerial())
+                    .warehouse(shipment.getWarehouse().getName())
+                    .shipmentType(shipment.getShipmentType().getName())
+                    .registrationDate(shipment.getRegistrationDate())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<ShipmentDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Shipment> shipments;
             Long clientId;

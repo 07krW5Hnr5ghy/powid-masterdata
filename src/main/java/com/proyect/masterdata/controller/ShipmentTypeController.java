@@ -59,4 +59,10 @@ public class ShipmentTypeController {
         CompletableFuture<List<String>> result = iShipmentType.list();
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<String>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<String>> result = iShipmentType.listFilter();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

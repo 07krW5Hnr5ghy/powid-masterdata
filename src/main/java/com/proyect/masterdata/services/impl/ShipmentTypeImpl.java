@@ -206,4 +206,24 @@ public class ShipmentTypeImpl implements IShipmentType {
             return shipmentTypeList.stream().map(ShipmentType::getName).toList();
         });
     }
+
+    @Override
+    public CompletableFuture<List<String>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<ShipmentType> shipmentTypeList;
+
+            try{
+                shipmentTypeList = shipmentTypeRepository.findAll();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(shipmentTypeList.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return shipmentTypeList.stream().map(ShipmentType::getName).toList();
+        });
+    }
 }
