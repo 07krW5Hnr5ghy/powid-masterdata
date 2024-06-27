@@ -19,7 +19,7 @@ public interface IStockTransactionItem {
                 throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<StockTransactionItemDTO>> list(
                 String user,
-                String stockTransaction,
+                List<String> stockTransactions,
                 List<String> supplierProducts,
                 List<String> warehouses,
                 List<String> stockTransactionTypes,

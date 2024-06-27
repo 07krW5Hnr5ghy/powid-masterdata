@@ -11,7 +11,7 @@ import java.util.List;
 public interface StockTransactionItemRepositoryCustom {
     Page<StockTransactionItem> searchForStockTransactionItem(
             Long clientId,
-            Long stockTransactionId,
+            List<Long> stockTransactionId,
             List<Long> supplierProductsIds,
             List<Long> warehouseIds,
             List<Long> stockTransactionTypeIds,

@@ -132,7 +132,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     @Override
     public CompletableFuture<Page<StockTransactionItemDTO>> list(
             String user,
-            String stockTransaction,
+            List<String> stockTransactions,
             List<String> supplierProducts,
             List<String> warehouses,
             List<String> stockTransactionTypes,
@@ -142,16 +142,18 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Long clientId;
-            Long stockTransactionId;
+            List<Long> stockTransactionIds;
             List<Long> supplierProductIds;
             List<Long> warehouseIds;
             List<Long> stockTransactionTypeIds;
             Page<StockTransactionItem> stockTransactionItemPage;
 
-            if (stockTransaction != null) {
-                stockTransactionId = stockTransactionRepository.findBySerial(stockTransaction.toUpperCase()).getId();
+            if (stockTransactions != null && !stockTransactions.isEmpty()) {
+                stockTransactionIds = stockTransactionRepository.findBySerialIn(
+                        stockTransactions.stream().map(String::toUpperCase).toList()
+                ).stream().map(StockTransaction::getId).toList();
             } else {
-                stockTransactionId = null;
+                stockTransactionIds = new ArrayList<>();
             }
 
             if(supplierProducts != null && !supplierProducts.isEmpty()){
@@ -183,7 +185,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stockTransactionItemPage = stockTransactionItemRepositoryCustom.searchForStockTransactionItem(
                         clientId,
-                        stockTransactionId,
+                        stockTransactionIds,
                         supplierProductIds,
                         warehouseIds,
                         stockTransactionTypeIds,

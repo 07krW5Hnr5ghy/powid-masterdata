@@ -28,7 +28,7 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
     @Override
     public Page<StockTransactionItem> searchForStockTransactionItem(
             Long clientId,
-            Long stockTransactionId,
+            List<Long> stockTransactionIds,
             List<Long> supplierProductIds,
             List<Long> warehouseIds,
             List<Long> stockTransactionTypesIds,
@@ -49,7 +49,7 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
 
         List<Predicate> conditions = predicate(
                 clientId,
-                stockTransactionId,
+                stockTransactionIds,
                 supplierProductIds,
                 warehouseIds,
                 stockTransactionTypesIds,
@@ -83,7 +83,7 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                stockTransactionId,
+                stockTransactionIds,
                 supplierProductIds,
                 warehouseIds,
                 stockTransactionTypesIds
@@ -93,7 +93,7 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
 
     private List<Predicate> predicate(
             Long clientId,
-            Long stockTransactionId,
+            List<Long> stockTransactionIds,
             List<Long> supplierProductIds,
             List<Long> warehouseIds,
             List<Long> stockTransactionTypeIds,
@@ -121,8 +121,8 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
             conditions.add(criteriaBuilder.and(itemRoot.get("supplierProduct").get("id").in(supplierProductIds)));
         }
 
-        if (stockTransactionId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("stockTransactionId"), stockTransactionId)));
+        if (!stockTransactionIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("stockTransactionId").in(stockTransactionIds)));
         }
         
         return conditions;
@@ -169,7 +169,7 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
 
     private Long getOrderCount(
             Long clientId,
-            Long stockTransactionId,
+            List<Long> stockTransactionIds,
             List<Long> supplierProductIds,
             List<Long> warehouseIds,
             List<Long> stockTransactionTypeIds
@@ -183,7 +183,7 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
         criteriaQuery.select(criteriaBuilder.count(stockTransactionItemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
-                stockTransactionId,
+                stockTransactionIds,
                 supplierProductIds,
                 warehouseIds,
                 stockTransactionTypeIds,
