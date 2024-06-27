@@ -200,8 +200,6 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 supplierProductIds = new ArrayList<>();
             }
 
-            System.out.println(supplierProductIds);
-
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pagePurchase = purchaseItemRepositoryCustom.searchForPurchaseItem(

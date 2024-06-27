@@ -22,7 +22,15 @@ public interface IShipmentItem {
             throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String purchaseSerial, String supplierProduct, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String purchaseSerial, String supplierProduct, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<Page<ShipmentItemDTO>> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn,
-                               Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<Page<ShipmentItemDTO>> list(
+            String user,
+            List<String> shipments,
+            List<String> purchases,
+            List<String> warehouses,
+            List<String> supplierProducts,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<List<ShipmentItemDTO>> listShipmentItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
 }

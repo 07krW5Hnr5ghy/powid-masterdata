@@ -10,6 +10,7 @@ import java.util.List;
 public interface ShipmentRepository extends JpaRepository<Shipment,Long> {
     Shipment findByPurchaseSerialAndShipmentTypeId(String serial,Long shipmentTypeId);
     Shipment findBySerial(String serial);
+    List<Shipment> findBySerialIn(List<String> serials);
     Shipment findByPurchaseIdAndShipmentTypeName(Long purchaseId,String shipmentTypeName);
     List<Shipment> findAllByClientId(Long clientId);
 }

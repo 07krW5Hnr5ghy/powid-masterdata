@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ShipmentItemDTO {
+    private String shipment;
     private String warehouse;
     private Integer quantity;
     private String supplierProduct;
