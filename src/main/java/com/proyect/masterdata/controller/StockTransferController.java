@@ -38,20 +38,37 @@ public class StockTransferController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_GET')")
     public ResponseEntity<Page<StockTransferDTO>> list(
             @RequestParam("user") String user,
-            @RequestParam(value = "originWarehouse",required = false) String originWarehouse,
-            @RequestParam(value = "destinationWarehouse", required = false) String destinationWarehouse,
+            @RequestParam(value = "serials",required = false) List<String> serials,
+            @RequestParam(value = "originWarehouses",required = false) List<String> originWarehouses,
+            @RequestParam(value = "destinationWarehouses", required = false) List<String> destinationWarehouses,
             @RequestParam(value = "sort",required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<StockTransferDTO>> result = iStockTransfer.list(user,originWarehouse,destinationWarehouse,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<StockTransferDTO>> result = iStockTransfer.list(
+                user,
+                serials,
+                originWarehouses,
+                destinationWarehouses,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_GET')")
     public ResponseEntity<List<StockTransferDTO>> listStockTransfer(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockTransferDTO>> result = iStockTransfer.listStockTransfer(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<StockTransferDTO>> listFilter(
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<StockTransferDTO>> result = iStockTransfer.listStockTransfer(user);
