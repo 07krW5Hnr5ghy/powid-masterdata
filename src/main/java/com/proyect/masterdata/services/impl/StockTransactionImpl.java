@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -140,35 +141,55 @@ public class StockTransactionImpl implements IStockTransaction {
     }
 
     @Override
-    public CompletableFuture<Page<StockTransactionDTO>> list(String user, String serial, String warehouse, String stockTransactionType, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<StockTransactionDTO>> list(
+            String user,
+            List<String> serials,
+            List<String> warehouses,
+            List<String> stockTransactionTypes,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<StockTransaction> pageStockTransaction;
             Long clientId;
-            Long warehouseId;
-            String stockTransactionSerial;
-            Long stockTransactionTypeId;
+            List<String> serialsUppercase;
+            List<Long> warehouseIds;
+            List<Long> stockTransactionTypeIds;
 
-            if(serial != null){
-                stockTransactionSerial = serial.toUpperCase();
+            if(serials != null && !serials.isEmpty()){
+                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
             }else{
-                stockTransactionSerial = null;
+                serialsUppercase = new ArrayList<>();
             }
 
-            if(warehouse != null){
-                warehouseId = warehouseRepository.findByName(warehouse.toUpperCase()).getId();
+            if(warehouses != null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository.findByNameIn(
+                        warehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
             }else {
-                warehouseId = null;
+                warehouseIds = new ArrayList<>();
             }
 
-            if(stockTransactionType != null){
-                stockTransactionTypeId = stockTransactionTypeRepository.findByName(stockTransactionType.toUpperCase()).getId();
+            if(stockTransactionTypes != null && !stockTransactionTypes.isEmpty()){
+                stockTransactionTypeIds = stockTransactionTypeRepository.findByNameIn(
+                        stockTransactionTypes.stream().map(String::toUpperCase).toList()
+                ).stream().map(StockTransactionType::getId).toList();
             }else {
-                stockTransactionTypeId = null;
+                stockTransactionTypeIds = new ArrayList<>();
             }
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageStockTransaction = stockTransactionRepositoryCustom.searchForStockTransaction(clientId,stockTransactionSerial,warehouseId,stockTransactionTypeId,sort,sortColumn,pageNumber,pageSize);
+                pageStockTransaction = stockTransactionRepositoryCustom.searchForStockTransaction(
+                        clientId,
+                        serialsUppercase,
+                        warehouseIds,
+                        stockTransactionTypeIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

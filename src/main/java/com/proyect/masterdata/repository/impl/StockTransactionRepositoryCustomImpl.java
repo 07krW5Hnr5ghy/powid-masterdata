@@ -21,7 +21,15 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<StockTransaction> searchForStockTransaction(Long clientId, String serial, Long warehouseId, Long stockTransactionTypeId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<StockTransaction> searchForStockTransaction(
+            Long clientId,
+            List<String> serials,
+            List<Long> warehouseIds,
+            List<Long> stockTransactionTypeIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<StockTransaction> criteriaQuery = criteriaBuilder.createQuery(StockTransaction.class);
 
@@ -29,7 +37,13 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicate(clientId,serial, warehouseId, stockTransactionTypeId, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                serials,
+                warehouseIds,
+                stockTransactionTypeIds,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -53,13 +67,23 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(clientId,serial, warehouseId,stockTransactionTypeId);
+        Long count = getOrderCount(
+                clientId,
+                serials,
+                warehouseIds,
+                stockTransactionTypeIds
+        );
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
 
     }
 
-    private List<Predicate> predicate(Long clientId, String serial, Long warehouseId,Long stockTransactionTypeId, CriteriaBuilder criteriaBuilder,
-                                      Root<StockTransaction> itemRoot) {
+    private List<Predicate> predicate(
+            Long clientId,
+            List<String> serials,
+            List<Long> warehouseIds,
+            List<Long> stockTransactionTypeIds,
+            CriteriaBuilder criteriaBuilder,
+            Root<StockTransaction> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -67,17 +91,16 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (serial != null) {
-            conditions.add(criteriaBuilder
-                    .and(criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("serial")), serial.toUpperCase())));
+        if (!serials.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("serial").in(serials)));
         }
 
-        if (warehouseId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("warehouseId"), warehouseId)));
+        if (!warehouseIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("warehouseId").in(warehouseIds)));
         }
 
-        if (stockTransactionTypeId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("stockTransactionTypeId"), stockTransactionTypeId)));
+        if (!stockTransactionTypeIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("stockTransactionTypeId").in(stockTransactionTypeIds)));
         }
 
         return conditions;
@@ -130,14 +153,24 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
         return stockTransactionList;
     }
 
-    private Long getOrderCount(Long clientId, String serial, Long warehouseId, Long stockTransactionTypeId) {
+    private Long getOrderCount(
+            Long clientId,
+            List<String> serials,
+            List<Long> warehouseIds,
+            List<Long> stockTransactionTypeIds) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<StockTransaction> itemRoot = criteriaQuery.from(StockTransaction.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(clientId, serial, warehouseId, stockTransactionTypeId, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                serials,
+                warehouseIds,
+                stockTransactionTypeIds,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

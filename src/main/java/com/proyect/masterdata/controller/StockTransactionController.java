@@ -26,20 +26,36 @@ public class StockTransactionController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_GET')")
     public ResponseEntity<Page<StockTransactionDTO>> list(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "serial", required = false) String serial,
-            @RequestParam(value = "stockTransactionType", required = false) String stockTransactionType,
-            @RequestParam(value = "warehouse", required = false) String warehouse,
+            @RequestParam(value = "serials", required = false) List<String> serials,
+            @RequestParam(value = "warehouses", required = false) List<String> warehouses,
+            @RequestParam(value = "stockTransactionTypes", required = false) List<String> stockTransactionTypes,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<StockTransactionDTO>> result = iStockTransaction.list(user,serial,warehouse,stockTransactionType,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<StockTransactionDTO>> result = iStockTransaction.list(
+                user,
+                serials,
+                warehouses,
+                stockTransactionTypes,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_GET')")
     public ResponseEntity<List<StockTransactionDTO>> listStockTransaction(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockTransactionDTO>> result = iStockTransaction.listStockTransaction(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<StockTransactionDTO>> listFilter(
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<StockTransactionDTO>> result = iStockTransaction.listStockTransaction(user);
