@@ -14,8 +14,16 @@ import java.util.concurrent.CompletableFuture;
 public interface IStockReturn {
     ResponseSuccess save(RequestStockReturn requestStockReturn) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(RequestStockReturn requestStockReturn) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<Page<StockReturnDTO>> list(String purchaseSerial, String user, String sort, String sortColumn,
-                              Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<StockReturnDTO>> list(
+            String user,
+            List<String> serials,
+            List<String> purchases,
+            List<String> suppliers,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<List<StockReturnDTO>> listStockReturn(String user) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<StockReturnDTO>> listStockReturnFalse(String user) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<List<StockReturnDTO>> listFilter(String user) throws InternalErrorExceptions,BadRequestExceptions;
 }

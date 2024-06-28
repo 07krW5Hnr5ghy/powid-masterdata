@@ -1,5 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
+import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.StockReturn;
 import com.proyect.masterdata.repository.StockReturnRepositoryCustom;
 import jakarta.persistence.EntityManager;
@@ -21,13 +22,31 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<StockReturn> searchForStockReturnItem(Long purchaseId, Long clientId, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<StockReturn> searchForStockReturnItem(
+            Long clientId,
+            List<String> serials,
+            List<Long> purchaseIds,
+            List<Long> supplierIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<StockReturn> criteriaQuery = criteriaBuilder.createQuery(StockReturn.class);
         Root<StockReturn> itemRoot = criteriaQuery.from(StockReturn.class);
+        Join<StockReturn, Purchase> stockReturnPurchaseJoin = itemRoot.join("purchase");
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicate(purchaseId, clientId,status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                serials,
+                purchaseIds,
+                supplierIds,
+                status,
+                criteriaBuilder,
+                itemRoot,
+                stockReturnPurchaseJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -51,16 +70,24 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(purchaseId,clientId, status);
+        Long count = getOrderCount(
+                clientId,
+                serials,
+                purchaseIds,
+                supplierIds,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicate(
-            Long purchaseId,
             Long clientId,
+            List<String> serials,
+            List<Long> purchaseIds,
+            List<Long> supplierIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<StockReturn> itemRoot) {
+            Root<StockReturn> itemRoot,
+            Join<StockReturn, Purchase> stockReturnPurchaseJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -68,8 +95,16 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (purchaseId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("purchaseId"), purchaseId)));
+        if (!serials.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("serial").in(serials)));
+        }
+
+        if(!purchaseIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("purchaseId").in(purchaseIds)));
+        }
+
+        if(!supplierIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(stockReturnPurchaseJoin.get("supplierId").in(supplierIds)));
         }
 
         if (status) {
@@ -113,13 +148,27 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
         return stockReturnList;
     }
 
-    private Long getOrderCount(Long purchaseId, Long clientId,Boolean status) {
+    private Long getOrderCount(
+            Long clientId,
+            List<String> serials,
+            List<Long> purchaseIds,
+            List<Long> supplierIds,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<StockReturn> itemRoot = criteriaQuery.from(StockReturn.class);
+        Join<StockReturn, Purchase> stockReturnPurchaseJoin = itemRoot.join("purchase");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(purchaseId, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                serials,
+                purchaseIds,
+                supplierIds,
+                status,
+                criteriaBuilder,
+                itemRoot,
+                stockReturnPurchaseJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
