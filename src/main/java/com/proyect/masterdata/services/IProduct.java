@@ -27,4 +27,5 @@ public interface IProduct {
         CompletableFuture<List<ProductDTO>> listProducts(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listProductsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listProductsModel(String user,String model) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<ProductDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

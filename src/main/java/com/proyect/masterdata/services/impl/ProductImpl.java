@@ -504,4 +504,39 @@ public class ProductImpl implements IProduct {
             }).toList();
         });
     }
+
+    @Override
+    public CompletableFuture<List<ProductDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Product> products;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                products = productRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(products.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return products.stream().map(product -> {
+                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                return ProductDTO.builder()
+                        .sku(product.getSku())
+                        .brand(product.getModel().getBrand().getName())
+                        .model(product.getModel().getName())
+                        .category(product.getCategoryProduct().getName())
+                        .color(product.getColor().getName())
+                        .size(product.getSize().getName())
+                        .unit(product.getUnit().getName())
+                        .price(productPrice.getUnitSalePrice())
+                        .registrationDate(product.getRegistrationDate())
+                        .updateDate(product.getUpdateDate())
+                        .build();
+            }).toList();
+        });
+    }
 }

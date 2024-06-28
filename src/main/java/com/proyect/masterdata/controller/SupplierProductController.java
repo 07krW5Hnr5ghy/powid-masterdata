@@ -66,33 +66,47 @@ public class SupplierProductController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<Page<SupplierProductDTO>> list(
-            @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "productSku", required = false) String productSku,
-            @RequestParam(value = "supplierRuc", required = false) String supplierRuc,
-            @RequestParam(value = "purchasePrice", required = false) Double purchasePrice,
+            @RequestParam(value = "serials", required = false) List<String> serials,
+            @RequestParam(value = "products", required = false) List<String> products,
+            @RequestParam(value = "suppliers", required = false) List<String> suppliers,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
 
-        CompletableFuture<Page<SupplierProductDTO>> result = iSupplierProduct.list(serial, user,productSku,supplierRuc,purchasePrice, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<SupplierProductDTO>> result = iSupplierProduct.list(
+                user,
+                serials,
+                products,
+                suppliers,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "pagination-status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<Page<SupplierProductDTO>> listFalse(
-            @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "productSku", required = false) String productSku,
-            @RequestParam(value = "supplierRuc", required = false) String supplierRuc,
-            @RequestParam(value = "purchasePrice", required = false) Double purchasePrice,
+            @RequestParam(value = "serials", required = false) List<String> serials,
+            @RequestParam(value = "products", required = false) List<String> products,
+            @RequestParam(value = "suppliers", required = false) List<String> suppliers,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<SupplierProductDTO>> result = iSupplierProduct.listFalse(serial, user,productSku,supplierRuc,purchasePrice, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<SupplierProductDTO>> result = iSupplierProduct.listFalse(
+                user,
+                serials,
+                products,
+                suppliers,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

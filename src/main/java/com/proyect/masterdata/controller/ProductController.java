@@ -118,4 +118,12 @@ public class ProductController {
         CompletableFuture<List<ProductDTO>> result = iProduct.listProductsModel(user,model);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<ProductDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions,ExecutionException,InterruptedException {
+        CompletableFuture<List<ProductDTO>> result = iProduct.listFilter(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

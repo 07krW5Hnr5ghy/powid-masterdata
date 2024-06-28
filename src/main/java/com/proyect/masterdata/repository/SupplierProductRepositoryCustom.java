@@ -5,14 +5,15 @@ import org.springframework.stereotype.Repository;
 
 import com.proyect.masterdata.domain.SupplierProduct;
 
+import java.util.List;
+
 @Repository
 public interface SupplierProductRepositoryCustom {
     Page<SupplierProduct> searchForSupplierProduct(
-            String serial,
             Long clientId,
-            Long productId,
-            Long supplierId,
-            Double purchasePrice,
+            List<String> serials,
+            List<Long> productIds,
+            List<Long> supplierIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

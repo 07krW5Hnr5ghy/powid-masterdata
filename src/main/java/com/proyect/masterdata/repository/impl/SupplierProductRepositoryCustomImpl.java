@@ -23,8 +23,16 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
     private EntityManager entityManager;
 
     @Override
-    public Page<SupplierProduct> searchForSupplierProduct(String serial, Long clientId,Long productId,Long supplierId,Double purchasePrice, String sort, String sortColumn,
-            Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<SupplierProduct> searchForSupplierProduct(
+            Long clientId,
+            List<String> serials,
+            List<Long> productIds,
+            List<Long> supplierIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<SupplierProduct> criteriaQuery = criteriaBuilder.createQuery(SupplierProduct.class);
@@ -32,7 +40,14 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(serial, clientId, productId, supplierId, purchasePrice, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                serials,
+                productIds,
+                supplierIds,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -56,25 +71,28 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(serial, clientId, productId, supplierId, purchasePrice, status);
+        Long count = getOrderCount(
+                clientId,
+                serials,
+                productIds,
+                supplierIds,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     private List<Predicate> predicateConditions(
-            String serial,
             Long clientId,
-            Long productId,
-            Long supplierId,
-            Double purchasePrice,
+            List<String> serials,
+            List<Long> productIds,
+            List<Long> supplierIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<SupplierProduct> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if (serial != null) {
-            conditions.add(criteriaBuilder
-                    .and(criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("serial")), serial.toUpperCase())));
+        if (!serials.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("serial").in(serials)));
         }
 
         if (clientId != null) {
@@ -82,19 +100,12 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
                     .and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (productId != null) {
-            conditions.add(criteriaBuilder
-                    .and(criteriaBuilder.equal(itemRoot.get("productId"), productId)));
+        if (!productIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("productId").in(productIds)));
         }
 
-        if (supplierId != null) {
-            conditions.add(criteriaBuilder
-                    .and(criteriaBuilder.equal(itemRoot.get("supplierId"), supplierId)));
-        }
-
-        if (purchasePrice != null) {
-            conditions.add(criteriaBuilder
-                    .and(criteriaBuilder.equal(itemRoot.get("purchasePrice"), purchasePrice)));
+        if (!supplierIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("supplierId").in(supplierIds)));
         }
 
         if (status) {
@@ -163,14 +174,26 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
         return supplierProductList;
     }
 
-    private Long getOrderCount(String serial, Long clientId,Long productId, Long supplierId, Double purchasePrice, Boolean status) {
+    private Long getOrderCount(
+            Long clientId,
+            List<String> serials,
+            List<Long> productIds,
+            List<Long> supplierIds,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<SupplierProduct> itemRoot = criteriaQuery.from(SupplierProduct.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(serial, clientId, productId, supplierId, purchasePrice, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                serials,
+                productIds,
+                supplierIds,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
 
