@@ -1,5 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
+import com.proyect.masterdata.domain.StockTransfer;
 import com.proyect.masterdata.domain.StockTransferItem;
 import com.proyect.masterdata.repository.StockTransferItemRepositoryCustom;
 import jakarta.persistence.EntityManager;
@@ -21,15 +22,33 @@ public class StockTransferItemRepositoryCustomImpl implements StockTransferItemR
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<StockTransferItem> searchForStockTransferItem(Long clientId, Long stockTransferId, Long supplierProductId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<StockTransferItem> searchForStockTransferItem(
+            Long clientId,
+            List<Long> stockTransferIds,
+            List<Long> originWarehouseIds,
+            List<Long> destinationWarehouseIds,
+            List<Long> supplierProductIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<StockTransferItem> criteriaQuery = criteriaBuilder.createQuery(StockTransferItem.class);
 
         Root<StockTransferItem> itemRoot = criteriaQuery.from(StockTransferItem.class);
+        Join<StockTransferItem, StockTransfer> stockTransferItemStockTransferJoin = itemRoot.join("stockTransfer");
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicate(clientId,stockTransferId, supplierProductId, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                stockTransferIds,
+                originWarehouseIds,
+                destinationWarehouseIds,
+                supplierProductIds,
+                criteriaBuilder,
+                itemRoot,
+                stockTransferItemStockTransferJoin);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
             List<Order> stockTransferItemList = new ArrayList<>();
@@ -52,12 +71,24 @@ public class StockTransferItemRepositoryCustomImpl implements StockTransferItemR
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(clientId, stockTransferId,supplierProductId);
+        Long count = getOrderCount(
+                clientId,
+                stockTransferIds,
+                originWarehouseIds,
+                destinationWarehouseIds,
+                supplierProductIds);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
-    private List<Predicate> predicate(Long clientId, Long stockTransferId, Long supplierProductId, CriteriaBuilder criteriaBuilder,
-                                      Root<StockTransferItem> itemRoot) {
+    private List<Predicate> predicate(
+            Long clientId,
+            List<Long> stockTransferIds,
+            List<Long> originWarehouseIds,
+            List<Long> destinationWarehouseIds,
+            List<Long> supplierProductIds,
+            CriteriaBuilder criteriaBuilder,
+            Root<StockTransferItem> itemRoot,
+            Join<StockTransferItem, StockTransfer> stockTransferItemStockTransferJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -65,12 +96,20 @@ public class StockTransferItemRepositoryCustomImpl implements StockTransferItemR
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (stockTransferId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("stockTransferId"), stockTransferId)));
+        if (!stockTransferIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("stockTransferId").in(stockTransferIds)));
         }
 
-        if (supplierProductId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("supplierProductId"), supplierProductId)));
+        if (!originWarehouseIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(stockTransferItemStockTransferJoin.get("originWarehouseId").in(originWarehouseIds)));
+        }
+
+        if(!destinationWarehouseIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(stockTransferItemStockTransferJoin.get("destinationWarehouseId").in(destinationWarehouseIds)));
+        }
+
+        if(!supplierProductIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("supplierProductId").in(supplierProductIds)));
         }
 
         return conditions;
@@ -115,14 +154,28 @@ public class StockTransferItemRepositoryCustomImpl implements StockTransferItemR
         return stockTransferItemList;
     }
 
-    private Long getOrderCount(Long clientId, Long stockTransferId, Long supplierProductId) {
+    private Long getOrderCount(
+            Long clientId,
+            List<Long> stockTransferIds,
+            List<Long> originWarehouseIds,
+            List<Long> destinationWarehouseIds,
+            List<Long> supplierProductIds) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<StockTransferItem> itemRoot = criteriaQuery.from(StockTransferItem.class);
+        Join<StockTransferItem, StockTransfer> stockTransferItemStockTransferJoin = itemRoot.join("stockTransfer");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(clientId, stockTransferId, supplierProductId, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                stockTransferIds,
+                originWarehouseIds,
+                destinationWarehouseIds,
+                supplierProductIds,
+                criteriaBuilder,
+                itemRoot,
+                stockTransferItemStockTransferJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
