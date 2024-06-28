@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +32,8 @@ public class StockReturnItemImpl implements IStockReturnItem {
     private final SupplierProductRepository supplierProductRepository;
     private final StockReturnItemRepository stockReturnItemRepository;
     private final StockReturnItemRepositoryCustom stockReturnItemRepositoryCustom;
+    private final StockReturnRepository stockReturnRepository;
+    private final SupplierRepository supplierRepository;
     @Override
     public StockReturnItem save(StockReturn stockReturn,PurchaseItem purchaseItem,RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -87,28 +90,68 @@ public class StockReturnItemImpl implements IStockReturnItem {
     }
 
     @Override
-    public CompletableFuture<Page<StockReturnItemDTO>> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<StockReturnItemDTO>> list(
+            String user,
+            List<String> stockReturns,
+            List<String> purchases,
+            List<String> suppliers,
+            List<String> supplierProducts,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<StockReturnItem> pageStockReturn;
             Long clientId;
-            Long purchaseId;
-            Long supplierProductId;
+            List<Long> stockReturnIds;
+            List<Long> purchaseIds;
+            List<Long> supplierIds;
+            List<Long> supplierProductIds;
 
-            if(purchaseSerial != null){
-                purchaseId = purchaseRepository.findBySerial(purchaseSerial.toUpperCase()).getId();
+            if(stockReturns != null && !stockReturns.isEmpty()){
+                stockReturnIds = stockReturnRepository.findBySerialIn(
+                        stockReturns.stream().map(String::toUpperCase).toList()
+                ).stream().map(StockReturn::getId).toList();
             }else {
-                purchaseId = null;
+                stockReturnIds = new ArrayList<>();
             }
 
-            if(supplierProductSerial != null){
-                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+            if(purchases != null && !purchases.isEmpty()){
+                purchaseIds = purchaseRepository.findBySerialIn(
+                        purchases.stream().map(String::toUpperCase).toList()
+                ).stream().map(Purchase::getId).toList();
             }else {
-                supplierProductId = null;
+                purchaseIds = new ArrayList<>();
+            }
+
+            if(suppliers != null && !suppliers.isEmpty()){
+                supplierIds = supplierRepository.findByRucIn(
+                        suppliers.stream().map(String::toUpperCase).toList()
+                ).stream().map(Supplier::getId).toList();
+            }else{
+                supplierIds = new ArrayList<>();
+            }
+
+            if(supplierProducts != null && !supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
+            }else {
+                supplierProductIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageStockReturn = stockReturnItemRepositoryCustom.searchForStockReturnItem(purchaseId,clientId,supplierProductId,sort,sortColumn,pageNumber,pageSize);
+                pageStockReturn = stockReturnItemRepositoryCustom.searchForStockReturnItem(
+                        clientId,
+                        stockReturnIds,
+                        purchaseIds,
+                        supplierIds,
+                        supplierProductIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
             } catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

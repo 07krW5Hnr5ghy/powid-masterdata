@@ -13,4 +13,5 @@ public interface StockReturnRepository extends JpaRepository<StockReturn,Long> {
     List<StockReturn> findAllByClientIdAndStatusFalse(Long clientId);
     List<StockReturn> findAllByClientId(Long clientId);
     StockReturn findBySerial(String serial);
+    List<StockReturn> findBySerialIn(List<String> serials);
 }
