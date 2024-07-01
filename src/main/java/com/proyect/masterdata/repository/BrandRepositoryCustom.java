@@ -6,12 +6,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface BrandRepositoryCustom {
     Page<Brand> searchForBrand(
-            String name,
             Long clientId,
+            List<String> names,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,

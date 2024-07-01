@@ -24,8 +24,17 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Brand> searchForBrand(String name, Long clientId, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
-                                      Integer pageSize, Boolean status) {
+    public Page<Brand> searchForBrand(
+            Long clientId,
+            List<String> names,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Brand> criteriaQuery = criteriaBuilder.createQuery(Brand.class);
@@ -33,7 +42,16 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(name, clientId,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                names,
+                clientId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -57,12 +75,19 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
         orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, clientId,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, status);
+        long count = getOrderCount(
+                names,
+                clientId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
-            String name,
+            List<String> names,
             Long clientId,
             Date registrationStartDate,
             Date registrationEndDate,
@@ -74,10 +99,9 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if (name != null) {
+        if (!names.isEmpty()) {
             conditions.add(
-                    criteriaBuilder.and(
-                            criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
+                    criteriaBuilder.and(itemRoot.get("name").in(names)));
         }
 
         if (clientId != null) {
@@ -194,14 +218,30 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
         return brandList;
     }
 
-    private long getOrderCount(String name, Long clientId,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, Boolean status) {
+    private long getOrderCount(
+            List<String> names,
+            Long clientId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Brand> itemRoot = criteriaQuery.from(Brand.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, clientId,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                names,
+                clientId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

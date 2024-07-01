@@ -22,6 +22,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -179,15 +180,42 @@ public class BrandImpl implements IBrand {
     }
 
     @Override
-    public CompletableFuture<Page<BrandDTO>> listPagination(String name, String tokenUser,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<BrandDTO>> listPagination(
+            String tokenUser,
+            List<String> names,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Brand> brandPage;
+            List<String> brandsUppercase;
             Long clientId;
+
+            if(names != null && !names.isEmpty()){
+                brandsUppercase = names.stream().map(String::toUpperCase).toList();
+            }else{
+                brandsUppercase = new ArrayList<>();
+            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                brandPage = brandRepositoryCustom.searchForBrand(name, clientId,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber, pageSize, true);
+                brandPage = brandRepositoryCustom.searchForBrand(
+                        clientId,
+                        brandsUppercase,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -211,16 +239,41 @@ public class BrandImpl implements IBrand {
     }
 
     @Override
-    public CompletableFuture<Page<BrandDTO>> listStatusFalse(String name, String tokenUser,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn,
+    public CompletableFuture<Page<BrandDTO>> listStatusFalse(
+            String tokenUser,
+            List<String> names,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<Brand> brandPage;
+            List<String> brandsUppercase;
             Long clientId;
+
+            if(names != null && !names.isEmpty()){
+                brandsUppercase = names.stream().map(String::toUpperCase).toList();
+            }else{
+                brandsUppercase = new ArrayList<>();
+            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                brandPage = brandRepositoryCustom.searchForBrand(name, clientId,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber, pageSize,
+                brandPage = brandRepositoryCustom.searchForBrand(
+                        clientId,
+                        brandsUppercase,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
                         false);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -319,6 +372,34 @@ public class BrandImpl implements IBrand {
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 brands = brandRepository.findAllByClientIdAndStatusFalse(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(brands.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return brands.stream().map(brand -> BrandDTO.builder()
+                    .name(brand.getName())
+                    .client(brand.getClient().getBusiness())
+                    .registrationDate(brand.getRegistrationDate())
+                    .updateDate(brand.getUpdateDate())
+                    .tokenUser(brand.getTokenUser())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<BrandDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Brand> brands;
+            Long clientId;
+
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                brands = brandRepository.findAllByClientId(clientId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
