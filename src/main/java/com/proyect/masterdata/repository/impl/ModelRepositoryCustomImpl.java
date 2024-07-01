@@ -33,9 +33,9 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
 
     @Override
     public Page<Model> searchForModel(
-            String name,
-            Brand brand,
             Long clientId,
+            List<String> names,
+            List<Long> brandIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -52,8 +52,8 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
-                name,
-                brand,
+                names,
+                brandIds,
                 clientId,
                 registrationStartDate,
                 registrationEndDate,
@@ -87,8 +87,8 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         long count = getOrderCount(
-                name,
-                brand,
+                names,
+                brandIds,
                 clientId,
                 registrationStartDate,
                 registrationEndDate,
@@ -99,8 +99,8 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
     }
 
     public List<Predicate> predicateConditions(
-            String name,
-            Brand brand,
+            List<String> names,
+            List<Long> brandIds,
             Long clientId,
             Date registrationStartDate,
             Date registrationEndDate,
@@ -112,13 +112,12 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if (name != null) {
-            conditions.add(criteriaBuilder.and(
-                    criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
+        if (!names.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("name").in(names)));
         }
 
-        if (brand != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("brandId"), brand.getId())));
+        if (!brandIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("brandId").in(brandIds)));
         }
 
         if (clientId != null) {
@@ -244,8 +243,8 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
     }
 
     private long getOrderCount(
-            String name,
-            Brand brand,
+            List<String> names,
+            List<Long> brandIds,
             Long clientId,
             Date registrationStartDate,
             Date registrationEndDate,
@@ -259,8 +258,8 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
-                name,
-                brand,
+                names,
+                brandIds,
                 clientId,
                 registrationStartDate,
                 registrationEndDate,

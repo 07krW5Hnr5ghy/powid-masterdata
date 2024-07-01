@@ -8,13 +8,14 @@ import com.proyect.masterdata.domain.Brand;
 import com.proyect.masterdata.domain.Model;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface ModelRepositoryCustom {
     Page<Model> searchForModel(
-            String name,
-            Brand Brand,
             Long clientId,
+            List<String> names,
+            List<Long> brandIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,

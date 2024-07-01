@@ -66,9 +66,9 @@ public class ModelController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> list(
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "brand", required = false) String brand,
             @RequestParam(value = "user") String user,
+            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -78,9 +78,9 @@ public class ModelController {
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ModelDTO>> result = iModel.list(
-                name,
-                brand,
                 user,
+                names,
+                brands,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -95,9 +95,9 @@ public class ModelController {
     @GetMapping(value = "pagination-status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> listStatusFalse(
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "name", required = false) String brand,
             @RequestParam(value = "user") String user,
+            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -107,9 +107,9 @@ public class ModelController {
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ModelDTO>> result = iModel.listStatusFalse(
-                name,
-                brand,
                 user,
+                names,
+                brands,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -146,6 +146,15 @@ public class ModelController {
             @RequestParam("brand") String brand
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<ModelDTO>> result = iModel.listModelBrand(user,brand);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
+    public ResponseEntity<List<ModelDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ModelDTO>> result = iModel.listFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

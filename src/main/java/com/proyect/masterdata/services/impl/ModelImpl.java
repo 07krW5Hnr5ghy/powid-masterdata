@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -220,9 +221,9 @@ public class ModelImpl implements IModel {
 
     @Override
     public CompletableFuture<Page<ModelDTO>> list(
-            String name,
-            String brand,
             String user,
+            List<String> names,
+            List<String> brands,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -233,21 +234,30 @@ public class ModelImpl implements IModel {
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<Model> pageModel;
-            Brand brandData;
+            List<String> modelsUppercase;
+            List<Long> brandIds;
             Long clientId;
 
-            if (brand != null) {
-                brandData = brandRepository.findByName(brand.toUpperCase());
+            if(names != null && !names.isEmpty()){
+                modelsUppercase = names.stream().map(String::toUpperCase).toList();
+            }else{
+                modelsUppercase = new ArrayList<>();
+            }
+
+            if (brands != null && !brands.isEmpty()) {
+                brandIds = brandRepository.findByNameIn(
+                        brands.stream().map(String::toUpperCase).toList()
+                ).stream().map(Brand::getId).toList();
             } else {
-                brandData = null;
+                brandIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
                 pageModel = modelRepositoryCustom.searchForModel(
-                        name,
-                        brandData,
                         clientId,
+                        modelsUppercase,
+                        brandIds,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
@@ -281,9 +291,9 @@ public class ModelImpl implements IModel {
 
     @Override
     public CompletableFuture<Page<ModelDTO>> listStatusFalse(
-            String name,
-            String brand,
             String user,
+            List<String> names,
+            List<String> brands,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -294,21 +304,30 @@ public class ModelImpl implements IModel {
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<Model> pageModel;
-            Brand brandData;
+            List<String> modelsUppercase;
+            List<Long> brandIds;
             Long clientId;
 
-            if (brand != null) {
-                brandData = brandRepository.findByName(brand.toUpperCase());
+            if(names != null && !names.isEmpty()){
+                modelsUppercase = names.stream().map(String::toUpperCase).toList();
+            }else{
+                modelsUppercase = new ArrayList<>();
+            }
+
+            if (brands != null && !brands.isEmpty()) {
+                brandIds = brandRepository.findByNameIn(
+                        brands.stream().map(String::toUpperCase).toList()
+                ).stream().map(Brand::getId).toList();
             } else {
-                brandData = null;
+                brandIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
                 pageModel = modelRepositoryCustom.searchForModel(
-                        name,
-                        brandData,
                         clientId,
+                        modelsUppercase,
+                        brandIds,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
@@ -403,6 +422,32 @@ public class ModelImpl implements IModel {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 brandId = brandRepository.findByName(brand.toUpperCase()).getId();
                 models = modelRepository.findAllByClientIdAndBrandIdAndStatusTrue(clientId,brandId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(models.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return models.stream().map(model -> ModelDTO.builder()
+                    .name(model.getName())
+                    .brand(model.getBrand().getName())
+                    .user(model.getTokenUser())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<ModelDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Model> models;
+            Long clientId;
+
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                models = modelRepository.findAllByClientId(clientId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

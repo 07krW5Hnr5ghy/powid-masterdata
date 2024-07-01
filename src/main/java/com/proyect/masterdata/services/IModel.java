@@ -20,9 +20,9 @@ public interface IModel {
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<ModelDTO>> list(
-                String name,
-                String brand,
                 String user,
+                List<String> names,
+                List<String> brands,
                 Date registrationStartDate,
                 Date registrationEndDate,
                 Date updateStartDate,
@@ -32,9 +32,9 @@ public interface IModel {
                 Integer pageNumber,
                 Integer pageSize);
         CompletableFuture<Page<ModelDTO>> listStatusFalse(
-                String name,
-                String brand,
                 String user,
+                List<String> names,
+                List<String> brands,
                 Date registrationStartDate,
                 Date registrationEndDate,
                 Date updateStartDate,
@@ -46,4 +46,5 @@ public interface IModel {
         CompletableFuture<List<ModelDTO>> listModels(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ModelDTO>> listModelsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ModelDTO>> listModelBrand(String user,String brand) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<ModelDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }
