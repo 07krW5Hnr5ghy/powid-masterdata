@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -175,14 +176,34 @@ public class StockReplenishmentImpl implements IStockReplenishment {
     }
 
     @Override
-    public CompletableFuture<Page<StockReplenishmentDTO>> list(String user, Long orderId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<StockReplenishmentDTO>> list(
+            String user,
+            List<Long> orders,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<StockReplenishment> pageStockReplenishment;
             Long clientId;
+            List<Long> orderIds;
+
+            if(orders != null && !orders.isEmpty()){
+                orderIds = orders;
+            }else {
+                orderIds = new ArrayList<>();
+            }
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageStockReplenishment = stockReplenishmentRepositoryCustom.searchForStockReplenishment(clientId,orderId,sort,sortColumn,pageNumber,pageSize,true);
+                pageStockReplenishment = stockReplenishmentRepositoryCustom.searchForStockReplenishment(
+                        clientId,
+                        orderIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
