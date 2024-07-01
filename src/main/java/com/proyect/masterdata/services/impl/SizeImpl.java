@@ -211,7 +211,7 @@ public class SizeImpl implements ISize {
     @Override
     public CompletableFuture<List<SizeDTO>> listSize() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<Size> sizes = new ArrayList<>();
+            List<Size> sizes;
 
             try {
                 sizes = sizeRepository.findAllByStatusTrue();
@@ -300,6 +300,29 @@ public class SizeImpl implements ISize {
             } catch (RuntimeException e) {
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SizeDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Size> sizes;
+
+            try {
+                sizes = sizeRepository.findAll();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (sizes.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return sizes.stream().map(size -> SizeDTO.builder()
+                    .name(size.getName())
+                    .sizeType(size.getSizeType().getName())
+                    .build()).toList();
         });
     }
 }

@@ -26,4 +26,5 @@ public interface ICategoryProduct {
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> update(String name,String description,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<CategoryProductDTO>> listFilter() throws InternalErrorExceptions,BadRequestExceptions;
 }

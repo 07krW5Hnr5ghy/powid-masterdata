@@ -27,4 +27,5 @@ public interface ICategory {
     CompletableFuture<Page<CategoryDTO>> listStatusFalse(String name, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<CategoryDTO>> listFilter() throws BadRequestExceptions;
 }

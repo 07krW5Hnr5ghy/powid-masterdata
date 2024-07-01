@@ -205,7 +205,7 @@ public class CategoryImpl implements ICategory {
     @Override
     public CompletableFuture<List<CategoryDTO>> listCategory() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<Category> categories = new ArrayList<>();
+            List<Category> categories;
 
             try {
                 categories = categoryRepository.findAllByStatusTrue();
@@ -294,6 +294,25 @@ public class CategoryImpl implements ICategory {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<CategoryDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Category> categories;
+
+            try {
+                categories = categoryRepository.findAll();
+            } catch (RuntimeException e) {
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (categories.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return categoryMapper.listCategoryToListCategoryDTO(categories);
         });
     }
 

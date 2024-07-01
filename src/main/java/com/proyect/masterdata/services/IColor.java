@@ -37,4 +37,5 @@ public interface IColor {
                 String sortColumn,
                 Integer pageNumber,
                 Integer pageSize) throws BadRequestExceptions;
+        CompletableFuture<List<ColorDTO>> listFilter() throws BadRequestExceptions;
 }

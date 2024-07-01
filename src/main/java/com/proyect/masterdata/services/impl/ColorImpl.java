@@ -156,7 +156,7 @@ public class ColorImpl implements IColor {
     @Override
     public CompletableFuture<List<ColorDTO>> listColor() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<Color> colors = new ArrayList<>();
+            List<Color> colors;
             try {
                 colors = colorRepository.findAllByStatusTrue();
             } catch (RuntimeException e) {
@@ -243,6 +243,23 @@ public class ColorImpl implements IColor {
 
             return new PageImpl<>(colorMapper.listColorToListColorDTO(colorPage.getContent()),
                     colorPage.getPageable(), colorPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<ColorDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Color> colors;
+            try {
+                colors = colorRepository.findAll();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (colors.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return colorMapper.listColorToListColorDTO(colors);
         });
     }
 }

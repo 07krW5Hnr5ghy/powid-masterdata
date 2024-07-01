@@ -104,4 +104,10 @@ public class ColorController {
         CompletableFuture<ResponseSuccess> result = iColor.activate(name,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+    @GetMapping("filter")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:COLOR_GET')")
+    public ResponseEntity<List<ColorDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ColorDTO>> result = iColor.listFilter();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
 }

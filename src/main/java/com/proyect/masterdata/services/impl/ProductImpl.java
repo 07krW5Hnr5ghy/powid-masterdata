@@ -1,9 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.*;
@@ -45,6 +42,7 @@ public class ProductImpl implements IProduct {
     private final IProductPicture iProductPicture;
     private final ProductPictureRepository productPictureRepository;
     private final IAudit iAudit;
+    private final BrandRepository brandRepository;
     @Override
     public ResponseSuccess save(RequestProductSave product, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -303,23 +301,100 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public CompletableFuture<Page<ProductDTO>> list(String sku, String model,String tokenUser, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<ProductDTO>> list(
+            String tokenUser,
+            List<String> skus,
+            List<String> models,
+            List<String> brands,
+            List<String> sizes,
+            List<String> categoryProducts,
+            List<String> colors,
+            List<String> units,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<Product> productPage;
-            Model modelData;
+            List<String> skusUppercase;
+            List<Long> modelIds;
+            List<Long> brandIds;
+            List<Long> sizeIds;
+            List<Long> categoryProductIds;
+            List<Long> colorIds;
+            List<Long> unitIds;
             Long clientId;
 
-            if(model != null){
-                modelData = modelRepository.findByNameAndStatusTrue(model.toUpperCase());
+            if (skus!=null&&!skus.isEmpty()){
+                skusUppercase = skus.stream().map(String::toUpperCase).toList();
+            }else{
+                skusUppercase = new ArrayList<>();
+            }
+
+            if(models != null && !models.isEmpty()){
+                modelIds = modelRepository.findByNameIn(
+                        models.stream().map(String::toUpperCase).toList()
+                ).stream().map(Model::getId).toList();
             }else {
-                modelData = null;
+                modelIds = new ArrayList<>();
+            }
+
+            if(brands != null && !brands.isEmpty()){
+                brandIds = brandRepository.findByNameIn(
+                        brands.stream().map(String::toUpperCase).toList()
+                ).stream().map(Brand::getId).toList();
+            }else{
+                brandIds = new ArrayList<>();
+            }
+
+            if(sizes != null && !sizes.isEmpty()){
+                sizeIds = sizeRepository.findByNameIn(
+                        sizes.stream().map(String::toUpperCase).toList()
+                ).stream().map(Size::getId).toList();
+            }else{
+                sizeIds = new ArrayList<>();
+            }
+
+            if(categoryProducts != null && !categoryProducts.isEmpty()){
+                categoryProductIds = categoryProductRepository.findByNameIn(
+                        categoryProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(CategoryProduct::getId).toList();
+            }else{
+                categoryProductIds = new ArrayList<>();
+            }
+
+            if(colors != null && !colors.isEmpty()){
+                colorIds = colorRepository.findByNameIn(
+                        colors.stream().map(String::toUpperCase).toList()
+                ).stream().map(Color::getId).toList();
+            }else{
+                colorIds = new ArrayList<>();
+            }
+
+            if(units != null && !units.isEmpty()){
+                unitIds = unitRepository.findByNameIn(
+                        units.stream().map(String::toUpperCase).toList()
+                ).stream().map(Unit::getId).toList();
+            }else {
+                unitIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                productPage = productRepositoryCustom.searchForProduct(sku, modelData,clientId, sort, sortColumn, pageNumber,
-                        pageSize, true);
+                productPage = productRepositoryCustom.searchForProduct(
+                        clientId,
+                        skusUppercase,
+                        modelIds,
+                        brandIds,
+                        sizeIds,
+                        categoryProductIds,
+                        colorIds,
+                        unitIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
 
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -353,22 +428,100 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public CompletableFuture<Page<ProductDTO>> listFalse(String sku, String model, String tokenUser, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<ProductDTO>> listFalse(
+            String tokenUser,
+            List<String> skus,
+            List<String> models,
+            List<String> brands,
+            List<String> sizes,
+            List<String> categoryProducts,
+            List<String> colors,
+            List<String> units,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Product> productPage;
-            Model modelData;
+            List<String> skusUppercase;
+            List<Long> modelIds;
+            List<Long> brandIds;
+            List<Long> sizeIds;
+            List<Long> categoryProductIds;
+            List<Long> colorIds;
+            List<Long> unitIds;
             Long clientId;
 
-            if(model != null){
-                modelData = modelRepository.findByNameAndStatusTrue(model.toUpperCase());
+            if (skus!=null&&!skus.isEmpty()){
+                skusUppercase = skus.stream().map(String::toUpperCase).toList();
+            }else{
+                skusUppercase = new ArrayList<>();
+            }
+
+            if(models != null && !models.isEmpty()){
+                modelIds = modelRepository.findByNameIn(
+                        models.stream().map(String::toUpperCase).toList()
+                ).stream().map(Model::getId).toList();
             }else {
-                modelData = null;
+                modelIds = new ArrayList<>();
+            }
+
+            if(brands != null && !brands.isEmpty()){
+                brandIds = brandRepository.findByNameIn(
+                        brands.stream().map(String::toUpperCase).toList()
+                ).stream().map(Brand::getId).toList();
+            }else{
+                brandIds = new ArrayList<>();
+            }
+
+            if(sizes != null && !sizes.isEmpty()){
+                sizeIds = sizeRepository.findByNameIn(
+                        sizes.stream().map(String::toUpperCase).toList()
+                ).stream().map(Size::getId).toList();
+            }else{
+                sizeIds = new ArrayList<>();
+            }
+
+            if(categoryProducts != null && !categoryProducts.isEmpty()){
+                categoryProductIds = categoryProductRepository.findByNameIn(
+                        categoryProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(CategoryProduct::getId).toList();
+            }else{
+                categoryProductIds = new ArrayList<>();
+            }
+
+            if(colors != null && !colors.isEmpty()){
+                colorIds = colorRepository.findByNameIn(
+                        colors.stream().map(String::toUpperCase).toList()
+                ).stream().map(Color::getId).toList();
+            }else{
+                colorIds = new ArrayList<>();
+            }
+
+            if(units != null && !units.isEmpty()){
+                unitIds = unitRepository.findByNameIn(
+                        units.stream().map(String::toUpperCase).toList()
+                ).stream().map(Unit::getId).toList();
+            }else {
+                unitIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                productPage = productRepositoryCustom.searchForProduct(sku, modelData,clientId, sort, sortColumn, pageNumber,
-                        pageSize, false);
+                productPage = productRepositoryCustom.searchForProduct(
+                        clientId,
+                        skusUppercase,
+                        modelIds,
+                        brandIds,
+                        sizeIds,
+                        categoryProductIds,
+                        colorIds,
+                        unitIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

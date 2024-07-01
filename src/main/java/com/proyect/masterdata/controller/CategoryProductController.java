@@ -110,4 +110,11 @@ public class CategoryProductController {
         CompletableFuture<ResponseSuccess> result = iCategoryProduct.update(name,description,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:CATEGORY_PRODUCT_GET')")
+    public ResponseEntity<List<CategoryProductDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CategoryProductDTO>> result = iCategoryProduct.listFilter();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

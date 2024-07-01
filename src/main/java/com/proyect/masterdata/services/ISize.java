@@ -24,4 +24,5 @@ public interface ISize {
         CompletableFuture<Page<SizeDTO>> listStatusFalse(String name, String user, String sort,
                         String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<List<SizeDTO>> findAllSizeTypeName(String nameSizeType) throws BadRequestExceptions;
+        CompletableFuture<List<SizeDTO>> listFilter() throws BadRequestExceptions;
 }

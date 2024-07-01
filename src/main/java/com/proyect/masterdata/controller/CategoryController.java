@@ -97,5 +97,10 @@ public class CategoryController {
         CompletableFuture<ResponseSuccess> result = iCategory.activate(name,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+    @GetMapping("filter")
+    public ResponseEntity<List<CategoryDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CategoryDTO>> result = iCategory.listFilter();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
 
 }

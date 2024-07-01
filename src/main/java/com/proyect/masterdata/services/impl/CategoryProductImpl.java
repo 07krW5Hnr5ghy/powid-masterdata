@@ -331,4 +331,28 @@ public class CategoryProductImpl implements ICategoryProduct {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<List<CategoryProductDTO>> listFilter() throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<CategoryProduct> categoryProducts;
+            try {
+                categoryProducts = categoryProductRepository.findAll();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(categoryProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+            return categoryProducts.stream()
+                    .map(categoryProduct -> CategoryProductDTO.builder()
+                            .description(categoryProduct.getDescription())
+                            .name(categoryProduct.getName())
+                            .registrationDate(categoryProduct.getRegistrationDate())
+                            .updateDate(categoryProduct.getUpdateDate())
+                            .build())
+                    .toList();
+        });
+    }
 }

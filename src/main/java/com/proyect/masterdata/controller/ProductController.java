@@ -66,28 +66,62 @@ public class ProductController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> list(
-            @RequestParam(value = "sku", required = false) String sku,
-            @RequestParam(value = "model", required = false) String model,
             @RequestParam(value = "user") String user,
+            @RequestParam(value = "skus", required = false) List<String> skus,
+            @RequestParam(value = "models", required = false) List<String> models,
+            @RequestParam(value = "brands", required = false) List<String> brands,
+            @RequestParam(value = "sizes", required = false) List<String> sizes,
+            @RequestParam(value = "categoryProducts", required = false) List<String> categoryProducts,
+            @RequestParam(value = "colors", required = false) List<String> colors,
+            @RequestParam(value = "units", required = false) List<String> units,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<ProductDTO>> result = iProduct.list(sku, model,user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<ProductDTO>> result = iProduct.list(
+                user,
+                skus,
+                models,
+                brands,
+                sizes,
+                categoryProducts,
+                colors,
+                units,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping(value = "pagination/list-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> listFalse(
-            @RequestParam(value = "sku", required = false) String sku,
-            @RequestParam(value = "model", required = false) String model,
             @RequestParam(value = "user") String user,
+            @RequestParam(value = "skus", required = false) List<String> skus,
+            @RequestParam(value = "models", required = false) List<String> models,
+            @RequestParam(value = "brands", required = false) List<String> brands,
+            @RequestParam(value = "sizes", required = false) List<String> sizes,
+            @RequestParam(value = "categoryProducts", required = false) List<String> categoryProducts,
+            @RequestParam(value = "colors", required = false) List<String> colors,
+            @RequestParam(value = "units", required = false) List<String> units,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<ProductDTO>> result = iProduct.listFalse(sku, model,user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<ProductDTO>> result = iProduct.listFalse(
+                user,
+                skus,
+                models,
+                brands,
+                sizes,
+                categoryProducts,
+                colors,
+                units,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
