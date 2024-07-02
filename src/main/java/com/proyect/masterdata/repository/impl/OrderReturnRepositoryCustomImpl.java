@@ -1,6 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.OrderReturn;
+import com.proyect.masterdata.domain.OrderStock;
 import com.proyect.masterdata.repository.OrderReturnRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -23,9 +24,9 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
     private EntityManager entityManager;
     @Override
     public Page<OrderReturn> searchForOrderReturn(
-            Long orderId,
             Long clientId,
-            Long warehouseId,
+            List<Long> orderIds,
+            List<Long> warehouseIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -38,19 +39,21 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderReturn> criteriaQuery = criteriaBuilder.createQuery(OrderReturn.class);
         Root<OrderReturn> itemRoot = criteriaQuery.from(OrderReturn.class);
+        Join<OrderReturn, OrderStock> orderReturnOrderStockJoin = itemRoot.join("orderStock");
         
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
-                orderId,
                 clientId,
-                warehouseId,
+                orderIds,
+                warehouseIds,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 status,
                 criteriaBuilder,
-                itemRoot);
+                itemRoot,
+                orderReturnOrderStockJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> orderReturnList = new ArrayList<>();
@@ -71,9 +74,9 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         long count = getOrderCount(
-                orderId,
                 clientId,
-                warehouseId,
+                orderIds,
+                warehouseIds,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -83,29 +86,30 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
     }
     
     List<Predicate> predicateConditions(
-            Long orderId,
             Long clientId,
-            Long warehouseId,
+            List<Long> orderIds,
+            List<Long> warehouseIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
             Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<OrderReturn> itemRoot
+            Root<OrderReturn> itemRoot,
+            Join<OrderReturn, OrderStock> orderReturnOrderStockJoin
     ) {
         List<Predicate> conditions = new ArrayList<>();
 
-        if (orderId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderId"), orderId)));
+        if (!orderIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("orderId").in(orderIds)));
         }
 
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (warehouseId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("warehouseId"), clientId)));
+        if (!warehouseIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(orderReturnOrderStockJoin.get("warehouseId").in(warehouseIds)));
         }
 
         if(registrationStartDate!=null){
@@ -216,9 +220,9 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
     }
 
     private long getOrderCount(
-            Long orderId,
             Long clientId,
-            Long warehouseId,
+            List<Long> orderIds,
+            List<Long> warehouseIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -227,19 +231,21 @@ public class OrderReturnRepositoryCustomImpl implements OrderReturnRepositoryCus
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<OrderReturn> itemRoot = criteriaQuery.from(OrderReturn.class);
+        Join<OrderReturn, OrderStock> orderReturnOrderStockJoin = itemRoot.join("orderStock");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
-                orderId,
                 clientId,
-                warehouseId,
+                orderIds,
+                warehouseIds,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 status,
                 criteriaBuilder,
-                itemRoot);
+                itemRoot,
+                orderReturnOrderStockJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

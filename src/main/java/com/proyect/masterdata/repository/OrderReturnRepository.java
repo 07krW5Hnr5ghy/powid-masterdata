@@ -10,4 +10,5 @@ import java.util.List;
 public interface OrderReturnRepository extends JpaRepository<OrderReturn,Long> {
     OrderReturn findByOrderId(Long orderId);
     List<OrderReturn> findAllByClientIdAndStatusTrue(Long clientId);
+    List<OrderReturn> findAllByClientId(Long clientId);
 }

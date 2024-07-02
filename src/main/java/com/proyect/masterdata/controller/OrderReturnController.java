@@ -42,9 +42,9 @@ public class OrderReturnController {
     }
     @GetMapping("pagination")
     public ResponseEntity<Page<OrderReturnDTO>> listPagination(
-            @RequestParam(value = "orderId",required = false) Long orderId,
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "warehouse",required = false) String warehouse,
+            @RequestParam(value = "orderIds",required = false) List<Long> orderIds,
+            @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -55,9 +55,9 @@ public class OrderReturnController {
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<OrderReturnDTO>> result = iOrderReturn.listPagination(
-                orderId,
                 user,
-                warehouse,
+                orderIds,
+                warehouses,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -71,9 +71,9 @@ public class OrderReturnController {
     }
     @GetMapping("false")
     public ResponseEntity<Page<OrderReturnDTO>> listFalse(
-            @RequestParam(value = "orderId",required = false) Long orderId,
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "warehouse",required = false) String warehouse,
+            @RequestParam(value = "orderIds",required = false) List<Long> orderIds,
+            @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -84,9 +84,9 @@ public class OrderReturnController {
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<OrderReturnDTO>> result = iOrderReturn.listFalse(
-                orderId,
                 user,
-                warehouse,
+                orderIds,
+                warehouses,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -96,6 +96,13 @@ public class OrderReturnController {
                 pageNumber,
                 pageSize
         );
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @GetMapping("filter")
+    public ResponseEntity<List<OrderReturnDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderReturnDTO>> result = iOrderReturn.listFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

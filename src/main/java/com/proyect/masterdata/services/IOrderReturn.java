@@ -16,9 +16,9 @@ public interface IOrderReturn {
     CompletableFuture<ResponseSuccess> saveAsync(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<OrderReturnDTO>> list(String user) throws BadRequestExceptions;
     CompletableFuture<Page<OrderReturnDTO>> listPagination(
-            Long orderId,
             String user,
-            String warehouse,
+            List<Long> orders,
+            List<String> warehouses,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -29,9 +29,9 @@ public interface IOrderReturn {
             Integer pageSize
     ) throws BadRequestExceptions;
     CompletableFuture<Page<OrderReturnDTO>> listFalse(
-            Long orderId,
             String user,
-            String warehouse,
+            List<Long> orders,
+            List<String> warehouses,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -41,4 +41,5 @@ public interface IOrderReturn {
             Integer pageNumber,
             Integer pageSize
     ) throws BadRequestExceptions;
+    CompletableFuture<List<OrderReturnDTO>> listFilter(String user) throws BadRequestExceptions;
 }

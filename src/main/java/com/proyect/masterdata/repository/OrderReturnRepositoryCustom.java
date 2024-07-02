@@ -5,13 +5,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface OrderReturnRepositoryCustom {
     Page<OrderReturn> searchForOrderReturn(
-            Long orderId,
             Long clientId,
-            Long warehouseId,
+            List<Long> orderIds,
+            List<Long> warehouseIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
