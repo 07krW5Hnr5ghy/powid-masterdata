@@ -14,7 +14,15 @@ import java.util.concurrent.CompletableFuture;
 public interface IOrderStock {
     ResponseSuccess save(Long orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(Long orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    CompletableFuture<Page<OrderStockDTO>> list(String warehouse, Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<OrderStockDTO>> list(
+            String user,
+            List<Long> orders,
+            List<String> warehouses,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<List<OrderStockDTO>> listOrderStock(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderStockDTO>> listOrderStockFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<OrderStockDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

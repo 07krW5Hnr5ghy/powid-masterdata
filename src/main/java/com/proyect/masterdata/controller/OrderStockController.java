@@ -43,15 +43,22 @@ public class OrderStockController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STOCK_GET')")
     public ResponseEntity<Page<OrderStockDTO>> list(
-            @RequestParam(value = "warehouse",required = false) String warehouse,
-            @RequestParam(value = "orderId",required = false) Long orderId,
             @RequestParam("user") String user,
+            @RequestParam(value = "warehouses",required = false) List<String> warehouses,
+            @RequestParam(value = "orderIds",required = false) List<Long> orderIds,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<OrderStockDTO>> result = iOrderStock.list(warehouse,orderId,user,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<OrderStockDTO>> result = iOrderStock.list(
+                user,
+                orderIds,
+                warehouses,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
@@ -61,6 +68,15 @@ public class OrderStockController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<OrderStockDTO>> result = iOrderStock.listOrderStock(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STOCK_GET')")
+    public ResponseEntity<List<OrderStockDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderStockDTO>> result = iOrderStock.listFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

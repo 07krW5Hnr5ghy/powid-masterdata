@@ -17,10 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -190,21 +187,45 @@ public class OrderStockImpl implements IOrderStock {
     }
 
     @Override
-    public CompletableFuture<Page<OrderStockDTO>> list(String warehouse, Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<OrderStockDTO>> list(
+            String user,
+            List<Long> orders,
+            List<String> warehouses,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStock> pageOrderStock;
-            Long warehouseId;
+            List<Long> warehouseIds;
+            List<Long> orderIds;
             Long clientId;
 
-            if(warehouse != null){
-                warehouseId = warehouseRepository.findByName(warehouse.toUpperCase()).getId();
+            if(warehouses != null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository.findByNameIn(
+                        warehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
             }else{
-                warehouseId = null;
+                warehouseIds = new ArrayList<>();
+            }
+
+            if(orders != null && !orders.isEmpty()){
+                orderIds = orders;
+            }else{
+                orderIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageOrderStock = orderStockRepositoryCustom.searchForOrderStock(warehouseId,orderId,clientId,sort,sortColumn,pageNumber,pageSize,true);
+                pageOrderStock = orderStockRepositoryCustom.searchForOrderStock(
+                        clientId,
+                        orderIds,
+                        warehouseIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
                 System.out.println(pageOrderStock.getContent());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -255,5 +276,31 @@ public class OrderStockImpl implements IOrderStock {
     @Override
     public CompletableFuture<List<OrderStockDTO>> listOrderStockFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return null;
+    }
+
+    @Override
+    public CompletableFuture<List<OrderStockDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderStock> orderStocks;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderStocks = orderStockRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (orderStocks.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
+                    .orderId(orderStock.getId())
+                    .warehouse(orderStock.getWarehouse().getName())
+                    .registrationDate(orderStock.getRegistrationDate())
+                    .build()
+            ).toList();
+        });
     }
 }
