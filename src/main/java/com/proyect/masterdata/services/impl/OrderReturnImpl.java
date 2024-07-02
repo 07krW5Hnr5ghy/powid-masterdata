@@ -388,4 +388,9 @@ public class OrderReturnImpl implements IOrderReturn {
                     .build()).toList();
         });
     }
+
+    @Override
+    public OrderReturn getOrderReturnItemByOrderIdAndClientId(Long orderId, Long clientId) {
+        return orderReturnRepository.findByOrderIdAndClientId(orderId,clientId);
+    }
 }

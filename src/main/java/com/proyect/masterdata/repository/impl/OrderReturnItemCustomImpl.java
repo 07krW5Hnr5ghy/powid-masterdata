@@ -1,6 +1,8 @@
 package com.proyect.masterdata.repository.impl;
 
+import com.proyect.masterdata.domain.OrderReturn;
 import com.proyect.masterdata.domain.OrderReturnItem;
+import com.proyect.masterdata.domain.OrderStock;
 import com.proyect.masterdata.repository.OrderReturnItemRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -23,12 +25,12 @@ public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCusto
     private EntityManager entityManager;
     @Override
     public Page<OrderReturnItem> searchForOrderReturnItem(
-            Long orderId,
             Long clientId,
-            Long productId,
-            Long supplierProductId,
-            Long warehouseId,
-            Long orderReturnTypeId,
+            List<Long> orderIds,
+            List<Long> productIds,
+            List<Long> supplierProductIds,
+            List<Long> warehouseIds,
+            List<Long> orderReturnTypeIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -41,22 +43,26 @@ public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCusto
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderReturnItem> criteriaQuery = criteriaBuilder.createQuery(OrderReturnItem.class);
         Root<OrderReturnItem> itemRoot = criteriaQuery.from(OrderReturnItem.class);
+        Join<OrderReturnItem, OrderReturn> orderReturnItemOrderReturnJoin = itemRoot.join("orderReturn");
+        Join<OrderReturn, OrderStock> orderReturnOrderStockJoin = orderReturnItemOrderReturnJoin.join("orderStock");
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
-                orderId,
                 clientId,
-                productId,
-                supplierProductId,
-                warehouseId,
-                orderReturnTypeId,
+                orderIds,
+                productIds,
+                supplierProductIds,
+                warehouseIds,
+                orderReturnTypeIds,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 status,
                 criteriaBuilder,
-                itemRoot);
+                itemRoot,
+                orderReturnItemOrderReturnJoin,
+                orderReturnOrderStockJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> orderReturnItemList = new ArrayList<>();
@@ -77,12 +83,12 @@ public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCusto
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         long count = getOrderCount(
-                orderId,
                 clientId,
-                productId,
-                supplierProductId,
-                warehouseId,
-                orderReturnTypeId,
+                orderIds,
+                productIds,
+                supplierProductIds,
+                warehouseIds,
+                orderReturnTypeIds,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -91,44 +97,46 @@ public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCusto
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
     List<Predicate> predicateConditions(
-            Long orderId,
             Long clientId,
-            Long productId,
-            Long supplierProductId,
-            Long warehouseId,
-            Long orderReturnTypeId,
+            List<Long> orderIds,
+            List<Long> productIds,
+            List<Long> supplierProductIds,
+            List<Long> warehouseIds,
+            List<Long> orderReturnTypeIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
             Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<OrderReturnItem> itemRoot
+            Root<OrderReturnItem> itemRoot,
+            Join<OrderReturnItem, OrderReturn> orderReturnItemOrderReturnJoin,
+            Join<OrderReturn, OrderStock> orderReturnOrderStockJoin
     ) {
         List<Predicate> conditions = new ArrayList<>();
-
-        if (orderId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderId"), orderId)));
-        }
 
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if(productId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("productId"), productId)));
+        if (!orderIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(orderReturnItemOrderReturnJoin.get("orderId").in(orderIds)));
         }
 
-        if(supplierProductId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("supplierProductId"), supplierProductId)));
+        if(!productIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("productId").in(productIds)));
         }
 
-        if (warehouseId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("warehouseId"), clientId)));
+        if(!supplierProductIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("supplierProductId").in(supplierProductIds)));
         }
 
-        if (orderReturnTypeId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderReturnTypeId"), orderReturnTypeId)));
+        if (!warehouseIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(orderReturnOrderStockJoin.get("warehouseId").in(warehouseIds)));
+        }
+
+        if (!orderReturnTypeIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("orderReturnTypeId").in(orderReturnTypeIds)));
         }
 
         if(registrationStartDate!=null){
@@ -257,12 +265,12 @@ public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCusto
     }
 
     private long getOrderCount(
-            Long orderId,
             Long clientId,
-            Long productId,
-            Long supplierProductId,
-            Long warehouseId,
-            Long orderReturnTypeId,
+            List<Long> orderIds,
+            List<Long> productIds,
+            List<Long> supplierProductIds,
+            List<Long> warehouseIds,
+            List<Long> orderReturnTypeIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -271,22 +279,26 @@ public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCusto
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<OrderReturnItem> itemRoot = criteriaQuery.from(OrderReturnItem.class);
+        Join<OrderReturnItem, OrderReturn> orderReturnItemOrderReturnJoin = itemRoot.join("orderReturn");
+        Join<OrderReturn, OrderStock> orderReturnOrderStockJoin = orderReturnItemOrderReturnJoin.join("orderStock");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
-                orderId,
                 clientId,
-                productId,
-                supplierProductId,
-                warehouseId,
-                orderReturnTypeId,
+                orderIds,
+                productIds,
+                supplierProductIds,
+                warehouseIds,
+                orderReturnTypeIds,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 status,
                 criteriaBuilder,
-                itemRoot);
+                itemRoot,
+                orderReturnItemOrderReturnJoin,
+                orderReturnOrderStockJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

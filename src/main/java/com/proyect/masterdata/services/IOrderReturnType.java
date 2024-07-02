@@ -14,4 +14,5 @@ public interface IOrderReturnType {
     CompletableFuture<List<String>> listFalse() throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<String>> listFilter() throws BadRequestExceptions,InternalErrorExceptions;
 }

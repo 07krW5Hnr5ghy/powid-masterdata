@@ -1243,7 +1243,6 @@ public class ExcelImpl implements IExcel {
                         orderReturnItem.setRegistrationDate(new Date(System.currentTimeMillis()));
                         orderReturnItem.setClient(user.getClient());
                         orderReturnItem.setClientId(user.getClientId());
-                        orderReturnItem.setOrderId(orderStock.getOrderId());
                         orderReturnItem.setOrderReturn(newOrderReturn);
                         orderReturnItem.setOrderReturnId(newOrderReturn.getId());
                         orderReturnItem.setTokenUser(user.getUsername());

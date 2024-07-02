@@ -54,4 +54,9 @@ public class OrderReturnTypeController {
         CompletableFuture<ResponseSuccess> result = iOrderReturnType.activate(name,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+    @GetMapping("filter")
+    public ResponseEntity<List<String>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<String>> result = iOrderReturnType.listFilter();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

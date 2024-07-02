@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface OrderReturnRepository extends JpaRepository<OrderReturn,Long> {
     OrderReturn findByOrderId(Long orderId);
+    OrderReturn findByOrderIdAndClientId(Long orderId,Long clientId);
     List<OrderReturn> findAllByClientIdAndStatusTrue(Long clientId);
     List<OrderReturn> findAllByClientId(Long clientId);
 }

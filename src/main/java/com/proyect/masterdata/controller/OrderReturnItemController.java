@@ -72,12 +72,12 @@ public class OrderReturnItemController {
     }
     @GetMapping("pagination")
     private ResponseEntity<Page<OrderReturnItemDTO>> listPagination(
-            @RequestParam(value = "orderId",required = false) Long orderId,
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "product",required = false) String product,
-            @RequestParam(value = "supplierProduct",required = false) String supplierProduct,
-            @RequestParam(value = "warehouse",required = false) String warehouse,
-            @RequestParam(value = "returnType",required = false) String returnType,
+            @RequestParam(value = "orderIds",required = false) List<Long> orderIds,
+            @RequestParam(value = "products",required = false) List<String> products,
+            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
+            @RequestParam(value = "warehouses",required = false) List<String> warehouses,
+            @RequestParam(value = "returnTypes",required = false) List<String> returnTypes,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -88,12 +88,12 @@ public class OrderReturnItemController {
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<OrderReturnItemDTO>> result = iOrderReturnItem.listPagination(
-                orderId,
                 user,
-                product,
-                supplierProduct,
-                warehouse,
-                returnType,
+                orderIds,
+                products,
+                supplierProducts,
+                warehouses,
+                returnTypes,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -107,12 +107,12 @@ public class OrderReturnItemController {
     }
     @GetMapping("false")
     private ResponseEntity<Page<OrderReturnItemDTO>> listFalse(
-            @RequestParam(value = "orderId",required = false) Long orderId,
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "product",required = false) String product,
-            @RequestParam(value = "supplierProduct",required = false) String supplierProduct,
-            @RequestParam(value = "warehouse",required = false) String warehouse,
-            @RequestParam(value = "returnType",required = false) String returnType,
+            @RequestParam(value = "orderIds",required = false) List<Long> orderIds,
+            @RequestParam(value = "products",required = false) List<String> products,
+            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
+            @RequestParam(value = "warehouses",required = false) List<String> warehouses,
+            @RequestParam(value = "returnTypes",required = false) List<String> returnTypes,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -123,12 +123,12 @@ public class OrderReturnItemController {
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<OrderReturnItemDTO>> result = iOrderReturnItem.listPagination(
-                orderId,
                 user,
-                product,
-                supplierProduct,
-                warehouse,
-                returnType,
+                orderIds,
+                products,
+                supplierProducts,
+                warehouses,
+                returnTypes,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,

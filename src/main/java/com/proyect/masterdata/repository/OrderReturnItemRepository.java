@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface OrderReturnItemRepository extends JpaRepository<OrderReturnItem,Long> {
-    OrderReturnItem findByClientIdAndOrderIdAndSupplierProductIdAndStatusTrue(Long clientId,Long orderId,Long supplierProductId);
-    List<OrderReturnItem> findAllByClientIdAndOrderIdAndStatusTrue(Long clientId,Long orderId);
+    OrderReturnItem findByClientIdAndOrderReturnIdAndSupplierProductIdAndStatusTrue(Long clientId,Long orderId,Long supplierProductId);
+    List<OrderReturnItem> findAllByClientIdAndOrderReturnIdAndStatusTrue(Long clientId,Long orderId);
     List<OrderReturnItem> findAllByClientIdAndStatusTrue(Long clientId);
-    OrderReturnItem findBySupplierProductIdAndOrderIdAndStatusTrue(Long supplierProductId,Long orderId);
-    OrderReturnItem findBySupplierProductIdAndOrderIdAndStatusFalse(Long supplierProductId,Long orderId);
+    OrderReturnItem findBySupplierProductIdAndOrderReturnIdAndStatusTrue(Long supplierProductId,Long orderId);
+    OrderReturnItem findBySupplierProductIdAndOrderReturnIdAndStatusFalse(Long supplierProductId,Long orderId);
 }

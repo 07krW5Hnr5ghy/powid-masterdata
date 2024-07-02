@@ -19,12 +19,12 @@ public interface IOrderReturnItem {
     CompletableFuture<ResponseSuccess> update(Long orderId,String supplierProductSerial,Integer quantity,String tokenUser) throws InternalErrorExceptions;
     CompletableFuture<List<OrderReturnItemDTO>> list(String user,Long orderId) throws BadRequestExceptions;
     CompletableFuture<Page<OrderReturnItemDTO>> listPagination(
-            Long orderId,
             String user,
-            String product,
-            String supplierProduct,
-            String warehouse,
-            String orderReturnType,
+            List<Long> orderIds,
+            List<String> products,
+            List<String> supplierProducts,
+            List<String> warehouses,
+            List<String> orderReturnTypes,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -35,12 +35,12 @@ public interface IOrderReturnItem {
             Integer pageSize
     ) throws BadRequestExceptions;
     CompletableFuture<Page<OrderReturnItemDTO>> listFalse(
-            Long orderId,
             String user,
-            String product,
-            String supplierProduct,
-            String warehouse,
-            String orderReturnType,
+            List<Long> orderIds,
+            List<String> products,
+            List<String> supplierProducts,
+            List<String> warehouses,
+            List<String> orderReturnTypes,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,

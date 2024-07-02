@@ -5,16 +5,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface OrderReturnItemRepositoryCustom {
     Page<OrderReturnItem> searchForOrderReturnItem(
-            Long orderId,
             Long clientId,
-            Long productId,
-            Long supplierProductId,
-            Long warehouseId,
-            Long orderReturnTypeId,
+            List<Long> orderIds,
+            List<Long> productIds,
+            List<Long> supplierProductIds,
+            List<Long> warehouseIds,
+            List<Long> orderReturnTypeIds,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,

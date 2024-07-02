@@ -166,4 +166,21 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<List<String>> listFilter() throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderReturnType> orderReturnTypeList;
+            try {
+                orderReturnTypeList = orderReturnTypeRepository.findAll();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(orderReturnTypeList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return orderReturnTypeList.stream().map(OrderReturnType::getName).toList();
+        });
+    }
 }

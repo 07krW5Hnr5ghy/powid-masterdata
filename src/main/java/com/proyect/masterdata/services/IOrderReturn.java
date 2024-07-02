@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services;
 
+import com.proyect.masterdata.domain.OrderReturn;
 import com.proyect.masterdata.dto.OrderReturnDTO;
 import com.proyect.masterdata.dto.request.RequestOrderReturnItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -42,4 +43,5 @@ public interface IOrderReturn {
             Integer pageSize
     ) throws BadRequestExceptions;
     CompletableFuture<List<OrderReturnDTO>> listFilter(String user) throws BadRequestExceptions;
+    OrderReturn getOrderReturnItemByOrderIdAndClientId(Long orderId,Long clientId);
 }

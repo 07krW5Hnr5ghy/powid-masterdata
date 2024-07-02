@@ -37,9 +37,6 @@ public class OrderReturnItem {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "order_id")
-    private Long orderId;
-
     @Column(name = "registration_date")
     @CreationTimestamp()
     private Date registrationDate;
