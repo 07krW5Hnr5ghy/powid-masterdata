@@ -289,4 +289,16 @@ public class ProvinceImpl implements IProvince {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<List<ProvinceDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try {
+                return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findAll());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 }

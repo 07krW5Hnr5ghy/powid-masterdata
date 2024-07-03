@@ -30,4 +30,10 @@ public class CountryController {
         CompletableFuture<Page<CountryDTO>> result = iCountry.listCountry(name,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<CountryDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CountryDTO>> result = iCountry.listFilter();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

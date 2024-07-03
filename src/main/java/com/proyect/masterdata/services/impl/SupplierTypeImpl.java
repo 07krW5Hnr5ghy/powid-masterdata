@@ -176,6 +176,22 @@ public class SupplierTypeImpl implements ISupplierType {
             }
             return supplierTypes.stream().map(SupplierType::getName).toList();
         });
+    }
 
+    @Override
+    public CompletableFuture<List<String>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierType> supplierTypes;
+            try {
+                supplierTypes = supplierTypeRepository.findAll();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(supplierTypes.isEmpty()){
+                return Collections.emptyList();
+            }
+            return supplierTypes.stream().map(SupplierType::getName).toList();
+        });
     }
 }

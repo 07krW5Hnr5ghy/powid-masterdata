@@ -23,4 +23,5 @@ public interface IDistrict {
         CompletableFuture<Page<DistrictDTO>> listStatusFalse(String name, String user, Long codeProvince, String nameProvince, String sort,
                         String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<List<DistrictDTO>> listDistrictByProvince(String province) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<List<DistrictDTO>> listFilter() throws BadRequestExceptions;
 }

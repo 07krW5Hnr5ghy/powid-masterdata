@@ -289,4 +289,16 @@ public class DistrictImpl implements IDistrict {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<List<DistrictDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try {
+                return districtMapper.listDistrictToListDistrictDTO(districtRepository.findAll());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 }

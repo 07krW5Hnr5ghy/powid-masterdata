@@ -84,6 +84,12 @@ public class DepartmentController {
                 return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
 
+        @GetMapping("filter")
+        public ResponseEntity<List<DepartmentDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+                CompletableFuture<List<DepartmentDTO>> result = iDepartment.listFilter();
+                return new ResponseEntity<>(result.get(), HttpStatus.OK);
+        }
+
 }
 /*
  * @Operation(summary = "Lista los departmentos",

@@ -95,4 +95,21 @@ public class CountryImpl implements ICountry {
             return new PageImpl<>(countryDTOS,countryPage.getPageable(),countryPage.getTotalElements());
         });
     }
+
+    @Override
+    public CompletableFuture<List<CountryDTO>> listFilter() throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Country> countryList;
+            try {
+                countryList = countryRepository.findAll();
+            }catch (RuntimeException e){
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+
+            return countryList.stream().map(country -> CountryDTO.builder()
+                    .id(country.getId().toString())
+                    .value(country.getName())
+                    .build()).toList();
+        });
+    }
 }

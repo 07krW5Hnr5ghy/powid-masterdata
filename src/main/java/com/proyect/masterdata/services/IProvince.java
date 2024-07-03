@@ -26,4 +26,5 @@ public interface IProvince {
                         throws BadRequestExceptions;
         CompletableFuture<List<ProvinceDTO>> listProvinceByDepartment(String department)
                         throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<List<ProvinceDTO>> listFilter() throws BadRequestExceptions;
 }

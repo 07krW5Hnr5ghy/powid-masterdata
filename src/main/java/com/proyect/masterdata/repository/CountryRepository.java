@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface CountryRepository extends JpaRepository<Country,Long> {
     Country findByNameAndStatusTrue(String name);
+    List<Country> findByNameIn(List<String> names);
     List<Country> findAllByStatusTrue();
 }

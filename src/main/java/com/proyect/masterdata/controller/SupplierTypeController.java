@@ -49,4 +49,10 @@ public class SupplierTypeController {
         CompletableFuture<List<String>> result = iSupplierType.listSupplierType();
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("filter")
+    private ResponseEntity<List<String>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<String>> result = iSupplierType.listFilter();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }
