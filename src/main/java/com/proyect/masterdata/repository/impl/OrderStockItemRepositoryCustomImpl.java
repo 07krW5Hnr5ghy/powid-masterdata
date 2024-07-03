@@ -1,6 +1,8 @@
 package com.proyect.masterdata.repository.impl;
 
+import com.proyect.masterdata.domain.OrderStock;
 import com.proyect.masterdata.domain.OrderStockItem;
+import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.repository.OrderStockItemRepositoryCustom;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
@@ -23,13 +25,35 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
     private EntityManager entityManager;
 
     @Override
-    public Page<OrderStockItem> searchForOrderStockItem(Long clientId, Long orderId, Long supplierProductId, String sort, String sortColumn, Integer pageNumber, Integer pageSize,Boolean status) {
+    public Page<OrderStockItem> searchForOrderStockItem(
+            Long clientId,
+            List<Long> orderIds,
+            List<Long> warehouseIds,
+            List<Long> productIds,
+            List<Long> supplierProductIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderStockItem> criteriaQuery = criteriaBuilder.createQuery(OrderStockItem.class);
         Root<OrderStockItem> itemRoot = criteriaQuery.from(OrderStockItem.class);
+        Join<OrderStockItem, OrderStock> orderStockItemOrderStockJoin = itemRoot.join("orderStock");
+        Join<OrderStockItem, SupplierProduct> orderStockItemSupplierProductJoin = itemRoot.join("supplierProduct");
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(clientId,orderId,supplierProductId,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                orderIds,
+                warehouseIds,
+                productIds,
+                supplierProductIds,
+                status,
+                criteriaBuilder,
+                itemRoot,
+                orderStockItemOrderStockJoin,
+                orderStockItemSupplierProductJoin);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
             List<Order> orderStockList = new ArrayList<>();
@@ -53,23 +77,47 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
         orderingTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        Long count = getOrderCount(clientId,orderId,supplierProductId,status);
+        Long count = getOrderCount(
+                clientId,
+                orderIds,
+                warehouseIds,
+                productIds,
+                supplierProductIds,
+                status);
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
     }
 
-    List<Predicate> predicateConditions(Long clientId,Long orderId,Long supplierProductId,Boolean status,CriteriaBuilder criteriaBuilder,Root<OrderStockItem> itemRoot){
+    List<Predicate> predicateConditions(
+            Long clientId,
+            List<Long> orderIds,
+            List<Long> warehouseIds,
+            List<Long> productIds,
+            List<Long> supplierProductIds,
+            Boolean status,
+            CriteriaBuilder criteriaBuilder,
+            Root<OrderStockItem> itemRoot,
+            Join<OrderStockItem, OrderStock> orderStockItemOrderStockJoin,
+            Join<OrderStockItem, SupplierProduct> orderStockItemSupplierProductJoin){
         List<Predicate> conditions = new ArrayList<>();
 
         if(clientId != null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"),clientId)));
         }
 
-        if(orderId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderId"),orderId)));
+        if(!orderIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(orderStockItemOrderStockJoin.get("orderId").in(orderIds)));
         }
 
-        if(supplierProductId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("supplierProductId"),supplierProductId)));
+        if(!warehouseIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(orderStockItemOrderStockJoin.get("warehouseId").in(warehouseIds)));
+        }
+
+        if(!productIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(orderStockItemSupplierProductJoin.get("productId").in(productIds)));
+        }
+
+        if(!supplierProductIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("supplierProductId").in(supplierProductIds)));
         }
 
         if (status){
@@ -119,13 +167,31 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
         return orderStockList;
     }
 
-    private Long getOrderCount(Long clientId,Long orderId,Long supplierProductId,Boolean status){
+    private Long getOrderCount(
+            Long clientId,
+            List<Long> orderIds,
+            List<Long> warehouseIds,
+            List<Long> productIds,
+            List<Long> supplierProductIds,
+            Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<OrderStockItem> itemRoot = criteriaQuery.from(OrderStockItem.class);
+        Join<OrderStockItem, OrderStock> orderStockItemOrderStockJoin = itemRoot.join("orderStock");
+        Join<OrderStockItem, SupplierProduct> orderStockItemSupplierProductJoin = itemRoot.join("supplierProduct");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(clientId,orderId,supplierProductId,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                orderIds,
+                warehouseIds,
+                productIds,
+                supplierProductIds,
+                status,
+                criteriaBuilder,
+                itemRoot,
+                orderStockItemOrderStockJoin,
+                orderStockItemSupplierProductJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
