@@ -18,8 +18,8 @@ public interface ICourier {
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<Page<CourierDTO>> list(
-            String name,
             String user,
+            List<String> names,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -29,8 +29,8 @@ public interface ICourier {
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<Page<CourierDTO>> listFalse(
-            String name,
             String user,
+            List<String> names,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -42,4 +42,5 @@ public interface ICourier {
     CompletableFuture<ResponseSuccess> updateOrder(Long orderId, RequestCourierOrder requestCourierOrder,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<CourierDTO>> listCouriers(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<CourierDTO>> listCouriersFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<CourierDTO>> listFilters(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

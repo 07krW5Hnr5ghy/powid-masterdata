@@ -23,8 +23,8 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
     private EntityManager entityManager;
     @Override
     public Page<Courier> searchForCourier(
-            String name,
             Long clientId,
+            List<String> names,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -40,8 +40,8 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
-                name,
                 clientId,
+                names,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -72,19 +72,19 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
-                name,
+                clientId,
+                names,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
-                clientId,
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
-            String name,
             Long clientId,
+            List<String> names,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -95,11 +95,10 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if(name != null){
+        if(!names.isEmpty()){
             conditions.add(
                     criteriaBuilder.and(
-                            criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("name")),name.toUpperCase())));
+                            itemRoot.get("name").in(names)));
         }
 
         if (clientId != null) {
@@ -212,12 +211,12 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
     }
 
     private Long getOrderCount(
-            String name,
+            Long clientId,
+            List<String> names,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
             Date updateEndDate,
-            Long clientId,
             Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -225,8 +224,8 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
-                name,
                 clientId,
+                names,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,

@@ -58,8 +58,8 @@ public class CourierController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
     public ResponseEntity<Page<CourierDTO>> list(
-            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,
+            @RequestParam(value = "names", required = false) List<String> names,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -70,8 +70,8 @@ public class CourierController {
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<CourierDTO>> result = iCourier.list(
-                name,
                 user,
+                names,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -85,8 +85,8 @@ public class CourierController {
     @GetMapping("pagination/status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
     public ResponseEntity<Page<CourierDTO>> listFalse(
-            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user") String user,
+            @RequestParam(value = "names", required = false) List<String> names,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
@@ -97,8 +97,8 @@ public class CourierController {
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<CourierDTO>> result = iCourier.listFalse(
-                name,
                 user,
+                names,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -134,6 +134,15 @@ public class CourierController {
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iCourier.activate(name, tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
+    public ResponseEntity<List<CourierDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CourierDTO>> result = iCourier.listFilters(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
