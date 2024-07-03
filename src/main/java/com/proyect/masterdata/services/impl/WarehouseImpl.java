@@ -201,15 +201,32 @@ public class WarehouseImpl implements IWarehouse {
     }
 
     @Override
-    public CompletableFuture<Page<WarehouseDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<WarehouseDTO>> list(
+            String user,
+            List<String> names,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Warehouse> warehousePage;
             Long clientId;
+            List<String> namesUppercase;
+
+            if(names != null && !names.isEmpty()){
+                namesUppercase = names.stream().map(String::toUpperCase).toList();
+            }else{
+                namesUppercase = new ArrayList<>();
+            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                warehousePage = warehouseRepositoryCustom.searchForWarehouse(name, clientId, sort, sortColumn, pageNumber,
+                warehousePage = warehouseRepositoryCustom.searchForWarehouse(
+                        clientId,
+                        namesUppercase,
+                        sort,
+                        sortColumn,
+                        pageNumber,
                         pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());

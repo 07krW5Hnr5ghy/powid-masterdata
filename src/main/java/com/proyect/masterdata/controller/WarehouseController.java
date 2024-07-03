@@ -59,13 +59,19 @@ public class WarehouseController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_GET')")
     public ResponseEntity<Page<WarehouseDTO>> list(
-            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "names", required = false) List<String> names,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<WarehouseDTO>> result = iWarehouse.list(name, user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<WarehouseDTO>> result = iWarehouse.list(
+                user,
+                names,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
