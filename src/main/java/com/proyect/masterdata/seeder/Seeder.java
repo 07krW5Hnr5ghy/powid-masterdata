@@ -91,6 +91,7 @@ public class Seeder implements CommandLineRunner {
         private final IOrderReturn iOrderReturn;
         private final ResourceLoader resourceLoader;
         private final IAuditEvent iAuditEvent;
+        private final ICustomer iCustomer;
         @Override
         public void run(String... args) throws Exception {
 
@@ -2170,20 +2171,24 @@ public class Seeder implements CommandLineRunner {
                         requestOrderItems1.add(requestOrderItem1);
                         requestOrderItems1.add(requestOrderItem2);
 
+                        RequestCustomer requestCustomer1 = RequestCustomer.builder()
+                                .name("Emilio Gomez")
+                                .phone("940544828")
+                                .address("807 IQUIQUE")
+                                .customerType("Tradicional")
+                                .instagram("")
+                                .district("BREÑA")
+                                .tokenUser("CROJAS")
+                                .reference("")
+                                .build();
+
+                        iCustomer.save(requestCustomer1);
+
                         RequestOrderSave requestOrderSave1 = RequestOrderSave.builder()
                                 .advancedPayment(0.00)
-                                .customerAddress("807 IQUIQUE")
-                                .customerDepartment("LIMA")
-                                .customerProvince("LIMA")
-                                .customerDistrict("BREÑA")
-                                .customerName("Emilio Gomez")
-                                .customerPhone("940544828")
-                                .customerReference("")
-                                .customerType("Tradicional")
                                 .deliveryAddress("807 IQUIQUE")
                                 .deliveryAmount(0.00)
                                 .managementType("venta")
-                                .instagram("")
                                 .observations("")
                                 .paymentMethod("yape")
                                 .receipts(receipts1)
@@ -2191,6 +2196,7 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems1)
                                 .storeName("store 1")
                                 .closingChannel("whatsapp")
+                                .phone("940544828")
                                 .build();
 
                         iOrdering.save(requestOrderSave1,"CROJAS");
@@ -2232,20 +2238,24 @@ public class Seeder implements CommandLineRunner {
                         requestOrderItems2.add(requestOrderItem3);
                         requestOrderItems2.add(requestOrderItem4);
 
+                        RequestCustomer requestCustomer2 = RequestCustomer.builder()
+                                .name("Consuelo Rojas")
+                                .phone("956701333")
+                                .address("AV. JORGE CHAVEZ 420, OFICN LIMA")
+                                .customerType("Tradicional")
+                                .instagram("")
+                                .district("INDEPENDENCIA")
+                                .tokenUser("CROJAS")
+                                .reference("")
+                                .build();
+
+                        iCustomer.save(requestCustomer2);
+
                         RequestOrderSave requestOrderSave2 = RequestOrderSave.builder()
                                 .advancedPayment(4.00)
-                                .customerAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
-                                .customerDepartment("LIMA")
-                                .customerProvince("LIMA")
-                                .customerDistrict("INDEPENDENCIA")
-                                .customerName("Consuelo Rojas")
-                                .customerPhone("956701333")
-                                .customerReference("")
-                                .customerType("Tradicional")
                                 .deliveryAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
                                 .deliveryAmount(3.00)
                                 .managementType("venta")
-                                .instagram("")
                                 .observations("")
                                 .paymentMethod("plin")
                                 .receipts(receipts2)
@@ -2253,6 +2263,7 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems2)
                                 .storeName("store 1")
                                 .closingChannel("facebook")
+                                .phone("956701333")
                                 .build();
 
                         iOrdering.save(requestOrderSave2,"CROJAS");
@@ -2278,20 +2289,23 @@ public class Seeder implements CommandLineRunner {
                         requestOrderItems3.add(requestOrderItem5);
                         requestOrderItems3.add(requestOrderItem6);
 
+                        RequestCustomer requestCustomer3 = RequestCustomer.builder()
+                                .name("Ulises Trujillo")
+                                .phone("944214925")
+                                .address("AV MARAÑÓN 776")
+                                .customerType("Tradicional")
+                                .instagram("")
+                                .district("ATE")
+                                .tokenUser("MAPARICIO")
+                                .reference("")
+                                .build();
+
+                        iCustomer.save(requestCustomer3);
+
                         RequestOrderSave requestOrderSave3 = RequestOrderSave.builder()
                                 .advancedPayment(0.00)
-                                .customerAddress("AV MARAÑÓN 776")
-                                .customerDepartment("LIMA")
-                                .customerProvince("LIMA")
-                                .customerDistrict("ATE")
-                                .customerName("Ulises Trujillo")
-                                .customerPhone("944214925")
-                                .customerReference("")
-                                .customerType("Tradicional")
-                                .deliveryAddress("AV MARAÑÓN 776")
                                 .deliveryAmount(6.25)
                                 .managementType("venta")
-                                .instagram("")
                                 .observations("")
                                 .paymentMethod("efectivo")
                                 .receipts(receipts3)
@@ -2299,7 +2313,11 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems3)
                                 .storeName("store 2")
                                 .closingChannel("twitter")
+                                .deliveryAddress("AV MARAÑÓN 776")
+                                .phone("944214925")
                                 .build();
+
+
 
                         iOrdering.save(requestOrderSave3,"MAPARICIO");
 
@@ -2324,20 +2342,24 @@ public class Seeder implements CommandLineRunner {
                         requestOrderItems4.add(requestOrderItem7);
                         requestOrderItems4.add(requestOrderItem8);
 
+                        RequestCustomer requestCustomer4 = RequestCustomer.builder()
+                                .name("Roberto Padilla")
+                                .phone("989538516")
+                                .address("URB. CAPILLA 130")
+                                .customerType("Tradicional")
+                                .instagram("")
+                                .district("CHORRILLOS")
+                                .tokenUser("MAPARICIO")
+                                .reference("")
+                                .build();
+
+                        iCustomer.save(requestCustomer4);
+
                         RequestOrderSave requestOrderSave4 = RequestOrderSave.builder()
                                 .advancedPayment(0.00)
-                                .customerAddress("URB. CAPILLA 130")
-                                .customerDepartment("LIMA")
-                                .customerProvince("LIMA")
-                                .customerDistrict("CHORRILLOS")
-                                .customerName("Roberto Padilla")
-                                .customerPhone("989538516")
-                                .customerReference("")
-                                .customerType("Tradicional")
                                 .deliveryAddress("URB. CAPILLA 130")
                                 .deliveryAmount(10.15)
                                 .managementType("venta")
-                                .instagram("")
                                 .observations("URB. LA CAPILLA 130, CALLE SARAGOZA- LA MOLINA")
                                 .paymentMethod("efectivo")
                                 .receipts(receipts4)
@@ -2345,6 +2367,7 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems4)
                                 .storeName("store 2")
                                 .closingChannel("web")
+                                .phone("989538516")
                                 .build();
 
                         iOrdering.save(requestOrderSave4,"MAPARICIO");
@@ -2370,18 +2393,9 @@ public class Seeder implements CommandLineRunner {
 
                         RequestOrderSave requestOrderSave5 = RequestOrderSave.builder()
                                 .advancedPayment(2.00)
-                                .customerAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
-                                .customerDepartment("LIMA")
-                                .customerProvince("LIMA")
-                                .customerDistrict("INDEPENDENCIA")
-                                .customerName("Consuelo Rojas")
-                                .customerPhone("956701333")
-                                .customerReference("")
-                                .customerType("Tradicional")
                                 .deliveryAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
                                 .deliveryAmount(4.00)
                                 .managementType("venta")
-                                .instagram("")
                                 .observations("")
                                 .paymentMethod("plin")
                                 .receipts(receipts2)
@@ -2389,6 +2403,7 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems5)
                                 .storeName("store 1")
                                 .closingChannel("instagram")
+                                .phone("956701333")
                                 .build();
 
                         iOrdering.save(requestOrderSave5,"CROJAS");

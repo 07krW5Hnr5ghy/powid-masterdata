@@ -2,10 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderDTO;
-import com.proyect.masterdata.dto.request.RequestOrderItem;
-import com.proyect.masterdata.dto.request.RequestOrderSave;
-import com.proyect.masterdata.dto.request.RequestOrderUpdate;
-import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
+import com.proyect.masterdata.dto.request.*;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -56,6 +53,7 @@ public class OrderingImpl implements IOrdering {
     private final ProvinceRepository provinceRepository;
     private final DistrictRepository districtRepository;
     private final IAudit iAudit;
+    private final CustomerRepository customerRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -67,10 +65,7 @@ public class OrderingImpl implements IOrdering {
         OrderPaymentMethod orderPaymentMethod;
         Store store;
         ClosingChannel closingChannel;
-        Department department;
-        Province province;
-        District district;
-        CustomerType customerType;
+        Customer customer;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
@@ -81,10 +76,7 @@ public class OrderingImpl implements IOrdering {
             orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
             store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
             closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
-            department = departmentRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerDepartment().toUpperCase());
-            province = provinceRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerProvince().toUpperCase());
-            district = districtRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerDistrict().toUpperCase());
-            customerType = customerTypeRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerType().toUpperCase());
+            customer = customerRepository.findByPhone(requestOrderSave.getPhone().toUpperCase());
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -115,20 +107,8 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorClosingChannel);
         }
 
-        if(department == null){
-            throw new BadRequestExceptions(Constants.ErrorDepartment);
-        }
-
-        if(province == null){
-            throw new BadRequestExceptions(Constants.ErrorProvince);
-        }
-
-        if(district == null){
-            throw new BadRequestExceptions(Constants.ErrorDistrict);
-        }
-
-        if(customerType == null){
-            throw new BadRequestExceptions(Constants.ErrorCustomerType);
+        if(customer == null){
+            throw new BadRequestExceptions(Constants.ErrorCustomer);
         }
 
         try{
@@ -143,21 +123,9 @@ public class OrderingImpl implements IOrdering {
                     throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
                 }
             });
+
             Ordering ordering = orderingRepository.save(Ordering.builder()
                     .cancellation(false)
-                            .department(department)
-                            .departmentId(department.getId())
-                            .province(province)
-                            .provinceId(province.getId())
-                            .district(district)
-                            .districtId(district.getId())
-                            .customerType(customerType)
-                            .customerTypeId(customerType.getId())
-                            .customerName(requestOrderSave.getCustomerName().toUpperCase())
-                            .address(requestOrderSave.getCustomerAddress().toUpperCase())
-                            .instagram(requestOrderSave.getInstagram())
-                            .phone(requestOrderSave.getCustomerPhone())
-                            .reference(requestOrderSave.getCustomerReference().toUpperCase())
                     .seller(user.getName() + " " + user.getSurname())
                     .observations(requestOrderSave.getObservations().toUpperCase())
                     .deliveryAddress(requestOrderSave.getDeliveryAddress())
@@ -183,6 +151,8 @@ public class OrderingImpl implements IOrdering {
                     .storeId(store.getId())
                     .closingChannel(closingChannel)
                     .closingChannelId(closingChannel.getId())
+                            .customer(customer)
+                            .customerId(customer.getId())
                     .tokenUser(user.getUsername())
                     .build());
 
@@ -217,10 +187,7 @@ public class OrderingImpl implements IOrdering {
             OrderPaymentMethod orderPaymentMethod;
             Store store;
             ClosingChannel closingChannel;
-            Department department;
-            Province province;
-            District district;
-            CustomerType customerType;
+            Customer customer;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
@@ -231,10 +198,7 @@ public class OrderingImpl implements IOrdering {
                 orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
                 store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
                 closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
-                department = departmentRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerDepartment().toUpperCase());
-                province = provinceRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerProvince().toUpperCase());
-                district = districtRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerDistrict().toUpperCase());
-                customerType = customerTypeRepository.findByNameAndStatusTrue(requestOrderSave.getCustomerType().toUpperCase());
+                customer = customerRepository.findByPhone(requestOrderSave.getPhone().toUpperCase());
             }catch (RuntimeException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -265,20 +229,8 @@ public class OrderingImpl implements IOrdering {
                 throw new BadRequestExceptions(Constants.ErrorClosingChannel);
             }
 
-            if(department == null){
-                throw new BadRequestExceptions(Constants.ErrorDepartment);
-            }
-
-            if(province == null){
-                throw new BadRequestExceptions(Constants.ErrorProvince);
-            }
-
-            if(district == null){
-                throw new BadRequestExceptions(Constants.ErrorDistrict);
-            }
-
-            if(customerType == null){
-                throw new BadRequestExceptions(Constants.ErrorCustomerType);
+            if(customer == null){
+                throw new BadRequestExceptions(Constants.ErrorCustomerExist);
             }
 
             try{
@@ -295,20 +247,7 @@ public class OrderingImpl implements IOrdering {
                 });
                 Ordering ordering = orderingRepository.save(Ordering.builder()
                         .cancellation(false)
-                        .department(department)
-                        .departmentId(department.getId())
-                        .province(province)
-                        .provinceId(province.getId())
-                        .district(district)
-                        .districtId(district.getId())
-                        .customerType(customerType)
-                        .customerTypeId(customerType.getId())
                         .seller(user.getName() + " " + user.getSurname())
-                        .customerName(requestOrderSave.getCustomerName().toUpperCase())
-                        .address(requestOrderSave.getCustomerAddress().toUpperCase())
-                        .instagram(requestOrderSave.getInstagram())
-                        .phone(requestOrderSave.getCustomerPhone())
-                        .reference(requestOrderSave.getCustomerReference().toUpperCase())
                         .observations(requestOrderSave.getObservations().toUpperCase())
                         .deliveryAddress(requestOrderSave.getDeliveryAddress())
                         .deliveryAmount(requestOrderSave.getDeliveryAmount())
@@ -334,6 +273,8 @@ public class OrderingImpl implements IOrdering {
                         .closingChannel(closingChannel)
                         .closingChannelId(closingChannel.getId())
                         .tokenUser(user.getUsername())
+                                .customer(customer)
+                                .customerId(customer.getId())
                         .build());
 
                 iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
@@ -432,18 +373,18 @@ public class OrderingImpl implements IOrdering {
                 }
                 return OrderDTO.builder()
                         .id(order.getId())
-                        .customerName(order.getCustomerName())
-                        .customerPhone(order.getPhone())
-                        .customerType(order.getCustomerType().getName())
+                        .customerName(order.getCustomer().getName())
+                        .customerPhone(order.getCustomer().getPhone())
+                        .customerType(order.getCustomer().getCustomerType().getName())
                         .closingChannel(order.getClosingChannel().getName())
                         .orderStatus(order.getOrderState().getName())
-                        .department(order.getDepartment().getName())
-                        .province(order.getProvince().getName())
-                        .district(order.getDistrict().getName())
-                        .address(order.getAddress())
-                        .instagram(order.getInstagram())
+                        .department(order.getCustomer().getDistrict().getProvince().getDepartment().getName())
+                        .province(order.getCustomer().getDistrict().getProvince().getName())
+                        .district(order.getCustomer().getDistrict().getName())
+                        .address(order.getCustomer().getAddress())
+                        .instagram(order.getCustomer().getInstagram())
                         .managementType(order.getManagementType().getName())
-                        .reference(order.getReference())
+                        .reference(order.getCustomer().getReference())
                         .saleChannel(order.getSaleChannel().getName())
                         .sellerName(order.getSeller())
                         .registrationDate(order.getRegistrationDate())
@@ -491,17 +432,17 @@ public class OrderingImpl implements IOrdering {
                 }
                 return OrderDTO.builder()
                         .id(order.getId())
-                        .customerName(order.getCustomerName())
-                        .customerPhone(order.getPhone())
-                        .customerType(order.getCustomerType().getName())
+                        .customerName(order.getCustomer().getName())
+                        .customerPhone(order.getCustomer().getPhone())
+                        .customerType(order.getCustomer().getCustomerType().getName())
                         .orderStatus(order.getOrderState().getName())
-                        .department(order.getDepartment().getName())
-                        .province(order.getProvince().getName())
-                        .district(order.getDistrict().getName())
-                        .address(order.getAddress())
-                        .instagram(order.getInstagram())
+                        .department(order.getCustomer().getDistrict().getProvince().getDepartment().getName())
+                        .province(order.getCustomer().getDistrict().getProvince().getName())
+                        .district(order.getCustomer().getDistrict().getName())
+                        .address(order.getCustomer().getAddress())
+                        .instagram(order.getCustomer().getInstagram())
                         .managementType(order.getManagementType().getName())
-                        .reference(order.getReference())
+                        .reference(order.getCustomer().getReference())
                         .saleChannel(order.getSaleChannel().getName())
                         .sellerName(order.getSeller())
                         .registrationDate(order.getRegistrationDate())

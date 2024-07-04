@@ -50,21 +50,6 @@ public class Ordering {
     @Column(name = "advance_payment")
     private Double advancePayment;
 
-    @Column(name = "customerName")
-    private String customerName;
-
-    @Column(name = "instagram")
-    private String instagram;
-
-    @Column(name = "phone")
-    private String phone;
-
-    @Column(name = "address")
-    private String address;
-
-    @Column(name = "reference")
-    private String reference;
-
     @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
@@ -100,17 +85,8 @@ public class Ordering {
     @Column(name = "closing_channel_id")
     private Long closingChannelId;
 
-    @Column(name = "district_id")
-    private Long districtId;
-
-    @Column(name = "province_id")
-    private Long provinceId;
-
-    @Column(name = "department_id")
-    private Long departmentId;
-
-    @Column(name = "customer_type_id")
-    private Long customerTypeId;
+    @Column(name = "customer_id")
+    private Long customerId;
 
     @Column(name = "token_user")
     private String tokenUser;
@@ -152,19 +128,7 @@ public class Ordering {
     private ClosingChannel closingChannel;
 
     @ManyToOne
-    @JoinColumn(name = "department_id",columnDefinition = "departmentId",insertable = false,updatable = false)
-    private Department department;
-
-    @ManyToOne
-    @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)
-    private District district;
-
-    @ManyToOne
-    @JoinColumn(name = "province_id", columnDefinition = "provinceId", insertable = false, updatable = false)
-    private Province province;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_type_id",columnDefinition = "customerTypeId",insertable = false,updatable = false)
-    private CustomerType customerType;
+    @JoinColumn(name = "customer_id",columnDefinition = "customerId",insertable = false,updatable = false)
+    private Customer customer;
 
 }
