@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.Customer;
 import com.proyect.masterdata.domain.CustomerType;
 import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.CustomerDTO;
 import com.proyect.masterdata.dto.request.RequestCustomer;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -18,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -134,6 +137,34 @@ public class CustomerImp implements ICustomer {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<CustomerDTO>> listFilter(String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Customer> customerList;
+            User user;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                customerList = customerRepository.findAllByClientId(user.getClientId());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(customerList.isEmpty()){
+                return new ArrayList<>();
+            }
+            return customerList.stream().map(customer -> CustomerDTO.builder()
+                    .name(customer.getName())
+                    .phone(customer.getPhone())
+                    .customerType(customer.getCustomerType().getName())
+                    .department(customer.getDistrict().getProvince().getDepartment().getName())
+                    .province(customer.getDistrict().getProvince().getName())
+                    .district(customer.getDistrict().getName())
+                    .address(customer.getAddress())
+                    .instagram(customer.getInstagram())
+                    .build()).toList();
         });
     }
 }

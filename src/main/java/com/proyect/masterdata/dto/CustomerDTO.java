@@ -15,4 +15,7 @@ public class CustomerDTO {
     private String phone;
     private String address;
     private String customerType;
+    private String district;
+    private String department;
+    private String province;
 }
