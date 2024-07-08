@@ -69,7 +69,7 @@ public class OrderItemController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_ITEM_GET')")
     public ResponseEntity<Page<OrderItemDTO>> listOrderItems(
             @RequestParam("user") String user,
