@@ -113,7 +113,7 @@ public class OrderingImpl implements IOrdering {
 
         try{
             requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
-                Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
+                Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
 
                 if(product == null){
                     throw new BadRequestExceptions(Constants.ErrorProduct);
@@ -130,7 +130,7 @@ public class OrderingImpl implements IOrdering {
                     .observations(requestOrderSave.getObservations().toUpperCase())
                     .deliveryAddress(requestOrderSave.getDeliveryAddress())
                     .deliveryAmount(requestOrderSave.getDeliveryAmount())
-                    .advancePayment(requestOrderSave.getAdvancedPayment())
+                    .advancedPayment(requestOrderSave.getAdvancedPayment())
                     .orderState(orderState)
                     .orderStateId(orderState.getId())
                     .client(user.getClient())
@@ -235,7 +235,7 @@ public class OrderingImpl implements IOrdering {
 
             try{
                 requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
-                    Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
+                    Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
 
                     if(product == null){
                         throw new BadRequestExceptions(Constants.ErrorProduct);
@@ -251,7 +251,7 @@ public class OrderingImpl implements IOrdering {
                         .observations(requestOrderSave.getObservations().toUpperCase())
                         .deliveryAddress(requestOrderSave.getDeliveryAddress())
                         .deliveryAmount(requestOrderSave.getDeliveryAmount())
-                        .advancePayment(requestOrderSave.getAdvancedPayment())
+                        .advancedPayment(requestOrderSave.getAdvancedPayment())
                         .orderState(orderState)
                         .orderStateId(orderState.getId())
                         .client(user.getClient())
@@ -397,8 +397,8 @@ public class OrderingImpl implements IOrdering {
                         .courierPictures(courierPictures)
                         .observations(order.getObservations())
                         .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
-                        .advancedPayment(BigDecimal.valueOf(order.getAdvancePayment()).setScale(2, RoundingMode.HALF_EVEN))
-                        .duePayment(BigDecimal.valueOf((saleAmount+order.getDeliveryAmount())-order.getAdvancePayment()).setScale(2,RoundingMode.HALF_EVEN))
+                        .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf((saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment()).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
                         .build();
             }).toList();
@@ -456,8 +456,8 @@ public class OrderingImpl implements IOrdering {
                         .observations(order.getObservations())
                         .closingChannel(order.getClosingChannel().getName())
                         .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
-                        .advancedPayment(BigDecimal.valueOf(order.getAdvancePayment()).setScale(2, RoundingMode.HALF_EVEN))
-                        .duePayment(BigDecimal.valueOf((saleAmount+order.getDeliveryAmount())-order.getAdvancePayment()).setScale(2,RoundingMode.HALF_EVEN))
+                        .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf((saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment()).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
                         .build();
             }).toList();

@@ -2153,7 +2153,7 @@ public class Seeder implements CommandLineRunner {
                         receipts1.add(multipartFile1);
 
                         RequestOrderItem requestOrderItem1 = RequestOrderItem.builder()
-                                .productSku("A00001")
+                                .product("A00001")
                                 .discount(0.00)
                                 .quantity(2)
                                 .observations("")
@@ -2162,7 +2162,7 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderItem requestOrderItem2 = RequestOrderItem.builder()
                                 .quantity(1)
                                 .discount(3.00)
-                                .productSku("A00002")
+                                .product("A00002")
                                 .observations("")
                                 .build();
 
@@ -2220,14 +2220,14 @@ public class Seeder implements CommandLineRunner {
                         receipts2.add(multipartFile3);
 
                         RequestOrderItem requestOrderItem3 = RequestOrderItem.builder()
-                                .productSku("A00003")
+                                .product("A00003")
                                 .quantity(3)
                                 .discount(0.00)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem4 = RequestOrderItem.builder()
-                                .productSku("A00001")
+                                .product("A00001")
                                 .quantity(1)
                                 .discount(2.00)
                                 .observations("")
@@ -2271,7 +2271,7 @@ public class Seeder implements CommandLineRunner {
                         List<MultipartFile> receipts3 = new ArrayList<>();
 
                         RequestOrderItem requestOrderItem5 = RequestOrderItem.builder()
-                                .productSku("B00001")
+                                .product("B00001")
                                 .discount(0.00)
                                 .quantity(1)
                                 .observations("")
@@ -2280,7 +2280,7 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderItem requestOrderItem6 = RequestOrderItem.builder()
                                 .quantity(3)
                                 .discount(5.00)
-                                .productSku("B00002")
+                                .product("B00002")
                                 .observations("")
                                 .build();
 
@@ -2324,7 +2324,7 @@ public class Seeder implements CommandLineRunner {
                         List<MultipartFile> receipts4 = new ArrayList<>();
 
                         RequestOrderItem requestOrderItem7 = RequestOrderItem.builder()
-                                .productSku("B00002")
+                                .product("B00002")
                                 .discount(7.00)
                                 .quantity(5)
                                 .observations("")
@@ -2333,7 +2333,7 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderItem requestOrderItem8 = RequestOrderItem.builder()
                                 .quantity(2)
                                 .discount(0.00)
-                                .productSku("B00003")
+                                .product("B00003")
                                 .observations("")
                                 .build();
 
@@ -2373,14 +2373,14 @@ public class Seeder implements CommandLineRunner {
                         iOrdering.save(requestOrderSave4,"MAPARICIO");
 
                         RequestOrderItem requestOrderItem9 = RequestOrderItem.builder()
-                                .productSku("A00003")
+                                .product("A00003")
                                 .quantity(5)
                                 .discount(0.00)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem10 = RequestOrderItem.builder()
-                                .productSku("A00001")
+                                .product("A00001")
                                 .quantity(8)
                                 .discount(2.00)
                                 .observations("")
@@ -2598,7 +2598,7 @@ public class Seeder implements CommandLineRunner {
                         iStockTransfer.save(requestStockTransfer1,"AYEPES");
                         // add order item mock
                         RequestOrderItem requestOrderItemAdd = RequestOrderItem.builder()
-                                .productSku("B00003")
+                                .product("B00003")
                                 .discount(0.00)
                                 .observations("")
                                 .quantity(2)
@@ -2608,7 +2608,7 @@ public class Seeder implements CommandLineRunner {
                         iOrderItem.delete(4L,"B00002","VMENDEZ");
                         // update order item mock
                         RequestOrderItem requestOrderItemUpdate = RequestOrderItem.builder()
-                                .productSku("B00001")
+                                .product("B00001")
                                 .discount(5.00)
                                 .quantity(3)
                                 .observations("se adicionan dos unidades al pedido")

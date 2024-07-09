@@ -47,8 +47,8 @@ public class Ordering {
     @Column(name = "delivery_amount")
     private Double deliveryAmount;
 
-    @Column(name = "advance_payment")
-    private Double advancePayment;
+    @Column(name = "advanced_payment")
+    private Double advancedPayment;
 
     @Column(name = "registration_date")
     @CreationTimestamp

@@ -48,7 +48,7 @@ public class OrderItemImpl implements IOrderItem {
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku());
+            product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -101,7 +101,7 @@ public class OrderItemImpl implements IOrderItem {
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku());
+                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -272,7 +272,7 @@ public class OrderItemImpl implements IOrderItem {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
@@ -335,7 +335,7 @@ public class OrderItemImpl implements IOrderItem {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
