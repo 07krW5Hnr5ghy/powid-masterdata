@@ -92,6 +92,7 @@ public class Seeder implements CommandLineRunner {
         private final ResourceLoader resourceLoader;
         private final IAuditEvent iAuditEvent;
         private final ICustomer iCustomer;
+        private final IDiscount iDiscount;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1007,6 +1008,10 @@ public class Seeder implements CommandLineRunner {
                         // customer types
                         iCustomerType.save("tradicional","admin1");
                         iCustomerType.save("mayorista","admin1");
+                        // discounts
+                        iDiscount.save("monto","admin1");
+                        iDiscount.save("porcentaje","admin1");
+                        iDiscount.save("no aplica","admin1");
                         // mock users
                         iUserRole.save(business1.getUsername(), "BUSINESS",business1.getUsername());
                         iUserRole.save(business2.getUsername(),"BUSINESS",business2.getUsername());
@@ -2154,14 +2159,16 @@ public class Seeder implements CommandLineRunner {
 
                         RequestOrderItem requestOrderItem1 = RequestOrderItem.builder()
                                 .product("A00001")
-                                .discount(0.00)
+                                .discount("porcentaje")
+                                .discountAmount(0.00)
                                 .quantity(2)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem2 = RequestOrderItem.builder()
                                 .quantity(1)
-                                .discount(3.00)
+                                .discount("porcentaje")
+                                .discountAmount(3.00)
                                 .product("A00002")
                                 .observations("")
                                 .build();
@@ -2222,14 +2229,16 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderItem requestOrderItem3 = RequestOrderItem.builder()
                                 .product("A00003")
                                 .quantity(3)
-                                .discount(0.00)
+                                .discount("porcentaje")
+                                .discountAmount(0.00)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem4 = RequestOrderItem.builder()
                                 .product("A00001")
                                 .quantity(1)
-                                .discount(2.00)
+                                .discount("porcentaje")
+                                .discountAmount(2.00)
                                 .observations("")
                                 .build();
 
@@ -2272,14 +2281,16 @@ public class Seeder implements CommandLineRunner {
 
                         RequestOrderItem requestOrderItem5 = RequestOrderItem.builder()
                                 .product("B00001")
-                                .discount(0.00)
+                                .discount("porcentaje")
+                                .discountAmount(0.00)
                                 .quantity(1)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem6 = RequestOrderItem.builder()
                                 .quantity(3)
-                                .discount(5.00)
+                                .discount("porcentaje")
+                                .discountAmount(5.00)
                                 .product("B00002")
                                 .observations("")
                                 .build();
@@ -2325,14 +2336,16 @@ public class Seeder implements CommandLineRunner {
 
                         RequestOrderItem requestOrderItem7 = RequestOrderItem.builder()
                                 .product("B00002")
-                                .discount(7.00)
+                                .discount("porcentaje")
+                                .discountAmount(7.00)
                                 .quantity(5)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem8 = RequestOrderItem.builder()
                                 .quantity(2)
-                                .discount(0.00)
+                                .discount("porcentaje")
+                                .discountAmount(0.00)
                                 .product("B00003")
                                 .observations("")
                                 .build();
@@ -2375,14 +2388,16 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderItem requestOrderItem9 = RequestOrderItem.builder()
                                 .product("A00003")
                                 .quantity(5)
-                                .discount(0.00)
+                                .discount("porcentaje")
+                                .discountAmount(0.00)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem10 = RequestOrderItem.builder()
                                 .product("A00001")
                                 .quantity(8)
-                                .discount(2.00)
+                                .discount("porcentaje")
+                                .discountAmount(2.00)
                                 .observations("")
                                 .build();
 
@@ -2599,7 +2614,8 @@ public class Seeder implements CommandLineRunner {
                         // add order item mock
                         RequestOrderItem requestOrderItemAdd = RequestOrderItem.builder()
                                 .product("B00003")
-                                .discount(0.00)
+                                .discount("porcentaje")
+                                .discountAmount(0.00)
                                 .observations("")
                                 .quantity(2)
                                 .build();
@@ -2609,7 +2625,8 @@ public class Seeder implements CommandLineRunner {
                         // update order item mock
                         RequestOrderItem requestOrderItemUpdate = RequestOrderItem.builder()
                                 .product("B00001")
-                                .discount(5.00)
+                                .discount("porcentaje")
+                                .discountAmount(5.00)
                                 .quantity(3)
                                 .observations("se adicionan dos unidades al pedido")
                                 .build();

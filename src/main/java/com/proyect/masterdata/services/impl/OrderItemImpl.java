@@ -40,15 +40,18 @@ public class OrderItemImpl implements IOrderItem {
     private final ProductPictureRepository productPictureRepository;
     private final OrderItemRepositoryCustom orderItemRepositoryCustom;
     private final IAudit iAudit;
+    private final DiscountRepository discountRepository;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         Product product;
+        Discount discount;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct());
+            discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -62,13 +65,19 @@ public class OrderItemImpl implements IOrderItem {
             throw new BadRequestExceptions(Constants.ErrorProduct);
         }
 
+        if(discount==null){
+            throw new BadRequestExceptions(Constants.ErrorDiscount);
+        }
+
         if(requestOrderItem.getQuantity()<1){
             throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
         }
 
         try{
             OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
-                            .discount(requestOrderItem.getDiscount())
+                            .discount(discount)
+                            .discountId(discount.getId())
+                            .discountAmount(requestOrderItem.getDiscountAmount())
                             .ordering(ordering)
                             .orderId(ordering.getId())
                             .quantity(requestOrderItem.getQuantity())
@@ -98,10 +107,12 @@ public class OrderItemImpl implements IOrderItem {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
+            Discount discount;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct());
+                discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -115,13 +126,19 @@ public class OrderItemImpl implements IOrderItem {
                 throw new BadRequestExceptions(Constants.ErrorProduct);
             }
 
+            if(discount==null){
+                throw new BadRequestExceptions(Constants.ErrorDiscount);
+            }
+
             if(requestOrderItem.getQuantity()<1){
                 throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
             }
 
             try{
                 OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
-                        .discount(requestOrderItem.getDiscount())
+                        .discount(discount)
+                        .discountId(discount.getId())
+                        .discountAmount(requestOrderItem.getDiscountAmount())
                         .ordering(ordering)
                         .orderId(ordering.getId())
                         .quantity(requestOrderItem.getQuantity())
@@ -269,10 +286,12 @@ public class OrderItemImpl implements IOrderItem {
             Ordering ordering;
             Product product;
             OrderItem orderItem;
+            Discount discount;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
                 product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
+                discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
@@ -296,6 +315,10 @@ public class OrderItemImpl implements IOrderItem {
                 throw new BadRequestExceptions(Constants.ErrorOrderItemExists);
             }
 
+            if(discount==null){
+                throw new BadRequestExceptions(Constants.ErrorDiscount);
+            }
+
             try{
                 OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
                         .ordering(ordering)
@@ -303,7 +326,9 @@ public class OrderItemImpl implements IOrderItem {
                         .status(true)
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .discount(requestOrderItem.getDiscount())
+                        .discount(discount)
+                        .discountId(discount.getId())
+                        .discountAmount(requestOrderItem.getDiscountAmount())
                         .observations(requestOrderItem.getObservations().toUpperCase())
                         .product(product)
                         .productId(product.getId())
@@ -331,11 +356,13 @@ public class OrderItemImpl implements IOrderItem {
             Ordering ordering;
             Product product;
             OrderItem orderItem;
+            Discount discount;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
                 product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
+                discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
@@ -359,9 +386,15 @@ public class OrderItemImpl implements IOrderItem {
                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
             }
 
+            if(discount==null){
+                throw new BadRequestExceptions(Constants.ErrorDiscount);
+            }
+
             try{
                 orderItem.setQuantity(requestOrderItem.getQuantity());
-                orderItem.setDiscount(requestOrderItem.getDiscount());
+                orderItem.setDiscount(discount);
+                orderItem.setDiscountId(discount.getId());
+                orderItem.setDiscountAmount(requestOrderItem.getDiscountAmount());
                 orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderItem.setObservations(requestOrderItem.getObservations().toUpperCase());
                 orderItemRepository.save(orderItem);
@@ -401,7 +434,7 @@ public class OrderItemImpl implements IOrderItem {
             List<OrderItemDTO> orderItemDTOS = pageOrderItem.getContent().stream().map(orderItem -> {
                 List<String> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
                 ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
-                Double totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscount()/100));
+                Double totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
                 return OrderItemDTO.builder()
                         .unit(orderItem.getProduct().getUnit().getName())
                         .color(orderItem.getProduct().getColor().getName())
@@ -410,7 +443,8 @@ public class OrderItemImpl implements IOrderItem {
                         .category(orderItem.getProduct().getCategoryProduct().getName())
                         .sku(orderItem.getProduct().getSku())
                         .unitPrice(productPrice.getUnitSalePrice())
-                        .discount(orderItem.getDiscount())
+                        .discount(orderItem.getDiscount().getName())
+                        .discountAmount(orderItem.getDiscountAmount())
                         .quantity(orderItem.getQuantity())
                         .orderId(orderItem.getOrderId())
                         .totalPrice(totalPrice)

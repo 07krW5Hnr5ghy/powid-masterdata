@@ -21,7 +21,8 @@ public class OrderItemDTO {
     private String unit;
     private Integer quantity;
     private Double unitPrice;
-    private Double discount;
+    private String discount;
+    private Double discountAmount;
     private Double totalPrice;
     private String observations;
     private List<String> pictures;

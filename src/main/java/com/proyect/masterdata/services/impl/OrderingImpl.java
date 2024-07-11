@@ -54,6 +54,7 @@ public class OrderingImpl implements IOrdering {
     private final DistrictRepository districtRepository;
     private final IAudit iAudit;
     private final CustomerRepository customerRepository;
+    private final DiscountRepository discountRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -369,7 +370,12 @@ public class OrderingImpl implements IOrdering {
                 List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
                 double saleAmount = 0.00;
                 for(OrderItem orderItem : orderItems){
-                    saleAmount += (orderItem.getQuantity()*orderItem.getQuantity()) - ((orderItem.getQuantity()*orderItem.getQuantity())*(orderItem.getDiscount()/100));
+                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - ((orderItem.getQuantity() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                    }
                 }
                 return OrderDTO.builder()
                         .id(order.getId())
@@ -428,7 +434,12 @@ public class OrderingImpl implements IOrdering {
                 List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
                 double saleAmount = 0.00;
                 for(OrderItem orderItem : orderItems){
-                    saleAmount += (orderItem.getQuantity()*orderItem.getQuantity()) - ((orderItem.getQuantity()*orderItem.getQuantity())*(orderItem.getDiscount()/100));
+                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - ((orderItem.getQuantity() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                    }
                 }
                 return OrderDTO.builder()
                         .id(order.getId())

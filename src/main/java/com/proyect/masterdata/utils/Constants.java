@@ -306,4 +306,6 @@ public class Constants {
     public static final String ErrorUserRole = "User role does not exist";
     public static final String ErrorCustomer = "Customer does not exist";
     public static final String ErrorCustomerExist = "Customer already exists";
+    public static final String ErrorDiscount = "Discount does not exists";
+    public static final String ErrorDiscountExist = "Discount already exists";
 }
