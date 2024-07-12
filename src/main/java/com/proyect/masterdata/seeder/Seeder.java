@@ -2210,6 +2210,8 @@ public class Seeder implements CommandLineRunner {
                                 .storeName("store 1")
                                 .closingChannel("whatsapp")
                                 .deliveryPoint("lima")
+                                .discountAmount(0.00)
+                                .discount("NO APLICA")
                                 .phone("940544828")
                                 .build();
 
@@ -2281,6 +2283,8 @@ public class Seeder implements CommandLineRunner {
                                 .closingChannel("facebook")
                                 .phone("956701333")
                                 .deliveryPoint("provincia")
+                                .discountAmount(2.00)
+                                .discount("PORCENTAJE")
                                 .build();
 
                         iOrdering.save(requestOrderSave2,"CROJAS");
@@ -2335,6 +2339,8 @@ public class Seeder implements CommandLineRunner {
                                 .deliveryAddress("AV MARAÑÓN 776")
                                 .phone("944214925")
                                 .deliveryPoint("punto scharf")
+                                .discountAmount(5.00)
+                                .discount("MONTO")
                                 .build();
 
                         iOrdering.save(requestOrderSave3,"MAPARICIO");
@@ -2389,6 +2395,8 @@ public class Seeder implements CommandLineRunner {
                                 .closingChannel("web")
                                 .phone("989538516")
                                 .deliveryPoint("recojo en tienda")
+                                .discountAmount(5.00)
+                                .discount("PORCENTAJE")
                                 .build();
 
                         iOrdering.save(requestOrderSave4,"MAPARICIO");
@@ -2428,6 +2436,8 @@ public class Seeder implements CommandLineRunner {
                                 .closingChannel("instagram")
                                 .phone("956701333")
                                 .deliveryPoint("lima")
+                                .discountAmount(0.00)
+                                .discount("NO APLICA")
                                 .build();
 
                         iOrdering.save(requestOrderSave5,"CROJAS");

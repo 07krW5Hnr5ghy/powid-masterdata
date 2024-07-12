@@ -47,6 +47,9 @@ public class Ordering {
     @Column(name = "delivery_amount")
     private Double deliveryAmount;
 
+    @Column(name = "discount_amount")
+    private Double discountAmount;
+
     @Column(name = "advanced_payment")
     private Double advancedPayment;
 
@@ -90,6 +93,9 @@ public class Ordering {
 
     @Column(name = "customer_id")
     private Long customerId;
+
+    @Column(name = "discount_id")
+    private Long discountId;
 
     @Column(name = "token_user")
     private String tokenUser;
@@ -137,5 +143,9 @@ public class Ordering {
     @ManyToOne
     @JoinColumn(name = "delivery_point_id",columnDefinition = "deliveryPointId",insertable = false,updatable = false)
     private DeliveryPoint deliveryPoint;
+
+    @ManyToOne
+    @JoinColumn(name = "discount_id",columnDefinition = "discountId",insertable = false,updatable = false)
+    private Discount discount;
 
 }

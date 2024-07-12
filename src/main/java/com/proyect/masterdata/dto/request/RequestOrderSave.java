@@ -25,5 +25,7 @@ public class RequestOrderSave {
     private String storeName;
     private String closingChannel;
     private String deliveryPoint;
+    private String discount;
+    private Double discountAmount;
     private String phone;
 }

@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface DiscountRepository extends JpaRepository<Discount,Long> {
     Discount findByName(String name);
+    Discount findByNameAndStatusTrue(String name);
     List<Discount> findAllByStatusTrue();
 }

@@ -69,6 +69,7 @@ public class OrderingImpl implements IOrdering {
         ClosingChannel closingChannel;
         Customer customer;
         DeliveryPoint deliveryPoint;
+        Discount discount;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
@@ -81,6 +82,7 @@ public class OrderingImpl implements IOrdering {
             closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
             customer = customerRepository.findByPhone(requestOrderSave.getPhone().toUpperCase());
             deliveryPoint = deliveryPointRepository.findByNameAndStatusTrue(requestOrderSave.getDeliveryPoint().toUpperCase());
+            discount = discountRepository.findByNameAndStatusTrue(requestOrderSave.getDiscount().toUpperCase());
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -119,6 +121,10 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorDeliveryPoint);
         }
 
+        if(discount == null){
+            throw new BadRequestExceptions(Constants.ErrorDiscount);
+        }
+
         try{
             requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
                 Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
@@ -139,6 +145,9 @@ public class OrderingImpl implements IOrdering {
                     .deliveryAddress(requestOrderSave.getDeliveryAddress())
                     .deliveryAmount(requestOrderSave.getDeliveryAmount())
                     .advancedPayment(requestOrderSave.getAdvancedPayment())
+                    .discount(discount)
+                    .discountId(discount.getId())
+                    .discountAmount(requestOrderSave.getDiscountAmount())
                     .orderState(orderState)
                     .orderStateId(orderState.getId())
                     .client(user.getClient())
@@ -162,8 +171,8 @@ public class OrderingImpl implements IOrdering {
                     .customer(customer)
                     .customerId(customer.getId())
                     .tokenUser(user.getUsername())
-                            .deliveryPoint(deliveryPoint)
-                            .deliveryPointId(deliveryPoint.getId())
+                    .deliveryPoint(deliveryPoint)
+                    .deliveryPointId(deliveryPoint.getId())
                     .build());
 
             iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
@@ -199,6 +208,7 @@ public class OrderingImpl implements IOrdering {
             ClosingChannel closingChannel;
             Customer customer;
             DeliveryPoint deliveryPoint;
+            Discount discount;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
@@ -211,6 +221,7 @@ public class OrderingImpl implements IOrdering {
                 closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
                 customer = customerRepository.findByPhone(requestOrderSave.getPhone().toUpperCase());
                 deliveryPoint = deliveryPointRepository.findByNameAndStatusTrue(requestOrderSave.getDeliveryPoint().toUpperCase());
+                discount = discountRepository.findByNameAndStatusTrue(requestOrderSave.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -245,6 +256,10 @@ public class OrderingImpl implements IOrdering {
                 throw new BadRequestExceptions(Constants.ErrorCustomerExist);
             }
 
+            if(discount == null){
+                throw new BadRequestExceptions(Constants.ErrorDiscount);
+            }
+
             try{
                 requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
                     Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
@@ -264,6 +279,9 @@ public class OrderingImpl implements IOrdering {
                         .deliveryAddress(requestOrderSave.getDeliveryAddress())
                         .deliveryAmount(requestOrderSave.getDeliveryAmount())
                         .advancedPayment(requestOrderSave.getAdvancedPayment())
+                        .discount(discount)
+                        .discountId(discount.getId())
+                        .discountAmount(requestOrderSave.getDiscountAmount())
                         .orderState(orderState)
                         .orderStateId(orderState.getId())
                         .client(user.getClient())
@@ -389,6 +407,19 @@ public class OrderingImpl implements IOrdering {
                     if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
                         saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
                     }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity());
+                    }
+                }
+                double totalDuePayment=0;
+                if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
+                    totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
+                if(Objects.equals(order.getDiscount().getName(), "MONTO")){
+                    totalDuePayment = (saleAmount-order.getDiscountAmount()+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
+                if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
+                    totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
                 }
                 return OrderDTO.builder()
                         .id(order.getId())
@@ -417,9 +448,11 @@ public class OrderingImpl implements IOrdering {
                         .observations(order.getObservations())
                         .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
                         .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
-                        .duePayment(BigDecimal.valueOf((saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment()).setScale(2,RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryPoint(order.getDeliveryPoint().getName())
+                        .discount(order.getDiscount().getName())
+                        .discountAmount(BigDecimal.valueOf(order.getDiscountAmount()))
                         .build();
             }).toList();
 
@@ -455,6 +488,16 @@ public class OrderingImpl implements IOrdering {
                         saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
                     }
                 }
+                double totalDuePayment=0;
+                if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
+                    totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
+                if(Objects.equals(order.getDiscount().getName(), "MONTO")){
+                    totalDuePayment = (saleAmount-order.getDiscountAmount()+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
+                if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
+                    totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
                 return OrderDTO.builder()
                         .id(order.getId())
                         .customerName(order.getCustomer().getName())
@@ -482,7 +525,7 @@ public class OrderingImpl implements IOrdering {
                         .closingChannel(order.getClosingChannel().getName())
                         .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
                         .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
-                        .duePayment(BigDecimal.valueOf((saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment()).setScale(2,RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryPoint(order.getDeliveryPoint().getName())
                         .build();
