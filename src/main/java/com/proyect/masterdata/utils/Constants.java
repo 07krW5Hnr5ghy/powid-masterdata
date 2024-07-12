@@ -102,6 +102,7 @@ public class Constants {
     public static final String tableOrderReturnType = "order_return_type";
     public static final String tableAudit = "audit";
     public static final String tableAuditEvent = "audit_event";
+    public static final String tableDeliveryPoint = "delivery_point";
     // messages
     public static final String register = "registration correctly";
     public static final String update = "correctly updated";
@@ -308,4 +309,6 @@ public class Constants {
     public static final String ErrorCustomerExist = "Customer already exists";
     public static final String ErrorDiscount = "Discount does not exists";
     public static final String ErrorDiscountExist = "Discount already exists";
+    public static final String ErrorDeliveryPoint = "Delivery point does not exists";
+    public static final String ErrorDeliveryPointExist = "Delivery point already exists";
 }

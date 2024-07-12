@@ -29,6 +29,7 @@ public class OrderDTO {
     private String paymentState;
     private String saleChannel;
     private String reference;
+    private String deliveryPoint;
     private List<String> paymentReceipts;
     private List<String> courierPictures;
     private BigDecimal saleAmount;

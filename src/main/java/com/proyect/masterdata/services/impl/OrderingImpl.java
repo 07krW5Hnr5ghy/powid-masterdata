@@ -55,6 +55,7 @@ public class OrderingImpl implements IOrdering {
     private final IAudit iAudit;
     private final CustomerRepository customerRepository;
     private final DiscountRepository discountRepository;
+    private final DeliveryPointRepository deliveryPointRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -67,6 +68,7 @@ public class OrderingImpl implements IOrdering {
         Store store;
         ClosingChannel closingChannel;
         Customer customer;
+        DeliveryPoint deliveryPoint;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
@@ -78,6 +80,7 @@ public class OrderingImpl implements IOrdering {
             store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
             closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
             customer = customerRepository.findByPhone(requestOrderSave.getPhone().toUpperCase());
+            deliveryPoint = deliveryPointRepository.findByNameAndStatusTrue(requestOrderSave.getDeliveryPoint().toUpperCase());
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -110,6 +113,10 @@ public class OrderingImpl implements IOrdering {
 
         if(customer == null){
             throw new BadRequestExceptions(Constants.ErrorCustomer);
+        }
+
+        if(deliveryPoint == null){
+            throw new BadRequestExceptions(Constants.ErrorDeliveryPoint);
         }
 
         try{
@@ -152,9 +159,11 @@ public class OrderingImpl implements IOrdering {
                     .storeId(store.getId())
                     .closingChannel(closingChannel)
                     .closingChannelId(closingChannel.getId())
-                            .customer(customer)
-                            .customerId(customer.getId())
+                    .customer(customer)
+                    .customerId(customer.getId())
                     .tokenUser(user.getUsername())
+                            .deliveryPoint(deliveryPoint)
+                            .deliveryPointId(deliveryPoint.getId())
                     .build());
 
             iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
@@ -189,6 +198,7 @@ public class OrderingImpl implements IOrdering {
             Store store;
             ClosingChannel closingChannel;
             Customer customer;
+            DeliveryPoint deliveryPoint;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
@@ -200,6 +210,7 @@ public class OrderingImpl implements IOrdering {
                 store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
                 closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
                 customer = customerRepository.findByPhone(requestOrderSave.getPhone().toUpperCase());
+                deliveryPoint = deliveryPointRepository.findByNameAndStatusTrue(requestOrderSave.getDeliveryPoint().toUpperCase());
             }catch (RuntimeException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -274,8 +285,10 @@ public class OrderingImpl implements IOrdering {
                         .closingChannel(closingChannel)
                         .closingChannelId(closingChannel.getId())
                         .tokenUser(user.getUsername())
-                                .customer(customer)
-                                .customerId(customer.getId())
+                        .customer(customer)
+                        .customerId(customer.getId())
+                        .deliveryPoint(deliveryPoint)
+                        .deliveryPointId(deliveryPoint.getId())
                         .build());
 
                 iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
@@ -406,6 +419,7 @@ public class OrderingImpl implements IOrdering {
                         .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
                         .duePayment(BigDecimal.valueOf((saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment()).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
+                        .deliveryPoint(order.getDeliveryPoint().getName())
                         .build();
             }).toList();
 
@@ -470,6 +484,7 @@ public class OrderingImpl implements IOrdering {
                         .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
                         .duePayment(BigDecimal.valueOf((saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment()).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
+                        .deliveryPoint(order.getDeliveryPoint().getName())
                         .build();
             }).toList();
         });

@@ -93,6 +93,7 @@ public class Seeder implements CommandLineRunner {
         private final IAuditEvent iAuditEvent;
         private final ICustomer iCustomer;
         private final IDiscount iDiscount;
+        private final IDeliveryPoint iDeliveryPoint;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1012,6 +1013,11 @@ public class Seeder implements CommandLineRunner {
                         iDiscount.save("monto","admin1");
                         iDiscount.save("porcentaje","admin1");
                         iDiscount.save("no aplica","admin1");
+                        // delivery points
+                        iDeliveryPoint.save("lima","admin1");
+                        iDeliveryPoint.save("punto scharf","admin1");
+                        iDeliveryPoint.save("provincia","admin1");
+                        iDeliveryPoint.save("recojo en tienda","admin1");
                         // mock users
                         iUserRole.save(business1.getUsername(), "BUSINESS",business1.getUsername());
                         iUserRole.save(business2.getUsername(),"BUSINESS",business2.getUsername());
@@ -2203,6 +2209,7 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems1)
                                 .storeName("store 1")
                                 .closingChannel("whatsapp")
+                                .deliveryPoint("lima")
                                 .phone("940544828")
                                 .build();
 
@@ -2273,6 +2280,7 @@ public class Seeder implements CommandLineRunner {
                                 .storeName("store 1")
                                 .closingChannel("facebook")
                                 .phone("956701333")
+                                .deliveryPoint("provincia")
                                 .build();
 
                         iOrdering.save(requestOrderSave2,"CROJAS");
@@ -2326,9 +2334,8 @@ public class Seeder implements CommandLineRunner {
                                 .closingChannel("twitter")
                                 .deliveryAddress("AV MARAÑÓN 776")
                                 .phone("944214925")
+                                .deliveryPoint("punto scharf")
                                 .build();
-
-
 
                         iOrdering.save(requestOrderSave3,"MAPARICIO");
 
@@ -2381,6 +2388,7 @@ public class Seeder implements CommandLineRunner {
                                 .storeName("store 2")
                                 .closingChannel("web")
                                 .phone("989538516")
+                                .deliveryPoint("recojo en tienda")
                                 .build();
 
                         iOrdering.save(requestOrderSave4,"MAPARICIO");
@@ -2419,6 +2427,7 @@ public class Seeder implements CommandLineRunner {
                                 .storeName("store 1")
                                 .closingChannel("instagram")
                                 .phone("956701333")
+                                .deliveryPoint("lima")
                                 .build();
 
                         iOrdering.save(requestOrderSave5,"CROJAS");

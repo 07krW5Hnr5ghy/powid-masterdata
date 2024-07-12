@@ -67,6 +67,9 @@ public class Ordering {
     @Column(name = "courier_id")
     private Long courierId;
 
+    @Column(name = "delivery_point_id")
+    private Long deliveryPointId;
+
     @Column(name = "payment_state_id")
     private Long paymentStateId;
 
@@ -130,5 +133,9 @@ public class Ordering {
     @ManyToOne
     @JoinColumn(name = "customer_id",columnDefinition = "customerId",insertable = false,updatable = false)
     private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "delivery_point_id",columnDefinition = "deliveryPointId",insertable = false,updatable = false)
+    private DeliveryPoint deliveryPoint;
 
 }

@@ -24,5 +24,6 @@ public class RequestOrderSave {
     private List<RequestOrderItem> requestOrderItems;
     private String storeName;
     private String closingChannel;
+    private String deliveryPoint;
     private String phone;
 }
