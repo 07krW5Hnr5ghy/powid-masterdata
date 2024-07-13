@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class DistrictController {
     private final IDistrict iDistrict;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
@@ -33,7 +33,7 @@ public class DistrictController {
         CompletableFuture<ResponseSuccess> result = iDistrict.saveAsync(name, tokenUser, province);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,

@@ -1,8 +1,5 @@
 package com.proyect.masterdata.dto.request;
 
-import com.proyect.masterdata.domain.CustomerType;
-import com.proyect.masterdata.domain.District;
-import com.proyect.masterdata.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
