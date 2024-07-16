@@ -203,11 +203,14 @@ public class OrderItemImpl implements IOrderItem {
                     for(WarehouseStock warehouseStock : warehouseStockList){
                         stockUnits += warehouseStock.getQuantity();
                         checkStockItemDTOList.add(CheckStockItemDTO.builder()
+                                .key(warehouseStock.getWarehouse().getName())
                                 .stockQuantity(warehouseStock.getQuantity())
                                 .warehouse(warehouseStock.getWarehouse().getName())
                                 .build());
                     }
                 }
+
+                System.out.println(checkStockItemDTOList);
 
                 if(stockUnits >= quantity){
                     return ResponseCheckStockItem.builder()
@@ -219,6 +222,7 @@ public class OrderItemImpl implements IOrderItem {
                     return ResponseCheckStockItem.builder()
                             .pendingQuantity(quantity-stockUnits)
                             .pendingStock(true)
+                            .itemStockList(checkStockItemDTOList)
                             .build();
                 }
             }catch (RuntimeException e){

@@ -732,4 +732,85 @@ public class OrderingImpl implements IOrdering {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<OrderDTO> selectOrder(Long orderId,String username) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering ordering;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                ordering = orderingRepository.findByClientIdAndId(user.getClientId(),orderId);
+            }
+            try {
+                List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(ordering.getId());
+                double saleAmount = 0.00;
+                for(OrderItem orderItem : orderItems){
+                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - ((orderItem.getQuantity() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                    }
+                }
+                double totalDuePayment=0;
+                if(Objects.equals(ordering.getDiscount().getName(), "PORCENTAJE")){
+                    totalDuePayment = (saleAmount-((saleAmount)*(ordering.getDiscountAmount()/100))+ordering.getDeliveryAmount())-ordering.getAdvancedPayment();
+                }
+                if(Objects.equals(ordering.getDiscount().getName(), "MONTO")){
+                    totalDuePayment = (saleAmount-ordering.getDiscountAmount()+ordering.getDeliveryAmount())-ordering.getAdvancedPayment();
+                }
+                if(Objects.equals(ordering.getDiscount().getName(), "NO APLICA")){
+                    totalDuePayment = (saleAmount+ordering.getDeliveryAmount())-ordering.getAdvancedPayment();
+                }
+                List<CourierPicture> courierPictures = courierPictureRepository.findAllByOrderId(ordering.getId());
+                List<OrderPaymentReceipt> orderPaymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(ordering.getId());
+                return OrderDTO.builder()
+                        .sellerName(ordering.getSeller())
+                        .discount(ordering.getDiscount().getName())
+                        .deliveryPoint(ordering.getDeliveryPoint().getName())
+                        .observations(ordering.getObservations())
+                        .closingChannel(ordering.getClosingChannel().getName())
+                        .paymentState(ordering.getOrderPaymentState().getName())
+                        .orderStatus(ordering.getOrderState().getName())
+                        .courierPictures(courierPictures.stream().map(courierPicture -> courierPicture.getPictureUrl().toUpperCase()).toList())
+                        .paymentMethod(ordering.getOrderPaymentMethod().getName())
+                        .paymentReceipts(orderPaymentReceipts.stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList())
+                        .courier(ordering.getCourier().getName())
+                        .address(ordering.getDeliveryAddress().toUpperCase())
+                        .saleChannel(ordering.getSaleChannel().getName())
+                        .managementType(ordering.getManagementType().getName())
+                        .instagram(ordering.getCustomer().getInstagram())
+                        .district(ordering.getCustomer().getDistrict().getName())
+                        .province(ordering.getCustomer().getDistrict().getProvince().getName())
+                        .department(ordering.getCustomer().getDistrict().getProvince().getDepartment().getName())
+                        .customerType(ordering.getCustomer().getCustomerType().getName())
+                        .reference(ordering.getCustomer().getReference())
+                        .customerName(ordering.getCustomer().getName())
+                        .customerPhone(ordering.getCustomer().getPhone())
+                        .deliveryAddress(ordering.getDeliveryAddress().toUpperCase())
+                        .advancedPayment(BigDecimal.valueOf(ordering.getAdvancedPayment()))
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .deliveryAmount(BigDecimal.valueOf(ordering.getDeliveryAmount()))
+                        .discountAmount(BigDecimal.valueOf(ordering.getDiscountAmount()))
+                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
+                        .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2,RoundingMode.HALF_EVEN))
+                        .paymentState(ordering.getOrderPaymentState().getName())
+                        .closingChannel(ordering.getClosingChannel().getName())
+                        .id(ordering.getId())
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 }
