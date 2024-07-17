@@ -2165,7 +2165,7 @@ public class Seeder implements CommandLineRunner {
 
                         RequestOrderItem requestOrderItem1 = RequestOrderItem.builder()
                                 .product("A00001")
-                                .discount("porcentaje")
+                                .discount("no aplica")
                                 .discountAmount(0.00)
                                 .quantity(2)
                                 .observations("")
@@ -2238,7 +2238,7 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderItem requestOrderItem3 = RequestOrderItem.builder()
                                 .product("A00003")
                                 .quantity(3)
-                                .discount("porcentaje")
+                                .discount("no aplica")
                                 .discountAmount(0.00)
                                 .observations("")
                                 .build();
@@ -2293,7 +2293,7 @@ public class Seeder implements CommandLineRunner {
 
                         RequestOrderItem requestOrderItem5 = RequestOrderItem.builder()
                                 .product("B00001")
-                                .discount("porcentaje")
+                                .discount("no aplica")
                                 .discountAmount(0.00)
                                 .quantity(1)
                                 .observations("")
@@ -2357,7 +2357,7 @@ public class Seeder implements CommandLineRunner {
 
                         RequestOrderItem requestOrderItem8 = RequestOrderItem.builder()
                                 .quantity(2)
-                                .discount("porcentaje")
+                                .discount("no aplica")
                                 .discountAmount(0.00)
                                 .product("B00003")
                                 .observations("")
@@ -2404,7 +2404,7 @@ public class Seeder implements CommandLineRunner {
                         RequestOrderItem requestOrderItem9 = RequestOrderItem.builder()
                                 .product("A00003")
                                 .quantity(5)
-                                .discount("porcentaje")
+                                .discount("no aplica")
                                 .discountAmount(0.00)
                                 .observations("")
                                 .build();

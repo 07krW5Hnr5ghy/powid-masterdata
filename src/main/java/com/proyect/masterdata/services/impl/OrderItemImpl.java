@@ -19,10 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -438,7 +435,19 @@ public class OrderItemImpl implements IOrderItem {
             List<OrderItemDTO> orderItemDTOS = pageOrderItem.getContent().stream().map(orderItem -> {
                 List<String> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
                 ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
-                Double totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                Double totalPrice = null;
+                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                }
+
+                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                }
+
+                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                }
+
                 return OrderItemDTO.builder()
                         .unit(orderItem.getProduct().getUnit().getName())
                         .color(orderItem.getProduct().getColor().getName())

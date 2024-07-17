@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderDTO;
+import com.proyect.masterdata.dto.OrderItemDTO;
 import com.proyect.masterdata.dto.request.*;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -56,6 +57,7 @@ public class OrderingImpl implements IOrdering {
     private final CustomerRepository customerRepository;
     private final DiscountRepository discountRepository;
     private final DeliveryPointRepository deliveryPointRepository;
+    private final ProductPriceRepository productPriceRepository;
     @Override
     public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -753,11 +755,15 @@ public class OrderingImpl implements IOrdering {
                 List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(ordering.getId());
                 double saleAmount = 0.00;
                 for(OrderItem orderItem : orderItems){
+                    ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
                     if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - ((orderItem.getQuantity() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((orderItem.getQuantity() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
                     }
                     if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                     }
                 }
                 double totalDuePayment=0;
@@ -805,6 +811,34 @@ public class OrderingImpl implements IOrdering {
                         .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2,RoundingMode.HALF_EVEN))
                         .paymentState(ordering.getOrderPaymentState().getName())
                         .closingChannel(ordering.getClosingChannel().getName())
+                        .orderItemDTOS(orderItems.stream().map(orderItem -> {
+                            ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                            Double totalPrice = null;
+                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                            }
+
+                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                            }
+
+                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                            }
+                            return OrderItemDTO.builder()
+                                    .orderId(orderItem.getOrderId())
+                                    .discountAmount(orderItem.getDiscountAmount())
+                                    .sku(orderItem.getProduct().getSku())
+                                    .unit(orderItem.getProduct().getUnit().getName())
+                                    .observations(orderItem.getObservations())
+                                    .quantity(orderItem.getQuantity())
+                                    .size(orderItem.getProduct().getSize().getName())
+                                    .discount(orderItem.getDiscount().getName())
+                                    .pictures(new ArrayList<>())
+                                    .unitPrice(productPrice.getUnitSalePrice())
+                                    .totalPrice(totalPrice)
+                                    .build();
+                        }).toList())
                         .id(ordering.getId())
                         .build();
             }catch (RuntimeException e){

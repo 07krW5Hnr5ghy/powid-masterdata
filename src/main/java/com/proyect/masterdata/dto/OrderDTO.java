@@ -45,4 +45,5 @@ public class OrderDTO {
     private String orderStatus;
     private String observations;
     private String closingChannel;
+    private List<OrderItemDTO> orderItemDTOS;
 }
