@@ -37,6 +37,9 @@ public class Customer {
     @Column(name = "reference")
     private String reference;
 
+    @Column(name = "dni")
+    private String dni;
+
     @Column(name = "customer_type_id")
     private Long customerTypeId;
 

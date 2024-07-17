@@ -28,4 +28,5 @@ public class RequestOrderSave {
     private String discount;
     private Double discountAmount;
     private String phone;
+    private String dni;
 }

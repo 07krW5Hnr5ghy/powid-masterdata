@@ -74,6 +74,7 @@ public class CustomerImp implements ICustomer {
                     .tokenUser(user.getUsername())
                     .customerTypeId(customerType.getId())
                     .customerType(customerType)
+                    .dni(requestCustomer.getDni())
                     .build());
             return ResponseSuccess.builder()
                     .message(Constants.register)

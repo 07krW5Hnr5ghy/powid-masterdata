@@ -18,4 +18,5 @@ public class RequestCustomer {
     private String reference;
     private String district;
     private String tokenUser;
+    private String dni;
 }

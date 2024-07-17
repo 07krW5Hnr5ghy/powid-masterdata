@@ -2193,6 +2193,7 @@ public class Seeder implements CommandLineRunner {
                                 .district("BREÑA")
                                 .tokenUser("CROJAS")
                                 .reference("")
+                                .dni("NO APLICA")
                                 .build();
 
                         iCustomer.save(requestCustomer1);
@@ -2264,6 +2265,7 @@ public class Seeder implements CommandLineRunner {
                                 .instagram("")
                                 .district("INDEPENDENCIA")
                                 .tokenUser("CROJAS")
+                                .dni("NO APLICA")
                                 .reference("")
                                 .build();
 
@@ -2320,6 +2322,7 @@ public class Seeder implements CommandLineRunner {
                                 .instagram("")
                                 .district("ATE")
                                 .tokenUser("MAPARICIO")
+                                .dni("NO APLICA")
                                 .reference("")
                                 .build();
 
@@ -2376,6 +2379,7 @@ public class Seeder implements CommandLineRunner {
                                 .instagram("")
                                 .district("CHORRILLOS")
                                 .tokenUser("MAPARICIO")
+                                .dni("NO APLICA")
                                 .reference("")
                                 .build();
 

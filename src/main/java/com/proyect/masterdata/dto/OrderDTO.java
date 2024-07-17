@@ -31,6 +31,7 @@ public class OrderDTO {
     private String reference;
     private String deliveryPoint;
     private String discount;
+    private String dni;
     private List<String> paymentReceipts;
     private List<String> courierPictures;
     private BigDecimal saleAmount;

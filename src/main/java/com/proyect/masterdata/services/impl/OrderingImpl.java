@@ -183,6 +183,11 @@ public class OrderingImpl implements IOrdering {
                 iOrderItem.save(ordering, requestOrderItem,tokenUser);
             }
 
+            if(Objects.equals(deliveryPoint.getName(), "PROVINCIA") && !Objects.equals(requestOrderSave.getDni(), "NO APLICA")){
+                customer.setDni(requestOrderSave.getDni());
+                customerRepository.save(customer);
+            }
+
             iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -315,6 +320,11 @@ public class OrderingImpl implements IOrdering {
 
                 for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
                     iOrderItem.save(ordering, requestOrderItem,tokenUser);
+                }
+
+                if(Objects.equals(deliveryPoint.getName(), "PROVINCIA") && !Objects.equals(requestOrderSave.getDni(), "NO APLICA")){
+                    customer.setDni(requestOrderSave.getDni());
+                    customerRepository.save(customer);
                 }
 
                 iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
@@ -455,6 +465,7 @@ public class OrderingImpl implements IOrdering {
                         .deliveryPoint(order.getDeliveryPoint().getName())
                         .discount(order.getDiscount().getName())
                         .discountAmount(BigDecimal.valueOf(order.getDiscountAmount()))
+                        .dni(order.getCustomer().getDni())
                         .build();
             }).toList();
 
@@ -530,6 +541,7 @@ public class OrderingImpl implements IOrdering {
                         .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryPoint(order.getDeliveryPoint().getName())
+                        .dni(order.getCustomer().getDni())
                         .build();
             }).toList();
         });
@@ -811,6 +823,7 @@ public class OrderingImpl implements IOrdering {
                         .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2,RoundingMode.HALF_EVEN))
                         .paymentState(ordering.getOrderPaymentState().getName())
                         .closingChannel(ordering.getClosingChannel().getName())
+                        .dni(ordering.getCustomer().getDni())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
                             Double totalPrice = null;
