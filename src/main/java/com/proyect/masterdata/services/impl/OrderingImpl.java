@@ -769,7 +769,7 @@ public class OrderingImpl implements IOrdering {
                 for(OrderItem orderItem : orderItems){
                     ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
                     if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((orderItem.getQuantity() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
                     }
                     if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
                         saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
