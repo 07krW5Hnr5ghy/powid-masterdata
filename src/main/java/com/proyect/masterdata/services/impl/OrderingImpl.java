@@ -850,6 +850,10 @@ public class OrderingImpl implements IOrdering {
                                     .pictures(new ArrayList<>())
                                     .unitPrice(productPrice.getUnitSalePrice())
                                     .totalPrice(totalPrice)
+                                    .color(orderItem.getProduct().getColor().getName())
+                                    .category(orderItem.getProduct().getCategoryProduct().getName())
+                                    .registrationDate(orderItem.getRegistrationDate())
+                                    .updateDate(orderItem.getUpdateDate())
                                     .build();
                         }).toList())
                         .id(ordering.getId())
