@@ -764,7 +764,7 @@ public class OrderingImpl implements IOrdering {
                 ordering = orderingRepository.findByClientIdAndId(user.getClientId(),orderId);
             }
             try {
-                List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(ordering.getId());
+                List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
                 double saleAmount = 0.00;
                 for(OrderItem orderItem : orderItems){
                     ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
