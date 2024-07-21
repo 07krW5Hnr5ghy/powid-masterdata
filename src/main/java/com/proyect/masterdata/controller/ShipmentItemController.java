@@ -25,7 +25,6 @@ public class ShipmentItemController {
     public ResponseEntity<Page<ShipmentItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "shipments",required = false) List<String> shipments,
-            @RequestParam(value = "purchases", required = false) List<String> purchases,
             @RequestParam(value = "warehouses", required = false) List<String> warehouses,
             @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "sort", required = false) String sort,

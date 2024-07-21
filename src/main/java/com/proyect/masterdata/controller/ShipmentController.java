@@ -37,7 +37,6 @@ public class ShipmentController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
     public ResponseEntity<Page<ShipmentDTO>> list(
             @RequestParam(value = "serials", required = false) List<String> serials,
-            @RequestParam(value = "purchases", required = false) List<String> purchases,
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "warehouses", required = false) List<String> warehouses,
             @RequestParam(value = "shipmentTypes", required = false) List<String> shipmentTypes,
