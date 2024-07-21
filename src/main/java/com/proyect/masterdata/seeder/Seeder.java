@@ -57,7 +57,6 @@ public class Seeder implements CommandLineRunner {
         private final IModule iModule;
         private final ISubscription iSubscription;
         private final IShipment iShipment;
-        private final IPurchase iPurchase;
         private final IOrderState iOrderState;
         private final IOrderPaymentState iOrderPaymentState;
         private final ISaleChannel iSaleChannel;
@@ -1920,116 +1919,6 @@ public class Seeder implements CommandLineRunner {
 
                         iCourier.save(requestCourier5,"admin1");
 
-                        // purchase mocks
-
-                        List<RequestPurchaseItem> requestPurchaseItemList1 = new ArrayList<>();
-
-                        RequestPurchaseItem requestPurchaseItem1 = RequestPurchaseItem.builder()
-                                .quantity(15)
-                                .supplierProductSerial("A00001A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem1);
-
-                        RequestPurchaseItem requestPurchaseItem2 = RequestPurchaseItem.builder()
-                                .quantity(4)
-                                .supplierProductSerial("A00002A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem2);
-
-                        RequestPurchaseItem requestPurchaseItem3 = RequestPurchaseItem.builder()
-                                .quantity(20)
-                                .supplierProductSerial("A00003A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem3);
-
-                        RequestPurchaseItem requestPurchaseItem4 = RequestPurchaseItem.builder()
-                                .quantity(25)
-                                .supplierProductSerial("A00004A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem4);
-
-                        RequestPurchaseItem requestPurchaseItem5 = RequestPurchaseItem.builder()
-                                .quantity(7)
-                                .supplierProductSerial("A00005A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem5);
-
-                        RequestPurchaseItem requestPurchaseItem6 = RequestPurchaseItem.builder()
-                                .quantity(15)
-                                .supplierProductSerial("A00006A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem6);
-
-                        RequestPurchase requestPurchase1 = RequestPurchase.builder()
-                                .serial("AA00001")
-                                .documentName("factura")
-                                .supplierRuc("12345678922")
-                                .tokenUser("AYEPES")
-                                .purchaseItemsList(requestPurchaseItemList1)
-                                .build();
-
-                        iPurchase.save(requestPurchase1);
-
-                        List<RequestPurchaseItem> requestPurchaseItemList2 = new ArrayList<>();
-
-                        RequestPurchaseItem requestPurchaseItem7 = RequestPurchaseItem.builder()
-                                .quantity(9)
-                                .supplierProductSerial("B00001A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem7);
-
-                        RequestPurchaseItem requestPurchaseItem8 = RequestPurchaseItem.builder()
-                                .quantity(15)
-                                .supplierProductSerial("B00002A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem8);
-
-                        RequestPurchaseItem requestPurchaseItem9 = RequestPurchaseItem.builder()
-                                .quantity(36)
-                                .supplierProductSerial("B00003A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem9);
-
-                        RequestPurchaseItem requestPurchaseItem10 = RequestPurchaseItem.builder()
-                                .quantity(13)
-                                .supplierProductSerial("B00004A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem10);
-
-                        RequestPurchaseItem requestPurchaseItem11 = RequestPurchaseItem.builder()
-                                .quantity(20)
-                                .supplierProductSerial("B00005A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem11);
-
-                        RequestPurchaseItem requestPurchaseItem12 = RequestPurchaseItem.builder()
-                                .quantity(27)
-                                .supplierProductSerial("B00006A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem12);
-
-                        RequestPurchase requestPurchase2 = RequestPurchase.builder()
-                                .serial("BB00001")
-                                .documentName("factura")
-                                .purchaseItemsList(requestPurchaseItemList2)
-                                .supplierRuc("12345678925")
-                                .tokenUser("NTORRES")
-                                .build();
-
-                        iPurchase.save(requestPurchase2);
-
                         // shipments
 
                         List<RequestShipmentItem> requestShipmentItemList1 = new ArrayList<>();
@@ -2085,9 +1974,10 @@ public class Seeder implements CommandLineRunner {
                         RequestShipment requestShipment1 = RequestShipment.builder()
                                 .serial("SA00001")
                                 .shipmentType("embarque")
+                                .shipmentDocument("FACTURA")
                                 .requestShipmentItemList(requestShipmentItemList1)
                                 .warehouse("luminous")
-                                .purchaseSerial("AA00001")
+                                .supplier("12345678922")
                                 .build();
 
                         iShipment.save(requestShipment1, "AYEPES");
@@ -2145,9 +2035,10 @@ public class Seeder implements CommandLineRunner {
                         RequestShipment requestShipment2 = RequestShipment.builder()
                                 .shipmentType("embarque")
                                 .serial("SB00001")
-                                .purchaseSerial("BB00001")
                                 .requestShipmentItemList(requestShipmentItemList2)
                                 .warehouse("alcazar")
+                                .shipmentDocument("FACTURA")
+                                .supplier("12345678925")
                                 .build();
 
                         iShipment.save(requestShipment2, "NTORRES");
@@ -2585,7 +2476,7 @@ public class Seeder implements CommandLineRunner {
                         requestStockReturnItemList.add(requestStockReturnItem3);
                         RequestStockReturn requestStockReturn1 = RequestStockReturn.builder()
                                 .serial("SR1AA00001")
-                                .purchaseSerial("AA00001")
+                                .shipmentSerial("SA00001")
                                 .warehouse("luminous")
                                 .tokenUser("AYEPES")
                                 .requestStockReturnItemList(requestStockReturnItemList)

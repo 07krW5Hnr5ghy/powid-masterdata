@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class RequestStockReturn {
     private String serial;
-    private String purchaseSerial;
+    private String shipmentSerial;
     private String warehouse;
     private List<RequestStockReturnItem> requestStockReturnItemList;
     private String tokenUser;

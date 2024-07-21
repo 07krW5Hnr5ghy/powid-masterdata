@@ -3,7 +3,6 @@ package com.proyect.masterdata.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.Shipment;
 import com.proyect.masterdata.domain.ShipmentItem;
 import jakarta.persistence.criteria.*;
@@ -30,7 +29,6 @@ public class ShipmentItemRepositoryCustomImpl implements ShipmentItemRepositoryC
     public Page<ShipmentItem> searchForShipmentItem(
             Long clientId,
             List<Long> shipmentIds,
-            List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> supplierProductIds,
             String sort,
@@ -49,7 +47,6 @@ public class ShipmentItemRepositoryCustomImpl implements ShipmentItemRepositoryC
         List<Predicate> conditions = predicate(
                 clientId,
                 shipmentIds,
-                purchaseIds,
                 warehouseIds,
                 supplierProductIds,
                 criteriaBuilder,
@@ -81,7 +78,6 @@ public class ShipmentItemRepositoryCustomImpl implements ShipmentItemRepositoryC
         Long count = getOrderCount(
                 clientId,
                 shipmentIds,
-                purchaseIds,
                 warehouseIds,
                 supplierProductIds);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
@@ -90,7 +86,6 @@ public class ShipmentItemRepositoryCustomImpl implements ShipmentItemRepositoryC
     private List<Predicate> predicate(
             Long clientId,
             List<Long> shipmentIds,
-            List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> supplierProductIds,
             CriteriaBuilder criteriaBuilder,
@@ -105,10 +100,6 @@ public class ShipmentItemRepositoryCustomImpl implements ShipmentItemRepositoryC
 
         if (!shipmentIds.isEmpty()) {
             conditions.add(criteriaBuilder.and(itemRoot.get("shipmentId").in(shipmentIds)));
-        }
-
-        if(!purchaseIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(shipmentItemShipmentJoin.get("purchaseId").in(purchaseIds)));
         }
 
         if (!warehouseIds.isEmpty()) {
@@ -163,7 +154,6 @@ public class ShipmentItemRepositoryCustomImpl implements ShipmentItemRepositoryC
     private Long getOrderCount(
             Long clientId,
             List<Long> shipmentIds,
-            List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> supplierProductIds) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -174,7 +164,6 @@ public class ShipmentItemRepositoryCustomImpl implements ShipmentItemRepositoryC
         List<Predicate> conditions = predicate(
                 clientId,
                 shipmentIds,
-                purchaseIds,
                 warehouseIds,
                 supplierProductIds,
                 criteriaBuilder,

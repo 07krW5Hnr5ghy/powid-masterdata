@@ -13,8 +13,9 @@ import java.util.List;
 @Data
 public class RequestShipment {
     private String serial;
-    private String purchaseSerial;
     private String warehouse;
     private String shipmentType;
+    private String shipmentDocument;
+    private String supplier;
     private List<RequestShipmentItem> requestShipmentItemList;
 }

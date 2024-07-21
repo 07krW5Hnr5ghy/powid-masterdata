@@ -48,7 +48,6 @@ public class ShipmentController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ShipmentDTO>> result = iShipment.list(
                 serials,
-                purchases,
                 user,
                 warehouses,
                 shipmentTypes,

@@ -35,7 +35,6 @@ public class ShipmentItemController {
         CompletableFuture<Page<ShipmentItemDTO>> result = iShipmentItem.list(
                 user,
                 shipments,
-                purchases,
                 warehouses,
                 supplierProducts,
                 sort,

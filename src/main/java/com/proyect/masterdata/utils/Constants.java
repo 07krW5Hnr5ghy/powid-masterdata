@@ -266,8 +266,8 @@ public class Constants {
     public static final String ErrorMercadoPagoOrigin = "Mercado pago origin not verified";
     public static final String ErrorSupplierRucExists = "Supplier ruc already exists";
     public static final String ErrorSupplierNameExists = "Supplier name already exists";
-    public static final String ErrorPurchaseDocument = "Purchase document does not exist";
-    public static final String ErrorPurchaseDocumentExists = "Purchase document already exists";
+    public static final String ErrorShipmentDocument = "Shipment document does not exist";
+    public static final String ErrorShipmentDocumentExists = "Shipment document already exists";
     public static final String ErrorCountry = "Country does not exist";
     public static final String ErrorCountryExists = "Country already exists";
     public static final String ErrorSupplierType = "Supplier type does not exist";
@@ -311,4 +311,5 @@ public class Constants {
     public static final String ErrorDiscountExist = "Discount already exists";
     public static final String ErrorDeliveryPoint = "Delivery point does not exists";
     public static final String ErrorDeliveryPointExist = "Delivery point already exists";
+    public static final String ErrorShipmentItem = "Shipment item does not exists";
 }

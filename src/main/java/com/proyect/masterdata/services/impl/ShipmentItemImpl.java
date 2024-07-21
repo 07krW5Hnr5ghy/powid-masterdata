@@ -35,28 +35,23 @@ public class ShipmentItemImpl implements IShipmentItem {
     private final UserRepository userRepository;
     private final ShipmentItemRepository shipmentItemRepository;
     private final WarehouseRepository warehouseRepository;
-    private final PurchaseItemRepository purchaseItemRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final ShipmentItemRepositoryCustom shipmentItemRepositoryCustom;
     private final ShipmentRepository shipmentRepository;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
     private final IAudit iAudit;
-    private final PurchaseRepository purchaseRepository;
     @Override
-    public ShipmentItem save(Shipment shipment,Purchase purchase, String warehouse, RequestShipmentItem requestShipmentItem,
+    public ShipmentItem save(Shipment shipment, String warehouse, RequestShipmentItem requestShipmentItem,
             String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         SupplierProduct supplierProduct;
         ShipmentItem shipmentItem;
-        PurchaseItem purchaseItem;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProductSerial().toUpperCase());
-            shipmentItem = shipmentItemRepository.findByShipmentIdAndSupplierProductId(shipment.getId(),supplierProduct.getId());
-            purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -68,21 +63,17 @@ public class ShipmentItemImpl implements IShipmentItem {
 
         if(supplierProduct == null){
             throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        }else{
+            shipmentItem = shipmentItemRepository.findByShipmentIdAndSupplierProductId(shipment.getId(),supplierProduct.getId());
         }
 
         if (shipmentItem != null) {
             throw new BadRequestExceptions(Constants.ErrorShipmentExists);
         }
 
-        if(purchaseItem == null){
-            throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
-        }
-
         try {
 
             ShipmentItem newShipmentItem = shipmentItemRepository.save(ShipmentItem.builder()
-                            .purchaseItem(purchaseItem)
-                            .purchaseItemId(purchaseItem.getId())
                             .shipment(shipment)
                             .shipmentId(shipment.getId())
                             .supplierProduct(supplierProduct)
@@ -99,7 +90,7 @@ public class ShipmentItemImpl implements IShipmentItem {
 
             iWarehouseStock.in(shipment.getWarehouse(),supplierProduct, requestShipmentItem.getQuantity(), user);
             iGeneralStock.in(supplierProduct.getSerial(), requestShipmentItem.getQuantity(), user.getUsername());
-            iAudit.save("ADD_SHIPMENT_ITEM","ADD SHIPMENT ITEM "+newShipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+newShipmentItem.getPurchaseItem().getPurchase().getSerial()+".",user.getUsername());
+            iAudit.save("ADD_SHIPMENT_ITEM","ADD SHIPMENT ITEM "+newShipmentItem.getSupplierProduct().getSerial()+".",user.getUsername());
             return newShipmentItem;
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -108,18 +99,16 @@ public class ShipmentItemImpl implements IShipmentItem {
     }
 
     @Override
-    public CompletableFuture<ShipmentItem> saveAsync(Shipment shipment, Purchase purchase, String warehouse, RequestShipmentItem requestShipmentItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ShipmentItem> saveAsync(Shipment shipment, String warehouse, RequestShipmentItem requestShipmentItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             SupplierProduct supplierProduct;
             ShipmentItem shipmentItem;
-            PurchaseItem purchaseItem;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProductSerial().toUpperCase());
                 shipmentItem = shipmentItemRepository.findByShipmentIdAndSupplierProductId(shipment.getId(),supplierProduct.getId());
-                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -137,15 +126,9 @@ public class ShipmentItemImpl implements IShipmentItem {
                 throw new BadRequestExceptions(Constants.ErrorShipmentExists);
             }
 
-            if(purchaseItem == null){
-                throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
-            }
-
             try {
 
                 ShipmentItem newShipmentItem = shipmentItemRepository.save(ShipmentItem.builder()
-                        .purchaseItem(purchaseItem)
-                        .purchaseItemId(purchaseItem.getId())
                         .shipment(shipment)
                         .shipmentId(shipment.getId())
                         .supplierProduct(supplierProduct)
@@ -162,7 +145,7 @@ public class ShipmentItemImpl implements IShipmentItem {
 
                 iWarehouseStock.in(shipment.getWarehouse(),supplierProduct, requestShipmentItem.getQuantity(), user);
                 iGeneralStock.in(supplierProduct.getSerial(), requestShipmentItem.getQuantity(), user.getUsername());
-                iAudit.save("ADD_SHIPMENT_ITEM","ADD SHIPMENT ITEM "+newShipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+newShipmentItem.getShipment().getPurchase().getSerial()+".",user.getUsername());
+                iAudit.save("ADD_SHIPMENT_ITEM","ADD SHIPMENT ITEM "+newShipmentItem.getSupplierProduct().getSerial()+".",user.getUsername());
                 return newShipmentItem;
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -172,17 +155,16 @@ public class ShipmentItemImpl implements IShipmentItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String purchaseSerial, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String serial,String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             SupplierProduct supplierProduct;
             Shipment shipment;
             ShipmentItem shipmentItem;
-            PurchaseItem purchaseItem;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                shipment = shipmentRepository.findBySerial(purchaseSerial.toUpperCase());
+                shipment = shipmentRepository.findBySerial(serial.toUpperCase());
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -201,12 +183,6 @@ public class ShipmentItemImpl implements IShipmentItem {
 
             if (shipmentItem == null) {
                 throw new BadRequestExceptions(Constants.ErrorShipment);
-            }else {
-                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(shipment.getPurchase().getId(),supplierProduct.getId());
-            }
-
-            if(purchaseItem == null){
-                throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
             }
 
             try {
@@ -215,7 +191,7 @@ public class ShipmentItemImpl implements IShipmentItem {
                 shipmentItem.setTokenUser(user.getUsername());
                 iWarehouseStock.out(shipment.getWarehouse(),supplierProduct, shipmentItem.getQuantity(), user);
                 iGeneralStock.out(supplierProduct.getSerial(), shipmentItem.getQuantity(), user.getUsername());
-                iAudit.save("DELETE_SHIPMENT_ITEM","DELETE SHIPMENT ITEM "+shipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+shipmentItem.getShipment().getPurchase().getSerial()+".",user.getUsername());
+                iAudit.save("DELETE_SHIPMENT_ITEM","DELETE SHIPMENT ITEM "+shipmentItem.getSupplierProduct().getSerial()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -234,7 +210,6 @@ public class ShipmentItemImpl implements IShipmentItem {
             SupplierProduct supplierProduct;
             Shipment shipment;
             ShipmentItem shipmentItem;
-            PurchaseItem purchaseItem;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -257,12 +232,6 @@ public class ShipmentItemImpl implements IShipmentItem {
 
             if (shipmentItem == null) {
                 throw new BadRequestExceptions(Constants.ErrorShipment);
-            }else {
-                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(shipment.getPurchase().getId(),supplierProduct.getId());
-            }
-
-            if(purchaseItem == null){
-                throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
             }
 
             try {
@@ -271,7 +240,7 @@ public class ShipmentItemImpl implements IShipmentItem {
                 shipmentItem.setTokenUser(user.getUsername());
                 iWarehouseStock.in(shipment.getWarehouse(),supplierProduct, shipmentItem.getQuantity(), user);
                 iGeneralStock.in(supplierProduct.getSerial(), shipmentItem.getQuantity(), user.getUsername());
-                iAudit.save("ACTIVATE_SHIPMENT_ITEM","ACTIVATE SHIPMENT ITEM "+shipmentItem.getSupplierProduct().getSerial()+" FOR SHIPMENT OF PURCHASE "+shipmentItem.getShipment().getPurchase().getSerial()+".",user.getUsername());
+                iAudit.save("ACTIVATE_SHIPMENT_ITEM","ACTIVATE SHIPMENT ITEM "+shipmentItem.getSupplierProduct().getSerial()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)
@@ -287,7 +256,6 @@ public class ShipmentItemImpl implements IShipmentItem {
     public CompletableFuture<Page<ShipmentItemDTO>> list(
             String user,
             List<String> shipments,
-            List<String> purchases,
             List<String> warehouses,
             List<String> supplierProducts,
             String sort,
@@ -308,16 +276,6 @@ public class ShipmentItemImpl implements IShipmentItem {
                 ).stream().map(Shipment::getId).toList();
             }else{
                 shipmentIds = new ArrayList<>();
-            }
-
-            if(purchases != null && !purchases.isEmpty()){
-                purchaseIds = purchaseRepository.findBySerialIn(purchases.stream().map(
-                        String::toUpperCase
-                ).toList()).stream().map(
-                        Purchase::getId
-                ).toList();
-            }else{
-                purchaseIds = new ArrayList<>();
             }
 
             if(warehouses != null && !warehouses.isEmpty()){
@@ -341,7 +299,6 @@ public class ShipmentItemImpl implements IShipmentItem {
                 pageShipmentItem = shipmentItemRepositoryCustom.searchForShipmentItem(
                         clientId,
                         shipmentIds,
-                        purchaseIds,
                         warehouseIds,
                         supplierProductIds,
                         sort,
@@ -359,7 +316,6 @@ public class ShipmentItemImpl implements IShipmentItem {
 
             List<ShipmentItemDTO> shipmentItemDTOS = pageShipmentItem.getContent().stream().map(shipmentItem -> ShipmentItemDTO.builder()
                     .shipment(shipmentItem.getShipment().getSerial())
-                    .purchase(shipmentItem.getPurchaseItem().getPurchase().getSerial())
                     .quantity(shipmentItem.getQuantity())
                     .supplierProduct(shipmentItem.getSupplierProduct().getSerial())
                     .warehouse(shipmentItem.getShipment().getWarehouse().getName())
@@ -393,7 +349,6 @@ public class ShipmentItemImpl implements IShipmentItem {
 
             return shipmentItems.stream().map(shipmentItem -> ShipmentItemDTO.builder()
                     .shipment(shipmentItem.getShipment().getSerial())
-                    .purchase(shipmentItem.getPurchaseItem().getPurchase().getSerial())
                     .quantity(shipmentItem.getQuantity())
                     .supplierProduct(shipmentItem.getSupplierProduct().getSerial())
                     .warehouse(shipmentItem.getShipment().getWarehouse().getName())

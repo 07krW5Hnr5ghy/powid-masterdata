@@ -25,7 +25,6 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
     public Page<Shipment> searchForShipment(
             Long clientId,
             List<String> serials,
-            List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> shipmentTypeIds,
             String sort,
@@ -44,7 +43,6 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
         List<Predicate> conditions = predicate(
                 clientId,
                 serials,
-                purchaseIds,
                 warehouseIds,
                 shipmentTypeIds,
                 status,
@@ -76,7 +74,6 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
         Long count = getOrderCount(
                 clientId,
                 serials,
-                purchaseIds,
                 warehouseIds,
                 shipmentTypeIds,
                 status);
@@ -86,7 +83,6 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
     private List<Predicate> predicate(
             Long clientId,
             List<String> serials,
-            List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> shipmentTypeIds,
             Boolean status,
@@ -101,10 +97,6 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
 
         if(!serials.isEmpty()){
             conditions.add(criteriaBuilder.and(itemRoot.get("serial").in(serials)));
-        }
-
-        if(!purchaseIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("purchaseId").in(purchaseIds)));
         }
 
         if(!warehouseIds.isEmpty()){
@@ -175,7 +167,6 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
     private Long getOrderCount(
             Long clientId,
             List<String> serials,
-            List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> shipmentTypeIds,
             Boolean status) {
@@ -186,7 +177,6 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
         List<Predicate> conditions = predicate(
                 clientId,
                 serials,
-                purchaseIds,
                 warehouseIds,
                 shipmentTypeIds,
                 status,

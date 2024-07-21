@@ -27,8 +27,6 @@ import java.util.concurrent.CompletableFuture;
 public class TemplateImpl implements ITemplate {
     private final UserRepository userRepository;
     private final SupplierProductRepository supplierProductRepository;
-    private final PurchaseRepository purchaseRepository;
-    private final PurchaseItemRepository purchaseItemRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final ShipmentRepository shipmentRepository;
@@ -46,19 +44,20 @@ public class TemplateImpl implements ITemplate {
     private final UnitTypeRepository unitTypeRepository;
     private final SizeRepository sizeRepository;
     private final UnitRepository unitRepository;
+    private final ShipmentTypeRepository shipmentTypeRepository;
     @Override
-    public CompletableFuture<ByteArrayInputStream> purchase(Integer quantity, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> shipment(Integer quantity, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<SupplierProduct> supplierProductList;
-            try {
+            try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if(user == null){
+            if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 supplierProductList = supplierProductRepository.findAllByClientIdAndStatusTrue(user.getClientId());
@@ -66,65 +65,6 @@ public class TemplateImpl implements ITemplate {
 
             if(supplierProductList.isEmpty()){
                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
-            }
-
-            try{
-                XSSFWorkbook workbook = new XSSFWorkbook();
-                XSSFSheet sheet = workbook.createSheet("compra");
-
-                CellStyle headerStyle = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-                Row headerRow = sheet.createRow(0);
-                Cell cell = headerRow.createCell(0);
-                cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
-
-                cell = headerRow.createCell(1);
-                cell.setCellValue("CANTIDAD");
-                cell.setCellStyle(headerStyle);
-
-                String[] serialList = supplierProductList.stream().map(SupplierProduct::getSerial).toList().toArray(new String[0]);
-                DataValidationHelper validationHelper = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
-                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);
-                DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
-                sheet.addValidationData(dataValidation);
-
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                workbook.write(out);
-                workbook.close();
-                return new ByteArrayInputStream(out.toByteArray());
-            }catch (RuntimeException e){
-                e.printStackTrace();
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    @Override
-    public CompletableFuture<ByteArrayInputStream> shipment(Integer quantity, String purchaseSerial, String username) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            User user;
-            Purchase purchase;
-            List<PurchaseItem> purchaseItemList;
-            try{
-                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                purchase = purchaseRepository.findBySerialAndStatusTrue(purchaseSerial.toUpperCase());
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
-            if(user==null){
-                throw new BadRequestExceptions(Constants.ErrorUser);
-            }
-            if(purchase==null){
-                throw new BadRequestExceptions(Constants.ErrorPurchase);
-            }else{
-                purchaseItemList = purchaseItemRepository.findAllByClientIdAndPurchaseIdAndStatusTrue(user.getClientId(),purchase.getId());
             }
 
             try{
@@ -148,7 +88,7 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellValue("OBSERVACIONES");
                 cell.setCellStyle(headerStyle);
 
-                String[] serialList = purchaseItemList.stream().map(purchaseItem -> purchaseItem.getSupplierProduct().getSerial()).toList().toArray(new String[0]);
+                String[] serialList = supplierProductList.stream().map(SupplierProduct::getSerial).toList().toArray(new String[0]);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
                 DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
                 CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);
@@ -233,15 +173,15 @@ public class TemplateImpl implements ITemplate {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> stockReturn(Integer quantity, String purchaseSerial, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> stockReturn(Integer quantity, String shipmentSerial, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Shipment shipment;
-            Purchase purchase;
+            ShipmentType shipmentType;
             List<ShipmentItem> shipmentItemList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                purchase = purchaseRepository.findBySerialAndStatusTrue(purchaseSerial.toUpperCase());
+                shipmentType = shipmentTypeRepository.findByNameAndStatusTrue("EMBARQUE");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -249,10 +189,10 @@ public class TemplateImpl implements ITemplate {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
-            if(purchase == null){
-                throw new BadRequestExceptions(Constants.ErrorPurchase);
+            if(shipmentType==null){
+                throw new BadRequestExceptions(Constants.ErrorShipmentType);
             }else{
-                shipment = shipmentRepository.findBySerial(purchaseSerial.toUpperCase());
+                shipment = shipmentRepository.findBySerialAndShipmentTypeId(shipmentSerial.toUpperCase(),shipmentType.getId());
             }
             if(shipment==null){
                 throw new BadRequestExceptions(Constants.ErrorShipment);

@@ -3,7 +3,6 @@ package com.proyect.masterdata.services;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.Shipment;
 import com.proyect.masterdata.domain.ShipmentItem;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -16,16 +15,15 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IShipmentItem {
-    ShipmentItem save(Shipment shipment, Purchase purchase, String warehouse, RequestShipmentItem requestShipmentItem, String tokenUser)
+    ShipmentItem save(Shipment shipment, String warehouse, RequestShipmentItem requestShipmentItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<ShipmentItem> saveAsync(Shipment shipment, Purchase purchase, String warehouse, RequestShipmentItem requestShipmentItem, String tokenUser)
+    CompletableFuture<ShipmentItem> saveAsync(Shipment shipment, String warehouse, RequestShipmentItem requestShipmentItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<ResponseDelete> delete(String purchaseSerial, String supplierProduct, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> activate(String purchaseSerial, String supplierProduct, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> delete(String serial,String supplierProduct, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(String serial,String supplierProduct, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<ShipmentItemDTO>> list(
             String user,
             List<String> shipments,
-            List<String> purchases,
             List<String> warehouses,
             List<String> supplierProducts,
             String sort,

@@ -27,28 +27,27 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 public class StockReturnItemImpl implements IStockReturnItem {
     private final UserRepository userRepository;
-    private final PurchaseRepository purchaseRepository;
-    private final PurchaseItemRepository purchaseItemRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final StockReturnItemRepository stockReturnItemRepository;
     private final StockReturnItemRepositoryCustom stockReturnItemRepositoryCustom;
     private final StockReturnRepository stockReturnRepository;
     private final SupplierRepository supplierRepository;
+    private final ShipmentRepository shipmentRepository;
     @Override
-    public StockReturnItem save(StockReturn stockReturn,PurchaseItem purchaseItem,RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
+    public StockReturnItem save(StockReturn stockReturn,ShipmentItem shipmentItem,RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
 
         try{
             return stockReturnItemRepository.save(StockReturnItem.builder()
-                            .purchaseItem(purchaseItem)
-                            .purchaseItemId(purchaseItem.getId())
+                            .shipmentItem(shipmentItem)
+                            .shipmentItemId(shipmentItem.getId())
                             .tokenUser(user.getUsername())
                             .quantity(requestStockReturnItem.getQuantity())
-                            .supplierProduct(purchaseItem.getSupplierProduct())
-                            .supplierProductId(purchaseItem.getSupplierProductId())
+                            .supplierProduct(shipmentItem.getSupplierProduct())
+                            .supplierProductId(shipmentItem.getSupplierProductId())
                             .client(user.getClient())
                             .clientId(user.getClientId())
-                            .purchase(purchaseItem.getPurchase())
-                            .purchaseId(purchaseItem.getPurchaseId())
+                            .shipment(shipmentItem.getShipment())
+                            .shipmentId(shipmentItem.getShipmentId())
                             .stockReturn(stockReturn)
                             .stockReturnId(stockReturn.getId())
                             .observations(requestStockReturnItem.getObservations().toUpperCase())
@@ -62,20 +61,20 @@ public class StockReturnItemImpl implements IStockReturnItem {
     }
 
     @Override
-    public CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn, ShipmentItem shipmentItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             try{
                 return stockReturnItemRepository.save(StockReturnItem.builder()
-                        .purchaseItem(purchaseItem)
-                        .purchaseItemId(purchaseItem.getId())
+                                .shipmentItem(shipmentItem)
+                                .shipmentItemId(shipmentItem.getId())
                         .tokenUser(user.getUsername())
                         .quantity(requestStockReturnItem.getQuantity())
-                        .supplierProduct(purchaseItem.getSupplierProduct())
-                        .supplierProductId(purchaseItem.getSupplierProductId())
+                        .supplierProduct(shipmentItem.getSupplierProduct())
+                        .supplierProductId(shipmentItem.getSupplierProductId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .purchase(purchaseItem.getPurchase())
-                        .purchaseId(purchaseItem.getPurchaseId())
+                                .shipment(shipmentItem.getShipment())
+                                .shipmentId(shipmentItem.getShipmentId())
                         .stockReturn(stockReturn)
                         .stockReturnId(stockReturn.getId())
                         .observations(requestStockReturnItem.getObservations().toUpperCase())
@@ -93,7 +92,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
     public CompletableFuture<Page<StockReturnItemDTO>> list(
             String user,
             List<String> stockReturns,
-            List<String> purchases,
+            List<String> shipments,
             List<String> suppliers,
             List<String> supplierProducts,
             String sort,
@@ -104,7 +103,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
             Page<StockReturnItem> pageStockReturn;
             Long clientId;
             List<Long> stockReturnIds;
-            List<Long> purchaseIds;
+            List<Long> shipmentIds;
             List<Long> supplierIds;
             List<Long> supplierProductIds;
 
@@ -116,12 +115,12 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 stockReturnIds = new ArrayList<>();
             }
 
-            if(purchases != null && !purchases.isEmpty()){
-                purchaseIds = purchaseRepository.findBySerialIn(
-                        purchases.stream().map(String::toUpperCase).toList()
-                ).stream().map(Purchase::getId).toList();
+            if(shipments != null && !shipments.isEmpty()){
+                shipmentIds = shipmentRepository.findBySerialIn(
+                        shipments.stream().map(String::toUpperCase).toList()
+                ).stream().map(Shipment::getId).toList();
             }else {
-                purchaseIds = new ArrayList<>();
+                shipmentIds = new ArrayList<>();
             }
 
             if(suppliers != null && !suppliers.isEmpty()){
@@ -145,7 +144,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 pageStockReturn = stockReturnItemRepositoryCustom.searchForStockReturnItem(
                         clientId,
                         stockReturnIds,
-                        purchaseIds,
+                        shipmentIds,
                         supplierIds,
                         supplierProductIds,
                         sort,
@@ -163,8 +162,8 @@ public class StockReturnItemImpl implements IStockReturnItem {
 
             List<StockReturnItemDTO> stockReturnDTOS = pageStockReturn.getContent().stream().map(stockReturnItem -> StockReturnItemDTO.builder()
                     .serial(stockReturnItem.getStockReturn().getSerial())
-                    .supplier(stockReturnItem.getStockReturn().getPurchase().getSupplier().getBusinessName())
-                    .purchase(stockReturnItem.getPurchase().getSerial())
+                    .supplier(stockReturnItem.getStockReturn().getShipment().getSupplier().getBusinessName())
+                    .shipment(stockReturnItem.getShipment().getSerial())
                     .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
                     .registrationDate(stockReturnItem.getRegistrationDate())
                     .quantity(stockReturnItem.getQuantity())
@@ -195,7 +194,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 return Collections.emptyList();
             }
             return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
-                    .purchase(stockReturnItem.getPurchase().getSerial())
+                    .shipment(stockReturnItem.getShipment().getSerial())
                     .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
                     .registrationDate(stockReturnItem.getRegistrationDate())
                     .quantity(stockReturnItem.getQuantity())
@@ -227,7 +226,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 return Collections.emptyList();
             }
             return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
-                    .purchase(stockReturnItem.getPurchase().getSerial())
+                    .shipment(stockReturnItem.getShipment().getSerial())
                     .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
                     .registrationDate(stockReturnItem.getRegistrationDate())
                     .quantity(stockReturnItem.getQuantity())

@@ -27,11 +27,9 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Log4j2
 public class StockReturnImpl implements IStockReturn {
-    private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
     private final StockReturnRepository stockReturnRepository;
     private final SupplierProductRepository supplierProductRepository;
-    private final PurchaseItemRepository purchaseItemRepository;
     private final StockReturnRepositoryCustom stockReturnRepositoryCustom;
     private final IStockReturnItem iStockReturnItem;
     private final IStockTransaction iStockTransaction;
@@ -42,17 +40,18 @@ public class StockReturnImpl implements IStockReturn {
     private final IGeneralStock iGeneralStock;
     private final IAudit iAudit;
     private final SupplierRepository supplierRepository;
+    private final ShipmentItemRepository shipmentItemRepository;
     @Override
     public ResponseSuccess save(RequestStockReturn requestStockReturn) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
-        Purchase purchase;
         StockReturn stockReturn;
         Warehouse warehouse;
         Shipment shipment;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(requestStockReturn.getTokenUser().toUpperCase());
-            purchase = purchaseRepository.findBySerial(requestStockReturn.getPurchaseSerial().toUpperCase());
+            stockReturn = stockReturnRepository.findBySerial(requestStockReturn.getSerial());
+            shipment = shipmentRepository.findByShipmentTypeNameAndSerial("EMBARQUE", requestStockReturn.getShipmentSerial());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -62,13 +61,6 @@ public class StockReturnImpl implements IStockReturn {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else {
             warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(), requestStockReturn.getWarehouse().toUpperCase());
-        }
-
-        if(purchase == null){
-            throw new BadRequestExceptions(Constants.ErrorPurchase);
-        }else{
-            stockReturn = stockReturnRepository.findBySerial(requestStockReturn.getSerial());
-            shipment = shipmentRepository.findByPurchaseIdAndShipmentTypeName(purchase.getId(), "EMBARQUE");
         }
 
         if(stockReturn != null){
@@ -85,15 +77,15 @@ public class StockReturnImpl implements IStockReturn {
                 if(supplierProduct == null){
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                 }
-                PurchaseItem purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
-                if(purchaseItem == null){
-                    throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
+                ShipmentItem shipmentItem = shipmentItemRepository.findByShipmentIdAndSupplierProductId(shipment.getId(),supplierProduct.getId());
+                if(shipmentItem == null){
+                    throw new BadRequestExceptions(Constants.ErrorShipmentItem);
                 }
                 WarehouseStock warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(), supplierProduct.getId());
                 if(requestStockReturnItem.getQuantity()<1){
                     throw new BadRequestExceptions(Constants.ErrorStockReturnItemZero);
                 }
-                if(requestStockReturnItem.getQuantity() > purchaseItem.getQuantity()){
+                if(requestStockReturnItem.getQuantity() > shipmentItem.getQuantity()){
                     throw new BadRequestExceptions(Constants.ErrorStockReturnQuantity);
                 }
                 if(requestStockReturnItem.getQuantity() > warehouseStock.getQuantity()){
@@ -102,10 +94,10 @@ public class StockReturnImpl implements IStockReturn {
             }
             StockReturn newStockReturn = stockReturnRepository.save(StockReturn.builder()
                             .serial(requestStockReturn.getSerial().toUpperCase())
-                            .purchase(purchase)
-                            .purchaseId(purchase.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
+                            .shipment(shipment)
+                            .shipmentId(shipment.getId())
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .tokenUser(user.getUsername())
@@ -115,8 +107,8 @@ public class StockReturnImpl implements IStockReturn {
 
             for(RequestStockReturnItem requestStockReturnItem : requestStockReturn.getRequestStockReturnItemList()){
                 SupplierProduct supplierProduct = supplierProductRepository.findBySerial(requestStockReturnItem.getSupplierProductSerial());
-                PurchaseItem purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
-                iStockReturnItem.save(newStockReturn,purchaseItem,requestStockReturnItem,user);
+                ShipmentItem shipmentItem = shipmentItemRepository.findByShipmentIdAndSupplierProductId(shipment.getId(),supplierProduct.getId());
+                iStockReturnItem.save(newStockReturn,shipmentItem,requestStockReturnItem,user);
                 iWarehouseStock.out(warehouse,supplierProduct,requestStockReturnItem.getQuantity(),user);
                 iGeneralStock.out(supplierProduct.getSerial(),requestStockReturnItem.getQuantity(),user.getUsername());
                 requestStockTransactionItemList.add(RequestStockTransactionItem.builder()
@@ -141,14 +133,14 @@ public class StockReturnImpl implements IStockReturn {
     public CompletableFuture<ResponseSuccess> saveAsync(RequestStockReturn requestStockReturn) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Purchase purchase;
             StockReturn stockReturn;
             Warehouse warehouse;
             Shipment shipment;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(requestStockReturn.getTokenUser().toUpperCase());
-                purchase = purchaseRepository.findBySerial(requestStockReturn.getPurchaseSerial().toUpperCase());
+                stockReturn = stockReturnRepository.findBySerial(requestStockReturn.getSerial());
+                shipment = shipmentRepository.findByShipmentTypeNameAndSerial("EMBARQUE", requestStockReturn.getSerial());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -158,13 +150,6 @@ public class StockReturnImpl implements IStockReturn {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else {
                 warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(), requestStockReturn.getWarehouse().toUpperCase());
-            }
-
-            if(purchase == null){
-                throw new BadRequestExceptions(Constants.ErrorPurchase);
-            }else{
-                stockReturn = stockReturnRepository.findBySerial(requestStockReturn.getSerial());
-                shipment = shipmentRepository.findByPurchaseIdAndShipmentTypeName(purchase.getId(), "EMBARQUE");
             }
 
             if(stockReturn != null){
@@ -181,15 +166,15 @@ public class StockReturnImpl implements IStockReturn {
                     if(supplierProduct == null){
                         throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                     }
-                    PurchaseItem purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
-                    if(purchaseItem == null){
-                        throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
+                    ShipmentItem shipmentItem = shipmentItemRepository.findByShipmentIdAndSupplierProductId(shipment.getId(),supplierProduct.getId());
+                    if(shipmentItem == null){
+                        throw new BadRequestExceptions(Constants.ErrorShipmentItem);
                     }
                     WarehouseStock warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(), supplierProduct.getId());
                     if(requestStockReturnItem.getQuantity()<1){
                         throw new BadRequestExceptions(Constants.ErrorStockReturnItemZero);
                     }
-                    if(requestStockReturnItem.getQuantity() > purchaseItem.getQuantity()){
+                    if(requestStockReturnItem.getQuantity() > shipmentItem.getQuantity()){
                         throw new BadRequestExceptions(Constants.ErrorStockReturnQuantity);
                     }
                     if(requestStockReturnItem.getQuantity() > warehouseStock.getQuantity()){
@@ -198,8 +183,8 @@ public class StockReturnImpl implements IStockReturn {
                 }
                 StockReturn newStockReturn = stockReturnRepository.save(StockReturn.builder()
                         .serial(requestStockReturn.getSerial().toUpperCase())
-                        .purchase(purchase)
-                        .purchaseId(purchase.getId())
+                                .shipment(shipment)
+                                .shipmentId(shipment.getId())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .client(user.getClient())
@@ -211,8 +196,8 @@ public class StockReturnImpl implements IStockReturn {
 
                 for(RequestStockReturnItem requestStockReturnItem : requestStockReturn.getRequestStockReturnItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findBySerial(requestStockReturnItem.getSupplierProductSerial());
-                    PurchaseItem purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
-                    iStockReturnItem.save(newStockReturn,purchaseItem,requestStockReturnItem,user);
+                    ShipmentItem shipmentItem = shipmentItemRepository.findByShipmentIdAndSupplierProductId(shipment.getId(),supplierProduct.getId());
+                    iStockReturnItem.save(newStockReturn,shipmentItem,requestStockReturnItem,user);
                     iWarehouseStock.out(warehouse,supplierProduct,requestStockReturnItem.getQuantity(),user);
                     iGeneralStock.out(supplierProduct.getSerial(),requestStockReturnItem.getQuantity(),user.getUsername());
                     requestStockTransactionItemList.add(RequestStockTransactionItem.builder()
@@ -238,7 +223,7 @@ public class StockReturnImpl implements IStockReturn {
     public CompletableFuture<Page<StockReturnDTO>> list(
             String user,
             List<String> serials,
-            List<String> purchases,
+            List<String> shipments,
             List<String> suppliers,
             String sort,
             String sortColumn,
@@ -248,7 +233,7 @@ public class StockReturnImpl implements IStockReturn {
             Page<StockReturn> pageStockReturn;
             Long clientId;
             List<String> serialsUppercase;
-            List<Long> purchaseIds;
+            List<Long> shipmentIds;
             List<Long> supplierIds;
 
             if(serials != null && !serials.isEmpty()){
@@ -257,12 +242,12 @@ public class StockReturnImpl implements IStockReturn {
                 serialsUppercase = new ArrayList<>();
             }
 
-            if(purchases != null && !purchases.isEmpty()){
-                purchaseIds = purchaseRepository.findBySerialIn(
-                        purchases.stream().map(String::toUpperCase).toList()
-                ).stream().map(Purchase::getId).toList();
+            if(shipments != null && !shipments.isEmpty()){
+                shipmentIds = shipmentRepository.findBySerialIn(
+                        shipments.stream().map(String::toUpperCase).toList()
+                ).stream().map(Shipment::getId).toList();
             }else{
-                purchaseIds = new ArrayList<>();
+                shipmentIds = new ArrayList<>();
             }
 
             if(suppliers != null && !suppliers.isEmpty()){
@@ -278,7 +263,7 @@ public class StockReturnImpl implements IStockReturn {
                 pageStockReturn = stockReturnRepositoryCustom.searchForStockReturnItem(
                         clientId,
                         serialsUppercase,
-                        purchaseIds,
+                        shipmentIds,
                         supplierIds,
                         sort,
                         sortColumn,
@@ -297,8 +282,8 @@ public class StockReturnImpl implements IStockReturn {
             List<StockReturnDTO> stockReturnDTOS = pageStockReturn.getContent().stream().map(stockReturn -> StockReturnDTO.builder()
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
-                    .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
-                    .purchase(stockReturn.getPurchase().getSerial())
+                    .supplier(stockReturn.getShipment().getSupplier().getBusinessName())
+                    .shipment(stockReturn.getShipment().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
                     .build()).toList();
             return new PageImpl<>(stockReturnDTOS,pageStockReturn.getPageable(),pageStockReturn.getTotalElements());
@@ -325,9 +310,9 @@ public class StockReturnImpl implements IStockReturn {
             return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
-                    .purchase(stockReturn.getPurchase().getSerial())
+                    .shipment(stockReturn.getShipment().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
-                    .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
+                    .supplier(stockReturn.getShipment().getSupplier().getBusinessName())
                     .build()).toList();
         });
     }
@@ -352,9 +337,9 @@ public class StockReturnImpl implements IStockReturn {
             return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
-                    .purchase(stockReturn.getPurchase().getSerial())
+                    .shipment(stockReturn.getShipment().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
-                    .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
+                    .supplier(stockReturn.getShipment().getSupplier().getBusinessName())
                     .build()).toList();
         });
     }
@@ -379,9 +364,9 @@ public class StockReturnImpl implements IStockReturn {
             return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
-                    .purchase(stockReturn.getPurchase().getSerial())
+                    .shipment(stockReturn.getShipment().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
-                    .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
+                    .supplier(stockReturn.getShipment().getSupplier().getBusinessName())
                     .build()).toList();
         });
     }

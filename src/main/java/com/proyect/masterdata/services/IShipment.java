@@ -16,7 +16,6 @@ public interface IShipment {
     CompletableFuture<ResponseSuccess> saveAsync(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<Page<ShipmentDTO>> list(
             List<String> serials,
-            List<String> purchases,
             String user,
             List<String> warehouses,
             List<String> shipmentTypes,
@@ -26,7 +25,6 @@ public interface IShipment {
             Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<ShipmentDTO>> listFalse(
             List<String> serials,
-            List<String> purchases,
             String user,
             List<String> warehouses,
             List<String> shipmentTypes,

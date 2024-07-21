@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 public class ShipmentDTO {
     private String serial;
-    private String purchase;
+    private String shipmentDocument;
     private String warehouse;
     private String shipmentType;
     private Date registrationDate;

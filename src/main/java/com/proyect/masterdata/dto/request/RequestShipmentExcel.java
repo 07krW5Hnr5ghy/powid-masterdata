@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestShipmentExcel {
     private String serial;
-    private String purchaseSerial;
+    private String shipmentSerial;
+    private String shipmentDocument;
     private String warehouse;
     private String shipmentType;
     private String tokenUser;

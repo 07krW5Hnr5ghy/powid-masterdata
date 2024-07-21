@@ -11,7 +11,6 @@ public interface ShipmentRepositoryCustom {
     Page<Shipment> searchForShipment(
             Long clientId,
             List<String> serials,
-            List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> shipmentTypeIds,
             String sort,
