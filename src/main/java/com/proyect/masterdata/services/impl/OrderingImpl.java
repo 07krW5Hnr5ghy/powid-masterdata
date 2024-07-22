@@ -466,6 +466,7 @@ public class OrderingImpl implements IOrdering {
                         .discount(order.getDiscount().getName())
                         .discountAmount(BigDecimal.valueOf(order.getDiscountAmount()))
                         .dni(order.getCustomer().getDni())
+                        .store(order.getStore().getName())
                         .build();
             }).toList();
 
@@ -542,6 +543,7 @@ public class OrderingImpl implements IOrdering {
                         .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryPoint(order.getDeliveryPoint().getName())
                         .dni(order.getCustomer().getDni())
+                        .store(order.getStore().getName())
                         .build();
             }).toList();
         });
@@ -824,6 +826,7 @@ public class OrderingImpl implements IOrdering {
                         .paymentState(ordering.getOrderPaymentState().getName())
                         .closingChannel(ordering.getClosingChannel().getName())
                         .dni(ordering.getCustomer().getDni())
+                        .store(ordering.getStore().getName())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
                             Double totalPrice = null;
