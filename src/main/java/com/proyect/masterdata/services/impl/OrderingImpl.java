@@ -411,16 +411,18 @@ public class OrderingImpl implements IOrdering {
                 List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
                 List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
                 List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
+
                 double saleAmount = 0.00;
                 for(OrderItem orderItem : orderItems){
+                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                     if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - ((orderItem.getQuantity() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
                     }
                     if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
                     }
                     if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity());
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                     }
                 }
                 double totalDuePayment=0;
@@ -495,11 +497,15 @@ public class OrderingImpl implements IOrdering {
                 List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
                 double saleAmount = 0.00;
                 for(OrderItem orderItem : orderItems){
+                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                     if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - ((orderItem.getQuantity() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
                     }
                     if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                        saleAmount += (orderItem.getQuantity() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                     }
                 }
                 double totalDuePayment=0;
