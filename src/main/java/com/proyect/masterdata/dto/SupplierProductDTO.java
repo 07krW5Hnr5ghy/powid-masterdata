@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,7 +14,8 @@ import lombok.NoArgsConstructor;
 public class SupplierProductDTO {
     private String serial;
     private String productSku;
-    private String supplierName;
-    private Double purchasePrice;
-    private Long supplierProductId;
+    private String supplier;
+    private Double price;
+    private Date registrationDate;
+    private Date updateDate;
 }

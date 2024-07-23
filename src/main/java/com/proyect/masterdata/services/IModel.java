@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -18,13 +19,32 @@ public interface IModel {
                 throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<Page<ModelDTO>> list(String name, String brand, String tokenUser, String sort, String columnSort,
-                        Integer pageNumber,
-                        Integer pageSize);
-        CompletableFuture<Page<ModelDTO>> listStatusFalse(String name, String brand, String tokenUser, String sort, String columnSort,
-                        Integer pageNumber,
-                        Integer pageSize);
+        CompletableFuture<Page<ModelDTO>> list(
+                String user,
+                List<String> names,
+                List<String> brands,
+                Date registrationStartDate,
+                Date registrationEndDate,
+                Date updateStartDate,
+                Date updateEndDate,
+                String sort,
+                String columnSort,
+                Integer pageNumber,
+                Integer pageSize);
+        CompletableFuture<Page<ModelDTO>> listStatusFalse(
+                String user,
+                List<String> names,
+                List<String> brands,
+                Date registrationStartDate,
+                Date registrationEndDate,
+                Date updateStartDate,
+                Date updateEndDate,
+                String sort,
+                String columnSort,
+                Integer pageNumber,
+                Integer pageSize);
         CompletableFuture<List<ModelDTO>> listModels(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ModelDTO>> listModelsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ModelDTO>> listModelBrand(String user,String brand) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<ModelDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

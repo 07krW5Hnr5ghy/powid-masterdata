@@ -14,9 +14,24 @@ import java.util.concurrent.CompletableFuture;
 public interface IShipment {
     ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    CompletableFuture<Page<ShipmentDTO>> list(String serialPurchase, String user, String warehouse, String shipmentType, String sort, String sortColumn,
-                                  Integer pageNumber, Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<Page<ShipmentDTO>> listFalse(String serialPurchase, String user, String warehouse, String shipmentType, String sort, String sortColumn,
-                                  Integer pageNumber, Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<Page<ShipmentDTO>> list(
+            List<String> serials,
+            String user,
+            List<String> warehouses,
+            List<String> shipmentTypes,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<Page<ShipmentDTO>> listFalse(
+            List<String> serials,
+            String user,
+            List<String> warehouses,
+            List<String> shipmentTypes,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<ShipmentDTO>> listShipment(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<ShipmentDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

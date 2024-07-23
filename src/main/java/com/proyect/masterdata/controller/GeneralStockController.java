@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,7 @@ import com.proyect.masterdata.services.IGeneralStock;
 
 import lombok.AllArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -33,11 +35,26 @@ public class GeneralStockController {
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK') and hasAuthority('ACCESS:GENERAL_STOCK_GET')")
     public ResponseEntity<Page<GeneralStockDTO>> list(
             @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<GeneralStockDTO>> result = iGeneralStock.list(user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<GeneralStockDTO>> result = iGeneralStock.list(
+                user,
+                supplierProducts,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

@@ -97,4 +97,11 @@ public class ProvinceController {
         CompletableFuture<List<ProvinceDTO>> result = iProvince.listProvinceByDepartment(department);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_GET')")
+    public ResponseEntity<List<ProvinceDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProvinceDTO>> result = iProvince.listFilter();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
 }

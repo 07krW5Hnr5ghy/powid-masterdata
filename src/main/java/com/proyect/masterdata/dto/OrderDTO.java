@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +15,6 @@ import java.util.List;
 @Data
 public class OrderDTO {
     private Long id;
-    private Long serial;
     private String sellerName;
     private String customerName;
     private String customerType;
@@ -29,12 +29,16 @@ public class OrderDTO {
     private String paymentState;
     private String saleChannel;
     private String reference;
+    private String deliveryPoint;
+    private String discount;
+    private String dni;
     private List<String> paymentReceipts;
     private List<String> courierPictures;
-    private Double saleAmount;
-    private Double deliveryAmount;
-    private Double advancedPayment;
-    private Double duePayment;
+    private BigDecimal saleAmount;
+    private BigDecimal deliveryAmount;
+    private BigDecimal advancedPayment;
+    private BigDecimal duePayment;
+    private BigDecimal discountAmount;
     private Date registrationDate;
     private Date updateDate;
     private String deliveryAddress;
@@ -42,4 +46,6 @@ public class OrderDTO {
     private String orderStatus;
     private String observations;
     private String closingChannel;
+    private List<OrderItemDTO> orderItemDTOS;
+    private String store;
 }

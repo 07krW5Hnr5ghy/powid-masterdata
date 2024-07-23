@@ -37,14 +37,22 @@ public class StockReturnController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_GET')")
     public ResponseEntity<Page<StockReturnDTO>> list(
-            @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "supplierProductSerial", required = false) String supplierProductSerial,
+            @RequestParam(value = "serials", required = false) List<String> serials,
+            @RequestParam(value = "shipments", required = false) List<String> shipments,
+            @RequestParam(value = "suppliers", required = false) List<String> suppliers,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<StockReturnDTO>> result = iStockReturn.list(purchaseSerial, user, sort, sortColumn, pageNumber,
+        CompletableFuture<Page<StockReturnDTO>> result = iStockReturn.list(
+                user,
+                serials,
+                shipments,
+                suppliers,
+                sort,
+                sortColumn,
+                pageNumber,
                 pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
@@ -64,6 +72,14 @@ public class StockReturnController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<StockReturnDTO>> result = iStockReturn.listStockReturnFalse(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<StockReturnDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockReturnDTO>> result = iStockReturn.listFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

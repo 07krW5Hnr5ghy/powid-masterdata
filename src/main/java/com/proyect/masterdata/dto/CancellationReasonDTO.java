@@ -11,10 +11,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PurchaseDTO {
-    private String serial;
+public class CancellationReasonDTO {
+    private String name;
     private Date registrationDate;
-    private String purchaseDocument;
-    private Long id;
-    private String supplierName;
+    private Date updateDate;
 }

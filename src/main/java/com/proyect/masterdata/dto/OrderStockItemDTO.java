@@ -13,10 +13,9 @@ import java.util.Date;
 @Data
 public class OrderStockItemDTO {
     private Long orderId;
-    private Long orderItemId;
     private String warehouse;
-    private String supplierProductSerial;
-    private String productSku;
+    private String supplierProduct;
+    private String product;
     private Integer quantity;
     private Date registrationDate;
     private Date updateDate;

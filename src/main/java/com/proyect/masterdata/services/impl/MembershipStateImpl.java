@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.MembershipState;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.MembershipStateDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -73,11 +74,21 @@ public class MembershipStateImpl implements IMembershipState {
     }
 
     @Override
-    public CompletableFuture<Page<String>> list(String name, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<MembershipStateDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<MembershipState> membershipStatePage;
             try{
-                membershipStatePage = membershipStateRepositoryCustom.searchForMembershipState(name,sort,sortColumn,pageNumber,pageSize,true);
+                membershipStatePage = membershipStateRepositoryCustom.searchForMembershipState(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -85,7 +96,52 @@ public class MembershipStateImpl implements IMembershipState {
             if(membershipStatePage.isEmpty()){
                 return new PageImpl<>(Collections.emptyList());
             }
-            List<String> membershipStateDTOs = membershipStatePage.getContent().stream().map(MembershipState::getName).toList();
+            List<MembershipStateDTO> membershipStateDTOs = membershipStatePage.getContent().stream().map(membershipState -> MembershipStateDTO.builder()
+                    .name(membershipState.getName())
+                    .registrationDate(membershipState.getRegistrationDate())
+                    .updateDate(membershipState.getUpdateDate())
+                    .build()).toList();
+            return new PageImpl<>(membershipStateDTOs,membershipStatePage.getPageable(),membershipStatePage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<MembershipStateDTO>> listPagination(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<MembershipState> membershipStatePage;
+            try{
+                membershipStatePage = membershipStateRepositoryCustom.searchForMembershipState(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(membershipStatePage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<MembershipStateDTO> membershipStateDTOs = membershipStatePage.getContent().stream().map(membershipState -> MembershipStateDTO.builder()
+                    .name(membershipState.getName())
+                    .registrationDate(membershipState.getRegistrationDate())
+                    .updateDate(membershipState.getUpdateDate())
+                    .build()).toList();
             return new PageImpl<>(membershipStateDTOs,membershipStatePage.getPageable(),membershipStatePage.getTotalElements());
         });
     }

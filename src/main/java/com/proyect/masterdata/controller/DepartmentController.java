@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 public class DepartmentController {
         private final IDepartment iDepartment;
 
-        @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+        @PostMapping()
         //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
         public ResponseEntity<ResponseSuccess> save(
                         @RequestParam("name") String name,
@@ -33,7 +33,7 @@ public class DepartmentController {
                 return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
 
-        @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+        @DeleteMapping()
         //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_DELETE')")
         public ResponseEntity<ResponseDelete> delete(
                         @RequestParam("name") String name,
@@ -81,6 +81,12 @@ public class DepartmentController {
                         @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
                 CompletableFuture<Page<DepartmentDTO>> result = iDepartment.listStatusFalse(name, user, sort, sortColumn, pageNumber,
                                 pageSize);
+                return new ResponseEntity<>(result.get(), HttpStatus.OK);
+        }
+
+        @GetMapping("filter")
+        public ResponseEntity<List<DepartmentDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+                CompletableFuture<List<DepartmentDTO>> result = iDepartment.listFilter();
                 return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
 

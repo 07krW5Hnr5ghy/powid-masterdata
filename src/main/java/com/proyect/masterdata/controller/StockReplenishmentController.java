@@ -37,16 +37,16 @@ public class StockReplenishmentController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_GET')")
     public ResponseEntity<Page<StockReplenishmentDTO>> list(
             @RequestParam("user") String user,
-            @RequestParam(value = "orderId",required = false) Long orderId,
+            @RequestParam(value = "orderIds",required = false) List<Long> orderIds,
             @RequestParam(value = "sort",required = false) String sort,
             @RequestParam(value = "sortColumn",required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<StockReplenishmentDTO>> result = iStockReplenishment.list(user,orderId,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<StockReplenishmentDTO>> result = iStockReplenishment.list(user,orderIds,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
-    @GetMapping()
+    @GetMapping("filter")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_GET')")
     public ResponseEntity<List<StockReplenishmentDTO>> listStockReplenishment(
             @RequestParam("user") String user

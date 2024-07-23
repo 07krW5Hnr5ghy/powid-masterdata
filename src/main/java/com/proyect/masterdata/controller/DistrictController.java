@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class DistrictController {
     private final IDistrict iDistrict;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
@@ -33,8 +33,8 @@ public class DistrictController {
         CompletableFuture<ResponseSuccess> result = iDistrict.saveAsync(name, tokenUser, province);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_DELETE')")
+    @DeleteMapping()
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -42,13 +42,13 @@ public class DistrictController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping(value = "/list-district")
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_GET')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_GET')")
     public ResponseEntity<List<DistrictDTO>> listProvince() throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<DistrictDTO>> result = iDistrict.listDistrict();
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping(value = "list")
-    @PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_GET')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_GET')")
     public ResponseEntity<Page<DistrictDTO>> list(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -90,6 +90,13 @@ public class DistrictController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iDistrict.activate(name,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_GET')")
+    public ResponseEntity<List<DistrictDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<DistrictDTO>> result = iDistrict.listFilter();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
 }

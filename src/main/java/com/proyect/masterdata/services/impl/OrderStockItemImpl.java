@@ -17,10 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -121,21 +118,67 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public CompletableFuture<Page<OrderStockItemDTO>> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<OrderStockItemDTO>> list(
+            String user,
+            List<Long> orders,
+            List<String> warehouses,
+            List<String> products,
+            List<String> supplierProducts,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStockItem> pageOrderStock;
             Long clientId;
-            Long supplierProductId;
+            List<Long> orderIds;
+            List<Long> warehouseIds;
+            List<Long> productIds;
+            List<Long> supplierProductIds;
 
-            if (supplierProductSerial != null) {
-                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
-            } else {
-                supplierProductId = null;
+            if(orders != null && !orders.isEmpty()){
+                orderIds = orders;
+            }else {
+                orderIds = new ArrayList<>();
+            }
+
+            if(warehouses != null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository.findByNameIn(
+                        warehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
+
+            if(products != null && !products.isEmpty()){
+                productIds = productRepository.findBySkuIn(
+                        products.stream().map(String::toUpperCase).toList()
+                ).stream().map(Product::getId).toList();
+            }else{
+                productIds = new ArrayList<>();
+            }
+
+            if(supplierProducts != null && !supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
+            }else {
+                supplierProductIds = new ArrayList<>();
             }
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(clientId,orderId,supplierProductId,sort,sortColumn,pageNumber,pageSize,true);
+                pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(
+                        clientId,
+                        orderIds,
+                        warehouseIds,
+                        productIds,
+                        supplierProductIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -148,8 +191,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .orderItemId(orderStockItem.getOrderItemId())
-                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
+                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
@@ -160,21 +203,67 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public CompletableFuture<Page<OrderStockItemDTO>> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<OrderStockItemDTO>> listFalse(
+            String user,
+            List<Long> orders,
+            List<String> warehouses,
+            List<String> products,
+            List<String> supplierProducts,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStockItem> pageOrderStock;
             Long clientId;
-            Long supplierProductId;
+            List<Long> orderIds;
+            List<Long> warehouseIds;
+            List<Long> productIds;
+            List<Long> supplierProductIds;
 
-            if (supplierProductSerial != null) {
-                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
-            } else {
-                supplierProductId = null;
+            if(orders != null && !orders.isEmpty()){
+                orderIds = orders;
+            }else {
+                orderIds = new ArrayList<>();
+            }
+
+            if(warehouses != null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository.findByNameIn(
+                        warehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
+
+            if(products != null && !products.isEmpty()){
+                productIds = productRepository.findBySkuIn(
+                        products.stream().map(String::toUpperCase).toList()
+                ).stream().map(Product::getId).toList();
+            }else{
+                productIds = new ArrayList<>();
+            }
+
+            if(supplierProducts != null && !supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
+            }else {
+                supplierProductIds = new ArrayList<>();
             }
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(clientId,orderId,supplierProductId,sort,sortColumn,pageNumber,pageSize,false);
+                pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(
+                        clientId,
+                        orderIds,
+                        warehouseIds,
+                        productIds,
+                        supplierProductIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -187,8 +276,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .orderItemId(orderStockItem.getOrderItemId())
-                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
@@ -260,12 +349,11 @@ public class OrderStockItemImpl implements IOrderStockItem {
             return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .orderItemId(orderStockItem.getOrderItemId())
-                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
-                    .productSku(orderStockItem.getOrderItem().getProduct().getSku())
                     .build()).toList();
         });
     }
@@ -294,12 +382,12 @@ public class OrderStockItemImpl implements IOrderStockItem {
             return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .orderItemId(orderStockItem.getOrderItemId())
-                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
-                    .productSku(orderStockItem.getOrderItem().getProduct().getSku())
+                    .product(orderStockItem.getOrderItem().getProduct().getSku())
                     .build()).toList();
         });
     }

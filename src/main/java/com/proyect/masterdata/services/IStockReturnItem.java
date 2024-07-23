@@ -13,10 +13,18 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface IStockReturnItem {
-    StockReturnItem save(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<Page<StockReturnItemDTO>> list(String purchaseSerial, String user, String supplierProductSerial, String sort, String sortColumn,
-                                  Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    StockReturnItem save(StockReturn stockReturn, ShipmentItem shipmentItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn, ShipmentItem shipmentItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<Page<StockReturnItemDTO>> list(
+            String user,
+            List<String> stockReturns,
+            List<String> shipments,
+            List<String> suppliers,
+            List<String> supplierProducts,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<List<StockReturnItemDTO>> listStockReturnItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<StockReturnItemDTO>> listStockReturnItemFalse(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
 }

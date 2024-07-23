@@ -3,6 +3,9 @@ package com.proyect.masterdata.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.proyect.masterdata.domain.District;
+import com.proyect.masterdata.domain.Province;
+import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,11 +19,6 @@ import com.proyect.masterdata.repository.SupplierRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 
 @Repository
 public class SupplierRepositoryCustomImpl implements SupplierRepositoryCustom {
@@ -29,17 +27,44 @@ public class SupplierRepositoryCustomImpl implements SupplierRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Supplier> searchForSupplier(String name, String ruc, Long clientId, String sort, String sortColumn,
-            Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Supplier> searchForSupplier(
+            Long clientId,
+            List<String> names,
+            List<String> rucs,
+            List<Long> countryIds,
+            List<Long> supplierTypeIds,
+            List<Long> departmentIds,
+            List<Long> provinceIds,
+            List<Long> districtIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Supplier> criteriaQuery = criteriaBuilder.createQuery(Supplier.class);
 
         Root<Supplier> itemRoot = criteriaQuery.from(Supplier.class);
+        Join<Supplier, District> supplierDistrictJoin = itemRoot.join("district");
+        Join<District, Province> districtProvinceJoin = supplierDistrictJoin.join("province");
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(name, ruc, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                names,
+                rucs,
+                countryIds,
+                supplierTypeIds,
+                departmentIds,
+                provinceIds,
+                districtIds,
+                status,
+                criteriaBuilder,
+                itemRoot,
+                supplierDistrictJoin,
+                districtProvinceJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -63,24 +88,63 @@ public class SupplierRepositoryCustomImpl implements SupplierRepositoryCustom {
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(name, ruc, clientId, status);
+        Long count = getOrderCount(
+                clientId,
+                names,
+                rucs,
+                countryIds,
+                supplierTypeIds,
+                departmentIds,
+                provinceIds,
+                districtIds,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
 
     }
 
-    private List<Predicate> predicateConditions(String name, String ruc, Long clientId, Boolean status,
-            CriteriaBuilder criteriaBuilder, Root<Supplier> itemRoot) {
+    private List<Predicate> predicateConditions(
+            Long clientId,
+            List<String> names,
+            List<String> rucs,
+            List<Long> countryIds,
+            List<Long> supplierTypeIds,
+            List<Long> departmentIds,
+            List<Long> provinceIds,
+            List<Long> districtIds,
+            Boolean status,
+            CriteriaBuilder criteriaBuilder,
+            Root<Supplier> itemRoot,
+            Join<Supplier, District> supplierDistrictJoin,
+            Join<District, Province> districtProvinceJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if (name != null) {
-            conditions.add(criteriaBuilder.and(
-                    criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("businessName")), name.toUpperCase())));
+        if (!names.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("businessName").in(names)));
         }
 
-        if (ruc != null) {
-            conditions.add(criteriaBuilder.and(
-                    criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("ruc")), ruc)));
+        if (!rucs.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("ruc").in(rucs)));
+        }
+
+        if(!countryIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("countryId").in(countryIds)));
+        }
+
+        if(!supplierTypeIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("supplierTypeId").in(supplierTypeIds)));
+        }
+
+        if(!departmentIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(districtProvinceJoin.get("departmentId").in(departmentIds)));
+        }
+
+        if (!provinceIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(supplierDistrictJoin.get("provinceId").in(provinceIds)));
+        }
+
+        if(!districtIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("districtId").in(districtIds)));
         }
 
         if (clientId != null) {
@@ -138,14 +202,38 @@ public class SupplierRepositoryCustomImpl implements SupplierRepositoryCustom {
 
     }
 
-    private Long getOrderCount(String name, String ruc, Long clientId, Boolean status) {
+    private Long getOrderCount(
+            Long clientId,
+            List<String> names,
+            List<String> rucs,
+            List<Long> countryIds,
+            List<Long> supplierTypeIds,
+            List<Long> departmentIds,
+            List<Long> provinceIds,
+            List<Long> districtIds,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Supplier> itemRoot = criteriaQuery.from(Supplier.class);
+        Join<Supplier, District> supplierDistrictJoin = itemRoot.join("district");
+        Join<District, Province> districtProvinceJoin = supplierDistrictJoin.join("province");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, ruc, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                names,
+                rucs,
+                countryIds,
+                supplierTypeIds,
+                departmentIds,
+                provinceIds,
+                districtIds,
+                status,
+                criteriaBuilder,
+                itemRoot,
+                supplierDistrictJoin,
+                districtProvinceJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
 

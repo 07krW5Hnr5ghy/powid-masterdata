@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class CheckStockItemDTO {
+    private String key;
     private String warehouse;
     private Integer stockQuantity;
 }

@@ -223,13 +223,22 @@ public class ClientImpl implements IClient {
     }
 
     @Override
-    public CompletableFuture<Page<ClientDTO>> list(String ruc, String business, String user, String sort, String sortColumn,
+    public CompletableFuture<Page<ClientDTO>> list(String ruc, String business, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Client> clientPage;
 
             try {
-                clientPage = clientRepositoryCustom.searchForClient(ruc, business, user, sort, sortColumn, pageNumber,
+                clientPage = clientRepositoryCustom.searchForClient(
+                        ruc,
+                        business,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
                         pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -252,6 +261,46 @@ public class ClientImpl implements IClient {
                     .ruc(client.getRuc())
                     .district(client.getDistrict().getName())
                     .status(client.getStatus())
+                    .registrationDate(client.getRegistrationDate())
+                    .updateDate(client.getUpdateDate())
+                    .build()).toList();
+
+            return new PageImpl<>(clientDTOList,
+                    clientPage.getPageable(), clientPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<ClientDTO>> listFalse(String ruc, String business, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Client> clientPage;
+
+            try {
+                clientPage = clientRepositoryCustom.searchForClient(ruc, business,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber,
+                        pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (clientPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<ClientDTO> clientDTOList = clientPage.getContent().stream().map(client -> ClientDTO.builder()
+                    .name(client.getName().toUpperCase())
+                    .surname(client.getSurname().toUpperCase())
+                    .business(client.getBusiness().toUpperCase())
+                    .dni(client.getDni())
+                    .email(client.getEmail())
+                    .ruc(client.getRuc())
+                    .address(client.getAddress().toUpperCase())
+                    .mobile(client.getMobile())
+                    .ruc(client.getRuc())
+                    .district(client.getDistrict().getName())
+                    .status(client.getStatus())
+                    .registrationDate(client.getRegistrationDate())
+                    .updateDate(client.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(clientDTOList,

@@ -53,4 +53,10 @@ public class PurchaseDocumentController {
         CompletableFuture<List<String>> result = iPurchaseDocument.list();
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<String>> listFilter() throws BadRequestExceptions,ExecutionException,InterruptedException {
+        CompletableFuture<List<String>> result = iPurchaseDocument.listFilter();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

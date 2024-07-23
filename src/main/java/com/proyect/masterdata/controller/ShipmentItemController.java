@@ -23,14 +23,23 @@ public class ShipmentItemController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_ITEM_GET')")
     public ResponseEntity<Page<ShipmentItemDTO>> list(
-            @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "supplierProductSerial", required = false) String supplierProductSerial,
+            @RequestParam(value = "shipments",required = false) List<String> shipments,
+            @RequestParam(value = "warehouses", required = false) List<String> warehouses,
+            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<ShipmentItemDTO>> result = iShipmentItem.list(purchaseSerial, user, supplierProductSerial, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<ShipmentItemDTO>> result = iShipmentItem.list(
+                user,
+                shipments,
+                warehouses,
+                supplierProducts,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()

@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,8 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     private final StockTransactionItemRepositoryCustom stockTransactionItemRepositoryCustom;
     private final StockTransactionRepository stockTransactionRepository;
     private final IAudit iAudit;
+    private final WarehouseRepository warehouseRepository;
+    private final StockTransactionTypeRepository stockTransactionTypeRepository;
     @Override
     public ResponseSuccess save(StockTransaction stockTransaction,RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -127,52 +130,94 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     }
 
     @Override
-    public CompletableFuture<Page<StockTransactionItemDTO>> list(String user, String stockTransactionSerial, String supplierProductSerial, String sort, String sortColumn,
-                                              Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<StockTransactionItemDTO>> list(
+            String user,
+            List<String> stockTransactions,
+            List<String> supplierProducts,
+            List<String> warehouses,
+            List<String> stockTransactionTypes,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Long clientId;
-            Long stockTransactionId;
-            Long supplierProductId;
-            Page<StockTransactionItem> stockTransactionPage;
+            List<Long> stockTransactionIds;
+            List<Long> supplierProductIds;
+            List<Long> warehouseIds;
+            List<Long> stockTransactionTypeIds;
+            Page<StockTransactionItem> stockTransactionItemPage;
 
-            if (stockTransactionSerial != null) {
-                stockTransactionId = stockTransactionRepository.findBySerial(stockTransactionSerial.toUpperCase()).getId();
+            if (stockTransactions != null && !stockTransactions.isEmpty()) {
+                stockTransactionIds = stockTransactionRepository.findBySerialIn(
+                        stockTransactions.stream().map(String::toUpperCase).toList()
+                ).stream().map(StockTransaction::getId).toList();
             } else {
-                stockTransactionId = null;
+                stockTransactionIds = new ArrayList<>();
             }
 
-            if(supplierProductSerial != null){
-                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+            if(supplierProducts != null && !supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
             }else{
-                supplierProductId = null;
+                supplierProductIds = new ArrayList<>();
+            }
+
+            if(warehouses!=null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository
+                        .findByNameIn(
+                                warehouses.stream().map(String::toUpperCase).toList()
+                        ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
+
+            if(stockTransactionTypes!=null&&!stockTransactionTypes.isEmpty()){
+                stockTransactionTypeIds = stockTransactionTypeRepository.findByNameIn(
+                        stockTransactionTypes.stream().map(String::toUpperCase).toList()
+                ).stream().map(StockTransactionType::getId).toList();
+            }else{
+                stockTransactionTypeIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                stockTransactionPage = stockTransactionItemRepositoryCustom.searchForStockTransactionItem(clientId, stockTransactionId, supplierProductId,
-                        sort, sortColumn, pageNumber, pageSize);
+                stockTransactionItemPage = stockTransactionItemRepositoryCustom.searchForStockTransactionItem(
+                        clientId,
+                        stockTransactionIds,
+                        supplierProductIds,
+                        warehouseIds,
+                        stockTransactionTypeIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
             } catch (RuntimeException e) {
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
 
-            if (stockTransactionPage.isEmpty()) {
+            if (stockTransactionItemPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<StockTransactionItemDTO> stockTransactionItemDTOS = stockTransactionPage.getContent().stream()
+            List<StockTransactionItemDTO> stockTransactionItemDTOS = stockTransactionItemPage.getContent().stream()
                     .map(stockTransactionItem -> StockTransactionItemDTO.builder()
                             .quantity(stockTransactionItem.getQuantity())
                             .warehouse(stockTransactionItem.getStockTransaction().getWarehouse().getName())
-                            .supplierProductSerial(stockTransactionItem.getSupplierProduct().getSerial())
-                            .stockTransactionSerial(stockTransactionItem.getStockTransaction().getSerial())
-                            .stockTransactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
+                            .supplierProduct(stockTransactionItem.getSupplierProduct().getSerial())
+                            .serial(stockTransactionItem.getStockTransaction().getSerial())
+                            .transactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
                             .registrationDate(stockTransactionItem.getRegistrationDate())
                             .build())
                     .toList();
 
-            return new PageImpl<>(stockTransactionItemDTOS, stockTransactionPage.getPageable(),
-                    stockTransactionPage.getTotalElements());
+            return new PageImpl<>(
+                    stockTransactionItemDTOS,
+                    stockTransactionItemPage.getPageable(),
+                    stockTransactionItemPage.getTotalElements());
         });
     }
 
@@ -199,9 +244,9 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                     .map(stockTransactionItem -> StockTransactionItemDTO.builder()
                             .quantity(stockTransactionItem.getQuantity())
                             .warehouse(stockTransactionItem.getStockTransaction().getWarehouse().getName())
-                            .supplierProductSerial(stockTransactionItem.getSupplierProduct().getSerial())
-                            .stockTransactionSerial(stockTransactionItem.getStockTransaction().getSerial())
-                            .stockTransactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
+                            .supplierProduct(stockTransactionItem.getSupplierProduct().getSerial())
+                            .serial(stockTransactionItem.getStockTransaction().getSerial())
+                            .transactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
                             .registrationDate(stockTransactionItem.getRegistrationDate())
                             .build())
                     .toList();

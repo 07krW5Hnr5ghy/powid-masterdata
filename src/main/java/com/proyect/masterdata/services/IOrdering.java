@@ -18,4 +18,5 @@ public interface IOrdering {
     CompletableFuture<List<OrderDTO>> listOrder(String user) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<OrderDTO> selectOrder(Long orderId,String username) throws InternalErrorExceptions,BadRequestExceptions;
 }

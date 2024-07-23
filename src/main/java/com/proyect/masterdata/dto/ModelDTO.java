@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,4 +15,6 @@ public class ModelDTO {
     private String name;
     private String brand;
     private String user;
+    private Date registrationDate;
+    private Date updateDate;
 }

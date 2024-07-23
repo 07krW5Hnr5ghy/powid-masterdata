@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +36,8 @@ public class SupplierImpl implements ISupplier {
     private final DistrictRepository districtRepository;
     private final CountryRepository countryRepository;
     private final IAudit iAudit;
+    private final DepartmentRepository departmentRepository;
+    private final ProvinceRepository provinceRepository;
     @Override
     public ResponseSuccess save(RequestSupplier requestSupplier, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -272,17 +275,98 @@ public class SupplierImpl implements ISupplier {
     }
 
     @Override
-    public CompletableFuture<Page<SupplierDTO>> list(String name, String ruc, String user, String sort, String sortColumn,
+    public CompletableFuture<Page<SupplierDTO>> list(
+            String user,
+            List<String> names,
+            List<String> rucs,
+            List<String> countries,
+            List<String> supplierTypes,
+            List<String> departments,
+            List<String> provinces,
+            List<String> districts,
+            String sort,
+            String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Supplier> supplierPage;
             Long clientId;
+            List<String> namesUppercase;
+            List<String> rucsUppercase;
+            List<Long> countryIds;
+            List<Long> supplierTypeIds;
+            List<Long> departmentIds;
+            List<Long> provinceIds;
+            List<Long> districtIds;
+
+            if(names != null && !names.isEmpty()){
+                namesUppercase = names.stream().map(String::toUpperCase).toList();
+            }else{
+                namesUppercase = new ArrayList<>();
+            }
+
+            if(rucs != null && !rucs.isEmpty()){
+                rucsUppercase = rucs.stream().map(String::toUpperCase).toList();
+            }else{
+                rucsUppercase = new ArrayList<>();
+            }
+
+            if(countries != null && !countries.isEmpty()){
+                countryIds = countryRepository.findByNameIn(
+                        countries.stream().map(String::toUpperCase).toList()
+                ).stream().map(Country::getId).toList();
+            }else{
+                countryIds = new ArrayList<>();
+            }
+
+            if(supplierTypes != null && !supplierTypes.isEmpty()){
+                supplierTypeIds = supplierTypeRepository.findByNameIn(
+                        supplierTypes.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierType::getId).toList();
+            }else{
+                supplierTypeIds = new ArrayList<>();
+            }
+
+            if(departments != null && !departments.isEmpty()){
+                departmentIds = departmentRepository.findByNameIn(
+                        departments.stream().map(String::toUpperCase).toList()
+                ).stream().map(Department::getId).toList();
+            }else{
+                departmentIds = new ArrayList<>();
+            }
+
+            if(provinces != null && !provinces.isEmpty()){
+                provinceIds = provinceRepository.findByNameIn(
+                        provinces.stream().map(String::toUpperCase).toList()
+                ).stream().map(Province::getId).toList();
+            }else{
+                provinceIds = new ArrayList<>();
+            }
+
+            if(districts != null && !districts.isEmpty()){
+                districtIds = districtRepository.findByNameIn(
+                        districts.stream().map(String::toUpperCase).toList()
+                ).stream().map(District::getId).toList();
+            }else{
+                districtIds = new ArrayList<>();
+            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                supplierPage = supplierRepositoryCustom.searchForSupplier(name, ruc, clientId, sort, sortColumn, pageNumber,
-                        pageSize, true);
+                supplierPage = supplierRepositoryCustom.searchForSupplier(
+                        clientId,
+                        namesUppercase,
+                        rucsUppercase,
+                        countryIds,
+                        supplierTypeIds,
+                        departmentIds,
+                        provinceIds,
+                        districtIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -293,12 +377,18 @@ public class SupplierImpl implements ISupplier {
             }
 
             List<SupplierDTO> supplierDTOs = supplierPage.getContent().stream().map(supplier -> SupplierDTO.builder()
-                    .businessName(supplier.getBusinessName())
+                    .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
                     .location(supplier.getLocation())
-                    .phoneNumber(supplier.getPhoneNumber())
+                    .phone(supplier.getPhoneNumber())
                     .ruc(supplier.getRuc())
+                    .department(supplier.getDistrict().getProvince().getDepartment().getName())
+                    .province(supplier.getDistrict().getProvince().getName())
+                    .district(supplier.getDistrict().getName())
+                    .supplierType(supplier.getSupplierType().getName())
+                    .registrationDate(supplier.getRegistrationDate())
+                    .updateDate(supplier.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(supplierDTOs, supplierPage.getPageable(), supplierPage.getTotalElements());
@@ -323,17 +413,18 @@ public class SupplierImpl implements ISupplier {
             }
 
             return suppliers.stream().map(supplier -> SupplierDTO.builder()
-                    .id(supplier.getId())
-                    .businessName(supplier.getBusinessName())
+                    .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
                     .location(supplier.getLocation())
-                    .phoneNumber(supplier.getPhoneNumber())
+                    .phone(supplier.getPhoneNumber())
                     .ruc(supplier.getRuc())
                     .department(supplier.getDistrict().getProvince().getDepartment().getName())
                     .province(supplier.getDistrict().getProvince().getName())
                     .district(supplier.getDistrict().getName())
                     .supplierType(supplier.getSupplierType().getName())
+                    .registrationDate(supplier.getRegistrationDate())
+                    .updateDate(supplier.getUpdateDate())
                     .build()).toList();
         });
     }
@@ -356,17 +447,52 @@ public class SupplierImpl implements ISupplier {
             }
 
             return suppliers.stream().map(supplier -> SupplierDTO.builder()
-                    .id(supplier.getId())
-                    .businessName(supplier.getBusinessName())
+                    .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
                     .location(supplier.getLocation())
-                    .phoneNumber(supplier.getPhoneNumber())
+                    .phone(supplier.getPhoneNumber())
                     .ruc(supplier.getRuc())
                     .department(supplier.getDistrict().getProvince().getDepartment().getName())
                     .province(supplier.getDistrict().getProvince().getName())
                     .district(supplier.getDistrict().getName())
                     .supplierType(supplier.getSupplierType().getName())
+                    .registrationDate(supplier.getRegistrationDate())
+                    .updateDate(supplier.getUpdateDate())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SupplierDTO>> listSuppliersFilter(String user) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<Supplier> suppliers;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                suppliers = supplierRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(suppliers.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return suppliers.stream().map(supplier -> SupplierDTO.builder()
+                    .name(supplier.getBusinessName())
+                    .country(supplier.getCountry().getName())
+                    .email(supplier.getEmail())
+                    .location(supplier.getLocation())
+                    .phone(supplier.getPhoneNumber())
+                    .ruc(supplier.getRuc())
+                    .department(supplier.getDistrict().getProvince().getDepartment().getName())
+                    .province(supplier.getDistrict().getProvince().getName())
+                    .district(supplier.getDistrict().getName())
+                    .supplierType(supplier.getSupplierType().getName())
+                    .registrationDate(supplier.getRegistrationDate())
+                    .updateDate(supplier.getUpdateDate())
                     .build()).toList();
         });
     }

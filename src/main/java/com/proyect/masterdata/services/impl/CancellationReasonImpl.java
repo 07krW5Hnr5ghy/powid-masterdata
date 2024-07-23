@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.CancellationReason;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.CancellationReasonDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -119,13 +120,13 @@ public class CancellationReasonImpl implements ICancellationReason {
     }
 
     @Override
-    public CompletableFuture<Page<String>> list(String name, String sort, String sortColumn, Integer pageNumber,
-                                                Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<CancellationReasonDTO>> listPagination(String name,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
+                                                               Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<CancellationReason> cancellationReasonPage;
 
             try {
-                cancellationReasonPage = cancellationReasonRepositoryCustom.searchForCancellationReason(name, sort, sortColumn, pageNumber, pageSize, true);
+                cancellationReasonPage = cancellationReasonRepositoryCustom.searchForCancellationReason(name,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber, pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -135,7 +136,11 @@ public class CancellationReasonImpl implements ICancellationReason {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<String> cancellationReasonDTOs = cancellationReasonPage.getContent().stream().map(CancellationReason::getName).toList();
+            List<CancellationReasonDTO> cancellationReasonDTOs = cancellationReasonPage.getContent().stream().map(cancellationReason -> CancellationReasonDTO.builder()
+                    .name(cancellationReason.getName())
+                    .registrationDate(cancellationReason.getRegistrationDate())
+                    .updateDate(cancellationReason.getUpdateDate())
+                    .build()).toList();
 
             return new PageImpl<>(cancellationReasonDTOs, cancellationReasonPage.getPageable(),
                     cancellationReasonPage.getTotalElements());
@@ -143,13 +148,13 @@ public class CancellationReasonImpl implements ICancellationReason {
     }
 
     @Override
-    public CompletableFuture<Page<String>> listFalse(String name, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<CancellationReasonDTO>> listFalse(String name,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
                                                      Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<CancellationReason> cancellationReasonPage;
 
             try {
-                cancellationReasonPage = cancellationReasonRepositoryCustom.searchForCancellationReason(name, sort, sortColumn, pageNumber, pageSize, false);
+                cancellationReasonPage = cancellationReasonRepositoryCustom.searchForCancellationReason(name,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber, pageSize, false);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -159,10 +164,36 @@ public class CancellationReasonImpl implements ICancellationReason {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<String> cancellationReasonDTOs = cancellationReasonPage.getContent().stream().map(CancellationReason::getName).toList();
+            List<CancellationReasonDTO> cancellationReasonDTOs = cancellationReasonPage.getContent().stream().map(cancellationReason -> CancellationReasonDTO.builder()
+                    .name(cancellationReason.getName())
+                    .registrationDate(cancellationReason.getRegistrationDate())
+                    .updateDate(cancellationReason.getUpdateDate())
+                    .build()).toList();
 
             return new PageImpl<>(cancellationReasonDTOs, cancellationReasonPage.getPageable(),
                     cancellationReasonPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<String>> list() throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<CancellationReason> cancellationReasonList;
+            try{
+                cancellationReasonList = cancellationReasonRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(cancellationReasonList.isEmpty()){
+                return Collections.emptyList();
+            }
+            try {
+                return cancellationReasonList.stream().map(CancellationReason::getName).toList();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 

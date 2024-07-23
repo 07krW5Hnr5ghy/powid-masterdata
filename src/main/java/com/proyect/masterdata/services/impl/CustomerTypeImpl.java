@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.CustomerType;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.CustomerTypeDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -156,12 +157,30 @@ public class CustomerTypeImpl implements ICustomerType {
     }
 
     @Override
-    public CompletableFuture<Page<String>> listPaginated(String name, String sort, String sortColumn, Integer pageNumber,
-                                                Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<CustomerTypeDTO>> listPagination(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<CustomerType> customerTypePage;
             try {
-                customerTypePage = customerTypeRepositoryCustom.searchForCustomerType(name,sort,sortColumn,pageNumber,pageSize,true);
+                customerTypePage = customerTypeRepositoryCustom.searchForCustomerType(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -169,7 +188,43 @@ public class CustomerTypeImpl implements ICustomerType {
             if(customerTypePage.isEmpty()){
                 return new PageImpl<>(Collections.emptyList());
             }
-            List<String> customerTypeDTOs = customerTypePage.getContent().stream().map(CustomerType::getName).toList();
+            List<CustomerTypeDTO> customerTypeDTOs = customerTypePage.getContent().stream().map(customerType -> CustomerTypeDTO.builder()
+                    .name(customerType.getName())
+                    .registrationDate(customerType.getRegistrationDate())
+                    .updateDate(customerType.getUpdateDate())
+                    .build()).toList();
+            return new PageImpl<>(customerTypeDTOs,customerTypePage.getPageable(),customerTypePage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<CustomerTypeDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<CustomerType> customerTypePage;
+            try {
+                customerTypePage = customerTypeRepositoryCustom.searchForCustomerType(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(customerTypePage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<CustomerTypeDTO> customerTypeDTOs = customerTypePage.getContent().stream().map(customerType -> CustomerTypeDTO.builder()
+                    .name(customerType.getName())
+                    .registrationDate(customerType.getRegistrationDate())
+                    .updateDate(customerType.getUpdateDate())
+                    .build()).toList();
             return new PageImpl<>(customerTypeDTOs,customerTypePage.getPageable(),customerTypePage.getTotalElements());
         });
     }

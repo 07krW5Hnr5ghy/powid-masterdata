@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Builder
@@ -12,9 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class OrderItemDTO {
-    private Long productId;
     private Long orderId;
-    private Long orderItemId;
     private String sku;
     private String color;
     private String size;
@@ -22,8 +21,11 @@ public class OrderItemDTO {
     private String unit;
     private Integer quantity;
     private Double unitPrice;
-    private Double discount;
+    private String discount;
+    private Double discountAmount;
     private Double totalPrice;
     private String observations;
     private List<String> pictures;
+    private Date registrationDate;
+    private Date updateDate;
 }

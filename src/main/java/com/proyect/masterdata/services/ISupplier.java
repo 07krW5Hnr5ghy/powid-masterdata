@@ -19,8 +19,20 @@ public interface ISupplier {
                 throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> activate(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<Page<SupplierDTO>> list(String name, String ruc, String user, String sort, String sortColumn, Integer pageNumber,
-                        Integer pageSize) throws BadRequestExceptions;
+        CompletableFuture<Page<SupplierDTO>> list(
+                String user,
+                List<String> names,
+                List<String> rucs,
+                List<String> countries,
+                List<String> supplierTypes,
+                List<String> departments,
+                List<String> provinces,
+                List<String> districts,
+                String sort,
+                String sortColumn,
+                Integer pageNumber,
+                Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<List<SupplierDTO>> listSuppliers(String user) throws InternalErrorExceptions,BadRequestExceptions;
         CompletableFuture<List<SupplierDTO>> listSuppliersFalse(String user) throws InternalErrorExceptions,BadRequestExceptions;
+        CompletableFuture<List<SupplierDTO>> listSuppliersFilter(String user) throws InternalErrorExceptions,BadRequestExceptions;
 }

@@ -2,16 +2,20 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.AuditEvent;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.AuditEventDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.AuditEventRepository;
+import com.proyect.masterdata.repository.AuditEventRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAuditEvent;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -25,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 public class AuditEventImpl implements IAuditEvent {
     private final AuditEventRepository auditEventRepository;
     private final UserRepository userRepository;
+    private final AuditEventRepositoryCustom auditEventRepositoryCustom;
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -143,6 +148,50 @@ public class AuditEventImpl implements IAuditEvent {
                 return Collections.emptyList();
             }
             return auditEvents.stream().map(AuditEvent::getName).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<AuditEventDTO>> listPagination(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<AuditEvent> auditEventPage;
+            try {
+                auditEventPage = auditEventRepositoryCustom.searchForAuditEvent(name,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate,sort,sortColumn,pageNumber,pageSize,true);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(auditEventPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<AuditEventDTO> auditEventDTOS = auditEventPage.getContent().stream().map(auditEvent -> AuditEventDTO.builder()
+                    .name(auditEvent.getName())
+                    .registrationDate(auditEvent.getRegistrationDate())
+                    .updateDate(auditEvent.getUpdateDate())
+                    .build()).toList();
+            return new PageImpl<>(auditEventDTOS,auditEventPage.getPageable(),auditEventPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<AuditEventDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<AuditEvent> auditEventPage;
+            try {
+                auditEventPage = auditEventRepositoryCustom.searchForAuditEvent(name,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate,sort,sortColumn,pageNumber,pageSize,false);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(auditEventPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<AuditEventDTO> auditEventDTOS = auditEventPage.getContent().stream().map(auditEvent -> AuditEventDTO.builder()
+                    .name(auditEvent.getName())
+                    .registrationDate(auditEvent.getRegistrationDate())
+                    .updateDate(auditEvent.getUpdateDate())
+                    .build()).toList();
+            return new PageImpl<>(auditEventDTOS,auditEventPage.getPageable(),auditEventPage.getTotalElements());
         });
     }
 }

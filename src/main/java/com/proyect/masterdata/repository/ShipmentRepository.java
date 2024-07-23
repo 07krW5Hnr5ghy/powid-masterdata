@@ -8,8 +8,11 @@ import java.util.List;
 
 @Repository
 public interface ShipmentRepository extends JpaRepository<Shipment,Long> {
-    Shipment findByPurchaseSerialAndShipmentTypeId(String serial,Long shipmentTypeId);
-    Shipment findByPurchaseSerial(String serial);
-    Shipment findByPurchaseIdAndShipmentTypeName(Long purchaseId,String shipmentTypeName);
+    Shipment findByShipmentTypeId(Long shipmentTypeId);
+    Shipment findBySerial(String serial);
+    Shipment findBySerialAndShipmentTypeId(String serial,Long shipmentTypeId);
+    List<Shipment> findBySerialIn(List<String> serials);
+    Shipment findByShipmentTypeName(String shipmentTypeName);
+    Shipment findByShipmentTypeNameAndSerial(String shipmentTypeName,String serial);
     List<Shipment> findAllByClientId(Long clientId);
 }

@@ -191,7 +191,7 @@ public class DepartmentImpl implements IDepartment {
     @Override
     public CompletableFuture<List<DepartmentDTO>> listDepartment() {
         return CompletableFuture.supplyAsync(()->{
-            List<Department> departments = new ArrayList<>();
+            List<Department> departments;
             try {
                 departments = departmentRepository.findAllByStatusTrue().stream()
                         .filter(department -> !department.getName().equals("SISTEMA"))
@@ -246,6 +246,25 @@ public class DepartmentImpl implements IDepartment {
             }
             return new PageImpl<>(departmentMapper.listDepartmentToListDepartmentDTO(departmentPage.getContent()),
                     departmentPage.getPageable(), departmentPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<DepartmentDTO>> listFilter() {
+        return CompletableFuture.supplyAsync(()->{
+            List<Department> departments;
+            try {
+                departments = departmentRepository.findAll().stream()
+                        .filter(department -> !department.getName().equals("SISTEMA"))
+                        .toList();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (departments.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return departmentMapper.listDepartmentToListDepartmentDTO(departments);
         });
     }
 }

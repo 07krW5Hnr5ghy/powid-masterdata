@@ -19,7 +19,14 @@ public interface IStockReplenishmentItem {
     CompletableFuture<ResponseDelete> delete(Long orderId, String productSku, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> update(Long orderId, String productSku,Integer quantity, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(Long orderId, String productSku, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<Page<StockReplenishmentItemDTO>> list(String user,Long orderId,String productSku,String sort,String sortColumn,Integer pageNumber,Integer pageSize);
+    CompletableFuture<Page<StockReplenishmentItemDTO>> list(
+            String user,
+            List<Long> orders,
+            List<String> productSkus,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize);
     CompletableFuture<List<StockReplenishmentItemDTO>> listStockReplenishmentItem(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<StockReplenishmentItemDTO>> listStockReplenishmentItemFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

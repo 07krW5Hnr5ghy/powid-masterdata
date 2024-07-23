@@ -51,7 +51,7 @@ public class SizeTypeController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("filter")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_TYPE_GET')")
     public ResponseEntity<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<SizeTypeDTO>> result = iSizeType.listSizeType();

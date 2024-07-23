@@ -20,24 +20,29 @@ import java.util.List;
 public class CountryRepositoryCustomImpl implements CountryRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
+
     @Override
-    public Page<Country> searchForCountry(String name,String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Country> searchForCountry(String name, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Country> criteriaQuery = criteriaBuilder.createQuery(Country.class);
         Root<Country> itemRoot = criteriaQuery.from(Country.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name,user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                name,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
-            List<Order> countryList = new ArrayList<>();
+            List<Order> colorList = new ArrayList<>();
             if (sort.equalsIgnoreCase("ASC")) {
-                countryList = listASC(sortColumn, criteriaBuilder, itemRoot);
+                colorList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
             if (sort.equalsIgnoreCase("DESC")) {
-                countryList = listDESC(sortColumn, criteriaBuilder, itemRoot);
+                colorList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(countryList);
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(colorList);
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
@@ -47,12 +52,14 @@ public class CountryRepositoryCustomImpl implements CountryRepositoryCustom {
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, user, status);
+        long count = getOrderCount(
+                name,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
+
     public List<Predicate> predicateConditions(
             String name,
-            String user,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Country> itemRoot) {
@@ -65,13 +72,6 @@ public class CountryRepositoryCustomImpl implements CountryRepositoryCustom {
                                     criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
         }
 
-        if (user != null) {
-            conditions.add(
-                    criteriaBuilder.and(
-                            criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("tokenUser")), user.toUpperCase())));
-        }
-
         if (status) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
@@ -82,6 +82,7 @@ public class CountryRepositoryCustomImpl implements CountryRepositoryCustom {
 
         return conditions;
     }
+
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
@@ -90,11 +91,9 @@ public class CountryRepositoryCustomImpl implements CountryRepositoryCustom {
         if (sortColumn.equalsIgnoreCase("NAME")) {
             colorList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
-        if (sortColumn.equalsIgnoreCase("tokenUser")) {
-            colorList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
-        }
         return colorList;
     }
+
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
@@ -103,19 +102,24 @@ public class CountryRepositoryCustomImpl implements CountryRepositoryCustom {
         if (sortColumn.equalsIgnoreCase("NAME")) {
             colorList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
-        if (sortColumn.equalsIgnoreCase("tokenUser")) {
-            colorList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
-        }
         return colorList;
     }
-    private long getOrderCount(String name, String user, Boolean status) {
+
+    private long getOrderCount(
+            String name,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Country> itemRoot = criteriaQuery.from(Country.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                name,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
+
 }

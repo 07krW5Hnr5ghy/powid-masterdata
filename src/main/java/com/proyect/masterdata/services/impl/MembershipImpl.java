@@ -169,7 +169,17 @@ public class MembershipImpl implements IMembership {
     }
 
     @Override
-    public CompletableFuture<Page<MembershipDTO>> list(String user, String membershipState,String subscription , String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<MembershipDTO>> list(
+            String user,
+            String membershipState,
+            String subscription,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Membership> membershipPage;
@@ -191,7 +201,19 @@ public class MembershipImpl implements IMembership {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                membershipPage = membershipRepositoryCustom.searchForMembership(clientId,membershipStateId,subscriptionId,sort,sortColumn,pageNumber,pageSize,true);
+                membershipPage = membershipRepositoryCustom.searchForMembership(
+                        clientId,
+                        membershipStateId,
+                        subscriptionId,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -209,8 +231,18 @@ public class MembershipImpl implements IMembership {
         });
     }
     @Override
-    public CompletableFuture<Page<MembershipDTO>> listFalse(String user, String membershipState,String subscription , String sort, String sortColumn, Integer pageNumber,
-                                    Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<Page<MembershipDTO>> listFalse(
+            String user,
+            String membershipState,
+            String subscription,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Membership> membershipPage;
             Long clientId;
@@ -231,7 +263,19 @@ public class MembershipImpl implements IMembership {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                membershipPage = membershipRepositoryCustom.searchForMembership(clientId,membershipStateId,subscriptionId,sort,sortColumn,pageNumber,pageSize,false);
+                membershipPage = membershipRepositoryCustom.searchForMembership(
+                        clientId,
+                        membershipStateId,
+                        subscriptionId,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

@@ -128,14 +128,14 @@ public class CancelledOrderImpl implements ICancelledOrder {
     }
 
     @Override
-    public CompletableFuture<Page<CancelledOrderDTO>> list(Long orderId, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<CancelledOrderDTO>> list(Long orderId, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<CancelledOrder> pageCancelledOrder;
             Long clientId;
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-                pageCancelledOrder = cancelledOrderRepositoryCustom.searchForCancelledOrder(orderId,clientId,sort,sortColumn,pageNumber,pageSize);
+                pageCancelledOrder = cancelledOrderRepositoryCustom.searchForCancelledOrder(orderId,clientId,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate,sort,sortColumn,pageNumber,pageSize);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -149,6 +149,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
                     .orderId(cancelledOrder.getOrderingId())
                     .cancellationReason(cancelledOrder.getCancellationReason().getName())
                     .registrationDate(cancelledOrder.getRegistrationDate())
+                    .updateDate(cancelledOrder.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(cancelledOrderDTOS,pageCancelledOrder.getPageable(),pageCancelledOrder.getTotalElements());

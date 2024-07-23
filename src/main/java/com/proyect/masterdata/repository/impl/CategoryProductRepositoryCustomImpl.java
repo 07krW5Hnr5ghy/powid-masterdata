@@ -1,6 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,20 +25,18 @@ import jakarta.persistence.criteria.Root;
 
 @Repository
 public class CategoryProductRepositoryCustomImpl implements CategoryProductRepositoryCustom {
-
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
-
     @Override
-    public Page<CategoryProduct> searchForCategoryProduct(String name, String user, String sort, String sortColumn,
-            Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<CategoryProduct> searchForCategoryProduct(String name, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn,
+                                                          Integer pageNumber, Integer pageSize, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<CategoryProduct> criteriaQuery = criteriaBuilder.createQuery(CategoryProduct.class);
         Root<CategoryProduct> itemRoot = criteriaQuery.from(CategoryProduct.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, user,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -63,13 +62,17 @@ public class CategoryProductRepositoryCustomImpl implements CategoryProductRepos
         ordeTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(name, user, status);
+        Long count = getOrderCount(name, user,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status);
         return new PageImpl<>(ordeTypedQuery.getResultList(), pageable, count);
     }
 
     private List<Predicate> predicateConditions(
             String name,
             String user,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<CategoryProduct> itemRoot) {
@@ -88,6 +91,38 @@ public class CategoryProductRepositoryCustomImpl implements CategoryProductRepos
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
                                     criteriaBuilder.upper(itemRoot.get("tokenUser")), user.toUpperCase())));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         if (status) {
@@ -116,6 +151,22 @@ public class CategoryProductRepositoryCustomImpl implements CategoryProductRepos
             categoryProductList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            categoryProductList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            categoryProductList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            categoryProductList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            categoryProductList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
         return categoryProductList;
 
     }
@@ -135,16 +186,32 @@ public class CategoryProductRepositoryCustomImpl implements CategoryProductRepos
             categoryProductList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            categoryProductList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            categoryProductList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            categoryProductList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            categoryProductList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
         return categoryProductList;
     }
 
-    private Long getOrderCount(String name, String user, Boolean status) {
+    private Long getOrderCount(String name, String user,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<CategoryProduct> itemRoot = criteriaQuery.from(CategoryProduct.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, status, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

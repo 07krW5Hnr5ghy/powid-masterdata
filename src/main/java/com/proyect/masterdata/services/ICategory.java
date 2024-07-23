@@ -9,6 +9,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,9 +22,10 @@ public interface ICategory {
             throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<CategoryDTO>> listCategory() throws BadRequestExceptions;
-    CompletableFuture<Page<CategoryDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<Page<CategoryDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    CompletableFuture<Page<CategoryDTO>> list(String name, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
+                                              Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<CategoryDTO>> listStatusFalse(String name, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<CategoryDTO>> listFilter() throws BadRequestExceptions;
 }

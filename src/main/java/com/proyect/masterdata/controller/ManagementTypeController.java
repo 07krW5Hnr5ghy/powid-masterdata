@@ -1,15 +1,18 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.ManagementTypeDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IManagementType;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -32,6 +35,58 @@ public class ManagementTypeController {
     @GetMapping()
     public ResponseEntity<List<String>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<String>> result = iManagementType.list();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("pagination")
+    public ResponseEntity<Page<ManagementTypeDTO>> listPagination(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = true) Integer pageSize
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<ManagementTypeDTO>> result = iManagementType.listPagination(
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize
+        );
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("pagination/false")
+    public ResponseEntity<Page<ManagementTypeDTO>> listFalse(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = true) Integer pageSize
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<ManagementTypeDTO>> result = iManagementType.listFalse(
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize
+        );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

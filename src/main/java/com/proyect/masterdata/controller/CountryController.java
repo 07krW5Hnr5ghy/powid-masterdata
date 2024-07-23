@@ -22,13 +22,18 @@ public class CountryController {
     @GetMapping()
     public ResponseEntity<Page<CountryDTO>> listCountry(
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<CountryDTO>> result = iCountry.listCountry(name,user,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<CountryDTO>> result = iCountry.listCountry(name,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<CountryDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CountryDTO>> result = iCountry.listFilter();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

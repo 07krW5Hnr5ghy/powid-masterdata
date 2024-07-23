@@ -13,11 +13,10 @@ import java.util.Date;
 @Data
 public class StockReturnItemDTO {
     private String serial;
-    private String purchaseSerial;
-    private String supplierProductSerial;
+    private String shipment;
+    private String supplierProduct;
     private Integer quantity;
     private String observations;
     private Date registrationDate;
     private String supplier;
-    private Long id;
 }

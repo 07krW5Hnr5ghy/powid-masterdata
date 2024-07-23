@@ -66,14 +66,31 @@ public class SupplierController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:STOCK','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUPPLIER_GET')")
     public ResponseEntity<Page<SupplierDTO>> list(
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "ruc", required = false) String ruc,
             @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "rucs", required = false) List<String> rucs,
+            @RequestParam(value = "countries", required = false) List<String> countries,
+            @RequestParam(value = "supplierTypes", required = false) List<String> supplierTypes,
+            @RequestParam(value = "departments", required = false) List<String> departments,
+            @RequestParam(value = "provinces", required = false) List<String> provinces,
+            @RequestParam(value = "districts", required = false) List<String> districts,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<SupplierDTO>> result = iSupplier.list(name, ruc, user, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<SupplierDTO>> result = iSupplier.list(
+                user,
+                names,
+                rucs,
+                countries,
+                supplierTypes,
+                departments,
+                provinces,
+                districts,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -92,6 +109,14 @@ public class SupplierController {
             @RequestParam(value = "user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<SupplierDTO>> result = iSupplier.listSuppliers(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<SupplierDTO>> listFilter(
+            @RequestParam(value = "user") String user
+    ) throws BadRequestExceptions,ExecutionException,InterruptedException {
+        CompletableFuture<List<SupplierDTO>> result = iSupplier.listSuppliersFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

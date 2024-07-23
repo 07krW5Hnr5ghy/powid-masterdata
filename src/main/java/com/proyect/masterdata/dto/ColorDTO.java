@@ -5,10 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class ColorDTO {
     private String name;
+    private Date registrationDate;
+    private Date updateDate;
 }

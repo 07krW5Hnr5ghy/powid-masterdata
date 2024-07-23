@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -243,30 +244,56 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public CompletableFuture<Page<SupplierProductDTO>> list(String serial, String user, String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<SupplierProductDTO>> list(
+            String user,
+            List<String> serials,
+            List<String> products,
+            List<String> suppliers,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<SupplierProduct> supplierProductPage;
             Long clientId;
-            Long productId;
-            Long supplierId;
+            List<String> serialsUppercase;
+            List<Long> productIds;
+            List<Long> supplierIds;
 
-            if(productSku != null){
-                productId = productRepository.findBySku(productSku.toUpperCase()).getId();
+            if(serials != null && !serials.isEmpty()){
+                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
             }else {
-                productId = null;
+                serialsUppercase = new ArrayList<>();
             }
 
-            if(supplierRuc != null){
-                supplierId = supplierRepository.findByRuc(supplierRuc.toUpperCase()).getId();
+            if(products != null && !products.isEmpty()){
+                productIds = productRepository.findBySkuIn(
+                        products.stream().map(String::toUpperCase).toList()
+                ).stream().map(Product::getId).toList();
             }else{
-                supplierId = null;
+                productIds = new ArrayList<>();
+            }
+
+            if(suppliers != null && !suppliers.isEmpty()){
+                supplierIds = supplierRepository.findByRucIn(
+                        suppliers.stream().map(String::toUpperCase).toList()
+                ).stream().map(Supplier::getId).toList();
+            }else{
+                supplierIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, productId, supplierId, purchasePrice, sort,
-                        sortColumn, pageNumber, pageSize, true);
+                supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(
+                        clientId,
+                        serialsUppercase,
+                        productIds,
+                        supplierIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -279,9 +306,11 @@ public class SupplierProductImpl implements ISupplierProduct {
             List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
-                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
-                            .supplierName(supplierProduct.getSupplier().getBusinessName())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
                             .build())
                     .toList();
 
@@ -291,30 +320,57 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public CompletableFuture<Page<SupplierProductDTO>> listFalse(String serial, String user, String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
-                                         Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<SupplierProductDTO>> listFalse(
+            String user,
+            List<String> serials,
+            List<String> products,
+            List<String> suppliers,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<SupplierProduct> supplierProductPage;
             Long clientId;
-            Long productId;
-            Long supplierId;
+            List<String> serialsUppercase;
+            List<Long> productIds;
+            List<Long> supplierIds;
 
-            if(productSku != null){
-                productId = productRepository.findBySku(productSku.toUpperCase()).getId();
+            if(serials != null && !serials.isEmpty()){
+                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
             }else {
-                productId = null;
+                serialsUppercase = new ArrayList<>();
             }
 
-            if(supplierRuc != null){
-                supplierId = supplierRepository.findByRuc(supplierRuc.toUpperCase()).getId();
+            if(products != null && !products.isEmpty()){
+                productIds = productRepository.findBySkuIn(
+                        products.stream().map(String::toUpperCase).toList()
+                ).stream().map(Product::getId).toList();
             }else{
-                supplierId = null;
+                productIds = new ArrayList<>();
+            }
+
+            if(suppliers != null && !suppliers.isEmpty()){
+                supplierIds = supplierRepository.findByRucIn(
+                        suppliers.stream().map(String::toUpperCase).toList()
+                ).stream().map(Supplier::getId).toList();
+            }else{
+                supplierIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, productId, supplierId, purchasePrice, sort,
-                        sortColumn, pageNumber, pageSize, false);
+                supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(
+                        clientId,
+                        serialsUppercase,
+                        productIds,
+                        supplierIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -327,9 +383,11 @@ public class SupplierProductImpl implements ISupplierProduct {
             List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
-                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
-                            .supplierName(supplierProduct.getSupplier().getBusinessName())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
                             .build())
                     .toList();
 
@@ -362,10 +420,41 @@ public class SupplierProductImpl implements ISupplierProduct {
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
-                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
-                            .supplierName(supplierProduct.getSupplier().getBusinessName())
-                            .supplierProductId(supplierProduct.getId())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
+                            .build())
+                    .toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SupplierProductDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierProduct> supplierProducts;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                supplierProducts = supplierProductRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(supplierProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return supplierProducts.stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .price(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
                             .build())
                     .toList();
         });
@@ -395,10 +484,11 @@ public class SupplierProductImpl implements ISupplierProduct {
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
-                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
-                            .supplierName(supplierProduct.getSupplier().getBusinessName())
-                            .supplierProductId(supplierProduct.getId())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
                             .build())
                     .toList();
         });
@@ -426,10 +516,11 @@ public class SupplierProductImpl implements ISupplierProduct {
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
-                            .purchasePrice(supplierProduct.getPurchasePrice())
+                            .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
-                            .supplierName(supplierProduct.getSupplier().getBusinessName())
-                            .supplierProductId(supplierProduct.getId())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
                             .build())
                     .toList();
         });

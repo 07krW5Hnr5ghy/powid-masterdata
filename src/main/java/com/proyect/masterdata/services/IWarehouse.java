@@ -19,8 +19,14 @@ public interface IWarehouse {
                 throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String warehouse,String tokenUser) throws BadRequestExceptions;
         CompletableFuture<ResponseSuccess> activate(String warehouse,String tokenUser) throws BadRequestExceptions;
-        CompletableFuture<Page<WarehouseDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
-                        Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<Page<WarehouseDTO>> list(
+                String user,
+                List<String> names,
+                String sort,
+                String sortColumn,
+                Integer pageNumber,
+                Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<List<WarehouseDTO>> listWarehouse(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<WarehouseDTO>> listWarehouseFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<WarehouseDTO>> listFilters(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

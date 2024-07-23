@@ -217,28 +217,55 @@ public class StockTransferImpl implements IStockTransfer {
     }
 
     @Override
-    public CompletableFuture<Page<StockTransferDTO>> list(String user, String originWarehouse, String destinationWarehouse, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<StockTransferDTO>> list(
+            String user,
+            List<String> serials,
+            List<String> originWarehouses,
+            List<String> destinationWarehouses,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<StockTransfer> pageStockTransfer;
             Long clientId;
-            Long originWarehouseId;
-            Long destinationWarehouseId;
+            List<String> serialsUppercase;
+            List<Long> originWarehouseIds;
+            List<Long> destinationWarehouseIds;
 
-            if(originWarehouse != null){
-                originWarehouseId = warehouseRepository.findByNameAndStatusTrue(originWarehouse.toUpperCase()).getId();
+            if(serials != null && !serials.isEmpty()){
+                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
             }else {
-                originWarehouseId = null;
+                serialsUppercase = new ArrayList<>();
             }
 
-            if(destinationWarehouse != null){
-                destinationWarehouseId = warehouseRepository.findByNameAndStatusTrue(destinationWarehouse.toUpperCase()).getId();
+            if(originWarehouses != null && !originWarehouses.isEmpty()){
+                originWarehouseIds = warehouseRepository.findByNameIn(
+                        originWarehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
             }else{
-                destinationWarehouseId = null;
+                originWarehouseIds = new ArrayList<>();
+            }
+
+            if(destinationWarehouses != null && !destinationWarehouses.isEmpty()){
+                destinationWarehouseIds = warehouseRepository.findByNameIn(
+                        destinationWarehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                destinationWarehouseIds = new ArrayList<>();
             }
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageStockTransfer = stockTransferRepositoryCustom.searchForStockTransfer(clientId,originWarehouseId,destinationWarehouseId,sort,sortColumn,pageNumber,pageSize);
+                pageStockTransfer = stockTransferRepositoryCustom.searchForStockTransfer(
+                        clientId,
+                        serialsUppercase,
+                        originWarehouseIds,
+                        destinationWarehouseIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -250,10 +277,9 @@ public class StockTransferImpl implements IStockTransfer {
 
             List<StockTransferDTO> stockTransferDTOS = pageStockTransfer.getContent().stream().map(stockTransfer -> StockTransferDTO.builder()
                     .serial(stockTransfer.getSerial())
-                    .originWarehouse(stockTransfer.getOriginWarehouse().getName())
-                    .destinationWarehouse(stockTransfer.getDestinationWarehouse().getName())
+                    .origin(stockTransfer.getOriginWarehouse().getName())
+                    .destination(stockTransfer.getDestinationWarehouse().getName())
                     .registrationDate(stockTransfer.getRegistrationDate())
-                    .stockTransferId(stockTransfer.getId())
                     .build()).toList();
 
             return new PageImpl<>(stockTransferDTOS,pageStockTransfer.getPageable(),pageStockTransfer.getTotalElements());
@@ -277,10 +303,9 @@ public class StockTransferImpl implements IStockTransfer {
             }
             return stockTransfers.stream().map(stockTransfer -> StockTransferDTO.builder()
                     .serial(stockTransfer.getSerial())
-                    .originWarehouse(stockTransfer.getOriginWarehouse().getName())
-                    .destinationWarehouse(stockTransfer.getDestinationWarehouse().getName())
+                    .origin(stockTransfer.getOriginWarehouse().getName())
+                    .destination(stockTransfer.getDestinationWarehouse().getName())
                     .registrationDate(stockTransfer.getRegistrationDate())
-                    .stockTransferId(stockTransfer.getId())
                     .build()).toList();
         });
     }

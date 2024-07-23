@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -21,13 +22,33 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Courier> searchForCourier(String name, Long clientId, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Courier> searchForCourier(
+            Long clientId,
+            List<String> names,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Courier> criteriaQuery = criteriaBuilder.createQuery(Courier.class);
         Root<Courier> itemRoot = criteriaQuery.from(Courier.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name,clientId,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                names,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
         if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
 
             List<Order> courierList = new ArrayList<>();
@@ -50,23 +71,70 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(name,clientId, status);
+        Long count = getOrderCount(
+                clientId,
+                names,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
-    public List<Predicate> predicateConditions(String name, Long clientId,Boolean status,CriteriaBuilder criteriaBuilder,Root<Courier> itemRoot){
+    public List<Predicate> predicateConditions(
+            Long clientId,
+            List<String> names,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            Boolean status,
+            CriteriaBuilder criteriaBuilder,
+            Root<Courier> itemRoot){
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if(name != null){
+        if(!names.isEmpty()){
             conditions.add(
                     criteriaBuilder.and(
-                            criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("name")),name.toUpperCase())));
+                            itemRoot.get("name").in(names)));
         }
 
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         if (status) {
@@ -92,6 +160,22 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
             courierList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            courierList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            courierList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            courierList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            courierList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
         return courierList;
     }
 
@@ -107,16 +191,48 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
             courierList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            courierList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            courierList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            courierList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            courierList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
         return courierList;
     }
 
-    private Long getOrderCount(String name,Long clientId,Boolean status){
+    private Long getOrderCount(
+            Long clientId,
+            List<String> names,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Courier> itemRoot = criteriaQuery.from(Courier.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name,clientId,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                names,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[]{}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

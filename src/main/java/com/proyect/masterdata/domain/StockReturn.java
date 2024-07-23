@@ -34,8 +34,8 @@ public class StockReturn {
     @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "purchase_id")
-    private Long purchaseId;
+    @Column(name = "shipment_id")
+    private Long shipmentId;
 
     @Column(name = "client_id")
     private Long clientId;
@@ -44,8 +44,8 @@ public class StockReturn {
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id", columnDefinition = "purchaseId", insertable = false, updatable = false)
-    private Purchase purchase;
+    @JoinColumn(name = "shipment_id",columnDefinition = "shipmentId",insertable = false,updatable = false)
+    private Shipment shipment;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)

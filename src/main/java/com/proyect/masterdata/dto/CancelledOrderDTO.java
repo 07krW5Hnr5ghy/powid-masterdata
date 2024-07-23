@@ -15,4 +15,5 @@ public class CancelledOrderDTO {
     private Long orderId;
     private String cancellationReason;
     private Date registrationDate;
+    private Date updateDate;
 }

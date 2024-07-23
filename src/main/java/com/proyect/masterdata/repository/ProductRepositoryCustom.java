@@ -6,12 +6,19 @@ import org.springframework.stereotype.Repository;
 
 import com.proyect.masterdata.domain.Product;
 
+import java.util.List;
+
 @Repository
 public interface ProductRepositoryCustom {
     public Page<Product> searchForProduct(
-            String sku,
-            Model model,
             Long clientId,
+            List<String> skus,
+            List<Long> modelIds,
+            List<Long> brandIds,
+            List<Long> sizeIds,
+            List<Long> categoryProductIds,
+            List<Long> colorIds,
+            List<Long> unitIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

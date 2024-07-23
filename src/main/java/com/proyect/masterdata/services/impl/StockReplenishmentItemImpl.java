@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -287,21 +288,44 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     }
 
     @Override
-    public CompletableFuture<Page<StockReplenishmentItemDTO>> list(String user, Long orderId, String productSku, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public CompletableFuture<Page<StockReplenishmentItemDTO>> list(
+            String user,
+            List<Long> orders,
+            List<String> productSkus,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<StockReplenishmentItem> pageStockReplenishmentItem;
             Long clientId;
-            Long productId;
+            List<Long> orderIds;
+            List<Long> productIds;
 
-            if(productSku != null){
-                productId = productRepository.findBySku(productSku.toUpperCase()).getId();
-            }else {
-                productId = null;
+            if(orders != null && !orders.isEmpty()){
+                orderIds = orders;
+            }else{
+                orderIds = new ArrayList<>();
+            }
+
+            if(productSkus != null && !productSkus.isEmpty()){
+                productIds = productRepository.findBySkuIn(
+                        productSkus.stream().map(String::toUpperCase).toList()
+                ).stream().map(Product::getId).toList();
+            }else{
+                productIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageStockReplenishmentItem = stockReplenishmentItemRepositoryCustom.searchForStockReplenishmentItem(clientId,orderId,productId,sort,sortColumn,pageNumber,pageSize,true);
+                pageStockReplenishmentItem = stockReplenishmentItemRepositoryCustom.searchForStockReplenishmentItem(
+                        clientId,
+                        orderIds,
+                        productIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -312,7 +336,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
             }
 
             List<StockReplenishmentItemDTO> stockReplenishmentItemDTOS = pageStockReplenishmentItem.getContent().stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
-                    .productSku(stockReplenishmentItem.getProduct().getSku())
+                    .product(stockReplenishmentItem.getProduct().getSku())
                     .orderId(stockReplenishmentItem.getOrderId())
                     .quantity(stockReplenishmentItem.getQuantity())
                     .registrationDate(stockReplenishmentItem.getRegistrationDate())
@@ -339,7 +363,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 return Collections.emptyList();
             }
             return stockReplenishmentItems.stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
-                    .productSku(stockReplenishmentItem.getProduct().getSku())
+                    .product(stockReplenishmentItem.getProduct().getSku())
                     .orderId(stockReplenishmentItem.getOrderId())
                     .quantity(stockReplenishmentItem.getQuantity())
                     .registrationDate(stockReplenishmentItem.getRegistrationDate())
@@ -364,7 +388,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 return Collections.emptyList();
             }
             return stockReplenishmentItems.stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
-                    .productSku(stockReplenishmentItem.getProduct().getSku())
+                    .product(stockReplenishmentItem.getProduct().getSku())
                     .orderId(stockReplenishmentItem.getOrderId())
                     .quantity(stockReplenishmentItem.getQuantity())
                     .registrationDate(stockReplenishmentItem.getRegistrationDate())

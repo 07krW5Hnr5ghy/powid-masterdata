@@ -73,7 +73,7 @@ public class AuditImpl implements IAudit {
     }
 
     @Override
-    public CompletableFuture<Page<AuditDTO>> list(String username, String eventName, String clientRuc, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<AuditDTO>> list(String username, String eventName, String clientRuc,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Audit> auditPage;
             Long userId;
@@ -95,7 +95,7 @@ public class AuditImpl implements IAudit {
                 clientId = null;
             }
             try {
-                auditPage = auditRepositoryCustom.searchForAudit(userId,auditEventId,clientId,sort,sortColumn,pageNumber,pageSize);
+                auditPage = auditRepositoryCustom.searchForAudit(userId,auditEventId,clientId,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate,sort,sortColumn,pageNumber,pageSize);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

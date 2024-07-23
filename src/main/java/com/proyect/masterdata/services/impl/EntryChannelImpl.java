@@ -79,13 +79,62 @@ public class EntryChannelImpl implements IEntryChannel {
     }
 
     @Override
-    public CompletableFuture<Page<EntryChannelDTO>> listEntryChannel(String name, String sort, String sortColumn, Integer pageNumber,
-                                                                     Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<EntryChannelDTO>> listEntryChannel(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<EntryChannel> entryChannelPage;
 
             try {
-                entryChannelPage = entryChannelRepositoryCustom.searchEntryChannel(name,sort,sortColumn,pageNumber,pageSize,true);
+                entryChannelPage = entryChannelRepositoryCustom.searchEntryChannel(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (entryChannelPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<EntryChannelDTO> entryChannelDTOS = entryChannelMapper.listEntryChannelToListEntryChannelDTO(entryChannelPage.getContent());
+            return new PageImpl<>(entryChannelDTOS,entryChannelPage.getPageable(),entryChannelPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<EntryChannelDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<EntryChannel> entryChannelPage;
+
+            try {
+                entryChannelPage = entryChannelRepositoryCustom.searchEntryChannel(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

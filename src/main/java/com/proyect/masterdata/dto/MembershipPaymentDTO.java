@@ -18,4 +18,5 @@ public class MembershipPaymentDTO {
     private Double taxAmount;
     private String paymentGateway;
     private Date registrationDate;
+    private Date updateDate;
 }

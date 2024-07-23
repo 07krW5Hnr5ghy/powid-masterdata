@@ -15,4 +15,5 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
     List<Brand> findByNameIn(List<String> namesList);
     List<Brand> findAllByClientIdAndStatusTrue(Long clientId);
     List<Brand> findAllByClientIdAndStatusFalse(Long clientId);
+    List<Brand> findAllByClientId(Long clientId);
 }

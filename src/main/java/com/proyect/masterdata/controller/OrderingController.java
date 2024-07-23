@@ -77,4 +77,13 @@ public class OrderingController {
         CompletableFuture<List<OrderDTO>> result = iOrdering.listOrder(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("detail")
+    public ResponseEntity<OrderDTO> detail(
+            @RequestParam("user") String user,
+            @RequestParam("id") Long id
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<OrderDTO> result = iOrdering.selectOrder(id,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

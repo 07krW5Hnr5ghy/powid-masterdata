@@ -4,11 +4,15 @@ import com.proyect.masterdata.domain.StockReturn;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface StockReturnRepositoryCustom {
-    public Page<StockReturn> searchForStockReturnItem(
-            Long purchaseId,
+    Page<StockReturn> searchForStockReturnItem(
             Long clientId,
+            List<String> serials,
+            List<Long> shipmentIds,
+            List<Long> supplierIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

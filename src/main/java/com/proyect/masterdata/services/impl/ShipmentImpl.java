@@ -17,10 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -31,7 +28,6 @@ public class ShipmentImpl implements IShipment {
     private final UserRepository userRepository;
     private final ShipmentRepository shipmentRepository;
     private final WarehouseRepository warehouseRepository;
-    private final PurchaseRepository purchaseRepository;
     private final IStockTransaction iStockTransaction;
     private final IShipmentItem iShipmentItem;
     private final IWarehouseStock iWarehouseStock;
@@ -40,21 +36,25 @@ public class ShipmentImpl implements IShipment {
     private final ShipmentRepositoryCustom shipmentRepositoryCustom;
     private final SupplierProductRepository supplierProductRepository;
     private final StockReturnRepository stockReturnRepository;
+    private final ShipmentDocumentRepository shipmentDocumentRepository;
     private final IAudit iAudit;
+    private final SupplierRepository supplierRepository;
     @Override
     public ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
         Warehouse warehouse;
         Shipment shipment;
-        Purchase purchase;
         ShipmentType shipmentType;
         StockReturn stockReturn;
+        ShipmentDocument shipmentDocument;
+        Supplier supplier;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipment.getWarehouse().toUpperCase());
-            purchase = purchaseRepository.findBySerialAndStatusTrue(requestShipment.getPurchaseSerial().toUpperCase());
+            shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
+            shipmentDocument = shipmentDocumentRepository.findByNameAndStatusTrue(requestShipment.getShipmentDocument());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -62,6 +62,8 @@ public class ShipmentImpl implements IShipment {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestShipment.getSupplier(), user.getClientId());
         }
 
         if (warehouse == null) {
@@ -72,25 +74,27 @@ public class ShipmentImpl implements IShipment {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
-        if(purchase == null){
-            throw new BadRequestExceptions(Constants.ErrorPurchase);
-        }else {
-            shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
-        }
-
         if(shipmentType == null){
             throw new BadRequestExceptions(Constants.ErrorShipmentType);
         }else{
-            shipment = shipmentRepository.findByPurchaseSerialAndShipmentTypeId(requestShipment.getPurchaseSerial().toUpperCase(),shipmentType.getId());
+            shipment = shipmentRepository.findBySerialAndShipmentTypeId(requestShipment.getSerial(),shipmentType.getId());
         }
 
         if (shipment != null) {
             throw new BadRequestExceptions(Constants.ErrorShipmentExists);
         }
 
+        if(shipmentDocument == null){
+            throw new BadRequestExceptions(Constants.ErrorShipmentDocument);
+        }
+
+        if(supplier==null){
+            throw new BadRequestExceptions(Constants.ErrorSupplier);
+        }
+
         try{
             if(Objects.equals(shipmentType.getName(), "DEVOLUCION")){
-                stockReturn = stockReturnRepository.findBySerial(requestShipment.getPurchaseSerial());
+                stockReturn = stockReturnRepository.findBySerial(requestShipment.getSerial());
                 if(stockReturn == null){
                     throw new BadRequestExceptions(Constants.ErrorShipmentReturn);
                 }
@@ -109,12 +113,12 @@ public class ShipmentImpl implements IShipment {
                     .quantity(shipmentItem.getQuantity())
                     .supplierProductSerial(shipmentItem.getSupplierProductSerial().toUpperCase())
                     .build()).toList();
-            StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getPurchaseSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
+            StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"EMBARQUE",user);
             Shipment newShipment = shipmentRepository.save(Shipment.builder()
-                            .purchaseSerial(requestShipment.getPurchaseSerial().toUpperCase())
+                            .serial(requestShipment.getSerial().toUpperCase())
+                            .supplier(supplier)
+                            .supplierId(supplier.getId())
                             .status(true)
-                            .purchase(purchase)
-                            .purchaseId(purchase.getId())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .warehouse(warehouse)
@@ -122,16 +126,18 @@ public class ShipmentImpl implements IShipment {
                             .shipmentType(shipmentType)
                             .shipmentTypeId(shipmentType.getId())
                             .client(user.getClient())
+                            .shipmentDocument(shipmentDocument)
+                            .shipmentDocumentId(shipmentDocument.getId())
                             .clientId(user.getClientId())
                             .tokenUser(user.getUsername())
                       .build());
             for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProductSerial());
-                  iShipmentItem.save(newShipment,purchase,warehouse.getName(),requestShipmentItem,user.getUsername());
+                  iShipmentItem.save(newShipment,warehouse.getName(),requestShipmentItem,user.getUsername());
                   iWarehouseStock.in(warehouse,supplierProduct,requestShipmentItem.getQuantity(),user);
                   iGeneralStock.in(requestShipmentItem.getSupplierProductSerial(),requestShipmentItem.getQuantity(),user.getUsername());
             }
-            iAudit.save("ADD_SHIPMENT","ADD SHIPMENT FOR PURCHASE "+newShipment.getPurchaseSerial()+".",user.getUsername());
+            iAudit.save("ADD_SHIPMENT","ADD SHIPMENT " + newShipment.getSerial() +".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -149,16 +155,16 @@ public class ShipmentImpl implements IShipment {
             User user;
             Warehouse warehouse;
             Shipment shipment;
-            Purchase purchase;
             ShipmentType shipmentType;
             StockReturn stockReturn;
+            ShipmentDocument shipmentDocument;
+            Supplier supplier;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipment.getWarehouse().toUpperCase());
-                shipment = shipmentRepository.findByPurchaseSerialAndShipmentTypeId(requestShipment.getPurchaseSerial().toUpperCase(),shipmentType.getId());
-                purchase = purchaseRepository.findBySerialAndStatusTrue(requestShipment.getPurchaseSerial().toUpperCase());
+                shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
+                shipmentDocument = shipmentDocumentRepository.findByNameAndStatusTrue(requestShipment.getShipmentDocument());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -166,6 +172,8 @@ public class ShipmentImpl implements IShipment {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestShipment.getSupplier(), user.getClientId());
             }
 
             if (warehouse == null) {
@@ -176,21 +184,27 @@ public class ShipmentImpl implements IShipment {
                 throw new BadRequestExceptions(Constants.ErrorWarehouse);
             }
 
+            if(shipmentType == null){
+                throw new BadRequestExceptions(Constants.ErrorShipmentType);
+            }else{
+                shipment = shipmentRepository.findBySerialAndShipmentTypeId(requestShipment.getSerial(),shipmentType.getId());
+            }
+
             if (shipment != null) {
                 throw new BadRequestExceptions(Constants.ErrorShipmentExists);
             }
 
-            if(purchase == null){
-                throw new BadRequestExceptions(Constants.ErrorPurchase);
+            if(shipmentDocument == null){
+                throw new BadRequestExceptions(Constants.ErrorShipmentDocument);
             }
 
-            if(shipmentType == null){
-                throw new BadRequestExceptions(Constants.ErrorShipmentType);
+            if(supplier == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
             }
 
             try{
                 if(Objects.equals(shipmentType.getName(), "DEVOLUCION")){
-                    stockReturn = stockReturnRepository.findBySerial(requestShipment.getPurchaseSerial());
+                    stockReturn = stockReturnRepository.findBySerial(requestShipment.getSerial());
                     if(stockReturn == null){
                         throw new BadRequestExceptions(Constants.ErrorShipmentReturn);
                     }
@@ -209,12 +223,12 @@ public class ShipmentImpl implements IShipment {
                         .quantity(shipmentItem.getQuantity())
                         .supplierProductSerial(shipmentItem.getSupplierProductSerial().toUpperCase())
                         .build()).toList();
-                StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getPurchaseSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
+                StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"EMBARQUE",user);
                 Shipment newShipment = shipmentRepository.save(Shipment.builder()
-                        .purchaseSerial(requestShipment.getPurchaseSerial().toUpperCase())
+                        .serial(requestShipment.getSerial().toUpperCase())
                         .status(true)
-                        .purchase(purchase)
-                        .purchaseId(purchase.getId())
+                        .supplier(supplier)
+                        .supplierId(supplier.getId())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .warehouse(warehouse)
@@ -223,15 +237,17 @@ public class ShipmentImpl implements IShipment {
                         .shipmentTypeId(shipmentType.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
+                                .shipmentDocument(shipmentDocument)
+                                .shipmentDocumentId(shipmentDocument.getId())
                         .tokenUser(user.getUsername())
                         .build());
                 for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProductSerial());
-                    iShipmentItem.save(newShipment,purchase,warehouse.getName(),requestShipmentItem,user.getUsername());
+                    iShipmentItem.save(newShipment,warehouse.getName(),requestShipmentItem,user.getUsername());
                     iWarehouseStock.in(warehouse,supplierProduct,requestShipmentItem.getQuantity(),user);
                     iGeneralStock.in(requestShipmentItem.getSupplierProductSerial(),requestShipmentItem.getQuantity(),user.getUsername());
                 }
-                iAudit.save("ADD_SHIPMENT","ADD SHIPMENT FOR PURCHASE "+newShipment.getPurchaseSerial()+".",user.getUsername());
+                iAudit.save("ADD_SHIPMENT","ADD SHIPMENT " + newShipment.getSerial() + ".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -245,28 +261,56 @@ public class ShipmentImpl implements IShipment {
     }
 
     @Override
-    public CompletableFuture<Page<ShipmentDTO>> list(String purchaseSerial, String user, String warehouse, String shipmentType, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<ShipmentDTO>> list(
+            List<String> serials,
+            String user,
+            List<String> warehouses,
+            List<String> shipmentTypes,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Shipment> pageShipment;
+            List<String> serialsUppercase;
             Long clientId;
-            Long warehouseId;
-            Long shipmentTypeId;
+            List<Long> warehouseIds;
+            List<Long> shipmentTypeIds;
 
-            if (warehouse != null) {
-                warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
-            } else {
-                warehouseId = null;
+            if(serials != null && !serials.isEmpty()){
+                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
+            }else{
+                serialsUppercase = new ArrayList<>();
             }
 
-            if (shipmentType != null){
-                shipmentTypeId = shipmentTypeRepository.findByNameAndStatusTrue(shipmentType.toUpperCase()).getId();
+            if(warehouses != null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository.findByNameIn(
+                        warehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
+
+            if (shipmentTypes != null && !shipmentTypes.isEmpty()){
+                shipmentTypeIds = shipmentTypeRepository.findByNameIn(
+                        shipmentTypes.stream().map(String::toUpperCase).toList()
+                ).stream().map(ShipmentType::getId).toList();
             }else {
-                shipmentTypeId = null;
+                shipmentTypeIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageShipment = shipmentRepositoryCustom.searchForShipment(clientId,purchaseSerial,warehouseId,shipmentTypeId,sort,sortColumn,pageNumber,pageSize,true);
+                pageShipment = shipmentRepositoryCustom.searchForShipment(
+                        clientId,
+                        serialsUppercase,
+                        warehouseIds,
+                        shipmentTypeIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.ResultsFound);
@@ -277,7 +321,8 @@ public class ShipmentImpl implements IShipment {
             }
 
             List<ShipmentDTO> shipmentDTOS = pageShipment.getContent().stream().map(shipment -> ShipmentDTO.builder()
-                    .purchaseSerial(shipment.getPurchaseSerial())
+                    .serial(shipment.getSerial())
+                    .shipmentDocument(shipment.getShipmentDocument().getName())
                     .warehouse(shipment.getWarehouse().getName())
                     .shipmentType(shipment.getShipmentType().getName())
                     .registrationDate(shipment.getRegistrationDate())
@@ -288,28 +333,56 @@ public class ShipmentImpl implements IShipment {
     }
 
     @Override
-    public CompletableFuture<Page<ShipmentDTO>> listFalse(String purchaseSerial, String user, String warehouse, String shipmentType, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<ShipmentDTO>> listFalse(
+            List<String> serials,
+            String user,
+            List<String> warehouses,
+            List<String> shipmentTypes,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Shipment> pageShipment;
             Long clientId;
-            Long warehouseId;
-            Long shipmentTypeId;
+            List<String> serialsUppercase;
+            List<Long> warehouseIds;
+            List<Long> shipmentTypeIds;
 
-            if (warehouse != null) {
-                warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
-            } else {
-                warehouseId = null;
+            if(serials != null && !serials.isEmpty()){
+                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
+            }else{
+                serialsUppercase = new ArrayList<>();
             }
 
-            if (shipmentType != null){
-                shipmentTypeId = shipmentTypeRepository.findByNameAndStatusTrue(shipmentType.toUpperCase()).getId();
+            if(warehouses != null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository.findByNameIn(
+                        warehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
+
+            if (shipmentTypes != null && !shipmentTypes.isEmpty()){
+                shipmentTypeIds = shipmentTypeRepository.findByNameIn(
+                        shipmentTypes.stream().map(String::toUpperCase).toList()
+                ).stream().map(ShipmentType::getId).toList();
             }else {
-                shipmentTypeId = null;
+                shipmentTypeIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageShipment = shipmentRepositoryCustom.searchForShipment(clientId,purchaseSerial,warehouseId,shipmentTypeId,sort,sortColumn,pageNumber,pageSize,false);
+                pageShipment = shipmentRepositoryCustom.searchForShipment(
+                        clientId,
+                        serialsUppercase,
+                        warehouseIds,
+                        shipmentTypeIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.ResultsFound);
@@ -320,7 +393,8 @@ public class ShipmentImpl implements IShipment {
             }
 
             List<ShipmentDTO> shipmentDTOS = pageShipment.getContent().stream().map(shipment -> ShipmentDTO.builder()
-                    .purchaseSerial(shipment.getPurchaseSerial())
+                    .serial(shipment.getSerial())
+                    .shipmentDocument(shipment.getShipmentDocument().getName())
                     .warehouse(shipment.getWarehouse().getName())
                     .shipmentType(shipment.getShipmentType().getName())
                     .registrationDate(shipment.getRegistrationDate())
@@ -348,11 +422,38 @@ public class ShipmentImpl implements IShipment {
             }
 
             return shipments.stream().map(shipment -> ShipmentDTO.builder()
-                    .purchaseSerial(shipment.getPurchaseSerial())
+                    .serial(shipment.getSerial())
+                    .shipmentDocument(shipment.getShipmentDocument().getName())
                     .warehouse(shipment.getWarehouse().getName())
                     .shipmentType(shipment.getShipmentType().getName())
                     .registrationDate(shipment.getRegistrationDate())
-                    .id(shipment.getId())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<ShipmentDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Shipment> shipments;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                shipments = shipmentRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(shipments.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return shipments.stream().map(shipment -> ShipmentDTO.builder()
+                    .serial(shipment.getSerial())
+                    .shipmentDocument(shipment.getShipmentDocument().getName())
+                    .warehouse(shipment.getWarehouse().getName())
+                    .shipmentType(shipment.getShipmentType().getName())
+                    .registrationDate(shipment.getRegistrationDate())
                     .build()).toList();
         });
     }

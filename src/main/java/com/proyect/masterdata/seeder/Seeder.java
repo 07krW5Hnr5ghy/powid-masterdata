@@ -1,6 +1,5 @@
 package com.proyect.masterdata.seeder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CountryDTO;
 import com.proyect.masterdata.dto.LocationDTO;
@@ -17,9 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -61,7 +57,6 @@ public class Seeder implements CommandLineRunner {
         private final IModule iModule;
         private final ISubscription iSubscription;
         private final IShipment iShipment;
-        private final IPurchase iPurchase;
         private final IOrderState iOrderState;
         private final IOrderPaymentState iOrderPaymentState;
         private final ISaleChannel iSaleChannel;
@@ -95,6 +90,9 @@ public class Seeder implements CommandLineRunner {
         private final IOrderReturn iOrderReturn;
         private final ResourceLoader resourceLoader;
         private final IAuditEvent iAuditEvent;
+        private final ICustomer iCustomer;
+        private final IDiscount iDiscount;
+        private final IDeliveryPoint iDeliveryPoint;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1010,6 +1008,15 @@ public class Seeder implements CommandLineRunner {
                         // customer types
                         iCustomerType.save("tradicional","admin1");
                         iCustomerType.save("mayorista","admin1");
+                        // discounts
+                        iDiscount.save("monto","admin1");
+                        iDiscount.save("porcentaje","admin1");
+                        iDiscount.save("no aplica","admin1");
+                        // delivery points
+                        iDeliveryPoint.save("lima","admin1");
+                        iDeliveryPoint.save("punto scharf","admin1");
+                        iDeliveryPoint.save("provincia","admin1");
+                        iDeliveryPoint.save("recojo en tienda","admin1");
                         // mock users
                         iUserRole.save(business1.getUsername(), "BUSINESS",business1.getUsername());
                         iUserRole.save(business2.getUsername(),"BUSINESS",business2.getUsername());
@@ -1840,8 +1847,8 @@ public class Seeder implements CommandLineRunner {
                         iSupplierProduct.save(requestSupplierProduct36, "NTORRES");
 
                         // stock transaction types mocks
-                        iStockTransactionType.save("entrada", "admin1");
-                        iStockTransactionType.save("salida", "admin1");
+                        iStockTransactionType.save("embarque", "admin1");
+                        iStockTransactionType.save("pedido", "admin1");
                         iStockTransactionType.save("transferencia-entrada", "admin1");
                         iStockTransactionType.save("transferencia-salida", "admin1");
                         iStockTransactionType.save("devolucion-comprador","admin1");
@@ -1912,116 +1919,6 @@ public class Seeder implements CommandLineRunner {
 
                         iCourier.save(requestCourier5,"admin1");
 
-                        // purchase mocks
-
-                        List<RequestPurchaseItem> requestPurchaseItemList1 = new ArrayList<>();
-
-                        RequestPurchaseItem requestPurchaseItem1 = RequestPurchaseItem.builder()
-                                .quantity(15)
-                                .supplierProductSerial("A00001A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem1);
-
-                        RequestPurchaseItem requestPurchaseItem2 = RequestPurchaseItem.builder()
-                                .quantity(4)
-                                .supplierProductSerial("A00002A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem2);
-
-                        RequestPurchaseItem requestPurchaseItem3 = RequestPurchaseItem.builder()
-                                .quantity(20)
-                                .supplierProductSerial("A00003A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem3);
-
-                        RequestPurchaseItem requestPurchaseItem4 = RequestPurchaseItem.builder()
-                                .quantity(25)
-                                .supplierProductSerial("A00004A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem4);
-
-                        RequestPurchaseItem requestPurchaseItem5 = RequestPurchaseItem.builder()
-                                .quantity(7)
-                                .supplierProductSerial("A00005A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem5);
-
-                        RequestPurchaseItem requestPurchaseItem6 = RequestPurchaseItem.builder()
-                                .quantity(15)
-                                .supplierProductSerial("A00006A")
-                                .build();
-
-                        requestPurchaseItemList1.add(requestPurchaseItem6);
-
-                        RequestPurchase requestPurchase1 = RequestPurchase.builder()
-                                .serial("AA00001")
-                                .documentName("factura")
-                                .supplierRuc("12345678922")
-                                .tokenUser("AYEPES")
-                                .purchaseItemsList(requestPurchaseItemList1)
-                                .build();
-
-                        iPurchase.save(requestPurchase1);
-
-                        List<RequestPurchaseItem> requestPurchaseItemList2 = new ArrayList<>();
-
-                        RequestPurchaseItem requestPurchaseItem7 = RequestPurchaseItem.builder()
-                                .quantity(9)
-                                .supplierProductSerial("B00001A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem7);
-
-                        RequestPurchaseItem requestPurchaseItem8 = RequestPurchaseItem.builder()
-                                .quantity(15)
-                                .supplierProductSerial("B00002A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem8);
-
-                        RequestPurchaseItem requestPurchaseItem9 = RequestPurchaseItem.builder()
-                                .quantity(36)
-                                .supplierProductSerial("B00003A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem9);
-
-                        RequestPurchaseItem requestPurchaseItem10 = RequestPurchaseItem.builder()
-                                .quantity(13)
-                                .supplierProductSerial("B00004A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem10);
-
-                        RequestPurchaseItem requestPurchaseItem11 = RequestPurchaseItem.builder()
-                                .quantity(20)
-                                .supplierProductSerial("B00005A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem11);
-
-                        RequestPurchaseItem requestPurchaseItem12 = RequestPurchaseItem.builder()
-                                .quantity(27)
-                                .supplierProductSerial("B00006A")
-                                .build();
-
-                        requestPurchaseItemList2.add(requestPurchaseItem12);
-
-                        RequestPurchase requestPurchase2 = RequestPurchase.builder()
-                                .serial("BB00001")
-                                .documentName("factura")
-                                .purchaseItemsList(requestPurchaseItemList2)
-                                .supplierRuc("12345678925")
-                                .tokenUser("NTORRES")
-                                .build();
-
-                        iPurchase.save(requestPurchase2);
-
                         // shipments
 
                         List<RequestShipmentItem> requestShipmentItemList1 = new ArrayList<>();
@@ -2075,10 +1972,12 @@ public class Seeder implements CommandLineRunner {
                         requestShipmentItemList1.add(requestShipmentItem6);
 
                         RequestShipment requestShipment1 = RequestShipment.builder()
+                                .serial("SA00001")
                                 .shipmentType("embarque")
+                                .shipmentDocument("FACTURA")
                                 .requestShipmentItemList(requestShipmentItemList1)
                                 .warehouse("luminous")
-                                .purchaseSerial("AA00001")
+                                .supplier("12345678922")
                                 .build();
 
                         iShipment.save(requestShipment1, "AYEPES");
@@ -2135,9 +2034,11 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipment requestShipment2 = RequestShipment.builder()
                                 .shipmentType("embarque")
-                                .purchaseSerial("BB00001")
+                                .serial("SB00001")
                                 .requestShipmentItemList(requestShipmentItemList2)
                                 .warehouse("alcazar")
+                                .shipmentDocument("FACTURA")
+                                .supplier("12345678925")
                                 .build();
 
                         iShipment.save(requestShipment2, "NTORRES");
@@ -2154,16 +2055,18 @@ public class Seeder implements CommandLineRunner {
                         receipts1.add(multipartFile1);
 
                         RequestOrderItem requestOrderItem1 = RequestOrderItem.builder()
-                                .productSku("A00001")
-                                .discount(0.00)
+                                .product("A00001")
+                                .discount("no aplica")
+                                .discountAmount(0.00)
                                 .quantity(2)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem2 = RequestOrderItem.builder()
                                 .quantity(1)
-                                .discount(3.00)
-                                .productSku("A00002")
+                                .discount("porcentaje")
+                                .discountAmount(3.00)
+                                .product("A00002")
                                 .observations("")
                                 .build();
 
@@ -2172,20 +2075,25 @@ public class Seeder implements CommandLineRunner {
                         requestOrderItems1.add(requestOrderItem1);
                         requestOrderItems1.add(requestOrderItem2);
 
+                        RequestCustomer requestCustomer1 = RequestCustomer.builder()
+                                .name("Emilio Gomez")
+                                .phone("940544828")
+                                .address("807 IQUIQUE")
+                                .customerType("Tradicional")
+                                .instagram("")
+                                .district("BREÑA")
+                                .tokenUser("CROJAS")
+                                .reference("")
+                                .dni("NO APLICA")
+                                .build();
+
+                        iCustomer.save(requestCustomer1);
+
                         RequestOrderSave requestOrderSave1 = RequestOrderSave.builder()
                                 .advancedPayment(0.00)
-                                .customerAddress("807 IQUIQUE")
-                                .customerDepartment("LIMA")
-                                .customerProvince("LIMA")
-                                .customerDistrict("BREÑA")
-                                .customerName("Emilio Gomez")
-                                .customerPhone("940544828")
-                                .customerReference("")
-                                .customerType("Tradicional")
                                 .deliveryAddress("807 IQUIQUE")
                                 .deliveryAmount(0.00)
                                 .managementType("venta")
-                                .instagram("")
                                 .observations("")
                                 .paymentMethod("yape")
                                 .receipts(receipts1)
@@ -2193,6 +2101,10 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems1)
                                 .storeName("store 1")
                                 .closingChannel("whatsapp")
+                                .deliveryPoint("lima")
+                                .discountAmount(0.00)
+                                .discount("NO APLICA")
+                                .phone("940544828")
                                 .build();
 
                         iOrdering.save(requestOrderSave1,"CROJAS");
@@ -2216,16 +2128,18 @@ public class Seeder implements CommandLineRunner {
                         receipts2.add(multipartFile3);
 
                         RequestOrderItem requestOrderItem3 = RequestOrderItem.builder()
-                                .productSku("A00003")
+                                .product("A00003")
                                 .quantity(3)
-                                .discount(0.00)
+                                .discount("no aplica")
+                                .discountAmount(0.00)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem4 = RequestOrderItem.builder()
-                                .productSku("A00001")
+                                .product("A00001")
                                 .quantity(1)
-                                .discount(2.00)
+                                .discount("porcentaje")
+                                .discountAmount(2.00)
                                 .observations("")
                                 .build();
 
@@ -2234,20 +2148,25 @@ public class Seeder implements CommandLineRunner {
                         requestOrderItems2.add(requestOrderItem3);
                         requestOrderItems2.add(requestOrderItem4);
 
+                        RequestCustomer requestCustomer2 = RequestCustomer.builder()
+                                .name("Consuelo Rojas")
+                                .phone("956701333")
+                                .address("AV. JORGE CHAVEZ 420, OFICN LIMA")
+                                .customerType("Tradicional")
+                                .instagram("")
+                                .district("INDEPENDENCIA")
+                                .tokenUser("CROJAS")
+                                .dni("NO APLICA")
+                                .reference("")
+                                .build();
+
+                        iCustomer.save(requestCustomer2);
+
                         RequestOrderSave requestOrderSave2 = RequestOrderSave.builder()
                                 .advancedPayment(4.00)
-                                .customerAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
-                                .customerDepartment("LIMA")
-                                .customerProvince("LIMA")
-                                .customerDistrict("INDEPENDENCIA")
-                                .customerName("Consuelo Rojas")
-                                .customerPhone("956701333")
-                                .customerReference("")
-                                .customerType("Tradicional")
                                 .deliveryAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
                                 .deliveryAmount(3.00)
                                 .managementType("venta")
-                                .instagram("")
                                 .observations("")
                                 .paymentMethod("plin")
                                 .receipts(receipts2)
@@ -2255,6 +2174,10 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems2)
                                 .storeName("store 1")
                                 .closingChannel("facebook")
+                                .phone("956701333")
+                                .deliveryPoint("provincia")
+                                .discountAmount(2.00)
+                                .discount("PORCENTAJE")
                                 .build();
 
                         iOrdering.save(requestOrderSave2,"CROJAS");
@@ -2262,16 +2185,18 @@ public class Seeder implements CommandLineRunner {
                         List<MultipartFile> receipts3 = new ArrayList<>();
 
                         RequestOrderItem requestOrderItem5 = RequestOrderItem.builder()
-                                .productSku("B00001")
-                                .discount(0.00)
+                                .product("B00001")
+                                .discount("no aplica")
+                                .discountAmount(0.00)
                                 .quantity(1)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem6 = RequestOrderItem.builder()
                                 .quantity(3)
-                                .discount(5.00)
-                                .productSku("B00002")
+                                .discount("porcentaje")
+                                .discountAmount(5.00)
+                                .product("B00002")
                                 .observations("")
                                 .build();
 
@@ -2280,20 +2205,24 @@ public class Seeder implements CommandLineRunner {
                         requestOrderItems3.add(requestOrderItem5);
                         requestOrderItems3.add(requestOrderItem6);
 
+                        RequestCustomer requestCustomer3 = RequestCustomer.builder()
+                                .name("Ulises Trujillo")
+                                .phone("944214925")
+                                .address("AV MARAÑÓN 776")
+                                .customerType("Tradicional")
+                                .instagram("")
+                                .district("ATE")
+                                .tokenUser("MAPARICIO")
+                                .dni("NO APLICA")
+                                .reference("")
+                                .build();
+
+                        iCustomer.save(requestCustomer3);
+
                         RequestOrderSave requestOrderSave3 = RequestOrderSave.builder()
                                 .advancedPayment(0.00)
-                                .customerAddress("AV MARAÑÓN 776")
-                                .customerDepartment("LIMA")
-                                .customerProvince("LIMA")
-                                .customerDistrict("ATE")
-                                .customerName("Ulises Trujillo")
-                                .customerPhone("944214925")
-                                .customerReference("")
-                                .customerType("Tradicional")
-                                .deliveryAddress("AV MARAÑÓN 776")
                                 .deliveryAmount(6.25)
                                 .managementType("venta")
-                                .instagram("")
                                 .observations("")
                                 .paymentMethod("efectivo")
                                 .receipts(receipts3)
@@ -2301,6 +2230,11 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems3)
                                 .storeName("store 2")
                                 .closingChannel("twitter")
+                                .deliveryAddress("AV MARAÑÓN 776")
+                                .phone("944214925")
+                                .deliveryPoint("punto scharf")
+                                .discountAmount(5.00)
+                                .discount("MONTO")
                                 .build();
 
                         iOrdering.save(requestOrderSave3,"MAPARICIO");
@@ -2308,16 +2242,18 @@ public class Seeder implements CommandLineRunner {
                         List<MultipartFile> receipts4 = new ArrayList<>();
 
                         RequestOrderItem requestOrderItem7 = RequestOrderItem.builder()
-                                .productSku("B00002")
-                                .discount(7.00)
+                                .product("B00002")
+                                .discount("porcentaje")
+                                .discountAmount(7.00)
                                 .quantity(5)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem8 = RequestOrderItem.builder()
                                 .quantity(2)
-                                .discount(0.00)
-                                .productSku("B00003")
+                                .discount("no aplica")
+                                .discountAmount(0.00)
+                                .product("B00003")
                                 .observations("")
                                 .build();
 
@@ -2326,20 +2262,25 @@ public class Seeder implements CommandLineRunner {
                         requestOrderItems4.add(requestOrderItem7);
                         requestOrderItems4.add(requestOrderItem8);
 
+                        RequestCustomer requestCustomer4 = RequestCustomer.builder()
+                                .name("Roberto Padilla")
+                                .phone("989538516")
+                                .address("URB. CAPILLA 130")
+                                .customerType("Tradicional")
+                                .instagram("")
+                                .district("CHORRILLOS")
+                                .tokenUser("MAPARICIO")
+                                .dni("NO APLICA")
+                                .reference("")
+                                .build();
+
+                        iCustomer.save(requestCustomer4);
+
                         RequestOrderSave requestOrderSave4 = RequestOrderSave.builder()
                                 .advancedPayment(0.00)
-                                .customerAddress("URB. CAPILLA 130")
-                                .customerDepartment("LIMA")
-                                .customerProvince("LIMA")
-                                .customerDistrict("CHORRILLOS")
-                                .customerName("Roberto Padilla")
-                                .customerPhone("989538516")
-                                .customerReference("")
-                                .customerType("Tradicional")
                                 .deliveryAddress("URB. CAPILLA 130")
                                 .deliveryAmount(10.15)
                                 .managementType("venta")
-                                .instagram("")
                                 .observations("URB. LA CAPILLA 130, CALLE SARAGOZA- LA MOLINA")
                                 .paymentMethod("efectivo")
                                 .receipts(receipts4)
@@ -2347,21 +2288,27 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems4)
                                 .storeName("store 2")
                                 .closingChannel("web")
+                                .phone("989538516")
+                                .deliveryPoint("recojo en tienda")
+                                .discountAmount(5.00)
+                                .discount("PORCENTAJE")
                                 .build();
 
                         iOrdering.save(requestOrderSave4,"MAPARICIO");
 
                         RequestOrderItem requestOrderItem9 = RequestOrderItem.builder()
-                                .productSku("A00003")
+                                .product("A00003")
                                 .quantity(5)
-                                .discount(0.00)
+                                .discount("no aplica")
+                                .discountAmount(0.00)
                                 .observations("")
                                 .build();
 
                         RequestOrderItem requestOrderItem10 = RequestOrderItem.builder()
-                                .productSku("A00001")
+                                .product("A00001")
                                 .quantity(8)
-                                .discount(2.00)
+                                .discount("porcentaje")
+                                .discountAmount(2.00)
                                 .observations("")
                                 .build();
 
@@ -2372,18 +2319,9 @@ public class Seeder implements CommandLineRunner {
 
                         RequestOrderSave requestOrderSave5 = RequestOrderSave.builder()
                                 .advancedPayment(2.00)
-                                .customerAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
-                                .customerDepartment("LIMA")
-                                .customerProvince("LIMA")
-                                .customerDistrict("INDEPENDENCIA")
-                                .customerName("Consuelo Rojas")
-                                .customerPhone("956701333")
-                                .customerReference("")
-                                .customerType("Tradicional")
                                 .deliveryAddress("AV. JORGE CHAVEZ 420, OFICN LIMA")
                                 .deliveryAmount(4.00)
                                 .managementType("venta")
-                                .instagram("")
                                 .observations("")
                                 .paymentMethod("plin")
                                 .receipts(receipts2)
@@ -2391,6 +2329,10 @@ public class Seeder implements CommandLineRunner {
                                 .requestOrderItems(requestOrderItems5)
                                 .storeName("store 1")
                                 .closingChannel("instagram")
+                                .phone("956701333")
+                                .deliveryPoint("lima")
+                                .discountAmount(0.00)
+                                .discount("NO APLICA")
                                 .build();
 
                         iOrdering.save(requestOrderSave5,"CROJAS");
@@ -2534,7 +2476,7 @@ public class Seeder implements CommandLineRunner {
                         requestStockReturnItemList.add(requestStockReturnItem3);
                         RequestStockReturn requestStockReturn1 = RequestStockReturn.builder()
                                 .serial("SR1AA00001")
-                                .purchaseSerial("AA00001")
+                                .shipmentSerial("SA00001")
                                 .warehouse("luminous")
                                 .tokenUser("AYEPES")
                                 .requestStockReturnItemList(requestStockReturnItemList)
@@ -2585,8 +2527,9 @@ public class Seeder implements CommandLineRunner {
                         iStockTransfer.save(requestStockTransfer1,"AYEPES");
                         // add order item mock
                         RequestOrderItem requestOrderItemAdd = RequestOrderItem.builder()
-                                .productSku("B00003")
-                                .discount(0.00)
+                                .product("B00003")
+                                .discount("porcentaje")
+                                .discountAmount(0.00)
                                 .observations("")
                                 .quantity(2)
                                 .build();
@@ -2595,8 +2538,9 @@ public class Seeder implements CommandLineRunner {
                         iOrderItem.delete(4L,"B00002","VMENDEZ");
                         // update order item mock
                         RequestOrderItem requestOrderItemUpdate = RequestOrderItem.builder()
-                                .productSku("B00001")
-                                .discount(5.00)
+                                .product("B00001")
+                                .discount("porcentaje")
+                                .discountAmount(5.00)
                                 .quantity(3)
                                 .observations("se adicionan dos unidades al pedido")
                                 .build();

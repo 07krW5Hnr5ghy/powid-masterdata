@@ -18,9 +18,14 @@ public interface IWarehouseStock {
                         throws InternalErrorExceptions, BadRequestExceptions;
         ResponseSuccess out(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<Page<WarehouseStockDTO>> list(String warehouse, String user, String sort, String sortColumn,
-                                                       Integer pageNumber,
-                                                       Integer pageSize) throws InternalErrorExceptions;
+        CompletableFuture<Page<WarehouseStockDTO>> list(
+                List<String> warehouses,
+                List<String> supplierProducts,
+                String user,
+                String sort,
+                String sortColumn,
+                Integer pageNumber,
+                Integer pageSize) throws InternalErrorExceptions;
         CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,Long warehouseId) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

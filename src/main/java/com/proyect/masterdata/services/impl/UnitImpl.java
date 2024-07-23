@@ -263,4 +263,27 @@ public class UnitImpl implements IUnit {
         });
     }
 
+    @Override
+    public CompletableFuture<List<UnitDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Unit> units;
+
+            try {
+                units = unitRepository.findAll();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (units.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return units.stream().map(unit -> UnitDTO.builder()
+                    .name(unit.getName())
+                    .unitType(unit.getUnitType().getName())
+                    .build()).toList();
+        });
+    }
+
 }

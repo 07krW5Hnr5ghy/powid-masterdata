@@ -58,9 +58,6 @@ public class ShipmentItem {
     @Column(name = "shipment_id")
     private Long shipmentId;
 
-    @Column(name = "purchase_item_id")
-    private Long purchaseItemId;
-
     @Column(name = "token_user")
     private String tokenUser;
 
@@ -75,9 +72,5 @@ public class ShipmentItem {
     @ManyToOne
     @JoinColumn(name = "shipment_id",columnDefinition = "shipmentId",insertable = false,updatable = false)
     private Shipment shipment;
-
-    @ManyToOne
-    @JoinColumn(name = "purchase_item_id",columnDefinition = "purchaseItemId",insertable = false,updatable = false)
-    private PurchaseItem purchaseItem;
 
 }

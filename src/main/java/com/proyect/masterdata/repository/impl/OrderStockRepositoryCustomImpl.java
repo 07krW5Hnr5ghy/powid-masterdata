@@ -21,13 +21,27 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<OrderStock> searchForOrderStock(Long warehouseId, Long orderId, Long clientId, String sort, String sortColumn, Integer pageNumber, Integer pageSize,Boolean status) {
+    public Page<OrderStock> searchForOrderStock(
+            Long clientId,
+            List<Long> orderIds,
+            List<Long> warehouseIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderStock> criteriaQuery = criteriaBuilder.createQuery(OrderStock.class);
         Root<OrderStock> itemRoot = criteriaQuery.from(OrderStock.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(warehouseId,orderId,clientId,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                orderIds,
+                warehouseIds,
+                status,
+                criteriaBuilder,
+                itemRoot);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
             List<Order> orderStockList = new ArrayList<>();
@@ -51,19 +65,29 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
         orderingTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        Long count = getOrderCount(warehouseId,orderId,clientId,status);
+        Long count = getOrderCount(
+                clientId,
+                orderIds,
+                warehouseIds,
+                status);
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
     }
 
-    List<Predicate> predicateConditions(Long warehouseId,Long orderId,Long clientId,Boolean status,CriteriaBuilder criteriaBuilder,Root<OrderStock> itemRoot){
+    List<Predicate> predicateConditions(
+            Long clientId,
+            List<Long> orderIds,
+            List<Long> warehouseIds,
+            Boolean status,
+            CriteriaBuilder criteriaBuilder,
+            Root<OrderStock> itemRoot){
         List<Predicate> conditions = new ArrayList<>();
 
-        if(warehouseId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("warehouseId"),warehouseId)));
+        if(!orderIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("orderId").in(orderIds)));
         }
 
-        if(orderId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderId"),orderId)));
+        if(!warehouseIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("warehouseId").in(warehouseIds)));
         }
 
         if(clientId != null){
@@ -117,13 +141,23 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
         return orderStockList;
     }
 
-    private Long getOrderCount(Long warehouseId,Long orderId,Long clientId,Boolean status){
+    private Long getOrderCount(
+            Long clientId,
+            List<Long> orderIds,
+            List<Long> warehouseIds,
+            Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<OrderStock> itemRoot = criteriaQuery.from(OrderStock.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(warehouseId,orderId,clientId,status,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                orderIds,
+                warehouseIds,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

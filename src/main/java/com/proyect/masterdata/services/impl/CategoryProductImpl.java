@@ -140,14 +140,14 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
-    public CompletableFuture<Page<CategoryProductDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<CategoryProductDTO>> list(String name, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
 
             Page<CategoryProduct> categoryProductPage;
 
             try {
-                categoryProductPage = categoryProductRepositoryCustom.searchForCategoryProduct(name, user, sort, sortColumn,
+                categoryProductPage = categoryProductRepositoryCustom.searchForCategoryProduct(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn,
                         pageNumber, pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -162,6 +162,40 @@ public class CategoryProductImpl implements ICategoryProduct {
                     .map(categoryProduct -> CategoryProductDTO.builder()
                             .description(categoryProduct.getDescription())
                             .name(categoryProduct.getName())
+                            .registrationDate(categoryProduct.getRegistrationDate())
+                            .updateDate(categoryProduct.getUpdateDate())
+                            .build())
+                    .toList();
+
+            return new PageImpl<>(categoryProductDTOs, categoryProductPage.getPageable(),
+                    categoryProductPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<CategoryProductDTO>> listFalse(String name, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+
+            Page<CategoryProduct> categoryProductPage;
+
+            try {
+                categoryProductPage = categoryProductRepositoryCustom.searchForCategoryProduct(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn,
+                        pageNumber, pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (categoryProductPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
+                    .map(categoryProduct -> CategoryProductDTO.builder()
+                            .description(categoryProduct.getDescription())
+                            .name(categoryProduct.getName())
+                            .registrationDate(categoryProduct.getRegistrationDate())
+                            .updateDate(categoryProduct.getUpdateDate())
                             .build())
                     .toList();
 
@@ -187,6 +221,8 @@ public class CategoryProductImpl implements ICategoryProduct {
                     .map(categoryProduct -> CategoryProductDTO.builder()
                             .description(categoryProduct.getDescription())
                             .name(categoryProduct.getName())
+                            .registrationDate(categoryProduct.getRegistrationDate())
+                            .updateDate(categoryProduct.getUpdateDate())
                             .build())
                     .toList();
         });
@@ -293,6 +329,30 @@ public class CategoryProductImpl implements ICategoryProduct {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<CategoryProductDTO>> listFilter() throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<CategoryProduct> categoryProducts;
+            try {
+                categoryProducts = categoryProductRepository.findAll();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(categoryProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+            return categoryProducts.stream()
+                    .map(categoryProduct -> CategoryProductDTO.builder()
+                            .description(categoryProduct.getDescription())
+                            .name(categoryProduct.getName())
+                            .registrationDate(categoryProduct.getRegistrationDate())
+                            .updateDate(categoryProduct.getUpdateDate())
+                            .build())
+                    .toList();
         });
     }
 }

@@ -78,4 +78,11 @@ public class UnitController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
+    @GetMapping("filter")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_GET')")
+    public ResponseEntity<List<UnitDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<UnitDTO>> result = iUnit.listFilter();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
 }

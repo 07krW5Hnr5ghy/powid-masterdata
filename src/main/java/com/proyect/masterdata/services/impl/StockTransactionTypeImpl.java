@@ -195,10 +195,34 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
     @Override
     public CompletableFuture<List<StockTransactionTypeDTO>> list() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<StockTransactionTypeDTO> stockTransactionTypeList = new ArrayList<>();
+            List<StockTransactionTypeDTO> stockTransactionTypeList;
 
             try {
                 stockTransactionTypeList = stockTransactionTypeRepository.findAllByStatusTrue().stream()
+                        .map(stockTransactionType -> StockTransactionTypeDTO.builder()
+                                .name(stockTransactionType.getName())
+                                .build())
+                        .toList();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (stockTransactionTypeList.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return stockTransactionTypeList;
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<StockTransactionTypeDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<StockTransactionTypeDTO> stockTransactionTypeList;
+
+            try {
+                stockTransactionTypeList = stockTransactionTypeRepository.findAll().stream()
                         .map(stockTransactionType -> StockTransactionTypeDTO.builder()
                                 .name(stockTransactionType.getName())
                                 .build())

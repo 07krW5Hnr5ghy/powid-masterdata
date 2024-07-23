@@ -218,4 +218,9 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
                     paymentMethodPage.getPageable(), paymentMethodPage.getTotalElements());
         });
     }
+
+    @Override
+    public CompletableFuture<List<OrderPaymentMethodDTO>> listFilter() throws BadRequestExceptions {
+        return null;
+    }
 }

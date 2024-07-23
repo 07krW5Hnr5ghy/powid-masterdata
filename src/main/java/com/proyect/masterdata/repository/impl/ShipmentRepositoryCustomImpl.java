@@ -22,7 +22,16 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Shipment> searchForShipment(Long clientId, String purchaseSerial, Long warehouseId,Long shipmentTypeId, String sort, String sortColumn, Integer pageNumber, Integer pageSize,Boolean status) {
+    public Page<Shipment> searchForShipment(
+            Long clientId,
+            List<String> serials,
+            List<Long> warehouseIds,
+            List<Long> shipmentTypeIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Shipment> criteriaQuery = criteriaBuilder.createQuery(Shipment.class);
@@ -31,7 +40,14 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicate(clientId, purchaseSerial, warehouseId,shipmentTypeId,status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                serials,
+                warehouseIds,
+                shipmentTypeIds,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -55,12 +71,23 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(clientId, purchaseSerial, warehouseId,shipmentTypeId,status);
+        Long count = getOrderCount(
+                clientId,
+                serials,
+                warehouseIds,
+                shipmentTypeIds,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
-    private List<Predicate> predicate(Long clientId, String purchaseSerial, Long warehouseId,Long shipmentTypeId,Boolean status, CriteriaBuilder criteriaBuilder,
-                                      Root<Shipment> itemRoot) {
+    private List<Predicate> predicate(
+            Long clientId,
+            List<String> serials,
+            List<Long> warehouseIds,
+            List<Long> shipmentTypeIds,
+            Boolean status,
+            CriteriaBuilder criteriaBuilder,
+            Root<Shipment> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -68,17 +95,16 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (purchaseSerial != null) {
-            conditions.add(criteriaBuilder
-                    .and(criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("purchaseSerial")), purchaseSerial.toUpperCase())));
+        if(!serials.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("serial").in(serials)));
         }
 
-        if (warehouseId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("warehouseId"), warehouseId)));
+        if(!warehouseIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("warehouseId").in(warehouseIds)));
         }
 
-        if (shipmentTypeId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("shipmentTypeId"), shipmentTypeId)));
+        if(!shipmentTypeIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("shipmentTypeId").in(shipmentTypeIds)));
         }
 
         if (status) {
@@ -138,12 +164,24 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
         return shipmentList;
     }
 
-    private Long getOrderCount(Long clientId, String purchaseSerial, Long warehouseId,Long shipmentTypeId,Boolean status) {
+    private Long getOrderCount(
+            Long clientId,
+            List<String> serials,
+            List<Long> warehouseIds,
+            List<Long> shipmentTypeIds,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Shipment> itemRoot = criteriaQuery.from(Shipment.class);
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(clientId, purchaseSerial, warehouseId,shipmentTypeId,status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                serials,
+                warehouseIds,
+                shipmentTypeIds,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

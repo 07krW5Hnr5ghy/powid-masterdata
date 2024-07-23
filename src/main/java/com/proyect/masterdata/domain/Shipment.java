@@ -23,8 +23,8 @@ public class Shipment {
     @Column(name = "shipment_id")
     private Long id;
 
-    @Column(name = "purchaseSerial")
-    private String purchaseSerial;
+    @Column(name = "serial")
+    private String serial;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -43,11 +43,14 @@ public class Shipment {
     @Column(name = "warehouse_id")
     private Long warehouseId;
 
-    @Column(name = "purchase_id")
-    private Long purchaseId;
-
     @Column(name = "shipment_type_id")
     private Long shipmentTypeId;
+
+    @Column(name = "shipment_document_id")
+    private Long shipmentDocumentId;
+
+    @Column(name = "supplier_id")
+    private Long supplierId;
 
     @Column(name = "token_user")
     private String tokenUser;
@@ -61,10 +64,15 @@ public class Shipment {
     private Warehouse warehouse;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id", columnDefinition = "purchaseId", insertable = false, updatable = false)
-    private Purchase purchase;
+    @JoinColumn(name = "shipment_document_id",columnDefinition = "shipmentDocumentId",insertable = false,updatable = false)
+    private ShipmentDocument shipmentDocument;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id",columnDefinition = "supplierId", insertable = false, updatable = false)
+    private Supplier supplier;
 
     @ManyToOne
     @JoinColumn(name = "shipment_type_id",columnDefinition = "shipmentTypeId",insertable = false,updatable = false)
     private ShipmentType shipmentType;
+
 }

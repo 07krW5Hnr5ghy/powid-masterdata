@@ -17,4 +17,5 @@ public interface IUnit {
     CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<List<UnitDTO>> listUnit() throws BadRequestExceptions;
     CompletableFuture<List<UnitDTO>> listUnitByType(String unitTypeName) throws BadRequestExceptions;
+    CompletableFuture<List<UnitDTO>> listFilter() throws BadRequestExceptions;
 }

@@ -10,4 +10,5 @@ import java.util.List;
 public interface StockTransferRepository extends JpaRepository<StockTransfer,Long> {
     List<StockTransfer> findAllByClientId(Long clientId);
     StockTransfer findBySerial(String serial);
+    List<StockTransfer> findBySerialIn(List<String> serial);
 }

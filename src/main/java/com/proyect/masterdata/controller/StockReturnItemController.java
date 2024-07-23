@@ -25,14 +25,24 @@ public class StockReturnItemController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_ITEM_GET')")
     public ResponseEntity<Page<StockReturnItemDTO>> list(
-            @RequestParam(value = "purchaseSerial", required = false) String purchaseSerial,
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "supplierProductSerial", required = false) String supplierProductSerial,
+            @RequestParam(value = "stockReturns", required = false) List<String> stockReturns,
+            @RequestParam(value = "shipments", required = false) List<String> shipments,
+            @RequestParam(value = "suppliers", required = false) List<String> suppliers,
+            @RequestParam(value = "supplierProducts", required = false) List<String> supplierProducts,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<StockReturnItemDTO>> result = iStockReturnItem.list(purchaseSerial, user,supplierProductSerial, sort, sortColumn, pageNumber,
+        CompletableFuture<Page<StockReturnItemDTO>> result = iStockReturnItem.list(
+                user,
+                stockReturns,
+                shipments,
+                suppliers,
+                supplierProducts,
+                sort,
+                sortColumn,
+                pageNumber,
                 pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }

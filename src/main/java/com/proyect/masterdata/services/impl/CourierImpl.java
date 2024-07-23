@@ -19,10 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -35,7 +32,6 @@ public class CourierImpl implements ICourier {
     private final OrderingRepository orderingRepository;
     private final OrderStateRepository orderStateRepository;
     private final OrderPaymentMethodRepository orderPaymentMethodRepository;
-    private final SaleRepository saleRepository;
     private final ICourierPicture iCourierPicture;
     private final IAudit iAudit;
     @Override
@@ -160,13 +156,40 @@ public class CourierImpl implements ICourier {
     }
 
     @Override
-    public CompletableFuture<Page<CourierDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<CourierDTO>> list(
+            String user,
+            List<String> names,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Courier> pageCourier;
             Long clientId;
+            List<String> namesUppercase;
+            if(names != null && !names.isEmpty()){
+                namesUppercase = names.stream().map(String::toUpperCase).toList();
+            }else{
+                namesUppercase = new ArrayList<>();
+            }
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-                pageCourier = courierRepositoryCustom.searchForCourier(name,clientId,sort,sortColumn,pageNumber,pageSize,true);
+                pageCourier = courierRepositoryCustom.searchForCourier(
+                        clientId,
+                        namesUppercase,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -177,8 +200,10 @@ public class CourierImpl implements ICourier {
             }
 
             List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
-                    .courier(courier.getName())
-                    .phoneNumber(courier.getPhoneNumber())
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
@@ -186,14 +211,35 @@ public class CourierImpl implements ICourier {
     }
 
     @Override
-    public CompletableFuture<Page<CourierDTO>> listFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<CourierDTO>> listFalse(
+            String user,
+            List<String> names,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Courier> pageCourier;
             Long clientId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-                pageCourier = courierRepositoryCustom.searchForCourier(name,clientId,sort,sortColumn,pageNumber,pageSize,false);
+                pageCourier = courierRepositoryCustom.searchForCourier(
+                        clientId,
+                        names,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -204,8 +250,10 @@ public class CourierImpl implements ICourier {
             }
 
             List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
-                    .courier(courier.getName())
-                    .phoneNumber(courier.getPhoneNumber())
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
@@ -286,8 +334,10 @@ public class CourierImpl implements ICourier {
                 return Collections.emptyList();
             }
             return couriers.stream().map(courier -> CourierDTO.builder()
-                    .courier(courier.getName())
-                    .phoneNumber(courier.getPhoneNumber())
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
                     .build()).toList();
         });
     }
@@ -308,8 +358,34 @@ public class CourierImpl implements ICourier {
                 return Collections.emptyList();
             }
             return couriers.stream().map(courier -> CourierDTO.builder()
-                    .courier(courier.getName())
-                    .phoneNumber(courier.getPhoneNumber())
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<CourierDTO>> listFilters(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<Courier> couriers;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                couriers = courierRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(couriers.isEmpty()){
+                return Collections.emptyList();
+            }
+            return couriers.stream().map(courier -> CourierDTO.builder()
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
                     .build()).toList();
         });
     }

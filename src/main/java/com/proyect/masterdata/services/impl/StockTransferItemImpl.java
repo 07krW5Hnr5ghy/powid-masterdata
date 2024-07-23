@@ -1,17 +1,11 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.StockTransfer;
-import com.proyect.masterdata.domain.StockTransferItem;
-import com.proyect.masterdata.domain.SupplierProduct;
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.StockTransferItemDTO;
 import com.proyect.masterdata.dto.request.RequestStockTransferItem;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.StockTransferItemRepository;
-import com.proyect.masterdata.repository.StockTransferItemRepositoryCustom;
-import com.proyect.masterdata.repository.SupplierProductRepository;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStockTransferItem;
 import com.proyect.masterdata.utils.Constants;
@@ -21,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +30,8 @@ public class StockTransferItemImpl implements IStockTransferItem {
     private final StockTransferItemRepositoryCustom stockTransferItemRepositoryCustom;
     private final SupplierProductRepository supplierProductRepository;
     private final IAudit iAudit;
+    private final StockTransferRepository stockTransferRepository;
+    private final WarehouseRepository warehouseRepository;
     @Override
     public StockTransferItem save(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -85,21 +82,68 @@ public class StockTransferItemImpl implements IStockTransferItem {
     }
 
     @Override
-    public CompletableFuture<Page<StockTransferItemDTO>> list(String user, Long stockTransferId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<StockTransferItemDTO>> list(
+            String user,
+            List<String> stockTransfers,
+            List<String> originWarehouses,
+            List<String> destinationWarehouses,
+            List<String> supplierProducts,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<StockTransferItem> pageStockTransferItem;
             Long clientId;
-            Long supplierProductId;
+            List<Long> stockTransferIds;
+            List<Long> originWarehouseIds;
+            List<Long> destinationWarehouseIds;
+            List<Long> supplierProductIds;
 
-            if(supplierProductSerial != null){
-                supplierProductId = supplierProductRepository.findBySerial(supplierProductSerial.toUpperCase()).getId();
+            if(stockTransfers!=null&&!stockTransfers.isEmpty()){
+                stockTransferIds = stockTransferRepository.findBySerialIn(
+                        stockTransfers.stream().map(String::toUpperCase).toList()
+                ).stream().map(StockTransfer::getId).toList();
             }else{
-                supplierProductId = null;
+                stockTransferIds = new ArrayList<>();
+            }
+
+            if(originWarehouses!=null&&!originWarehouses.isEmpty()){
+                originWarehouseIds = warehouseRepository.findByNameIn(
+                        originWarehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                originWarehouseIds = new ArrayList<>();
+            }
+
+            if(destinationWarehouses!=null&&!destinationWarehouses.isEmpty()){
+                destinationWarehouseIds = warehouseRepository.findByNameIn(
+                        destinationWarehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                destinationWarehouseIds = new ArrayList<>();
+            }
+
+            if(supplierProducts!=null&&!supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
+            }else{
+                supplierProductIds = new ArrayList<>();
             }
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageStockTransferItem = stockTransferItemRepositoryCustom.searchForStockTransferItem(clientId,stockTransferId,supplierProductId,sort,sortColumn,pageNumber,pageSize);
+                pageStockTransferItem = stockTransferItemRepositoryCustom.searchForStockTransferItem(
+                        clientId,
+                        stockTransferIds,
+                        originWarehouseIds,
+                        destinationWarehouseIds,
+                        supplierProductIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -110,8 +154,10 @@ public class StockTransferItemImpl implements IStockTransferItem {
             }
 
             List<StockTransferItemDTO> stockTransferItemDTOS = pageStockTransferItem.getContent().stream().map(stockTransferItem -> StockTransferItemDTO.builder()
-                    .stockTransferId(stockTransferItem.getStockTransferId())
-                    .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
+                    .serial(stockTransferItem.getStockTransfer().getSerial())
+                    .origin(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
+                    .destination(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())
+                    .supplierProduct(stockTransferItem.getSupplierProduct().getSerial())
                     .quantity(stockTransferItem.getQuantity())
                     .registrationDate(stockTransferItem.getRegistrationDate())
                     .build()
@@ -142,11 +188,10 @@ public class StockTransferItemImpl implements IStockTransferItem {
             }
             return stockTransferItems.stream().map(stockTransferItem -> StockTransferItemDTO.builder()
                     .serial(stockTransferItem.getStockTransfer().getSerial())
-                    .stockTransferId(stockTransferItem.getStockTransferId())
-                    .supplierProductSerial(stockTransferItem.getSupplierProduct().getSerial())
+                    .supplierProduct(stockTransferItem.getSupplierProduct().getSerial())
                     .quantity(stockTransferItem.getQuantity())
-                    .originWarehouse(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
-                    .destinationWarehouse(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())
+                    .origin(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
+                    .destination(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())
                     .registrationDate(stockTransferItem.getRegistrationDate())
                     .build()
             ).toList();

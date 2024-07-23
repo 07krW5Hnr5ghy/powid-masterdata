@@ -201,15 +201,32 @@ public class WarehouseImpl implements IWarehouse {
     }
 
     @Override
-    public CompletableFuture<Page<WarehouseDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<WarehouseDTO>> list(
+            String user,
+            List<String> names,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Warehouse> warehousePage;
             Long clientId;
+            List<String> namesUppercase;
+
+            if(names != null && !names.isEmpty()){
+                namesUppercase = names.stream().map(String::toUpperCase).toList();
+            }else{
+                namesUppercase = new ArrayList<>();
+            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                warehousePage = warehouseRepositoryCustom.searchForWarehouse(name, clientId, sort, sortColumn, pageNumber,
+                warehousePage = warehouseRepositoryCustom.searchForWarehouse(
+                        clientId,
+                        namesUppercase,
+                        sort,
+                        sortColumn,
+                        pageNumber,
                         pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -223,6 +240,8 @@ public class WarehouseImpl implements IWarehouse {
             List<WarehouseDTO> warehouseDTOs = warehousePage.getContent().stream().map(warehouse -> WarehouseDTO.builder()
                     .location(warehouse.getLocation())
                     .name(warehouse.getName())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
                     .build()).toList();
 
             return new PageImpl<>(warehouseDTOs, warehousePage.getPageable(), warehousePage.getTotalElements());
@@ -249,7 +268,8 @@ public class WarehouseImpl implements IWarehouse {
             return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
                     .location(warehouse.getLocation())
                     .name(warehouse.getName())
-                    .id(warehouse.getId())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
                     .build()).toList();
         });
     }
@@ -274,7 +294,34 @@ public class WarehouseImpl implements IWarehouse {
             return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
                     .location(warehouse.getLocation())
                     .name(warehouse.getName())
-                    .id(warehouse.getId())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<WarehouseDTO>> listFilters(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Warehouse> warehouses;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                warehouses = warehouseRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (warehouses.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
+                    .location(warehouse.getLocation())
+                    .name(warehouse.getName())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
                     .build()).toList();
         });
     }

@@ -13,7 +13,7 @@ import java.util.Date;
 public class OrderReturnItemDTO {
     private Long orderId;
     private String supplierProduct;
-    private String productSku;
+    private String product;
     private Date registrationDate;
     private Date updateDate;
     private String returnType;

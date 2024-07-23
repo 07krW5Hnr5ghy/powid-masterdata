@@ -16,6 +16,15 @@ import java.util.concurrent.CompletableFuture;
 public interface IStockTransferItem {
     StockTransferItem save(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<StockTransferItem> saveAsync(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<Page<StockTransferItemDTO>> list(String user,Long stockTransferId,String supplierProductSerial,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<StockTransferItemDTO>> list(
+            String user,
+            List<String> stockTransfers,
+            List<String> originWarehouses,
+            List<String> destinationWarehouses,
+            List<String> supplierProducts,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<List<StockTransferItemDTO>> listStockTransferItem(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
 }

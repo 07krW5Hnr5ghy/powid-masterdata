@@ -15,8 +15,26 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IOrderStockItem {
     CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<Page<OrderStockItemDTO>> list(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<Page<OrderStockItemDTO>> listFalse(String user, Long orderId, String supplierProductSerial, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<OrderStockItemDTO>> list(
+            String user,
+            List<Long> orderIds,
+            List<String> warehouses,
+            List<String> products,
+            List<String> supplierProductSerials,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<OrderStockItemDTO>> listFalse(
+            String user,
+            List<Long> orderIds,
+            List<String> warehouses,
+            List<String> products,
+            List<String> supplierProductSerials,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<Boolean> checkWarehouseItemStock(Long orderId, Warehouse warehouse, RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<OrderStockItemDTO>> listOrderStockItem(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderStockItemDTO>> listOrderStockItemFalse(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;

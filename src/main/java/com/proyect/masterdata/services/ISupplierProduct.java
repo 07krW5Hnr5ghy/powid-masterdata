@@ -19,11 +19,26 @@ public interface ISupplierProduct {
                 throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> activate(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<Page<SupplierProductDTO>> list(String serial, String user,String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
-                        Integer pageSize) throws BadRequestExceptions;
-        CompletableFuture<Page<SupplierProductDTO>> listFalse(String serial, String user,String productSku,String supplierRuc, Double purchasePrice, String sort, String sortColumn, Integer pageNumber,
-                                      Integer pageSize) throws BadRequestExceptions;
+        CompletableFuture<Page<SupplierProductDTO>> list(
+                String user,
+                List<String> serial,
+                List<String> products,
+                List<String> suppliers,
+                String sort,
+                String sortColumn,
+                Integer pageNumber,
+                Integer pageSize) throws BadRequestExceptions;
+        CompletableFuture<Page<SupplierProductDTO>> listFalse(
+                String user,
+                List<String> serial,
+                List<String> products,
+                List<String> suppliers,
+                String sort,
+                String sortColumn,
+                Integer pageNumber,
+                Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user, Long id) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<SupplierProductDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user,String productSku) throws BadRequestExceptions,InternalErrorExceptions;
 

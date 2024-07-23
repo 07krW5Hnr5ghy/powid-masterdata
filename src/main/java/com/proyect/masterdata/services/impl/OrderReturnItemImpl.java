@@ -15,12 +15,11 @@ import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -42,6 +41,8 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     private final GeneralStockRepository generalStockRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final IAudit iAudit;
+    private final OrderReturnItemRepositoryCustom orderReturnItemRepositoryCustom;
+    private final WarehouseRepository warehouseRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -67,6 +68,9 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
+            if(orderReturn == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderReturn);
+            }
             if(supplierProduct == null){
                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
             }
@@ -91,13 +95,10 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             if(orderStockItem == null){
                 throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
             }else{
-                orderReturnItem = orderReturnItemRepository.findByClientIdAndOrderIdAndSupplierProductIdAndStatusTrue(user.getClientId(),orderId,supplierProduct.getId());
+                orderReturnItem = orderReturnItemRepository.findByClientIdAndOrderReturnIdAndSupplierProductIdAndStatusTrue(user.getClientId(),orderReturn.getId(),supplierProduct.getId());
             }
             if(orderReturnItem != null){
                 throw new BadRequestExceptions(Constants.ErrorOrderItemExists);
-            }
-            if(orderReturn == null){
-                throw new BadRequestExceptions(Constants.ErrorOrderReturn);
             }
             if(requestOrderReturnItem.getQuantity() > orderStockItem.getQuantity()){
                 throw new BadRequestExceptions(Constants.ErrorOrderReturnItemQuantity);
@@ -109,7 +110,6 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                         .orderReturnType(orderReturnType)
                         .orderReturnTypeId(orderReturnType.getId())
                         .product(product)
-                        .orderId(orderStockItem.getOrderId())
                         .productId(product.getId())
                         .quantity(requestOrderReturnItem.getQuantity())
                         .supplierProduct(supplierProduct)
@@ -161,7 +161,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             if(orderReturn==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderReturn);
             }else{
-                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderIdAndStatusTrue(supplierProduct.getId(), orderReturn.getOrderId());
+                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderReturnIdAndStatusTrue(supplierProduct.getId(), orderReturn.getId());
             }
             try{
                 orderReturnItem.setStatus(false);
@@ -208,7 +208,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             if(orderReturn==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderReturn);
             }else{
-                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderIdAndStatusFalse(supplierProduct.getId(), orderReturn.getOrderId());
+                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderReturnIdAndStatusFalse(supplierProduct.getId(), orderReturn.getId());
             }
             try{
                 orderReturnItem.setStatus(true);
@@ -257,7 +257,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             if(orderReturn==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderReturn);
             }else{
-                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderIdAndStatusTrue(supplierProduct.getId(), orderReturn.getOrderId());
+                orderReturnItem = orderReturnItemRepository.findBySupplierProductIdAndOrderReturnIdAndStatusTrue(supplierProduct.getId(), orderReturn.getId());
             }
             if(orderReturnItem==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderReturnItem);
@@ -299,10 +299,16 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
         return CompletableFuture.supplyAsync(()->{
             Long clientId;
             List<OrderReturnItem> orderReturnItemList;
+            OrderReturn orderReturn;
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(orderId!=null){
-                    orderReturnItemList = orderReturnItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(clientId,orderId);
+                    orderReturn = orderReturnRepository.findByOrderId(orderId);
+                }else{
+                    orderReturn = null;
+                }
+                if(orderReturn!=null){
+                    orderReturnItemList = orderReturnItemRepository.findAllByClientIdAndOrderReturnIdAndStatusTrue(clientId,orderId);
                 }else{
                     orderReturnItemList = orderReturnItemRepository.findAllByClientIdAndStatusTrue(clientId);
                 }
@@ -314,8 +320,8 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 return Collections.emptyList();
             }
             return orderReturnItemList.stream().map(orderReturnItem -> OrderReturnItemDTO.builder()
-                    .orderId(orderReturnItem.getOrderId())
-                    .productSku(orderReturnItem.getProduct().getSku())
+                    .orderId(orderReturnItem.getOrderReturn().getOrderId())
+                    .product(orderReturnItem.getProduct().getSku())
                     .supplierProduct(orderReturnItem.getSupplierProduct().getSerial())
                     .returnType(orderReturnItem.getOrderReturnType().getName())
                     .registrationDate(new Date(System.currentTimeMillis()))
@@ -323,6 +329,201 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                     .quantity(orderReturnItem.getQuantity())
                     .warehouse(orderReturnItem.getOrderReturn().getOrderStock().getWarehouse().getName())
                     .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<OrderReturnItemDTO>> listPagination(
+            String user,
+            List<Long> orders,
+            List<String> products,
+            List<String> supplierProducts,
+            List<String> warehouses,
+            List<String> orderReturnTypes,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderReturnItem> orderReturnItemPage;
+            Long clientId;
+            List<Long> orderIds;
+            List<Long> productIds;
+            List<Long> supplierProductIds;
+            List<Long> warehouseIds;
+            List<Long> orderReturnTypeIds;
+            if(orders != null && !orders.isEmpty()){
+                orderIds = orders;
+            }else{
+                orderIds = new ArrayList<>();
+            }
+            if(products != null && !products.isEmpty()){
+                productIds = productRepository.findBySkuIn(
+                        products.stream().map(String::toUpperCase).toList()
+                ).stream().map(Product::getId).toList();
+            }else {
+                productIds = new ArrayList<>();
+            }
+            if(supplierProducts != null && !supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
+            }else{
+                supplierProductIds = new ArrayList<>();
+            }
+            if(warehouses != null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository.findByNameIn(
+                        warehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
+            if(orderReturnTypes!=null && !orderReturnTypes.isEmpty()){
+                orderReturnTypeIds = orderReturnTypeRepository.findByNameIn(
+                        orderReturnTypes.stream().map(String::toUpperCase).toList()
+                ).stream().map(OrderReturnType::getId).toList();
+            }else{
+                orderReturnTypeIds = new ArrayList<>();
+            }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderReturnItemPage = orderReturnItemRepositoryCustom.searchForOrderReturnItem(
+                        clientId,
+                        orderIds,
+                        productIds,
+                        supplierProductIds,
+                        warehouseIds,
+                        orderReturnTypeIds,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true
+                );
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(orderReturnItemPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<OrderReturnItemDTO> orderReturnItemDTOS = orderReturnItemPage.getContent().stream().map(orderReturnItem -> OrderReturnItemDTO.builder()
+                    .orderId(orderReturnItem.getOrderReturn().getOrderId())
+                    .product(orderReturnItem.getProduct().getSku())
+                    .supplierProduct(orderReturnItem.getSupplierProduct().getSerial())
+                    .warehouse(orderReturnItem.getOrderReturn().getOrderStock().getWarehouse().getName())
+                    .returnType(orderReturnItem.getOrderReturnType().getName())
+                    .quantity(orderReturnItem.getQuantity())
+                    .registrationDate(orderReturnItem.getRegistrationDate())
+                    .updateDate(orderReturnItem.getUpdateDate())
+                    .build()).toList();
+            return new PageImpl<>(orderReturnItemDTOS,orderReturnItemPage.getPageable(),orderReturnItemPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<OrderReturnItemDTO>> listFalse(
+            String user,
+            List<Long> orders,
+            List<String> products,
+            List<String> supplierProducts,
+            List<String> warehouses,
+            List<String> orderReturnTypes,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderReturnItem> orderReturnItemPage;
+            Long clientId;
+            List<Long> orderIds;
+            List<Long> productIds;
+            List<Long> supplierProductIds;
+            List<Long> warehouseIds;
+            List<Long> orderReturnTypeIds;
+            if(orders != null && !orders.isEmpty()){
+                orderIds = orders;
+            }else{
+                orderIds = new ArrayList<>();
+            }
+            if(products != null && !products.isEmpty()){
+                productIds = productRepository.findBySkuIn(
+                        products.stream().map(String::toUpperCase).toList()
+                ).stream().map(Product::getId).toList();
+            }else {
+                productIds = new ArrayList<>();
+            }
+            if(supplierProducts != null && !supplierProducts.isEmpty()){
+                supplierProductIds = supplierProductRepository.findBySerialIn(
+                        supplierProducts.stream().map(String::toUpperCase).toList()
+                ).stream().map(SupplierProduct::getId).toList();
+            }else{
+                supplierProductIds = new ArrayList<>();
+            }
+            if(warehouses != null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository.findByNameIn(
+                        warehouses.stream().map(String::toUpperCase).toList()
+                ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
+            if(orderReturnTypes!=null && !orderReturnTypes.isEmpty()){
+                orderReturnTypeIds = orderReturnTypeRepository.findByNameIn(
+                        orderReturnTypes.stream().map(String::toUpperCase).toList()
+                ).stream().map(OrderReturnType::getId).toList();
+            }else{
+                orderReturnTypeIds = new ArrayList<>();
+            }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderReturnItemPage = orderReturnItemRepositoryCustom.searchForOrderReturnItem(
+                        clientId,
+                        orderIds,
+                        productIds,
+                        supplierProductIds,
+                        warehouseIds,
+                        orderReturnTypeIds,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false
+                );
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(orderReturnItemPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<OrderReturnItemDTO> orderReturnItemDTOS = orderReturnItemPage.getContent().stream().map(orderReturnItem -> OrderReturnItemDTO.builder()
+                    .orderId(orderReturnItem.getOrderReturn().getOrderId())
+                    .product(orderReturnItem.getProduct().getSku())
+                    .supplierProduct(orderReturnItem.getSupplierProduct().getSerial())
+                    .warehouse(orderReturnItem.getOrderReturn().getOrderStock().getWarehouse().getName())
+                    .returnType(orderReturnItem.getOrderReturnType().getName())
+                    .quantity(orderReturnItem.getQuantity())
+                    .registrationDate(orderReturnItem.getRegistrationDate())
+                    .updateDate(orderReturnItem.getUpdateDate())
+                    .build()).toList();
+            return new PageImpl<>(orderReturnItemDTOS,orderReturnItemPage.getPageable(),orderReturnItemPage.getTotalElements());
         });
     }
 }

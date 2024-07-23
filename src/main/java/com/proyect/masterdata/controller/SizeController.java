@@ -91,8 +91,15 @@ public class SizeController {
     @GetMapping(value = "size-type")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
     public ResponseEntity<List<SizeDTO>> findAllSizeTypeName(
-            @RequestParam("nameSizeType") String nameSizeType) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam("sizeType") String nameSizeType) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<SizeDTO>> result = iSize.findAllSizeTypeName(nameSizeType);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
+    public ResponseEntity<List<SizeDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SizeDTO>> result = iSize.listFilter();
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

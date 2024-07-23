@@ -7,28 +7,27 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Access> searchForAccess(String name, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Access> searchForAccess(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Access> criteriaQuery = criteriaBuilder.createQuery(Access.class);
         Root<Access> itemRoot = criteriaQuery.from(Access.class);
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(name, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -49,15 +48,18 @@ public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
 
         TypedQuery<Access> orderTypeQuery = entityManager.createQuery(criteriaQuery);
         orderTypeQuery.setFirstResult(pageNumber * pageSize);
-        orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, status);
+        long count = getOrderCount(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate,status);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Access> itemRoot) {
@@ -68,6 +70,38 @@ public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         if (status) {
@@ -92,6 +126,22 @@ public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
             accessList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            accessList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            accessList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            accessList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            accessList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
         return accessList;
     }
 
@@ -105,17 +155,33 @@ public class AccessRepositoryCustomImpl implements AccessRepositoryCustom {
             accessList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            accessList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            accessList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            accessList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            accessList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
         return accessList;
     }
 
-    private long getOrderCount(String name, Boolean status) {
+    private long getOrderCount(String name, Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Access> itemRoot = criteriaQuery.from(Access.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, status, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

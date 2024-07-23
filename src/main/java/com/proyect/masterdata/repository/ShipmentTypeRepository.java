@@ -11,5 +11,6 @@ public interface ShipmentTypeRepository extends JpaRepository<ShipmentType,Long>
     ShipmentType findByName(String name);
     ShipmentType findByNameAndStatusTrue(String name);
     ShipmentType findByNameAndStatusFalse(String name);
+    List<ShipmentType> findByNameIn(List<String> names);
     List<ShipmentType> findAllByStatusTrue();
 }

@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface OrderReturnTypeRepository extends JpaRepository<OrderReturnType,Long> {
     OrderReturnType findByName(String name);
+    List<OrderReturnType> findByNameIn(List<String> names);
     List<OrderReturnType> findAllByStatusTrue();
     List<OrderReturnType> findAllByStatusFalse();
     OrderReturnType findByNameAndStatusTrue(String name);

@@ -15,4 +15,5 @@ public interface IStockTransactionType {
     CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<List<StockTransactionTypeDTO>> list() throws BadRequestExceptions;
+    CompletableFuture<List<StockTransactionTypeDTO>> listFilter() throws BadRequestExceptions;
 }

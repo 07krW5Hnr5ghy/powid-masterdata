@@ -21,13 +21,27 @@ public class StockReplenishmentItemRepositoryCustomImpl implements StockReplenis
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<StockReplenishmentItem> searchForStockReplenishmentItem(Long clientId, Long orderId, Long productId, String sort, String sortColumn, Integer pageNumber, Integer pageSize,Boolean status) {
+    public Page<StockReplenishmentItem> searchForStockReplenishmentItem(
+            Long clientId,
+            List<Long> orderIds,
+            List<Long> productIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<StockReplenishmentItem> criteriaQuery = criteriaBuilder.createQuery(StockReplenishmentItem.class);
         Root<StockReplenishmentItem> itemRoot = criteriaQuery.from(StockReplenishmentItem.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicate(clientId,orderId,productId,status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                orderIds,
+                productIds,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -51,14 +65,18 @@ public class StockReplenishmentItemRepositoryCustomImpl implements StockReplenis
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(clientId,orderId,productId, status);
+        Long count = getOrderCount(
+                clientId,
+                orderIds,
+                productIds,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicate(
             Long clientId,
-            Long orderId,
-            Long productId,
+            List<Long> orderIds,
+            List<Long> productIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<StockReplenishmentItem> itemRoot) {
@@ -69,12 +87,12 @@ public class StockReplenishmentItemRepositoryCustomImpl implements StockReplenis
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (orderId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderId"), orderId)));
+        if (!orderIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("orderId").in(orderIds)));
         }
 
-        if (productId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("productId"), productId)));
+        if (!productIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("productId").in(productIds)));
         }
 
         if (status) {
@@ -126,13 +144,23 @@ public class StockReplenishmentItemRepositoryCustomImpl implements StockReplenis
         return stockReplenishmentList;
     }
 
-    private Long getOrderCount(Long clientId, Long orderId,Long supplierProductId,Boolean status) {
+    private Long getOrderCount(
+            Long clientId,
+            List<Long> orderIds,
+            List<Long> productIds,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<StockReplenishmentItem> itemRoot = criteriaQuery.from(StockReplenishmentItem.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(clientId, orderId,supplierProductId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                orderIds,
+                productIds,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

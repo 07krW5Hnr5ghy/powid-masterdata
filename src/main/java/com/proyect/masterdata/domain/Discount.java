@@ -9,22 +9,23 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
-
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tablePurchaseDocument,schema = Constants.schemaMaster)
-public class PurchaseDocument {
-
+@Table(name = Constants.tableDiscount, schema = Constants.schemaMaster)
+public class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "purchase_document_id")
+    @Column(name = "discount_id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", length = 50)
     private String name;
+
+    @Column(name = "status")
+    private boolean status;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -33,9 +34,6 @@ public class PurchaseDocument {
     @Column(name = "update_date")
     @CreationTimestamp
     private Date updateDate;
-
-    @Column(name = "status")
-    private Boolean status;
 
     @Column(name = "token_user")
     private String tokenUser;

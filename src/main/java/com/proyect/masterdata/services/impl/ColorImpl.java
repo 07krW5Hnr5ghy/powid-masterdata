@@ -31,7 +31,6 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Log4j2
 public class ColorImpl implements IColor {
-
     private final ColorRepository colorRepository;
     private final ColorMapper colorMapper;
     private final UserRepository userRepository;
@@ -157,7 +156,7 @@ public class ColorImpl implements IColor {
     @Override
     public CompletableFuture<List<ColorDTO>> listColor() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<Color> colors = new ArrayList<>();
+            List<Color> colors;
             try {
                 colors = colorRepository.findAllByStatusTrue();
             } catch (RuntimeException e) {
@@ -172,12 +171,30 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public CompletableFuture<Page<ColorDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<ColorDTO>> list(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Color> colorPage;
             try {
-                colorPage = colorRepositoryCustom.searchForColor(name, user, sort, sortColumn, pageNumber, pageSize, true);
+                colorPage = colorRepositoryCustom.searchForColor(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -191,12 +208,30 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public CompletableFuture<Page<ColorDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<ColorDTO>> listStatusFalse(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Color> colorPage;
             try {
-                colorPage = colorRepositoryCustom.searchForColor(name, user, sort, sortColumn, pageNumber, pageSize, false);
+                colorPage = colorRepositoryCustom.searchForColor(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -208,6 +243,23 @@ public class ColorImpl implements IColor {
 
             return new PageImpl<>(colorMapper.listColorToListColorDTO(colorPage.getContent()),
                     colorPage.getPageable(), colorPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<ColorDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Color> colors;
+            try {
+                colors = colorRepository.findAll();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (colors.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return colorMapper.listColorToListColorDTO(colors);
         });
     }
 }

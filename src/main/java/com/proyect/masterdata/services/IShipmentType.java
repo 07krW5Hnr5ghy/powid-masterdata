@@ -16,4 +16,5 @@ public interface IShipmentType {
     CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<List<String>> list() throws BadRequestExceptions;
+    CompletableFuture<List<String>> listFilter() throws BadRequestExceptions;
 }
