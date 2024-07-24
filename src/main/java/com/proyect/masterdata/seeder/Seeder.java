@@ -2340,15 +2340,15 @@ public class Seeder implements CommandLineRunner {
                         // order stock mocks
 
                         RequestOrderStockItem requestOrderStockItem1 = RequestOrderStockItem.builder()
-                                .supplierProductSerial("A00001A")
+                                .supplierProduct("A00001A")
                                 .quantity(2)
-                                .productSku("A00001")
+                                .product("A00001")
                                 .build();
 
                         RequestOrderStockItem requestOrderStockItem2 = RequestOrderStockItem.builder()
-                                .supplierProductSerial("A00002A")
+                                .supplierProduct("A00002A")
                                 .quantity(1)
-                                .productSku("A00002")
+                                .product("A00002")
                                 .build();
 
                         List<RequestOrderStockItem> requestOrderStockItemList1 = new ArrayList<>();
@@ -2358,15 +2358,15 @@ public class Seeder implements CommandLineRunner {
                         iOrderStock.save(1L,"luminous", requestOrderStockItemList1,"AYEPES");
 
                         RequestOrderStockItem requestOrderStockItem3 = RequestOrderStockItem.builder()
-                                .supplierProductSerial("A00003A")
+                                .supplierProduct("A00003A")
                                 .quantity(2)
-                                .productSku("A00003")
+                                .product("A00003")
                                 .build();
 
                         RequestOrderStockItem requestOrderStockItem4 = RequestOrderStockItem.builder()
-                                .supplierProductSerial("A00001A")
+                                .supplierProduct("A00001A")
                                 .quantity(1)
-                                .productSku("A00001")
+                                .product("A00001")
                                 .build();
 
                         List<RequestOrderStockItem> requestOrderStockItemList2 = new ArrayList<>();
@@ -2376,15 +2376,15 @@ public class Seeder implements CommandLineRunner {
                         iOrderStock.save(2L,"luminous", requestOrderStockItemList2,"AYEPES");
 
                         RequestOrderStockItem requestOrderStockItem5 = RequestOrderStockItem.builder()
-                                .supplierProductSerial("B00001A")
+                                .supplierProduct("B00001A")
                                 .quantity(1)
-                                .productSku("B00001")
+                                .product("B00001")
                                 .build();
 
                         RequestOrderStockItem requestOrderStockItem6 = RequestOrderStockItem.builder()
-                                .supplierProductSerial("B00002A")
+                                .supplierProduct("B00002A")
                                 .quantity(3)
-                                .productSku("B00002")
+                                .product("B00002")
                                 .build();
 
                         List<RequestOrderStockItem> requestOrderStockItemList3 = new ArrayList<>();
@@ -2394,15 +2394,15 @@ public class Seeder implements CommandLineRunner {
                         iOrderStock.save(3L,"alcazar", requestOrderStockItemList3,"NTORRES");
 
                         RequestOrderStockItem requestOrderStockItem7 = RequestOrderStockItem.builder()
-                                .supplierProductSerial("B00002A")
+                                .supplierProduct("B00002A")
                                 .quantity(5)
-                                .productSku("B00002")
+                                .product("B00002")
                                 .build();
 
                         RequestOrderStockItem requestOrderStockItem8 = RequestOrderStockItem.builder()
-                                .supplierProductSerial("B00003A")
+                                .supplierProduct("B00003A")
                                 .quantity(2)
-                                .productSku("B00003")
+                                .product("B00003")
                                 .build();
 
                         List<RequestOrderStockItem> requestOrderStockItemList4 = new ArrayList<>();

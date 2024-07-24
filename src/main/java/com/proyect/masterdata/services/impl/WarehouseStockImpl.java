@@ -208,13 +208,27 @@ public class WarehouseStockImpl implements IWarehouseStock {
     }
 
     @Override
-    public CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,Long warehouseId) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,String warehouse,String supplierProduct) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<WarehouseStock> warehouseStocks;
             Long clientId;
+            Long warehouseId;
+            Long supplierProductId;
             try {
-                clientId = userRepository.findByUsernameAndStatusTrue(user).getClientId();
-                if(warehouseId != null){
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(warehouse != null){
+                    warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+                }else{
+                    warehouseId = null;
+                }
+                if(supplierProduct != null){
+                    supplierProductId = supplierProductRepository.findBySerialAndStatusTrue(supplierProduct.toUpperCase()).getId();
+                }else{
+                    supplierProductId = null;
+                }
+                if(warehouseId != null && supplierProductId != null){
+                    warehouseStocks = warehouseStockRepository.findAllByWarehouseIdAndSupplierProductId(warehouseId,supplierProductId);
+                }else if(warehouseId != null){
                     warehouseStocks = warehouseStockRepository.findAllByClientIdAndWarehouseId(clientId, warehouseId);
                 }else{
                     warehouseStocks = warehouseStockRepository.findAllByClientId(clientId);

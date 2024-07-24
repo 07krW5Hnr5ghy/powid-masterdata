@@ -469,4 +469,50 @@ public class OrderItemImpl implements IOrderItem {
             return new PageImpl<>(orderItemDTOS,pageOrderItem.getPageable(),pageOrderItem.getTotalElements());
         });
     }
+
+    @Override
+    public CompletableFuture<List<OrderItemDTO>> listByOrder(String user, Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<OrderItem> orderItemList;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(clientId,orderId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(orderItemList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return orderItemList.stream().map(orderItem -> {
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                Double totalPrice = null;
+                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                }
+
+                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                }
+
+                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                }
+                return OrderItemDTO.builder()
+                    .unit(orderItem.getProduct().getUnit().getName())
+                    .orderId(orderItem.getOrderId())
+                    .color(orderItem.getProduct().getColor().getName())
+                    .size(orderItem.getProduct().getSize().getName())
+                    .sku(orderItem.getProduct().getSku())
+                    .category(orderItem.getProduct().getCategoryProduct().getName())
+                        .quantity(orderItem.getQuantity())
+                    .unitPrice(productPrice.getUnitSalePrice())
+                        .discountAmount(orderItem.getDiscountAmount())
+                        .discount(orderItem.getDiscount().getName())
+                        .totalPrice(totalPrice)
+                    .build();
+            }).toList();
+        });
+    }
 }

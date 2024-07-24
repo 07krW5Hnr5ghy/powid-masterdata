@@ -768,14 +768,14 @@ public class ExcelImpl implements IExcel {
                             if(orderItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
                             }
-                            requestOrderStockItem.setProductSku(product.getSku());
+                            requestOrderStockItem.setProduct(product.getSku());
                         }
                         if(i>=1 && (cell.getCellType() == STRING) && ii==1){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
-                            requestOrderStockItem.setSupplierProductSerial(supplierProduct.getSerial());
+                            requestOrderStockItem.setSupplierProduct(supplierProduct.getSerial());
                         }
                         if(i>=1 && (cell.getCellType()==NUMERIC)&&(ii==2)&&(orderItem != null)){
                             if(((int) cell.getNumericCellValue()) < 1){
@@ -790,14 +790,14 @@ public class ExcelImpl implements IExcel {
                     }
                     if(i>=1 && (
                             requestOrderStockItem.getQuantity() != null &&
-                                    requestOrderStockItem.getProductSku() != null &&
-                                    requestOrderStockItem.getSupplierProductSerial() != null)){
+                                    requestOrderStockItem.getProduct() != null &&
+                                    requestOrderStockItem.getSupplierProduct() != null)){
                         requestOrderStockItemList.add(requestOrderStockItem);
                     }
                     if(i>=1 && (
                             requestOrderStockItem.getQuantity() == null ||
-                                    requestOrderStockItem.getProductSku() == null ||
-                                    requestOrderStockItem.getSupplierProductSerial() == null)){
+                                    requestOrderStockItem.getProduct() == null ||
+                                    requestOrderStockItem.getSupplierProduct() == null)){
                         break;
                     }
                     i++;
@@ -805,7 +805,7 @@ public class ExcelImpl implements IExcel {
                 Set<String> serials = new HashSet<>();
                 boolean hasDuplicate = false;
                 for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
-                    if(!serials.add(requestOrderStockItem.getSupplierProductSerial())){
+                    if(!serials.add(requestOrderStockItem.getSupplierProduct())){
                         hasDuplicate = true;
                     }
                     if(hasDuplicate){
@@ -819,7 +819,7 @@ public class ExcelImpl implements IExcel {
                 System.out.println(requestOrderStockItemList);
                 Map<String,Integer> checkCount = requestOrderStockItemList.stream().collect(
                         Collectors.groupingBy(
-                                RequestOrderStockItem::getProductSku,
+                                RequestOrderStockItem::getProduct,
                                 Collectors.summingInt(RequestOrderStockItem::getQuantity)
                         )
                 );

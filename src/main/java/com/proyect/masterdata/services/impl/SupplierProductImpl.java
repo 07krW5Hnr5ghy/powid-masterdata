@@ -468,7 +468,7 @@ public class SupplierProductImpl implements ISupplierProduct {
             try {
                 clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
                 if(id != null){
-                    supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusFalse(clientId,id);
+                    supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(clientId,id);
                 }else{
                     supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
                 }
@@ -501,7 +501,7 @@ public class SupplierProductImpl implements ISupplierProduct {
             Long clientId;
             Long productId;
             try {
-                clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 productId = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase()).getId();
                 supplierProducts = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(clientId,productId);
             }catch (RuntimeException e){

@@ -73,7 +73,7 @@ public class OrderStockImpl implements IOrderStock {
                     throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
                 }
             }
-            Map<String,Integer> checkCount = requestOrderStockItemList.stream().collect(Collectors.groupingBy(RequestOrderStockItem::getProductSku,Collectors.summingInt(RequestOrderStockItem::getQuantity)));
+            Map<String,Integer> checkCount = requestOrderStockItemList.stream().collect(Collectors.groupingBy(RequestOrderStockItem::getProduct,Collectors.summingInt(RequestOrderStockItem::getQuantity)));
             checkCount.forEach((key,value)->{
                 Product product = productRepository.findBySkuAndStatusTrue(key);
                 OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
@@ -148,7 +148,7 @@ public class OrderStockImpl implements IOrderStock {
                         throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
                     }
                 }
-                Map<String,Integer> checkCount = requestOrderStockItemList.stream().collect(Collectors.groupingBy(RequestOrderStockItem::getProductSku,Collectors.summingInt(RequestOrderStockItem::getQuantity)));
+                Map<String,Integer> checkCount = requestOrderStockItemList.stream().collect(Collectors.groupingBy(RequestOrderStockItem::getProduct,Collectors.summingInt(RequestOrderStockItem::getQuantity)));
                 checkCount.forEach((key,value)->{
                     Product product = productRepository.findBySkuAndStatusTrue(key);
                     OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());

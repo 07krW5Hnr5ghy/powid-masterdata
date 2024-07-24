@@ -47,9 +47,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProductSku().toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProduct().toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProduct().toUpperCase());
                 orderStock = orderStockRepository.findByOrderId(orderId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -294,8 +294,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             OrderItem orderItem;
             Product product;
             try{
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProductSku().toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProduct().toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProduct().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
