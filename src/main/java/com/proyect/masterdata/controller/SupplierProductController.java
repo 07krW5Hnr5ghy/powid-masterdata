@@ -114,9 +114,9 @@ public class SupplierProductController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<List<SupplierProductDTO>> listSupplierProduct(
             @RequestParam("user") String user,
-            @RequestParam(value = "id",required = false) Long id
+            @RequestParam(value = "ruc",required = false) String ruc
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SupplierProductDTO>> result = iSupplierProduct.listSupplierProduct(user,id);
+        CompletableFuture<List<SupplierProductDTO>> result = iSupplierProduct.listSupplierProduct(user,ruc);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

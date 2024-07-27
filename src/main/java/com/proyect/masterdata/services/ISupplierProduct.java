@@ -37,7 +37,7 @@ public interface ISupplierProduct {
                 String sortColumn,
                 Integer pageNumber,
                 Integer pageSize) throws BadRequestExceptions;
-        CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user, Long id) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user, String supplier) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<SupplierProductDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user,String productSku) throws BadRequestExceptions,InternalErrorExceptions;

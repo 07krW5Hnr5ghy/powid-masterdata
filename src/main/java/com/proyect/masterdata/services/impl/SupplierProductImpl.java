@@ -397,14 +397,21 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user,String supplier) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<SupplierProduct> supplierProducts;
             Long clientId;
+            Long supplierId;
+
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                if(id != null){
-                    supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(clientId,id);
+                if(supplier != null){
+                    supplierId = supplierRepository.findByClientIdAndRucAndStatusTrue(clientId,supplier.toUpperCase()).getId();
+                }else{
+                    supplierId = null;
+                }
+                if(supplierId != null){
+                    supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(clientId,supplierId);
                 }else {
                     supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
                 }

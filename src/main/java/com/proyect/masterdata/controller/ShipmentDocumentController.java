@@ -7,7 +7,6 @@ import com.proyect.masterdata.services.IPurchaseDocument;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,9 +15,9 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("purchase-document")
+@RequestMapping("shipment-document")
 @AllArgsConstructor
-public class PurchaseDocumentController {
+public class ShipmentDocumentController {
     private final IPurchaseDocument iPurchaseDocument;
     @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_DOCUMENT_POST')")

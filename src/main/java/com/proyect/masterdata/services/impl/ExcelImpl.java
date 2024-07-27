@@ -127,7 +127,7 @@ public class ExcelImpl implements IExcel {
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
-                            requestShipmentItem.setSupplierProductSerial(supplierProduct.getSerial());
+                            requestShipmentItem.setSupplierProduct(supplierProduct.getSerial());
                         }
                         if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==1)){
                             if(((int) cell.getNumericCellValue()) < 1){
@@ -143,13 +143,13 @@ public class ExcelImpl implements IExcel {
                     if(i>=1 && (
                             requestShipmentItem.getQuantity() != null &&
                                     requestShipmentItem.getObservations() != null &&
-                                    requestShipmentItem.getSupplierProductSerial() != null)){
+                                    requestShipmentItem.getSupplierProduct() != null)){
                         requestShipmentItemList.add(requestShipmentItem);
                     }
                     if(i>=1 && (
                             requestShipmentItem.getQuantity() == null ||
                                     requestShipmentItem.getObservations() == null ||
-                                    requestShipmentItem.getSupplierProductSerial() == null)){
+                                    requestShipmentItem.getSupplierProduct() == null)){
                         break;
                     }
                     i++;
@@ -157,7 +157,7 @@ public class ExcelImpl implements IExcel {
                 Set<String> serials = new HashSet<>();
                 boolean hasDuplicate = false;
                 for(RequestShipmentItem requestShipmentItem : requestShipmentItemList){
-                    if(!serials.add(requestShipmentItem.getSupplierProductSerial())){
+                    if(!serials.add(requestShipmentItem.getSupplierProduct())){
                         hasDuplicate = true;
                     }
                     if(hasDuplicate){
