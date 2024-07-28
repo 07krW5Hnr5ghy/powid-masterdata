@@ -54,7 +54,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProductSku());
+            product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProduct());
             supplierProduct = supplierProductRepository.findBySerial(requestSupplierProduct.getSerial());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -64,7 +64,7 @@ public class SupplierProductImpl implements ISupplierProduct {
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else {
-            supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplierProduct.getSupplierRuc(), user.getClientId());
+            supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplierProduct.getSupplier(), user.getClientId());
         }
 
         if (supplier == null) {
@@ -115,7 +115,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProductSku());
+                product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProduct());
                 supplierProduct = supplierProductRepository.findBySerial(requestSupplierProduct.getSerial());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -125,7 +125,7 @@ public class SupplierProductImpl implements ISupplierProduct {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else {
-                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplierProduct.getSupplierRuc(), user.getClientId());
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplierProduct.getSupplier(), user.getClientId());
             }
 
             if (supplier == null) {

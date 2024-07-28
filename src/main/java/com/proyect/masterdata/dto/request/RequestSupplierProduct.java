@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestSupplierProduct {
     private String serial;
-    private String productSku;
-    private String supplierRuc;
+    private String product;
+    private String supplier;
     private Double purchasePrice;
 }

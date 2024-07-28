@@ -1524,325 +1524,325 @@ public class Seeder implements CommandLineRunner {
                         // mock supplier products
 
                         RequestSupplierProduct requestSupplierProduct1 = RequestSupplierProduct.builder()
-                                .productSku("A00001")
+                                .product("A00001")
                                 .purchasePrice(5.24)
                                 .serial("A00001A")
-                                .supplierRuc("12345678922")
+                                .supplier("12345678922")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct1, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct2 = RequestSupplierProduct.builder()
-                                .productSku("A00001")
+                                .product("A00001")
                                 .purchasePrice(2.10)
                                 .serial("A00001B")
-                                .supplierRuc("12345678924")
+                                .supplier("12345678924")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct2, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct3 = RequestSupplierProduct.builder()
-                                .productSku("A00002")
+                                .product("A00002")
                                 .purchasePrice(10.47)
                                 .serial("A00002A")
-                                .supplierRuc("12345678922")
+                                .supplier("12345678922")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct3, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct4 = RequestSupplierProduct.builder()
-                                .productSku("A00002")
+                                .product("A00002")
                                 .purchasePrice(13.09)
                                 .serial("A00002B")
-                                .supplierRuc("12345678924")
+                                .supplier("12345678924")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct4, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct5 = RequestSupplierProduct.builder()
-                                .productSku("A00003")
+                                .product("A00003")
                                 .purchasePrice(20.15)
                                 .serial("A00003A")
-                                .supplierRuc("12345678922")
+                                .supplier("12345678922")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct5, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct6 = RequestSupplierProduct.builder()
-                                .productSku("A00003")
+                                .product("A00003")
                                 .purchasePrice(17.45)
                                 .serial("A00003B")
-                                .supplierRuc("12345678924")
+                                .supplier("12345678924")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct6, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct7 = RequestSupplierProduct.builder()
-                                .productSku("A00004")
+                                .product("A00004")
                                 .purchasePrice(23.76)
                                 .serial("A00004A")
-                                .supplierRuc("12345678922")
+                                .supplier("12345678922")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct7, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct8 = RequestSupplierProduct.builder()
-                                .productSku("A00004")
+                                .product("A00004")
                                 .purchasePrice(35.02)
                                 .serial("A00004B")
-                                .supplierRuc("12345678924")
+                                .supplier("12345678924")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct8, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct9 = RequestSupplierProduct.builder()
-                                .productSku("A00005")
+                                .product("A00005")
                                 .purchasePrice(7.90)
                                 .serial("A00005A")
-                                .supplierRuc("12345678922")
+                                .supplier("12345678922")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct9, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct10 = RequestSupplierProduct.builder()
-                                .productSku("A00005")
+                                .product("A00005")
                                 .purchasePrice(3.22)
                                 .serial("A00005B")
-                                .supplierRuc("12345678924")
+                                .supplier("12345678924")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct10, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct11 = RequestSupplierProduct.builder()
-                                .productSku("A00006")
+                                .product("A00006")
                                 .purchasePrice(5.34)
                                 .serial("A00006A")
-                                .supplierRuc("12345678922")
+                                .supplier("12345678922")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct11, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct12 = RequestSupplierProduct.builder()
-                                .productSku("A00006")
+                                .product("A00006")
                                 .purchasePrice(2.66)
                                 .serial("A00006B")
-                                .supplierRuc("12345678924")
+                                .supplier("12345678924")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct12, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct13 = RequestSupplierProduct.builder()
-                                .productSku("A00007")
+                                .product("A00007")
                                 .purchasePrice(4.50)
                                 .serial("A00007A")
-                                .supplierRuc("12345678922")
+                                .supplier("12345678922")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct13, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct14 = RequestSupplierProduct.builder()
-                                .productSku("A00007")
+                                .product("A00007")
                                 .purchasePrice(11.37)
                                 .serial("A00007B")
-                                .supplierRuc("12345678924")
+                                .supplier("12345678924")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct14, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct15 = RequestSupplierProduct.builder()
-                                .productSku("A00008")
+                                .product("A00008")
                                 .purchasePrice(9.11)
                                 .serial("A00008A")
-                                .supplierRuc("12345678922")
+                                .supplier("12345678922")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct15, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct16 = RequestSupplierProduct.builder()
-                                .productSku("A00008")
+                                .product("A00008")
                                 .purchasePrice(2.73)
                                 .serial("A00008B")
-                                .supplierRuc("12345678924")
+                                .supplier("12345678924")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct16, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct17 = RequestSupplierProduct.builder()
-                                .productSku("A00009")
+                                .product("A00009")
                                 .purchasePrice(6.41)
                                 .serial("A00009A")
-                                .supplierRuc("12345678922")
+                                .supplier("12345678922")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct17, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct18 = RequestSupplierProduct.builder()
-                                .productSku("A00009")
+                                .product("A00009")
                                 .purchasePrice(12.30)
                                 .serial("A00009B")
-                                .supplierRuc("12345678924")
+                                .supplier("12345678924")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct18, "AYEPES");
 
                         RequestSupplierProduct requestSupplierProduct19 = RequestSupplierProduct.builder()
-                                .productSku("B00001")
+                                .product("B00001")
                                 .purchasePrice(3.01)
                                 .serial("B00001A")
-                                .supplierRuc("12345678925")
+                                .supplier("12345678925")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct19, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct20 = RequestSupplierProduct.builder()
-                                .productSku("B00001")
+                                .product("B00001")
                                 .purchasePrice(1.05)
                                 .serial("B00001B")
-                                .supplierRuc("12345678926")
+                                .supplier("12345678926")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct20, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct21 = RequestSupplierProduct.builder()
-                                .productSku("B00002")
+                                .product("B00002")
                                 .purchasePrice(7.20)
                                 .serial("B00002A")
-                                .supplierRuc("12345678925")
+                                .supplier("12345678925")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct21, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct22 = RequestSupplierProduct.builder()
-                                .productSku("B00002")
+                                .product("B00002")
                                 .purchasePrice(5.68)
                                 .serial("B00002B")
-                                .supplierRuc("12345678926")
+                                .supplier("12345678926")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct22, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct23 = RequestSupplierProduct.builder()
-                                .productSku("B00003")
+                                .product("B00003")
                                 .purchasePrice(36.49)
                                 .serial("B00003A")
-                                .supplierRuc("12345678925")
+                                .supplier("12345678925")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct23, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct24 = RequestSupplierProduct.builder()
-                                .productSku("B00003")
+                                .product("B00003")
                                 .purchasePrice(45.27)
                                 .serial("B00003B")
-                                .supplierRuc("12345678926")
+                                .supplier("12345678926")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct24, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct25 = RequestSupplierProduct.builder()
-                                .productSku("B00004")
+                                .product("B00004")
                                 .purchasePrice(22.38)
                                 .serial("B00004A")
-                                .supplierRuc("12345678925")
+                                .supplier("12345678925")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct25, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct26 = RequestSupplierProduct.builder()
-                                .productSku("B00004")
+                                .product("B00004")
                                 .purchasePrice(15.07)
                                 .serial("B00004B")
-                                .supplierRuc("12345678926")
+                                .supplier("12345678926")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct26, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct27 = RequestSupplierProduct.builder()
-                                .productSku("B00005")
+                                .product("B00005")
                                 .purchasePrice(73.02)
                                 .serial("B00005A")
-                                .supplierRuc("12345678925")
+                                .supplier("12345678925")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct27, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct28 = RequestSupplierProduct.builder()
-                                .productSku("B00005")
+                                .product("B00005")
                                 .purchasePrice(82.17)
                                 .serial("B00005B")
-                                .supplierRuc("12345678926")
+                                .supplier("12345678926")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct28, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct29 = RequestSupplierProduct.builder()
-                                .productSku("B00006")
+                                .product("B00006")
                                 .purchasePrice(13.77)
                                 .serial("B00006A")
-                                .supplierRuc("12345678925")
+                                .supplier("12345678925")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct29, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct30 = RequestSupplierProduct.builder()
-                                .productSku("B00006")
+                                .product("B00006")
                                 .purchasePrice(24.93)
                                 .serial("B00006B")
-                                .supplierRuc("12345678926")
+                                .supplier("12345678926")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct30, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct31 = RequestSupplierProduct.builder()
-                                .productSku("B00007")
+                                .product("B00007")
                                 .purchasePrice(64.57)
                                 .serial("B00007A")
-                                .supplierRuc("12345678925")
+                                .supplier("12345678925")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct31, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct32 = RequestSupplierProduct.builder()
-                                .productSku("B00007")
+                                .product("B00007")
                                 .purchasePrice(23.89)
                                 .serial("B00007B")
-                                .supplierRuc("12345678926")
+                                .supplier("12345678926")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct32, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct33 = RequestSupplierProduct.builder()
-                                .productSku("B00008")
+                                .product("B00008")
                                 .purchasePrice(17.94)
                                 .serial("B00008A")
-                                .supplierRuc("12345678925")
+                                .supplier("12345678925")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct33, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct34 = RequestSupplierProduct.builder()
-                                .productSku("B00008")
+                                .product("B00008")
                                 .purchasePrice(33.29)
                                 .serial("B00008B")
-                                .supplierRuc("12345678926")
+                                .supplier("12345678926")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct34, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct35 = RequestSupplierProduct.builder()
-                                .productSku("B00009")
+                                .product("B00009")
                                 .purchasePrice(95.22)
                                 .serial("B00009A")
-                                .supplierRuc("12345678925")
+                                .supplier("12345678925")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct35, "NTORRES");
 
                         RequestSupplierProduct requestSupplierProduct36 = RequestSupplierProduct.builder()
-                                .productSku("B00009")
+                                .product("B00009")
                                 .purchasePrice(83.19)
                                 .serial("B00009B")
-                                .supplierRuc("12345678926")
+                                .supplier("12345678926")
                                 .build();
 
                         iSupplierProduct.save(requestSupplierProduct36, "NTORRES");
