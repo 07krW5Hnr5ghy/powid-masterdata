@@ -1887,35 +1887,35 @@ public class Seeder implements CommandLineRunner {
                         // courier
                         RequestCourier requestCourier1 = RequestCourier.builder()
                                 .courier("Marvisur")
-                                .phoneNumber("123456789")
+                                .phone("123456789")
                                 .build();
 
                         iCourier.save(requestCourier1,"gjimenez");
 
                         RequestCourier requestCourier2 = RequestCourier.builder()
                                 .courier("Rappi")
-                                .phoneNumber("111111111")
+                                .phone("111111111")
                                 .build();
 
                         iCourier.save(requestCourier2,"gjimenez");
 
                         RequestCourier requestCourier3 = RequestCourier.builder()
                                 .courier("Indriver")
-                                .phoneNumber("222222222")
+                                .phone("222222222")
                                 .build();
 
                         iCourier.save(requestCourier3,"fcasas");
 
                         RequestCourier requestCourier4 = RequestCourier.builder()
                                 .courier("Shalom")
-                                .phoneNumber("333333333")
+                                .phone("333333333")
                                 .build();
 
                         iCourier.save(requestCourier4,"fcasas");
 
                         RequestCourier requestCourier5 = RequestCourier.builder()
                                 .courier("Sin courier")
-                                .phoneNumber("000000000")
+                                .phone("000000000")
                                 .build();
 
                         iCourier.save(requestCourier5,"admin1");

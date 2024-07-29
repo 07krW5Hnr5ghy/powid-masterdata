@@ -59,7 +59,7 @@ public class CourierImpl implements ICourier {
             try {
                 Courier newCourier = courierRepository.save(Courier.builder()
                         .name(requestCourier.getCourier().toUpperCase())
-                        .phoneNumber(requestCourier.getPhoneNumber())
+                        .phoneNumber(requestCourier.getPhone())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .client(user.getClient())
