@@ -14,7 +14,7 @@ public class RequestSupplier {
     private String ruc;
     private String country;
     private String location;
-    private String phoneNumber;
+    private String phone;
     private String email;
     private String supplierType;
     private String district;

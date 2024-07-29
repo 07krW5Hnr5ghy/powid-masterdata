@@ -1481,7 +1481,7 @@ public class Seeder implements CommandLineRunner {
                         supplier1.setSupplierType("INTERNO");
                         supplier1.setEmail("bg@gmail.com");
                         supplier1.setLocation("Lima, Street 123");
-                        supplier1.setPhoneNumber("323456789");
+                        supplier1.setPhone("323456789");
 
                         iSupplier.save(supplier1, "AYEPES");
 
@@ -1493,7 +1493,7 @@ public class Seeder implements CommandLineRunner {
                         supplier2.setSupplierType("DISTRIBUIDOR");
                         supplier2.setEmail("coltran@gmail.com");
                         supplier2.setLocation("Mumbai, Av 345");
-                        supplier2.setPhoneNumber("333456789");
+                        supplier2.setPhone("333456789");
 
                         iSupplier.save(supplier2, "AYEPES");
 
@@ -1505,7 +1505,7 @@ public class Seeder implements CommandLineRunner {
                         supplier3.setSupplierType("DISTRIBUIDOR");
                         supplier3.setEmail("xincheng@gmail.com");
                         supplier3.setLocation("Shanghai, st 777");
-                        supplier3.setPhoneNumber("343456789");
+                        supplier3.setPhone("343456789");
 
                         iSupplier.save(supplier3, "NTORRES");
 
@@ -1517,7 +1517,7 @@ public class Seeder implements CommandLineRunner {
                         supplier4.setSupplierType("DISTRIBUIDOR");
                         supplier4.setEmail("tejidos@gmail.com");
                         supplier4.setLocation("Valencia, tranv 843");
-                        supplier4.setPhoneNumber("353456789");
+                        supplier4.setPhone("353456789");
 
                         iSupplier.save(supplier4, "NTORRES");
 
