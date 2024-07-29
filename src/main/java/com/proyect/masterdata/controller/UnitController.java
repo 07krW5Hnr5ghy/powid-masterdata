@@ -72,9 +72,9 @@ public class UnitController {
     @GetMapping("unit-type")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_GET')")
     public ResponseEntity<List<UnitDTO>> list(
-            @RequestParam("unitTypeName") String unitTypeName
+            @RequestParam("unitType") String unitType
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<UnitDTO>> result = iUnit.listUnitByType(unitTypeName);
+        CompletableFuture<List<UnitDTO>> result = iUnit.listUnitByType(unitType);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

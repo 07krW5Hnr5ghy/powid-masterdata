@@ -194,10 +194,29 @@ public class SizeTypeImpl implements ISizeType {
     @Override
     public CompletableFuture<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<SizeType> sizeTypes = new ArrayList<>();
+            List<SizeType> sizeTypes;
 
             try {
                 sizeTypes = sizeTypeRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (sizeTypes.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypes);
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SizeTypeDTO>> listSizeTypeFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SizeType> sizeTypes;
+
+            try {
+                sizeTypes = sizeTypeRepository.findAll();
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);

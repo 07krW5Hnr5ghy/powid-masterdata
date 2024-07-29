@@ -16,7 +16,7 @@ public interface ISizeType {
     CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions;
-
+    CompletableFuture<List<SizeTypeDTO>> listSizeTypeFilter() throws BadRequestExceptions;
     CompletableFuture<Page<SizeTypeDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
 
