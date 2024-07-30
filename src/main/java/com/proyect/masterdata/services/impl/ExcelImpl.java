@@ -61,6 +61,7 @@ public class ExcelImpl implements IExcel {
     private final SizeRepository sizeRepository;
     private final UnitRepository unitRepository;
     private final IAudit iAudit;
+    private final ProductPriceRepository productPriceRepository;
 
     @Override
     public CompletableFuture<ResponseSuccess> shipment(RequestShipmentExcel requestShipmentExcel, MultipartFile multipartFile) throws BadRequestExceptions {
@@ -1123,6 +1124,9 @@ public class ExcelImpl implements IExcel {
                 Workbook workbook = WorkbookFactory.create(inputStream);
                 Sheet sheet = workbook.getSheetAt(0);
                 List<Product> products = new ArrayList<>();
+                List<ProductPrice> productPrices = new ArrayList<>();
+                Set<String> skus = new HashSet<>();
+                boolean hasDuplicate = false;
                 int i = 0;
                 for(Row row:sheet){
                     int ii = 0;
@@ -1218,11 +1222,12 @@ public class ExcelImpl implements IExcel {
                         newProduct.setTokenUser(user.getUsername());
                         newProduct.setClient(user.getClient());
                         newProduct.setClientId(user.getClientId());
-                        productPrice.setProduct(newProduct);
-                        productPrice.setProductId(newProduct.getId());
                         productPrice.setTokenUser(user.getUsername());
                         productPrice.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        productPrice.setUpdateDate(new Date(System.currentTimeMillis()));
+                        productPrice.setStatus(true);
                         products.add(newProduct);
+                        productPrices.add(productPrice);
                     }
                     if(i>=1 && (
                             newProduct.getSku() == null ||
@@ -1237,16 +1242,23 @@ public class ExcelImpl implements IExcel {
                     }
                     i++;
                 }
-                Set<String> skus = new HashSet<>();
-                boolean hasDuplicate = false;
-                for(Product product : products){
+                
+                for(int j = 0;j < products.size();j++){
+                    if(products.size() != productPrices.size()){
+                        throw new IllegalArgumentException("Both lists must have the same size");
+                    }
+                    Product product = products.get(j);
+                    ProductPrice productPrice = productPrices.get(j);
                     if(!skus.add(product.getSku())){
                         hasDuplicate = true;
                     }
                     if(hasDuplicate){
-                        throw new BadRequestExceptions(Constants.ErrorOrderStockDuplicateItem);
+                        throw new BadRequestExceptions(Constants.ErrorProductExists);
                     }else {
-                        productRepository.save(product);
+                        Product storedProduct = productRepository.save(product);
+                        productPrice.setProductId(storedProduct.getId());
+                        productPrice.setProduct(storedProduct);
+                        productPriceRepository.save(productPrice);
                         iAudit.save("ADD_PRODUCT_EXCEL","ADD PRODUCT "+product.getSku()+" USING EXCEL FILE.",user.getUsername());
                     }
                 }
