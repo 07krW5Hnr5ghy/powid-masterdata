@@ -1242,7 +1242,7 @@ public class ExcelImpl implements IExcel {
                     }
                     i++;
                 }
-                
+
                 for(int j = 0;j < products.size();j++){
                     if(products.size() != productPrices.size()){
                         throw new IllegalArgumentException("Both lists must have the same size");

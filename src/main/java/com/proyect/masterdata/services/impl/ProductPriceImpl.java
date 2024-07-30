@@ -64,6 +64,7 @@ public class ProductPriceImpl implements IProductPrice {
                             .unitSalePrice(unitPrice)
                             .status(true)
                             .registrationDate(new Date(System.currentTimeMillis()))
+                            .updateDate(new Date(System.currentTimeMillis()))
                             .tokenUser(tokenUser.toUpperCase())
                     .build());
             iAudit.save("ADD_PRODUCT_PRICE","ADD PRICE "+newProductPrice.getUnitSalePrice()+" FOR PRODUCT "+newProductPrice.getProduct().getSku()+".",user.getUsername());
@@ -113,6 +114,7 @@ public class ProductPriceImpl implements IProductPrice {
                         .unitSalePrice(unitPrice)
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
                 iAudit.save("ADD_PRODUCT_PRICE","ADD PRICE "+newProductPrice.getUnitSalePrice()+" FOR PRODUCT "+newProductPrice.getProduct().getSku()+".",user.getUsername());
