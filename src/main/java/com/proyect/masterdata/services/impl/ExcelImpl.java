@@ -62,7 +62,6 @@ public class ExcelImpl implements IExcel {
     private final UnitRepository unitRepository;
     private final IAudit iAudit;
     private final ProductPriceRepository productPriceRepository;
-
     @Override
     public CompletableFuture<ResponseSuccess> shipment(RequestShipmentExcel requestShipmentExcel, MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -86,8 +85,6 @@ public class ExcelImpl implements IExcel {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
-            }else{
-                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestShipmentExcel.getSupplier().toUpperCase(),user.getClientId());
             }
 
             if (warehouse == null) {
@@ -108,10 +105,6 @@ public class ExcelImpl implements IExcel {
                 throw new BadRequestExceptions(Constants.ErrorShipmentExists);
             }
 
-            if(supplier == null){
-                throw new BadRequestExceptions(Constants.ErrorSupplier);
-            }
-
             if(shipmentDocument == null){
                 throw new BadRequestExceptions(Constants.ErrorShipmentDocument);
             }
@@ -128,6 +121,12 @@ public class ExcelImpl implements IExcel {
                 InputStream inputStream = multipartFile.getInputStream();
                 Workbook workbook = WorkbookFactory.create(inputStream);
                 Sheet sheet = workbook.getSheetAt(0);
+                Row supplierRow = sheet.getRow(0);
+                Cell supplierCell = supplierRow.getCell(3);
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(supplierCell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                if(supplier == null){
+                    throw new BadRequestExceptions(Constants.ErrorSupplier);
+                }
                 int i = 0;
                 List<RequestStockTransactionItem> stockTransactionItemList = new ArrayList<>();
                 List<RequestShipmentItem> requestShipmentItemList = new ArrayList<>();
@@ -137,31 +136,31 @@ public class ExcelImpl implements IExcel {
                     RequestShipmentItem requestShipmentItem = RequestShipmentItem.builder().build();
                     int ii = 0;
                     for(Cell cell:row){
-                        if(i>=1 && (cell.getCellType() == STRING) && (ii == 0)){
+                        if(i>=2 && (cell.getCellType() == STRING) && (ii == 0)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
                             requestShipmentItem.setSupplierProduct(supplierProduct.getSerial());
                         }
-                        if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==1)){
+                        if(i>=3 && (cell.getCellType() == NUMERIC) && (ii==1)){
                             if(((int) cell.getNumericCellValue()) < 1){
                                 throw new BadRequestExceptions(Constants.ErrorShipmentItemZero);
                             }
                             requestShipmentItem.setQuantity((int) cell.getNumericCellValue());
                         }
-                        if(i>=1 && (cell.getCellType()==STRING) && (ii==2)){
+                        if(i>=4 && (cell.getCellType()==STRING) && (ii==2)){
                             requestShipmentItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         ii++;
                     }
-                    if(i>=1 && (
+                    if(i>=2 && (
                             requestShipmentItem.getQuantity() != null &&
                                     requestShipmentItem.getObservations() != null &&
                                     requestShipmentItem.getSupplierProduct() != null)){
                         requestShipmentItemList.add(requestShipmentItem);
                     }
-                    if(i>=1 && (
+                    if(i>=2 && (
                             requestShipmentItem.getQuantity() == null ||
                                     requestShipmentItem.getObservations() == null ||
                                     requestShipmentItem.getSupplierProduct() == null)){
@@ -203,24 +202,24 @@ public class ExcelImpl implements IExcel {
                     RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder().build();
                     int ji = 0;
                     for(Cell cell:row){
-                        if(j>=1 && (cell.getCellType() == STRING) && (ji == 0)){
+                        if(j>=2 && (cell.getCellType() == STRING) && (ji == 0)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             requestStockTransactionItem.setSupplierProductSerial(cell.getRichStringCellValue().getString().toUpperCase());
                             shipmentItem.setSupplierProduct(supplierProduct);
                             shipmentItem.setSupplierProductId(supplierProduct.getId());
                         }
-                        if(j>=1 && (cell.getCellType()==NUMERIC)){
+                        if(j>=2 && (cell.getCellType()==NUMERIC)){
                             shipmentItem.setQuantity((int) cell.getNumericCellValue());
                             requestStockTransactionItem.setQuantity((int) cell.getNumericCellValue());
 
                         }
-                        if(j>=1 && (cell.getCellType() == STRING) && (ji == 2)){
+                        if(j>=2 && (cell.getCellType() == STRING) && (ji == 2)){
                             shipmentItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
                         }
 
                         ji++;
                     }
-                    if(j>=1 && (
+                    if(j>=2 && (
                             shipmentItem.getQuantity() != null &&
                                     shipmentItem.getSupplierProduct() != null &&
                             shipmentItem.getObservations() != null)){
@@ -235,7 +234,7 @@ public class ExcelImpl implements IExcel {
                         iWarehouseStock.in(warehouse,shipmentItem.getSupplierProduct(),shipmentItem.getQuantity(),user);
                         iGeneralStock.in(shipmentItem.getSupplierProduct().getSerial(),shipmentItem.getQuantity(),user.getUsername());
                     }
-                    if(j>=1 && (
+                    if(j>=2 && (
                             shipmentItem.getQuantity() == null ||
                                     shipmentItem.getSupplierProduct() == null ||
                                     shipmentItem.getObservations() == null)){

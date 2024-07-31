@@ -24,11 +24,12 @@ public class TemplateController {
     @GetMapping("shipment")
     private ResponseEntity<byte[]> shipment(
             @RequestParam("quantity") Integer quantity,
+            @RequestParam("ruc") String ruc,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ByteArrayInputStream> result = iTemplate.shipment(quantity,user);
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.shipment(quantity,ruc,user);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=embarque.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=compra.xlsx");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)

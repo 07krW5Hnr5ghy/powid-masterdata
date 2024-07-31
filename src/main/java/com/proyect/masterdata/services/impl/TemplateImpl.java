@@ -45,10 +45,12 @@ public class TemplateImpl implements ITemplate {
     private final SizeRepository sizeRepository;
     private final UnitRepository unitRepository;
     private final ShipmentTypeRepository shipmentTypeRepository;
+    private final SupplierRepository supplierRepository;
     @Override
-    public CompletableFuture<ByteArrayInputStream> shipment(Integer quantity, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> shipment(Integer quantity,String supplierRuc, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
+            Supplier supplier;
             List<SupplierProduct> supplierProductList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
@@ -60,7 +62,13 @@ public class TemplateImpl implements ITemplate {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                supplierProductList = supplierProductRepository.findAllByClientIdAndStatusTrue(user.getClientId());
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(supplierRuc,user.getClientId());
+            }
+
+            if(supplier == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }else{
+                supplierProductList = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(user.getClientId(),supplier.getId());
             }
 
             if(supplierProductList.isEmpty()){
@@ -69,13 +77,25 @@ public class TemplateImpl implements ITemplate {
 
             try{
                 XSSFWorkbook workbook = new XSSFWorkbook();
-                XSSFSheet sheet = workbook.createSheet("embarque");
+                XSSFSheet sheet = workbook.createSheet("compra");
 
                 CellStyle headerStyle = workbook.createCellStyle();
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-                Row headerRow = sheet.createRow(0);
+                Row supplierRow = sheet.createRow(0);
+                Cell supplierHeaderCell = supplierRow.createCell(0);
+                supplierHeaderCell.setCellValue("PROVEEDOR");
+                supplierHeaderCell.setCellStyle(headerStyle);
+                Cell supplierCell = supplierRow.createCell(1);
+                supplierCell.setCellValue(supplier.getBusinessName());
+                Cell supplierHeaderCell2 = supplierRow.createCell(2);
+                supplierHeaderCell2.setCellValue("RUC");
+                supplierHeaderCell2.setCellStyle(headerStyle);
+                Cell supplierCell2 = supplierRow.createCell(3);
+                supplierCell2.setCellValue(supplier.getRuc());
+
+                Row headerRow = sheet.createRow(1);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU INVENTARIO");
                 cell.setCellStyle(headerStyle);
@@ -91,7 +111,7 @@ public class TemplateImpl implements ITemplate {
                 String[] serialList = supplierProductList.stream().map(SupplierProduct::getSerial).toList().toArray(new String[0]);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
                 DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
-                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);
+                CellRangeAddressList addressList = new CellRangeAddressList(2,quantity+1,0,0);
                 DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
                 sheet.addValidationData(dataValidation);
 
