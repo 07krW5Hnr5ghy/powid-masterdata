@@ -973,7 +973,7 @@ public class Seeder implements CommandLineRunner {
                         iUnit.save(requestUnit3,"admin1");
 
                         // shipment type
-                        iShipmentType.save("embarque","admin1");
+                        iShipmentType.save("compra","admin1");
                         iShipmentType.save("devolucion","admin1");
                         iShipmentType.save("restockaje","admin1");
 
@@ -1848,7 +1848,7 @@ public class Seeder implements CommandLineRunner {
                         iSupplierProduct.save(requestSupplierProduct36, "NTORRES");
 
                         // stock transaction types mocks
-                        iStockTransactionType.save("embarque", "admin1");
+                        iStockTransactionType.save("compra", "admin1");
                         iStockTransactionType.save("pedido", "admin1");
                         iStockTransactionType.save("transferencia-entrada", "admin1");
                         iStockTransactionType.save("transferencia-salida", "admin1");
@@ -1974,7 +1974,7 @@ public class Seeder implements CommandLineRunner {
 
                         RequestShipment requestShipment1 = RequestShipment.builder()
                                 .serial("SA00001")
-                                .shipmentType("embarque")
+                                .shipmentType("compra")
                                 .shipmentDocument("FACTURA")
                                 .requestShipmentItemList(requestShipmentItemList1)
                                 .warehouse("luminous")
@@ -2034,7 +2034,7 @@ public class Seeder implements CommandLineRunner {
                         requestShipmentItemList2.add(requestShipmentItem12);
 
                         RequestShipment requestShipment2 = RequestShipment.builder()
-                                .shipmentType("embarque")
+                                .shipmentType("compra")
                                 .serial("SB00001")
                                 .requestShipmentItemList(requestShipmentItemList2)
                                 .warehouse("alcazar")

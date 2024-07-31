@@ -51,7 +51,7 @@ public class StockReturnImpl implements IStockReturn {
         try{
             user = userRepository.findByUsernameAndStatusTrue(requestStockReturn.getTokenUser().toUpperCase());
             stockReturn = stockReturnRepository.findBySerial(requestStockReturn.getSerial());
-            shipment = shipmentRepository.findByShipmentTypeNameAndSerial("EMBARQUE", requestStockReturn.getShipmentSerial());
+            shipment = shipmentRepository.findByShipmentTypeNameAndSerial("COMPRA", requestStockReturn.getShipmentSerial());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

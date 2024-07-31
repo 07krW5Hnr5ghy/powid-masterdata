@@ -71,17 +71,23 @@ public class ExcelImpl implements IExcel {
             Shipment shipment;
             ShipmentType shipmentType = null;
             StockReturn stockReturn;
+            Supplier supplier;
+            ShipmentDocument shipmentDocument;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(requestShipmentExcel.getTokenUser().toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipmentExcel.getWarehouse().toUpperCase());
                 shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipmentExcel.getShipmentType().toUpperCase());
+                shipmentDocument = shipmentDocumentRepository.findByNameAndStatusTrue(requestShipmentExcel.getShipmentDocument().toUpperCase());
             } catch (RuntimeException e) {
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestShipmentExcel.getSupplier().toUpperCase(),user.getClientId());
             }
 
             if (warehouse == null) {
@@ -100,6 +106,14 @@ public class ExcelImpl implements IExcel {
 
             if(shipment != null){
                 throw new BadRequestExceptions(Constants.ErrorShipmentExists);
+            }
+
+            if(supplier == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }
+
+            if(shipmentDocument == null){
+                throw new BadRequestExceptions(Constants.ErrorShipmentDocument);
             }
 
             try {
@@ -166,9 +180,14 @@ public class ExcelImpl implements IExcel {
                     }
                 }
                 Shipment newShipment = shipmentRepository.save(Shipment.builder()
+                        .serial(requestShipmentExcel.getSerial().toUpperCase())
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
+                        .shipmentDocument(shipmentDocument)
+                        .shipmentDocumentId(shipmentDocument.getId())
+                        .supplier(supplier)
+                        .supplierId(supplier.getId())
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
                         .shipmentType(shipmentType)
@@ -224,15 +243,17 @@ public class ExcelImpl implements IExcel {
                     }
                     j++;
                 }
-                iStockTransaction.save("S"+requestShipmentExcel.getSerial().toUpperCase(), warehouse,stockTransactionItemList,"ENTRADA",user);
+                iStockTransaction.save("S"+requestShipmentExcel.getSerial().toUpperCase(), warehouse,stockTransactionItemList,"COMPRA",user);
                 iAudit.save("ADD_SHIPMENT_EXCEL","ADD SHIPMENT "+newShipment.getSerial()+" USING EXCEL FILE.",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
                         .build();
             } catch (IOException e) {
+                e.printStackTrace();
                 throw new RuntimeException(e);
             }catch (RuntimeException e){
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
