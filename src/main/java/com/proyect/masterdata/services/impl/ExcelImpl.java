@@ -1293,4 +1293,112 @@ public class ExcelImpl implements IExcel {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> supplierProduct(MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            try {
+                user = userRepository
+                        .findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            try {
+                InputStream inputStream = multipartFile.getInputStream();
+                Workbook workbook = WorkbookFactory.create(inputStream);
+                Sheet sheet = workbook.getSheetAt(0);
+                List<SupplierProduct> supplierProducts = new ArrayList<>();
+                Set<String> skus = new HashSet<>();
+                boolean hasDuplicate = false;
+                int i = 0;
+                for(Row row:sheet){
+                    int ii = 0;
+                    Product product;
+                    SupplierProduct supplierProduct;
+                    Supplier supplier;
+                    SupplierProduct newSupplierProduct = SupplierProduct.builder().build();
+                    for(Cell cell:row){
+                        if((i>=1) && (cell.getCellType() == STRING) && (ii==0)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getStringCellValue().toUpperCase());
+                            if(supplierProduct!=null){
+                                throw new BadRequestExceptions(Constants.ErrorSupplierExists);
+                            }
+                            newSupplierProduct.setSerial(cell.getStringCellValue().toUpperCase());
+                        }
+                        if((i>=1) && (cell.getCellType() == STRING) && (ii==1)){
+                            product = productRepository.findBySkuAndStatusTrue(cell.getStringCellValue().toUpperCase());
+                            if(product == null){
+                                throw new BadRequestExceptions(Constants.ErrorProduct);
+                            }
+                            newSupplierProduct.setProduct(product);
+                            newSupplierProduct.setProductId(product.getId());
+                        }
+                        if((i>=1) && (cell.getCellType() == STRING) && (ii==2)){
+                            supplier = supplierRepository.findByBusinessNameAndClientId(cell.getStringCellValue().toUpperCase(),user.getClientId());
+                            if(supplier == null){
+                                throw new BadRequestExceptions(Constants.ErrorUser);
+                            }
+                            newSupplierProduct.setSupplier(supplier);
+                            newSupplierProduct.setSupplierId(supplier.getId());
+                        }
+                        if((i>=1) && (cell.getCellType() == NUMERIC) && (ii==3)){
+                            if(cell.getNumericCellValue() < 0.01){
+                                throw new BadRequestExceptions(Constants.ErrorSupplierProductZero);
+                            }
+                            newSupplierProduct.setPurchasePrice(cell.getNumericCellValue());
+                        }
+                        ii++;
+                    }
+                    if(i>=1 && (
+                            newSupplierProduct.getSerial() != null ||
+                                    newSupplierProduct.getProduct() != null ||
+                                    newSupplierProduct.getSupplier() != null ||
+                                    newSupplierProduct.getPurchasePrice() != null
+                            )){
+                        newSupplierProduct.setStatus(true);
+                        newSupplierProduct.setTokenUser(user.getUsername());
+                        newSupplierProduct.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        newSupplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
+                        newSupplierProduct.setClient(user.getClient());
+                        newSupplierProduct.setClientId(user.getClientId());
+                        supplierProducts.add(newSupplierProduct);
+                    }
+                    if(i>=1 && (
+                            newSupplierProduct.getSerial() == null ||
+                                    newSupplierProduct.getProduct() == null ||
+                                    newSupplierProduct.getSupplier() == null ||
+                                    newSupplierProduct.getPurchasePrice() == null
+                    )){
+                        break;
+                    }
+                    i++;
+                }
+                for(SupplierProduct supplierProduct : supplierProducts){
+                    if(!skus.add(supplierProduct.getSerial())){
+                        hasDuplicate = true;
+                    }
+                    if(hasDuplicate){
+                        throw new BadRequestExceptions(Constants.ErrorSupplierProductExists);
+                    }else{
+                        supplierProductRepository.save(supplierProduct);
+                        iAudit.save("ADD_SUPPLIER_PRODUCT_EXCEL","ADD SUPPLIER PRODUCT "+supplierProduct.getSerial()+" USING EXCEL FILE.",user.getUsername());
+                    }
+                }
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException | IOException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 }

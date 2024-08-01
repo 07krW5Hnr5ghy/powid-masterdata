@@ -312,4 +312,5 @@ public class Constants {
     public static final String ErrorDeliveryPoint = "Delivery point does not exists";
     public static final String ErrorDeliveryPointExist = "Delivery point already exists";
     public static final String ErrorShipmentItem = "Shipment item does not exists";
+    public static final String ErrorSupplierProductZero = "Supplier product price can't be zero";
 }

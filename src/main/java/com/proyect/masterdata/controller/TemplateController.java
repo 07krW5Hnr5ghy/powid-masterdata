@@ -121,4 +121,18 @@ public class TemplateController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(result.get().readAllBytes());
     }
+
+    @GetMapping("supplier-product")
+    private ResponseEntity<byte[]> supplierProduct(
+            @RequestParam("quantity") Integer quantity,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InterruptedException, ExecutionException {
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.supplierProduct(quantity,user);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=productos_inventario.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(result.get().readAllBytes());
+    }
 }

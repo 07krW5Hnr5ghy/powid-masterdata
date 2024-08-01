@@ -13,4 +13,5 @@ public interface ITemplate {
     CompletableFuture<ByteArrayInputStream> orderStock(Long orderId,String username) throws BadRequestExceptions;
     CompletableFuture<ByteArrayInputStream> orderReturn(Long orderId,String username) throws BadRequestExceptions;
     CompletableFuture<ByteArrayInputStream> product(Integer quantity,String username) throws BadRequestExceptions;
+    CompletableFuture<ByteArrayInputStream> supplierProduct(Integer quantity,String username) throws BadRequestExceptions;
 }
