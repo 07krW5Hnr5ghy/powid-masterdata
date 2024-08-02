@@ -86,9 +86,11 @@ public class ProductPictureImpl implements IProductPicture {
             iAudit.save("ADD_PRODUCT_PICTURE","ADD "+pictures.size()+" PRODUCT PICTURES.",user.getUsername());
             return pictureUrlList;
         }catch (RuntimeException | IOException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

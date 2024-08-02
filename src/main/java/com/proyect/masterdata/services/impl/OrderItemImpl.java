@@ -207,8 +207,6 @@ public class OrderItemImpl implements IOrderItem {
                     }
                 }
 
-                System.out.println(checkStockItemDTOList);
-
                 if(stockUnits >= quantity){
                     return ResponseCheckStockItem.builder()
                             .itemStockList(checkStockItemDTOList)

@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.CheckStockDTO;
 import com.proyect.masterdata.dto.ShipmentDTO;
 import com.proyect.masterdata.dto.ShipmentItemDTO;
 import com.proyect.masterdata.dto.request.RequestShipment;
@@ -70,6 +71,15 @@ public class ShipmentController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<ShipmentDTO>> result = iShipment.listFilter(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("check-stock")
+    public ResponseEntity<List<CheckStockDTO>> checkStock(
+            @RequestParam("user") String user,
+            @RequestParam("serial") String serial
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CheckStockDTO>> result = iShipment.checkStock(serial,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

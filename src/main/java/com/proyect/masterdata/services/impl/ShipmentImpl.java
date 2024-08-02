@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.CheckStockDTO;
 import com.proyect.masterdata.dto.ShipmentDTO;
 import com.proyect.masterdata.dto.request.RequestShipment;
 import com.proyect.masterdata.dto.request.RequestShipmentItem;
@@ -39,6 +40,8 @@ public class ShipmentImpl implements IShipment {
     private final ShipmentDocumentRepository shipmentDocumentRepository;
     private final IAudit iAudit;
     private final SupplierRepository supplierRepository;
+    private final ProductRepository productRepository;
+    private final WarehouseStockRepository warehouseStockRepository;
     @Override
     public ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -455,6 +458,41 @@ public class ShipmentImpl implements IShipment {
                     .shipmentType(shipment.getShipmentType().getName())
                     .registrationDate(shipment.getRegistrationDate())
                     .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<CheckStockDTO>> checkStock(String serial, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<WarehouseStock> warehouseStocks;
+            SupplierProduct supplierProduct;
+            User user;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(serial.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(supplierProduct == null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }else{
+                warehouseStocks = warehouseStockRepository.findAllBySupplierProductId(supplierProduct.getId());
+            }
+
+            try {
+                return warehouseStocks.stream().map(warehouseStock -> CheckStockDTO.builder()
+                        .warehouse(warehouseStock.getWarehouse().getName())
+                        .quantity(warehouseStock.getQuantity())
+                        .build()
+                ).toList();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 

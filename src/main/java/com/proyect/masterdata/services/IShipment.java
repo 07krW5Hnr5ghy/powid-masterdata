@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services;
 
+import com.proyect.masterdata.dto.CheckStockDTO;
 import com.proyect.masterdata.dto.ShipmentDTO;
 import com.proyect.masterdata.dto.request.RequestShipment;
 import com.proyect.masterdata.dto.request.RequestShipmentItem;
@@ -34,4 +35,5 @@ public interface IShipment {
             Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<ShipmentDTO>> listShipment(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<ShipmentDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<CheckStockDTO>> checkStock(String serial, String user) throws BadRequestExceptions,InternalErrorExceptions;
 }
