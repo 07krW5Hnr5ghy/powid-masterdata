@@ -953,7 +953,7 @@ public class Seeder implements CommandLineRunner {
 
                         // unit
                         RequestUnit requestUnit1 = RequestUnit.builder()
-                                .name("prenda")
+                                .name("und")
                                 .unitType("ropa")
                                 .build();
 
@@ -1299,7 +1299,7 @@ public class Seeder implements CommandLineRunner {
                         product4.setSize("s");
                         product4.setSku("A00004");
                         product4.setPrice(7.01);
-                        product4.setUnit("prenda");
+                        product4.setUnit("und");
                         product4.setPictures(productImages2);
 
                         iProduct.save(product4, "OPEREZ");
@@ -1311,7 +1311,7 @@ public class Seeder implements CommandLineRunner {
                         product5.setSize("m");
                         product5.setSku("A00005");
                         product5.setPrice(4.76);
-                        product5.setUnit("prenda");
+                        product5.setUnit("und");
                         product5.setPictures(productImages1);
 
                         iProduct.save(product5, "OPEREZ");
@@ -1323,7 +1323,7 @@ public class Seeder implements CommandLineRunner {
                         product6.setSize("l");
                         product6.setSku("A00006");
                         product6.setPrice(1.34);
-                        product6.setUnit("prenda");
+                        product6.setUnit("und");
                         product6.setPictures(productImages2);
 
                         iProduct.save(product6, "OPEREZ");
@@ -1335,7 +1335,7 @@ public class Seeder implements CommandLineRunner {
                         product7.setSize("xs");
                         product7.setSku("A00007");
                         product7.setPrice(8.23);
-                        product7.setUnit("prenda");
+                        product7.setUnit("und");
                         product7.setPictures(productImages1);
 
                         iProduct.save(product7, "OPEREZ");
@@ -1347,7 +1347,7 @@ public class Seeder implements CommandLineRunner {
                         product8.setSize("xm");
                         product8.setSku("A00008");
                         product8.setPrice(6.27);
-                        product8.setUnit("prenda");
+                        product8.setUnit("und");
                         product8.setPictures(productImages2);
 
                         iProduct.save(product8, "OPEREZ");
@@ -1359,7 +1359,7 @@ public class Seeder implements CommandLineRunner {
                         product9.setSize("xl");
                         product9.setSku("A00009");
                         product9.setPrice(9.05);
-                        product9.setUnit("prenda");
+                        product9.setUnit("und");
                         product9.setPictures(productImages1);
 
                         iProduct.save(product9, "OPEREZ");
@@ -1407,7 +1407,7 @@ public class Seeder implements CommandLineRunner {
                         product13.setSize("s");
                         product13.setSku("B00004");
                         product13.setPrice(4.02);
-                        product13.setUnit("prenda");
+                        product13.setUnit("und");
                         product13.setPictures(productImages1);
 
                         iProduct.save(product13, "JORTIZ");
@@ -1419,7 +1419,7 @@ public class Seeder implements CommandLineRunner {
                         product14.setSize("m");
                         product14.setSku("B00005");
                         product14.setPrice(1.99);
-                        product14.setUnit("prenda");
+                        product14.setUnit("und");
                         product14.setPictures(productImages2);
 
                         iProduct.save(product14, "JORTIZ");
@@ -1431,7 +1431,7 @@ public class Seeder implements CommandLineRunner {
                         product15.setSize("l");
                         product15.setSku("B00006");
                         product15.setPrice(6.37);
-                        product15.setUnit("prenda");
+                        product15.setUnit("und");
                         product15.setPictures(productImages1);
 
                         iProduct.save(product15, "JORTIZ");
@@ -1443,7 +1443,7 @@ public class Seeder implements CommandLineRunner {
                         product16.setSize("xl");
                         product16.setSku("B00007");
                         product16.setPrice(2.97);
-                        product16.setUnit("prenda");
+                        product16.setUnit("und");
                         product16.setPictures(productImages2);
 
                         iProduct.save(product16, "JORTIZ");
@@ -1455,7 +1455,7 @@ public class Seeder implements CommandLineRunner {
                         product17.setSize("xs");
                         product17.setSku("B00008");
                         product17.setPrice(5.21);
-                        product17.setUnit("prenda");
+                        product17.setUnit("und");
                         product17.setPictures(productImages1);
 
                         iProduct.save(product17, "JORTIZ");
@@ -1467,7 +1467,7 @@ public class Seeder implements CommandLineRunner {
                         product18.setSize("m");
                         product18.setSku("B00009");
                         product18.setPrice(3.53);
-                        product18.setUnit("prenda");
+                        product18.setUnit("und");
                         product18.setPictures(productImages2);
 
                         iProduct.save(product18, "JORTIZ");
@@ -1858,28 +1858,40 @@ public class Seeder implements CommandLineRunner {
 
                         // warehouse mocks
                         RequestWarehouse warehouse1 = RequestWarehouse.builder()
-                                .location("Cusco calle 123")
+                                .contact("ROBERTO FRANCO")
+                                .phone("145235782")
+                                .address("Cusco calle 123")
+                                .reference("NO APLICA")
                                 .name("luminous")
                                 .build();
 
                         iWarehouse.save(warehouse1, "AYEPES");
 
                         RequestWarehouse warehouse2 = RequestWarehouse.builder()
-                                .location("Lima Avenida 234")
+                                .contact("MARIA PERDOMO")
+                                .phone("190203455")
+                                .address("Lima Avenida 234")
+                                .reference("NO APLICA")
                                 .name("oikas")
                                 .build();
 
                         iWarehouse.save(warehouse2, "AYEPES");
 
                         RequestWarehouse warehouse3 = RequestWarehouse.builder()
-                                .location("Arequipa Calle 765")
+                                .contact("ERNESTO MENDEZ")
+                                .phone("359834031")
+                                .address("Arequipa Calle 765")
+                                .reference("NO APLICA")
                                 .name("villalobos")
                                 .build();
 
                         iWarehouse.save(warehouse3, "NTORRES");
 
                         RequestWarehouse warehouse4 = RequestWarehouse.builder()
-                                .location("Nazca calle 89")
+                                .contact("OMAR RESTREPO")
+                                .phone("899123054")
+                                .address("Nazca calle 89")
+                                .reference("NO APLICA")
                                 .name("alcazar")
                                 .build();
 

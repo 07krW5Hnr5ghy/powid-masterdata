@@ -11,5 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestWarehouse {
     private String name;
-    private String location;
+    private String contact;
+    private String phone;
+    private String address;
+    private String reference;
 }
