@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -8,6 +9,7 @@ import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IProductPicture;
 import com.proyect.masterdata.services.IProductPrice;
+import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import com.proyect.masterdata.utils.Constants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -209,7 +212,7 @@ public class ProductImpl implements IProduct {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .build());
                 iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
-                iProductPicture.uploadPicture(product.getPictures(),productData.getId(),user.getUsername());
+                iProductPicture.uploadPictureAsync(product.getPictures(),productData.getId(),user.getUsername());
                 iAudit.save("ADD_PRODUCT","ADD PRODUCT "+productData.getSku()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)

@@ -8,14 +8,18 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.services.IOrdering;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -23,17 +27,19 @@ import java.util.concurrent.ExecutionException;
 @CrossOrigin({"*"})
 @RequestMapping("order")
 @AllArgsConstructor
+@Log4j2
 public class OrderingController {
 
     private final IOrdering iOrdering;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:SALES') and hasAuthority('ACCESS:ORDER_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestBody() RequestOrderSave requestOrderSave,
+            @RequestPart("requestOrder") RequestOrderSave requestOrderSave,
+            @RequestPart("receipts") MultipartFile[] receipts,
             @RequestParam("tokenUser") String tokenUser
-    ) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrdering.saveAsync(requestOrderSave,tokenUser);
+    ) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException, IOException {
+        CompletableFuture<ResponseSuccess> result = iOrdering.saveAsync(requestOrderSave,receipts,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

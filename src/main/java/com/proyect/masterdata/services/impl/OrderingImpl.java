@@ -3,7 +3,10 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderDTO;
 import com.proyect.masterdata.dto.OrderItemDTO;
-import com.proyect.masterdata.dto.request.*;
+import com.proyect.masterdata.dto.request.RequestOrderItem;
+import com.proyect.masterdata.dto.request.RequestOrderSave;
+import com.proyect.masterdata.dto.request.RequestOrderUpdate;
+import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -12,14 +15,22 @@ import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -59,7 +70,10 @@ public class OrderingImpl implements IOrdering {
     private final DeliveryPointRepository deliveryPointRepository;
     private final ProductPriceRepository productPriceRepository;
     @Override
-    public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(
+            RequestOrderSave requestOrderSave,
+            MultipartFile[] receipts,
+            String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         OrderState orderState;
         Courier courier;
@@ -176,8 +190,7 @@ public class OrderingImpl implements IOrdering {
                     .deliveryPoint(deliveryPoint)
                     .deliveryPointId(deliveryPoint.getId())
                     .build());
-
-            iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
+            iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
 
             for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
                 iOrderItem.save(ordering, requestOrderItem,tokenUser);
@@ -202,7 +215,8 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave,MultipartFile[] receipts, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        Path folder = Paths.get("src/main/resources/uploads");
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderState orderState;
@@ -315,8 +329,17 @@ public class OrderingImpl implements IOrdering {
                         .deliveryPoint(deliveryPoint)
                         .deliveryPointId(deliveryPoint.getId())
                         .build());
+                List<File> fileList = new ArrayList<>();
+                for(MultipartFile multipartFile : receipts){
+                    File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    fileList.add(convFile);
+                }
 
-                iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
+                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptFileAsync(fileList,ordering.getId(),user.getUsername());
 
                 for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
                     iOrderItem.save(ordering, requestOrderItem,tokenUser);
@@ -327,13 +350,24 @@ public class OrderingImpl implements IOrdering {
                     customerRepository.save(customer);
                 }
 
+                if(!paymentReceipts.get().isEmpty()){
+                    Stream<Path> paths = Files.list(folder);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+
                 iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
                         .build();
 
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

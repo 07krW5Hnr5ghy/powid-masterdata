@@ -19,6 +19,6 @@ public class RequestOrderUpdate {
     public String orderState;
     public String paymentState;
     public String courier;
-    public List<MultipartFile> receipts;
-    public List<MultipartFile> pictures;
+    public MultipartFile[] receipts;
+    public MultipartFile[] pictures;
 }

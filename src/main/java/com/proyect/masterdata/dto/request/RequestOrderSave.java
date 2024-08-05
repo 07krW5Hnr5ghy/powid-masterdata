@@ -14,7 +14,6 @@ import java.util.List;
 @Data
 public class RequestOrderSave {
     private String observations;
-    private List<MultipartFile> receipts;
     private String deliveryAddress;
     private Double deliveryAmount;
     private Double advancedPayment;

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +36,7 @@ public class CourierPictureImpl implements ICourierPicture {
     private final CourierPictureRepository courierPictureRepository;
     private final IFile iFile;
     @Override
-    public CompletableFuture<List<String>> uploadPicture(List<MultipartFile> pictures, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<String>> uploadPicture(MultipartFile[] pictures, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -65,11 +66,16 @@ public class CourierPictureImpl implements ICourierPicture {
                 String filename = "PEDIDO_" + orderId.toString() + "_" + user.getUsername() + "_" + formattedString;
                 String folderPath = folder + "/" + filename;
                 int pictureNumber = 1;
-                if(pictures.isEmpty()){
+                if(pictures.length == 0){
                     return Collections.emptyList();
                 }
-                for(MultipartFile receipt : pictures){
-                    String url = iFile.uploadFile(receipt,folderPath + "_COURIER_" + Integer.toString(pictureNumber)).get();
+                for(MultipartFile multipartFile : pictures){
+                    InputStream inputStream = multipartFile.getInputStream();
+                    byte[] buffer = new byte[inputStream.available()];
+                    if (buffer.length == 0) {
+                        System.out.println("Received an empty file: " + multipartFile.getOriginalFilename());
+                    }
+                    String url = iFile.uploadFile(multipartFile,folderPath + "_COURIER_" + Integer.toString(pictureNumber)).get();
                     courierPictureRepository.save(CourierPicture.builder()
                             .pictureUrl(url)
                             .client(user.getClient())

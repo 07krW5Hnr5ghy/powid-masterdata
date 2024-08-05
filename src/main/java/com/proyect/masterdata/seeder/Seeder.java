@@ -2058,7 +2058,7 @@ public class Seeder implements CommandLineRunner {
                         iShipment.save(requestShipment2, "NTORRES");
 
                         // orders mocks
-                        List<MultipartFile> receipts1 = new ArrayList<>();
+                        MultipartFile[] receipts1 = new MultipartFile[1];
                         Resource resource3 = resourceLoader.getResource("classpath:static/pictures/receipt.jpg");
                         MockMultipartFile multipartFile1 = new MockMultipartFile(
                                 "receipt.jpg",
@@ -2066,7 +2066,7 @@ public class Seeder implements CommandLineRunner {
                                 "image/jpeg",
                                 StreamUtils.copyToByteArray(resource3.getInputStream())
                         );
-                        receipts1.add(multipartFile1);
+                        receipts1[0] = multipartFile1;
 
                         RequestOrderItem requestOrderItem1 = RequestOrderItem.builder()
                                 .product("A00001")
@@ -2110,7 +2110,6 @@ public class Seeder implements CommandLineRunner {
                                 .managementType("venta")
                                 .observations("")
                                 .paymentMethod("yape")
-                                .receipts(receipts1)
                                 .saleChannel("web")
                                 .requestOrderItems(requestOrderItems1)
                                 .storeName("store 1")
@@ -2121,9 +2120,9 @@ public class Seeder implements CommandLineRunner {
                                 .phone("940544828")
                                 .build();
 
-                        iOrdering.save(requestOrderSave1,"CROJAS");
+                        iOrdering.save(requestOrderSave1,receipts1,"CROJAS");
 
-                        List<MultipartFile> receipts2 = new ArrayList<>();
+                        MultipartFile[] receipts2 = new MultipartFile[2];
                         Resource resource4 = resourceLoader.getResource("classpath:static/pictures/receiptarticle.jpg");
                         MockMultipartFile multipartFile2 = new MockMultipartFile(
                                 "receiptarticle.jpg",
@@ -2131,7 +2130,7 @@ public class Seeder implements CommandLineRunner {
                                 "image/jpeg",
                                 StreamUtils.copyToByteArray(resource4.getInputStream())
                         );
-                        receipts2.add(multipartFile2);
+                        receipts2[0] = multipartFile2;
                         Resource resource5 = resourceLoader.getResource("classpath:static/pictures/invoice1.jpg");
                         MockMultipartFile multipartFile3 = new MockMultipartFile(
                                 "invoice1.jpg",
@@ -2139,7 +2138,7 @@ public class Seeder implements CommandLineRunner {
                                 "image/jpeg",
                                 StreamUtils.copyToByteArray(resource5.getInputStream())
                         );
-                        receipts2.add(multipartFile3);
+                        receipts2[1] = multipartFile3;
 
                         RequestOrderItem requestOrderItem3 = RequestOrderItem.builder()
                                 .product("A00003")
@@ -2183,7 +2182,6 @@ public class Seeder implements CommandLineRunner {
                                 .managementType("venta")
                                 .observations("")
                                 .paymentMethod("plin")
-                                .receipts(receipts2)
                                 .saleChannel("web")
                                 .requestOrderItems(requestOrderItems2)
                                 .storeName("store 1")
@@ -2194,9 +2192,9 @@ public class Seeder implements CommandLineRunner {
                                 .discount("PORCENTAJE")
                                 .build();
 
-                        iOrdering.save(requestOrderSave2,"CROJAS");
+                        iOrdering.save(requestOrderSave2,receipts2,"CROJAS");
 
-                        List<MultipartFile> receipts3 = new ArrayList<>();
+                        MultipartFile[] receipts3 = new MultipartFile[0];
 
                         RequestOrderItem requestOrderItem5 = RequestOrderItem.builder()
                                 .product("B00001")
@@ -2239,7 +2237,6 @@ public class Seeder implements CommandLineRunner {
                                 .managementType("venta")
                                 .observations("")
                                 .paymentMethod("efectivo")
-                                .receipts(receipts3)
                                 .saleChannel("web")
                                 .requestOrderItems(requestOrderItems3)
                                 .storeName("store 2")
@@ -2251,9 +2248,9 @@ public class Seeder implements CommandLineRunner {
                                 .discount("MONTO")
                                 .build();
 
-                        iOrdering.save(requestOrderSave3,"MAPARICIO");
+                        iOrdering.save(requestOrderSave3,receipts3,"MAPARICIO");
 
-                        List<MultipartFile> receipts4 = new ArrayList<>();
+                        MultipartFile[] receipts4 = new MultipartFile[0];
 
                         RequestOrderItem requestOrderItem7 = RequestOrderItem.builder()
                                 .product("B00002")
@@ -2297,7 +2294,6 @@ public class Seeder implements CommandLineRunner {
                                 .managementType("venta")
                                 .observations("URB. LA CAPILLA 130, CALLE SARAGOZA- LA MOLINA")
                                 .paymentMethod("efectivo")
-                                .receipts(receipts4)
                                 .saleChannel("web")
                                 .requestOrderItems(requestOrderItems4)
                                 .storeName("store 2")
@@ -2308,7 +2304,7 @@ public class Seeder implements CommandLineRunner {
                                 .discount("PORCENTAJE")
                                 .build();
 
-                        iOrdering.save(requestOrderSave4,"MAPARICIO");
+                        iOrdering.save(requestOrderSave4,receipts4,"MAPARICIO");
 
                         RequestOrderItem requestOrderItem9 = RequestOrderItem.builder()
                                 .product("A00003")
@@ -2338,7 +2334,6 @@ public class Seeder implements CommandLineRunner {
                                 .managementType("venta")
                                 .observations("")
                                 .paymentMethod("plin")
-                                .receipts(receipts2)
                                 .saleChannel("web")
                                 .requestOrderItems(requestOrderItems5)
                                 .storeName("store 1")
@@ -2349,7 +2344,7 @@ public class Seeder implements CommandLineRunner {
                                 .discount("NO APLICA")
                                 .build();
 
-                        iOrdering.save(requestOrderSave5,"CROJAS");
+                        iOrdering.save(requestOrderSave5,receipts2,"CROJAS");
 
                         // order stock mocks
 
@@ -2425,8 +2420,8 @@ public class Seeder implements CommandLineRunner {
 
                         iOrderStock.save(4L, "alcazar",requestOrderStockItemList4,"NTORRES");
 
-                        List<MultipartFile> paymentReceipts = new ArrayList<MultipartFile>();
-                        List<MultipartFile> courierPictures = new ArrayList<MultipartFile>();
+                        MultipartFile[] paymentReceipts = new MultipartFile[0];
+                        MultipartFile[] courierPictures = new MultipartFile[0];
 
                         RequestOrderUpdate requestOrderUpdate1 = RequestOrderUpdate.builder()
                                 .observations("")
@@ -2450,7 +2445,7 @@ public class Seeder implements CommandLineRunner {
                         iCancelledOrder.save(requestCancelledOrder1,"ICONTRERAS");
 
                         // mock courier pictures and change state to delivered
-                        List<MultipartFile> courierImages1 = new ArrayList<>();
+                        MultipartFile[] courierImages1 = new MultipartFile[1];
                         Resource resource6 = resourceLoader.getResource("classpath:static/pictures/bill.jpg");
                         MockMultipartFile multipartCourierImage1 = new MockMultipartFile(
                                 "bill.jpg",
@@ -2458,7 +2453,7 @@ public class Seeder implements CommandLineRunner {
                                 "image/jpeg",
                                 StreamUtils.copyToByteArray(resource6.getInputStream())
                         );
-                        courierImages1.add(multipartCourierImage1);
+                        courierImages1[0] = multipartCourierImage1;
 
                         RequestCourierOrder requestCourierOrder1 = RequestCourierOrder.builder()
                                 .orderPictures(courierImages1)
@@ -2498,7 +2493,7 @@ public class Seeder implements CommandLineRunner {
                         iStockReturn.save(requestStockReturn1);
                         // update order to lack of stock state
                         RequestOrderUpdate requestOrderUpdate3 = RequestOrderUpdate.builder()
-                                .pictures(new ArrayList<>())
+                                .pictures(new MultipartFile[0])
                                 .receipts(receipts2)
                                 .saleChannel("tienda online")
                                 .courier("SIN COURIER")

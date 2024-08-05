@@ -15,5 +15,5 @@ import java.util.List;
 public class RequestCourierOrder {
     public String paymentMethod;
     public String orderState;
-    public List<MultipartFile> orderPictures;
+    public MultipartFile[] orderPictures;
 }

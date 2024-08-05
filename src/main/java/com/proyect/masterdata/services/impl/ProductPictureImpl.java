@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,8 +70,13 @@ public class ProductPictureImpl implements IProductPicture {
             if(pictures.isEmpty()){
                 return Collections.emptyList();
             }
-            for (MultipartFile picture : pictures){
-                String url = iFile.uploadFile(picture,folderPath + "_IMAGEN_" + Integer.toString(pictureNumber)).get();
+            for (MultipartFile multipartFile : pictures){
+                InputStream inputStream = multipartFile.getInputStream();
+                byte[] buffer = new byte[inputStream.available()];
+                if (buffer.length == 0) {
+                    System.out.println("Received an empty file: " + multipartFile.getOriginalFilename());
+                }
+                String url = iFile.uploadFile(multipartFile,folderPath + "_IMAGEN_" + Integer.toString(pictureNumber)).get();
                 productPictureRepository.save(ProductPicture.builder()
                         .productPictureUrl(url)
                         .product(product)
@@ -130,8 +136,13 @@ public class ProductPictureImpl implements IProductPicture {
                 if(pictures.isEmpty()){
                     return Collections.emptyList();
                 }
-                for (MultipartFile picture : pictures){
-                    String url = iFile.uploadFile(picture,folderPath + "_IMAGEN_" + Integer.toString(pictureNumber)).get();
+                for (MultipartFile multipartFile : pictures){
+                    InputStream inputStream = multipartFile.getInputStream();
+                    byte[] buffer = new byte[inputStream.available()];
+                    if (buffer.length == 0) {
+                        System.out.println("Received an empty file: " + multipartFile.getOriginalFilename());
+                    }
+                    String url = iFile.uploadFileAsync(multipartFile,folderPath + "_IMAGEN_" + Integer.toString(pictureNumber)).get();
                     productPictureRepository.save(ProductPicture.builder()
                             .productPictureUrl(url)
                             .product(product)
