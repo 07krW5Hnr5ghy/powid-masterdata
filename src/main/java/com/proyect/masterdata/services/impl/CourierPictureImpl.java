@@ -17,6 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -89,13 +90,62 @@ public class CourierPictureImpl implements ICourierPicture {
                     pictureNumber++;
                 }
                 return picturesUrlList;
-            }catch (RuntimeException | IOException e){
+            }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<String>> uploadPictureAsync(List<File> pictures, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering ordering;
+            List<String> picturesUrlList = new ArrayList<>();
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                ordering = orderingRepository.findById(orderId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(ordering == null){
+                throw new InternalErrorExceptions(Constants.ErrorOrdering);
+            }
+
+            try{
+                String folder = (user.getClient().getBusiness() + "_PEDIDOS").replace(" ","_");
+                Date currentDate = new Date(System.currentTimeMillis());
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+                String dateString = dateFormat.format(currentDate);
+                String formattedString = dateString.replace(" ", "_");
+                String filename = "PEDIDO_" + orderId.toString() + "_" + user.getUsername() + "_" + formattedString;
+                String folderPath = folder + "/" + filename;
+                int pictureNumber = 1;
+                for(File file : pictures){
+                    String url = iFile.uploadFiles(file,folderPath + "_COURIER_" + Integer.toString(pictureNumber)).get();
+                    courierPictureRepository.save(CourierPicture.builder()
+                            .pictureUrl(url)
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
+                            .ordering(ordering)
+                            .orderId(ordering.getId())
+                            .registrationDate(currentDate)
+                            .tokenUser(user.getUsername())
+                            .build());
+                    picturesUrlList.add(url);
+                    pictureNumber++;
+                }
+                return picturesUrlList;
+            }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
     }

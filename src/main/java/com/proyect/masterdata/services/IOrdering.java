@@ -17,7 +17,7 @@ public interface IOrdering {
     CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave, MultipartFile[] receipts, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<Page<OrderDTO>> list(Long orderId,String user,String orderState,String courier,String paymentState,String paymentMethod,String saleChannel,String managementType,String storeName,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<List<OrderDTO>> listOrder(String user) throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<OrderDTO> selectOrder(Long orderId,String username) throws InternalErrorExceptions,BadRequestExceptions;
 }

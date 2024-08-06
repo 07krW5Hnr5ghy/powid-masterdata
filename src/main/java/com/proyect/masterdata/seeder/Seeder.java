@@ -2429,12 +2429,10 @@ public class Seeder implements CommandLineRunner {
                                 .paymentMethod("LINK")
                                 .paymentState("RECAUDADO")
                                 .saleChannel("tienda online")
-                                .receipts(paymentReceipts)
                                 .courier("MARVISUR")
-                                .pictures(courierPictures)
                                 .build();
 
-                        iOrdering.update(1L,requestOrderUpdate1,"ICONTRERAS");
+                        iOrdering.update(1L,requestOrderUpdate1,paymentReceipts,courierPictures,"ICONTRERAS");
 
                         RequestCancelledOrder requestCancelledOrder1 = RequestCancelledOrder.builder()
                                 .cancellationReason("Demora en entrega")
@@ -2493,8 +2491,6 @@ public class Seeder implements CommandLineRunner {
                         iStockReturn.save(requestStockReturn1);
                         // update order to lack of stock state
                         RequestOrderUpdate requestOrderUpdate3 = RequestOrderUpdate.builder()
-                                .pictures(new MultipartFile[0])
-                                .receipts(receipts2)
                                 .saleChannel("tienda online")
                                 .courier("SIN COURIER")
                                 .paymentState("POR RECAUDAR")
@@ -2502,7 +2498,7 @@ public class Seeder implements CommandLineRunner {
                                 .orderState("NO HAY STOCK")
                                 .observations("falta de stock para cumplir con el pedido")
                                 .build();
-                        iOrdering.update(5L,requestOrderUpdate3,"ICONTRERAS");
+                        iOrdering.update(5L,requestOrderUpdate3,receipts2,new MultipartFile[0],"ICONTRERAS");
                         // mock stock replenishment
                         List<RequestStockReplenishmentItem> requestStockReplenishmentItemList1 = new ArrayList<RequestStockReplenishmentItem>();
                         RequestStockReplenishmentItem requestStockReplenishmentItem1 =  RequestStockReplenishmentItem.builder()

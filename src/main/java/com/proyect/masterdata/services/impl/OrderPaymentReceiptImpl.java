@@ -71,10 +71,7 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
                     return Collections.emptyList();
                 }
                 for(MultipartFile multipartFile : receipts){
-                    System.out.println("Order Payment Receipt");
-                    System.out.println(multipartFile.getOriginalFilename());
                     String url = iFile.uploadFile(multipartFile,folderPath + "_COMPROBANTE_" + Integer.toString(receiptNumber)).get();
-                    System.out.println(url);
                     orderPaymentReceiptRepository.save(OrderPaymentReceipt.builder()
                             .paymentReceiptUrl(url)
                             .client(user.getClient())
@@ -89,12 +86,10 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
                 }
                 iAudit.save("ADD_ORDER_PAYMENT_RECEIPT","ADD ORDER PAYMENT RECEIPT FOR ORDER "+ordering.getId()+".",user.getUsername());
                 return receiptUrlList;
-            }catch (RuntimeException | IOException e){
+            }catch (RuntimeException | IOException | InterruptedException | ExecutionException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (ExecutionException | InterruptedException e) {
-                throw new RuntimeException(e);
             }
         });
     }
@@ -153,12 +148,10 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
                 }
                 iAudit.save("ADD_ORDER_PAYMENT_RECEIPT","ADD ORDER PAYMENT RECEIPT FOR ORDER "+ordering.getId()+".",user.getUsername());
                 return receiptUrlList;
-            }catch (RuntimeException | IOException e){
+            }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (ExecutionException | InterruptedException e) {
-                throw new RuntimeException(e);
             }
         });
     }
@@ -195,10 +188,7 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
                 String folderPath = folder + "/" + filename;
                 int receiptNumber = 1;
                 for(File file : fileList){
-                    System.out.println("Order Payment Receipt");
-                    System.out.println(file.getName());
                     String url = iFile.uploadFiles(file,folderPath + "_COMPROBANTE_" + Integer.toString(receiptNumber)).get();
-                    System.out.println(url);
                     orderPaymentReceiptRepository.save(OrderPaymentReceipt.builder()
                             .paymentReceiptUrl(url)
                             .client(user.getClient())
@@ -213,12 +203,10 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
                 }
                 iAudit.save("ADD_ORDER_PAYMENT_RECEIPT","ADD ORDER PAYMENT RECEIPT FOR ORDER "+ordering.getId()+".",user.getUsername());
                 return receiptUrlList;
-            }catch (RuntimeException | IOException e){
+            }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (ExecutionException | InterruptedException e) {
-                throw new RuntimeException(e);
             }
         });
     }

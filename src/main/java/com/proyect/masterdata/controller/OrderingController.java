@@ -64,14 +64,16 @@ public class OrderingController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_PUT')")
     public ResponseEntity<ResponseSuccess> update(
             @RequestParam("orderId") Long orderId,
-            @RequestBody()RequestOrderUpdate requestOrderUpdate,
+            @RequestPart("requestOrder") RequestOrderUpdate requestOrderUpdate,
+            @RequestPart("receipts") MultipartFile[] receipts,
+            @RequestPart("courierPictures") MultipartFile[] courierPictures,
             @RequestParam("tokenUser") String tokenUser
             ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrdering.updateAsync(orderId,requestOrderUpdate,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iOrdering.updateAsync(orderId,requestOrderUpdate,receipts,courierPictures,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

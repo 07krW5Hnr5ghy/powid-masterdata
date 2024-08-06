@@ -331,6 +331,9 @@ public class OrderingImpl implements IOrdering {
                         .build());
                 List<File> fileList = new ArrayList<>();
                 for(MultipartFile multipartFile : receipts){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
                     File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
@@ -590,7 +593,7 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
-    public ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Ordering ordering;
         OrderState orderState;
@@ -675,8 +678,8 @@ public class OrderingImpl implements IOrdering {
             }
 
             orderingRepository.save(ordering);
-            iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
-            iCourierPicture.uploadPicture(requestOrderUpdate.getPictures(),ordering.getId(),user.getUsername());
+            iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
+            iCourierPicture.uploadPicture(courierPictures,ordering.getId(),user.getUsername());
             iAudit.save("UPDATE_ORDER","UPDATE ORDER "+ordering.getId()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -689,7 +692,8 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        Path folder = Paths.get("src/main/resources/uploads");
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -775,14 +779,50 @@ public class OrderingImpl implements IOrdering {
                 }
 
                 orderingRepository.save(ordering);
-                iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
-                iCourierPicture.uploadPicture(requestOrderUpdate.getPictures(),ordering.getId(),user.getUsername());
+                List<File> receiptList = new ArrayList<>();
+                for(MultipartFile multipartFile : receipts){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    receiptList.add(convFile);
+                }
+                List<File> courierPictureList = new ArrayList<>();
+                for(MultipartFile multipartFile:courierPictures){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    courierPictureList.add(convFile);
+                }
+
+                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptFileAsync(receiptList,ordering.getId(),user.getUsername());
+                CompletableFuture<List<String>> courierPhotos = iCourierPicture.uploadPictureAsync(courierPictureList,ordering.getId(),user.getUsername());
+                if(!paymentReceipts.get().isEmpty() || !courierPhotos.get().isEmpty()){
+                    Stream<Path> paths = Files.list(folder);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+
                 iAudit.save("UPDATE_ORDER","UPDATE ORDER "+ordering.getId()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
                         .build();
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException | InterruptedException | ExecutionException e){
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

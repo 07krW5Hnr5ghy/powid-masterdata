@@ -19,6 +19,4 @@ public class RequestOrderUpdate {
     public String orderState;
     public String paymentState;
     public String courier;
-    public MultipartFile[] receipts;
-    public MultipartFile[] pictures;
 }
