@@ -1,8 +1,13 @@
 package com.proyect.masterdata.services.impl;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.*;
@@ -47,8 +52,7 @@ public class ProductImpl implements IProduct {
     private final IAudit iAudit;
     private final BrandRepository brandRepository;
     @Override
-    public ResponseSuccess save(RequestProductSave product, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(RequestProductSave product,List<MultipartFile> productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         boolean existsProduct;
         Model modelData;
@@ -123,7 +127,7 @@ public class ProductImpl implements IProduct {
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
             iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
-            iProductPicture.uploadPicture(product.getPictures(),productData.getId(),user.getUsername());
+            iProductPicture.uploadPicture(productPictures,productData.getId(),user.getUsername());
             iAudit.save("ADD_PRODUCT","ADD PRODUCT "+productData.getSku()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -136,7 +140,8 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product,MultipartFile[] productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        Path folder = Paths.get("src/main/resources/uploads/products");
         return CompletableFuture.supplyAsync(()->{
             User user;
             boolean existsProduct;
@@ -212,13 +217,35 @@ public class ProductImpl implements IProduct {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .build());
                 iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
-                iProductPicture.uploadPictureAsync(product.getPictures(),productData.getId(),user.getUsername());
+                List<File> fileList = new ArrayList<>();
+                for(MultipartFile multipartFile : productPictures){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/products/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    fileList.add(convFile);
+                }
+                CompletableFuture<List<String>> productPhotos = iProductPicture.uploadPictureAsync(fileList,productData.getId(),user.getUsername());
+                if(!productPhotos.get().isEmpty()){
+                    Stream<Path> paths = Files.list(folder);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
                 iAudit.save("ADD_PRODUCT","ADD PRODUCT "+productData.getSku()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
                         .build();
-            } catch (RuntimeException e) {
+            } catch (RuntimeException | IOException | InterruptedException | ExecutionException e) {
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

@@ -17,6 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -102,7 +103,7 @@ public class ProductPictureImpl implements IProductPicture {
     }
 
     @Override
-    public CompletableFuture<List<String>> uploadPictureAsync(List<MultipartFile> pictures, Long productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<String>> uploadPictureAsync(List<File> pictures, Long productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -133,16 +134,8 @@ public class ProductPictureImpl implements IProductPicture {
                 String filename = "PRODUCTO_" + product.getSku() + "_" + user.getUsername() + "_" + formattedString;
                 String folderPath = folder + "/" + filename;
                 int pictureNumber = 1;
-                if(pictures.isEmpty()){
-                    return Collections.emptyList();
-                }
-                for (MultipartFile multipartFile : pictures){
-                    InputStream inputStream = multipartFile.getInputStream();
-                    byte[] buffer = new byte[inputStream.available()];
-                    if (buffer.length == 0) {
-                        System.out.println("Received an empty file: " + multipartFile.getOriginalFilename());
-                    }
-                    String url = iFile.uploadFileAsync(multipartFile,folderPath + "_IMAGEN_" + Integer.toString(pictureNumber)).get();
+                for (File file : pictures){
+                    String url = iFile.uploadFiles(file,folderPath + "_IMAGEN_" + Integer.toString(pictureNumber)).get();
                     productPictureRepository.save(ProductPicture.builder()
                             .productPictureUrl(url)
                             .product(product)
@@ -157,11 +150,9 @@ public class ProductPictureImpl implements IProductPicture {
                 }
                 iAudit.save("ADD_PRODUCT_PICTURE","ADD "+pictures.size()+" PRODUCT PICTURES.",user.getUsername());
                 return pictureUrlList;
-            }catch (RuntimeException | IOException e){
+            }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (ExecutionException | InterruptedException e) {
-                throw new RuntimeException(e);
             }
         });
     }

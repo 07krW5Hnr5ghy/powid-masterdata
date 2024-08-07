@@ -1264,9 +1264,8 @@ public class Seeder implements CommandLineRunner {
                         product1.setSku("A00001");
                         product1.setPrice(2.30);
                         product1.setUnit("par");
-                        product1.setPictures(productImages1);
 
-                        iProduct.save(product1, "OPEREZ");
+                        iProduct.save(product1,productImages1, "OPEREZ");
 
                         RequestProductSave product2 = RequestProductSave.builder().build();
                         product2.setCategory("botas");
@@ -1276,9 +1275,8 @@ public class Seeder implements CommandLineRunner {
                         product2.setSku("A00002");
                         product2.setPrice(5.41);
                         product2.setUnit("par");
-                        product2.setPictures(productImages2);
 
-                        iProduct.save(product2, "OPEREZ");
+                        iProduct.save(product2,productImages2, "OPEREZ");
 
                         RequestProductSave product3 = RequestProductSave.builder().build();
                         product3.setCategory("tennis");
@@ -1288,9 +1286,8 @@ public class Seeder implements CommandLineRunner {
                         product3.setSku("A00003");
                         product3.setPrice(3.33);
                         product3.setUnit("par");
-                        product3.setPictures(productImages1);
 
-                        iProduct.save(product3, "OPEREZ");
+                        iProduct.save(product3,productImages1, "OPEREZ");
 
                         RequestProductSave product4 = RequestProductSave.builder().build();
                         product4.setCategory("camisetas");
@@ -1300,9 +1297,8 @@ public class Seeder implements CommandLineRunner {
                         product4.setSku("A00004");
                         product4.setPrice(7.01);
                         product4.setUnit("und");
-                        product4.setPictures(productImages2);
 
-                        iProduct.save(product4, "OPEREZ");
+                        iProduct.save(product4,productImages2, "OPEREZ");
 
                         RequestProductSave product5 = RequestProductSave.builder().build();
                         product5.setCategory("jeans");
@@ -1312,9 +1308,8 @@ public class Seeder implements CommandLineRunner {
                         product5.setSku("A00005");
                         product5.setPrice(4.76);
                         product5.setUnit("und");
-                        product5.setPictures(productImages1);
 
-                        iProduct.save(product5, "OPEREZ");
+                        iProduct.save(product5, productImages1,"OPEREZ");
 
                         RequestProductSave product6 = RequestProductSave.builder().build();
                         product6.setCategory("blusas");
@@ -1324,9 +1319,8 @@ public class Seeder implements CommandLineRunner {
                         product6.setSku("A00006");
                         product6.setPrice(1.34);
                         product6.setUnit("und");
-                        product6.setPictures(productImages2);
 
-                        iProduct.save(product6, "OPEREZ");
+                        iProduct.save(product6, productImages2,"OPEREZ");
 
                         RequestProductSave product7 = RequestProductSave.builder().build();
                         product7.setCategory("blusas");
@@ -1336,9 +1330,8 @@ public class Seeder implements CommandLineRunner {
                         product7.setSku("A00007");
                         product7.setPrice(8.23);
                         product7.setUnit("und");
-                        product7.setPictures(productImages1);
 
-                        iProduct.save(product7, "OPEREZ");
+                        iProduct.save(product7,productImages1, "OPEREZ");
 
                         RequestProductSave product8 = RequestProductSave.builder().build();
                         product8.setCategory("camisetas");
@@ -1348,9 +1341,8 @@ public class Seeder implements CommandLineRunner {
                         product8.setSku("A00008");
                         product8.setPrice(6.27);
                         product8.setUnit("und");
-                        product8.setPictures(productImages2);
 
-                        iProduct.save(product8, "OPEREZ");
+                        iProduct.save(product8,productImages2, "OPEREZ");
 
                         RequestProductSave product9 = RequestProductSave.builder().build();
                         product9.setCategory("blusas");
@@ -1360,9 +1352,8 @@ public class Seeder implements CommandLineRunner {
                         product9.setSku("A00009");
                         product9.setPrice(9.05);
                         product9.setUnit("und");
-                        product9.setPictures(productImages1);
 
-                        iProduct.save(product9, "OPEREZ");
+                        iProduct.save(product9,productImages1, "OPEREZ");
 
                         RequestProductSave product10 = RequestProductSave.builder().build();
                         product10.setCategory("botas");
@@ -1372,9 +1363,8 @@ public class Seeder implements CommandLineRunner {
                         product10.setSku("B00001");
                         product10.setPrice(7.11);
                         product10.setUnit("par");
-                        product10.setPictures(productImages2);
 
-                        iProduct.save(product10, "JORTIZ");
+                        iProduct.save(product10,productImages2, "JORTIZ");
 
                         RequestProductSave product11 = RequestProductSave.builder().build();
                         product11.setCategory("tennis");
@@ -1384,9 +1374,8 @@ public class Seeder implements CommandLineRunner {
                         product11.setSku("B00002");
                         product11.setPrice(4.65);
                         product11.setUnit("par");
-                        product11.setPictures(productImages1);
 
-                        iProduct.save(product11, "JORTIZ");
+                        iProduct.save(product11,productImages1, "JORTIZ");
 
                         RequestProductSave product12 = RequestProductSave.builder().build();
                         product12.setCategory("tennis");
@@ -1396,9 +1385,8 @@ public class Seeder implements CommandLineRunner {
                         product12.setSku("B00003");
                         product12.setPrice(8.38);
                         product12.setUnit("par");
-                        product12.setPictures(productImages2);
 
-                        iProduct.save(product12, "JORTIZ");
+                        iProduct.save(product12,productImages2, "JORTIZ");
 
                         RequestProductSave product13 = RequestProductSave.builder().build();
                         product13.setCategory("camisetas");
@@ -1408,9 +1396,8 @@ public class Seeder implements CommandLineRunner {
                         product13.setSku("B00004");
                         product13.setPrice(4.02);
                         product13.setUnit("und");
-                        product13.setPictures(productImages1);
 
-                        iProduct.save(product13, "JORTIZ");
+                        iProduct.save(product13, productImages1,"JORTIZ");
 
                         RequestProductSave product14 = RequestProductSave.builder().build();
                         product14.setCategory("blusas");
@@ -1420,9 +1407,8 @@ public class Seeder implements CommandLineRunner {
                         product14.setSku("B00005");
                         product14.setPrice(1.99);
                         product14.setUnit("und");
-                        product14.setPictures(productImages2);
 
-                        iProduct.save(product14, "JORTIZ");
+                        iProduct.save(product14,productImages2, "JORTIZ");
 
                         RequestProductSave product15 = RequestProductSave.builder().build();
                         product15.setCategory("jeans");
@@ -1432,9 +1418,8 @@ public class Seeder implements CommandLineRunner {
                         product15.setSku("B00006");
                         product15.setPrice(6.37);
                         product15.setUnit("und");
-                        product15.setPictures(productImages1);
 
-                        iProduct.save(product15, "JORTIZ");
+                        iProduct.save(product15,productImages1, "JORTIZ");
 
                         RequestProductSave product16 = RequestProductSave.builder().build();
                         product16.setCategory("camisetas");
@@ -1444,9 +1429,8 @@ public class Seeder implements CommandLineRunner {
                         product16.setSku("B00007");
                         product16.setPrice(2.97);
                         product16.setUnit("und");
-                        product16.setPictures(productImages2);
 
-                        iProduct.save(product16, "JORTIZ");
+                        iProduct.save(product16,productImages2, "JORTIZ");
 
                         RequestProductSave product17 = RequestProductSave.builder().build();
                         product17.setCategory("blusas");
@@ -1456,9 +1440,8 @@ public class Seeder implements CommandLineRunner {
                         product17.setSku("B00008");
                         product17.setPrice(5.21);
                         product17.setUnit("und");
-                        product17.setPictures(productImages1);
 
-                        iProduct.save(product17, "JORTIZ");
+                        iProduct.save(product17,productImages1, "JORTIZ");
 
                         RequestProductSave product18 = RequestProductSave.builder().build();
                         product18.setCategory("camisetas");
@@ -1468,9 +1451,8 @@ public class Seeder implements CommandLineRunner {
                         product18.setSku("B00009");
                         product18.setPrice(3.53);
                         product18.setUnit("und");
-                        product18.setPictures(productImages2);
 
-                        iProduct.save(product18, "JORTIZ");
+                        iProduct.save(product18,productImages2, "JORTIZ");
 
                         // mocks suppliers
 

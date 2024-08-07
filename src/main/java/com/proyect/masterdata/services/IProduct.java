@@ -12,11 +12,12 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface IProduct {
-        ResponseSuccess save(RequestProductSave product, String tokenUser)
+        ResponseSuccess save(RequestProductSave product, List<MultipartFile> productPictures, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product, String tokenUser)
+        CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product, MultipartFile[] productPictures, String tokenUser)
                 throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> activate(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;

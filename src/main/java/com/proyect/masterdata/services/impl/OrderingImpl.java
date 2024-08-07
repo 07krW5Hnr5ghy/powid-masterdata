@@ -216,7 +216,7 @@ public class OrderingImpl implements IOrdering {
 
     @Override
     public CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave,MultipartFile[] receipts, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folder = Paths.get("src/main/resources/uploads");
+        Path folder = Paths.get("src/main/resources/uploads/orders");
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderState orderState;
@@ -334,7 +334,7 @@ public class OrderingImpl implements IOrdering {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    File convFile = new File("src/main/resources/uploads/orders/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
@@ -693,7 +693,8 @@ public class OrderingImpl implements IOrdering {
 
     @Override
     public CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folder = Paths.get("src/main/resources/uploads");
+        Path folderOrders = Paths.get("src/main/resources/uploads/orders");
+        Path folderCouriers = Paths.get("src/main/resources/uploads/couriers");
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -807,7 +808,17 @@ public class OrderingImpl implements IOrdering {
                 CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptFileAsync(receiptList,ordering.getId(),user.getUsername());
                 CompletableFuture<List<String>> courierPhotos = iCourierPicture.uploadPictureAsync(courierPictureList,ordering.getId(),user.getUsername());
                 if(!paymentReceipts.get().isEmpty() || !courierPhotos.get().isEmpty()){
-                    Stream<Path> paths = Files.list(folder);
+                    Stream<Path> paths = Files.list(folderOrders);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+                if(!courierPhotos.get().isEmpty()){
+                    Stream<Path> paths = Files.list(folderCouriers);
                     paths.filter(Files::isRegularFile).forEach(path -> {
                         try {
                             Files.delete(path);
