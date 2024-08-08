@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.LoginDTO;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,9 +38,9 @@ public class AuthController {
     }
 
     @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseLogin> login(
+    public ResponseEntity<LoginDTO> login(
             @RequestBody() RequestLogin requestLogin) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseLogin> result = iAuthentication.loginUser(requestLogin.getUsername(), requestLogin.getPassword());
+        CompletableFuture<LoginDTO> result = iAuthentication.loginUser(requestLogin.getUsername(), requestLogin.getPassword());
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

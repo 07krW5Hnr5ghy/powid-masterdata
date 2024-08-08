@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutionException;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.domain.Module;
+import com.proyect.masterdata.dto.LoginDTO;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,8 +55,9 @@ public class AuthenticationImpl implements IAuthentication {
     private final MembershipRepository membershipRepository;
     private final MembershipStateRepository membershipStateRepository;
     private final IAudit iAudit;
+    private final UserRoleRepository userRoleRepository;
 
-    public CompletableFuture<ResponseLogin> loginUser(String username, String password) {
+    public CompletableFuture<LoginDTO> loginUser(String username, String password) {
         return CompletableFuture.supplyAsync(() -> {
             try {
 
@@ -93,7 +95,15 @@ public class AuthenticationImpl implements IAuthentication {
 
                 String token = iToken.generateJwt(auth);
                 iAudit.save("LOG_IN","USER " + user.getUsername() + " LOGGED IN.",user.getUsername());
-                return new ResponseLogin(userRepository.findByUsernameAndStatusTrue(username.toUpperCase()), token);
+                User userData = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(userData.getId());
+                return LoginDTO.builder()
+                        .username(userData.getUsername())
+                        .jwt(token)
+                        .roles(userRoles.stream().map(role -> role.getRole().getName()).toList())
+                        .code(200)
+                        .message("Inicio de sesion exitoso")
+                        .build();
 
             } catch (AuthenticationException e) {
                 log.error(e);

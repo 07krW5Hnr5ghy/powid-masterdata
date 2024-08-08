@@ -114,6 +114,7 @@ public class UserImpl implements IUser {
                             .userId(newUser.getId())
                             .roleId(role.getId())
                             .tokenUser(tokenUser.getUsername())
+                            .status(true)
                     .build());
             iAudit.save("ADD_USER","ADD USER "+newUser.getUsername()+".",tokenUser.getUsername());
             return ResponseSuccess.builder()
