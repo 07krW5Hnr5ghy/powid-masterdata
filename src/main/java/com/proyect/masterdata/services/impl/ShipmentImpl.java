@@ -226,7 +226,7 @@ public class ShipmentImpl implements IShipment {
                         .quantity(shipmentItem.getQuantity())
                         .supplierProductSerial(shipmentItem.getSupplierProduct().toUpperCase())
                         .build()).toList();
-                StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"EMBARQUE",user);
+                StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
                 Shipment newShipment = shipmentRepository.save(Shipment.builder()
                         .serial(requestShipment.getSerial().toUpperCase())
                         .status(true)

@@ -73,6 +73,14 @@ public class SecurityConfiguration {
                     auth.requestMatchers(HttpMethod.GET, "/unit/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/supplier-type/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/country/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/sale-channel/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/order-payment-method/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/management-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/delivery-point/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/discount/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/customer-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/order-state/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/order-payment-state/**").permitAll();
                     //auth.requestMatchers("/file/**").permitAll();
                     //auth.requestMatchers("/doc/**").permitAll();
                     //auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");

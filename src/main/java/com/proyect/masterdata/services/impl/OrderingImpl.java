@@ -659,7 +659,7 @@ public class OrderingImpl implements IOrdering {
                         iGeneralStock.out(orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
                     }
                 }
-                iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"PEDIDO",user);
+                iStockTransaction.save("OU"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"PEDIDO",user);
             }
 
             if(!Objects.equals(orderPaymentMethod.getId(), ordering.getOrderPaymentMethod().getId())){
@@ -761,7 +761,7 @@ public class OrderingImpl implements IOrdering {
                             iGeneralStock.out(orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
                         }
                     }
-                    iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"SALIDA",user);
+                    iStockTransaction.save("OU"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"PEDIDO",user);
                 }
 
                 if(!Objects.equals(orderPaymentMethod.getId(), ordering.getOrderPaymentMethod().getId())){
