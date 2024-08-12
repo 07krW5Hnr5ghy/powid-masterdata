@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestProductUpdate {
     String sku;
+    Double price;
     String tokenUser;
 }

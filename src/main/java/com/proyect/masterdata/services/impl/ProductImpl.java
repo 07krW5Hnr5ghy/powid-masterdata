@@ -437,7 +437,7 @@ public class ProductImpl implements IProduct {
             }
 
             List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 List<String> productImages = productPictureRepository.findAllByProductId(product.getId()).stream().map(ProductPicture::getProductPictureUrl).toList();
                 return ProductDTO.builder()
                         .sku(product.getSku())
@@ -563,7 +563,7 @@ public class ProductImpl implements IProduct {
             }
 
             List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
                         .brand(product.getModel().getBrand().getName())
@@ -600,7 +600,7 @@ public class ProductImpl implements IProduct {
             }
 
             return products.stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
                         .brand(product.getModel().getBrand().getName())
@@ -635,7 +635,7 @@ public class ProductImpl implements IProduct {
             }
 
             return products.stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
                         .brand(product.getModel().getBrand().getName())
@@ -672,7 +672,7 @@ public class ProductImpl implements IProduct {
             }
 
             return products.stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
                         .brand(product.getModel().getBrand().getName())
@@ -707,7 +707,7 @@ public class ProductImpl implements IProduct {
             }
 
             return products.stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
                         .brand(product.getModel().getBrand().getName())
@@ -747,6 +747,20 @@ public class ProductImpl implements IProduct {
             }
 
             try {
+                if(requestProductUpdate.getPrice()!=null){
+                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
+                    productPrice.setStatus(false);
+                    productPriceRepository.save(productPrice);
+                    productPriceRepository.save(ProductPrice.builder()
+                                    .unitSalePrice(requestProductUpdate.getPrice())
+                                    .product(product)
+                                    .productId(product.getId())
+                                    .registrationDate(new Date(System.currentTimeMillis()))
+                                    .updateDate(new Date(System.currentTimeMillis()))
+                                    .tokenUser(user.getUsername())
+                                    .status(true)
+                            .build());
+                }
                 List<File> fileList = new ArrayList<>();
                 for(MultipartFile multipartFile : pictures){
                     if(multipartFile.isEmpty()){
