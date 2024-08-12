@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.request.RequestProductUpdate;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IProductPicture;
@@ -720,6 +721,64 @@ public class ProductImpl implements IProduct {
                         .updateDate(product.getUpdateDate())
                         .build();
             }).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> update(RequestProductUpdate requestProductUpdate, List<MultipartFile> pictures) throws BadRequestExceptions, InternalErrorExceptions {
+        Path folder = Paths.get("src/main/resources/uploads/products");
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Product product;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(requestProductUpdate.getTokenUser().toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestProductUpdate.getSku().toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(product==null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+
+            try {
+                List<File> fileList = new ArrayList<>();
+                for(MultipartFile multipartFile : pictures){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/products/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    fileList.add(convFile);
+                }
+                CompletableFuture<List<String>> productPhotos = iProductPicture.uploadPictureAsync(fileList,product.getId(),user.getUsername());
+                if(!productPhotos.get().isEmpty()){
+                    Stream<Path> paths = Files.list(folder);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+                iAudit.save("ADD_PRODUCT_PICTURES","ADD PICTURES FOR PRODUCT "+product.getSku()+".",user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException | IOException | InterruptedException | ExecutionException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 }

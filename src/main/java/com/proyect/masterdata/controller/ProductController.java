@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.request.RequestProductUpdate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -153,6 +154,15 @@ public class ProductController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions,ExecutionException,InterruptedException {
         CompletableFuture<List<ProductDTO>> result = iProduct.listFilter(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @PutMapping()
+    public ResponseEntity<ResponseSuccess> addPictures(
+            @RequestPart("productPictures") List<MultipartFile> productPictures,
+            @RequestPart("requestProductUpdate")RequestProductUpdate requestProductUpdate
+            ) throws BadRequestExceptions, InterruptedException, ExecutionException {
+        CompletableFuture<ResponseSuccess> result = iProduct.update(requestProductUpdate,productPictures);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

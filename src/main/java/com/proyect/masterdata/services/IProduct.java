@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.Model;
+import com.proyect.masterdata.dto.request.RequestProductUpdate;
 import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.dto.ProductDTO;
@@ -51,4 +52,5 @@ public interface IProduct {
         CompletableFuture<List<ProductDTO>> listProductsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listProductsModel(String user,String model) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<ResponseSuccess> update(RequestProductUpdate requestProductUpdate, List<MultipartFile> pictures) throws BadRequestExceptions,InternalErrorExceptions;
 }
