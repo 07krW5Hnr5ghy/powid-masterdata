@@ -612,6 +612,7 @@ public class TemplateImpl implements ITemplate {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 brands = brandRepository.findAllByClientIdAndStatusTrue(user.getClientId());
+                System.out.println(brands);
             }
             if(brands.isEmpty()){
                 throw new BadRequestExceptions(Constants.ErrorBrand);
@@ -964,6 +965,16 @@ public class TemplateImpl implements ITemplate {
                 CellRangeAddressList addressList2 = new CellRangeAddressList(1,quantity+1,2,2);
                 DataValidation dataValidation2 = validationHelper.createValidation(constraint2,addressList2);
                 sheet.addValidationData(dataValidation2);
+
+                CellStyle priceStyle = workbook.createCellStyle();
+                DataFormat priceFormat = workbook.createDataFormat();
+                priceStyle.setDataFormat(priceFormat.getFormat("_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"));
+
+                for(int rowIndex = 1; rowIndex <= quantity;rowIndex++){
+                    Row row = sheet.createRow(rowIndex);
+                    Cell priceCell = row.createCell(3);
+                    priceCell.setCellStyle(priceStyle);
+                }
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 workbook.write(out);
