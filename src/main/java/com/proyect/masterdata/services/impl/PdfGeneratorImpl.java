@@ -4,10 +4,13 @@ import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.draw.ILineDrawer;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.Style;
+import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -25,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Log4j2
 public class PdfGeneratorImpl implements IPdfGenerator {
+    private ILineDrawer iLineDrawer;
     @Override
     public CompletableFuture<InputStream> generate() throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -36,8 +40,13 @@ public class PdfGeneratorImpl implements IPdfGenerator {
             Document document = new Document(pdfDoc);
             document.setMargins(2,2,2,2);
 
-            Style headerStyle = new Style().setFontSize(10).setBold().setFontColor(ColorConstants.BLACK);
-            Style normalStyle = new Style().setFontSize(8).setFontColor(ColorConstants.BLACK);
+            Style headerStyle = new Style().setFontSize(8).setBold().setFontColor(ColorConstants.BLACK);
+            Style normalStyle = new Style().setFontSize(7).setFontColor(ColorConstants.BLACK);
+
+            // Separator
+
+            LineSeparator separator = new LineSeparator(iLineDrawer);
+            separator.setMarginTop(2).setMarginBottom(2);
 
             // Header Section
             document.add(new Paragraph("#15628 ALONSO FUENTES").addStyle(headerStyle).setMargin(0).setPadding(0));
@@ -46,7 +55,15 @@ public class PdfGeneratorImpl implements IPdfGenerator {
             document.add(new Paragraph("ANTONIO RAYMONDI").addStyle(normalStyle).setMargin(0).setPadding(0));
             document.add(new Paragraph("ANCASH").addStyle(normalStyle).setMargin(0).setPadding(0));
             document.add(new Paragraph("123456789").addStyle(normalStyle).setMargin(0).setPadding(0));
-            document.add(new Paragraph("FALABELLA").addStyle(normalStyle).setMargin(0).setPadding(0));
+
+            // Add a separator
+            document.add(separator);
+
+            document.add(new Paragraph("FALABELLA").addStyle(normalStyle).setMargin(0).setPadding(0).setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph("VENTA").addStyle(normalStyle).setMargin(0).setPadding(0).setTextAlignment(TextAlignment.CENTER));
+
+            // Add a separator
+            document.add(separator);
             // Table for item info
             float[] columnWidths = {1,4}; // Two Columns with proportional widths
             Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
@@ -56,11 +73,17 @@ public class PdfGeneratorImpl implements IPdfGenerator {
             table.addCell(new Paragraph("BOTINES - XIMO - R4 - ROJO - 35 x 1 und").addStyle(normalStyle).setMargin(0).setPadding(0));
             document.add(table);
 
+            // Add a separator
+            document.add(separator);
+
             // Total Section
             document.add(new Paragraph("Total: $1.00").addStyle(headerStyle).setMargin(0).setPadding(0));
             document.add(new Paragraph("Costo producto: $1.00").addStyle(normalStyle).setMargin(0).setPadding(0));
             document.add(new Paragraph("Costo envio: $0.00").addStyle(normalStyle).setMargin(0).setPadding(0));
             document.add(new Paragraph("Pendiente por pagar: $1.00").addStyle(headerStyle).setMargin(0).setPadding(0));
+
+            // Add a separator
+            document.add(separator);
 
             // Footer Section
             document.add(new Paragraph("RUC 20609605601").addStyle(normalStyle).setMargin(0).setPadding(0));
