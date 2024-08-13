@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.request.RequestPdfOrder;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IPdfGenerator;
 import lombok.AllArgsConstructor;
@@ -7,10 +8,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
@@ -22,9 +20,11 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class PdfController {
     private final IPdfGenerator iPdfGenerator;
-    @PostMapping()
-    public ResponseEntity<InputStreamResource> generatePdf() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<InputStream> pdfStream = iPdfGenerator.generate();
+    @PostMapping("order")
+    public ResponseEntity<InputStreamResource> generatePdf(
+            @RequestBody()RequestPdfOrder requestPdfOrder
+            ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<InputStream> pdfStream = iPdfGenerator.generateOrderReport(requestPdfOrder.getOrderId(), requestPdfOrder.getTokenUser());
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition","inline;filename=generated.pdf");
         return ResponseEntity.ok()

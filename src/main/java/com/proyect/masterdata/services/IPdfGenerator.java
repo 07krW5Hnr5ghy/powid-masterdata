@@ -7,5 +7,5 @@ import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
 public interface IPdfGenerator {
-    CompletableFuture<InputStream> generate() throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<InputStream> generateOrderReport(Long orderId,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
 }
