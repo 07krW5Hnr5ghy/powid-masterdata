@@ -23,7 +23,7 @@ public class PurchaseTypeController {
     private final IPurchaseType iPurchaseType;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SHIPMENT_TYPE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
@@ -33,7 +33,7 @@ public class PurchaseTypeController {
     }
 
     @DeleteMapping()
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SHIPMENT_TYPE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_TYPE_POST')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
@@ -43,7 +43,7 @@ public class PurchaseTypeController {
     }
 
     @PostMapping("activate")
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SHIPMENT_TYPE_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
@@ -53,7 +53,7 @@ public class PurchaseTypeController {
     }
 
     @GetMapping()
-    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_TYPE_GET')")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_TYPE_GET')")
     public ResponseEntity<List<String>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<String>> result = iPurchaseType.list();
         return new ResponseEntity<>(result.get(),HttpStatus.OK);

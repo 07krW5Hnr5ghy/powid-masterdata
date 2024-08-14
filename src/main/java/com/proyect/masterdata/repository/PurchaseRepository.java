@@ -8,11 +8,11 @@ import java.util.List;
 
 @Repository
 public interface PurchaseRepository extends JpaRepository<Purchase,Long> {
-    Purchase findByPurchaseTypeId(Long shipmentTypeId);
+    Purchase findByPurchaseTypeId(Long purchaseTypeId);
     Purchase findBySerial(String serial);
-    Purchase findBySerialAndPurchaseTypeId(String serial, Long shipmentTypeId);
+    Purchase findBySerialAndPurchaseTypeId(String serial, Long purchaseTypeId);
     List<Purchase> findBySerialIn(List<String> serials);
-    Purchase findByPurchaseTypeName(String shipmentTypeName);
-    Purchase findByPurchaseTypeNameAndSerial(String shipmentTypeName, String serial);
+    Purchase findByPurchaseTypeName(String purchaseTypeName);
+    Purchase findByPurchaseTypeNameAndSerial(String purchaseTypeName, String serial);
     List<Purchase> findAllByClientId(Long clientId);
 }

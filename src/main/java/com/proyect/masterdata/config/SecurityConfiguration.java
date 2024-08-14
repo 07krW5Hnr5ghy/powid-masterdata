@@ -62,8 +62,8 @@ public class SecurityConfiguration {
                     auth.requestMatchers(HttpMethod.GET, "/store-type/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/subscription/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/module").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/shipment-type/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/shipment-document/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/purchase-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/purchase-document/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/stock-transaction-type/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/size/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/category-product/**").permitAll();

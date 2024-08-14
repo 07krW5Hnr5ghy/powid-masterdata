@@ -8,9 +8,9 @@ import java.util.List;
 
 @Repository
 public interface PurchaseItemRepositoryCustom {
-    Page<PurchaseItem> searchForShipmentItem(
+    Page<PurchaseItem> searchForPurchaseItem(
             Long clientId,
-            List<Long> shipmentIds,
+            List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> supplierProductIds,
             String sort,

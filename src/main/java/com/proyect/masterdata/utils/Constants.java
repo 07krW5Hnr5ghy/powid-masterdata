@@ -220,8 +220,8 @@ public class Constants {
     public static final String ErrorOrderStockProduct = "El producto de inventario no pertenece al producto de marketing";
     public static final String ErrorOrderStockItemUpdateOrderQuantity = "La cantidad del item de preparacion no puede ser mayor que la del pedido";
     public static final String ErrorOrderStockItemUpdateStockQuantity = "La cantidad del item de preparacion no puede ser mayor que la del stock del almacen";
-    public static final String ErrorShipmentType = "Tipo de compra no esta registrado";
-    public static final String ErrorShipmentTypeExists = "Tipo de compra ya fue registrado";
+    public static final String ErrorPurchaseType = "Tipo de compra no esta registrado";
+    public static final String ErrorPurchaseTypeExists = "Tipo de compra ya fue registrado";
     public static final String ErrorStockReplenishment = "Restock no esta registrado";
     public static final String ErrorStockReplenishmentExists = "Restock ya fue registrado";
     public static final String ErrorStockReplenishmentQuantity = "Cantidad de restock no puede ser mayor que el pedido";
@@ -244,8 +244,8 @@ public class Constants {
     public static final String ErrorMercadoPagoOrigin = "Origen de pago no verificado";
     public static final String ErrorSupplierRucExists = "Ruc de proveedor ya fue registrado";
     public static final String ErrorSupplierNameExists = "Nombre de proveedor ya fue registrado";
-    public static final String ErrorShipmentDocument = "Documento de compra no esta registrado";
-    public static final String ErrorShipmentDocumentExists = "Documento de compra ya fue registrado";
+    public static final String ErrorPurchaseDocument = "Documento de compra no esta registrado";
+    public static final String ErrorPurchaseDocumentExists = "Documento de compra ya fue registrado";
     public static final String ErrorCountry = "Pais no esta registrado";
     public static final String ErrorCountryExists = "Pais ya fue registrado";
     public static final String ErrorSupplierType = "Tipo de proveedor no esta registrado";
@@ -270,7 +270,7 @@ public class Constants {
     public static final String ErrorStockReplenishmentDuplicateItem = "No se puede registrar item duplicado en restock";
     public static final String ErrorStockReturnDuplicateItem = "No se puede registrar item duplicado en devolucion de stock";
     public static final String ErrorStockTransferDuplicateItem = "No se puede registrar item duplicado en transferencia de stock";
-    public static final String ErrorShipmentDuplicateItem = "No se puede registrar item duplicado en compra";
+    public static final String ErrorPurchaseDuplicateItem = "No se puede registrar item duplicado en compra";
     public static final String ErrorProductPriceZero = "Precio del producto no puede ser menos que $0.01";
     public static final String ErrorSizeTypeCategoryProduct = "Tipo de tamaño no pertence a esta categoria";
     public static final String ErrorAuditEvent = "Evento de auditoria no esta registrado";

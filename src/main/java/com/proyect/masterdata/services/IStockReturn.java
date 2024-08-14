@@ -17,7 +17,7 @@ public interface IStockReturn {
     CompletableFuture<Page<StockReturnDTO>> list(
             String user,
             List<String> serials,
-            List<String> shipments,
+            List<String> purchases,
             List<String> suppliers,
             String sort,
             String sortColumn,

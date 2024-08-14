@@ -11,11 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestShipment {
+public class RequestPurchase {
     private String serial;
     private String warehouse;
-    private String shipmentType;
-    private String shipmentDocument;
+    private String purchaseType;
+    private String purchaseDocument;
     private String supplier;
-    private List<RequestShipmentItem> requestShipmentItemList;
+    private List<RequestPurchaseItem> requestPurchaseItemList;
 }

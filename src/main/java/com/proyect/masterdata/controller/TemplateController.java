@@ -21,13 +21,13 @@ import java.util.concurrent.ExecutionException;
 public class TemplateController {
     private final ITemplate iTemplate;
 
-    @GetMapping("shipment")
-    private ResponseEntity<byte[]> shipment(
+    @GetMapping("purchase")
+    private ResponseEntity<byte[]> purchase(
             @RequestParam("quantity") Integer quantity,
             @RequestParam("ruc") String ruc,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ByteArrayInputStream> result = iTemplate.shipment(quantity,ruc,user);
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.purchase(quantity,ruc,user);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=compra.xlsx");
         return ResponseEntity.ok()

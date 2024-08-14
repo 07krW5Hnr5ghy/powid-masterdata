@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestShipmentExcel {
+public class RequestPurchaseExcel {
     private String serial;
-    private String shipmentDocument;
+    private String purchaseDocument;
     private String warehouse;
     private String supplier;
-    private String shipmentType;
+    private String purchaseType;
     private String tokenUser;
 }

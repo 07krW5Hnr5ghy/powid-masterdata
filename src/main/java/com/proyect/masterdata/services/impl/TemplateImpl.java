@@ -48,7 +48,7 @@ public class TemplateImpl implements ITemplate {
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
     @Override
-    public CompletableFuture<ByteArrayInputStream> shipment(Integer quantity,String supplierRuc, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> purchase(Integer quantity,String supplierRuc, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Supplier supplier;
@@ -194,7 +194,7 @@ public class TemplateImpl implements ITemplate {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> stockReturn(Integer quantity, String shipmentSerial, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> stockReturn(Integer quantity, String purchaseSerial, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Purchase purchase;
@@ -211,9 +211,9 @@ public class TemplateImpl implements ITemplate {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
             if(purchaseType ==null){
-                throw new BadRequestExceptions(Constants.ErrorShipmentType);
+                throw new BadRequestExceptions(Constants.ErrorPurchaseType);
             }else{
-                purchase = purchaseRepository.findBySerialAndPurchaseTypeId(shipmentSerial.toUpperCase(), purchaseType.getId());
+                purchase = purchaseRepository.findBySerialAndPurchaseTypeId(purchaseSerial.toUpperCase(), purchaseType.getId());
             }
             if(purchase ==null){
                 throw new BadRequestExceptions(Constants.ErrorPurchase);
@@ -242,7 +242,7 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellValue("OBSERVACIONES");
                 cell.setCellStyle(headerStyle);
 
-                String[] serialList = purchaseItemList.stream().map(shipmentItem -> shipmentItem.getSupplierProduct().getSerial()).toList().toArray(new String[0]);
+                String[] serialList = purchaseItemList.stream().map(purchaseItem -> purchaseItem.getSupplierProduct().getSerial()).toList().toArray(new String[0]);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
                 DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
                 CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);

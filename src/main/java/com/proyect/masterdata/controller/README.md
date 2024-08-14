@@ -2132,7 +2132,7 @@ http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&
     "purchaseSerial":"serial of the purchase of the purchase goods",
     "warehouse":"name of the purchase warehouse",
     "purchaseType":"name of the purchase type",
-    "requestShipmentList": [
+    "requestPurchaseList": [
         {
             "quantity": number of units,
             "observations": observation of the state of the goods,

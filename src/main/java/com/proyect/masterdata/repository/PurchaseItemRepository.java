@@ -7,7 +7,7 @@ import com.proyect.masterdata.domain.PurchaseItem;
 import java.util.List;
 
 public interface PurchaseItemRepository extends JpaRepository<PurchaseItem, Long> {
-    PurchaseItem findByPurchaseIdAndSupplierProductId(Long shipmentId, Long supplierProductId);
+    PurchaseItem findByPurchaseIdAndSupplierProductId(Long purchaseId, Long supplierProductId);
     List<PurchaseItem> findAllByClientId(Long clientId);
-    List<PurchaseItem> findAllByClientIdAndPurchaseId(Long clientId, Long shipmentId);
+    List<PurchaseItem> findAllByClientIdAndPurchaseId(Long clientId, Long purchaseId);
 }

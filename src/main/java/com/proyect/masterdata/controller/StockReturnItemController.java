@@ -27,7 +27,7 @@ public class StockReturnItemController {
     public ResponseEntity<Page<StockReturnItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "stockReturns", required = false) List<String> stockReturns,
-            @RequestParam(value = "shipments", required = false) List<String> shipments,
+            @RequestParam(value = "purchases", required = false) List<String> purchases,
             @RequestParam(value = "suppliers", required = false) List<String> suppliers,
             @RequestParam(value = "supplierProducts", required = false) List<String> supplierProducts,
             @RequestParam(value = "sort", required = false) String sort,
@@ -37,7 +37,7 @@ public class StockReturnItemController {
         CompletableFuture<Page<StockReturnItemDTO>> result = iStockReturnItem.list(
                 user,
                 stockReturns,
-                shipments,
+                purchases,
                 suppliers,
                 supplierProducts,
                 sort,

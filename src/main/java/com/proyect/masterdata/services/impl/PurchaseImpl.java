@@ -2,9 +2,9 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CheckStockDTO;
-import com.proyect.masterdata.dto.ShipmentDTO;
-import com.proyect.masterdata.dto.request.RequestShipment;
-import com.proyect.masterdata.dto.request.RequestShipmentItem;
+import com.proyect.masterdata.dto.PurchaseDTO;
+import com.proyect.masterdata.dto.request.RequestPurchase;
+import com.proyect.masterdata.dto.request.RequestPurchaseItem;
 import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -43,7 +43,7 @@ public class PurchaseImpl implements IPurchase {
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     @Override
-    public ResponseSuccess save(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(RequestPurchase requestPurchase, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
         Warehouse warehouse;
@@ -55,9 +55,9 @@ public class PurchaseImpl implements IPurchase {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipment.getWarehouse().toUpperCase());
-            purchaseType = purchaseTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
-            purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestShipment.getShipmentDocument());
+            warehouse = warehouseRepository.findByNameAndStatusTrue(requestPurchase.getWarehouse().toUpperCase());
+            purchaseType = purchaseTypeRepository.findByNameAndStatusTrue(requestPurchase.getPurchaseType().toUpperCase());
+            purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestPurchase.getPurchaseDocument());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -66,7 +66,7 @@ public class PurchaseImpl implements IPurchase {
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
-            supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestShipment.getSupplier(), user.getClientId());
+            supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestPurchase.getSupplier(), user.getClientId());
         }
 
         if (warehouse == null) {
@@ -78,9 +78,9 @@ public class PurchaseImpl implements IPurchase {
         }
 
         if(purchaseType == null){
-            throw new BadRequestExceptions(Constants.ErrorShipmentType);
+            throw new BadRequestExceptions(Constants.ErrorPurchaseType);
         }else{
-            purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestShipment.getSerial(), purchaseType.getId());
+            purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestPurchase.getSerial(), purchaseType.getId());
         }
 
         if (purchase != null) {
@@ -88,7 +88,7 @@ public class PurchaseImpl implements IPurchase {
         }
 
         if(purchaseDocument == null){
-            throw new BadRequestExceptions(Constants.ErrorShipmentDocument);
+            throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
         }
 
         if(supplier==null){
@@ -97,28 +97,28 @@ public class PurchaseImpl implements IPurchase {
 
         try{
             if(Objects.equals(purchaseType.getName(), "DEVOLUCION")){
-                stockReturn = stockReturnRepository.findBySerial(requestShipment.getSerial());
+                stockReturn = stockReturnRepository.findBySerial(requestPurchase.getSerial());
                 if(stockReturn == null){
                     throw new BadRequestExceptions(Constants.ErrorPurchaseReturn);
                 }
             }
 
-            for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
-                SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProduct());
+            for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
+                SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct());
                 if(supplierProduct == null){
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                 }
-                if(requestShipmentItem.getQuantity() < 1){
+                if(requestPurchaseItem.getQuantity() < 1){
                     throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
                 }
             }
-            List<RequestStockTransactionItem> requestStockTransactionItemList = requestShipment.getRequestShipmentItemList().stream().map(shipmentItem -> RequestStockTransactionItem.builder()
-                    .quantity(shipmentItem.getQuantity())
-                    .supplierProductSerial(shipmentItem.getSupplierProduct().toUpperCase())
+            List<RequestStockTransactionItem> requestStockTransactionItemList = requestPurchase.getRequestPurchaseItemList().stream().map(purchaseItem -> RequestStockTransactionItem.builder()
+                    .quantity(purchaseItem.getQuantity())
+                    .supplierProductSerial(purchaseItem.getSupplierProduct().toUpperCase())
                     .build()).toList();
-            StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
+            StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
             Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
-                            .serial(requestShipment.getSerial().toUpperCase())
+                            .serial(requestPurchase.getSerial().toUpperCase())
                             .supplier(supplier)
                             .supplierId(supplier.getId())
                             .status(true)
@@ -134,13 +134,13 @@ public class PurchaseImpl implements IPurchase {
                             .clientId(user.getClientId())
                             .tokenUser(user.getUsername())
                       .build());
-            for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProduct());
-                  iPurchaseItem.save(newPurchase,warehouse.getName(),requestShipmentItem,user.getUsername());
-                  iWarehouseStock.in(warehouse,supplierProduct,requestShipmentItem.getQuantity(),user);
-                  iGeneralStock.in(requestShipmentItem.getSupplierProduct(),requestShipmentItem.getQuantity(),user.getUsername());
+            for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
+                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct());
+                  iPurchaseItem.save(newPurchase,warehouse.getName(), requestPurchaseItem,user.getUsername());
+                  iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
+                  iGeneralStock.in(requestPurchaseItem.getSupplierProduct(), requestPurchaseItem.getQuantity(),user.getUsername());
             }
-            iAudit.save("ADD_SHIPMENT","ADD SHIPMENT " + newPurchase.getSerial() +".",user.getUsername());
+            iAudit.save("ADD_PURCHASE","ADD PURCHASE " + newPurchase.getSerial() +".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -153,7 +153,7 @@ public class PurchaseImpl implements IPurchase {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(RequestShipment requestShipment, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestPurchase requestPurchase, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Warehouse warehouse;
@@ -165,9 +165,9 @@ public class PurchaseImpl implements IPurchase {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipment.getWarehouse().toUpperCase());
-                purchaseType = purchaseTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
-                purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestShipment.getShipmentDocument());
+                warehouse = warehouseRepository.findByNameAndStatusTrue(requestPurchase.getWarehouse().toUpperCase());
+                purchaseType = purchaseTypeRepository.findByNameAndStatusTrue(requestPurchase.getPurchaseType().toUpperCase());
+                purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestPurchase.getPurchaseDocument());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -176,7 +176,7 @@ public class PurchaseImpl implements IPurchase {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestShipment.getSupplier(), user.getClientId());
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestPurchase.getSupplier(), user.getClientId());
             }
 
             if (warehouse == null) {
@@ -188,9 +188,9 @@ public class PurchaseImpl implements IPurchase {
             }
 
             if(purchaseType == null){
-                throw new BadRequestExceptions(Constants.ErrorShipmentType);
+                throw new BadRequestExceptions(Constants.ErrorPurchaseType);
             }else{
-                purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestShipment.getSerial(), purchaseType.getId());
+                purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestPurchase.getSerial(), purchaseType.getId());
             }
 
             if (purchase != null) {
@@ -198,7 +198,7 @@ public class PurchaseImpl implements IPurchase {
             }
 
             if(purchaseDocument == null){
-                throw new BadRequestExceptions(Constants.ErrorShipmentDocument);
+                throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
             }
 
             if(supplier == null){
@@ -207,28 +207,28 @@ public class PurchaseImpl implements IPurchase {
 
             try{
                 if(Objects.equals(purchaseType.getName(), "DEVOLUCION")){
-                    stockReturn = stockReturnRepository.findBySerial(requestShipment.getSerial());
+                    stockReturn = stockReturnRepository.findBySerial(requestPurchase.getSerial());
                     if(stockReturn == null){
                         throw new BadRequestExceptions(Constants.ErrorPurchaseReturn);
                     }
                 }
 
-                for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProduct());
+                for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
+                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct());
                     if(supplierProduct == null){
                         throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                     }
-                    if(requestShipmentItem.getQuantity() < 1){
+                    if(requestPurchaseItem.getQuantity() < 1){
                         throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
                     }
                 }
-                List<RequestStockTransactionItem> requestStockTransactionItemList = requestShipment.getRequestShipmentItemList().stream().map(shipmentItem -> RequestStockTransactionItem.builder()
-                        .quantity(shipmentItem.getQuantity())
-                        .supplierProductSerial(shipmentItem.getSupplierProduct().toUpperCase())
+                List<RequestStockTransactionItem> requestStockTransactionItemList = requestPurchase.getRequestPurchaseItemList().stream().map(purchaseItem -> RequestStockTransactionItem.builder()
+                        .quantity(purchaseItem.getQuantity())
+                        .supplierProductSerial(purchaseItem.getSupplierProduct().toUpperCase())
                         .build()).toList();
-                StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
+                StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
                 Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
-                        .serial(requestShipment.getSerial().toUpperCase())
+                        .serial(requestPurchase.getSerial().toUpperCase())
                         .status(true)
                         .supplier(supplier)
                         .supplierId(supplier.getId())
@@ -244,13 +244,13 @@ public class PurchaseImpl implements IPurchase {
                                 .purchaseDocumentId(purchaseDocument.getId())
                         .tokenUser(user.getUsername())
                         .build());
-                for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProduct());
-                    iPurchaseItem.save(newPurchase,warehouse.getName(),requestShipmentItem,user.getUsername());
-                    iWarehouseStock.in(warehouse,supplierProduct,requestShipmentItem.getQuantity(),user);
-                    iGeneralStock.in(requestShipmentItem.getSupplierProduct(),requestShipmentItem.getQuantity(),user.getUsername());
+                for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
+                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct());
+                    iPurchaseItem.save(newPurchase,warehouse.getName(), requestPurchaseItem,user.getUsername());
+                    iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
+                    iGeneralStock.in(requestPurchaseItem.getSupplierProduct(), requestPurchaseItem.getQuantity(),user.getUsername());
                 }
-                iAudit.save("ADD_SHIPMENT","ADD SHIPMENT " + newPurchase.getSerial() + ".",user.getUsername());
+                iAudit.save("ADD_PURCHASE","ADD PURCHASE " + newPurchase.getSerial() + ".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -264,21 +264,21 @@ public class PurchaseImpl implements IPurchase {
     }
 
     @Override
-    public CompletableFuture<Page<ShipmentDTO>> list(
+    public CompletableFuture<Page<PurchaseDTO>> list(
             List<String> serials,
             String user,
             List<String> warehouses,
-            List<String> shipmentTypes,
+            List<String> purchaseTypes,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Page<Purchase> pageShipment;
+            Page<Purchase> pagePurchase;
             List<String> serialsUppercase;
             Long clientId;
             List<Long> warehouseIds;
-            List<Long> shipmentTypeIds;
+            List<Long> purchaseTypeIds;
 
             if(serials != null && !serials.isEmpty()){
                 serialsUppercase = serials.stream().map(String::toUpperCase).toList();
@@ -294,21 +294,21 @@ public class PurchaseImpl implements IPurchase {
                 warehouseIds = new ArrayList<>();
             }
 
-            if (shipmentTypes != null && !shipmentTypes.isEmpty()){
-                shipmentTypeIds = purchaseTypeRepository.findByNameIn(
-                        shipmentTypes.stream().map(String::toUpperCase).toList()
+            if (purchaseTypes != null && !purchaseTypes.isEmpty()){
+                purchaseTypeIds = purchaseTypeRepository.findByNameIn(
+                        purchaseTypes.stream().map(String::toUpperCase).toList()
                 ).stream().map(PurchaseType::getId).toList();
             }else {
-                shipmentTypeIds = new ArrayList<>();
+                purchaseTypeIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageShipment = purchaseRepositoryCustom.searchForShipment(
+                pagePurchase = purchaseRepositoryCustom.searchForPurchase(
                         clientId,
                         serialsUppercase,
                         warehouseIds,
-                        shipmentTypeIds,
+                        purchaseTypeIds,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -319,38 +319,38 @@ public class PurchaseImpl implements IPurchase {
                 throw new InternalErrorExceptions(Constants.ResultsFound);
             }
 
-            if(pageShipment.isEmpty()){
+            if(pagePurchase.isEmpty()){
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<ShipmentDTO> shipmentDTOS = pageShipment.getContent().stream().map(shipment -> ShipmentDTO.builder()
-                    .serial(shipment.getSerial())
-                    .shipmentDocument(shipment.getPurchaseDocument().getName())
-                    .warehouse(shipment.getWarehouse().getName())
-                    .shipmentType(shipment.getPurchaseType().getName())
-                    .registrationDate(shipment.getRegistrationDate())
+            List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> PurchaseDTO.builder()
+                    .serial(purchase.getSerial())
+                    .purchaseDocument(purchase.getPurchaseDocument().getName())
+                    .warehouse(purchase.getWarehouse().getName())
+                    .purchaseType(purchase.getPurchaseType().getName())
+                    .registrationDate(purchase.getRegistrationDate())
                     .build()).toList();
 
-            return new PageImpl<>(shipmentDTOS,pageShipment.getPageable(),pageShipment.getTotalElements());
+            return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
         });
     }
 
     @Override
-    public CompletableFuture<Page<ShipmentDTO>> listFalse(
+    public CompletableFuture<Page<PurchaseDTO>> listFalse(
             List<String> serials,
             String user,
             List<String> warehouses,
-            List<String> shipmentTypes,
+            List<String> purchaseTypes,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Page<Purchase> pageShipment;
+            Page<Purchase> pagePurchase;
             Long clientId;
             List<String> serialsUppercase;
             List<Long> warehouseIds;
-            List<Long> shipmentTypeIds;
+            List<Long> purchaseTypeIds;
 
             if(serials != null && !serials.isEmpty()){
                 serialsUppercase = serials.stream().map(String::toUpperCase).toList();
@@ -366,21 +366,21 @@ public class PurchaseImpl implements IPurchase {
                 warehouseIds = new ArrayList<>();
             }
 
-            if (shipmentTypes != null && !shipmentTypes.isEmpty()){
-                shipmentTypeIds = purchaseTypeRepository.findByNameIn(
-                        shipmentTypes.stream().map(String::toUpperCase).toList()
+            if (purchaseTypes != null && !purchaseTypes.isEmpty()){
+                purchaseTypeIds = purchaseTypeRepository.findByNameIn(
+                        purchaseTypes.stream().map(String::toUpperCase).toList()
                 ).stream().map(PurchaseType::getId).toList();
             }else {
-                shipmentTypeIds = new ArrayList<>();
+                purchaseTypeIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageShipment = purchaseRepositoryCustom.searchForShipment(
+                pagePurchase = purchaseRepositoryCustom.searchForPurchase(
                         clientId,
                         serialsUppercase,
                         warehouseIds,
-                        shipmentTypeIds,
+                        purchaseTypeIds,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -391,24 +391,24 @@ public class PurchaseImpl implements IPurchase {
                 throw new InternalErrorExceptions(Constants.ResultsFound);
             }
 
-            if(pageShipment.isEmpty()){
+            if(pagePurchase.isEmpty()){
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<ShipmentDTO> shipmentDTOS = pageShipment.getContent().stream().map(shipment -> ShipmentDTO.builder()
-                    .serial(shipment.getSerial())
-                    .shipmentDocument(shipment.getPurchaseDocument().getName())
-                    .warehouse(shipment.getWarehouse().getName())
-                    .shipmentType(shipment.getPurchaseType().getName())
-                    .registrationDate(shipment.getRegistrationDate())
+            List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> PurchaseDTO.builder()
+                    .serial(purchase.getSerial())
+                    .purchaseDocument(purchase.getPurchaseDocument().getName())
+                    .warehouse(purchase.getWarehouse().getName())
+                    .purchaseType(purchase.getPurchaseType().getName())
+                    .registrationDate(purchase.getRegistrationDate())
                     .build()).toList();
 
-            return new PageImpl<>(shipmentDTOS,pageShipment.getPageable(),pageShipment.getTotalElements());
+            return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
         });
     }
 
     @Override
-    public CompletableFuture<List<ShipmentDTO>> listShipment(String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<PurchaseDTO>> listPurchase(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Purchase> purchases;
             Long clientId;
@@ -424,18 +424,18 @@ public class PurchaseImpl implements IPurchase {
                 return Collections.emptyList();
             }
 
-            return purchases.stream().map(shipment -> ShipmentDTO.builder()
-                    .serial(shipment.getSerial())
-                    .shipmentDocument(shipment.getPurchaseDocument().getName())
-                    .warehouse(shipment.getWarehouse().getName())
-                    .shipmentType(shipment.getPurchaseType().getName())
-                    .registrationDate(shipment.getRegistrationDate())
+            return purchases.stream().map(purchase -> PurchaseDTO.builder()
+                    .serial(purchase.getSerial())
+                    .purchaseDocument(purchase.getPurchaseDocument().getName())
+                    .warehouse(purchase.getWarehouse().getName())
+                    .purchaseType(purchase.getPurchaseType().getName())
+                    .registrationDate(purchase.getRegistrationDate())
                     .build()).toList();
         });
     }
 
     @Override
-    public CompletableFuture<List<ShipmentDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<PurchaseDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Purchase> purchases;
             Long clientId;
@@ -451,12 +451,12 @@ public class PurchaseImpl implements IPurchase {
                 return Collections.emptyList();
             }
 
-            return purchases.stream().map(shipment -> ShipmentDTO.builder()
-                    .serial(shipment.getSerial())
-                    .shipmentDocument(shipment.getPurchaseDocument().getName())
-                    .warehouse(shipment.getWarehouse().getName())
-                    .shipmentType(shipment.getPurchaseType().getName())
-                    .registrationDate(shipment.getRegistrationDate())
+            return purchases.stream().map(purchase -> PurchaseDTO.builder()
+                    .serial(purchase.getSerial())
+                    .purchaseDocument(purchase.getPurchaseDocument().getName())
+                    .warehouse(purchase.getWarehouse().getName())
+                    .purchaseType(purchase.getPurchaseType().getName())
+                    .registrationDate(purchase.getRegistrationDate())
                     .build()).toList();
         });
     }

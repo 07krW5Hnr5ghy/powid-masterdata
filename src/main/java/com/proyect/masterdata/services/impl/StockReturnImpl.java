@@ -51,7 +51,7 @@ public class StockReturnImpl implements IStockReturn {
         try{
             user = userRepository.findByUsernameAndStatusTrue(requestStockReturn.getTokenUser().toUpperCase());
             stockReturn = stockReturnRepository.findBySerial(requestStockReturn.getSerial());
-            purchase = purchaseRepository.findByPurchaseTypeNameAndSerial("COMPRA", requestStockReturn.getShipmentSerial());
+            purchase = purchaseRepository.findByPurchaseTypeNameAndSerial("COMPRA", requestStockReturn.getPurchaseSerial());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -97,7 +97,7 @@ public class StockReturnImpl implements IStockReturn {
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                             .purchase(purchase)
-                            .shipmentId(purchase.getId())
+                            .purchaseId(purchase.getId())
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .tokenUser(user.getUsername())
@@ -184,7 +184,7 @@ public class StockReturnImpl implements IStockReturn {
                 StockReturn newStockReturn = stockReturnRepository.save(StockReturn.builder()
                         .serial(requestStockReturn.getSerial().toUpperCase())
                                 .purchase(purchase)
-                                .shipmentId(purchase.getId())
+                                .purchaseId(purchase.getId())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .client(user.getClient())
@@ -223,7 +223,7 @@ public class StockReturnImpl implements IStockReturn {
     public CompletableFuture<Page<StockReturnDTO>> list(
             String user,
             List<String> serials,
-            List<String> shipments,
+            List<String> purchases,
             List<String> suppliers,
             String sort,
             String sortColumn,
@@ -233,7 +233,7 @@ public class StockReturnImpl implements IStockReturn {
             Page<StockReturn> pageStockReturn;
             Long clientId;
             List<String> serialsUppercase;
-            List<Long> shipmentIds;
+            List<Long> purchaseIds;
             List<Long> supplierIds;
 
             if(serials != null && !serials.isEmpty()){
@@ -242,12 +242,12 @@ public class StockReturnImpl implements IStockReturn {
                 serialsUppercase = new ArrayList<>();
             }
 
-            if(shipments != null && !shipments.isEmpty()){
-                shipmentIds = purchaseRepository.findBySerialIn(
-                        shipments.stream().map(String::toUpperCase).toList()
+            if(purchases != null && !purchases.isEmpty()){
+                purchaseIds = purchaseRepository.findBySerialIn(
+                        purchases.stream().map(String::toUpperCase).toList()
                 ).stream().map(com.proyect.masterdata.domain.Purchase::getId).toList();
             }else{
-                shipmentIds = new ArrayList<>();
+                purchaseIds = new ArrayList<>();
             }
 
             if(suppliers != null && !suppliers.isEmpty()){
@@ -263,7 +263,7 @@ public class StockReturnImpl implements IStockReturn {
                 pageStockReturn = stockReturnRepositoryCustom.searchForStockReturnItem(
                         clientId,
                         serialsUppercase,
-                        shipmentIds,
+                        purchaseIds,
                         supplierIds,
                         sort,
                         sortColumn,
@@ -283,7 +283,7 @@ public class StockReturnImpl implements IStockReturn {
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
                     .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
-                    .shipment(stockReturn.getPurchase().getSerial())
+                    .purchase(stockReturn.getPurchase().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
                     .build()).toList();
             return new PageImpl<>(stockReturnDTOS,pageStockReturn.getPageable(),pageStockReturn.getTotalElements());
@@ -310,7 +310,7 @@ public class StockReturnImpl implements IStockReturn {
             return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
-                    .shipment(stockReturn.getPurchase().getSerial())
+                    .purchase(stockReturn.getPurchase().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
                     .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
                     .build()).toList();
@@ -337,7 +337,7 @@ public class StockReturnImpl implements IStockReturn {
             return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
-                    .shipment(stockReturn.getPurchase().getSerial())
+                    .purchase(stockReturn.getPurchase().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
                     .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
                     .build()).toList();
@@ -364,7 +364,7 @@ public class StockReturnImpl implements IStockReturn {
             return stockReturns.stream().map(stockReturn -> StockReturnDTO.builder()
                     .registrationDate(stockReturn.getRegistrationDate())
                     .serial(stockReturn.getSerial())
-                    .shipment(stockReturn.getPurchase().getSerial())
+                    .purchase(stockReturn.getPurchase().getSerial())
                     .updateDate(stockReturn.getUpdateDate())
                     .supplier(stockReturn.getPurchase().getSupplier().getBusinessName())
                     .build()).toList();

@@ -45,7 +45,7 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
             }
 
             if(purchaseDocument != null){
-                throw new BadRequestExceptions(Constants.ErrorShipmentDocumentExists);
+                throw new BadRequestExceptions(Constants.ErrorPurchaseDocumentExists);
             }
 
             try {
@@ -87,7 +87,7 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
             }
 
             if(purchaseDocument == null){
-                throw new BadRequestExceptions(Constants.ErrorShipmentDocument);
+                throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
             }
 
             try {
@@ -126,7 +126,7 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
             }
 
             if(purchaseDocument == null){
-                throw new BadRequestExceptions(Constants.ErrorShipmentDocument);
+                throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
             }
 
             try {

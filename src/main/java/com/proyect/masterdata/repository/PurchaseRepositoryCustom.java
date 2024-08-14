@@ -8,11 +8,11 @@ import java.util.List;
 
 @Repository
 public interface PurchaseRepositoryCustom {
-    Page<Purchase> searchForShipment(
+    Page<Purchase> searchForPurchase(
             Long clientId,
             List<String> serials,
             List<Long> warehouseIds,
-            List<Long> shipmentTypeIds,
+            List<Long> purchaseTypeIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

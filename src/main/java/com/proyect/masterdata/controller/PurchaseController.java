@@ -1,8 +1,8 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.CheckStockDTO;
-import com.proyect.masterdata.dto.ShipmentDTO;
-import com.proyect.masterdata.dto.request.RequestShipment;
+import com.proyect.masterdata.dto.PurchaseDTO;
+import com.proyect.masterdata.dto.request.RequestPurchase;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IPurchase;
@@ -24,30 +24,30 @@ import java.util.concurrent.ExecutionException;
 public class PurchaseController {
     private final IPurchase iPurchase;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SHIPMENT_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:PURCHASE_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestBody() RequestShipment requestShipment,
+            @RequestBody() RequestPurchase requestPurchase,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iPurchase.saveAsync(requestShipment, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iPurchase.saveAsync(requestPurchase, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping("pagination")
-    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
-    public ResponseEntity<Page<ShipmentDTO>> list(
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_GET')")
+    public ResponseEntity<Page<PurchaseDTO>> list(
             @RequestParam(value = "serials", required = false) List<String> serials,
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "warehouses", required = false) List<String> warehouses,
-            @RequestParam(value = "shipmentTypes", required = false) List<String> shipmentTypes,
+            @RequestParam(value = "purchaseTypes", required = false) List<String> purchaseTypes,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<ShipmentDTO>> result = iPurchase.list(
+        CompletableFuture<Page<PurchaseDTO>> result = iPurchase.list(
                 serials,
                 user,
                 warehouses,
-                shipmentTypes,
+                purchaseTypes,
                 sort,
                 sortColumn,
                 pageNumber,
@@ -55,19 +55,19 @@ public class PurchaseController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping()
-    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_GET')")
-    public ResponseEntity<List<ShipmentDTO>> listShipment(
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_GET')")
+    public ResponseEntity<List<PurchaseDTO>> listPurchase(
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<ShipmentDTO>> result = iPurchase.listShipment(user);
+        CompletableFuture<List<PurchaseDTO>> result = iPurchase.listPurchase(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @GetMapping("filter")
-    public ResponseEntity<List<ShipmentDTO>> listFilter(
+    public ResponseEntity<List<PurchaseDTO>> listFilter(
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<ShipmentDTO>> result = iPurchase.listFilter(user);
+        CompletableFuture<List<PurchaseDTO>> result = iPurchase.listFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

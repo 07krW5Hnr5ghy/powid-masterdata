@@ -47,7 +47,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
         }
 
         if(purchaseType != null){
-            throw new BadRequestExceptions(Constants.ErrorShipmentTypeExists);
+            throw new BadRequestExceptions(Constants.ErrorPurchaseTypeExists);
         }
 
         try{
@@ -57,7 +57,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
                     .build());
-            iAudit.save("ADD_SHIPMENT_TYPE","ADD SHIPMENT TYPE "+ newPurchaseType.getName()+".",user.getUsername());
+            iAudit.save("ADD_PURCHASE_TYPE","ADD PURCHASE TYPE "+ newPurchaseType.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -87,7 +87,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
             }
 
             if(purchaseType != null){
-                throw new BadRequestExceptions(Constants.ErrorShipmentTypeExists);
+                throw new BadRequestExceptions(Constants.ErrorPurchaseTypeExists);
             }
 
             try{
@@ -97,7 +97,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_SHIPMENT_TYPE","ADD SHIPMENT TYPE "+ newPurchaseType.getName()+".",user.getUsername());
+                iAudit.save("ADD_PURCHASE_TYPE","ADD PURCHASE TYPE "+ newPurchaseType.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -128,7 +128,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
             }
 
             if(purchaseType == null){
-                throw new BadRequestExceptions(Constants.ErrorShipmentType);
+                throw new BadRequestExceptions(Constants.ErrorPurchaseType);
             }
 
             try{
@@ -136,7 +136,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
                 purchaseType.setTokenUser(user.getUsername());
                 purchaseType.setUpdateDate(new Date(System.currentTimeMillis()));
                 purchaseTypeRepository.save(purchaseType);
-                iAudit.save("DELETE_SHIPMENT_TYPE","DELETE SHIPMENT TYPE "+ purchaseType.getName()+".",user.getUsername());
+                iAudit.save("DELETE_PURCHASE_TYPE","DELETE PURCHASE TYPE "+ purchaseType.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -167,7 +167,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
             }
 
             if(purchaseType == null){
-                throw new BadRequestExceptions(Constants.ErrorShipmentType);
+                throw new BadRequestExceptions(Constants.ErrorPurchaseType);
             }
 
             try{
@@ -175,7 +175,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
                 purchaseType.setTokenUser(user.getUsername());
                 purchaseType.setUpdateDate(new Date(System.currentTimeMillis()));
                 purchaseTypeRepository.save(purchaseType);
-                iAudit.save("ACTIVATE_SHIPMENT_TYPE","ACTIVATE SHIPMENT TYPE "+ purchaseType.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_PURCHASE_TYPE","ACTIVATE PURCHASE TYPE "+ purchaseType.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

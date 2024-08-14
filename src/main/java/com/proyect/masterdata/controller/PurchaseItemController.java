@@ -1,6 +1,6 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.ShipmentItemDTO;
+import com.proyect.masterdata.dto.PurchaseItemDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IPurchaseItem;
 import lombok.AllArgsConstructor;
@@ -20,19 +20,19 @@ import java.util.concurrent.ExecutionException;
 public class PurchaseItemController {
     private final IPurchaseItem iPurchaseItem;
     @GetMapping("pagination")
-    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_ITEM_GET')")
-    public ResponseEntity<Page<ShipmentItemDTO>> list(
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
+    public ResponseEntity<Page<PurchaseItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "shipments",required = false) List<String> shipments,
+            @RequestParam(value = "purchases",required = false) List<String> purchases,
             @RequestParam(value = "warehouses", required = false) List<String> warehouses,
             @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<ShipmentItemDTO>> result = iPurchaseItem.list(
+        CompletableFuture<Page<PurchaseItemDTO>> result = iPurchaseItem.list(
                 user,
-                shipments,
+                purchases,
                 warehouses,
                 supplierProducts,
                 sort,
@@ -42,12 +42,12 @@ public class PurchaseItemController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
-    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_ITEM_GET')")
-    public ResponseEntity<List<ShipmentItemDTO>> listShipment(
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
+    public ResponseEntity<List<PurchaseItemDTO>> listPurchase(
             @RequestParam("user") String user,
             @RequestParam(value = "id", required = false) Long id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<ShipmentItemDTO>> result = iPurchaseItem.listShipmentItem(user,id);
+        CompletableFuture<List<PurchaseItemDTO>> result = iPurchaseItem.listPurchaseItem(user,id);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
