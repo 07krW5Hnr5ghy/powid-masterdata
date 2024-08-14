@@ -71,7 +71,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             }
 
             if(orderItem == null){
-                throw new BadRequestExceptions(Constants.ErrorItem);
+                throw new BadRequestExceptions(Constants.ErrorOrderItem);
             }
 
             if(supplierProduct == null){
@@ -312,7 +312,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             }
 
             if(orderItem == null){
-                throw new BadRequestExceptions(Constants.ErrorItem);
+                throw new BadRequestExceptions(Constants.ErrorOrderItem);
             }
 
             try{

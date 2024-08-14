@@ -62,11 +62,11 @@ public class StockReturnItem {
 
     @ManyToOne
     @JoinColumn(name = "shipment_id",columnDefinition = "shipmentId",insertable = false,updatable = false)
-    private Shipment shipment;
+    private Purchase purchase;
 
     @ManyToOne
     @JoinColumn(name = "shipment_item_id",columnDefinition = "shipmentItemId",insertable = false,updatable = false)
-    private ShipmentItem shipmentItem;
+    private PurchaseItem purchaseItem;
 
     @ManyToOne
     @JoinColumn(name = "stock_return_id", columnDefinition = "stockReturnId", insertable = false, updatable = false)

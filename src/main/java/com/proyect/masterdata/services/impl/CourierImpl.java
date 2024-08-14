@@ -287,7 +287,7 @@ public class CourierImpl implements ICourier {
             }
 
             if(orderState == null){
-                throw new BadRequestExceptions(Constants.ErrorState);
+                throw new BadRequestExceptions(Constants.ErrorOrderState);
             }
 
             try{

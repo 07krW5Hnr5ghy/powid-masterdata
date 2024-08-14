@@ -1,10 +1,8 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.domain.*;
-import com.proyect.masterdata.dto.StockReturnDTO;
 import com.proyect.masterdata.dto.StockReturnItemDTO;
 import com.proyect.masterdata.dto.request.RequestStockReturnItem;
-import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
@@ -13,8 +11,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface IStockReturnItem {
-    StockReturnItem save(StockReturn stockReturn, ShipmentItem shipmentItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn, ShipmentItem shipmentItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
+    StockReturnItem save(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<Page<StockReturnItemDTO>> list(
             String user,
             List<String> stockReturns,

@@ -29,8 +29,8 @@ public class TemplateImpl implements ITemplate {
     private final SupplierProductRepository supplierProductRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepository warehouseStockRepository;
-    private final ShipmentRepository shipmentRepository;
-    private final ShipmentItemRepository shipmentItemRepository;
+    private final PurchaseRepository purchaseRepository;
+    private final PurchaseItemRepository purchaseItemRepository;
     private final OrderingRepository orderingRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderStockRepository orderStockRepository;
@@ -44,7 +44,7 @@ public class TemplateImpl implements ITemplate {
     private final UnitTypeRepository unitTypeRepository;
     private final SizeRepository sizeRepository;
     private final UnitRepository unitRepository;
-    private final ShipmentTypeRepository shipmentTypeRepository;
+    private final PurchaseTypeRepository purchaseTypeRepository;
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
     @Override
@@ -197,12 +197,12 @@ public class TemplateImpl implements ITemplate {
     public CompletableFuture<ByteArrayInputStream> stockReturn(Integer quantity, String shipmentSerial, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Shipment shipment;
-            ShipmentType shipmentType;
-            List<ShipmentItem> shipmentItemList;
+            Purchase purchase;
+            PurchaseType purchaseType;
+            List<PurchaseItem> purchaseItemList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                shipmentType = shipmentTypeRepository.findByNameAndStatusTrue("EMBARQUE");
+                purchaseType = purchaseTypeRepository.findByNameAndStatusTrue("EMBARQUE");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -210,15 +210,15 @@ public class TemplateImpl implements ITemplate {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
-            if(shipmentType==null){
+            if(purchaseType ==null){
                 throw new BadRequestExceptions(Constants.ErrorShipmentType);
             }else{
-                shipment = shipmentRepository.findBySerialAndShipmentTypeId(shipmentSerial.toUpperCase(),shipmentType.getId());
+                purchase = purchaseRepository.findBySerialAndPurchaseTypeId(shipmentSerial.toUpperCase(), purchaseType.getId());
             }
-            if(shipment==null){
-                throw new BadRequestExceptions(Constants.ErrorShipment);
+            if(purchase ==null){
+                throw new BadRequestExceptions(Constants.ErrorPurchase);
             }else{
-                shipmentItemList = shipmentItemRepository.findAllByClientIdAndShipmentId(user.getClientId(), shipment.getId());
+                purchaseItemList = purchaseItemRepository.findAllByClientIdAndPurchaseId(user.getClientId(), purchase.getId());
             }
 
             try{
@@ -242,7 +242,7 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellValue("OBSERVACIONES");
                 cell.setCellStyle(headerStyle);
 
-                String[] serialList = shipmentItemList.stream().map(shipmentItem -> shipmentItem.getSupplierProduct().getSerial()).toList().toArray(new String[0]);
+                String[] serialList = purchaseItemList.stream().map(shipmentItem -> shipmentItem.getSupplierProduct().getSerial()).toList().toArray(new String[0]);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
                 DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
                 CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);

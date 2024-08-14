@@ -56,7 +56,7 @@ public class OrderStateImpl implements IOrderState {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (orderState != null) {
-                throw new BadRequestExceptions(Constants.ErrorStateExist.toUpperCase());
+                throw new BadRequestExceptions(Constants.ErrorOrderStateExist.toUpperCase());
             }
 
             try {
@@ -93,7 +93,7 @@ public class OrderStateImpl implements IOrderState {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (orderState == null) {
-                throw new BadRequestExceptions(Constants.ErrorState.toUpperCase());
+                throw new BadRequestExceptions(Constants.ErrorOrderState.toUpperCase());
             }
 
             try {
@@ -131,7 +131,7 @@ public class OrderStateImpl implements IOrderState {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (orderState == null) {
-                throw new BadRequestExceptions(Constants.ErrorState.toUpperCase());
+                throw new BadRequestExceptions(Constants.ErrorOrderState.toUpperCase());
             }
 
             try {

@@ -56,7 +56,7 @@ public class Seeder implements CommandLineRunner {
         private final IWarehouse iWarehouse;
         private final IModule iModule;
         private final ISubscription iSubscription;
-        private final IShipment iShipment;
+        private final IPurchase iPurchase;
         private final IOrderState iOrderState;
         private final IOrderPaymentState iOrderPaymentState;
         private final ISaleChannel iSaleChannel;
@@ -70,7 +70,7 @@ public class Seeder implements CommandLineRunner {
         private final ICancellationReason iCancellationReason;
         private final ICancelledOrder iCancelledOrder;
         private final IStockReturn iStockReturn;
-        private final IShipmentType iShipmentType;
+        private final IPurchaseType iPurchaseType;
         private final IStockReplenishment iStockReplenishment;
         private final IStockTransfer iStockTransfer;
         private final IOrderItem iOrderItem;
@@ -974,9 +974,9 @@ public class Seeder implements CommandLineRunner {
                         iUnit.save(requestUnit3,"admin1");
 
                         // shipment type
-                        iShipmentType.save("compra","admin1");
-                        iShipmentType.save("devolucion","admin1");
-                        iShipmentType.save("restockaje","admin1");
+                        iPurchaseType.save("compra","admin1");
+                        iPurchaseType.save("devolucion","admin1");
+                        iPurchaseType.save("restockaje","admin1");
 
                         // order return type
                         iOrderReturnType.save("rechazo","admin1");
@@ -1976,7 +1976,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplier("12345678922")
                                 .build();
 
-                        iShipment.save(requestShipment1, "AYEPES");
+                        iPurchase.save(requestShipment1, "AYEPES");
 
                         List<RequestShipmentItem> requestShipmentItemList2 = new ArrayList<>();
 
@@ -2037,7 +2037,7 @@ public class Seeder implements CommandLineRunner {
                                 .supplier("12345678925")
                                 .build();
 
-                        iShipment.save(requestShipment2, "NTORRES");
+                        iPurchase.save(requestShipment2, "NTORRES");
 
                         // orders mocks
                         MultipartFile[] receipts1 = new MultipartFile[1];

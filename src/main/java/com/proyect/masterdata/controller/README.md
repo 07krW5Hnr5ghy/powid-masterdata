@@ -2019,17 +2019,17 @@ http://localhost:8080/masterdata/purchase-orderItem?serial=AA00001&tokenUser=gji
     ... more items
 ]
 
-### GET /shipment-orderItem protected
+### GET /purchase-orderItem protected
 
-- Description : list all shipment items
+- Description : list all purchase items
 
 - Request : none
 
 - Parameters : 
 
-1. purchaseSerial : filter shipment items by purchase serial
-2. user : filter shipment items by the client of the user (required)
-3. supplierProductSerial : filter shipment items by supplier product serial
+1. purchaseSerial : filter purchase items by purchase serial
+2. user : filter purchase items by the client of the user (required)
+3. supplierProductSerial : filter purchase items by supplier product serial
 4. sort : sort the values the only valid values are ASC and DESC, default is ASC
 5. sortColumn : select the value that sorts the list in this case name or user
 6. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -2069,20 +2069,20 @@ http://localhost:8080/masterdata/purchase-orderItem?serial=AA00001&tokenUser=gji
 
 - Example : 
 
-http://localhost:8080/masterdata/shipment-orderItem?user=gjimenez&pageNumber=0&pageSize=2&purchaseSerial=AA00001&supplierProductSerial=A00001A
+http://localhost:8080/masterdata/purchase-orderItem?user=gjimenez&pageNumber=0&pageSize=2&purchaseSerial=AA00001&supplierProductSerial=A00001A
 
-### GET /shipment protected
+### GET /purchase protected
 
-- Description : list all active shipments
+- Description : list all active purchases
 
 - Request : none
 
 - Parameters :
 
-1. purchaseSerial : filter shipments by purchase serial
-2. warehouse : filter shipments by warehouse
-3. user : filter shipments by the client of the user (required)
-4. shipmentType : filter shipments by shipment type
+1. purchaseSerial : filter purchases by purchase serial
+2. warehouse : filter purchases by warehouse
+3. user : filter purchases by the client of the user (required)
+4. purchaseType : filter purchases by purchase type
 5. sort : sort the values the only valid values are ASC and DESC, default is ASC
 6. sortColumn : select the value that sorts the list in this case name or user
 7. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -2095,7 +2095,7 @@ http://localhost:8080/masterdata/shipment-orderItem?user=gjimenez&pageNumber=0&p
         {
             "purchaseSerial": "AA00001",
             "warehouse": "LUMINOUS",
-            "shipmentType": "EMBARQUE",
+            "purchaseType": "EMBARQUE",
             "registrationDate": "2024-02-14T01:12:22.576+00:00"
         }
     ],
@@ -2120,18 +2120,18 @@ http://localhost:8080/masterdata/shipment-orderItem?user=gjimenez&pageNumber=0&p
 
 - Example :
 
-http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous&shipmentType=embarque
+http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous&purchaseType=embarque
 
-### POST /shipment protected
+### POST /purchase protected
 
-- Description : add one shipment to the database
+- Description : add one purchase to the database
 
 - Request : 
 
 {
-    "purchaseSerial":"serial of the purchase of the shipment goods",
-    "warehouse":"name of the shipment warehouse",
-    "shipmentType":"name of the shipment type",
+    "purchaseSerial":"serial of the purchase of the purchase goods",
+    "warehouse":"name of the purchase warehouse",
+    "purchaseType":"name of the purchase type",
     "requestShipmentList": [
         {
             "quantity": number of units,
@@ -2145,7 +2145,7 @@ http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&
 
 - Parameters : 
 
-1. tokenUser : username of who register the shipment
+1. tokenUser : username of who register the purchase
 
 - Response : 
 
@@ -2157,7 +2157,7 @@ http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&
 
 - Example :
 
-http://localhost:8080/masterdata/shipment-orderItem?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
+http://localhost:8080/masterdata/purchase-orderItem?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
 
 [
     {
@@ -2169,9 +2169,9 @@ http://localhost:8080/masterdata/shipment-orderItem?serial=SA00001&warehouse=lum
     ... more items
 ]
 
-### GET /shipment-type protected
+### GET /purchase-type protected
 
-- Description : list active shipment types
+- Description : list active purchase types
 
 - Request : none
 
@@ -2180,23 +2180,23 @@ http://localhost:8080/masterdata/shipment-orderItem?serial=SA00001&warehouse=lum
 - Response :
 
 [
-    "name of the shipment type"
+    "name of the purchase type"
 ]
 
 - Example :
 
-http://localhost:8080/masterdata/shipment-type
+http://localhost:8080/masterdata/purchase-type
 
-### POST /shipment-type protected
+### POST /purchase-type protected
 
-- Description : add one shipment type to the database
+- Description : add one purchase type to the database
 
 - Request : none
 
 - Parameters :
 
-1. name : name of the shipment type
-2. tokenUser : username of the user who creates the shipment type
+1. name : name of the purchase type
+2. tokenUser : username of the user who creates the purchase type
 
 - Response :
 
@@ -2208,7 +2208,7 @@ http://localhost:8080/masterdata/shipment-type
 
 - Example :
 
-http://localhost:8080/masterdata/shipment-type?name=embarque&tokenUser=admin1
+http://localhost:8080/masterdata/purchase-type?name=embarque&tokenUser=admin1
 
 ### GET /size-type protected
 

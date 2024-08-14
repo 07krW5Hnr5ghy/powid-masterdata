@@ -45,7 +45,7 @@ public class StockReturn {
 
     @ManyToOne
     @JoinColumn(name = "shipment_id",columnDefinition = "shipmentId",insertable = false,updatable = false)
-    private Shipment shipment;
+    private Purchase purchase;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)

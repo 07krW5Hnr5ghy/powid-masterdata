@@ -24,20 +24,20 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class ShipmentImpl implements IShipment {
+public class PurchaseImpl implements IPurchase {
 
     private final UserRepository userRepository;
-    private final ShipmentRepository shipmentRepository;
+    private final PurchaseRepository purchaseRepository;
     private final WarehouseRepository warehouseRepository;
     private final IStockTransaction iStockTransaction;
-    private final IShipmentItem iShipmentItem;
+    private final IPurchaseItem iPurchaseItem;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
-    private final ShipmentTypeRepository shipmentTypeRepository;
-    private final ShipmentRepositoryCustom shipmentRepositoryCustom;
+    private final PurchaseTypeRepository purchaseTypeRepository;
+    private final PurchaseRepositoryCustom purchaseRepositoryCustom;
     private final SupplierProductRepository supplierProductRepository;
     private final StockReturnRepository stockReturnRepository;
-    private final ShipmentDocumentRepository shipmentDocumentRepository;
+    private final PurchaseDocumentRepository purchaseDocumentRepository;
     private final IAudit iAudit;
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
@@ -47,17 +47,17 @@ public class ShipmentImpl implements IShipment {
 
         User user;
         Warehouse warehouse;
-        Shipment shipment;
-        ShipmentType shipmentType;
+        Purchase purchase;
+        PurchaseType purchaseType;
         StockReturn stockReturn;
-        ShipmentDocument shipmentDocument;
+        PurchaseDocument purchaseDocument;
         Supplier supplier;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipment.getWarehouse().toUpperCase());
-            shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
-            shipmentDocument = shipmentDocumentRepository.findByNameAndStatusTrue(requestShipment.getShipmentDocument());
+            purchaseType = purchaseTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
+            purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestShipment.getShipmentDocument());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -77,17 +77,17 @@ public class ShipmentImpl implements IShipment {
             throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
-        if(shipmentType == null){
+        if(purchaseType == null){
             throw new BadRequestExceptions(Constants.ErrorShipmentType);
         }else{
-            shipment = shipmentRepository.findBySerialAndShipmentTypeId(requestShipment.getSerial(),shipmentType.getId());
+            purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestShipment.getSerial(), purchaseType.getId());
         }
 
-        if (shipment != null) {
-            throw new BadRequestExceptions(Constants.ErrorShipmentExists);
+        if (purchase != null) {
+            throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
         }
 
-        if(shipmentDocument == null){
+        if(purchaseDocument == null){
             throw new BadRequestExceptions(Constants.ErrorShipmentDocument);
         }
 
@@ -96,10 +96,10 @@ public class ShipmentImpl implements IShipment {
         }
 
         try{
-            if(Objects.equals(shipmentType.getName(), "DEVOLUCION")){
+            if(Objects.equals(purchaseType.getName(), "DEVOLUCION")){
                 stockReturn = stockReturnRepository.findBySerial(requestShipment.getSerial());
                 if(stockReturn == null){
-                    throw new BadRequestExceptions(Constants.ErrorShipmentReturn);
+                    throw new BadRequestExceptions(Constants.ErrorPurchaseReturn);
                 }
             }
 
@@ -109,7 +109,7 @@ public class ShipmentImpl implements IShipment {
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                 }
                 if(requestShipmentItem.getQuantity() < 1){
-                    throw new BadRequestExceptions(Constants.ErrorShipmentItemZero);
+                    throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
                 }
             }
             List<RequestStockTransactionItem> requestStockTransactionItemList = requestShipment.getRequestShipmentItemList().stream().map(shipmentItem -> RequestStockTransactionItem.builder()
@@ -117,7 +117,7 @@ public class ShipmentImpl implements IShipment {
                     .supplierProductSerial(shipmentItem.getSupplierProduct().toUpperCase())
                     .build()).toList();
             StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
-            Shipment newShipment = shipmentRepository.save(Shipment.builder()
+            Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
                             .serial(requestShipment.getSerial().toUpperCase())
                             .supplier(supplier)
                             .supplierId(supplier.getId())
@@ -126,21 +126,21 @@ public class ShipmentImpl implements IShipment {
                             .updateDate(new Date(System.currentTimeMillis()))
                             .warehouse(warehouse)
                             .warehouseId(warehouse.getId())
-                            .shipmentType(shipmentType)
-                            .shipmentTypeId(shipmentType.getId())
+                            .purchaseType(purchaseType)
+                            .purchaseTypeId(purchaseType.getId())
                             .client(user.getClient())
-                            .shipmentDocument(shipmentDocument)
-                            .shipmentDocumentId(shipmentDocument.getId())
+                            .purchaseDocument(purchaseDocument)
+                            .purchaseDocumentId(purchaseDocument.getId())
                             .clientId(user.getClientId())
                             .tokenUser(user.getUsername())
                       .build());
             for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProduct());
-                  iShipmentItem.save(newShipment,warehouse.getName(),requestShipmentItem,user.getUsername());
+                  iPurchaseItem.save(newPurchase,warehouse.getName(),requestShipmentItem,user.getUsername());
                   iWarehouseStock.in(warehouse,supplierProduct,requestShipmentItem.getQuantity(),user);
                   iGeneralStock.in(requestShipmentItem.getSupplierProduct(),requestShipmentItem.getQuantity(),user.getUsername());
             }
-            iAudit.save("ADD_SHIPMENT","ADD SHIPMENT " + newShipment.getSerial() +".",user.getUsername());
+            iAudit.save("ADD_SHIPMENT","ADD SHIPMENT " + newPurchase.getSerial() +".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -157,17 +157,17 @@ public class ShipmentImpl implements IShipment {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Warehouse warehouse;
-            Shipment shipment;
-            ShipmentType shipmentType;
+            Purchase purchase;
+            PurchaseType purchaseType;
             StockReturn stockReturn;
-            ShipmentDocument shipmentDocument;
+            PurchaseDocument purchaseDocument;
             Supplier supplier;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestShipment.getWarehouse().toUpperCase());
-                shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
-                shipmentDocument = shipmentDocumentRepository.findByNameAndStatusTrue(requestShipment.getShipmentDocument());
+                purchaseType = purchaseTypeRepository.findByNameAndStatusTrue(requestShipment.getShipmentType().toUpperCase());
+                purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestShipment.getShipmentDocument());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -187,17 +187,17 @@ public class ShipmentImpl implements IShipment {
                 throw new BadRequestExceptions(Constants.ErrorWarehouse);
             }
 
-            if(shipmentType == null){
+            if(purchaseType == null){
                 throw new BadRequestExceptions(Constants.ErrorShipmentType);
             }else{
-                shipment = shipmentRepository.findBySerialAndShipmentTypeId(requestShipment.getSerial(),shipmentType.getId());
+                purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestShipment.getSerial(), purchaseType.getId());
             }
 
-            if (shipment != null) {
-                throw new BadRequestExceptions(Constants.ErrorShipmentExists);
+            if (purchase != null) {
+                throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
             }
 
-            if(shipmentDocument == null){
+            if(purchaseDocument == null){
                 throw new BadRequestExceptions(Constants.ErrorShipmentDocument);
             }
 
@@ -206,10 +206,10 @@ public class ShipmentImpl implements IShipment {
             }
 
             try{
-                if(Objects.equals(shipmentType.getName(), "DEVOLUCION")){
+                if(Objects.equals(purchaseType.getName(), "DEVOLUCION")){
                     stockReturn = stockReturnRepository.findBySerial(requestShipment.getSerial());
                     if(stockReturn == null){
-                        throw new BadRequestExceptions(Constants.ErrorShipmentReturn);
+                        throw new BadRequestExceptions(Constants.ErrorPurchaseReturn);
                     }
                 }
 
@@ -219,7 +219,7 @@ public class ShipmentImpl implements IShipment {
                         throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                     }
                     if(requestShipmentItem.getQuantity() < 1){
-                        throw new BadRequestExceptions(Constants.ErrorShipmentItemZero);
+                        throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
                     }
                 }
                 List<RequestStockTransactionItem> requestStockTransactionItemList = requestShipment.getRequestShipmentItemList().stream().map(shipmentItem -> RequestStockTransactionItem.builder()
@@ -227,7 +227,7 @@ public class ShipmentImpl implements IShipment {
                         .supplierProductSerial(shipmentItem.getSupplierProduct().toUpperCase())
                         .build()).toList();
                 StockTransaction newStockTransaction = iStockTransaction.save("S"+requestShipment.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
-                Shipment newShipment = shipmentRepository.save(Shipment.builder()
+                Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
                         .serial(requestShipment.getSerial().toUpperCase())
                         .status(true)
                         .supplier(supplier)
@@ -236,21 +236,21 @@ public class ShipmentImpl implements IShipment {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
-                        .shipmentType(shipmentType)
-                        .shipmentTypeId(shipmentType.getId())
+                        .purchaseType(purchaseType)
+                        .purchaseTypeId(purchaseType.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                                .shipmentDocument(shipmentDocument)
-                                .shipmentDocumentId(shipmentDocument.getId())
+                                .purchaseDocument(purchaseDocument)
+                                .purchaseDocumentId(purchaseDocument.getId())
                         .tokenUser(user.getUsername())
                         .build());
                 for(RequestShipmentItem requestShipmentItem : requestShipment.getRequestShipmentItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestShipmentItem.getSupplierProduct());
-                    iShipmentItem.save(newShipment,warehouse.getName(),requestShipmentItem,user.getUsername());
+                    iPurchaseItem.save(newPurchase,warehouse.getName(),requestShipmentItem,user.getUsername());
                     iWarehouseStock.in(warehouse,supplierProduct,requestShipmentItem.getQuantity(),user);
                     iGeneralStock.in(requestShipmentItem.getSupplierProduct(),requestShipmentItem.getQuantity(),user.getUsername());
                 }
-                iAudit.save("ADD_SHIPMENT","ADD SHIPMENT " + newShipment.getSerial() + ".",user.getUsername());
+                iAudit.save("ADD_SHIPMENT","ADD SHIPMENT " + newPurchase.getSerial() + ".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -274,7 +274,7 @@ public class ShipmentImpl implements IShipment {
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Page<Shipment> pageShipment;
+            Page<Purchase> pageShipment;
             List<String> serialsUppercase;
             Long clientId;
             List<Long> warehouseIds;
@@ -295,16 +295,16 @@ public class ShipmentImpl implements IShipment {
             }
 
             if (shipmentTypes != null && !shipmentTypes.isEmpty()){
-                shipmentTypeIds = shipmentTypeRepository.findByNameIn(
+                shipmentTypeIds = purchaseTypeRepository.findByNameIn(
                         shipmentTypes.stream().map(String::toUpperCase).toList()
-                ).stream().map(ShipmentType::getId).toList();
+                ).stream().map(PurchaseType::getId).toList();
             }else {
                 shipmentTypeIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageShipment = shipmentRepositoryCustom.searchForShipment(
+                pageShipment = purchaseRepositoryCustom.searchForShipment(
                         clientId,
                         serialsUppercase,
                         warehouseIds,
@@ -325,9 +325,9 @@ public class ShipmentImpl implements IShipment {
 
             List<ShipmentDTO> shipmentDTOS = pageShipment.getContent().stream().map(shipment -> ShipmentDTO.builder()
                     .serial(shipment.getSerial())
-                    .shipmentDocument(shipment.getShipmentDocument().getName())
+                    .shipmentDocument(shipment.getPurchaseDocument().getName())
                     .warehouse(shipment.getWarehouse().getName())
-                    .shipmentType(shipment.getShipmentType().getName())
+                    .shipmentType(shipment.getPurchaseType().getName())
                     .registrationDate(shipment.getRegistrationDate())
                     .build()).toList();
 
@@ -346,7 +346,7 @@ public class ShipmentImpl implements IShipment {
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Page<Shipment> pageShipment;
+            Page<Purchase> pageShipment;
             Long clientId;
             List<String> serialsUppercase;
             List<Long> warehouseIds;
@@ -367,16 +367,16 @@ public class ShipmentImpl implements IShipment {
             }
 
             if (shipmentTypes != null && !shipmentTypes.isEmpty()){
-                shipmentTypeIds = shipmentTypeRepository.findByNameIn(
+                shipmentTypeIds = purchaseTypeRepository.findByNameIn(
                         shipmentTypes.stream().map(String::toUpperCase).toList()
-                ).stream().map(ShipmentType::getId).toList();
+                ).stream().map(PurchaseType::getId).toList();
             }else {
                 shipmentTypeIds = new ArrayList<>();
             }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageShipment = shipmentRepositoryCustom.searchForShipment(
+                pageShipment = purchaseRepositoryCustom.searchForShipment(
                         clientId,
                         serialsUppercase,
                         warehouseIds,
@@ -397,9 +397,9 @@ public class ShipmentImpl implements IShipment {
 
             List<ShipmentDTO> shipmentDTOS = pageShipment.getContent().stream().map(shipment -> ShipmentDTO.builder()
                     .serial(shipment.getSerial())
-                    .shipmentDocument(shipment.getShipmentDocument().getName())
+                    .shipmentDocument(shipment.getPurchaseDocument().getName())
                     .warehouse(shipment.getWarehouse().getName())
-                    .shipmentType(shipment.getShipmentType().getName())
+                    .shipmentType(shipment.getPurchaseType().getName())
                     .registrationDate(shipment.getRegistrationDate())
                     .build()).toList();
 
@@ -410,25 +410,25 @@ public class ShipmentImpl implements IShipment {
     @Override
     public CompletableFuture<List<ShipmentDTO>> listShipment(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<Shipment> shipments;
+            List<Purchase> purchases;
             Long clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                shipments = shipmentRepository.findAllByClientId(clientId);
+                purchases = purchaseRepository.findAllByClientId(clientId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if(shipments.isEmpty()){
+            if(purchases.isEmpty()){
                 return Collections.emptyList();
             }
 
-            return shipments.stream().map(shipment -> ShipmentDTO.builder()
+            return purchases.stream().map(shipment -> ShipmentDTO.builder()
                     .serial(shipment.getSerial())
-                    .shipmentDocument(shipment.getShipmentDocument().getName())
+                    .shipmentDocument(shipment.getPurchaseDocument().getName())
                     .warehouse(shipment.getWarehouse().getName())
-                    .shipmentType(shipment.getShipmentType().getName())
+                    .shipmentType(shipment.getPurchaseType().getName())
                     .registrationDate(shipment.getRegistrationDate())
                     .build()).toList();
         });
@@ -437,25 +437,25 @@ public class ShipmentImpl implements IShipment {
     @Override
     public CompletableFuture<List<ShipmentDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<Shipment> shipments;
+            List<Purchase> purchases;
             Long clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                shipments = shipmentRepository.findAllByClientId(clientId);
+                purchases = purchaseRepository.findAllByClientId(clientId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if(shipments.isEmpty()){
+            if(purchases.isEmpty()){
                 return Collections.emptyList();
             }
 
-            return shipments.stream().map(shipment -> ShipmentDTO.builder()
+            return purchases.stream().map(shipment -> ShipmentDTO.builder()
                     .serial(shipment.getSerial())
-                    .shipmentDocument(shipment.getShipmentDocument().getName())
+                    .shipmentDocument(shipment.getPurchaseDocument().getName())
                     .warehouse(shipment.getWarehouse().getName())
-                    .shipmentType(shipment.getShipmentType().getName())
+                    .shipmentType(shipment.getPurchaseType().getName())
                     .registrationDate(shipment.getRegistrationDate())
                     .build()).toList();
         });

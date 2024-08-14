@@ -1,15 +1,15 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.ShipmentType;
+import com.proyect.masterdata.domain.PurchaseType;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.ShipmentTypeRepository;
+import com.proyect.masterdata.repository.PurchaseTypeRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAudit;
-import com.proyect.masterdata.services.IShipmentType;
+import com.proyect.masterdata.services.IPurchaseType;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,20 +23,20 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class ShipmentTypeImpl implements IShipmentType {
+public class PurchaseTypeImpl implements IPurchaseType {
 
     private final UserRepository userRepository;
-    private final ShipmentTypeRepository shipmentTypeRepository;
+    private final PurchaseTypeRepository purchaseTypeRepository;
     private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
-        ShipmentType shipmentType;
+        PurchaseType purchaseType;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            shipmentType = shipmentTypeRepository.findByName(name.toUpperCase());
+            purchaseType = purchaseTypeRepository.findByName(name.toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -46,18 +46,18 @@ public class ShipmentTypeImpl implements IShipmentType {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if(shipmentType != null){
+        if(purchaseType != null){
             throw new BadRequestExceptions(Constants.ErrorShipmentTypeExists);
         }
 
         try{
-            ShipmentType newShipmentType = shipmentTypeRepository.save(ShipmentType.builder()
+            PurchaseType newPurchaseType = purchaseTypeRepository.save(PurchaseType.builder()
                             .name(name.toUpperCase())
                             .status(true)
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
                     .build());
-            iAudit.save("ADD_SHIPMENT_TYPE","ADD SHIPMENT TYPE "+newShipmentType.getName()+".",user.getUsername());
+            iAudit.save("ADD_SHIPMENT_TYPE","ADD SHIPMENT TYPE "+ newPurchaseType.getName()+".",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -72,11 +72,11 @@ public class ShipmentTypeImpl implements IShipmentType {
     public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            ShipmentType shipmentType;
+            PurchaseType purchaseType;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                shipmentType = shipmentTypeRepository.findByName(name.toUpperCase());
+                purchaseType = purchaseTypeRepository.findByName(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -86,18 +86,18 @@ public class ShipmentTypeImpl implements IShipmentType {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(shipmentType != null){
+            if(purchaseType != null){
                 throw new BadRequestExceptions(Constants.ErrorShipmentTypeExists);
             }
 
             try{
-                ShipmentType newShipmentType = shipmentTypeRepository.save(ShipmentType.builder()
+                PurchaseType newPurchaseType = purchaseTypeRepository.save(PurchaseType.builder()
                         .name(name.toUpperCase())
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_SHIPMENT_TYPE","ADD SHIPMENT TYPE "+newShipmentType.getName()+".",user.getUsername());
+                iAudit.save("ADD_SHIPMENT_TYPE","ADD SHIPMENT TYPE "+ newPurchaseType.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -113,11 +113,11 @@ public class ShipmentTypeImpl implements IShipmentType {
     public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            ShipmentType shipmentType;
+            PurchaseType purchaseType;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                shipmentType = shipmentTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+                purchaseType = purchaseTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -127,16 +127,16 @@ public class ShipmentTypeImpl implements IShipmentType {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(shipmentType == null){
+            if(purchaseType == null){
                 throw new BadRequestExceptions(Constants.ErrorShipmentType);
             }
 
             try{
-                shipmentType.setStatus(false);
-                shipmentType.setTokenUser(user.getUsername());
-                shipmentType.setUpdateDate(new Date(System.currentTimeMillis()));
-                shipmentTypeRepository.save(shipmentType);
-                iAudit.save("DELETE_SHIPMENT_TYPE","DELETE SHIPMENT TYPE "+shipmentType.getName()+".",user.getUsername());
+                purchaseType.setStatus(false);
+                purchaseType.setTokenUser(user.getUsername());
+                purchaseType.setUpdateDate(new Date(System.currentTimeMillis()));
+                purchaseTypeRepository.save(purchaseType);
+                iAudit.save("DELETE_SHIPMENT_TYPE","DELETE SHIPMENT TYPE "+ purchaseType.getName()+".",user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -152,11 +152,11 @@ public class ShipmentTypeImpl implements IShipmentType {
     public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            ShipmentType shipmentType;
+            PurchaseType purchaseType;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                shipmentType = shipmentTypeRepository.findByNameAndStatusFalse(name.toUpperCase());
+                purchaseType = purchaseTypeRepository.findByNameAndStatusFalse(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -166,16 +166,16 @@ public class ShipmentTypeImpl implements IShipmentType {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(shipmentType == null){
+            if(purchaseType == null){
                 throw new BadRequestExceptions(Constants.ErrorShipmentType);
             }
 
             try{
-                shipmentType.setStatus(true);
-                shipmentType.setTokenUser(user.getUsername());
-                shipmentType.setUpdateDate(new Date(System.currentTimeMillis()));
-                shipmentTypeRepository.save(shipmentType);
-                iAudit.save("ACTIVATE_SHIPMENT_TYPE","ACTIVATE SHIPMENT TYPE "+shipmentType.getName()+".",user.getUsername());
+                purchaseType.setStatus(true);
+                purchaseType.setTokenUser(user.getUsername());
+                purchaseType.setUpdateDate(new Date(System.currentTimeMillis()));
+                purchaseTypeRepository.save(purchaseType);
+                iAudit.save("ACTIVATE_SHIPMENT_TYPE","ACTIVATE SHIPMENT TYPE "+ purchaseType.getName()+".",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -190,40 +190,40 @@ public class ShipmentTypeImpl implements IShipmentType {
     @Override
     public CompletableFuture<List<String>> list() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<ShipmentType> shipmentTypeList;
+            List<PurchaseType> purchaseTypeList;
 
             try{
-                shipmentTypeList = shipmentTypeRepository.findAllByStatusTrue();
+                purchaseTypeList = purchaseTypeRepository.findAllByStatusTrue();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
 
-            if(shipmentTypeList.isEmpty()){
+            if(purchaseTypeList.isEmpty()){
                 return Collections.emptyList();
             }
 
-            return shipmentTypeList.stream().map(ShipmentType::getName).toList();
+            return purchaseTypeList.stream().map(PurchaseType::getName).toList();
         });
     }
 
     @Override
     public CompletableFuture<List<String>> listFilter() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<ShipmentType> shipmentTypeList;
+            List<PurchaseType> purchaseTypeList;
 
             try{
-                shipmentTypeList = shipmentTypeRepository.findAll();
+                purchaseTypeList = purchaseTypeRepository.findAll();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
 
-            if(shipmentTypeList.isEmpty()){
+            if(purchaseTypeList.isEmpty()){
                 return Collections.emptyList();
             }
 
-            return shipmentTypeList.stream().map(ShipmentType::getName).toList();
+            return purchaseTypeList.stream().map(PurchaseType::getName).toList();
         });
     }
 }

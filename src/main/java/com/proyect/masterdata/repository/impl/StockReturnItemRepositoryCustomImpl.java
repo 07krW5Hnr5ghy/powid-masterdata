@@ -1,6 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Shipment;
+import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.StockReturn;
 import com.proyect.masterdata.domain.StockReturnItem;
 import com.proyect.masterdata.repository.StockReturnItemRepositoryCustom;
@@ -37,7 +37,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
         CriteriaQuery<StockReturnItem> criteriaQuery = criteriaBuilder.createQuery(StockReturnItem.class);
         Root<StockReturnItem> itemRoot = criteriaQuery.from(StockReturnItem.class);
         Join<StockReturnItem, StockReturn> stockReturnItemStockReturnJoin = itemRoot.join("stockReturn");
-        Join<StockReturn, Shipment> stockReturnShipmentJoin = stockReturnItemStockReturnJoin.join("shipment");
+        Join<StockReturn, Purchase> stockReturnShipmentJoin = stockReturnItemStockReturnJoin.join("shipment");
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicate(
@@ -90,7 +90,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
             List<Long> supplierProductIds,
             CriteriaBuilder criteriaBuilder,
             Root<StockReturnItem> itemRoot,
-            Join<StockReturn, Shipment> stockReturnShipmentJoin) {
+            Join<StockReturn, Purchase> stockReturnShipmentJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -165,7 +165,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<StockReturnItem> itemRoot = criteriaQuery.from(StockReturnItem.class);
         Join<StockReturnItem, StockReturn> stockReturnItemStockReturnJoin = itemRoot.join("stockReturn");
-        Join<StockReturn, Shipment> stockReturnShipmentJoin = stockReturnItemStockReturnJoin.join("shipment");
+        Join<StockReturn, Purchase> stockReturnShipmentJoin = stockReturnItemStockReturnJoin.join("shipment");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(

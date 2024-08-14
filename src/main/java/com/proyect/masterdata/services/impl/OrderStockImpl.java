@@ -67,7 +67,7 @@ public class OrderStockImpl implements IOrderStock {
         }
 
         if(orderState == null){
-            throw new BadRequestExceptions(Constants.ErrorState);
+            throw new BadRequestExceptions(Constants.ErrorOrderState);
         }
 
         try{
@@ -151,7 +151,7 @@ public class OrderStockImpl implements IOrderStock {
             }
 
             if(orderState == null){
-                throw new BadRequestExceptions(Constants.ErrorState);
+                throw new BadRequestExceptions(Constants.ErrorOrderState);
             }
 
             try{

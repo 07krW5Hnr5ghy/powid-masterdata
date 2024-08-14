@@ -1,6 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Shipment;
+import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.StockReturn;
 import com.proyect.masterdata.repository.StockReturnRepositoryCustom;
 import jakarta.persistence.EntityManager;
@@ -35,7 +35,7 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<StockReturn> criteriaQuery = criteriaBuilder.createQuery(StockReturn.class);
         Root<StockReturn> itemRoot = criteriaQuery.from(StockReturn.class);
-        Join<StockReturn, Shipment> stockReturnShipmentJoin = itemRoot.join("shipment");
+        Join<StockReturn, Purchase> stockReturnShipmentJoin = itemRoot.join("shipment");
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicate(
@@ -87,7 +87,7 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<StockReturn> itemRoot,
-            Join<StockReturn, Shipment> stockReturnShipmentJoin) {
+            Join<StockReturn, Purchase> stockReturnShipmentJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -157,7 +157,7 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<StockReturn> itemRoot = criteriaQuery.from(StockReturn.class);
-        Join<StockReturn, Shipment> stockReturnShipmentJoin = itemRoot.join("shipment");
+        Join<StockReturn, Purchase> stockReturnShipmentJoin = itemRoot.join("shipment");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(

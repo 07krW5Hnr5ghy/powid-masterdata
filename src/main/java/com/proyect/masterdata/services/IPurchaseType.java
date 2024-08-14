@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Repository
-public interface IShipmentType {
+public interface IPurchaseType {
     ResponseSuccess save(String name,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
