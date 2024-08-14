@@ -15,9 +15,9 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("shipment-item")
+@RequestMapping("purchase-item")
 @AllArgsConstructor
-public class ShipmentItemController {
+public class PurchaseItemController {
     private final IPurchaseItem iPurchaseItem;
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SHIPMENT_ITEM_GET')")

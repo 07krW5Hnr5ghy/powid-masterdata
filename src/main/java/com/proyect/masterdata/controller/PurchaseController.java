@@ -19,9 +19,9 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("shipment")
+@RequestMapping("purchase")
 @AllArgsConstructor
-public class ShipmentController {
+public class PurchaseController {
     private final IPurchase iPurchase;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SHIPMENT_POST')")

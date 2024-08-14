@@ -15,9 +15,9 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("shipment-document")
+@RequestMapping("purchase-document")
 @AllArgsConstructor
-public class ShipmentDocumentController {
+public class PurchaseDocumentController {
     private final IPurchaseDocument iPurchaseDocument;
     @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PURCHASE_DOCUMENT_POST')")

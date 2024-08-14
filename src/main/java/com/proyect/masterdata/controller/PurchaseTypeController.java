@@ -16,9 +16,9 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("shipment-type")
+@RequestMapping("purchase-type")
 @AllArgsConstructor
-public class ShipmentTypeController {
+public class PurchaseTypeController {
 
     private final IPurchaseType iPurchaseType;
 
