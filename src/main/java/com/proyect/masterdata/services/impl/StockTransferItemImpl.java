@@ -48,7 +48,7 @@ public class StockTransferItemImpl implements IStockTransferItem {
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                     .build());
-            iAudit.save("ADD_STOCK_TRANSFER_ITEM","ADD STOCK TRANSFER ITEM "+newStockTransferItem.getSupplierProduct().getSerial()+" FOR STOCK TRANSFER "+newStockTransferItem.getStockTransferId()+".", user.getUsername());
+            iAudit.save("ADD_STOCK_TRANSFER_ITEM","PRODUCTO DE INVENTARIO "+newStockTransferItem.getSupplierProduct().getSerial()+" EN TRANSFERENCIA DE STOCK "+newStockTransferItem.getStockTransfer().getSerial()+" AGREGADO.",newStockTransferItem.getStockTransfer().getSerial(), user.getUsername());
             return newStockTransferItem;
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -72,7 +72,7 @@ public class StockTransferItemImpl implements IStockTransferItem {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .build());
-                iAudit.save("ADD_STOCK_TRANSFER_ITEM","ADD STOCK TRANSFER ITEM "+newStockTransferItem.getSupplierProduct().getSerial()+" FOR STOCK TRANSFER "+newStockTransferItem.getStockTransferId()+".", user.getUsername());
+                iAudit.save("ADD_STOCK_TRANSFER_ITEM","PRODUCTO DE INVENTARIO "+newStockTransferItem.getSupplierProduct().getSerial()+" EN TRANSFERENCIA DE STOCK "+newStockTransferItem.getStockTransfer().getSerial()+" AGREGADO.",newStockTransferItem.getStockTransfer().getSerial(), user.getUsername());
                 return newStockTransferItem;
             }catch (RuntimeException e){
                 log.error(e.getMessage());

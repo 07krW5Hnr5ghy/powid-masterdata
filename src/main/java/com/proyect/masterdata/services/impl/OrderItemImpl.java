@@ -88,7 +88,7 @@ public class OrderItemImpl implements IOrderItem {
                             .updateDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
                     .build());
-            iAudit.save("ADD_ORDER_ITEM","ADD ORDER ITEM "+newOrderItem.getProduct().getSku()+" FOR ORDER "+newOrderItem.getOrderId()+" WITH "+newOrderItem.getQuantity()+" UNITS.",user.getUsername());
+            iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+newOrderItem.getProduct().getSku()+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES AGREGADO.",newOrderItem.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -149,7 +149,7 @@ public class OrderItemImpl implements IOrderItem {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_ORDER_ITEM","ADD ORDER ITEM "+newOrderItem.getProduct().getSku()+" FOR ORDER "+newOrderItem.getOrderId()+" WITH "+newOrderItem.getQuantity()+" UNITS.",user.getUsername());
+                iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+newOrderItem.getProduct().getSku()+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES AGREGADO.",newOrderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -266,7 +266,7 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderItem.setTokenUser(user.getUsername());
                 orderItemRepository.save(orderItem);
-                iAudit.save("DELETE_ORDER_ITEM","DELETE ORDER ITEM "+orderItem.getProduct().getSku()+" FOR ORDER "+orderItem.getOrderId()+".",user.getUsername());
+                iAudit.save("DELETE_ORDER_ITEM","PRODUCTO "+orderItem.getProduct().getSku()+" DE PEDIDO "+orderItem.getOrderId()+" DESACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -336,7 +336,7 @@ public class OrderItemImpl implements IOrderItem {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_ORDER_ITEM","ADD ORDER ITEM "+newOrderItem.getProduct().getSku()+" FOR ORDER "+newOrderItem.getOrderId()+" WITH "+newOrderItem.getQuantity()+" UNITS.",user.getUsername());
+                iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+newOrderItem.getProduct().getSku()+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES.",newOrderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -397,7 +397,7 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderItem.setObservations(requestOrderItem.getObservations().toUpperCase());
                 orderItemRepository.save(orderItem);
-                iAudit.save("UPDATE_ORDER_ITEM","UPDATE ORDER ITEM "+orderItem.getProduct().getSku()+" FOR ORDER "+orderItem.getOrderId()+".",user.getUsername());
+                iAudit.save("UPDATE_ORDER_ITEM","PRODUCTO "+orderItem.getProduct().getSku()+" DE PEDIDO "+orderItem.getOrderId()+" ACTUALIZADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

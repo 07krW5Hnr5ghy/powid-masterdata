@@ -64,7 +64,6 @@ public class ClientImpl implements IClient {
         }
 
         try {
-
             clientRepository.save(Client.builder()
                     .name(requestClientSave.getName().toUpperCase())
                     .surname(requestClientSave.getSurname().toUpperCase())
@@ -178,7 +177,7 @@ public class ClientImpl implements IClient {
                 clientRepository.save(client);
                 ClientDTO clientDTO = clientMapper.clientToClientDTO(client);
                 clientDTO.setDistrict(district.getName());
-                iAudit.save("UPDATE_CLIENT","UPDATE CLIENT "+client.getRuc()+".",user.getUsername());
+                iAudit.save("UPDATE_CLIENT","CLIENTE "+client.getRuc()+" EDITADO.",client.getRuc(),user.getUsername());
                 return clientDTO;
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -210,7 +209,7 @@ public class ClientImpl implements IClient {
                 client.setStatus(false);
                 client.setUpdateDate(new Date(System.currentTimeMillis()));
                 clientRepository.save(client);
-                iAudit.save("DELETE_CLIENT","DELETE CLIENT "+client.getRuc()+".",user.getUsername());
+                iAudit.save("DELETE_CLIENT","CLIENTE "+client.getRuc()+" DESACTIVADO.",client.getRuc(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -329,7 +328,7 @@ public class ClientImpl implements IClient {
                 client.setStatus(true);
                 client.setRegistrationDate(new Date(System.currentTimeMillis()));
                 clientRepository.save(client);
-                iAudit.save("ACTIVATE_CLIENT","ACTIVATE CLIENT "+client.getRuc()+".",user.getUsername());
+                iAudit.save("ACTIVATE_CLIENT","CLIENTE "+client.getRuc()+" ACTIVADO.",client.getRuc(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

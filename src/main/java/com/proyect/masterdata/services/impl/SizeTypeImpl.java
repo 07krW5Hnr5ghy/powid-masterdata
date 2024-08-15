@@ -63,7 +63,7 @@ public class SizeTypeImpl implements ISizeType {
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_SIZE_TYPE","ADD SIZE TYPE "+newSizeType.getName()+".",datauser.getUsername());
+            iAudit.save("ADD_SIZE_TYPE","TIPO DE TAMAÑO "+newSizeType.getName()+" CREADO.",newSizeType.getName(),datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -102,7 +102,7 @@ public class SizeTypeImpl implements ISizeType {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_SIZE_TYPE","ADD SIZE TYPE "+newSizeType.getName()+".",datauser.getUsername());
+                iAudit.save("ADD_SIZE_TYPE","TIPO DE TAMAÑO "+newSizeType.getName()+" CREADO.",newSizeType.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -141,7 +141,7 @@ public class SizeTypeImpl implements ISizeType {
                 sizeType.setUpdateDate(new Date(System.currentTimeMillis()));
                 sizeType.setTokenUser(datauser.getUsername());
                 sizeTypeRepository.save(sizeType);
-                iAudit.save("DELETE_SIZE_TYPE","DELETE SIZE TYPE "+sizeType.getName()+".",datauser.getUsername());
+                iAudit.save("DELETE_SIZE_TYPE","TIPO DE MAÑANA "+sizeType.getName()+" DESACTIVADO.",sizeType.getName(),datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -179,7 +179,7 @@ public class SizeTypeImpl implements ISizeType {
                 sizeType.setUpdateDate(new Date(System.currentTimeMillis()));
                 sizeType.setTokenUser(datauser.getUsername());
                 sizeTypeRepository.save(sizeType);
-                iAudit.save("ACTIVATE_SIZE_TYPE","ACTIVATE SIZE TYPE "+sizeType.getName()+".",datauser.getUsername());
+                iAudit.save("ACTIVATE_SIZE_TYPE","TIPO DE TAMAÑO "+sizeType.getName()+" ACTIVADO.",sizeType.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

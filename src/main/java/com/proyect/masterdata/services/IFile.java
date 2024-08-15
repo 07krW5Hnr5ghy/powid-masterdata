@@ -10,6 +10,5 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IFile {
     CompletableFuture<String> uploadFile(MultipartFile multipartFile, String filePath) throws IOException;
-    CompletableFuture<String> uploadFileAsync(MultipartFile multipartFile,String filePath) throws IOException;
     CompletableFuture<String> uploadFiles(File file,String filePath) throws IOException;
 }

@@ -72,7 +72,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                             .quantity(requestStockTransactionItem.getQuantity())
                             .tokenUser(user.getUsername())
                     .build());
-            iAudit.save("ADD_STOCK_TRANSACTION_ITEM","ADD STOCK TRANSACTION ITEM "+newStockTransactionItem.getSupplierProduct().getSerial()+" FOR STOCK TRANSACTION "+newStockTransactionItem.getStockTransactionId()+".",user.getUsername());
+            iAudit.save("ADD_STOCK_TRANSACTION_ITEM","PRODUCTO DE INVENTARIO "+newStockTransactionItem.getSupplierProduct().getSerial()+" PARA TRANSACCION DE STOCK "+newStockTransactionItem.getStockTransaction().getSerial()+" CREADO.",newStockTransactionItem.getStockTransaction().getSerial(),user.getUsername());
             return ResponseSuccess.builder()
                     .message(Constants.register)
                     .code(200)
@@ -117,7 +117,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                         .quantity(requestStockTransactionItem.getQuantity())
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_STOCK_TRANSACTION_ITEM","ADD STOCK TRANSACTION ITEM "+newStockTransactionItem.getSupplierProduct().getSerial()+" FOR STOCK TRANSACTION "+newStockTransactionItem.getStockTransactionId()+".",user.getUsername());
+                iAudit.save("ADD_STOCK_TRANSACTION_ITEM","PRODUCTO DE INVENTARIO "+newStockTransactionItem.getSupplierProduct().getSerial()+" PARA TRANSACCION DE STOCK "+newStockTransactionItem.getStockTransaction().getSerial()+" CREADO.",newStockTransactionItem.getStockTransaction().getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)

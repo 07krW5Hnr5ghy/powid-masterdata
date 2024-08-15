@@ -75,7 +75,7 @@ public class ProvinceImpl implements IProvince {
                     .status(true)
                     .tokenUser(user.getUsername())
                     .build());
-            iAudit.save("ADD_PROVINCE","ADD PROVINCE "+newProvince.getName()+".",user.getUsername());
+            iAudit.save("ADD_PROVINCE","PROVINCIA "+newProvince.getName()+" CREADA.",newProvince.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -122,7 +122,7 @@ public class ProvinceImpl implements IProvince {
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_PROVINCE","ADD PROVINCE "+newProvince.getName()+".",user.getUsername());
+                iAudit.save("ADD_PROVINCE","PROVINCIA "+newProvince.getName()+" CREADA.",newProvince.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -160,7 +160,7 @@ public class ProvinceImpl implements IProvince {
                 province.setStatus(false);
                 province.setTokenUser(user.getUsername());
                 provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
-                iAudit.save("DELETE_PROVINCE","DELETE PROVINCE "+province.getName()+".",user.getUsername());
+                iAudit.save("DELETE_PROVINCE","PROVINCIA "+province.getName()+" DESACTIVADA.", province.getName(), user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -197,7 +197,7 @@ public class ProvinceImpl implements IProvince {
                 province.setStatus(true);
                 province.setTokenUser(user.getUsername());
                 provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
-                iAudit.save("ACTIVATE_PROVINCE","ACTIVATE PROVINCE "+province.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_PROVINCE","PROVINCIA "+province.getName()+" ACTIVADA.",province.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

@@ -114,7 +114,7 @@ public class MembershipImpl implements IMembership {
                 if(userRole == null){
                     iUserRole.save(user.getUsername(),"BUSINESS",user.getUsername());
                 }
-                iAudit.save("ADD_MEMBERSHIP","ADD MEMBERSHIP WITH SUBSCRIPTION "+newMembership.getSubscription()+".",user.getUsername());
+                iAudit.save("ADD_MEMBERSHIP","MEMBRESIA CON SUBSCRIPCION "+newMembership.getSubscription().getName()+" CREADA.",newMembership.getClient().getRuc(),user.getUsername());
                 return newMembership;
             } catch (RuntimeException e) {
                 e.printStackTrace();
@@ -156,7 +156,7 @@ public class MembershipImpl implements IMembership {
                 membership.setMembershipStateId(expiredState.getId());
                 membership.setUpdateDate(new Date(System.currentTimeMillis()));
                 membershipRepository.save(membership);
-                iAudit.save("DELETE_MEMBERSHIP","DELETE MEMBERSHIP WITH SUBSCRIPTION "+membership.getSubscription()+".",user.getUsername());
+                iAudit.save("DELETE_MEMBERSHIP","MEMBRESIA CON SUBSCRIPCION "+membership.getSubscription().getName()+" DESACTIVADA.",membership.getClient().getRuc(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)

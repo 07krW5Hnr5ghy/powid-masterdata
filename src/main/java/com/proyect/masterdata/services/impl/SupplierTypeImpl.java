@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.SupplierTypeRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ISupplierType;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 public class SupplierTypeImpl implements ISupplierType {
     private final UserRepository userRepository;
     private final SupplierTypeRepository supplierTypeRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -43,12 +45,13 @@ public class SupplierTypeImpl implements ISupplierType {
             throw new BadRequestExceptions(Constants.ErrorSupplierTypeExists);
         }
         try {
-            supplierTypeRepository.save(SupplierType.builder()
+            SupplierType newSupplierType = supplierTypeRepository.save(SupplierType.builder()
                             .name(name.toUpperCase())
                             .status(true)
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
                     .build());
+            iAudit.save("ADD_SUPPLIER_TYPE","TIPO DE PROVEEDOR "+newSupplierType.getName()+" CREADO.",newSupplierType.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .message(Constants.register)
                     .code(200)
@@ -78,12 +81,13 @@ public class SupplierTypeImpl implements ISupplierType {
                 throw new BadRequestExceptions(Constants.ErrorSupplierTypeExists);
             }
             try {
-                supplierTypeRepository.save(SupplierType.builder()
+                SupplierType newSupplierType = supplierTypeRepository.save(SupplierType.builder()
                         .name(name.toUpperCase())
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .build());
+                iAudit.save("ADD_SUPPLIER_TYPE","TIPO DE PROVEEDOR "+newSupplierType.getName()+" CREADO.",newSupplierType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -117,6 +121,7 @@ public class SupplierTypeImpl implements ISupplierType {
                 supplierType.setStatus(false);
                 supplierType.setUpdateDate(new Date(System.currentTimeMillis()));
                 supplierType.setTokenUser(user.getUsername());
+                iAudit.save("DELETE_SUPPLIER_TYPE","TIPO DE PROVEEDOR "+supplierType.getName()+" DESACTIVADO.",supplierType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -150,6 +155,7 @@ public class SupplierTypeImpl implements ISupplierType {
                 supplierType.setStatus(true);
                 supplierType.setUpdateDate(new Date(System.currentTimeMillis()));
                 supplierType.setTokenUser(user.getUsername());
+                iAudit.save("ACTIVATE_SUPPLIER_TYPE","TIPO DE PROVEEDOR "+supplierType.getName()+" ACTIVADO.",supplierType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

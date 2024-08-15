@@ -57,7 +57,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
                     .build());
-            iAudit.save("ADD_PURCHASE_TYPE","ADD PURCHASE TYPE "+ newPurchaseType.getName()+".",user.getUsername());
+            iAudit.save("ADD_PURCHASE_TYPE","TIPO DE COMPRA "+ newPurchaseType.getName()+" CREADO.",newPurchaseType.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -97,7 +97,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_PURCHASE_TYPE","ADD PURCHASE TYPE "+ newPurchaseType.getName()+".",user.getUsername());
+                iAudit.save("ADD_PURCHASE_TYPE","TIPO DE COMPRA "+ newPurchaseType.getName()+" CREADO.",newPurchaseType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -136,7 +136,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
                 purchaseType.setTokenUser(user.getUsername());
                 purchaseType.setUpdateDate(new Date(System.currentTimeMillis()));
                 purchaseTypeRepository.save(purchaseType);
-                iAudit.save("DELETE_PURCHASE_TYPE","DELETE PURCHASE TYPE "+ purchaseType.getName()+".",user.getUsername());
+                iAudit.save("DELETE_PURCHASE_TYPE","TIPO DE COMPRA "+ purchaseType.getName()+" DESACTIVADO.",purchaseType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -175,7 +175,7 @@ public class PurchaseTypeImpl implements IPurchaseType {
                 purchaseType.setTokenUser(user.getUsername());
                 purchaseType.setUpdateDate(new Date(System.currentTimeMillis()));
                 purchaseTypeRepository.save(purchaseType);
-                iAudit.save("ACTIVATE_PURCHASE_TYPE","ACTIVATE PURCHASE TYPE "+ purchaseType.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_PURCHASE_TYPE","TIPO DE COMPRA "+ purchaseType.getName()+" ACTIVADO.",purchaseType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

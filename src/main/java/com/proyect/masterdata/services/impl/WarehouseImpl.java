@@ -74,7 +74,7 @@ public class WarehouseImpl implements IWarehouse {
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_WAREHOUSE","ADD WAREHOUSE "+newWarehouse.getName()+".",user.getUsername());
+            iAudit.save("ADD_WAREHOUSE","ALMACEN "+newWarehouse.getName()+" CREADO.",newWarehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -123,7 +123,7 @@ public class WarehouseImpl implements IWarehouse {
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_WAREHOUSE","ADD WAREHOUSE "+newWarehouse.getName()+".",user.getUsername());
+                iAudit.save("ADD_WAREHOUSE","ALMACEN "+newWarehouse.getName()+" CREADO.",newWarehouse.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -159,7 +159,7 @@ public class WarehouseImpl implements IWarehouse {
                 warehouse.setStatus(false);
                 warehouse.setUpdateDate(new Date(System.currentTimeMillis()));
                 warehouse.setTokenUser(user.getUsername());
-                iAudit.save("DELETE_WAREHOUSE","DELETE WAREHOUSE "+warehouse.getName()+".",user.getUsername());
+                iAudit.save("DELETE_WAREHOUSE","ALMACEN "+warehouse.getName()+" DESACTIVADO.",warehouse.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -194,7 +194,7 @@ public class WarehouseImpl implements IWarehouse {
                 warehouse.setStatus(false);
                 warehouse.setUpdateDate(new Date(System.currentTimeMillis()));
                 warehouse.setTokenUser(user.getUsername());
-                iAudit.save("ACTIVATE_WAREHOUSE","ACTIVATE WAREHOUSE "+warehouse.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_WAREHOUSE","ALMACEN "+warehouse.getName()+" ACTIVADO.",warehouse.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

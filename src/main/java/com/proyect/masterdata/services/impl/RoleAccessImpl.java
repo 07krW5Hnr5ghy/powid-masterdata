@@ -81,7 +81,7 @@ public class RoleAccessImpl implements IRoleAccess {
                             .tokenUser(tokenUser.toUpperCase())
                             .status(true)
                     .build());
-            iAudit.save("ADD_ROLE_ACCESS","ADD ROLE ACCESS WITH ROLE "+newRoleAccess.getRole().getName()+" AND ACCESS "+newRoleAccess.getAccess().getName()+".",user.getUsername());
+            iAudit.save("ADD_ROLE_ACCESS","ROL "+newRoleAccess.getRole().getName()+" AGREGA ACCESO "+newRoleAccess.getAccess().getName()+".",newRoleAccess.getRole().getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -138,7 +138,7 @@ public class RoleAccessImpl implements IRoleAccess {
                         .tokenUser(tokenUser.toUpperCase())
                         .status(true)
                         .build());
-                iAudit.save("ADD_ROLE_ACCESS","ADD ROLE ACCESS WITH ROLE "+newRoleAccess.getRole().getName()+" AND ACCESS "+newRoleAccess.getAccess().getName()+".",user.getUsername());
+                iAudit.save("ADD_ROLE_ACCESS","ROL "+newRoleAccess.getRole().getName()+" AGREGA ACCESO "+newRoleAccess.getAccess().getName()+".",newRoleAccess.getRole().getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -189,7 +189,7 @@ public class RoleAccessImpl implements IRoleAccess {
                 roleAccess.setUpdateDate(new Date(System.currentTimeMillis()));
                 roleAccess.setTokenUser(user.getUsername());
                 roleAccessRepository.save(roleAccess);
-                iAudit.save("DELETE_ROLE_ACCESS","DELETE ROLE ACCESS WITH ROLE "+roleAccess.getRole().getName()+" AND ACCESS "+roleAccess.getAccess().getName()+".",user.getUsername());
+                iAudit.save("DELETE_ROLE_ACCESS","ROL "+roleAccess.getRole().getName()+" DESACTIVO ACCESO "+roleAccess.getAccess().getName()+".",roleAccess.getRole().getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -306,7 +306,7 @@ public class RoleAccessImpl implements IRoleAccess {
                 roleAccess.setUpdateDate(new Date(System.currentTimeMillis()));
                 roleAccess.setTokenUser(user.getUsername());
                 roleAccessRepository.save(roleAccess);
-                iAudit.save("ACTIVATE_ROLE_ACCESS","ACTIVATE ROLE ACCESS WITH ROLE "+roleAccess.getRole().getName()+" AND ACCESS "+roleAccess.getAccess().getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_ROLE_ACCESS","ROL "+roleAccess.getRole().getName()+" ACTIVO ACCESO "+roleAccess.getAccess().getName()+".",roleAccess.getRole().getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

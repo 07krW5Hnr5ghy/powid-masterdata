@@ -13,6 +13,7 @@ import com.proyect.masterdata.repository.CustomerRepository;
 import com.proyect.masterdata.repository.CustomerTypeRepository;
 import com.proyect.masterdata.repository.DistrictRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICustomer;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class CustomerImp implements ICustomer {
     private final DistrictRepository districtRepository;
     private final UserRepository userRepository;
     private final CustomerTypeRepository customerTypeRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestCustomer requestCustomer) throws BadRequestExceptions, InternalErrorExceptions {
         District district;
@@ -60,7 +62,7 @@ public class CustomerImp implements ICustomer {
             throw new BadRequestExceptions(Constants.ErrorCustomerExist);
         }
         try {
-            customerRepository.save(Customer.builder()
+            Customer newCustomer = customerRepository.save(Customer.builder()
                     .name(requestCustomer.getName())
                     .phone(requestCustomer.getPhone())
                     .address(requestCustomer.getAddress())
@@ -76,6 +78,7 @@ public class CustomerImp implements ICustomer {
                     .customerType(customerType)
                     .dni(requestCustomer.getDni())
                     .build());
+            iAudit.save("ADD_CUSTOMER","COMPRADOR "+newCustomer.getName()+"/"+newCustomer.getPhone()+" CREADO.",newCustomer.getPhone(),user.getUsername());
             return ResponseSuccess.builder()
                     .message(Constants.register)
                     .code(200)
@@ -115,7 +118,7 @@ public class CustomerImp implements ICustomer {
                 throw new BadRequestExceptions(Constants.ErrorCustomerExist);
             }
             try {
-                customerRepository.save(Customer.builder()
+                Customer newCustomer = customerRepository.save(Customer.builder()
                         .name(requestCustomer.getName())
                         .phone(requestCustomer.getPhone())
                         .address(requestCustomer.getAddress())
@@ -130,6 +133,7 @@ public class CustomerImp implements ICustomer {
                                 .customerTypeId(customerType.getId())
                         .tokenUser(user.getUsername())
                         .build());
+                iAudit.save("ADD_CUSTOMER","COMPRADOR "+newCustomer.getName()+"/"+newCustomer.getPhone()+" CREADO.",newCustomer.getPhone(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)

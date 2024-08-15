@@ -64,7 +64,7 @@ public class StoreTypeImpl implements IStoreType {
                     .updateDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_STORE_TYPE","ADD STORE TYPE "+newStoreType.getName()+".",user.getUsername());
+            iAudit.save("ADD_STORE_TYPE","TIPO DE TIENDA "+newStoreType.getName()+" CREADO.",newStoreType.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -109,7 +109,7 @@ public class StoreTypeImpl implements IStoreType {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_STORE_TYPE","ADD STORE TYPE "+newStoreType.getName()+".",user.getUsername());
+                iAudit.save("ADD_STORE_TYPE","TIPO DE TIENDA "+newStoreType.getName()+" CREADO.",newStoreType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -145,7 +145,7 @@ public class StoreTypeImpl implements IStoreType {
                 storeType.setStatus(false);
                 storeType.setUpdateDate(new Date(System.currentTimeMillis()));
                 storeType.setTokenUser(user.getUsername());
-                iAudit.save("DELETE_STORE_TYPE","DELETE STORE TYPE "+storeType.getName()+".",user.getUsername());
+                iAudit.save("DELETE_STORE_TYPE","TIPO DE TIENDA "+storeType.getName()+" DESACTIVADO.",storeType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.ErrorStoreType)
                         .code(200)
@@ -179,7 +179,7 @@ public class StoreTypeImpl implements IStoreType {
                 storeType.setStatus(true);
                 storeType.setUpdateDate(new Date(System.currentTimeMillis()));
                 storeType.setTokenUser(user.getUsername());
-                iAudit.save("ACTIVATE_STORE_TYPE","ACTIVATE STORE TYPE "+storeType.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_STORE_TYPE","TIPO DE TIENDA "+storeType.getName()+" ACTIVADO.",storeType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.ErrorStoreType)
                         .code(200)

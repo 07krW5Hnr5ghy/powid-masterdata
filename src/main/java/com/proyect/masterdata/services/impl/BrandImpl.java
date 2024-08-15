@@ -78,7 +78,7 @@ public class BrandImpl implements IBrand {
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .build());
-            iAudit.save("ADD_BRAND","ADD BRAND "+newBrand.getName()+".",user.getUsername());
+            iAudit.save("ADD_BRAND","MARCA "+newBrand.getName()+" CREADA.", newBrand.getName(), user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -129,7 +129,7 @@ public class BrandImpl implements IBrand {
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .build());
-                iAudit.save("ADD_BRAND","ADD BRAND "+newBrand.getName()+".",user.getUsername());
+                iAudit.save("ADD_BRAND","MARCA "+newBrand.getName()+" CREADA.",newBrand.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -167,7 +167,7 @@ public class BrandImpl implements IBrand {
                 brand.setUpdateDate(new Date(System.currentTimeMillis()));
                 brand.setTokenUser(tokenUser.toUpperCase());
                 brandRepository.save(brand);
-                iAudit.save("DELETE_BRAND","DELETE BRAND "+brand.getName()+".",user.getUsername());
+                iAudit.save("DELETE_BRAND","MARCA "+brand.getName()+" DESACTIVADA.", brand.getName(), user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -323,7 +323,7 @@ public class BrandImpl implements IBrand {
                 brand.setUpdateDate(new Date(System.currentTimeMillis()));
                 brand.setTokenUser(tokenUser.toUpperCase());
                 brandRepository.save(brand);
-                iAudit.save("ACTIVATE_BRAND","ACTIVATE BRAND "+brand.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_BRAND","MARCA "+brand.getName()+" ACTIVADA.", brand.getName(), user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

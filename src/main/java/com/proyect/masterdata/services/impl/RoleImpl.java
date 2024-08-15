@@ -61,7 +61,7 @@ public class RoleImpl implements IRole {
                     .status(true)
                     .tokenUser(datauser.getUsername().toUpperCase())
                     .build());
-            iAudit.save("ADD_ROLE","ADD ROLE "+newRole.getName()+".",datauser.getUsername());
+            iAudit.save("ADD_ROLE","ROL "+newRole.getName()+" CREADO.",newRole.getName(),datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -100,7 +100,7 @@ public class RoleImpl implements IRole {
                         .status(true)
                         .tokenUser(datauser.getUsername().toUpperCase())
                         .build());
-                iAudit.save("ADD_ROLE","ADD ROLE "+newRole.getName()+".",datauser.getUsername());
+                iAudit.save("ADD_ROLE","ROL "+newRole.getName()+" CREADO.",newRole.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -139,7 +139,7 @@ public class RoleImpl implements IRole {
                 role.setStatus(false);
                 role.setRegistrationDate(new Date(System.currentTimeMillis()));
                 roleRepository.save(role);
-                iAudit.save("DELETE_ROLE","DELETE ROLE "+role.getName()+".",datauser.getUsername());
+                iAudit.save("DELETE_ROLE","ROL "+role.getName()+" DESACTIVADO.",role.getName(),datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -223,7 +223,7 @@ public class RoleImpl implements IRole {
                 role.setStatus(true);
                 role.setRegistrationDate(new Date(System.currentTimeMillis()));
                 roleRepository.save(role);
-                iAudit.save("ACTIVATE_ROLE","ACTIVATE ROLE "+role.getName()+".",datauser.getUsername());
+                iAudit.save("ACTIVATE_ROLE","ROL "+role.getName()+" ACTIVADO.",role.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

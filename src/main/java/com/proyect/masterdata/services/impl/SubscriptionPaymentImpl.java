@@ -80,7 +80,7 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
                             discount;
                 }
 
-                iAudit.save("SEND_SUBSCRIPTION_PAYMENT","SEND SUBSCRIPTION PAYMENT FOR SUBSCRIPTION "+subscription.getName()+".",user.getUsername());
+                iAudit.save("SEND_SUBSCRIPTION_PAYMENT","PAGO DE SUBSCRIPCION "+subscription.getName()+" ENVIADO.",user.getClient().getRuc(),user.getUsername());
 
                 return iMercadoPagoPayment.sendPayment(netAmount,subscription,requestSubscriptionPayment.getModules(),user).get();
 
@@ -143,7 +143,7 @@ public class SubscriptionPaymentImpl implements ISubscriptionPayment {
                         .netAmount(0.00)
                         .taxAmount(0.00)
                         .build(), user.getUsername());
-                iAudit.save("ACTIVATE_DEMO_ACCOUNT","ACTIVATE DEMO ACCOUNT FOR CLIENT WITH RUT "+user.getClient().getRuc()+".",user.getUsername());
+                iAudit.save("ACTIVATE_DEMO_ACCOUNT","CUENTA DEMO HABILITADA PARA CLIENTE CON RUC "+user.getClient().getRuc()+".",user.getClient().getRuc(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

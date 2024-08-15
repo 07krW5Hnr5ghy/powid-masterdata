@@ -67,7 +67,7 @@ public class ClosingChannelImpl implements IClosingChannel {
                     .updateDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_CLOSING_CHANNEL","CLOSING CHANNEL "+newClosingChannel.getName()+".",user.getUsername());
+            iAudit.save("ADD_CLOSING_CHANNEL","CANAL DE CIERRE "+newClosingChannel.getName()+" CREADO.",newClosingChannel.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -108,7 +108,7 @@ public class ClosingChannelImpl implements IClosingChannel {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_CLOSING_CHANNEL","CLOSING CHANNEL "+newClosingChannel.getName()+".",user.getUsername());
+                iAudit.save("ADD_CLOSING_CHANNEL","CANAL DE CIERRE "+newClosingChannel.getName()+" CREADO.",newClosingChannel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -232,7 +232,7 @@ public class ClosingChannelImpl implements IClosingChannel {
                 closingChannel.setUpdateDate(new Date(System.currentTimeMillis()));
                 closingChannel.setTokenUser(user.getUsername());
                 closingChannelRepository.save(closingChannel);
-                iAudit.save("DELETE_CLOSING_CHANNEL","DELETE CLOSING CHANNEL "+closingChannel.getName()+".",user.getUsername());
+                iAudit.save("DELETE_CLOSING_CHANNEL","CANAL DE CIERRE "+closingChannel.getName()+" DESACTIVADO.", closingChannel.getName(), user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -267,7 +267,7 @@ public class ClosingChannelImpl implements IClosingChannel {
                 closingChannel.setUpdateDate(new Date(System.currentTimeMillis()));
                 closingChannel.setTokenUser(user.getUsername());
                 closingChannelRepository.save(closingChannel);
-                iAudit.save("ACTIVATE_CLOSING_CHANNEL","ACTIVATE CLOSING CHANNEL "+closingChannel.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_CLOSING_CHANNEL","CANAL DE CIERRE "+closingChannel.getName()+" ACTIVADO.",closingChannel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

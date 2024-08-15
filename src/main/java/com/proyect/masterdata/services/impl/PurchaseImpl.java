@@ -140,7 +140,7 @@ public class PurchaseImpl implements IPurchase {
                   iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
                   iGeneralStock.in(requestPurchaseItem.getSupplierProduct(), requestPurchaseItem.getQuantity(),user.getUsername());
             }
-            iAudit.save("ADD_PURCHASE","ADD PURCHASE " + newPurchase.getSerial() +".",user.getUsername());
+            iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getSerial() +" CREADA.",newPurchase.getSerial(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -250,7 +250,7 @@ public class PurchaseImpl implements IPurchase {
                     iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
                     iGeneralStock.in(requestPurchaseItem.getSupplierProduct(), requestPurchaseItem.getQuantity(),user.getUsername());
                 }
-                iAudit.save("ADD_PURCHASE","ADD PURCHASE " + newPurchase.getSerial() + ".",user.getUsername());
+                iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getSerial() +" CREADA.",newPurchase.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

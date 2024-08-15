@@ -6,6 +6,7 @@ import com.proyect.masterdata.dto.request.RequestStockReturnItem;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStockReturnItem;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,12 @@ public class StockReturnItemImpl implements IStockReturnItem {
     private final StockReturnRepository stockReturnRepository;
     private final SupplierRepository supplierRepository;
     private final PurchaseRepository purchaseRepository;
+    private final IAudit iAudit;
     @Override
     public StockReturnItem save(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
 
         try{
+            iAudit.save("ADD_STOCK_RETURN_ITEM","PRODUCTO DE INVENTARIO "+requestStockReturnItem.getSupplierProductSerial().toUpperCase()+" AGREGADO A DEVOLUCION DE STOCK "+stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
             return stockReturnItemRepository.save(StockReturnItem.builder()
                             .purchaseItem(purchaseItem)
                             .purchaseItemId(purchaseItem.getId())
@@ -62,6 +65,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
     public CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             try{
+                iAudit.save("ADD_STOCK_RETURN_ITEM","PRODUCTO DE INVENTARIO "+requestStockReturnItem.getSupplierProductSerial().toUpperCase()+" AGREGADO A DEVOLUCION DE STOCK "+stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
                 return stockReturnItemRepository.save(StockReturnItem.builder()
                                 .purchaseItem(purchaseItem)
                                 .purchaseItemId(purchaseItem.getId())

@@ -118,7 +118,7 @@ public class StockReturnImpl implements IStockReturn {
             }
 
             iStockTransaction.save("SR"+newStockReturn.getId(), purchase.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-PROVEEDOR",user);
-            iAudit.save("ADD_STOCK_RETURN","ADD STOCK RETURN "+newStockReturn.getSerial()+".",user.getUsername());
+            iAudit.save("ADD_STOCK_RETURN","DEVOLUCION DE STOCK "+newStockReturn.getSerial()+" CREADA.",newStockReturn.getSerial(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -207,7 +207,7 @@ public class StockReturnImpl implements IStockReturn {
                 }
 
                 iStockTransaction.save("SR"+newStockReturn.getId(), purchase.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-PROVEEDOR",user);
-                iAudit.save("ADD_STOCK_RETURN","ADD STOCK RETURN "+newStockReturn.getSerial()+".",user.getUsername());
+                iAudit.save("ADD_STOCK_RETURN","DEVOLUCION DE STOCK "+newStockReturn.getSerial()+" CREADA.",newStockReturn.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

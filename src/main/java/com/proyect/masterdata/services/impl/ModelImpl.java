@@ -78,7 +78,7 @@ public class ModelImpl implements IModel {
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_MODEL","ADD MODEL "+newModel.getName()+".",user.getUsername());
+            iAudit.save("ADD_MODEL","MODELO "+newModel.getName()+" CREADO.",newModel.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -129,7 +129,7 @@ public class ModelImpl implements IModel {
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_MODEL","ADD MODEL "+newModel.getName()+".",user.getUsername());
+                iAudit.save("ADD_MODEL","MODELO "+newModel.getName()+" CREADO.",newModel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -168,7 +168,7 @@ public class ModelImpl implements IModel {
                 modelData.setUpdateDate(new Date(System.currentTimeMillis()));
                 modelData.setTokenUser(user.getUsername());
                 modelRepository.save(modelData);
-                iAudit.save("DELETE_MODEL","DELETE MODEL "+modelData.getName()+".",user.getUsername());
+                iAudit.save("DELETE_MODEL","MODELO "+modelData.getName()+" DESACTIVADO.",modelData.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -207,7 +207,7 @@ public class ModelImpl implements IModel {
                 modelData.setUpdateDate(new Date(System.currentTimeMillis()));
                 modelData.setTokenUser(user.getUsername());
                 modelRepository.save(modelData);
-                iAudit.save("ACTIVATE_MODEL","ACTIVATE MODEL "+modelData.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_MODEL","MODELO "+modelData.getName()+" ACTIVADO.",modelData.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

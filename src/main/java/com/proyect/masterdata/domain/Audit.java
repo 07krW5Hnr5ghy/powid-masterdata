@@ -39,6 +39,9 @@ public class Audit {
     @CreationTimestamp
     private Date registrationDate;
 
+    @Column(name = "reference")
+    private String reference;
+
     @Column(name = "detail",length = 1024)
     private String detail;
 
@@ -53,6 +56,5 @@ public class Audit {
     @ManyToOne
     @JoinColumn(name="audit_event_id",columnDefinition = "auditEventId",insertable = false,updatable = false)
     private AuditEvent auditEvent;
-
 
 }

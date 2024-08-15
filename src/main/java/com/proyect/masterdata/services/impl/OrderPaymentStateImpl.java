@@ -67,7 +67,7 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.toUpperCase())
                         .build());
-                iAudit.save("ADD_ORDER_PAYMENT_STATE","ADD ORDER PAYMENT STATE "+newOrderPaymentState.getName()+".", datauser.getUsername());
+                iAudit.save("ADD_ORDER_PAYMENT_STATE","ESTADO DE PAGO DE PEDIDO "+newOrderPaymentState.getName()+" CREADO.",newOrderPaymentState.getName(), datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -106,7 +106,7 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
                 orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderPaymentState.setTokenUser(datauser.getUsername());
                 orderPaymentStateRepository.save(orderPaymentState);
-                iAudit.save("DELETE_ORDER_PAYMENT_STATE","DELETE ORDER PAYMENT STATE "+orderPaymentState.getName()+".", datauser.getUsername());
+                iAudit.save("DELETE_ORDER_PAYMENT_STATE","ESTADO DE PAGO DE PEDIDO "+orderPaymentState.getName()+" DESACTIVADO.",orderPaymentState.getName(), datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -144,7 +144,7 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
                 orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderPaymentState.setTokenUser(datauser.getUsername());
                 orderPaymentStateRepository.save(orderPaymentState);
-                iAudit.save("ACTIVATE_ORDER_PAYMENT_STATE","ACTIVATE ORDER PAYMENT STATE "+orderPaymentState.getName()+".", datauser.getUsername());
+                iAudit.save("ACTIVATE_ORDER_PAYMENT_STATE","ESTADO DE PAGO DE PEDIDO "+orderPaymentState.getName()+" ACTIVADO.",orderPaymentState.getName(), datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

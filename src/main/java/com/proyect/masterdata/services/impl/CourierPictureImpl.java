@@ -9,6 +9,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.CourierPictureRepository;
 import com.proyect.masterdata.repository.OrderingRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICourierPicture;
 import com.proyect.masterdata.services.IFile;
 import com.proyect.masterdata.utils.Constants;
@@ -36,6 +37,7 @@ public class CourierPictureImpl implements ICourierPicture {
     private final OrderingRepository orderingRepository;
     private final CourierPictureRepository courierPictureRepository;
     private final IFile iFile;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<List<String>> uploadPicture(MultipartFile[] pictures, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -77,6 +79,7 @@ public class CourierPictureImpl implements ICourierPicture {
                         System.out.println("Received an empty file: " + multipartFile.getOriginalFilename());
                     }
                     String url = iFile.uploadFile(multipartFile,folderPath + "_COURIER_" + Integer.toString(pictureNumber)).get();
+                    iAudit.save("ADD_COURIER_PICTURE","FOTO ENTREGA AGREGADA PARA PEDIDO "+orderId+".",orderId.toString(),user.getUsername());
                     courierPictureRepository.save(CourierPicture.builder()
                             .pictureUrl(url)
                             .client(user.getClient())
@@ -130,6 +133,7 @@ public class CourierPictureImpl implements ICourierPicture {
                 int pictureNumber = 1;
                 for(File file : pictures){
                     String url = iFile.uploadFiles(file,folderPath + "_COURIER_" + Integer.toString(pictureNumber)).get();
+                    iAudit.save("ADD_COURIER_PICTURE","FOTO ENTREGA AGREGADA PARA PEDIDO "+orderId+".",orderId.toString(),user.getUsername());
                     courierPictureRepository.save(CourierPicture.builder()
                             .pictureUrl(url)
                             .client(user.getClient())

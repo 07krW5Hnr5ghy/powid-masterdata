@@ -94,7 +94,7 @@ public class AuthenticationImpl implements IAuthentication {
                         new UsernamePasswordAuthenticationToken(username.toUpperCase(), password));
 
                 String token = iToken.generateJwt(auth);
-                iAudit.save("LOG_IN","USER " + user.getUsername() + " LOGGED IN.",user.getUsername());
+                iAudit.save("LOG_IN","USUARIO " + user.getUsername() + " INICIO SESION.",user.getUsername(),user.getUsername());
                 User userData = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(userData.getId());
                 return LoginDTO.builder()
@@ -263,7 +263,7 @@ public class AuthenticationImpl implements IAuthentication {
                     iOnboardStore.save(store, onboard);
 
                 }
-                iAudit.save("REGISTER_CLIENT","REGISTER NEW CLIENT RUC : " + requestClientSave.getRuc() + " .",requestUser.getUser());
+                iAudit.save("REGISTER_CLIENT","NUEVO CLIENTE REGISTRADO CON EL RUC : " + requestClientSave.getRuc() + " .",requestClientSave.getRuc(),requestUser.getUser());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

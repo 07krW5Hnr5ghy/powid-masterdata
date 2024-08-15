@@ -55,7 +55,7 @@ public class PaymentGatewayImpl implements IPaymentGateway {
                         .name(name.toUpperCase())
                                 .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_PAYMENT_GATEWAY","ADD PAYMENT GATEWAY "+newPaymentGateway.getName()+".",user.getUsername());
+                iAudit.save("ADD_PAYMENT_GATEWAY","PASARELA DE PAGO "+newPaymentGateway.getName()+" CREADA.",newPaymentGateway.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -93,7 +93,7 @@ public class PaymentGatewayImpl implements IPaymentGateway {
                 paymentGateway.setStatus(false);
                 paymentGateway.setUpdateDate(new Date(System.currentTimeMillis()));
                 paymentGateway.setTokenUser(user.getUsername());
-                iAudit.save("DELETE_PAYMENT_GATEWAY","DELETE PAYMENT GATEWAY "+paymentGateway.getName()+".",user.getUsername());
+                iAudit.save("DELETE_PAYMENT_GATEWAY","PASARELA DE PAGO "+paymentGateway.getName()+" DESACTIVADA.",paymentGateway.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -131,7 +131,7 @@ public class PaymentGatewayImpl implements IPaymentGateway {
                 paymentGateway.setStatus(true);
                 paymentGateway.setUpdateDate(new Date(System.currentTimeMillis()));
                 paymentGateway.setTokenUser(user.getUsername());
-                iAudit.save("ACTIVATE_PAYMENT_GATEWAY","ACTIVATE PAYMENT GATEWAY "+paymentGateway.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_PAYMENT_GATEWAY","PASARELA DE PAGO "+paymentGateway.getName()+" ACTIVADA.",paymentGateway.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

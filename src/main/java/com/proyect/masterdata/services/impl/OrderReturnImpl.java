@@ -111,7 +111,7 @@ public class OrderReturnImpl implements IOrderReturn {
                 requestStockTransactionItemList.add(requestStockTransactionItem);
             }
             iStockTransaction.save("OR"+orderStock.getOrdering().getId(),orderStock.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-COMPRADOR",user);
-            iAudit.save("ADD_ORDER_RETURN","ADD ORDER RETURN "+newOrderReturn.getOrderId()+".",user.getUsername());
+            iAudit.save("ADD_ORDER_RETURN","DEVOLUCION DE PEDIDO "+newOrderReturn.getOrderId()+" CREADA.",newOrderReturn.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -196,7 +196,7 @@ public class OrderReturnImpl implements IOrderReturn {
                     requestStockTransactionItemList.add(requestStockTransactionItem);
                 }
                 iStockTransaction.save("OR"+orderStock.getOrdering().getId(),orderStock.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-COMPRADOR",user);
-                iAudit.save("ADD_ORDER_RETURN","ADD ORDER RETURN "+newOrderReturn.getOrderId()+".",user.getUsername());
+                iAudit.save("ADD_ORDER_RETURN","DEVOLUCION DE PEDIDO "+newOrderReturn.getOrderId()+" CREADA.",newOrderReturn.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

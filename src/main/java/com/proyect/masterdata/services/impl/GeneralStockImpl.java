@@ -80,7 +80,7 @@ public class GeneralStockImpl implements IGeneralStock {
                             .tokenUser(user.getUsername())
                             .build());
                 }
-                iAudit.save("ADD_GENERAL_STOCK","ADD GENERAL STOCK FOR SUPPLIER PRODUCT "+supplierProduct.getSerial()+" WITH " + quantity +" UNITS.",user.getUsername());
+                iAudit.save("ADD_GENERAL_STOCK","INGRESO DE STOCK "+supplierProduct.getSerial()+" DE " + quantity +" UNIDADES.",supplierProduct.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -129,7 +129,7 @@ public class GeneralStockImpl implements IGeneralStock {
 
                 generalStock.setQuantity(generalStock.getQuantity() - quantity);
                 generalStockRepository.save(generalStock);
-                iAudit.save("DELETE_GENERAL_STOCK","DELETE GENERAL STOCK FOR SUPPLIER PRODUCT "+supplierProduct.getSerial()+" WITH " + quantity +" UNITS.",user.getUsername());
+                iAudit.save("DELETE_GENERAL_STOCK","SALIDA DE STOCK "+supplierProduct.getSerial()+" DE " + quantity +" UNIDADES.",supplierProduct.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

@@ -104,7 +104,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                         .quantity(requestOrderStockItem.getQuantity())
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_ORDER_STOCK_ITEM","ADD ORDER STOCK ITEM WITH SUPPLIER PRODUCT "+newOrderStockItem.getSupplierProduct().getSerial()+" WITH "+newOrderStockItem.getQuantity()+".",user.getUsername());
+                iAudit.save("ADD_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+newOrderStockItem.getSupplierProduct().getSerial()+" CON "+newOrderStockItem.getQuantity()+" UNIDADES CREADO.",newOrderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -432,7 +432,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderStockItem.setTokenUser(user.getUsername());
                 orderStockItemRepository.save(orderStockItem);
-                iAudit.save("DELETE_ORDER_STOCK_ITEM","DELETE ORDER STOCK ITEM WITH SUPPLIER PRODUCT "+orderStockItem.getSupplierProduct().getSerial()+" WITH "+orderStockItem.getQuantity()+".",user.getUsername());
+                iAudit.save("DELETE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES DESACTIVADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -484,7 +484,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderStockItem.setTokenUser(user.getUsername());
                 orderStockItemRepository.save(orderStockItem);
-                iAudit.save("ACTIVATE_ORDER_STOCK_ITEM","ACTIVATE ORDER STOCK ITEM WITH SUPPLIER PRODUCT "+orderStockItem.getSupplierProduct().getSerial()+" WITH "+orderStockItem.getQuantity()+".",user.getUsername());
+                iAudit.save("ACTIVATE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES ACTIVADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -546,7 +546,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderStockItem.setTokenUser(user.getUsername());
                 orderStockItemRepository.save(orderStockItem);
-                iAudit.save("UPDATE_ORDER_STOCK_ITEM","UPDATE ORDER STOCK ITEM WITH SUPPLIER PRODUCT "+orderStockItem.getSupplierProduct().getSerial()+" WITH "+orderStockItem.getQuantity()+".",user.getUsername());
+                iAudit.save("UPDATE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES ACTUALIZADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

@@ -53,7 +53,7 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
                                 .tokenUser(user.getUsername())
                         .name(name.toUpperCase())
                         .build());
-                iAudit.save("ADD_ORDER_RETURN_TYPE","ADD ORDER RETURN TYPE "+newOrderReturnType.getName()+".",user.getUsername());
+                iAudit.save("ADD_ORDER_RETURN_TYPE","TIPO DE DEVOLUCION DE PEDIDO "+newOrderReturnType.getName()+" CREADO.",newOrderReturnType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -121,7 +121,7 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
                 orderReturnType.setStatus(false);
                 orderReturnType.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderReturnType.setTokenUser(user.getUsername());
-                iAudit.save("DELETE_ORDER_RETURN_TYPE","DELETE ORDER RETURN TYPE "+orderReturnType.getName()+".",user.getUsername());
+                iAudit.save("DELETE_ORDER_RETURN_TYPE","TIPO DE DEVOLUCION DE PEDIDO "+orderReturnType.getName()+" DESACTIVADO.",orderReturnType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -155,7 +155,7 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
                 orderReturnType.setStatus(true);
                 orderReturnType.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderReturnType.setTokenUser(user.getUsername());
-                iAudit.save("ACTIVATE_ORDER_RETURN_TYPE","ACTIVATE ORDER RETURN TYPE "+orderReturnType.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_ORDER_RETURN_TYPE","TIPO DE DEVOLUCION DE PEDIDO "+orderReturnType.getName()+" ACTIVADO.",orderReturnType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.delete)

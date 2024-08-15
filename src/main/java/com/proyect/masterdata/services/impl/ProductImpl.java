@@ -129,7 +129,7 @@ public class ProductImpl implements IProduct {
                     .build());
             iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
             iProductPicture.uploadPicture(productPictures,productData.getId(),user.getUsername());
-            iAudit.save("ADD_PRODUCT","ADD PRODUCT "+productData.getSku()+".",user.getUsername());
+            iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getSku()+" CREADO.",productData.getSku(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -241,7 +241,7 @@ public class ProductImpl implements IProduct {
                         }
                     });
                 }
-                iAudit.save("ADD_PRODUCT","ADD PRODUCT "+productData.getSku()+".",user.getUsername());
+                iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getSku()+" CREADO.",productData.getSku(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -280,7 +280,7 @@ public class ProductImpl implements IProduct {
                 product.setUpdateDate(new Date(System.currentTimeMillis()));
                 product.setTokenUser(user.getUsername());
                 productRepository.save(product);
-                iAudit.save("DELETE_PRODUCT","DELETE PRODUCT "+product.getSku()+".",user.getUsername());
+                iAudit.save("DELETE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" DESACTIVADO.",product.getSku(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -319,7 +319,7 @@ public class ProductImpl implements IProduct {
                 product.setUpdateDate(new Date(System.currentTimeMillis()));
                 product.setTokenUser(user.getUsername());
                 productRepository.save(product);
-                iAudit.save("ACTIVATE_PRODUCT","ACTIVATE PRODUCT "+product.getSku()+".",user.getUsername());
+                iAudit.save("ACTIVATE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" ACTIVADO.",product.getSku(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -784,7 +784,7 @@ public class ProductImpl implements IProduct {
                         }
                     });
                 }
-                iAudit.save("ADD_PRODUCT_PICTURES","ADD PICTURES FOR PRODUCT "+product.getSku()+".",user.getUsername());
+                iAudit.save("UPDATE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" ACTUALIZADO.",product.getSku(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

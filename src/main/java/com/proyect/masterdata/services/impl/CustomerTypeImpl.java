@@ -57,7 +57,7 @@ public class CustomerTypeImpl implements ICustomerType {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .build());
-                iAudit.save("ADD_CUSTOMER_TYPE","ADD CUSTOMER TYPE "+newCustomerType.getName()+".",user.getUsername());
+                iAudit.save("ADD_CUSTOMER_TYPE","TIPO DE CLIENTE "+newCustomerType.getName()+" CREADO.",newCustomerType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -92,7 +92,7 @@ public class CustomerTypeImpl implements ICustomerType {
                 customerType.setUpdateDate(new Date(System.currentTimeMillis()));
                 customerType.setTokenUser(user.getUsername());
                 customerTypeRepository.save(customerType);
-                iAudit.save("DELETE_CUSTOMER_TYPE","DELETE CUSTOMER TYPE "+customerType.getName()+".",user.getUsername());
+                iAudit.save("DELETE_CUSTOMER_TYPE","TIPO DE CLIENTE "+customerType.getName()+" DESACTIVADO.",customerType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -127,7 +127,7 @@ public class CustomerTypeImpl implements ICustomerType {
                 customerType.setUpdateDate(new Date(System.currentTimeMillis()));
                 customerType.setTokenUser(user.getUsername());
                 customerTypeRepository.save(customerType);
-                iAudit.save("ACTIVATE_CUSTOMER_TYPE","DELETE CUSTOMER TYPE "+customerType.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_CUSTOMER_TYPE","TIPO DE CLIENTE "+customerType.getName()+" ACTIVADO.",customerType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.delete)
                         .code(200)

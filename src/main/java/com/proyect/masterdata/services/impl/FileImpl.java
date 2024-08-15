@@ -47,25 +47,6 @@ public class FileImpl implements IFile {
     }
 
     @Override
-    public CompletableFuture<String> uploadFileAsync(MultipartFile multipartFile, String filePath) throws IOException {
-        return CompletableFuture.supplyAsync(()->{
-            try{
-                return cloudinary.uploader()
-                        .upload(multipartFile.getBytes(), Map.of(
-                                "public_id", filePath,
-                                "transformation",new Transformation<>().quality("auto")
-                        ))
-                        .get("url")
-                        .toString();
-            }catch (RuntimeException | IOException e){
-                e.printStackTrace();
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
-        });
-    }
-
-    @Override
     public CompletableFuture<String> uploadFiles(File file, String filePath) throws IOException {
         return CompletableFuture.supplyAsync(()->{
             try{

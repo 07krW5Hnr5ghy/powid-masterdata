@@ -90,7 +90,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
 
             iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, requestPurchaseItem.getQuantity(), user);
             iGeneralStock.in(supplierProduct.getSerial(), requestPurchaseItem.getQuantity(), user.getUsername());
-            iAudit.save("ADD_PURCHASE_ITEM","ADD PURCHASE ITEM "+ newPurchaseItem.getSupplierProduct().getSerial()+".",user.getUsername());
+            iAudit.save("ADD_PURCHASE_ITEM","PRODUCTO DE INVENTARIO "+ newPurchaseItem.getSupplierProduct().getSerial()+" CREADO EN COMPRA.",newPurchaseItem.getPurchase().getSerial(),user.getUsername());
             return newPurchaseItem;
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -145,7 +145,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
 
                 iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, requestPurchaseItem.getQuantity(), user);
                 iGeneralStock.in(supplierProduct.getSerial(), requestPurchaseItem.getQuantity(), user.getUsername());
-                iAudit.save("ADD_PURCHASE_ITEM","ADD PURCHASE ITEM "+ newPurchaseItem.getSupplierProduct().getSerial()+".",user.getUsername());
+                iAudit.save("ADD_PURCHASE_ITEM","PRODUCTO DE INVENTARIO "+ newPurchaseItem.getSupplierProduct().getSerial()+" CREADO EN COMPRA.",newPurchaseItem.getPurchase().getSerial(),user.getUsername());
                 return newPurchaseItem;
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -191,7 +191,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 purchaseItem.setTokenUser(user.getUsername());
                 iWarehouseStock.out(purchase.getWarehouse(),supplierProduct, purchaseItem.getQuantity(), user);
                 iGeneralStock.out(supplierProduct.getSerial(), purchaseItem.getQuantity(), user.getUsername());
-                iAudit.save("DELETE_PURCHASE_ITEM","DELETE PURCHASE ITEM "+ purchaseItem.getSupplierProduct().getSerial()+".",user.getUsername());
+                iAudit.save("DELETE_PURCHASE_ITEM","PRODUCTO DE INVENTARIO "+ purchaseItem.getSupplierProduct().getSerial()+" DESACTIVADO EN COMPRA.",purchaseItem.getPurchase().getSerial(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -240,7 +240,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 purchaseItem.setTokenUser(user.getUsername());
                 iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, purchaseItem.getQuantity(), user);
                 iGeneralStock.in(supplierProduct.getSerial(), purchaseItem.getQuantity(), user.getUsername());
-                iAudit.save("ACTIVATE_PURCHASE_ITEM","ACTIVATE PURCHASE ITEM "+ purchaseItem.getSupplierProduct().getSerial()+".",user.getUsername());
+                iAudit.save("ACTIVATE_PURCHASE_ITEM","PRODUCTO DE INVENTARIO "+ purchaseItem.getSupplierProduct().getSerial()+" ACTIVADO EN COMPRA.",purchaseItem.getPurchase().getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

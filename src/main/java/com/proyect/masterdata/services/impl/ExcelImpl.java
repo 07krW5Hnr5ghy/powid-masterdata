@@ -243,15 +243,12 @@ public class ExcelImpl implements IExcel {
                     j++;
                 }
                 iStockTransaction.save("S"+ requestPurchaseExcel.getSerial().toUpperCase(), warehouse,stockTransactionItemList,"COMPRA",user);
-                iAudit.save("ADD_PURCHASE_EXCEL","ADD PURCHASE "+ newPurchase.getSerial()+" USING EXCEL FILE.",user.getUsername());
+                iAudit.save("ADD_PURCHASE_EXCEL","COMPRA "+ newPurchase.getSerial()+" CREADA POR EXCEL.",newPurchase.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
                         .build();
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }catch (RuntimeException e){
+            } catch (IOException | RuntimeException e) {
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
@@ -401,17 +398,15 @@ public class ExcelImpl implements IExcel {
                 }
                 iStockTransaction.save("STO"+newStockTransfer.getId(),newStockTransfer.getOriginWarehouse(),requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
                 iStockTransaction.save("STI"+newStockTransfer.getId(),newStockTransfer.getDestinationWarehouse(),requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
-                iAudit.save("ADD_STOCK_TRANSFER_EXCEL","ADD STOCK TRANSFER "+newStockTransfer.getSerial()+" USING EXCEL FILE.",user.getUsername());
+                iAudit.save("ADD_STOCK_TRANSFER_EXCEL","TRANSFERENCIA DE STOCK "+newStockTransfer.getSerial()+" CREADA POR EXCEL.",newStockTransfer.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
                         .build();
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         });
     }
@@ -579,7 +574,7 @@ public class ExcelImpl implements IExcel {
                 }
 
                 iStockTransaction.save("SR"+newStockReturn.getId(), purchase.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-PROVEEDOR",user);
-                iAudit.save("ADD_STOCK_RETURN_EXCEL","ADD STOCK RETURN "+newStockReturn.getSerial()+" USING EXCEL FILE.",user.getUsername());
+                iAudit.save("ADD_STOCK_RETURN_EXCEL","DEVOLUCION DE STOCK "+newStockReturn.getSerial()+" CREADA POR EXCEL.",newStockReturn.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -726,7 +721,7 @@ public class ExcelImpl implements IExcel {
                     }
                     j++;
                 }
-                iAudit.save("ADD_STOCK_REPLENISHMENT_EXCEL","ADD STOCK REPLENISHMENT OF ORDER "+newStockReplenishment.getOrderId()+" USING EXCEL FILE.",user.getUsername());
+                iAudit.save("ADD_STOCK_REPLENISHMENT_EXCEL","RESTOCK "+newStockReplenishment.getOrderId()+" CREADO POR EXCEL.",newStockReplenishment.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -911,7 +906,7 @@ public class ExcelImpl implements IExcel {
                     }
                     j++;
                 }
-                iAudit.save("ADD_ORDER_STOCK_EXCEL","ADD ORDER STOCK OF ORDER "+orderStock.getOrderId()+" USING EXCEL FILE.",user.getUsername());
+                iAudit.save("ADD_ORDER_STOCK_EXCEL","PREPARACION DEL PEDIDO #"+orderStock.getOrderId()+" CREADO POR EXCEL.",orderStock.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -1107,17 +1102,15 @@ public class ExcelImpl implements IExcel {
                     j++;
                 }
                 iStockTransaction.save("OR"+orderStock.getOrdering().getId(),orderStock.getWarehouse(),requestStockTransactionItemList,"DEVOLUCION-COMPRADOR",user);
-                iAudit.save("ADD_ORDER_RETURN_EXCEL","ADD ORDER RETURN OF ORDER "+newOrderReturn.getOrderId()+" USING EXCEL FILE.",user.getUsername());
+                iAudit.save("ADD_ORDER_RETURN_EXCEL","DEVOLUCION DE PEDIDO "+newOrderReturn.getOrderId()+" CREADA POR EXCEL.",newOrderReturn.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
                         .build();
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         });
     }
@@ -1279,7 +1272,7 @@ public class ExcelImpl implements IExcel {
                         productPrice.setProductId(storedProduct.getId());
                         productPrice.setProduct(storedProduct);
                         productPriceRepository.save(productPrice);
-                        iAudit.save("ADD_PRODUCT_EXCEL","ADD PRODUCT "+product.getSku()+" USING EXCEL FILE.",user.getUsername());
+                        iAudit.save("ADD_PRODUCT_EXCEL","PRODUCTO DE MARKETING "+product.getSku()+" CREADO POR EXCEL.",product.getSku(),user.getUsername());
                     }
                 }
                 return ResponseSuccess.builder()
@@ -1388,7 +1381,7 @@ public class ExcelImpl implements IExcel {
                         throw new BadRequestExceptions(Constants.ErrorSupplierProductExists);
                     }else{
                         supplierProductRepository.save(supplierProduct);
-                        iAudit.save("ADD_SUPPLIER_PRODUCT_EXCEL","ADD SUPPLIER PRODUCT "+supplierProduct.getSerial()+" USING EXCEL FILE.",user.getUsername());
+                        iAudit.save("ADD_SUPPLIER_PRODUCT_EXCEL","PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" CREADO POR EXCEL.",supplierProduct.getSerial(),user.getUsername());
                     }
                 }
                 return ResponseSuccess.builder()

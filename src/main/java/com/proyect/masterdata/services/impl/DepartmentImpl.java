@@ -64,7 +64,7 @@ public class DepartmentImpl implements IDepartment {
                     .tokenUser(user.toUpperCase())
                     .status(true)
                     .build());
-            iAudit.save("ADD_DEPARTMENT","ADD DEPARTMENT "+newDepartment.getName()+".",datauser.getUsername());
+            iAudit.save("ADD_DEPARTMENT","DEPARTAMENTO "+newDepartment.getName()+" CREADO.",newDepartment.getName(),datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -102,7 +102,7 @@ public class DepartmentImpl implements IDepartment {
                         .tokenUser(user.toUpperCase())
                         .status(true)
                         .build());
-                iAudit.save("ADD_DEPARTMENT","ADD DEPARTMENT "+newDepartment.getName()+".",datauser.getUsername());
+                iAudit.save("ADD_DEPARTMENT","DEPARTAMENTO "+newDepartment.getName()+" CREADO.",newDepartment.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -139,7 +139,7 @@ public class DepartmentImpl implements IDepartment {
                 department.setUpdateDate(new Date(System.currentTimeMillis()));
                 department.setTokenUser(datauser.getUsername());
                 departmentRepository.save(department);
-                iAudit.save("DELETE_DEPARTMENT","DELETE DEPARTMENT "+department.getName()+".",datauser.getUsername());
+                iAudit.save("DELETE_DEPARTMENT","DEPARTAMENTO "+department.getName()+" DESACTIVADO.",department.getName(),datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -176,7 +176,7 @@ public class DepartmentImpl implements IDepartment {
                 department.setUpdateDate(new Date(System.currentTimeMillis()));
                 department.setTokenUser(datauser.getUsername());
                 departmentRepository.save(department);
-                iAudit.save("ACTIVATE_DEPARTMENT","ACTIVATE DEPARTMENT "+department.getName()+".",datauser.getUsername());
+                iAudit.save("ACTIVATE_DEPARTMENT","DEPARTAMENTO "+department.getName()+" ACTIVADO.",department.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

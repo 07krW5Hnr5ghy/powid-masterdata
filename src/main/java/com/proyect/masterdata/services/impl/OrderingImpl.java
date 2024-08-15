@@ -15,13 +15,14 @@ import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -60,10 +61,6 @@ public class OrderingImpl implements IOrdering {
     private final CourierPictureRepository courierPictureRepository;
     private final StoreRepository storeRepository;
     private final ClosingChannelRepository closingChannelRepository;
-    private final CustomerTypeRepository customerTypeRepository;
-    private final DepartmentRepository departmentRepository;
-    private final ProvinceRepository provinceRepository;
-    private final DistrictRepository districtRepository;
     private final IAudit iAudit;
     private final CustomerRepository customerRepository;
     private final DiscountRepository discountRepository;
@@ -201,7 +198,7 @@ public class OrderingImpl implements IOrdering {
                 customerRepository.save(customer);
             }
 
-            iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
+            iAudit.save("ADD_ORDER","PEDIDO "+ordering.getId()+" CREADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -342,7 +339,7 @@ public class OrderingImpl implements IOrdering {
                     fileList.add(convFile);
                 }
 
-                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptFileAsync(fileList,ordering.getId(),user.getUsername());
+                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptAsync(fileList,ordering.getId(),user.getUsername());
 
                 for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
                     iOrderItem.save(ordering, requestOrderItem,tokenUser);
@@ -364,7 +361,7 @@ public class OrderingImpl implements IOrdering {
                     });
                 }
 
-                iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
+                iAudit.save("ADD_ORDER","PEDIDO "+ordering.getId()+" CREADO.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -680,7 +677,7 @@ public class OrderingImpl implements IOrdering {
             orderingRepository.save(ordering);
             iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
             iCourierPicture.uploadPicture(courierPictures,ordering.getId(),user.getUsername());
-            iAudit.save("UPDATE_ORDER","UPDATE ORDER "+ordering.getId()+".",user.getUsername());
+            iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.update)
@@ -805,7 +802,7 @@ public class OrderingImpl implements IOrdering {
                     courierPictureList.add(convFile);
                 }
 
-                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptFileAsync(receiptList,ordering.getId(),user.getUsername());
+                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptAsync(receiptList,ordering.getId(),user.getUsername());
                 CompletableFuture<List<String>> courierPhotos = iCourierPicture.uploadPictureAsync(courierPictureList,ordering.getId(),user.getUsername());
                 if(!paymentReceipts.get().isEmpty() || !courierPhotos.get().isEmpty()){
                     Stream<Path> paths = Files.list(folderOrders);
@@ -828,7 +825,7 @@ public class OrderingImpl implements IOrdering {
                     });
                 }
 
-                iAudit.save("UPDATE_ORDER","UPDATE ORDER "+ordering.getId()+".",user.getUsername());
+                iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

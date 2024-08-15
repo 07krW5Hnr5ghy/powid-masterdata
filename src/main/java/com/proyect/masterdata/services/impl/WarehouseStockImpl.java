@@ -83,7 +83,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
                         .tokenUser(user.getUsername())
                         .build());
             }
-            iAudit.save("ADD_WAREHOUSE_STOCK","ADD "+quantity+" UNITS OF STOCK FOR SUPPLIER PRODUCT "+supplierProduct.getSerial()+" IN WAREHOUSE "+warehouse.getName()+".",user.getUsername());
+            iAudit.save("ADD_WAREHOUSE_STOCK","INGRESAN ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" EN ALMACEN "+warehouse.getName()+".",warehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -130,7 +130,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
             warehouseStock.setQuantity(warehouseStock.getQuantity() - quantity);
             warehouseStockRepository.save(warehouseStock);
-            iAudit.save("DELETE_WAREHOUSE_STOCK","DELETE "+quantity+" UNITS OF STOCK FOR SUPPLIER PRODUCT "+supplierProduct.getSerial()+" IN WAREHOUSE "+warehouse.getName()+".",user.getUsername());
+            iAudit.save("DELETE_WAREHOUSE_STOCK","SALIDA DE ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" PARA ALMACEN "+warehouse.getName()+".",warehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)

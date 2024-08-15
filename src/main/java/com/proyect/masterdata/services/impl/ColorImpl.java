@@ -64,7 +64,7 @@ public class ColorImpl implements IColor {
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_COLOR","ADD COLOR "+newColor.getName()+".",datauser.getUsername());
+                iAudit.save("ADD_COLOR","COLOR "+newColor.getName()+" CREADO.",newColor.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -103,7 +103,7 @@ public class ColorImpl implements IColor {
                 color.setUpdateDate(new Date(System.currentTimeMillis()));
                 color.setTokenUser(datauser.getUsername());
                 colorRepository.save(color);
-                iAudit.save("DELETE_COLOR","DELETE COLOR "+color.getName()+".",datauser.getUsername());
+                iAudit.save("DELETE_COLOR","COLOR "+color.getName()+" DESACTIVADO.", color.getName(), datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -141,7 +141,7 @@ public class ColorImpl implements IColor {
                 color.setUpdateDate(new Date(System.currentTimeMillis()));
                 color.setTokenUser(datauser.getUsername());
                 colorRepository.save(color);
-                iAudit.save("ACTIVATE_COLOR","ACTIVATE COLOR "+color.getName()+".",datauser.getUsername());
+                iAudit.save("ACTIVATE_COLOR","COLOR "+color.getName()+" ACTIVADO.",color.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

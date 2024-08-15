@@ -61,7 +61,7 @@ public class MembershipStateImpl implements IMembershipState {
                         .updateDate(new Date(System.currentTimeMillis()))
                                 .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_MEMBERSHIP_STATE","ADD MEMBERSHIP STATE "+newMembershipState.getName()+".",user.getUsername());
+                iAudit.save("ADD_MEMBERSHIP_STATE","ESTADO DE MEMBRESIA "+newMembershipState.getName()+" CREADO.",newMembershipState.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -169,7 +169,7 @@ public class MembershipStateImpl implements IMembershipState {
                 membershipState.setRegistrationDate(new Date(System.currentTimeMillis()));
                 membershipState.setTokenUser(user.getUsername());
                 membershipStateRepository.save(membershipState);
-                iAudit.save("DELETE_MEMBERSHIP_STATE","DELETE MEMBERSHIP STATE "+membershipState.getName()+".",user.getUsername());
+                iAudit.save("DELETE_MEMBERSHIP_STATE","ESTADO DE MEMBRESIA "+membershipState.getName()+" DESACTIVADO.",membershipState.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -204,7 +204,7 @@ public class MembershipStateImpl implements IMembershipState {
                 membershipState.setRegistrationDate(new Date(System.currentTimeMillis()));
                 membershipState.setTokenUser(user.getUsername());
                 membershipStateRepository.save(membershipState);
-                iAudit.save("ACTIVATE_MEMBERSHIP_STATE","ACTIVATE MEMBERSHIP STATE "+membershipState.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_MEMBERSHIP_STATE","ESTADO DE MEMBRESIA "+membershipState.getName()+" ACTIVADO.",membershipState.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

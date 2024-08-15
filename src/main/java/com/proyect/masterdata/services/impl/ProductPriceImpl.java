@@ -67,7 +67,7 @@ public class ProductPriceImpl implements IProductPrice {
                             .updateDate(new Date(System.currentTimeMillis()))
                             .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_PRODUCT_PRICE","ADD PRICE "+newProductPrice.getUnitSalePrice()+" FOR PRODUCT "+newProductPrice.getProduct().getSku()+".",user.getUsername());
+            iAudit.save("ADD_PRODUCT_PRICE","PRECIO "+newProductPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+newProductPrice.getProduct().getSku()+" AGREGADO.",newProductPrice.getProduct().getSku(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -117,7 +117,7 @@ public class ProductPriceImpl implements IProductPrice {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_PRODUCT_PRICE","ADD PRICE "+newProductPrice.getUnitSalePrice()+" FOR PRODUCT "+newProductPrice.getProduct().getSku()+".",user.getUsername());
+                iAudit.save("ADD_PRODUCT_PRICE","PRECIO "+newProductPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+newProductPrice.getProduct().getSku()+" AGREGADO.",newProductPrice.getProduct().getSku(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -158,7 +158,7 @@ public class ProductPriceImpl implements IProductPrice {
                 productPrice.setUpdateDate(new Date(System.currentTimeMillis()));
                 productPrice.setTokenUser(user.getUsername());
                 productPriceRepository.save(productPrice);
-                iAudit.save("DELETE_PRODUCT_PRICE","DELETE PRODUCT PRICE "+productPrice.getUnitSalePrice()+" FOR PRODUCT "+productPrice.getProduct().getSku()+".",user.getUsername());
+                iAudit.save("DELETE_PRODUCT_PRICE","PRECIO "+productPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+productPrice.getProduct().getSku()+" DESACTIVADO.",productPrice.getProduct().getSku(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)

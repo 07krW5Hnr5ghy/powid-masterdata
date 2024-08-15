@@ -90,15 +90,12 @@ public class ProductPictureImpl implements IProductPicture {
                 pictureUrlList.add(url);
                 pictureNumber++;
             }
-            iAudit.save("ADD_PRODUCT_PICTURE","ADD "+pictures.size()+" PRODUCT PICTURES.",user.getUsername());
+            iAudit.save("ADD_PRODUCT_PICTURE","FOTOS ("+pictures.size()+") DE PRODUCTO DE MARKETING AGREGADAS.",product.getSku(),user.getUsername());
             return pictureUrlList;
-        }catch (RuntimeException | IOException e){
+        }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
             e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
         }
     }
 
@@ -148,7 +145,7 @@ public class ProductPictureImpl implements IProductPicture {
                     pictureUrlList.add(url);
                     pictureNumber++;
                 }
-                iAudit.save("ADD_PRODUCT_PICTURE","ADD "+pictures.size()+" PRODUCT PICTURES.",user.getUsername());
+                iAudit.save("ADD_PRODUCT_PICTURE","FOTOS ("+pictures.size()+") DE PRODUCTO DE MARKETING AGREGADAS.",product.getSku(),user.getUsername());
                 return pictureUrlList;
             }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
                 log.error(e.getMessage());

@@ -116,7 +116,7 @@ public class UserImpl implements IUser {
                             .tokenUser(tokenUser.getUsername())
                             .status(true)
                     .build());
-            iAudit.save("ADD_USER","ADD USER "+newUser.getUsername()+".",tokenUser.getUsername());
+            iAudit.save("ADD_USER","USUARIO "+newUser.getUsername()+" CREADO.",newUser.getUsername(),tokenUser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -204,7 +204,7 @@ public class UserImpl implements IUser {
                         .roleId(role.getId())
                         .tokenUser(tokenUser.getUsername())
                         .build());
-                iAudit.save("ADD_USER","ADD USER "+newUser.getUsername()+".",tokenUser.getUsername());
+                iAudit.save("ADD_USER","USUARIO "+newUser.getUsername()+" CREADO.",newUser.getUsername(),tokenUser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -251,7 +251,7 @@ public class UserImpl implements IUser {
                 userData.setPassword(requestUserSave.getPassword());
                 userData.setTokenUser(tokenUser.toUpperCase());
                 User updatedUser = userRepository.save(userData);
-                iAudit.save("UPDATE_USER","UPDATE USER "+updatedUser.getUsername()+".",user.getUsername());
+                iAudit.save("UPDATE_USER","USUARIO "+updatedUser.getUsername()+" ACTUALIZADO.",updatedUser.getUsername(),user.getUsername());
                 return UserDTO.builder()
                         .username(updatedUser.getUsername().toUpperCase())
                         .name(updatedUser.getName().toUpperCase())
@@ -299,7 +299,7 @@ public class UserImpl implements IUser {
                 dataUser.setStatus(false);
                 dataUser.setTokenUser(username.toUpperCase());
                 userRepository.save(dataUser);
-                iAudit.save("DELETE_USER","DELETE USER "+dataUser.getUsername()+".",tokenUserData.getUsername());
+                iAudit.save("DELETE_USER","USUARIO "+dataUser.getUsername()+" DESACTIVADO.",dataUser.getUsername(),tokenUserData.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -417,7 +417,7 @@ public class UserImpl implements IUser {
                 dataUser.setStatus(true);
                 dataUser.setTokenUser(tokenUserData.getUsername());
                 userRepository.save(dataUser);
-                iAudit.save("ACTIVATE_USER","ACTIVATE USER "+dataUser.getUsername()+".",tokenUserData.getUsername());
+                iAudit.save("ACTIVATE_USER","USUARIO "+dataUser.getUsername()+" DESACTIVADO.",dataUser.getUsername(),tokenUserData.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

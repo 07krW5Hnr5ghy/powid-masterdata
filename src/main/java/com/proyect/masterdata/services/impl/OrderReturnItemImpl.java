@@ -123,7 +123,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                         .build());
                 iGeneralStock.in(supplierProduct.getSerial(), requestOrderReturnItem.getQuantity(), user.getUsername());
                 iWarehouseStock.in(orderStock.getWarehouse(),supplierProduct, requestOrderReturnItem.getQuantity(), user);
-                iAudit.save("ADD_ORDER_RETURN_ITEM","ADD ORDER RETURN ITEM WITH SUPPLIER PRODUCT "+newOrderReturnItem.getSupplierProduct().getSerial()+" WITH "+newOrderReturnItem.getQuantity()+" UNITS.",user.getUsername());
+                iAudit.save("ADD_ORDER_RETURN_ITEM","PRODUCTO DE DEVOLUCION DE PEDIDO CON PRODUCTO DE INVENTARIO "+newOrderReturnItem.getSupplierProduct().getSerial()+" CON "+newOrderReturnItem.getQuantity()+" UNIDADES.",newOrderReturnItem.getOrderReturn().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -170,7 +170,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 orderReturnItemRepository.save(orderReturnItem);
                 iGeneralStock.out(supplierProduct.getSerial(), orderReturnItem.getQuantity(), user.getUsername());
                 iWarehouseStock.out(orderReturn.getOrderStock().getWarehouse(),supplierProduct, orderReturnItem.getQuantity(), user);
-                iAudit.save("DELETE_ORDER_RETURN_ITEM","DELETE ORDER RETURN ITEM WITH SUPPLIER PRODUCT "+orderReturnItem.getSupplierProduct().getSerial()+" WITH "+orderReturnItem.getQuantity()+" UNITS.",user.getUsername());
+                iAudit.save("DELETE_ORDER_RETURN_ITEM","PRODUCTO DE DEVOLUCION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderReturnItem.getSupplierProduct().getSerial()+" CON "+orderReturnItem.getQuantity()+" UNIDADES DESACTIVADO.",orderReturnItem.getOrderReturn().getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -217,7 +217,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 orderReturnItemRepository.save(orderReturnItem);
                 iGeneralStock.in(supplierProduct.getSerial(), orderReturnItem.getQuantity(), user.getUsername());
                 iWarehouseStock.in(orderReturn.getOrderStock().getWarehouse(),supplierProduct, orderReturnItem.getQuantity(), user);
-                iAudit.save("ACTIVATE_ORDER_RETURN_ITEM","ACTIVATE ORDER RETURN ITEM WITH SUPPLIER PRODUCT "+orderReturnItem.getSupplierProduct().getSerial()+" WITH "+orderReturnItem.getQuantity()+" UNITS.",user.getUsername());
+                iAudit.save("ACTIVATE_ORDER_RETURN_ITEM","PRODUCTO DE DEVOLUCION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderReturnItem.getSupplierProduct().getSerial()+" CON "+orderReturnItem.getQuantity()+" UNIDADES ACTIVADO.",orderReturnItem.getOrderReturn().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)
@@ -281,7 +281,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 orderReturnItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderReturnItem.setTokenUser(user.getUsername());
                 orderReturnItemRepository.save(orderReturnItem);
-                iAudit.save("UPDATE_ORDER_RETURN_ITEM","UPDATE ORDER RETURN ITEM WITH SUPPLIER PRODUCT "+orderReturnItem.getSupplierProduct().getSerial()+" WITH "+orderReturnItem.getQuantity()+" UNITS.",user.getUsername());
+                iAudit.save("UPDATE_ORDER_RETURN_ITEM","PRODUCTO DE DEVOLUCION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderReturnItem.getSupplierProduct().getSerial()+" CON "+orderReturnItem.getQuantity()+" UNIDADES ACTUALIZADO.",orderReturnItem.getOrderReturn().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

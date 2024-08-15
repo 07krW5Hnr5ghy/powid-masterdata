@@ -106,17 +106,15 @@ public class OrderStockImpl implements IOrderStock {
             ordering.setOrderState(orderState);
             ordering.setOrderStateId(orderState.getId());
             orderingRepository.save(ordering);
-            iAudit.save("ADD_ORDER_STOCK","ADD ORDER STOCK "+orderStock.getOrderId()+".",user.getUsername());
+            iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+orderStock.getOrderId()+" CREADA.",orderStock.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .message(Constants.register)
                     .code(200)
                     .build();
-        }catch (RuntimeException e){
+        }catch (RuntimeException | ExecutionException | InterruptedException e){
             log.error(e.getMessage());
             e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -190,17 +188,15 @@ public class OrderStockImpl implements IOrderStock {
                 ordering.setOrderState(orderState);
                 ordering.setOrderStateId(orderState.getId());
                 orderingRepository.save(ordering);
-                iAudit.save("ADD_ORDER_STOCK","ADD ORDER STOCK "+orderStock.getOrderId()+".",user.getUsername());
+                iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+orderStock.getOrderId()+" CREADA.",orderStock.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
                         .build();
-            }catch (RuntimeException e){
+            }catch (RuntimeException | ExecutionException | InterruptedException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (ExecutionException | InterruptedException e) {
-                throw new RuntimeException(e);
             }
         });
     }
@@ -294,7 +290,28 @@ public class OrderStockImpl implements IOrderStock {
 
     @Override
     public CompletableFuture<List<OrderStockDTO>> listOrderStockFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
-        return null;
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderStock> orderStocks;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
+                orderStocks = orderStockRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (orderStocks.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
+                    .orderId(orderStock.getId())
+                    .warehouse(orderStock.getWarehouse().getName())
+                    .registrationDate(orderStock.getRegistrationDate())
+                    .build()
+            ).toList();
+        });
     }
 
     @Override

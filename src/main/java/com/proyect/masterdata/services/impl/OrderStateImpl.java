@@ -62,7 +62,7 @@ public class OrderStateImpl implements IOrderState {
             try {
                 OrderState newOrderState = orderStateRepository.save(stateMapper.stateToName(RequestStateSave.builder()
                         .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
-                iAudit.save("ADD_ORDER_STATE","ADD ORDER STATE "+newOrderState.getName()+".",datauser.getUsername());
+                iAudit.save("ADD_ORDER_STATE","ESTADO DE PEDIDO "+newOrderState.getName()+" CREADO.",newOrderState.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -101,7 +101,7 @@ public class OrderStateImpl implements IOrderState {
                 orderState.setRegistrationDate(new Date(System.currentTimeMillis()));
                 orderState.setTokenUser(datauser.getUsername());
                 orderStateRepository.save(orderState);
-                iAudit.save("DELETE_ORDER_STATE","DELETE ORDER STATE "+orderState.getName()+".",datauser.getUsername());
+                iAudit.save("DELETE_ORDER_STATE","ESTADO DE PEDIDO "+orderState.getName()+" DESACTIVADO.",orderState.getName(),datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -139,7 +139,7 @@ public class OrderStateImpl implements IOrderState {
                 orderState.setRegistrationDate(new Date(System.currentTimeMillis()));
                 orderState.setTokenUser(datauser.getUsername());
                 orderStateRepository.save(orderState);
-                iAudit.save("ACTIVATE_ORDER_STATE","ACTIVATE ORDER STATE "+orderState.getName()+".",datauser.getUsername());
+                iAudit.save("ACTIVATE_ORDER_STATE","ESTADO DE PEDIDO "+orderState.getName()+" ACTIVADO.",orderState.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

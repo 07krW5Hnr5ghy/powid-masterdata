@@ -93,7 +93,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                     .supplierId(supplier.getId())
                     .tokenUser(user.getUsername())
                     .build());
-            iAudit.save("ADD_SUPPLIER_PRODUCT","ADD SUPPLIER PRODUCT "+newSupplierProduct.getSerial()+".",user.getUsername());
+            iAudit.save("ADD_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+newSupplierProduct.getSerial()+" CREADO.",newSupplierProduct.getSerial(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -154,7 +154,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                         .supplierId(supplier.getId())
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_SUPPLIER_PRODUCT","ADD SUPPLIER PRODUCT "+newSupplierProduct.getSerial()+".",user.getUsername());
+                iAudit.save("ADD_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+newSupplierProduct.getSerial()+" CREADO.",newSupplierProduct.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -194,7 +194,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                 supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
                 supplierProduct.setTokenUser(user.getUsername());
                 supplierProductRepository.save(supplierProduct);
-                iAudit.save("DELETE_SUPPLIER_PRODUCT","DELETE SUPPLIER PRODUCT "+supplierProduct.getSerial()+".",user.getUsername());
+                iAudit.save("DELETE_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" DESACTIVADO.",supplierProduct.getSerial(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -232,7 +232,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                 supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
                 supplierProduct.setTokenUser(user.getUsername());
                 supplierProductRepository.save(supplierProduct);
-                iAudit.save("ACTIVATE_SUPPLIER_PRODUCT","ACTIVATE SUPPLIER PRODUCT "+supplierProduct.getSerial()+".",user.getUsername());
+                iAudit.save("ACTIVATE_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" ACTIVADO.",supplierProduct.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

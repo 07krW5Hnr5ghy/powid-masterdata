@@ -63,7 +63,7 @@ public class AccessImpl implements IAccess {
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_ACCESS","ADD ACCESS " + newAccess.getName() + " .",user.getUsername());
+            iAudit.save("ADD_ACCESS","ACCESO " + newAccess.getName() + "CREADO .","NO APLICA",user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -103,7 +103,7 @@ public class AccessImpl implements IAccess {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_ACCESS","ADD ACCESS " + newAccess.getName() + " .",user.getUsername());
+                iAudit.save("ADD_ACCESS","ACCESO " + newAccess.getName() + " CREADO .","NO APLICA",user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -141,7 +141,7 @@ public class AccessImpl implements IAccess {
             access.setUpdateDate(new Date(System.currentTimeMillis()));
             access.setTokenUser(tokenUser.toUpperCase());
             accessRepository.save(access);
-            iAudit.save("DELETE_ACCESS","DELETE ACCESS "+access.getName()+" .",user.getUsername());
+            iAudit.save("DELETE_ACCESS","ACCESO "+access.getName()+" DESACTIVADO.","NO APLICA",user.getUsername());
             return ResponseDelete.builder()
                     .message(Constants.delete)
                     .code(200)
@@ -179,7 +179,7 @@ public class AccessImpl implements IAccess {
                 access.setUpdateDate(new Date(System.currentTimeMillis()));
                 access.setTokenUser(tokenUser.toUpperCase());
                 accessRepository.save(access);
-                iAudit.save("DELETE_ACCESS","DELETE ACCESS "+access.getName()+" .",user.getUsername());
+                iAudit.save("DELETE_ACCESS","ACCESO "+access.getName()+" DESACTIVADO.","NO APLICA",user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -296,7 +296,7 @@ public class AccessImpl implements IAccess {
                 access.setUpdateDate(new Date(System.currentTimeMillis()));
                 access.setTokenUser(tokenUser.toUpperCase());
                 accessRepository.save(access);
-                iAudit.save("ACTIVATE_ACCESS","ACTIVATE ACCESS " +  access.getName() + " .",user.getUsername());
+                iAudit.save("ACTIVATE_ACCESS","ACCESO " +  access.getName() + " ACTIVADO.","NO APLICA",user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

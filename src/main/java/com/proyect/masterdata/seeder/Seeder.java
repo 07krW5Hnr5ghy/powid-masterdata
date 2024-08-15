@@ -224,6 +224,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_COLOR","ADMIN1");
                         iAuditEvent.save("ACTIVATE_COURIER","ADMIN1");
                         iAuditEvent.save("ACTIVATE_CUSTOMER_TYPE","ADMIN1");
+                        iAuditEvent.save("ACTIVATE_DEPARTMENT","ADMIN1");
                         iAuditEvent.save("ACTIVATE_DISTRICT","ADMIN1");
                         iAuditEvent.save("ACTIVATE_DEMO_ACCOUNT","ADMIN1");
                         iAuditEvent.save("ACTIVATE_ENTRY_CHANNEL","ADMIN1");
@@ -271,8 +272,12 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_COLOR","ADMIN1");
                         iAuditEvent.save("ADD_COUNTRY","ADMIN1");
                         iAuditEvent.save("ADD_COURIER","ADMIN1");
+                        iAuditEvent.save("ADD_COURIER_PICTURE","ADMIN1");
+                        iAuditEvent.save("ADD_CUSTOMER","ADMIN1");
                         iAuditEvent.save("ADD_CUSTOMER_TYPE","ADMIN1");
+                        iAuditEvent.save("ADD_DELIVERY_POINT","ADMIN1");
                         iAuditEvent.save("ADD_DEPARTMENT","ADMIN1");
+                        iAuditEvent.save("ADD_DISCOUNT","ADMIN1");
                         iAuditEvent.save("ADD_DISTRICT","ADMIN1");
                         iAuditEvent.save("ADD_ENTRY_CHANNEL","ADMIN1");
                         iAuditEvent.save("ADD_GENERAL_STOCK","ADMIN1");
@@ -308,7 +313,6 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_PURCHASE_ITEM","ADMIN1");
                         iAuditEvent.save("ADD_ROLE","ADMIN1");
                         iAuditEvent.save("ADD_ROLE_ACCESS","ADMIN1");
-                        iAuditEvent.save("ADD_SALE","ADMIN1");
                         iAuditEvent.save("ADD_SALE_CHANNEL","ADMIN1");
                         iAuditEvent.save("ADD_PURCHASE_TYPE","ADMIN1");
                         iAuditEvent.save("ADD_SIZE","ADMIN1");
@@ -316,8 +320,8 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_STOCK_REPLENISHMENT_EXCEL","ADMIN1");
                         iAuditEvent.save("ADD_STOCK_RETURN_EXCEL","ADMIN1");
                         iAuditEvent.save("ADD_STOCK_TRANSFER_EXCEL","ADMIN1");
-                        iAuditEvent.save("ADD_STOCK_REPLENISMENT","ADMIN1");
-                        iAuditEvent.save("ADD_STOCK_REPLENISMENT_ITEM","ADMIN1");
+                        iAuditEvent.save("ADD_STOCK_REPLENISHMENT","ADMIN1");
+                        iAuditEvent.save("ADD_STOCK_REPLENISHMENT_ITEM","ADMIN1");
                         iAuditEvent.save("ADD_STOCK_RETURN","ADMIN1");
                         iAuditEvent.save("ADD_STOCK_RETURN_ITEM","ADMIN1");
                         iAuditEvent.save("ADD_STOCK_TRANSACTION","ADMIN1");
@@ -376,7 +380,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_PURCHASE_TYPE","ADMIN1");
                         iAuditEvent.save("DELETE_SIZE","ADMIN1");
                         iAuditEvent.save("DELETE_SIZE_TYPE","ADMIN1");
-                        iAuditEvent.save("DELETE_STOCK_REPLENISMENT_ITEM","ADMIN1");
+                        iAuditEvent.save("DELETE_STOCK_REPLENISHMENT_ITEM","ADMIN1");
                         iAuditEvent.save("DELETE_STOCK_TRANSACTION_TYPE","ADMIN1");
                         iAuditEvent.save("DELETE_STORE","ADMIN1");
                         iAuditEvent.save("DELETE_STORE_TYPE","ADMIN1");
@@ -404,6 +408,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("UPDATE_ORDER_ITEM","ADMIN1");
                         iAuditEvent.save("UPDATE_ORDER_RETURN_ITEM","ADMIN1");
                         iAuditEvent.save("UPDATE_ORDER_STOCK_ITEM","ADMIN1");
+                        iAuditEvent.save("UPDATE_PRODUCT","ADMIN1");
                         iAuditEvent.save("UPDATE_STOCK_REPLENISHMENT_ITEM","ADMIN1");
                         iAuditEvent.save("UPDATE_STORE","ADMIN1");
                         iAuditEvent.save("UPDATE_USER","ADMIN1");

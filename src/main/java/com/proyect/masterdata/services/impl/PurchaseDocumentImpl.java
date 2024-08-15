@@ -56,7 +56,7 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_PURCHASE_DOCUMENT","ADD PURCHASE DOCUMENT "+ newPurchaseDocument.getName()+".",user.getUsername());
+                iAudit.save("ADD_PURCHASE_DOCUMENT","DOCUMENTO DE COMPRA "+ newPurchaseDocument.getName()+" CREADO.",newPurchaseDocument.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -95,7 +95,7 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
                 purchaseDocument.setUpdateDate(new Date(System.currentTimeMillis()));
                 purchaseDocument.setTokenUser(user.getUsername());
                 purchaseDocumentRepository.save(purchaseDocument);
-                iAudit.save("DELETE_PURCHASE_DOCUMENT","DELETE PURCHASE DOCUMENT "+ purchaseDocument.getName()+".",user.getUsername());
+                iAudit.save("DELETE_PURCHASE_DOCUMENT","DOCUMENTO DE COMPRA "+ purchaseDocument.getName()+" DESACTIVADO.",purchaseDocument.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -134,7 +134,7 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
                 purchaseDocument.setUpdateDate(new Date(System.currentTimeMillis()));
                 purchaseDocument.setTokenUser(user.getUsername());
                 purchaseDocumentRepository.save(purchaseDocument);
-                iAudit.save("ACTIVATE_PURCHASE_DOCUMENT","ACTIVATE PURCHASE DOCUMENT "+ purchaseDocument.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_PURCHASE_DOCUMENT","DOCUMENTO DE COMPRA "+ purchaseDocument.getName()+" ACTIVADO.",purchaseDocument.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

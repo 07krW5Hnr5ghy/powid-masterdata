@@ -75,7 +75,7 @@ public class DistrictImpl implements IDistrict {
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
-            iAudit.save("ADD_DISTRICT","ADD DISTRICT "+newDistrict.getName()+".",user.toUpperCase());
+            iAudit.save("ADD_DISTRICT","DISTRITO "+newDistrict.getName()+" CREADO.",newDistrict.getName(),user.toUpperCase());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -122,7 +122,7 @@ public class DistrictImpl implements IDistrict {
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .build());
-                iAudit.save("ADD_DISTRICT","ADD DISTRICT "+newDistrict.getName()+".",user.toUpperCase());
+                iAudit.save("ADD_DISTRICT","DISTRITO "+newDistrict.getName()+" CREADO.",newDistrict.getName(),user.toUpperCase());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -160,7 +160,7 @@ public class DistrictImpl implements IDistrict {
                 district.setUpdateDate(new Date(System.currentTimeMillis()));
                 district.setTokenUser(user.getUsername());
                 districtRepository.save(district);
-                iAudit.save("DELETE_DISTRICT","DELETE DISTRICT "+district.getName()+".",user.getUsername());
+                iAudit.save("DELETE_DISTRICT","DISTRITO "+district.getName()+" DESACTIVADO.",district.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -197,7 +197,7 @@ public class DistrictImpl implements IDistrict {
                 district.setUpdateDate(new Date(System.currentTimeMillis()));
                 district.setTokenUser(user.getUsername());
                 districtRepository.save(district);
-                iAudit.save("ACTIVATE_DISTRICT","ACTIVATE DISTRICT "+district.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_DISTRICT","DISTRITO "+district.getName()+" ACTIVADO.",district.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

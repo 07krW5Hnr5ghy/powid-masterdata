@@ -61,7 +61,7 @@ public class SaleChannelImpl implements ISaleChannel {
         try {
             SaleChannel newSaleChannel = saleChannelRepository.save(saleChannelMapper.saleChannelToName(RequestSaleChannelSave.builder()
                     .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
-            iAudit.save("ADD_SALE_CHANNEL","ADD SALE CHANNEL "+newSaleChannel.getName()+".",datauser.getUsername());
+            iAudit.save("ADD_SALE_CHANNEL","CANAL DE VENTA "+newSaleChannel.getName()+" CREADO.",newSaleChannel.getName(),datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -96,7 +96,7 @@ public class SaleChannelImpl implements ISaleChannel {
             try {
                 SaleChannel newSaleChannel = saleChannelRepository.save(saleChannelMapper.saleChannelToName(RequestSaleChannelSave.builder()
                         .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
-                iAudit.save("ADD_SALE_CHANNEL","ADD SALE CHANNEL "+newSaleChannel.getName()+".",datauser.getUsername());
+                iAudit.save("ADD_SALE_CHANNEL","CANAL DE VENTA "+newSaleChannel.getName()+" CREADO.",newSaleChannel.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -134,7 +134,7 @@ public class SaleChannelImpl implements ISaleChannel {
                 saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
                 saleChannel.setTokenUser(datauser.getUsername());
                 saleChannelRepository.save(saleChannel);
-                iAudit.save("DELETE_SALE_CHANNEL","DELETE SALE CHANNEL "+saleChannel.getName()+".",datauser.getUsername());
+                iAudit.save("DELETE_SALE_CHANNEL","CANAL DE VENTA "+saleChannel.getName()+" DESACTIVADO.",saleChannel.getName(),datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -228,7 +228,7 @@ public class SaleChannelImpl implements ISaleChannel {
                 saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
                 saleChannel.setTokenUser(datauser.getUsername());
                 saleChannelRepository.save(saleChannel);
-                iAudit.save("ACTIVATE_SALE_CHANNEL","ACTIVATE SALE CHANNEL "+saleChannel.getName()+".",datauser.getUsername());
+                iAudit.save("ACTIVATE_SALE_CHANNEL","CANAL DE VENTA "+saleChannel.getName()+" ACTIVADO.",saleChannel.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

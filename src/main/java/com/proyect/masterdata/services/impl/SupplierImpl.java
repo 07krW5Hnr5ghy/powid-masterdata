@@ -105,7 +105,7 @@ public class SupplierImpl implements ISupplier {
                     .districtId(district.getId())
                     .tokenUser(user.getUsername().toUpperCase())
                     .build());
-            iAudit.save("ADD_SUPPLIER","ADD SUPPLIER WITH RUC "+newSupplier.getRuc()+".",user.getUsername());
+            iAudit.save("ADD_SUPPLIER","PROVEEDOR CON RUC "+newSupplier.getRuc()+" CREADO.",newSupplier.getRuc(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -182,7 +182,7 @@ public class SupplierImpl implements ISupplier {
                         .districtId(district.getId())
                         .tokenUser(user.getUsername().toUpperCase())
                         .build());
-                iAudit.save("ADD_SUPPLIER","ADD SUPPLIER WITH RUC "+newSupplier.getRuc()+".",user.getUsername());
+                iAudit.save("ADD_SUPPLIER","PROVEEDOR CON RUC "+newSupplier.getRuc()+" CREADO.",newSupplier.getRuc(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -222,7 +222,7 @@ public class SupplierImpl implements ISupplier {
                 supplier.setUpdateDate(new Date(System.currentTimeMillis()));
                 supplier.setTokenUser(user.getUsername());
                 supplierRepository.save(supplier);
-                iAudit.save("DELETE_SUPPLIER","DELETE SUPPLIER WITH RUC "+supplier.getRuc()+".",user.getUsername());
+                iAudit.save("DELETE_SUPPLIER","PROVEEDOR CON RUC "+supplier.getRuc()+" DESACTIVADO.",supplier.getRuc(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -262,7 +262,7 @@ public class SupplierImpl implements ISupplier {
                 supplier.setUpdateDate(new Date(System.currentTimeMillis()));
                 supplier.setTokenUser(user.getUsername());
                 supplierRepository.save(supplier);
-                iAudit.save("ACTIVATE_SUPPLIER","ACTIVATE SUPPLIER WITH RUC "+supplier.getRuc()+".",user.getUsername());
+                iAudit.save("ACTIVATE_SUPPLIER","PROVEEDOR CON RUC "+supplier.getRuc()+" ACTIVADO.",supplier.getRuc(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
