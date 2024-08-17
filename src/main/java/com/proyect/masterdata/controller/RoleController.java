@@ -45,7 +45,7 @@ public class RoleController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ROLE_GET')")
     public ResponseEntity<Page<RoleDTO>> list(
             @RequestParam(value = "name", required = false) String name,
@@ -58,7 +58,7 @@ public class RoleController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "status-false")
+    @GetMapping(value = "pagination/status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ROLE_GET')")
     public ResponseEntity<Page<RoleDTO>> listStatusFalse(
             @RequestParam(value = "name", required = false) String name,
@@ -69,6 +69,12 @@ public class RoleController {
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<RoleDTO>> result = iRole.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<RoleDTO>> listSelect() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<RoleDTO>> result = iRole.listRole();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @PostMapping("activate")

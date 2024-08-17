@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Collections;
 import java.util.List;
@@ -211,6 +212,7 @@ public class UserImpl implements IUser {
                         .build();
             } catch (RuntimeException e) {
                 log.error(e);
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
@@ -312,20 +314,34 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public CompletableFuture<Page<UserQueryDTO>> list(String user, String clientRuc, String dni, String email, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<UserQueryDTO>> list(String user,List<String> names, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<User> userPage;
             Long clientId;
             try {
-                clientId = clientRepository.findByRucAndStatusTrue(clientRuc).getId();
-                userPage = userRepositoryCustom.searchForUser(user, clientId, dni, email, sort, sortColumn, pageNumber,
-                        pageSize, true);
+                List<String> namesUppercase;
+
+                if(names != null && !names.isEmpty()){
+                    namesUppercase = names.stream().map(String::toUpperCase).toList();
+                }else{
+                    namesUppercase = new ArrayList<>();
+                }
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                userPage = userRepositoryCustom.searchForUser(
+                        clientId,
+                        namesUppercase,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
             if (userPage.isEmpty()) {
+                System.out.println("is empty");
                 return new PageImpl<>(Collections.emptyList());
             }
             List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
@@ -352,15 +368,28 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public CompletableFuture<Page<UserQueryDTO>> listFalse(String user, String clientRuc, String dni, String email, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<UserQueryDTO>> listFalse(String user, List<String>names,String sort, String sortColumn, Integer pageNumber,
                                    Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<User> userPage;
             Long clientId;
             try {
-                clientId = clientRepository.findByRucAndStatusTrue(clientRuc).getId();
-                userPage = userRepositoryCustom.searchForUser(user, clientId, dni, email, sort, sortColumn, pageNumber,
-                        pageSize, false);
+                List<String> namesUppercase;
+
+                if(names != null && !names.isEmpty()){
+                    namesUppercase = names.stream().map(String::toUpperCase).toList();
+                }else{
+                    namesUppercase = new ArrayList<>();
+                }
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                userPage = userRepositoryCustom.searchForUser(
+                        clientId,
+                        namesUppercase,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);

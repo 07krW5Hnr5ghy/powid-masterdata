@@ -21,4 +21,5 @@ public interface IRole {
         CompletableFuture<Page<RoleDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
                         Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<RoleDTO>> listRole() throws BadRequestExceptions,InternalErrorExceptions;
 }

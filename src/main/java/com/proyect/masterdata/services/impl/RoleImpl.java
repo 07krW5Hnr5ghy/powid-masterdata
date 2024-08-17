@@ -235,4 +235,21 @@ public class RoleImpl implements IRole {
         });
     }
 
+    @Override
+    public CompletableFuture<List<RoleDTO>> listRole() throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Role> roleList;
+            try {
+                roleList = roleRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(roleList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return roleMapper.listRoleToListRoleDTO(roleList);
+        });
+    }
+
 }
