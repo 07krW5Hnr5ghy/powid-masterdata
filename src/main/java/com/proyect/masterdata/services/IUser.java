@@ -21,6 +21,7 @@ public interface IUser {
     CompletableFuture<Page<UserQueryDTO>> list(
             String user,
             List<String> names,
+            List<String> usernames,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -28,10 +29,12 @@ public interface IUser {
     CompletableFuture<Page<UserQueryDTO>> listFalse(
             String user,
             List<String> names,
+            List<String> usernames,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize
     ) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String username,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<UserQueryDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

@@ -56,11 +56,12 @@ public class UserController {
     public ResponseEntity<Page<UserQueryDTO>> list(
             @RequestParam(value = "user",required = false) String user,
             @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "usernames",required = false) List<String> usernames,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<UserQueryDTO>> result = iUser.list(user, names,sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<UserQueryDTO>> result = iUser.list(user, names,usernames,sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -69,11 +70,12 @@ public class UserController {
     public ResponseEntity<Page<UserQueryDTO>> listFalse(
             @RequestParam(value = "user",required = false) String user,
             @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "usernames",required = false) List<String> usernames,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<UserQueryDTO>> result = iUser.listFalse(user, names,sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<UserQueryDTO>> result = iUser.listFalse(user, names,usernames,sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -84,6 +86,14 @@ public class UserController {
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iUser.activate(username,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<UserQueryDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InterruptedException, ExecutionException {
+        CompletableFuture<List<UserQueryDTO>> result = iUser.listFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

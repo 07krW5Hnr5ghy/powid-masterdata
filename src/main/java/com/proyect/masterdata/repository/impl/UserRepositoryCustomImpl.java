@@ -24,6 +24,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     public Page<User> searchForUser(
                                     Long clientId,
                                     List<String> names,
+                                    List<String> usernames,
                                     String sort,
                                     String sortColumn,
                                     Integer pageNumber,
@@ -38,6 +39,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         List<Predicate> conditions = predicate(
                 clientId,
                 names,
+                usernames,
                 status,
                 criteriaBuilder,
                 itemRoot);
@@ -67,6 +69,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         Long count = getOrderCount(
                 clientId,
                 names,
+                usernames,
                 status);
 
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
@@ -75,6 +78,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private List<Predicate> predicate(
             Long clientId,
             List<String> names,
+            List<String> usernames,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<User> itemRoot) {
@@ -83,6 +87,10 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
         if (!names.isEmpty()) {
             conditions.add(criteriaBuilder.and(itemRoot.get("name").in(names)));
+        }
+
+        if(!usernames.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("username").in(usernames)));
         }
 
         if (clientId != null) {
@@ -104,6 +112,10 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
         List<Order> userList = new ArrayList<>();
 
+        if (sortColumn.equalsIgnoreCase("username")) {
+            userList.add(criteriaBuilder.asc(itemRoot.get("username")));
+        }
+
         if (sortColumn.equalsIgnoreCase("name")) {
             userList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
@@ -120,6 +132,10 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
         List<Order> warehouseList = new ArrayList<>();
 
+        if (sortColumn.equalsIgnoreCase("username")) {
+            warehouseList.add(criteriaBuilder.desc(itemRoot.get("username")));
+        }
+
         if (sortColumn.equalsIgnoreCase("name")) {
             warehouseList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
@@ -135,6 +151,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private Long getOrderCount(
             Long clientId,
             List<String> names,
+            List<String> usernames,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -143,6 +160,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         List<Predicate> conditions = predicate(
                 clientId,
                 names,
+                usernames,
                 status,
                 criteriaBuilder,
                 itemRoot);

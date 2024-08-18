@@ -314,23 +314,36 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public CompletableFuture<Page<UserQueryDTO>> list(String user,List<String> names, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<UserQueryDTO>> list(
+            String user,
+            List<String> names,
+            List<String> usernames,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<User> userPage;
             Long clientId;
             try {
                 List<String> namesUppercase;
+                List<String> usernamesUppercase;
 
                 if(names != null && !names.isEmpty()){
                     namesUppercase = names.stream().map(String::toUpperCase).toList();
                 }else{
                     namesUppercase = new ArrayList<>();
                 }
+                if(usernames != null && !usernames.isEmpty()){
+                    usernamesUppercase = usernames.stream().map(String::toUpperCase).toList();
+                }else{
+                    usernamesUppercase = new ArrayList<>();
+                }
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 userPage = userRepositoryCustom.searchForUser(
                         clientId,
                         namesUppercase,
+                        usernamesUppercase,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -341,7 +354,6 @@ public class UserImpl implements IUser {
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
             if (userPage.isEmpty()) {
-                System.out.println("is empty");
                 return new PageImpl<>(Collections.emptyList());
             }
             List<UserQueryDTO> userDTOList = userPage.getContent().stream().map(userData -> {
@@ -368,23 +380,38 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public CompletableFuture<Page<UserQueryDTO>> listFalse(String user, List<String>names,String sort, String sortColumn, Integer pageNumber,
-                                   Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<UserQueryDTO>> listFalse(
+            String user,
+            List<String>names,
+            List<String> usernames,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<User> userPage;
             Long clientId;
             try {
                 List<String> namesUppercase;
+                List<String> usernamesUppercase;
 
                 if(names != null && !names.isEmpty()){
                     namesUppercase = names.stream().map(String::toUpperCase).toList();
                 }else{
                     namesUppercase = new ArrayList<>();
                 }
+
+                if(usernames != null && !usernames.isEmpty()){
+                    usernamesUppercase = usernames.stream().map(String::toUpperCase).toList();
+                }else{
+                    usernamesUppercase = new ArrayList<>();
+                }
+
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 userPage = userRepositoryCustom.searchForUser(
                         clientId,
                         namesUppercase,
+                        usernamesUppercase,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -455,6 +482,42 @@ public class UserImpl implements IUser {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<UserQueryDTO>> listFilter(String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<User> userList;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(username.toUpperCase()).getClientId();
+                userList = userRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(userList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return userList.stream().map(user -> {
+                List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(user.getId());
+                return UserQueryDTO.builder()
+                    .address(user.getAddress())
+                    .district(user.getDistrict().getName())
+                    .dni(user.getDni())
+                    .email(user.getEmail())
+                    .gender(user.getGender())
+                    .mobile(user.getMobile())
+                    .name(user.getName())
+                    .surname(user.getSurname())
+                    .user(user.getUsername())
+                    .roleNames(userRoles.stream().map(userRole -> {
+                        Role role = roleRepository.findById(userRole.getRoleId()).orElse(null);
+                        return role.getName();
+                    }).toList())
+                    .build();
+            }).toList();
         });
     }
 }

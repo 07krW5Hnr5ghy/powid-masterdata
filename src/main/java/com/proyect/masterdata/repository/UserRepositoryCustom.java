@@ -11,6 +11,7 @@ public interface UserRepositoryCustom {
     Page<User> searchForUser(
             Long clientId,
             List<String> names,
+            List<String> usernames,
             String sort,
             String sortColumn,
             Integer pageNumber,
