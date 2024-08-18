@@ -139,6 +139,18 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             orderingList.add(criteriaBuilder.asc(itemRoot.get("storeId")));
         }
 
+        if(sortColumn.equalsIgnoreCase("updateDate")){
+            orderingList.add(criteriaBuilder.asc(itemRoot.get(
+                    "updateDate"
+            )));
+        }
+
+        if(sortColumn.equalsIgnoreCase("registrationDate")){
+            orderingList.add(criteriaBuilder.asc(itemRoot.get(
+                    "registrationDate"
+            )));
+        }
+
         return orderingList;
 
     }
@@ -181,6 +193,18 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
 
         if(sortColumn.equals("storeId")){
             orderingList.add(criteriaBuilder.desc(itemRoot.get("storeId")));
+        }
+
+        if(sortColumn.equalsIgnoreCase("updateDate")){
+            orderingList.add(criteriaBuilder.desc(itemRoot.get(
+                    "updateDate"
+            )));
+        }
+
+        if(sortColumn.equalsIgnoreCase("registrationDate")){
+            orderingList.add(criteriaBuilder.desc(itemRoot.get(
+                    "registrationDate"
+            )));
         }
 
         return orderingList;
