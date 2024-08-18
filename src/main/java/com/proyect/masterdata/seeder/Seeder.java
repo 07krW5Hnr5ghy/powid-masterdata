@@ -104,7 +104,7 @@ public class Seeder implements CommandLineRunner {
                                         new Date(System.currentTimeMillis()), "SISTEMA"));
 
                         Role role = roleRepository.save(new Role(
-                                1L, "ADMINISTRATION", true, new Date(System.currentTimeMillis()),
+                                1L, "ADMINISTRACION", true, new Date(System.currentTimeMillis()),
                                 new Date(System.currentTimeMillis()), "SISTEMA"));
 
                         // department, province and district to create system user
@@ -557,48 +557,48 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("WAREHOUSE_POST","ADMIN1");
                         iAccess.save("WAREHOUSE_STOCK_GET","ADMIN1");
                         // roles
-                        iRole.save("BUSINESS","ADMIN1");
-                        iRole.save("SALES","ADMIN1");
+                        iRole.save("NEGOCIO","ADMIN1");
+                        iRole.save("VENTAS","ADMIN1");
                         iRole.save("STOCK","ADMIN1");
-                        iRole.save("CUSTOMER_SERVICE","ADMIN1");
+                        iRole.save("SERVICIO_CLIENTE","ADMIN1");
                         iRole.save("COURIER","ADMIN1");
                         iRole.save("MARKETING","ADMIN1");
                         // roles by access
-                        iRoleAccess.save("SALES","BRAND_GET","ADMIN1");
-                        iRoleAccess.save("SALES","CANCELLATION_REASON_GET","ADMIN1");
-                        iRoleAccess.save("SALES","CANCELLED_ORDER_GET","ADMIN1");
-                        iRoleAccess.save("SALES","CANCELLED_ORDER_POST","ADMIN1");
-                        iRoleAccess.save("SALES","COURIER_GET","ADMIN1");
-                        iRoleAccess.save("SALES","MODEL_GET","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_GET","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_POST","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_PUT","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_ITEM_POST","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_ITEM_PUT","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_ITEM_DELETE","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_PAYMENT_METHOD_GET","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_PAYMENT_STATE_GET","ADMIN1");
-                        iRoleAccess.save("SALES","ORDER_STATE_GET","ADMIN1");
-                        iRoleAccess.save("SALES","PRODUCT_GET","ADMIN1");
-                        iRoleAccess.save("SALES","STORE_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","BRAND_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","CANCELLATION_REASON_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","CANCELLED_ORDER_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","CANCELLED_ORDER_POST","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","MODEL_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","COURIER_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_PUT","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_ITEM_POST","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_ITEM_PUT","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_ITEM_DELETE","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_PAYMENT_METHOD_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_PAYMENT_STATE_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","ORDER_STATE_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","PRODUCT_GET","ADMIN1");
-                        iRoleAccess.save("CUSTOMER_SERVICE","STORE_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","BRAND_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","CANCELLATION_REASON_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","CANCELLED_ORDER_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","CANCELLED_ORDER_POST","ADMIN1");
+                        iRoleAccess.save("VENTAS","COURIER_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","MODEL_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","ORDER_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","ORDER_POST","ADMIN1");
+                        iRoleAccess.save("VENTAS","ORDER_PUT","ADMIN1");
+                        iRoleAccess.save("VENTAS","ORDER_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","ORDER_ITEM_POST","ADMIN1");
+                        iRoleAccess.save("VENTAS","ORDER_ITEM_PUT","ADMIN1");
+                        iRoleAccess.save("VENTAS","ORDER_ITEM_DELETE","ADMIN1");
+                        iRoleAccess.save("VENTAS","ORDER_PAYMENT_METHOD_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","ORDER_PAYMENT_STATE_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","ORDER_STATE_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","PRODUCT_GET","ADMIN1");
+                        iRoleAccess.save("VENTAS","STORE_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","BRAND_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","CANCELLATION_REASON_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","CANCELLED_ORDER_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","CANCELLED_ORDER_POST","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","MODEL_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","COURIER_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_PUT","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_ITEM_POST","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_ITEM_PUT","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_ITEM_DELETE","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_PAYMENT_METHOD_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_PAYMENT_STATE_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_STATE_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","PRODUCT_GET","ADMIN1");
+                        iRoleAccess.save("SERVICIO_CLIENTE","STORE_GET","ADMIN1");
                         iRoleAccess.save("MARKETING","BRAND_GET","ADMIN1");
                         iRoleAccess.save("MARKETING","BRAND_POST","ADMIN1");
                         iRoleAccess.save("MARKETING","BRAND_DELETE","ADMIN1");
@@ -650,152 +650,152 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("STOCK","WAREHOUSE_GET","ADMIN1");
                         iRoleAccess.save("STOCK","WAREHOUSE_POST","ADMIN1");
                         iRoleAccess.save("COURIER","COURIER_PUT","ADMIN1");
-                        iRoleAccess.save("BUSINESS","BRAND_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","CLIENT_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","COLOR_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","CANCELLED_ORDER_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","COURIER_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","COURIER_POST","ADMIN1");
-                        iRoleAccess.save("BUSINESS","GENERAL_STOCK_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","MEMBERSHIP_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","MEMBERSHIP_PAYMENT_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","MODEL_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","ORDER_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","ORDER_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","ORDER_STOCK_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","ORDER_STOCK_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","ORDER_PAYMENT_METHOD_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","ORDER_PAYMENT_STATE_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","ORDER_STATE_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","PRODUCT_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","PURCHASE_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","PURCHASE_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","ROLE_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","SIZE_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","SIZE_TYPE_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STOCK_REPLENISHMENT_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STOCK_REPLENISHMENT_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STOCK_RETURN_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STOCK_RETURN_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STOCK_TRANSACTION_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STOCK_TRANSACTION_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STOCK_TRANSFER_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STOCK_TRANSFER_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STORE_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STORE_PUT","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STORE_POST","ADMIN1");
-                        iRoleAccess.save("BUSINESS","STORE_DELETE","ADMIN1");
-                        iRoleAccess.save("BUSINESS","SUBSCRIPTION_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","SUBSCRIPTION_PAYMENT_POST","ADMIN1");
-                        iRoleAccess.save("BUSINESS","SUPPLIER_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","UNIT_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","UNIT_TYPE_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","USER_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","USER_POST","ADMIN1");
-                        iRoleAccess.save("BUSINESS","WAREHOUSE_GET","ADMIN1");
-                        iRoleAccess.save("BUSINESS","WAREHOUSE_STOCK_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ACCESS_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ACCESS_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ACCESS_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ACCESS_PUT","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","BRAND_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CANCELLED_ORDER_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CANCELLATION_REASON_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CANCELLATION_REASON_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CANCELLATION_REASON_PUT","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CATEGORY_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CATEGORY_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CATEGORY_PUT","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CLIENT_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CLIENT_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CLIENT_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","CLOSING_CHANNEL_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","COLOR_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","COLOR_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","COLOR_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","COURIER_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","COURIER_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","DEPARTMENT_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","DEPARTMENT_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","DEPARTMENT_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","DISTRICT_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","DISTRICT_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ENTRY_CHANNEL_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","GENERAL_STOCK_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","MEMBERSHIP_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","MEMBERSHIP_PAYMENT_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","MODEL_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","MODULE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","MODULE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","MODULE_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ONBOARD_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_STOCK_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_STOCK_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_PAYMENT_METHOD_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_PAYMENT_METHOD_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_PAYMENT_METHOD_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_PAYMENT_STATE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_PAYMENT_STATE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_PAYMENT_STATE_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_STATE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_STATE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ORDER_STATE_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PAYMENT_GATEWAY_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PRODUCT_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PROVINCE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PROVINCE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PROVINCE_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PURCHASE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PURCHASE_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PURCHASE_DOCUMENT_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PURCHASE_DOCUMENT_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PURCHASE_DOCUMENT_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ROLE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ROLE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ROLE_PUT","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ROLE_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ROLE_ACCESS_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ROLE_ACCESS_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ROLE_ACCESS_PUT","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","ROLE_ACCESS_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SALE_CHANNEL_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SALE_CHANNEL_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PURCHASE_TYPE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","PURCHASE_TYPE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SIZE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SIZE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SIZE_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SIZE_TYPE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SIZE_TYPE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SIZE_TYPE_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STOCK_REPLENISHMENT_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STOCK_REPLENISHMENT_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STOCK_RETURN_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STOCK_RETURN_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STOCK_TRANSACTION_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STOCK_TRANSACTION_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STOCK_TRANSACTION_TYPE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STOCK_TRANSACTION_TYPE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STOCK_TRANSFER_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STOCK_TRANSFER_ITEM_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","STORE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SUBSCRIPTION_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SUBSCRIPTION_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","SUPPLIER_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","UNIT_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","UNIT_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","UNIT_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","UNIT_TYPE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","UNIT_TYPE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","UNIT_TYPE_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","USER_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","USER_PUT","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","USER_DELETE","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","USER_ROLE_POST","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","WAREHOUSE_GET","ADMIN1");
-                        iRoleAccess.save("ADMINISTRATION","WAREHOUSE_STOCK_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","BRAND_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","CLIENT_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","COLOR_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","CANCELLED_ORDER_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","COURIER_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","COURIER_POST","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","GENERAL_STOCK_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","MEMBERSHIP_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","MEMBERSHIP_PAYMENT_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","MODEL_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","ORDER_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","ORDER_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","ORDER_STOCK_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","ORDER_STOCK_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","ORDER_PAYMENT_METHOD_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","ORDER_PAYMENT_STATE_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","ORDER_STATE_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","PRODUCT_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","PURCHASE_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","PURCHASE_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","ROLE_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","SIZE_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","SIZE_TYPE_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STOCK_REPLENISHMENT_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STOCK_REPLENISHMENT_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STOCK_RETURN_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STOCK_RETURN_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STOCK_TRANSACTION_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STOCK_TRANSACTION_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STOCK_TRANSFER_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STOCK_TRANSFER_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STORE_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STORE_PUT","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STORE_POST","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","STORE_DELETE","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","SUBSCRIPTION_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","SUBSCRIPTION_PAYMENT_POST","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","SUPPLIER_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","UNIT_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","UNIT_TYPE_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","USER_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","USER_POST","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","WAREHOUSE_GET","ADMIN1");
+                        iRoleAccess.save("NEGOCIO","WAREHOUSE_STOCK_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ACCESS_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ACCESS_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ACCESS_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ACCESS_PUT","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","BRAND_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CANCELLED_ORDER_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CANCELLATION_REASON_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CANCELLATION_REASON_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CANCELLATION_REASON_PUT","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CATEGORY_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CATEGORY_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CATEGORY_PUT","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CLIENT_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CLIENT_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CLIENT_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","CLOSING_CHANNEL_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","COLOR_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","COLOR_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","COLOR_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","COURIER_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","COURIER_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","DEPARTMENT_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","DEPARTMENT_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","DEPARTMENT_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","DISTRICT_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","DISTRICT_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ENTRY_CHANNEL_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","GENERAL_STOCK_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","MEMBERSHIP_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","MEMBERSHIP_PAYMENT_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","MODEL_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","MODULE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","MODULE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","MODULE_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ONBOARD_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_STOCK_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_STOCK_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_PAYMENT_METHOD_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_PAYMENT_METHOD_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_PAYMENT_METHOD_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_PAYMENT_STATE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_PAYMENT_STATE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_PAYMENT_STATE_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_STATE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_STATE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ORDER_STATE_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PAYMENT_GATEWAY_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PRODUCT_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PROVINCE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PROVINCE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PROVINCE_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PURCHASE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PURCHASE_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PURCHASE_DOCUMENT_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PURCHASE_DOCUMENT_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PURCHASE_DOCUMENT_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ROLE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ROLE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ROLE_PUT","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ROLE_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ROLE_ACCESS_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ROLE_ACCESS_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ROLE_ACCESS_PUT","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","ROLE_ACCESS_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SALE_CHANNEL_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SALE_CHANNEL_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PURCHASE_TYPE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","PURCHASE_TYPE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SIZE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SIZE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SIZE_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SIZE_TYPE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SIZE_TYPE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SIZE_TYPE_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STOCK_REPLENISHMENT_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STOCK_REPLENISHMENT_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STOCK_RETURN_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STOCK_RETURN_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STOCK_TRANSACTION_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STOCK_TRANSACTION_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STOCK_TRANSACTION_TYPE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STOCK_TRANSACTION_TYPE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STOCK_TRANSFER_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STOCK_TRANSFER_ITEM_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","STORE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SUBSCRIPTION_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SUBSCRIPTION_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","SUPPLIER_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","UNIT_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","UNIT_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","UNIT_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","UNIT_TYPE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","UNIT_TYPE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","UNIT_TYPE_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","USER_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","USER_PUT","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","USER_DELETE","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","USER_ROLE_POST","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","WAREHOUSE_GET","ADMIN1");
+                        iRoleAccess.save("ADMINISTRACION","WAREHOUSE_STOCK_GET","ADMIN1");
                         // mock modules
                         iModule.save("Módulo de Ventas", 3.00, "ADMIN1");
                         iModule.save("Módulo de Gestión", 5.00, "ADMIN1");
@@ -1010,8 +1010,8 @@ public class Seeder implements CommandLineRunner {
                         iDeliveryPoint.save("provincia","admin1");
                         iDeliveryPoint.save("recojo en tienda","admin1");
                         // mock users
-                        iUserRole.save(business1.getUsername(), "BUSINESS",business1.getUsername());
-                        iUserRole.save(business2.getUsername(),"BUSINESS",business2.getUsername());
+                        iUserRole.save(business1.getUsername(), "NEGOCIO",business1.getUsername());
+                        iUserRole.save(business2.getUsername(),"NEGOCIO",business2.getUsername());
 
                         RequestUser businessSales1 = RequestUser.builder()
                                 .user("CROJAS")
@@ -1025,7 +1025,7 @@ public class Seeder implements CommandLineRunner {
                                 .password("abc123+")
                                 .district(business1.getDistrict().getName())
                                 .tokenUser(business1.getUsername())
-                                .roleName("SALES")
+                                .roleName("VENTAS")
                                 .build();
 
                         iUser.save(businessSales1);
@@ -1042,7 +1042,7 @@ public class Seeder implements CommandLineRunner {
                                 .password("abc123+")
                                 .district(business2.getDistrict().getName())
                                 .tokenUser(business2.getUsername())
-                                .roleName("SALES")
+                                .roleName("VENTAS")
                                 .build();
 
                         iUser.save(businessSales2);
@@ -1127,7 +1127,7 @@ public class Seeder implements CommandLineRunner {
                                 .password("abc123+")
                                 .district(business1.getDistrict().getName())
                                 .tokenUser(business1.getUsername())
-                                .roleName("CUSTOMER_SERVICE")
+                                .roleName("SERVICIO_CLIENTE")
                                 .build();
 
                         iUser.save(businessCustomerService1);
@@ -1144,7 +1144,7 @@ public class Seeder implements CommandLineRunner {
                                 .password("abc123+")
                                 .district(business2.getDistrict().getName())
                                 .tokenUser(business2.getUsername())
-                                .roleName("CUSTOMER_SERVICE")
+                                .roleName("SERVICIO_CLIENTE")
                                 .build();
 
                         iUser.save(businessCustomerService2);
