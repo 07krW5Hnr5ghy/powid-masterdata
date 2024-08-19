@@ -66,6 +66,9 @@ public class OrderingImpl implements IOrdering {
     private final DiscountRepository discountRepository;
     private final DeliveryPointRepository deliveryPointRepository;
     private final ProductPriceRepository productPriceRepository;
+    private final DepartmentRepository departmentRepository;
+    private final ProvinceRepository provinceRepository;
+    private final DistrictRepository districtRepository;
     @Override
     public ResponseSuccess save(
             RequestOrderSave requestOrderSave,
@@ -383,6 +386,9 @@ public class OrderingImpl implements IOrdering {
             String customer,
             String customerPhone,
             String instagram,
+            List<String> departments,
+            List<String> provinces,
+            List<String> districts,
             String orderState,
             String courier,
             String paymentState,
@@ -397,6 +403,9 @@ public class OrderingImpl implements IOrdering {
         return CompletableFuture.supplyAsync(()->{
             Page<Ordering> pageOrdering;
             Long clientId;
+            List<Long> departmentIds;
+            List<Long> provinceIds;
+            List<Long> districtIds;
             Long orderStateId;
             Long courierId;
             Long paymentStateId;
@@ -404,6 +413,30 @@ public class OrderingImpl implements IOrdering {
             Long saleChannelId;
             Long managementTypeId;
             Long storeId;
+
+            if(departments != null && !departments.isEmpty()){
+                departmentIds = departmentRepository.findByNameIn(
+                        departments.stream().map(String::toUpperCase).toList()
+                ).stream().map(Department::getId).toList();
+            }else{
+                departmentIds = new ArrayList<>();
+            }
+
+            if(provinces != null && !provinces.isEmpty()){
+                provinceIds = provinceRepository.findByNameIn(
+                        provinces.stream().map(String::toUpperCase).toList()
+                ).stream().map(Province::getId).toList();
+            }else{
+                provinceIds = new ArrayList<>();
+            }
+
+            if(districts != null && !districts.isEmpty()){
+                districtIds = districtRepository.findByNameIn(
+                        districts.stream().map(String::toUpperCase).toList()
+                ).stream().map(District::getId).toList();
+            }else{
+                districtIds = new ArrayList<>();
+            }
 
             if(orderState != null){
                 orderStateId = orderStateRepository.findByName(orderState.toUpperCase()).getId();
@@ -456,6 +489,9 @@ public class OrderingImpl implements IOrdering {
                         customer,
                         customerPhone,
                         instagram,
+                        departmentIds,
+                        provinceIds,
+                        districtIds,
                         orderStateId,
                         courierId,
                         paymentStateId,

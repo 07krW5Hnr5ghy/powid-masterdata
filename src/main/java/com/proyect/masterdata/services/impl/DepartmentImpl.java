@@ -3,8 +3,6 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Department;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.DepartmentDTO;
-import com.proyect.masterdata.dto.request.RequestDepartment;
-import com.proyect.masterdata.dto.request.RequestDepartmentSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -22,10 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -195,7 +190,6 @@ public class DepartmentImpl implements IDepartment {
             try {
                 departments = departmentRepository.findAllByStatusTrue().stream()
                         .filter(department -> !department.getName().equals("SISTEMA"))
-                        .filter(department -> !department.getName().equals("NO APLICA"))
                         .toList();
             } catch (RuntimeException e) {
                 log.error(e);
@@ -264,7 +258,11 @@ public class DepartmentImpl implements IDepartment {
             if (departments.isEmpty()) {
                 return Collections.emptyList();
             }
-            return departmentMapper.listDepartmentToListDepartmentDTO(departments);
+            List<DepartmentDTO> departmentDTOS = new ArrayList<>(departments.stream().map(department -> DepartmentDTO.builder()
+                    .name(department.getName())
+                    .build()).toList());
+            departmentDTOS.sort(Comparator.comparing(DepartmentDTO::getName,String::compareToIgnoreCase));
+            return departmentDTOS;
         });
     }
 }

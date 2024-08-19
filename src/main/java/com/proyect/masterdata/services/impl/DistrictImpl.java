@@ -4,8 +4,6 @@ import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Province;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.DistrictDTO;
-import com.proyect.masterdata.dto.request.RequestDistrict;
-import com.proyect.masterdata.dto.request.RequestDistrictSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -23,9 +21,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-import java.util.Date;
-import java.util.Collections;
-import java.util.List;
+
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -294,7 +291,12 @@ public class DistrictImpl implements IDistrict {
     public CompletableFuture<List<DistrictDTO>> listFilter() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             try {
-                return districtMapper.listDistrictToListDistrictDTO(districtRepository.findAll());
+                List<DistrictDTO> districtDTOS = new ArrayList<>(districtRepository.findAll().stream().map(district -> DistrictDTO.builder()
+                        .name(district.getName())
+                        .nameProvince(district.getProvince().getName())
+                        .build()).toList());
+                districtDTOS.sort(Comparator.comparing(DistrictDTO::getName,String::compareToIgnoreCase));
+                return districtDTOS;
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

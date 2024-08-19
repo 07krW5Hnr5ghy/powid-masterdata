@@ -5,6 +5,8 @@ import com.proyect.masterdata.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface OrderingRepositoryCustom {
     Page<Ordering> searchForOrdering(
@@ -14,6 +16,9 @@ public interface OrderingRepositoryCustom {
             String customer,
             String customerPhone,
             String instagram,
+            List<Long> departmentIds,
+            List<Long> provinceIds,
+            List<Long> districtIds,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,

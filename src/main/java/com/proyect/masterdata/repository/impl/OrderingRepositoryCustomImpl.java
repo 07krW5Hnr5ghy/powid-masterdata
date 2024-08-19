@@ -1,7 +1,9 @@
 package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.Customer;
+import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Ordering;
+import com.proyect.masterdata.domain.Province;
 import com.proyect.masterdata.repository.OrderingRepositoryCustom;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
@@ -29,6 +31,9 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             String customer,
             String customerPhone,
             String instagram,
+            List<Long> departmentIds,
+            List<Long> provinceIds,
+            List<Long> districtIds,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
@@ -45,6 +50,8 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
         CriteriaQuery<Ordering> criteriaQuery = criteriaBuilder.createQuery(Ordering.class);
         Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);
         Join<Ordering, Customer> orderingCustomerJoin = itemRoot.join("customer");
+        Join<Customer, District> customerDistrictJoin = orderingCustomerJoin.join("district");
+        Join<District, Province> districtProvinceJoin = customerDistrictJoin.join("province");
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
@@ -54,6 +61,9 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 customer,
                 customerPhone,
                 instagram,
+                departmentIds,
+                provinceIds,
+                districtIds,
                 orderStateId,
                 courierId,
                 paymentStateId,
@@ -63,7 +73,9 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 storeId,
                 criteriaBuilder,
                 itemRoot,
-                orderingCustomerJoin);
+                orderingCustomerJoin,
+                customerDistrictJoin,
+                districtProvinceJoin);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
             List<Order> orderingList = new ArrayList<>();
@@ -94,6 +106,9 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 customer,
                 customerPhone,
                 instagram,
+                departmentIds,
+                provinceIds,
+                districtIds,
                 orderStateId,
                 courierId,
                 paymentStateId,
@@ -111,6 +126,9 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             String customer,
             String customerPhone,
             String instagram,
+            List<Long> departmentIds,
+            List<Long> provinceIds,
+            List<Long> districtIds,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
@@ -120,7 +138,9 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             Long storeId,
             CriteriaBuilder criteriaBuilder,
             Root<Ordering> itemRoot,
-            Join<Ordering,Customer> orderingCustomerJoin){
+            Join<Ordering,Customer> orderingCustomerJoin,
+            Join<Customer,District> customerDistrictJoin,
+            Join<District,Province> districtProvinceJoin){
         List<Predicate> conditions = new ArrayList<>();
 
         if(id != null){
@@ -145,6 +165,18 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
 
         if(instagram != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(orderingCustomerJoin.get("instagram")),"%"+instagram.toUpperCase()+"%"));
+        }
+
+        if(!departmentIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(districtProvinceJoin.get("departmentId").in(departmentIds)));
+        }
+
+        if (!provinceIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(customerDistrictJoin.get("provinceId").in(provinceIds)));
+        }
+
+        if(!districtIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(orderingCustomerJoin.get("districtId").in(districtIds)));
         }
 
         if(orderStateId != null){
@@ -297,6 +329,9 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             String customer,
             String customerPhone,
             String instagram,
+            List<Long> departmentIds,
+            List<Long> provinceIds,
+            List<Long> districtIds,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
@@ -308,6 +343,8 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);
         Join<Ordering,Customer> orderingCustomerJoin = itemRoot.join("customer");
+        Join<Customer, District> customerDistrictJoin = orderingCustomerJoin.join("district");
+        Join<District, Province> districtProvinceJoin = customerDistrictJoin.join("province");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
@@ -317,6 +354,9 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 customer,
                 customerPhone,
                 instagram,
+                departmentIds,
+                provinceIds,
+                districtIds,
                 orderStateId,
                 courierId,
                 paymentStateId,
@@ -326,7 +366,9 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 storeId,
                 criteriaBuilder,
                 itemRoot,
-                orderingCustomerJoin);
+                orderingCustomerJoin,
+                customerDistrictJoin,
+                districtProvinceJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
