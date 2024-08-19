@@ -33,7 +33,9 @@ public class OrderDTO {
     private String discount;
     private String dni;
     private List<String> paymentReceipts;
+    private Boolean receiptFlag;
     private List<String> courierPictures;
+    private Boolean deliveryFlag;
     private BigDecimal saleAmount;
     private BigDecimal deliveryAmount;
     private BigDecimal advancedPayment;

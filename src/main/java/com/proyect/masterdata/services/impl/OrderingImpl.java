@@ -189,8 +189,14 @@ public class OrderingImpl implements IOrdering {
                     .tokenUser(user.getUsername())
                     .deliveryPoint(deliveryPoint)
                     .deliveryPointId(deliveryPoint.getId())
+                    .receiptFlag(false)
+                    .deliveryFlag(false)
                     .build());
-            iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
+            CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
+            if(!paymentReceipts.get().isEmpty()){
+                ordering.setReceiptFlag(true);
+                orderingRepository.save(ordering);
+            }
 
             for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
                 iOrderItem.save(ordering, requestOrderItem,tokenUser);
@@ -207,7 +213,7 @@ public class OrderingImpl implements IOrdering {
                     .message(Constants.register)
                     .build();
 
-        }catch (RuntimeException e){
+        }catch (RuntimeException | InterruptedException | ExecutionException e){
             e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -328,6 +334,8 @@ public class OrderingImpl implements IOrdering {
                         .customerId(customer.getId())
                         .deliveryPoint(deliveryPoint)
                         .deliveryPointId(deliveryPoint.getId())
+                        .receiptFlag(false)
+                        .deliveryFlag(false)
                         .build());
                 List<File> fileList = new ArrayList<>();
                 for(MultipartFile multipartFile : receipts){
@@ -362,6 +370,8 @@ public class OrderingImpl implements IOrdering {
                             throw new RuntimeException(e);
                         }
                     });
+                    ordering.setReceiptFlag(true);
+                    orderingRepository.save(ordering);
                 }
 
                 iAudit.save("ADD_ORDER","PEDIDO "+ordering.getId()+" CREADO.",ordering.getId().toString(),user.getUsername());
@@ -390,6 +400,8 @@ public class OrderingImpl implements IOrdering {
             List<String> provinces,
             List<String> districts,
             List<String> saleChannels,
+            Boolean receiptFlag,
+            Boolean deliveryFlag,
             String orderState,
             String courier,
             String paymentState,
@@ -495,6 +507,8 @@ public class OrderingImpl implements IOrdering {
                         provinceIds,
                         districtIds,
                         saleChannelIds,
+                        receiptFlag,
+                        deliveryFlag,
                         orderStateId,
                         courierId,
                         paymentStateId,
@@ -575,6 +589,8 @@ public class OrderingImpl implements IOrdering {
                         .discountAmount(BigDecimal.valueOf(order.getDiscountAmount()))
                         .dni(order.getCustomer().getDni())
                         .store(order.getStore().getName())
+                        .receiptFlag(order.getReceiptFlag())
+                        .deliveryFlag(order.getDeliveryFlag())
                         .build();
             }).toList();
 
@@ -656,6 +672,8 @@ public class OrderingImpl implements IOrdering {
                         .deliveryPoint(order.getDeliveryPoint().getName())
                         .dni(order.getCustomer().getDni())
                         .store(order.getStore().getName())
+                        .receiptFlag(order.getReceiptFlag())
+                        .deliveryFlag(order.getDeliveryFlag())
                         .build();
             }).toList();
         });
@@ -747,14 +765,24 @@ public class OrderingImpl implements IOrdering {
             }
 
             orderingRepository.save(ordering);
-            iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
-            iCourierPicture.uploadPicture(courierPictures,ordering.getId(),user.getUsername());
+
+            CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
+            if((!ordering.getReceiptFlag()) && (!paymentReceipts.get().isEmpty())){
+                ordering.setReceiptFlag(true);
+                orderingRepository.save(ordering);
+            }
+
+            CompletableFuture<List<String>> deliveryPictures = iCourierPicture.uploadPicture(courierPictures,ordering.getId(),user.getUsername());
+            if((!ordering.getDeliveryFlag())&&(!deliveryPictures.get().isEmpty())){
+                ordering.setDeliveryFlag(true);
+                orderingRepository.save(ordering);
+            }
             iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.update)
                     .build();
-        }catch (RuntimeException e){
+        }catch (RuntimeException | InterruptedException | ExecutionException e){
             e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -876,7 +904,11 @@ public class OrderingImpl implements IOrdering {
 
                 CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptAsync(receiptList,ordering.getId(),user.getUsername());
                 CompletableFuture<List<String>> courierPhotos = iCourierPicture.uploadPictureAsync(courierPictureList,ordering.getId(),user.getUsername());
-                if(!paymentReceipts.get().isEmpty() || !courierPhotos.get().isEmpty()){
+                if(!paymentReceipts.get().isEmpty()){
+                    if(!ordering.getReceiptFlag()){
+                        ordering.setReceiptFlag(true);
+                        orderingRepository.save(ordering);
+                    }
                     Stream<Path> paths = Files.list(folderOrders);
                     paths.filter(Files::isRegularFile).forEach(path -> {
                         try {
@@ -887,6 +919,10 @@ public class OrderingImpl implements IOrdering {
                     });
                 }
                 if(!courierPhotos.get().isEmpty()){
+                    if(!ordering.getDeliveryFlag()){
+                        ordering.setDeliveryFlag(true);
+                        orderingRepository.save(ordering);
+                    }
                     Stream<Path> paths = Files.list(folderCouriers);
                     paths.filter(Files::isRegularFile).forEach(path -> {
                         try {
@@ -987,6 +1023,8 @@ public class OrderingImpl implements IOrdering {
                         .closingChannel(ordering.getClosingChannel().getName())
                         .dni(ordering.getCustomer().getDni())
                         .store(ordering.getStore().getName())
+                        .receiptFlag(ordering.getReceiptFlag())
+                        .deliveryFlag(ordering.getDeliveryFlag())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
                             Double totalPrice = null;

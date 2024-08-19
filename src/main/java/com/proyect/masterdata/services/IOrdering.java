@@ -26,6 +26,8 @@ public interface IOrdering {
             List<String> provinces,
             List<String> districts,
             List<String> saleChannels,
+            Boolean receiptFlag,
+            Boolean deliveryFlag,
             String orderState,
             String courier,
             String paymentState,

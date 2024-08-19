@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -304,14 +305,18 @@ public class CourierImpl implements ICourier {
 
                 ordering.setUpdateDate(new Date(System.currentTimeMillis()));
 
-                iCourierPicture.uploadPicture(requestCourierOrder.getOrderPictures(),ordering.getId(),user.getUsername());
+                CompletableFuture<List<String>> deliveryPictures = iCourierPicture.uploadPicture(requestCourierOrder.getOrderPictures(),ordering.getId(),user.getUsername());
+                if(!ordering.getDeliveryFlag() && !deliveryPictures.get().isEmpty()){
+                    ordering.setDeliveryFlag(true);
+                    orderingRepository.save(ordering);
+                }
                 orderingRepository.save(ordering);
                 iAudit.save("UPDATE_COURIER_ORDER","PEDIDO "+ordering.getId()+" EDITADO POR COURIER.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
                         .build();
-            }catch (RuntimeException e){
+            }catch (RuntimeException | InterruptedException | ExecutionException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

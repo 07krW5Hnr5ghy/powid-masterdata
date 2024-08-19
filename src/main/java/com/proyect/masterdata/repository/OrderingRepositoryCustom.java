@@ -20,6 +20,8 @@ public interface OrderingRepositoryCustom {
             List<Long> provinceIds,
             List<Long> districtIds,
             List<Long> saleChannelIds,
+            Boolean receiptFlag,
+            Boolean deliveryFlag,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
