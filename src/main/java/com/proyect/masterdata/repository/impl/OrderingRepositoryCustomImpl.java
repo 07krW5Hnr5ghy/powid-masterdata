@@ -22,7 +22,23 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Ordering> searchForOrdering(Long orderId, Long clientId, String seller,String customer,Long orderStateId,Long courierId,Long paymentStateId,Long paymentMethodId,Long saleChannelId, Long managementTypeId,Long storeId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<Ordering> searchForOrdering(
+            Long orderId,
+            Long clientId,
+            String seller,
+            String customer,
+            String customerPhone,
+            Long orderStateId,
+            Long courierId,
+            Long paymentStateId,
+            Long paymentMethodId,
+            Long saleChannelId,
+            Long managementTypeId,
+            Long storeId,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Ordering> criteriaQuery = criteriaBuilder.createQuery(Ordering.class);
@@ -30,7 +46,22 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
         Join<Ordering, Customer> orderingCustomerJoin = itemRoot.join("customer");
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(orderId,clientId,seller,customer,orderStateId,courierId, paymentStateId,paymentMethodId, saleChannelId, managementTypeId,storeId,criteriaBuilder,itemRoot,orderingCustomerJoin);
+        List<Predicate> conditions = predicateConditions(
+                orderId,
+                clientId,
+                seller,
+                customer,
+                customerPhone,
+                orderStateId,
+                courierId,
+                paymentStateId,
+                paymentMethodId,
+                saleChannelId,
+                managementTypeId,
+                storeId,
+                criteriaBuilder,
+                itemRoot,
+                orderingCustomerJoin);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
             List<Order> orderingList = new ArrayList<>();
@@ -59,6 +90,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 clientId,
                 seller,
                 customer,
+                customerPhone,
                 orderStateId,
                 courierId,
                 paymentStateId,
@@ -74,6 +106,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             Long clientId,
             String seller,
             String customer,
+            String customerPhone,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
@@ -100,6 +133,10 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
 
         if(customer != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(orderingCustomerJoin.get("name")),"%"+customer.toUpperCase()+"%"));
+        }
+
+        if(customerPhone != null){
+            conditions.add(criteriaBuilder.like(orderingCustomerJoin.get("phone"),"%"+customerPhone+"%"));
         }
 
         if(orderStateId != null){
@@ -250,6 +287,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             Long clientId,
             String seller,
             String customer,
+            String customerPhone,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
@@ -268,6 +306,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 clientId,
                 seller,
                 customer,
+                customerPhone,
                 orderStateId,
                 courierId,
                 paymentStateId,

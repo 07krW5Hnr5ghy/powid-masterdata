@@ -12,6 +12,7 @@ public interface OrderingRepositoryCustom {
             Long clientId,
             String seller,
             String customer,
+            String customerPhone,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,

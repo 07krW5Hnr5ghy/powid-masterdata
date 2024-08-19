@@ -20,6 +20,7 @@ public interface IOrdering {
             String user,
             String seller,
             String customer,
+            String customerPhone,
             String orderState,
             String courier,
             String paymentState,
