@@ -13,6 +13,7 @@ public interface OrderingRepositoryCustom {
             String seller,
             String customer,
             String customerPhone,
+            String instagram,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,

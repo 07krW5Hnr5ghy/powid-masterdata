@@ -21,6 +21,7 @@ public interface IOrdering {
             String seller,
             String customer,
             String customerPhone,
+            String instagram,
             String orderState,
             String courier,
             String paymentState,

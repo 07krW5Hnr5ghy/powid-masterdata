@@ -28,6 +28,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             String seller,
             String customer,
             String customerPhone,
+            String instagram,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
@@ -52,6 +53,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 seller,
                 customer,
                 customerPhone,
+                instagram,
                 orderStateId,
                 courierId,
                 paymentStateId,
@@ -91,6 +93,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 seller,
                 customer,
                 customerPhone,
+                instagram,
                 orderStateId,
                 courierId,
                 paymentStateId,
@@ -107,6 +110,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             String seller,
             String customer,
             String customerPhone,
+            String instagram,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
@@ -137,6 +141,10 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
 
         if(customerPhone != null){
             conditions.add(criteriaBuilder.like(orderingCustomerJoin.get("phone"),"%"+customerPhone+"%"));
+        }
+
+        if(instagram != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(orderingCustomerJoin.get("instagram")),"%"+instagram.toUpperCase()+"%"));
         }
 
         if(orderStateId != null){
@@ -288,6 +296,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             String seller,
             String customer,
             String customerPhone,
+            String instagram,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
@@ -307,6 +316,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 seller,
                 customer,
                 customerPhone,
+                instagram,
                 orderStateId,
                 courierId,
                 paymentStateId,
