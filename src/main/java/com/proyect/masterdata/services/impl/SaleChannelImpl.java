@@ -149,7 +149,7 @@ public class SaleChannelImpl implements ISaleChannel {
     @Override
     public CompletableFuture<List<SaleChannelDTO>> listSaleChannel() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<SaleChannel> saleChannels = new ArrayList<>();
+            List<SaleChannel> saleChannels;
             try {
                 saleChannels = saleChannelRepository.findAllByStatusTrue();
             } catch (RuntimeException e) {
@@ -237,6 +237,23 @@ public class SaleChannelImpl implements ISaleChannel {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SaleChannelDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SaleChannel> saleChannels;
+            try {
+                saleChannels = saleChannelRepository.findAll();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (saleChannels.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannels);
         });
     }
 

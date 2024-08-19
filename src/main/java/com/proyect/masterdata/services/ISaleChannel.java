@@ -19,4 +19,5 @@ public interface ISaleChannel {
     CompletableFuture<Page<SaleChannelDTO>> list(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<Page<SaleChannelDTO>> listStatusFalse(String name,String user,String sort,String sortColumn,Integer pageNumber,Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String user) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<SaleChannelDTO>> listFilter() throws BadRequestExceptions;
 }

@@ -34,11 +34,11 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             List<Long> departmentIds,
             List<Long> provinceIds,
             List<Long> districtIds,
+            List<Long> saleChannelIds,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
             Long paymentMethodId,
-            Long saleChannelId,
             Long managementTypeId,
             Long storeId,
             String sort,
@@ -64,11 +64,11 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 departmentIds,
                 provinceIds,
                 districtIds,
+                saleChannelIds,
                 orderStateId,
                 courierId,
                 paymentStateId,
                 paymentMethodId,
-                saleChannelId,
                 managementTypeId,
                 storeId,
                 criteriaBuilder,
@@ -109,11 +109,11 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 departmentIds,
                 provinceIds,
                 districtIds,
+                saleChannelIds,
                 orderStateId,
                 courierId,
                 paymentStateId,
                 paymentMethodId,
-                saleChannelId,
                 managementTypeId,
                 storeId);
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
@@ -129,11 +129,11 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             List<Long> departmentIds,
             List<Long> provinceIds,
             List<Long> districtIds,
+            List<Long> saleChannelIds,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
             Long paymentMethodId,
-            Long saleChannelId,
             Long managementTypeId,
             Long storeId,
             CriteriaBuilder criteriaBuilder,
@@ -179,6 +179,10 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             conditions.add(criteriaBuilder.and(orderingCustomerJoin.get("districtId").in(districtIds)));
         }
 
+        if(!saleChannelIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("saleChannelId").in(saleChannelIds)));
+        }
+
         if(orderStateId != null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderStateId"),orderStateId)));
         }
@@ -193,10 +197,6 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
 
         if(paymentMethodId != null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("paymentMethodId"),paymentMethodId)));
-        }
-
-        if(saleChannelId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("saleChannelId"),saleChannelId)));
         }
 
         if(managementTypeId != null){
@@ -332,11 +332,11 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             List<Long> departmentIds,
             List<Long> provinceIds,
             List<Long> districtIds,
+            List<Long> saleChannelIds,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,
             Long paymentMethodId,
-            Long saleChannelId,
             Long managementTypeId,
             Long storeId){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -357,11 +357,11 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 departmentIds,
                 provinceIds,
                 districtIds,
+                saleChannelIds,
                 orderStateId,
                 courierId,
                 paymentStateId,
                 paymentMethodId,
-                saleChannelId,
                 managementTypeId,
                 storeId,
                 criteriaBuilder,

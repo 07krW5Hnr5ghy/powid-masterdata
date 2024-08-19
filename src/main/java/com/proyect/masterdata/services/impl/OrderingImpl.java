@@ -389,11 +389,11 @@ public class OrderingImpl implements IOrdering {
             List<String> departments,
             List<String> provinces,
             List<String> districts,
+            List<String> saleChannels,
             String orderState,
             String courier,
             String paymentState,
             String paymentMethod,
-            String saleChannel,
             String managementType,
             String storeName,
             String sort,
@@ -406,11 +406,11 @@ public class OrderingImpl implements IOrdering {
             List<Long> departmentIds;
             List<Long> provinceIds;
             List<Long> districtIds;
+            List<Long> saleChannelIds;
             Long orderStateId;
             Long courierId;
             Long paymentStateId;
             Long paymentMethodId;
-            Long saleChannelId;
             Long managementTypeId;
             Long storeId;
 
@@ -438,6 +438,14 @@ public class OrderingImpl implements IOrdering {
                 districtIds = new ArrayList<>();
             }
 
+            if(saleChannels != null && !saleChannels.isEmpty()){
+                saleChannelIds = saleChannelRepository.findByNameIn(
+                        saleChannels.stream().map(String::toUpperCase).toList()
+                ).stream().map(SaleChannel::getId).toList();
+            }else{
+                saleChannelIds = new ArrayList<>();
+            }
+
             if(orderState != null){
                 orderStateId = orderStateRepository.findByName(orderState.toUpperCase()).getId();
             }else{
@@ -460,12 +468,6 @@ public class OrderingImpl implements IOrdering {
                 paymentMethodId = orderPaymentMethodRepository.findByName(paymentMethod.toUpperCase()).getId();
             }else {
                 paymentMethodId = null;
-            }
-
-            if(saleChannel != null){
-                saleChannelId = saleChannelRepository.findByName(saleChannel.toUpperCase()).getId();
-            }else {
-                saleChannelId = null;
             }
 
             if(managementType != null){
@@ -492,11 +494,11 @@ public class OrderingImpl implements IOrdering {
                         departmentIds,
                         provinceIds,
                         districtIds,
+                        saleChannelIds,
                         orderStateId,
                         courierId,
                         paymentStateId,
                         paymentMethodId,
-                        saleChannelId,
                         managementTypeId,
                         storeId,
                         sort,
