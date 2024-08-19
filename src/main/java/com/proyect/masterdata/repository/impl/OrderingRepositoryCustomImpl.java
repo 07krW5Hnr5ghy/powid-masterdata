@@ -1,7 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.Ordering;
-import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.repository.OrderingRepositoryCustom;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
@@ -22,14 +21,14 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Ordering> searchForOrdering(Long orderId, Long clientId,Long orderStateId,Long courierId,Long paymentStateId,Long paymentMethodId,Long saleChannelId, Long managementTypeId,Long storeId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<Ordering> searchForOrdering(Long orderId, Long clientId, String seller,Long orderStateId,Long courierId,Long paymentStateId,Long paymentMethodId,Long saleChannelId, Long managementTypeId,Long storeId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Ordering> criteriaQuery = criteriaBuilder.createQuery(Ordering.class);
         Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(orderId,clientId,orderStateId,courierId, paymentStateId,paymentMethodId, saleChannelId, managementTypeId,storeId,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(orderId,clientId,seller,orderStateId,courierId, paymentStateId,paymentMethodId, saleChannelId, managementTypeId,storeId,criteriaBuilder,itemRoot);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
             List<Order> orderingList = new ArrayList<>();
@@ -53,11 +52,23 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
         orderingTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        Long count = getOrderCount(orderId,clientId,orderStateId,courierId,paymentStateId,paymentMethodId, saleChannelId, managementTypeId,storeId);
+        Long count = getOrderCount(orderId,clientId,seller,orderStateId,courierId,paymentStateId,paymentMethodId, saleChannelId, managementTypeId,storeId);
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
     }
 
-    List<Predicate> predicateConditions(Long id, Long clientId,Long orderStateId,Long courierId,Long paymentStateId,Long paymentMethodId,Long saleChannelId,Long managementTypeId,Long storeId, CriteriaBuilder criteriaBuilder,Root<Ordering> itemRoot){
+    List<Predicate> predicateConditions(
+            Long id,
+            Long clientId,
+            String seller,
+            Long orderStateId,
+            Long courierId,
+            Long paymentStateId,
+            Long paymentMethodId,
+            Long saleChannelId,
+            Long managementTypeId,
+            Long storeId,
+            CriteriaBuilder criteriaBuilder,
+            Root<Ordering> itemRoot){
         List<Predicate> conditions = new ArrayList<>();
 
         if(id != null){
@@ -66,6 +77,10 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
 
         if(clientId != null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"),clientId)));
+        }
+
+        if(seller != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("seller")),"%"+seller.toUpperCase()+"%"));
         }
 
         if(orderStateId != null){
@@ -211,13 +226,13 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
 
     }
 
-    private Long getOrderCount(Long id,Long clientId,Long orderStateId,Long courierId,Long paymentStateId,Long paymentMethodId,Long saleChannelId, Long managementTypeId, Long storeId){
+    private Long getOrderCount(Long id,Long clientId,String seller,Long orderStateId,Long courierId,Long paymentStateId,Long paymentMethodId,Long saleChannelId, Long managementTypeId, Long storeId){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(id,clientId,orderStateId,courierId,paymentStateId,paymentMethodId,saleChannelId,managementTypeId,storeId,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(id,clientId,seller,orderStateId,courierId,paymentStateId,paymentMethodId,saleChannelId,managementTypeId,storeId,criteriaBuilder,itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

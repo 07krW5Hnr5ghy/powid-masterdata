@@ -376,7 +376,7 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
-    public CompletableFuture<Page<OrderDTO>> list(Long orderId,String user,String orderState,String courier,String paymentState,String paymentMethod,String saleChannel,String managementType,String storeName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<OrderDTO>> list(Long orderId,String user,String seller,String orderState,String courier,String paymentState,String paymentMethod,String saleChannel,String managementType,String storeName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Ordering> pageOrdering;
             Long clientId;
@@ -432,7 +432,7 @@ public class OrderingImpl implements IOrdering {
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-                pageOrdering = orderingRepositoryCustom.searchForOrdering(orderId,clientId,orderStateId,courierId,paymentStateId,paymentMethodId,saleChannelId,managementTypeId,storeId,sort,sortColumn,pageNumber,pageSize);
+                pageOrdering = orderingRepositoryCustom.searchForOrdering(orderId,clientId,seller,orderStateId,courierId,paymentStateId,paymentMethodId,saleChannelId,managementTypeId,storeId,sort,sortColumn,pageNumber,pageSize);
             }catch (RuntimeException e){
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }

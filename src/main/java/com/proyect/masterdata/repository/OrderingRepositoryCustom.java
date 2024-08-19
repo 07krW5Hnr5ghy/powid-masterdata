@@ -10,6 +10,7 @@ public interface OrderingRepositoryCustom {
     Page<Ordering> searchForOrdering(
             Long orderId,
             Long clientId,
+            String seller,
             Long orderStateId,
             Long courierId,
             Long paymentStateId,

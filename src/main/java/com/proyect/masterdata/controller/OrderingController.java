@@ -47,7 +47,8 @@ public class OrderingController {
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK') and hasAuthority('ACCESS:ORDER_GET')")
     public ResponseEntity<Page<OrderDTO>> list(
             @RequestParam(value = "orderId", required = false) Long orderId,
-            @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "user") String user,
+            @RequestParam(value = "seller",required = false) String seller,
             @RequestParam(value = "orderState",required = false) String orderState,
             @RequestParam(value = "courier",required = false) String courier,
             @RequestParam(value = "paymentState",required = false) String paymentState,
@@ -55,12 +56,26 @@ public class OrderingController {
             @RequestParam(value = "saleChannel",required = false) String saleChannel,
             @RequestParam(value = "managementType",required = false) String managementType,
             @RequestParam(value = "storeName",required = false) String storeName,
-            @RequestParam(value = "sort",required = false) String sort,
-            @RequestParam(value = "sortColumn",required = false) String sortColumn,
+            @RequestParam(value = "sort",defaultValue = "DESC",required = false) String sort,
+            @RequestParam(value = "sortColumn",defaultValue = "registrationDate",required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<OrderDTO>> result = iOrdering.list(orderId,user,orderState,courier,paymentState,paymentMethod,saleChannel,managementType,storeName,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<OrderDTO>> result = iOrdering.list(
+                orderId,
+                user,
+                seller,
+                orderState,
+                courier,
+                paymentState,
+                paymentMethod,
+                saleChannel,
+                managementType,
+                storeName,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
