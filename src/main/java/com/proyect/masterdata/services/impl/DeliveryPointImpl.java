@@ -117,4 +117,21 @@ public class DeliveryPointImpl implements IDeliveryPoint {
             return deliveryPointList.stream().map(DeliveryPoint::getName).toList();
         });
     }
+
+    @Override
+    public CompletableFuture<List<String>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<DeliveryPoint> deliveryPointList;
+            try {
+                deliveryPointList = deliveryPointRepository.findAll();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(deliveryPointList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return deliveryPointList.stream().map(DeliveryPoint::getName).toList();
+        });
+    }
 }

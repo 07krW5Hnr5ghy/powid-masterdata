@@ -11,4 +11,5 @@ public interface DeliveryPointRepository extends JpaRepository<DeliveryPoint,Lon
     DeliveryPoint findByName(String name);
     DeliveryPoint findByNameAndStatusTrue(String name);
     List<DeliveryPoint> findAllByStatusTrue();
+    List<DeliveryPoint> findByNameIn(List<String> names);
 }

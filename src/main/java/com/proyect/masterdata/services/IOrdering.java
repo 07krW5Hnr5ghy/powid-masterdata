@@ -28,6 +28,7 @@ public interface IOrdering {
             List<String> saleChannels,
             Boolean receiptFlag,
             Boolean deliveryFlag,
+            List<String> deliveryPoints,
             String orderState,
             String courier,
             String paymentState,
