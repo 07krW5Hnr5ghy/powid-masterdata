@@ -29,7 +29,7 @@ public class OrderStockItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "orderIds", required = false) List<Long> orderIds,
+            @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "productSku",required = false) String productSku,
             @RequestParam(value = "serial", required = false) String serial,
@@ -40,7 +40,7 @@ public class OrderStockItemController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<OrderStockItemDTO>> result = iOrderStockItem.list(
                 user,
-                orderIds,
+                orderId,
                 warehouses,
                 productSku,
                 serial,
@@ -55,7 +55,7 @@ public class OrderStockItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> listFalse(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "orderIds", required = false) List<Long> orderIds,
+            @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "productSku",required = false) String productSku,
             @RequestParam(value = "serial", required = false) String serial,
@@ -66,7 +66,7 @@ public class OrderStockItemController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<OrderStockItemDTO>> result = iOrderStockItem.listFalse(
                 user,
-                orderIds,
+                orderId,
                 warehouses,
                 productSku,
                 serial,

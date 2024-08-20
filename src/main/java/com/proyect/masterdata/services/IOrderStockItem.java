@@ -16,7 +16,7 @@ public interface IOrderStockItem {
     CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<Page<OrderStockItemDTO>> list(
             String user,
-            List<Long> orderIds,
+            Long orderId,
             List<String> warehouses,
             String productSku,
             String serial,
@@ -26,7 +26,7 @@ public interface IOrderStockItem {
             Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<Page<OrderStockItemDTO>> listFalse(
             String user,
-            List<Long> orderIds,
+            Long orderId,
             List<String> warehouses,
             String productSku,
             String serial,

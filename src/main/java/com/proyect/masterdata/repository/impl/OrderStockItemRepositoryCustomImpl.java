@@ -28,7 +28,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
     @Override
     public Page<OrderStockItem> searchForOrderStockItem(
             Long clientId,
-            List<Long> orderIds,
+            Long orderId,
             List<Long> warehouseIds,
             String productSku,
             String serial,
@@ -47,7 +47,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                orderIds,
+                orderId,
                 warehouseIds,
                 productSku,
                 serial,
@@ -82,7 +82,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
         Long count = getOrderCount(
                 clientId,
-                orderIds,
+                orderId,
                 warehouseIds,
                 productSku,
                 serial,
@@ -92,7 +92,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
 
     List<Predicate> predicateConditions(
             Long clientId,
-            List<Long> orderIds,
+            Long orderId,
             List<Long> warehouseIds,
             String productSku,
             String serial,
@@ -108,8 +108,8 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"),clientId)));
         }
 
-        if(!orderIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(orderStockItemOrderStockJoin.get("orderId").in(orderIds)));
+        if(orderId != null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(orderStockItemOrderStockJoin.get("orderId"),orderId)));
         }
 
         if(!warehouseIds.isEmpty()){
@@ -173,7 +173,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
 
     private Long getOrderCount(
             Long clientId,
-            List<Long> orderIds,
+            Long orderId,
             List<Long> warehouseIds,
             String productSku,
             String serial,
@@ -188,7 +188,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                orderIds,
+                orderId,
                 warehouseIds,
                 productSku,
                 serial,

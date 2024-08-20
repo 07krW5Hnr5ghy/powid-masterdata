@@ -120,7 +120,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     @Override
     public CompletableFuture<Page<OrderStockItemDTO>> list(
             String user,
-            List<Long> orders,
+            Long orderId,
             List<String> warehouses,
             String productSku,
             String serial,
@@ -131,14 +131,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStockItem> pageOrderStock;
             Long clientId;
-            List<Long> orderIds;
             List<Long> warehouseIds;
-
-            if(orders != null && !orders.isEmpty()){
-                orderIds = orders;
-            }else {
-                orderIds = new ArrayList<>();
-            }
 
             if(warehouses != null && !warehouses.isEmpty()){
                 warehouseIds = warehouseRepository.findByNameIn(
@@ -152,7 +145,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(
                         clientId,
-                        orderIds,
+                        orderId,
                         warehouseIds,
                         productSku,
                         serial,
@@ -187,7 +180,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     @Override
     public CompletableFuture<Page<OrderStockItemDTO>> listFalse(
             String user,
-            List<Long> orders,
+            Long orderId,
             List<String> warehouses,
             String productSku,
             String serial,
@@ -198,14 +191,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStockItem> pageOrderStock;
             Long clientId;
-            List<Long> orderIds;
             List<Long> warehouseIds;
-
-            if(orders != null && !orders.isEmpty()){
-                orderIds = orders;
-            }else {
-                orderIds = new ArrayList<>();
-            }
 
             if(warehouses != null && !warehouses.isEmpty()){
                 warehouseIds = warehouseRepository.findByNameIn(
@@ -219,7 +205,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(
                         clientId,
-                        orderIds,
+                        orderId,
                         warehouseIds,
                         productSku,
                         serial,
