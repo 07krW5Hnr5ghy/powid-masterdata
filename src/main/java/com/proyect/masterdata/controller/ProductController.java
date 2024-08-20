@@ -63,7 +63,7 @@ public class ProductController {
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> list(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "skus", required = false) List<String> skus,
+            @RequestParam(value = "sku", required = false) String sku,
             @RequestParam(value = "models", required = false) List<String> models,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "sizes", required = false) List<String> sizes,
@@ -76,7 +76,7 @@ public class ProductController {
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ProductDTO>> result = iProduct.list(
                 user,
-                skus,
+                sku,
                 models,
                 brands,
                 sizes,
@@ -94,7 +94,7 @@ public class ProductController {
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> listFalse(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "skus", required = false) List<String> skus,
+            @RequestParam(value = "sku", required = false) String sku,
             @RequestParam(value = "models", required = false) List<String> models,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "sizes", required = false) List<String> sizes,
@@ -107,7 +107,7 @@ public class ProductController {
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ProductDTO>> result = iProduct.listFalse(
                 user,
-                skus,
+                sku,
                 models,
                 brands,
                 sizes,

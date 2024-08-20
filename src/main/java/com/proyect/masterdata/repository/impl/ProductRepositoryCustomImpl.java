@@ -29,7 +29,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     @Override
     public Page<Product> searchForProduct(
             Long clientId,
-            List<String> skus,
+            String sku,
             List<Long> modelIds,
             List<Long> brandIds,
             List<Long> sizeIds,
@@ -51,7 +51,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                skus,
+                sku,
                 modelIds,
                 brandIds,
                 sizeIds,
@@ -89,7 +89,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                skus,
+                sku,
                 modelIds,
                 brandIds,
                 sizeIds,
@@ -102,7 +102,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
     private List<Predicate> predicateConditions(
             Long clientId,
-            List<String> skus,
+            String sku,
             List<Long> modelIds,
             List<Long> brandIds,
             List<Long> sizeIds,
@@ -116,9 +116,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if (!skus.isEmpty()) {
-            conditions.add(criteriaBuilder
-                    .and(itemRoot.get("sku").in(skus)));
+        if(sku != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("sku")),"%"+sku.toUpperCase()+"%"));
         }
 
         if (!modelIds.isEmpty()) {
@@ -200,7 +199,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
     private Long getOrderCount(
             Long clientId,
-            List<String> skus,
+            String sku,
             List<Long> modelIds,
             List<Long> brandIds,
             List<Long> sizeIds,
@@ -216,7 +215,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                skus,
+                sku,
                 modelIds,
                 brandIds,
                 sizeIds,

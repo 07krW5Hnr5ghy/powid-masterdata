@@ -24,7 +24,7 @@ public interface IProduct {
         CompletableFuture<ResponseSuccess> activate(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<ProductDTO>> list(
                 String tokenUser,
-                List<String> skus,
+                String sku,
                 List<String> models,
                 List<String> brands,
                 List<String> sizes,
@@ -37,7 +37,7 @@ public interface IProduct {
                 Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<Page<ProductDTO>> listFalse(
                 String tokenUser,
-                List<String> skus,
+                String sku,
                 List<String> models,
                 List<String> brands,
                 List<String> sizes,

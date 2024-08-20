@@ -12,7 +12,7 @@ import java.util.List;
 public interface ProductRepositoryCustom {
     public Page<Product> searchForProduct(
             Long clientId,
-            List<String> skus,
+            String sku,
             List<Long> modelIds,
             List<Long> brandIds,
             List<Long> sizeIds,
