@@ -122,8 +122,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             String user,
             List<Long> orders,
             List<String> warehouses,
-            List<String> products,
-            List<String> supplierProducts,
+            String productSku,
+            String serial,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -133,8 +133,6 @@ public class OrderStockItemImpl implements IOrderStockItem {
             Long clientId;
             List<Long> orderIds;
             List<Long> warehouseIds;
-            List<Long> productIds;
-            List<Long> supplierProductIds;
 
             if(orders != null && !orders.isEmpty()){
                 orderIds = orders;
@@ -150,30 +148,14 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 warehouseIds = new ArrayList<>();
             }
 
-            if(products != null && !products.isEmpty()){
-                productIds = productRepository.findBySkuIn(
-                        products.stream().map(String::toUpperCase).toList()
-                ).stream().map(Product::getId).toList();
-            }else{
-                productIds = new ArrayList<>();
-            }
-
-            if(supplierProducts != null && !supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else {
-                supplierProductIds = new ArrayList<>();
-            }
-
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(
                         clientId,
                         orderIds,
                         warehouseIds,
-                        productIds,
-                        supplierProductIds,
+                        productSku,
+                        serial,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -207,8 +189,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             String user,
             List<Long> orders,
             List<String> warehouses,
-            List<String> products,
-            List<String> supplierProducts,
+            String productSku,
+            String serial,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -218,8 +200,6 @@ public class OrderStockItemImpl implements IOrderStockItem {
             Long clientId;
             List<Long> orderIds;
             List<Long> warehouseIds;
-            List<Long> productIds;
-            List<Long> supplierProductIds;
 
             if(orders != null && !orders.isEmpty()){
                 orderIds = orders;
@@ -235,30 +215,14 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 warehouseIds = new ArrayList<>();
             }
 
-            if(products != null && !products.isEmpty()){
-                productIds = productRepository.findBySkuIn(
-                        products.stream().map(String::toUpperCase).toList()
-                ).stream().map(Product::getId).toList();
-            }else{
-                productIds = new ArrayList<>();
-            }
-
-            if(supplierProducts != null && !supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else {
-                supplierProductIds = new ArrayList<>();
-            }
-
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(
                         clientId,
                         orderIds,
                         warehouseIds,
-                        productIds,
-                        supplierProductIds,
+                        productSku,
+                        serial,
                         sort,
                         sortColumn,
                         pageNumber,

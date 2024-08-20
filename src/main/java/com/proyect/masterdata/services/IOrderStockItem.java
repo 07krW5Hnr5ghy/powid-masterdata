@@ -1,6 +1,5 @@
 package com.proyect.masterdata.services;
 
-import com.proyect.masterdata.domain.OrderStock;
 import com.proyect.masterdata.domain.Warehouse;
 import com.proyect.masterdata.dto.OrderStockItemDTO;
 import com.proyect.masterdata.dto.request.RequestOrderStockItem;
@@ -19,8 +18,8 @@ public interface IOrderStockItem {
             String user,
             List<Long> orderIds,
             List<String> warehouses,
-            List<String> products,
-            List<String> supplierProductSerials,
+            String productSku,
+            String serial,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -29,8 +28,8 @@ public interface IOrderStockItem {
             String user,
             List<Long> orderIds,
             List<String> warehouses,
-            List<String> products,
-            List<String> supplierProductSerials,
+            String productSku,
+            String serial,
             String sort,
             String sortColumn,
             Integer pageNumber,
