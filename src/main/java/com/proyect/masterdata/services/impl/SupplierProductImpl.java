@@ -246,8 +246,8 @@ public class SupplierProductImpl implements ISupplierProduct {
     @Override
     public CompletableFuture<Page<SupplierProductDTO>> list(
             String user,
-            List<String> serials,
-            List<String> products,
+            String serial,
+            String productSku,
             List<String> suppliers,
             String sort,
             String sortColumn,
@@ -256,23 +256,7 @@ public class SupplierProductImpl implements ISupplierProduct {
         return CompletableFuture.supplyAsync(()->{
             Page<SupplierProduct> supplierProductPage;
             Long clientId;
-            List<String> serialsUppercase;
-            List<Long> productIds;
             List<Long> supplierIds;
-
-            if(serials != null && !serials.isEmpty()){
-                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
-            }else {
-                serialsUppercase = new ArrayList<>();
-            }
-
-            if(products != null && !products.isEmpty()){
-                productIds = productRepository.findBySkuIn(
-                        products.stream().map(String::toUpperCase).toList()
-                ).stream().map(Product::getId).toList();
-            }else{
-                productIds = new ArrayList<>();
-            }
 
             if(suppliers != null && !suppliers.isEmpty()){
                 supplierIds = supplierRepository.findByRucIn(
@@ -286,8 +270,8 @@ public class SupplierProductImpl implements ISupplierProduct {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(
                         clientId,
-                        serialsUppercase,
-                        productIds,
+                        serial,
+                        productSku,
                         supplierIds,
                         sort,
                         sortColumn,
@@ -322,8 +306,8 @@ public class SupplierProductImpl implements ISupplierProduct {
     @Override
     public CompletableFuture<Page<SupplierProductDTO>> listFalse(
             String user,
-            List<String> serials,
-            List<String> products,
+            String serial,
+            String productSku,
             List<String> suppliers,
             String sort,
             String sortColumn,
@@ -333,23 +317,7 @@ public class SupplierProductImpl implements ISupplierProduct {
         return CompletableFuture.supplyAsync(()->{
             Page<SupplierProduct> supplierProductPage;
             Long clientId;
-            List<String> serialsUppercase;
-            List<Long> productIds;
             List<Long> supplierIds;
-
-            if(serials != null && !serials.isEmpty()){
-                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
-            }else {
-                serialsUppercase = new ArrayList<>();
-            }
-
-            if(products != null && !products.isEmpty()){
-                productIds = productRepository.findBySkuIn(
-                        products.stream().map(String::toUpperCase).toList()
-                ).stream().map(Product::getId).toList();
-            }else{
-                productIds = new ArrayList<>();
-            }
 
             if(suppliers != null && !suppliers.isEmpty()){
                 supplierIds = supplierRepository.findByRucIn(
@@ -363,8 +331,8 @@ public class SupplierProductImpl implements ISupplierProduct {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(
                         clientId,
-                        serialsUppercase,
-                        productIds,
+                        serial,
+                        productSku,
                         supplierIds,
                         sort,
                         sortColumn,

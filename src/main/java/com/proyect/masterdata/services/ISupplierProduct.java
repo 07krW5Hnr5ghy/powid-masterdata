@@ -21,8 +21,8 @@ public interface ISupplierProduct {
         CompletableFuture<ResponseSuccess> activate(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<SupplierProductDTO>> list(
                 String user,
-                List<String> serial,
-                List<String> products,
+                String serial,
+                String productSku,
                 List<String> suppliers,
                 String sort,
                 String sortColumn,
@@ -30,8 +30,8 @@ public interface ISupplierProduct {
                 Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<Page<SupplierProductDTO>> listFalse(
                 String user,
-                List<String> serial,
-                List<String> products,
+                String serial,
+                String productSku,
                 List<String> suppliers,
                 String sort,
                 String sortColumn,

@@ -66,19 +66,19 @@ public class SupplierProductController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<Page<SupplierProductDTO>> list(
-            @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "serials", required = false) List<String> serials,
-            @RequestParam(value = "products", required = false) List<String> products,
+            @RequestParam(value = "user") String user,
+            @RequestParam(value = "serial", required = false) String serial,
+            @RequestParam(value = "productSku", required = false) String productSku,
             @RequestParam(value = "suppliers", required = false) List<String> suppliers,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam(value = "pageNumber") Integer pageNumber,
+            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
 
         CompletableFuture<Page<SupplierProductDTO>> result = iSupplierProduct.list(
                 user,
-                serials,
-                products,
+                serial,
+                productSku,
                 suppliers,
                 sort,
                 sortColumn,
@@ -90,18 +90,18 @@ public class SupplierProductController {
     @GetMapping(value = "pagination-status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<Page<SupplierProductDTO>> listFalse(
-            @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "serials", required = false) List<String> serials,
-            @RequestParam(value = "products", required = false) List<String> products,
+            @RequestParam(value = "user") String user,
+            @RequestParam(value = "serial", required = false) String serial,
+            @RequestParam(value = "productSku", required = false) String productSku,
             @RequestParam(value = "suppliers", required = false) List<String> suppliers,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam(value = "pageNumber") Integer pageNumber,
+            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<SupplierProductDTO>> result = iSupplierProduct.listFalse(
                 user,
-                serials,
-                products,
+                serial,
+                productSku,
                 suppliers,
                 sort,
                 sortColumn,
