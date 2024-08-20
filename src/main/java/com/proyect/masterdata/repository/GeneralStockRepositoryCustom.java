@@ -10,7 +10,8 @@ import java.util.List;
 public interface GeneralStockRepositoryCustom {
     Page<GeneralStock> searchForGeneralStock(
             Long clientId,
-            List<Long> supplierProductIds,
+            String serial,
+            String productSku,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
