@@ -115,7 +115,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
                 ordering.setOrderStateId(orderState.getId());
                 ordering.setCancellation(true);
                 orderingRepository.save(ordering);
-                iAudit.save("ADD_CANCELLED_ORDER","ADD CANCELLED ORDER " + ordering.getId() + ".",user.getUsername());
+                iAudit.save("ADD_CANCELLED_ORDER","PEDIDO CANCELADO #" + ordering.getId() + ".",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

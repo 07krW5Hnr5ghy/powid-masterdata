@@ -5,15 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestShipmentExcel {
+public class RequestPurchase {
     private String serial;
-    private String shipmentSerial;
-    private String shipmentDocument;
     private String warehouse;
-    private String shipmentType;
-    private String tokenUser;
+    private String purchaseType;
+    private String purchaseDocument;
+    private String supplier;
+    private List<RequestPurchaseItem> requestPurchaseItemList;
 }

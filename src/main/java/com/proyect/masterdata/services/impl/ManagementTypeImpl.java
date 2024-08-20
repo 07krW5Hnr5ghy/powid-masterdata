@@ -60,7 +60,7 @@ public class ManagementTypeImpl implements IManagementType {
                         .name(name.toUpperCase())
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_MANAGEMENT_TYPE","ADD MANAGEMENT TYPE "+newManagement+".",user.getUsername());
+                iAudit.save("ADD_MANAGEMENT_TYPE","TIPO DE GESTION "+newManagement.getName()+" CREADO.",newManagement.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -94,7 +94,7 @@ public class ManagementTypeImpl implements IManagementType {
                 managementType.setUpdateDate(new Date(System.currentTimeMillis()));
                 managementType.setTokenUser(user.getUsername());
                 managementTypeRepository.save(managementType);
-                iAudit.save("DELETE_MANAGEMENT_TYPE","DELETE MANAGEMENT TYPE "+managementType.getName()+".",user.getUsername());
+                iAudit.save("DELETE_MANAGEMENT_TYPE","TIPO DE GESTION "+managementType.getName()+" DESACTIVADO.",managementType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -129,7 +129,7 @@ public class ManagementTypeImpl implements IManagementType {
                 managementType.setUpdateDate(new Date(System.currentTimeMillis()));
                 managementType.setTokenUser(user.getUsername());
                 managementTypeRepository.save(managementType);
-                iAudit.save("ACTIVATE_MANAGEMENT_TYPE","DELETE MANAGEMENT TYPE "+managementType.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_MANAGEMENT_TYPE","TIPO DE GESTION "+managementType.getName()+" ACTIVADO.",managementType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.delete)
                         .code(200)

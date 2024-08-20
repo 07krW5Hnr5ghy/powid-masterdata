@@ -68,7 +68,7 @@ public class ModuleImpl implements IModule {
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_MODULE","ADD MODULE "+newModule.getName()+".",user.getUsername());
+            iAudit.save("ADD_MODULE","MODULO "+newModule.getName()+".",newModule.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -111,7 +111,7 @@ public class ModuleImpl implements IModule {
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_MODULE","ADD MODULE "+newModule.getName()+".",user.getUsername());
+                iAudit.save("ADD_MODULE","MODULO "+newModule.getName()+" CREADO.",newModule.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -149,7 +149,7 @@ public class ModuleImpl implements IModule {
 
             module.setMonthlyPrice(requestModule.getMontlyPrice());
             module.setUpdateDate(new Date(System.currentTimeMillis()));
-            iAudit.save("UPDATE_MODULE","UPDATE MODULE "+module.getName()+" WITH PRICE "+module.getMonthlyPrice()+".",user.getUsername());
+            iAudit.save("UPDATE_MODULE","MODULO ACTUALIZADO "+module.getName()+" CON PRECIO "+module.getMonthlyPrice()+".",module.getName(),user.getUsername());
             try {
                 return moduleMapper.moduleToModuleDTO(moduleRepository.save(module));
             } catch (RuntimeException e) {
@@ -186,7 +186,7 @@ public class ModuleImpl implements IModule {
                 module.setUpdateDate(new Date(System.currentTimeMillis()));
                 module.setTokenUser(user.getUsername());
                 moduleRepository.save(module);
-                iAudit.save("DELETE_MODULE","DELETE MODULE "+module.getName()+".",user.getUsername());
+                iAudit.save("DELETE_MODULE","MODULO "+module.getName()+" DESACTIVADO.",module.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -226,7 +226,7 @@ public class ModuleImpl implements IModule {
                 module.setTokenUser(user.getUsername());
                 module.setUpdateDate(new Date(System.currentTimeMillis()));
                 moduleRepository.save(module);
-                iAudit.save("ACTIVATE_MODULE","ACTIVATE MODULE "+module.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_MODULE","MODULO "+module.getName()+" ACTIVADO.",module.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

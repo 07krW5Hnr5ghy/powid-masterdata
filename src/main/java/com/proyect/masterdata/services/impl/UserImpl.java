@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Collections;
 import java.util.List;
@@ -114,8 +115,9 @@ public class UserImpl implements IUser {
                             .userId(newUser.getId())
                             .roleId(role.getId())
                             .tokenUser(tokenUser.getUsername())
+                            .status(true)
                     .build());
-            iAudit.save("ADD_USER","ADD USER "+newUser.getUsername()+".",tokenUser.getUsername());
+            iAudit.save("ADD_USER","USUARIO "+newUser.getUsername()+" CREADO.",newUser.getUsername(),tokenUser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -203,13 +205,14 @@ public class UserImpl implements IUser {
                         .roleId(role.getId())
                         .tokenUser(tokenUser.getUsername())
                         .build());
-                iAudit.save("ADD_USER","ADD USER "+newUser.getUsername()+".",tokenUser.getUsername());
+                iAudit.save("ADD_USER","USUARIO "+newUser.getUsername()+" CREADO.",newUser.getUsername(),tokenUser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
                         .build();
             } catch (RuntimeException e) {
                 log.error(e);
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
@@ -250,7 +253,7 @@ public class UserImpl implements IUser {
                 userData.setPassword(requestUserSave.getPassword());
                 userData.setTokenUser(tokenUser.toUpperCase());
                 User updatedUser = userRepository.save(userData);
-                iAudit.save("UPDATE_USER","UPDATE USER "+updatedUser.getUsername()+".",user.getUsername());
+                iAudit.save("UPDATE_USER","USUARIO "+updatedUser.getUsername()+" ACTUALIZADO.",updatedUser.getUsername(),user.getUsername());
                 return UserDTO.builder()
                         .username(updatedUser.getUsername().toUpperCase())
                         .name(updatedUser.getName().toUpperCase())
@@ -298,7 +301,7 @@ public class UserImpl implements IUser {
                 dataUser.setStatus(false);
                 dataUser.setTokenUser(username.toUpperCase());
                 userRepository.save(dataUser);
-                iAudit.save("DELETE_USER","DELETE USER "+dataUser.getUsername()+".",tokenUserData.getUsername());
+                iAudit.save("DELETE_USER","USUARIO "+dataUser.getUsername()+" DESACTIVADO.",dataUser.getUsername(),tokenUserData.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -311,15 +314,41 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public CompletableFuture<Page<UserQueryDTO>> list(String user, String clientRuc, String dni, String email, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<UserQueryDTO>> list(
+            String user,
+            List<String> names,
+            List<String> usernames,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<User> userPage;
             Long clientId;
             try {
-                clientId = clientRepository.findByRucAndStatusTrue(clientRuc).getId();
-                userPage = userRepositoryCustom.searchForUser(user, clientId, dni, email, sort, sortColumn, pageNumber,
-                        pageSize, true);
+                List<String> namesUppercase;
+                List<String> usernamesUppercase;
+
+                if(names != null && !names.isEmpty()){
+                    namesUppercase = names.stream().map(String::toUpperCase).toList();
+                }else{
+                    namesUppercase = new ArrayList<>();
+                }
+                if(usernames != null && !usernames.isEmpty()){
+                    usernamesUppercase = usernames.stream().map(String::toUpperCase).toList();
+                }else{
+                    usernamesUppercase = new ArrayList<>();
+                }
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                userPage = userRepositoryCustom.searchForUser(
+                        clientId,
+                        namesUppercase,
+                        usernamesUppercase,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -351,15 +380,43 @@ public class UserImpl implements IUser {
     }
 
     @Override
-    public CompletableFuture<Page<UserQueryDTO>> listFalse(String user, String clientRuc, String dni, String email, String sort, String sortColumn, Integer pageNumber,
-                                   Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<UserQueryDTO>> listFalse(
+            String user,
+            List<String>names,
+            List<String> usernames,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<User> userPage;
             Long clientId;
             try {
-                clientId = clientRepository.findByRucAndStatusTrue(clientRuc).getId();
-                userPage = userRepositoryCustom.searchForUser(user, clientId, dni, email, sort, sortColumn, pageNumber,
-                        pageSize, false);
+                List<String> namesUppercase;
+                List<String> usernamesUppercase;
+
+                if(names != null && !names.isEmpty()){
+                    namesUppercase = names.stream().map(String::toUpperCase).toList();
+                }else{
+                    namesUppercase = new ArrayList<>();
+                }
+
+                if(usernames != null && !usernames.isEmpty()){
+                    usernamesUppercase = usernames.stream().map(String::toUpperCase).toList();
+                }else{
+                    usernamesUppercase = new ArrayList<>();
+                }
+
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                userPage = userRepositoryCustom.searchForUser(
+                        clientId,
+                        namesUppercase,
+                        usernamesUppercase,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -416,7 +473,7 @@ public class UserImpl implements IUser {
                 dataUser.setStatus(true);
                 dataUser.setTokenUser(tokenUserData.getUsername());
                 userRepository.save(dataUser);
-                iAudit.save("ACTIVATE_USER","ACTIVATE USER "+dataUser.getUsername()+".",tokenUserData.getUsername());
+                iAudit.save("ACTIVATE_USER","USUARIO "+dataUser.getUsername()+" DESACTIVADO.",dataUser.getUsername(),tokenUserData.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -425,6 +482,42 @@ public class UserImpl implements IUser {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<UserQueryDTO>> listFilter(String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<User> userList;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(username.toUpperCase()).getClientId();
+                userList = userRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(userList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return userList.stream().map(user -> {
+                List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(user.getId());
+                return UserQueryDTO.builder()
+                    .address(user.getAddress())
+                    .district(user.getDistrict().getName())
+                    .dni(user.getDni())
+                    .email(user.getEmail())
+                    .gender(user.getGender())
+                    .mobile(user.getMobile())
+                    .name(user.getName())
+                    .surname(user.getSurname())
+                    .user(user.getUsername())
+                    .roleNames(userRoles.stream().map(userRole -> {
+                        Role role = roleRepository.findById(userRole.getRoleId()).orElse(null);
+                        return role.getName();
+                    }).toList())
+                    .build();
+            }).toList();
         });
     }
 }

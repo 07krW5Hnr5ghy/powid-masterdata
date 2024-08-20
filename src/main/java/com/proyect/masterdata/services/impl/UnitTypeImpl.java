@@ -58,7 +58,7 @@ public class UnitTypeImpl implements IUnitType {
                             .updateDate(new Date(System.currentTimeMillis()))
                             .tokenUser(user.getUsername())
                     .build());
-            iAudit.save("ADD_UNIT_TYPE","ADD UNIT TYPE "+newUnitType.getName()+".",user.getUsername());
+            iAudit.save("ADD_UNIT_TYPE","TIPO DE UNIDAD "+newUnitType.getName()+" CREADO.",newUnitType.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -99,7 +99,7 @@ public class UnitTypeImpl implements IUnitType {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_UNIT_TYPE","ADD UNIT TYPE "+newUnitType.getName()+".",user.getUsername());
+                iAudit.save("ADD_UNIT_TYPE","TIPO DE UNIDAD "+newUnitType.getName()+" CREADO.",newUnitType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -138,7 +138,7 @@ public class UnitTypeImpl implements IUnitType {
                 unitType.setUpdateDate(new Date(System.currentTimeMillis()));
                 unitType.setTokenUser(user.getUsername());
                 unitTypeRepository.save(unitType);
-                iAudit.save("DELETE_UNIT_TYPE","DELETE UNIT TYPE "+unitType.getName()+".",user.getUsername());
+                iAudit.save("DELETE_UNIT_TYPE","TIPO DE UNIDAD "+unitType.getName()+" DESACTIVADO.",unitType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -177,7 +177,7 @@ public class UnitTypeImpl implements IUnitType {
                 unitType.setUpdateDate(new Date(System.currentTimeMillis()));
                 unitType.setTokenUser(user.getUsername());
                 unitTypeRepository.save(unitType);
-                iAudit.save("ACTIVATE_UNIT_TYPE","ACTIVATE UNIT TYPE "+unitType.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_UNIT_TYPE","TIPO DE UNIDAD "+unitType.getName()+" ACTIVADA.",unitType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.delete)

@@ -22,6 +22,7 @@ public class ProductDTO {
     private String unit;
     private Double price;
     private List<String> pictures;
+    private Boolean pictureFlag;
     private Date registrationDate;
     private Date updateDate;
 }

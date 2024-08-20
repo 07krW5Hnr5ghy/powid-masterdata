@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class WarehouseStockDTO {
     public String warehouse;
     public String supplierProduct;
+    public String product;
     public Integer quantity;
     public Date registrationDate;
     public Date updateDate;

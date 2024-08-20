@@ -32,13 +32,22 @@ public class WarehouseStockController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
     public ResponseEntity<Page<WarehouseStockDTO>> list(
             @RequestParam(value = "warehouses", required = false) List<String> warehouses,
-            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
-            @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "serial",required = false) String serial,
+            @RequestParam(value = "productSku",required = false) String productSku,
+            @RequestParam(value = "user") String user,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<WarehouseStockDTO>> result = iWarehouseStock.list(warehouses,supplierProducts, user, sort, sortColumn, pageNumber, pageSize);
+            @RequestParam(value = "pageNumber") Integer pageNumber,
+            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<WarehouseStockDTO>> result = iWarehouseStock.list(
+                warehouses,
+                serial,
+                productSku,
+                user,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -46,9 +55,10 @@ public class WarehouseStockController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:WAREHOUSE_STOCK_GET')")
     public ResponseEntity<List<WarehouseStockDTO>> listWarehouseStock(
             @RequestParam("user") String user,
-            @RequestParam(value = "warehouseId",required = false) Long warehouseId
+            @RequestParam(value = "warehouse",required = false) String warehouse,
+            @RequestParam(value = "supplierProduct",required = false) String supplierProduct
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<WarehouseStockDTO>> result = iWarehouseStock.listWarehouse(user,warehouseId);
+        CompletableFuture<List<WarehouseStockDTO>> result = iWarehouseStock.listWarehouse(user,warehouse,supplierProduct);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

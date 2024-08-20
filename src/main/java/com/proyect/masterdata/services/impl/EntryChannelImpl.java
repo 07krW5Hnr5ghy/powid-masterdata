@@ -66,7 +66,7 @@ public class EntryChannelImpl implements IEntryChannel {
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_ENTRY_CHANNEL","ENTRY CHANNEL "+newEntryChannel.getName()+".",user.getUsername());
+                iAudit.save("ADD_ENTRY_CHANNEL","CANAL DE ENTRADA "+newEntryChannel.getName()+" CREADO.",newEntryChannel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -188,7 +188,7 @@ public class EntryChannelImpl implements IEntryChannel {
                 entryChannel.setUpdateDate(new Date(System.currentTimeMillis()));
                 entryChannel.setTokenUser(user.getUsername());
                 entryChannelRepository.save(entryChannel);
-                iAudit.save("DELETE_ENTRY_CHANNEL","DELETE ENTRY CHANNEL "+entryChannel.getName()+".",user.getUsername());
+                iAudit.save("DELETE_ENTRY_CHANNEL","CANAL DE ENTRADA "+entryChannel.getName()+" DESACTIVADO.",entryChannel.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -223,7 +223,7 @@ public class EntryChannelImpl implements IEntryChannel {
                 entryChannel.setUpdateDate(new Date(System.currentTimeMillis()));
                 entryChannel.setTokenUser(user.getUsername());
                 entryChannelRepository.save(entryChannel);
-                iAudit.save("ACTIVATE_ENTRY_CHANNEL","DELETE ENTRY CHANNEL "+entryChannel.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_ENTRY_CHANNEL","CANAL DE ENTRADA "+entryChannel.getName()+" ACTIVADO.",entryChannel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

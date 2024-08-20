@@ -51,10 +51,17 @@ public class SizeTypeController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @GetMapping("filter")
+    @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_TYPE_GET')")
     public ResponseEntity<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<SizeTypeDTO>> result = iSizeType.listSizeType();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_TYPE_GET')")
+    public ResponseEntity<List<SizeTypeDTO>> listSizeTypeFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SizeTypeDTO>> result = iSizeType.listSizeTypeFilter();
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

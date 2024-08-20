@@ -71,7 +71,7 @@ public class UserRoleImpl implements IUserRole {
                     .tokenUser(tokenUser.toUpperCase())
                             .status(true)
                     .build());
-            iAudit.save("ADD_USER_ROLE","ADD ROLE "+newUserRole.getRole().getName()+" FOR USER "+newUserRole.getUser().getUsername()+".",user.getUsername());
+            iAudit.save("ADD_USER_ROLE","ROL "+newUserRole.getRole().getName()+" PARA USUARIO "+newUserRole.getUser().getUsername()+" CREADO.",newUserRole.getUser().getUsername(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -120,7 +120,7 @@ public class UserRoleImpl implements IUserRole {
                                 .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_USER_ROLE","ADD ROLE "+newUserRole.getRole().getName()+" FOR USER "+newUserRole.getUser().getUsername()+".",user.getUsername());
+                iAudit.save("ADD_USER_ROLE","ROL "+newUserRole.getRole().getName()+" PARA USUARIO "+newUserRole.getUser().getUsername()+" CREADO.",newUserRole.getUser().getUsername(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -170,7 +170,7 @@ public class UserRoleImpl implements IUserRole {
                 userRole.setStatus(false);
                 userRole.setUpdateDate(new Date(System.currentTimeMillis()));
                 userRole.setTokenUser(user.getUsername());
-                iAudit.save("DELETE_USER_ROLE","DELETE ROLE "+userRole.getRole().getName()+" FOR USER "+userRole.getUser().getUsername()+".",user.getUsername());
+                iAudit.save("DELETE_USER_ROLE","ROL "+userRole.getRole().getName()+" PARA USUARIO "+userRole.getUser().getUsername()+" DESACTIVADO.",userRole.getUser().getUsername(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -220,7 +220,7 @@ public class UserRoleImpl implements IUserRole {
                 userRole.setStatus(true);
                 userRole.setUpdateDate(new Date(System.currentTimeMillis()));
                 userRole.setTokenUser(user.getUsername());
-                iAudit.save("ACTIVATE_USER_ROLE","ACTIVATE ROLE "+userRole.getRole().getName()+" FOR USER "+userRole.getUser().getUsername()+".",user.getUsername());
+                iAudit.save("ACTIVATE_USER_ROLE","ROL ACTIVADO "+userRole.getRole().getName()+" PARA USUARIO "+userRole.getUser().getUsername()+" ACTIVADO.",userRole.getUser().getUsername(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.delete)

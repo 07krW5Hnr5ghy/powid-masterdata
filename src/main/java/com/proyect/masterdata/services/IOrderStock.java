@@ -16,7 +16,7 @@ public interface IOrderStock {
     CompletableFuture<ResponseSuccess> saveAsync(Long orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<Page<OrderStockDTO>> list(
             String user,
-            List<Long> orders,
+            Long orderId,
             List<String> warehouses,
             String sort,
             String sortColumn,

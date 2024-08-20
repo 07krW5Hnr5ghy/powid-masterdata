@@ -114,7 +114,7 @@ public class StockTransferImpl implements IStockTransfer {
 
             iStockTransaction.save("STO"+newStockTransfer.getId(),originWarehouse,requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
             iStockTransaction.save("STI"+newStockTransfer.getId(), destinationWarehouse, requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
-            iAudit.save("ADD_STOCK_TRANSFER","ADD STOCK TRANSFER "+newStockTransfer.getSerial()+".",user.getUsername());
+            iAudit.save("ADD_STOCK_TRANSFER","TRANSFERENCIA DE STOCK "+newStockTransfer.getSerial()+" CREADA.",newStockTransfer.getSerial(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -203,7 +203,7 @@ public class StockTransferImpl implements IStockTransfer {
 
                 iStockTransaction.save("STO"+newStockTransfer.getId(),originWarehouse,requestStockTransactionItemList,"TRANSFERENCIA-SALIDA",user);
                 iStockTransaction.save("STI"+newStockTransfer.getId(), destinationWarehouse, requestStockTransactionItemList,"TRANSFERENCIA-ENTRADA",user);
-                iAudit.save("ADD_STOCK_TRANSFER","ADD STOCK TRANSFER "+newStockTransfer.getSerial()+".",user.getUsername());
+                iAudit.save("ADD_STOCK_TRANSFER","TRANSFERENCIA DE STOCK "+newStockTransfer.getSerial()+" CREADA.",newStockTransfer.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

@@ -7,6 +7,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.DiscountRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IDiscount;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 public class DiscountImpl implements IDiscount {
     private final UserRepository userRepository;
     private final DiscountRepository discountRepository;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -42,12 +44,14 @@ public class DiscountImpl implements IDiscount {
             throw new BadRequestExceptions(Constants.ErrorDiscountExist);
         }
         try{
-            discountRepository.save(Discount.builder()
+            Discount newDiscount = discountRepository.save(Discount.builder()
                             .name(name.toUpperCase())
                             .registrationDate(new Date(System.currentTimeMillis()))
                             .updateDate(new Date(System.currentTimeMillis()))
+                            .tokenUser(user.getUsername())
                             .status(true)
                     .build());
+            iAudit.save("ADD_DISCOUNT","DESCUENTO "+newDiscount.getName()+" CREADO.",newDiscount.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -77,12 +81,14 @@ public class DiscountImpl implements IDiscount {
                 throw new BadRequestExceptions(Constants.ErrorDiscountExist);
             }
             try{
-                discountRepository.save(Discount.builder()
+                Discount newDiscount = discountRepository.save(Discount.builder()
                         .name(name.toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(user.getUsername())
                         .status(true)
                         .build());
+                iAudit.save("ADD_DISCOUNT","DESCUENTO "+newDiscount.getName()+" CREADO.",newDiscount.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

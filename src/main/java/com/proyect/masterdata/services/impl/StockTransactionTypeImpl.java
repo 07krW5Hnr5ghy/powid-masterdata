@@ -61,7 +61,7 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_STOCK_TRANSACTION_TYPE","ADD STOCK TRANSACTION TYPE "+newStockTransactionType.getName()+".",user.getUsername());
+            iAudit.save("ADD_STOCK_TRANSACTION_TYPE","TIPO DE TRANSACCION "+newStockTransactionType.getName()+" CREADO.",newStockTransactionType.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -101,7 +101,7 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_STOCK_TRANSACTION_TYPE","ADD STOCK TRANSACTION TYPE "+newStockTransactionType.getName()+".",user.getUsername());
+                iAudit.save("ADD_STOCK_TRANSACTION_TYPE","TIPO DE TRANSACCION "+newStockTransactionType.getName()+" CREADO.",newStockTransactionType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -141,7 +141,7 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
                 stockTransactionType.setStatus(false);
                 stockTransactionType.setTokenUser(user.getUsername());
                 stockTransactionTypeRepository.save(stockTransactionType);
-                iAudit.save("DELETE_STOCK_TRANSACTION_TYPE","DELETE STOCK TRANSACTION TYPE "+stockTransactionType.getName()+".",user.getUsername());
+                iAudit.save("DELETE_STOCK_TRANSACTION_TYPE","TIPO DE TRANSACCION "+stockTransactionType.getName()+" DESACTIVADO.",stockTransactionType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -180,7 +180,7 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
                 stockTransactionType.setStatus(true);
                 stockTransactionType.setTokenUser(user.getUsername());
                 stockTransactionTypeRepository.save(stockTransactionType);
-                iAudit.save("DELETE_STOCK_TRANSACTION_TYPE","DELETE STOCK TRANSACTION TYPE "+stockTransactionType.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_STOCK_TRANSACTION_TYPE","TIPO DE TRANSACCION "+stockTransactionType.getName()+" ACTIVADO.",stockTransactionType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

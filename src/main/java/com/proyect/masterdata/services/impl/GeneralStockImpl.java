@@ -80,7 +80,7 @@ public class GeneralStockImpl implements IGeneralStock {
                             .tokenUser(user.getUsername())
                             .build());
                 }
-                iAudit.save("ADD_GENERAL_STOCK","ADD GENERAL STOCK FOR SUPPLIER PRODUCT "+supplierProduct.getSerial()+" WITH " + quantity +" UNITS.",user.getUsername());
+                iAudit.save("ADD_GENERAL_STOCK","INGRESO DE STOCK "+supplierProduct.getSerial()+" DE " + quantity +" UNIDADES.",supplierProduct.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -129,7 +129,7 @@ public class GeneralStockImpl implements IGeneralStock {
 
                 generalStock.setQuantity(generalStock.getQuantity() - quantity);
                 generalStockRepository.save(generalStock);
-                iAudit.save("DELETE_GENERAL_STOCK","DELETE GENERAL STOCK FOR SUPPLIER PRODUCT "+supplierProduct.getSerial()+" WITH " + quantity +" UNITS.",user.getUsername());
+                iAudit.save("DELETE_GENERAL_STOCK","SALIDA DE STOCK "+supplierProduct.getSerial()+" DE " + quantity +" UNIDADES.",supplierProduct.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -144,7 +144,8 @@ public class GeneralStockImpl implements IGeneralStock {
     @Override
     public CompletableFuture<Page<GeneralStockDTO>> list(
             String user,
-            List<String> supplierProducts,
+            String serial,
+            String productSku,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -157,21 +158,13 @@ public class GeneralStockImpl implements IGeneralStock {
         return CompletableFuture.supplyAsync(()->{
             Page<GeneralStock> generalStockPage;
             Long clientId;
-            List<Long> supplierProductIds;
-
-            if(supplierProducts != null && !supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else{
-                supplierProductIds = new ArrayList<>();
-            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 generalStockPage = generalStockRepositoryCustom.searchForGeneralStock(
                         clientId,
-                        supplierProductIds,
+                        serial,
+                        productSku,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
@@ -193,6 +186,7 @@ public class GeneralStockImpl implements IGeneralStock {
                     .map(generalStock -> GeneralStockDTO.builder()
                             .quantity(generalStock.getQuantity())
                             .supplierProduct(generalStock.getSupplierProduct().getSerial())
+                            .productSku(generalStock.getSupplierProduct().getProduct().getSku())
                             .registrationDate(generalStock.getRegistrationDate())
                             .updateDate(generalStock.getUpdateDate())
                             .build())
@@ -224,6 +218,7 @@ public class GeneralStockImpl implements IGeneralStock {
                     .map(generalStock -> GeneralStockDTO.builder()
                             .quantity(generalStock.getQuantity())
                             .supplierProduct(generalStock.getSupplierProduct().getSerial())
+                            .productSku(generalStock.getSupplierProduct().getProduct().getSku())
                             .registrationDate(generalStock.getRegistrationDate())
                             .updateDate(generalStock.getUpdateDate())
                             .build())

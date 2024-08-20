@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.domain.Product;
+import com.proyect.masterdata.domain.SupplierProduct;
+import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,11 +20,6 @@ import com.proyect.masterdata.repository.GeneralStockRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 
 @Repository
 public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryCustom {
@@ -32,7 +30,8 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
     @Override
     public Page<GeneralStock> searchForGeneralStock(
             Long clientId,
-            List<Long> supplierProductIds,
+            String serial,
+            String productSku,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -45,17 +44,22 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GeneralStock> criteriaQuery = criteriaBuilder.createQuery(GeneralStock.class);
         Root<GeneralStock> itemRoot = criteriaQuery.from(GeneralStock.class);
+        Join<GeneralStock, SupplierProduct> generalStockSupplierProductJoin = itemRoot.join("supplierProduct");
+        Join<SupplierProduct, Product> supplierProductProductJoin = generalStockSupplierProductJoin.join("product");
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
                 clientId,
-                supplierProductIds,
+                serial,
+                productSku,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 criteriaBuilder,
-                itemRoot);
+                itemRoot,
+                generalStockSupplierProductJoin,
+                supplierProductProductJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -81,7 +85,8 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                supplierProductIds,
+                serial,
+                productSku,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -94,13 +99,16 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
 
     private List<Predicate> predicate(
             Long clientId,
-            List<Long> supplierProductIds,
+            String serial,
+            String productSku,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
             Date updateEndDate,
             CriteriaBuilder criteriaBuilder,
-            Root<GeneralStock> itemRoot) {
+            Root<GeneralStock> itemRoot,
+            Join<GeneralStock,SupplierProduct> generalStockSupplierProductJoin,
+            Join<SupplierProduct,Product> supplierProductProductJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -108,8 +116,12 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if(!supplierProductIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("supplierProduct").get("id").in(supplierProductIds)));
+        if(serial != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(generalStockSupplierProductJoin.get("serial")),"%"+serial.toUpperCase()+"%"));
+        }
+
+        if(productSku != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplierProductProductJoin.get("sku")),"%"+productSku.toUpperCase()+"%"));
         }
 
         if(registrationStartDate!=null){
@@ -213,7 +225,8 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
 
     private Long getOrderCount(
             Long clientId,
-            List<Long> supplierProductIds,
+            String serial,
+            String productSku,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -222,16 +235,21 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<GeneralStock> itemRoot = criteriaQuery.from(GeneralStock.class);
+        Join<GeneralStock, SupplierProduct> generalStockSupplierProductJoin = itemRoot.join("supplierProduct");
+        Join<SupplierProduct, Product> supplierProductProductJoin = generalStockSupplierProductJoin.join("product");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
-                supplierProductIds,
+                serial,
+                productSku,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 criteriaBuilder,
-                itemRoot);
+                itemRoot,
+                generalStockSupplierProductJoin,
+                supplierProductProductJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

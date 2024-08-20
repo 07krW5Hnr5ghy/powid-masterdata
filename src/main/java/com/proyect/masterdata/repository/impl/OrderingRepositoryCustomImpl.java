@@ -1,7 +1,9 @@
 package com.proyect.masterdata.repository.impl;
 
+import com.proyect.masterdata.domain.Customer;
+import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Ordering;
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.Province;
 import com.proyect.masterdata.repository.OrderingRepositoryCustom;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
@@ -22,14 +24,64 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Ordering> searchForOrdering(Long orderId, Long clientId,Long orderStateId,Long courierId,Long paymentStateId,Long paymentMethodId,Long saleChannelId, Long managementTypeId,Long storeId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<Ordering> searchForOrdering(
+            Long orderId,
+            Long clientId,
+            String seller,
+            String customer,
+            String customerPhone,
+            String instagram,
+            List<Long> departmentIds,
+            List<Long> provinceIds,
+            List<Long> districtIds,
+            List<Long> saleChannelIds,
+            Boolean receiptFlag,
+            Boolean deliveryFlag,
+            List<Long> deliveryPointIds,
+            List<Long> orderStateIds,
+            List<Long> courierIds,
+            Long paymentStateId,
+            Long paymentMethodId,
+            Long managementTypeId,
+            Long storeId,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Ordering> criteriaQuery = criteriaBuilder.createQuery(Ordering.class);
         Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);
+        Join<Ordering, Customer> orderingCustomerJoin = itemRoot.join("customer");
+        Join<Customer, District> customerDistrictJoin = orderingCustomerJoin.join("district");
+        Join<District, Province> districtProvinceJoin = customerDistrictJoin.join("province");
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(orderId,clientId,orderStateId,courierId, paymentStateId,paymentMethodId, saleChannelId, managementTypeId,storeId,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                orderId,
+                clientId,
+                seller,
+                customer,
+                customerPhone,
+                instagram,
+                departmentIds,
+                provinceIds,
+                districtIds,
+                saleChannelIds,
+                receiptFlag,
+                deliveryFlag,
+                deliveryPointIds,
+                orderStateIds,
+                courierIds,
+                paymentStateId,
+                paymentMethodId,
+                managementTypeId,
+                storeId,
+                criteriaBuilder,
+                itemRoot,
+                orderingCustomerJoin,
+                customerDistrictJoin,
+                districtProvinceJoin);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
             List<Order> orderingList = new ArrayList<>();
@@ -53,11 +105,54 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
         orderingTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        Long count = getOrderCount(orderId,clientId,orderStateId,courierId,paymentStateId,paymentMethodId, saleChannelId, managementTypeId,storeId);
+        Long count = getOrderCount(
+                orderId,
+                clientId,
+                seller,
+                customer,
+                customerPhone,
+                instagram,
+                departmentIds,
+                provinceIds,
+                districtIds,
+                saleChannelIds,
+                receiptFlag,
+                deliveryFlag,
+                deliveryPointIds,
+                orderStateIds,
+                courierIds,
+                paymentStateId,
+                paymentMethodId,
+                managementTypeId,
+                storeId);
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
     }
 
-    List<Predicate> predicateConditions(Long id, Long clientId,Long orderStateId,Long courierId,Long paymentStateId,Long paymentMethodId,Long saleChannelId,Long managementTypeId,Long storeId, CriteriaBuilder criteriaBuilder,Root<Ordering> itemRoot){
+    List<Predicate> predicateConditions(
+            Long id,
+            Long clientId,
+            String seller,
+            String customer,
+            String customerPhone,
+            String instagram,
+            List<Long> departmentIds,
+            List<Long> provinceIds,
+            List<Long> districtIds,
+            List<Long> saleChannelIds,
+            Boolean receiptFlag,
+            Boolean deliveryFlag,
+            List<Long> deliveryPointIds,
+            List<Long> orderStateIds,
+            List<Long> courierIds,
+            Long paymentStateId,
+            Long paymentMethodId,
+            Long managementTypeId,
+            Long storeId,
+            CriteriaBuilder criteriaBuilder,
+            Root<Ordering> itemRoot,
+            Join<Ordering,Customer> orderingCustomerJoin,
+            Join<Customer,District> customerDistrictJoin,
+            Join<District,Province> districtProvinceJoin){
         List<Predicate> conditions = new ArrayList<>();
 
         if(id != null){
@@ -68,12 +163,56 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"),clientId)));
         }
 
-        if(orderStateId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderStateId"),orderStateId)));
+        if(seller != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("seller")),"%"+seller.toUpperCase()+"%"));
         }
 
-        if(courierId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("courierId"),courierId)));
+        if(customer != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(orderingCustomerJoin.get("name")),"%"+customer.toUpperCase()+"%"));
+        }
+
+        if(customerPhone != null){
+            conditions.add(criteriaBuilder.like(orderingCustomerJoin.get("phone"),"%"+customerPhone+"%"));
+        }
+
+        if(instagram != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(orderingCustomerJoin.get("instagram")),"%"+instagram.toUpperCase()+"%"));
+        }
+
+        if(!departmentIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(districtProvinceJoin.get("departmentId").in(departmentIds)));
+        }
+
+        if (!provinceIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(customerDistrictJoin.get("provinceId").in(provinceIds)));
+        }
+
+        if(!districtIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(orderingCustomerJoin.get("districtId").in(districtIds)));
+        }
+
+        if(!saleChannelIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("saleChannelId").in(saleChannelIds)));
+        }
+
+        if (receiptFlag != null) {
+            conditions.add(criteriaBuilder.equal(itemRoot.get("receiptFlag"), receiptFlag));
+        }
+
+        if (deliveryFlag != null) {
+            conditions.add(criteriaBuilder.equal(itemRoot.get("deliveryFlag"), deliveryFlag));
+        }
+
+        if(!deliveryPointIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("deliveryPointId").in(deliveryPointIds)));
+        }
+
+        if(!orderStateIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("orderStateId").in(orderStateIds)));
+        }
+
+        if(!courierIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("courierId").in(courierIds)));
         }
 
         if(paymentStateId != null){
@@ -82,10 +221,6 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
 
         if(paymentMethodId != null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("paymentMethodId"),paymentMethodId)));
-        }
-
-        if(saleChannelId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("saleChannelId"),saleChannelId)));
         }
 
         if(managementTypeId != null){
@@ -139,6 +274,18 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             orderingList.add(criteriaBuilder.asc(itemRoot.get("storeId")));
         }
 
+        if(sortColumn.equalsIgnoreCase("updateDate")){
+            orderingList.add(criteriaBuilder.asc(itemRoot.get(
+                    "updateDate"
+            )));
+        }
+
+        if(sortColumn.equalsIgnoreCase("registrationDate")){
+            orderingList.add(criteriaBuilder.asc(itemRoot.get(
+                    "registrationDate"
+            )));
+        }
+
         return orderingList;
 
     }
@@ -183,17 +330,75 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             orderingList.add(criteriaBuilder.desc(itemRoot.get("storeId")));
         }
 
+        if(sortColumn.equalsIgnoreCase("updateDate")){
+            orderingList.add(criteriaBuilder.desc(itemRoot.get(
+                    "updateDate"
+            )));
+        }
+
+        if(sortColumn.equalsIgnoreCase("registrationDate")){
+            orderingList.add(criteriaBuilder.desc(itemRoot.get(
+                    "registrationDate"
+            )));
+        }
+
         return orderingList;
 
     }
 
-    private Long getOrderCount(Long id,Long clientId,Long orderStateId,Long courierId,Long paymentStateId,Long paymentMethodId,Long saleChannelId, Long managementTypeId, Long storeId){
+    private Long getOrderCount(
+            Long id,
+            Long clientId,
+            String seller,
+            String customer,
+            String customerPhone,
+            String instagram,
+            List<Long> departmentIds,
+            List<Long> provinceIds,
+            List<Long> districtIds,
+            List<Long> saleChannelIds,
+            Boolean receiptFlag,
+            Boolean deliveryFlag,
+            List<Long> deliveryPointIds,
+            List<Long> orderStateIds,
+            List<Long> courierIds,
+            Long paymentStateId,
+            Long paymentMethodId,
+            Long managementTypeId,
+            Long storeId){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);
+        Join<Ordering,Customer> orderingCustomerJoin = itemRoot.join("customer");
+        Join<Customer, District> customerDistrictJoin = orderingCustomerJoin.join("district");
+        Join<District, Province> districtProvinceJoin = customerDistrictJoin.join("province");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(id,clientId,orderStateId,courierId,paymentStateId,paymentMethodId,saleChannelId,managementTypeId,storeId,criteriaBuilder,itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                id,
+                clientId,
+                seller,
+                customer,
+                customerPhone,
+                instagram,
+                departmentIds,
+                provinceIds,
+                districtIds,
+                saleChannelIds,
+                receiptFlag,
+                deliveryFlag,
+                deliveryPointIds,
+                orderStateIds,
+                courierIds,
+                paymentStateId,
+                paymentMethodId,
+                managementTypeId,
+                storeId,
+                criteriaBuilder,
+                itemRoot,
+                orderingCustomerJoin,
+                customerDistrictJoin,
+                districtProvinceJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

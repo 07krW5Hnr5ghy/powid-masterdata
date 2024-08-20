@@ -33,4 +33,10 @@ public class DeliveryPointController {
         CompletableFuture<List<String>> result = iDeliveryPoint.listDeliveryPoints();
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<String>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<String>> result = iDeliveryPoint.listFilter();
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

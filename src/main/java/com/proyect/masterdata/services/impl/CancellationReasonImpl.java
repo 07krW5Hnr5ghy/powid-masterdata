@@ -63,7 +63,7 @@ public class CancellationReasonImpl implements ICancellationReason {
                             .status(true)
                             .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_CANCELLATION_REASON","ADD CANCELLATION REASON "+newCancellationReason.getName()+".",user.getUsername());
+            iAudit.save("ADD_CANCELLATION_REASON","RAZON DE CANCELACION "+newCancellationReason.getName()+" CREADA .",newCancellationReason.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -106,7 +106,7 @@ public class CancellationReasonImpl implements ICancellationReason {
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_CANCELLATION_REASON","ADD CANCELLATION REASON "+newCancellationReason.getName()+".",user.getUsername());
+                iAudit.save("ADD_CANCELLATION_REASON","RAZON DE CANCELACION "+newCancellationReason.getName()+" CREADA.",newCancellationReason.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -223,7 +223,7 @@ public class CancellationReasonImpl implements ICancellationReason {
                 cancellationReason.setUpdateDate(new Date(System.currentTimeMillis()));
                 cancellationReason.setTokenUser(tokenUser.toUpperCase());
                 cancellationReasonRepository.save(cancellationReason);
-                iAudit.save("DELETE_CANCELLATION_REASON","DELETE CANCELLATION REASON "+cancellationReason.getName()+".",user.getUsername());
+                iAudit.save("DELETE_CANCELLATION_REASON","RAZON DE CANCELACION "+cancellationReason.getName()+" DESACTIVADA.",cancellationReason.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -261,7 +261,7 @@ public class CancellationReasonImpl implements ICancellationReason {
                 cancellationReason.setUpdateDate(new Date(System.currentTimeMillis()));
                 cancellationReason.setTokenUser(tokenUser.toUpperCase());
                 cancellationReasonRepository.save(cancellationReason);
-                iAudit.save("ACTIVATE_CANCELLATION_REASON","ACTIVATE CANCELLATION REASON "+cancellationReason.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_CANCELLATION_REASON","RAZON DE CANCELACION "+cancellationReason.getName()+" ACTIVADA.",cancellationReason.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

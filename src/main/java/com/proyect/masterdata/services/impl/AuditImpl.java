@@ -32,7 +32,7 @@ public class AuditImpl implements IAudit {
     private final AuditRepositoryCustom auditRepositoryCustom;
     private final ClientRepository clientRepository;
     @Override
-    public CompletableFuture<ResponseSuccess> save(String eventName, String detail, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> save(String eventName, String detail, String reference, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             AuditEvent auditEvent;
@@ -57,6 +57,7 @@ public class AuditImpl implements IAudit {
                                 .clientId(user.getClientId())
                                 .detail(detail.toUpperCase())
                                 .registrationDate(new Date(System.currentTimeMillis()))
+                                .reference(reference.toUpperCase())
                                 .tokenUser(user.getUsername())
                                 .user(user)
                                 .userId(user.getId())

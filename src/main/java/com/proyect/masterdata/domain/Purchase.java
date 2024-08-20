@@ -15,12 +15,12 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableShipment, schema = Constants.schemaStock)
-public class Shipment {
+@Table(name = Constants.tablePurchase, schema = Constants.schemaStock)
+public class Purchase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "shipment_id")
+    @Column(name = "purchase_id")
     private Long id;
 
     @Column(name = "serial")
@@ -43,11 +43,11 @@ public class Shipment {
     @Column(name = "warehouse_id")
     private Long warehouseId;
 
-    @Column(name = "shipment_type_id")
-    private Long shipmentTypeId;
+    @Column(name = "purchase_type_id")
+    private Long purchaseTypeId;
 
-    @Column(name = "shipment_document_id")
-    private Long shipmentDocumentId;
+    @Column(name = "purchase_document_id")
+    private Long purchaseDocumentId;
 
     @Column(name = "supplier_id")
     private Long supplierId;
@@ -64,15 +64,15 @@ public class Shipment {
     private Warehouse warehouse;
 
     @ManyToOne
-    @JoinColumn(name = "shipment_document_id",columnDefinition = "shipmentDocumentId",insertable = false,updatable = false)
-    private ShipmentDocument shipmentDocument;
+    @JoinColumn(name = "purchase_document_id",columnDefinition = "purchaseDocumentId",insertable = false,updatable = false)
+    private PurchaseDocument purchaseDocument;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id",columnDefinition = "supplierId", insertable = false, updatable = false)
     private Supplier supplier;
 
     @ManyToOne
-    @JoinColumn(name = "shipment_type_id",columnDefinition = "shipmentTypeId",insertable = false,updatable = false)
-    private ShipmentType shipmentType;
+    @JoinColumn(name = "purchase_type_id",columnDefinition = "purchaseTypeId",insertable = false,updatable = false)
+    private PurchaseType purchaseType;
 
 }

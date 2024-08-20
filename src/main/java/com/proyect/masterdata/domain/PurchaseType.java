@@ -15,12 +15,12 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableShipmentType,schema = Constants.schemaStock)
-public class ShipmentType {
+@Table(name = Constants.tablePurchaseType,schema = Constants.schemaStock)
+public class PurchaseType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "shipment_type_id")
+    @Column(name = "purchase_type_id")
     private Long id;
 
     @Column(name = "name")

@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -83,6 +84,15 @@ public class OrderItemController {
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<OrderItemDTO>> result = iOrderItem.listOrderItems(user,orderId,productSku,quantity,discount,sort,sortColumn,pageNumber,pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("order")
+    public ResponseEntity<List<OrderItemDTO>> listByOrder(
+            @RequestParam("user") String user,
+            @RequestParam("orderId") Long orderId
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderItemDTO>> result = iOrderItem.listByOrder(user,orderId);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

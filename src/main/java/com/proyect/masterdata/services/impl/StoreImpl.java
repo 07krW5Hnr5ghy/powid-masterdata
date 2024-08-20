@@ -87,7 +87,7 @@ public class StoreImpl implements IStore {
                     .status(true)
                     .tokenUser(user.getUsername())
                     .build());
-            iAudit.save("ADD_STORE","ADD STORE "+newStore.getName()+".",user.getUsername());
+            iAudit.save("ADD_STORE","TIENDA "+newStore.getName()+" AGREGADA.",newStore.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -141,7 +141,7 @@ public class StoreImpl implements IStore {
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_STORE","ADD STORE "+newStore.getName()+".",user.getUsername());
+                iAudit.save("ADD_STORE","TIENDA "+newStore.getName()+" AGREGADA.",newStore.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -182,7 +182,7 @@ public class StoreImpl implements IStore {
                 store.setUrl(requestStore.getUrl());
                 store.setTokenUser(requestStore.getTokenUser().toUpperCase());
                 store.setUpdateDate(new Date(System.currentTimeMillis()));
-                iAudit.save("UPDATE_STORE","UPDATE STORE "+store.getName()+".",user.getUsername());
+                iAudit.save("UPDATE_STORE","TIENDA "+store.getName()+" ACTUALIZADA.",store.getName(),user.getUsername());
                 return StoreDTO.builder()
                         .name(store.getName())
                         .url(store.getUrl())
@@ -224,7 +224,7 @@ public class StoreImpl implements IStore {
                 store.setRegistrationDate(new Date(System.currentTimeMillis()));
                 store.setTokenUser(user.getUsername());
                 storeRepository.save(store);
-                iAudit.save("DELETE_STORE","DELETE STORE "+store.getName()+".",user.getUsername());
+                iAudit.save("DELETE_STORE","TIENDA "+store.getName()+" DESACTIVADA.",store.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -263,7 +263,7 @@ public class StoreImpl implements IStore {
                 store.setRegistrationDate(new Date(System.currentTimeMillis()));
                 store.setTokenUser(user.getUsername());
                 storeRepository.save(store);
-                iAudit.save("ACTIVATE_STORE","ACTIVATE STORE "+store.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_STORE","TIENDA "+store.getName()+" ACTIVADA.",store.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

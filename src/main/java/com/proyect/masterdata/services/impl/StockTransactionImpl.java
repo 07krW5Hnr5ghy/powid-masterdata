@@ -80,7 +80,7 @@ public class StockTransactionImpl implements IStockTransaction {
             for(RequestStockTransactionItem requestStockTransactionItem : requestStockTransactionItemList){
                 iStockTransactionItem.save(newStockTransaction,requestStockTransactionItem,user.getUsername());
             }
-            iAudit.save("ADD_STOCK_TRANSACTION","ADD STOCK TRANSACTION "+newStockTransaction.getSerial()+".",user.getUsername());
+            iAudit.save("ADD_STOCK_TRANSACTION","TRANSACCION DE STOCK "+newStockTransaction.getSerial()+" CREADO.",newStockTransaction.getSerial(),user.getUsername());
             return newStockTransaction;
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -131,7 +131,7 @@ public class StockTransactionImpl implements IStockTransaction {
                 for(RequestStockTransactionItem requestStockTransactionItem : requestStockTransactionItemList){
                     iStockTransactionItem.save(newStockTransaction,requestStockTransactionItem,user.getUsername());
                 }
-                iAudit.save("ADD_STOCK_TRANSACTION","ADD STOCK TRANSACTION "+newStockTransaction.getSerial()+".",user.getUsername());
+                iAudit.save("ADD_STOCK_TRANSACTION","TRANSACCION DE STOCK "+newStockTransaction.getSerial()+" CREADO.",newStockTransaction.getSerial(),user.getUsername());
                 return newStockTransaction;
             }catch (RuntimeException e){
                 log.error(e.getMessage());

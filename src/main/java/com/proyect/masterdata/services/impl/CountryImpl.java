@@ -61,7 +61,7 @@ public class CountryImpl implements ICountry {
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_COUNTRY","ADD COUNTRY "+newCountry.getName()+".",user.getUsername());
+                iAudit.save("ADD_COUNTRY","PAIS "+newCountry.getName()+" CREADO.", newCountry.getName(), user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

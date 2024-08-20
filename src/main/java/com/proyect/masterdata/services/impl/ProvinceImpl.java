@@ -4,8 +4,6 @@ import com.proyect.masterdata.domain.Department;
 import com.proyect.masterdata.domain.Province;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.ProvinceDTO;
-import com.proyect.masterdata.dto.request.RequestProvince;
-import com.proyect.masterdata.dto.request.RequestProvinceSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -23,9 +21,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-import java.util.Date;
-import java.util.Collections;
-import java.util.List;
+
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -75,7 +72,7 @@ public class ProvinceImpl implements IProvince {
                     .status(true)
                     .tokenUser(user.getUsername())
                     .build());
-            iAudit.save("ADD_PROVINCE","ADD PROVINCE "+newProvince.getName()+".",user.getUsername());
+            iAudit.save("ADD_PROVINCE","PROVINCIA "+newProvince.getName()+" CREADA.",newProvince.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -122,7 +119,7 @@ public class ProvinceImpl implements IProvince {
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_PROVINCE","ADD PROVINCE "+newProvince.getName()+".",user.getUsername());
+                iAudit.save("ADD_PROVINCE","PROVINCIA "+newProvince.getName()+" CREADA.",newProvince.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -160,7 +157,7 @@ public class ProvinceImpl implements IProvince {
                 province.setStatus(false);
                 province.setTokenUser(user.getUsername());
                 provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
-                iAudit.save("DELETE_PROVINCE","DELETE PROVINCE "+province.getName()+".",user.getUsername());
+                iAudit.save("DELETE_PROVINCE","PROVINCIA "+province.getName()+" DESACTIVADA.", province.getName(), user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -197,7 +194,7 @@ public class ProvinceImpl implements IProvince {
                 province.setStatus(true);
                 province.setTokenUser(user.getUsername());
                 provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
-                iAudit.save("ACTIVATE_PROVINCE","ACTIVATE PROVINCE "+province.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_PROVINCE","PROVINCIA "+province.getName()+" ACTIVADA.",province.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -294,7 +291,12 @@ public class ProvinceImpl implements IProvince {
     public CompletableFuture<List<ProvinceDTO>> listFilter() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             try {
-                return provinceMapper.listProvinceToListProvinceDTO(provinceRepository.findAll());
+                List<ProvinceDTO> provinceDTOS = new ArrayList<>(provinceRepository.findAll().stream().map(province -> ProvinceDTO.builder()
+                        .name(province.getName())
+                        .nameDepartment(province.getDepartment().getName())
+                        .build()).toList());
+                provinceDTOS.sort(Comparator.comparing(ProvinceDTO::getName,String::compareToIgnoreCase));
+                return provinceDTOS;
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 public class StockReturnDTO {
     private String serial;
-    private String shipment;
+    private String purchase;
     private Date registrationDate;
     private Date updateDate;
     private String supplier;

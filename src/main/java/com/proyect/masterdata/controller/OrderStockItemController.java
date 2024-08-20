@@ -29,10 +29,10 @@ public class OrderStockItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "orderIds", required = false) List<Long> orderIds,
+            @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
-            @RequestParam(value = "products",required = false) List<String> products,
-            @RequestParam(value = "supplierProducts", required = false) List<String> supplierProducts,
+            @RequestParam(value = "productSku",required = false) String productSku,
+            @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
@@ -40,10 +40,10 @@ public class OrderStockItemController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<OrderStockItemDTO>> result = iOrderStockItem.list(
                 user,
-                orderIds,
+                orderId,
                 warehouses,
-                products,
-                supplierProducts,
+                productSku,
+                serial,
                 sort,
                 sortColumn,
                 pageNumber,
@@ -55,10 +55,10 @@ public class OrderStockItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> listFalse(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "orderIds", required = false) List<Long> orderIds,
+            @RequestParam(value = "orderId", required = false) Long orderId,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
-            @RequestParam(value = "products",required = false) List<String> products,
-            @RequestParam(value = "supplierProducts", required = false) List<String> supplierProducts,
+            @RequestParam(value = "productSku",required = false) String productSku,
+            @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
@@ -66,10 +66,10 @@ public class OrderStockItemController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<OrderStockItemDTO>> result = iOrderStockItem.listFalse(
                 user,
-                orderIds,
+                orderId,
                 warehouses,
-                products,
-                supplierProducts,
+                productSku,
+                serial,
                 sort,
                 sortColumn,
                 pageNumber,

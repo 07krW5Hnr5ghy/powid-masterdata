@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +60,7 @@ public class CourierImpl implements ICourier {
             try {
                 Courier newCourier = courierRepository.save(Courier.builder()
                         .name(requestCourier.getCourier().toUpperCase())
-                        .phoneNumber(requestCourier.getPhoneNumber())
+                        .phoneNumber(requestCourier.getPhone())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .client(user.getClient())
@@ -67,7 +68,7 @@ public class CourierImpl implements ICourier {
                         .status(true)
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_COURIER","ADD COURIER "+newCourier.getName()+".",user.getUsername());
+                iAudit.save("ADD_COURIER","COURIER "+newCourier.getName()+" CREADO.",newCourier.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -105,7 +106,7 @@ public class CourierImpl implements ICourier {
                 courier.setStatus(false);
                 courier.setUpdateDate(new Date(System.currentTimeMillis()));
                 courierRepository.save(courier);
-                iAudit.save("DELETE_COURIER","DELETE COURIER "+courier.getName()+".",user.getUsername());
+                iAudit.save("DELETE_COURIER","COURIER "+courier.getName()+" DESACTIVADO.",courier.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -143,7 +144,7 @@ public class CourierImpl implements ICourier {
                 courier.setStatus(true);
                 courier.setUpdateDate(new Date(System.currentTimeMillis()));
                 courierRepository.save(courier);
-                iAudit.save("DELETE_COURIER","DELETE COURIER "+courier.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_COURIER","COURIER "+courier.getName()+" ACTIVADO.",courier.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -287,7 +288,7 @@ public class CourierImpl implements ICourier {
             }
 
             if(orderState == null){
-                throw new BadRequestExceptions(Constants.ErrorState);
+                throw new BadRequestExceptions(Constants.ErrorOrderState);
             }
 
             try{
@@ -304,14 +305,18 @@ public class CourierImpl implements ICourier {
 
                 ordering.setUpdateDate(new Date(System.currentTimeMillis()));
 
-                iCourierPicture.uploadPicture(requestCourierOrder.getOrderPictures(),ordering.getId(),user.getUsername());
+                CompletableFuture<List<String>> deliveryPictures = iCourierPicture.uploadPicture(requestCourierOrder.getOrderPictures(),ordering.getId(),user.getUsername());
+                if(!ordering.getDeliveryFlag() && !deliveryPictures.get().isEmpty()){
+                    ordering.setDeliveryFlag(true);
+                    orderingRepository.save(ordering);
+                }
                 orderingRepository.save(ordering);
-                iAudit.save("UPDATE_COURIER_ORDER","UPDATE ORDER "+ordering.getId()+" WITH COURIER DATA.",user.getUsername());
+                iAudit.save("UPDATE_COURIER_ORDER","PEDIDO "+ordering.getId()+" EDITADO POR COURIER.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
                         .build();
-            }catch (RuntimeException e){
+            }catch (RuntimeException | InterruptedException | ExecutionException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
@@ -381,12 +386,21 @@ public class CourierImpl implements ICourier {
             if(couriers.isEmpty()){
                 return Collections.emptyList();
             }
-            return couriers.stream().map(courier -> CourierDTO.builder()
+            List<CourierDTO> courierDTOS = new ArrayList<>(couriers.stream().map(courier -> CourierDTO.builder()
                     .name(courier.getName())
                     .phone(courier.getPhoneNumber())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
-                    .build()).toList();
+                    .build()).toList());
+            Courier defaultNoCourier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
+            CourierDTO dtoNoCourier = CourierDTO.builder()
+                    .name(defaultNoCourier.getName())
+                    .phone(defaultNoCourier.getPhoneNumber())
+                    .registrationDate(defaultNoCourier.getRegistrationDate())
+                    .updateDate(defaultNoCourier.getUpdateDate())
+                    .build();
+            courierDTOS.add(dtoNoCourier);
+            return courierDTOS;
         });
     }
 }

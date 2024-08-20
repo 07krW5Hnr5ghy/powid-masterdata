@@ -73,7 +73,7 @@ public class SubscriptionImpl implements ISubscription {
                     .tokenUser(tokenUser.toUpperCase())
                     .status(true)
                     .build());
-            iAudit.save("ADD_SUBSCRIPTION","ADD SUBSCRIPTION "+newSubscription.getName()+".",user.getUsername());
+            iAudit.save("ADD_SUBSCRIPTION","SUBSCRIPCION "+newSubscription.getName()+" CREADO.",newSubscription.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -116,7 +116,7 @@ public class SubscriptionImpl implements ISubscription {
                         .tokenUser(tokenUser.toUpperCase())
                         .status(true)
                         .build());
-                iAudit.save("ADD_SUBSCRIPTION","ADD SUBSCRIPTION "+newSubscription.getName()+".",user.getUsername());
+                iAudit.save("ADD_SUBSCRIPTION","SUBSCRIPCION "+newSubscription.getName()+" CREADO.",newSubscription.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -150,7 +150,7 @@ public class SubscriptionImpl implements ISubscription {
                 subscription.setStatus(false);
                 subscription.setUpdateDate(new Date(System.currentTimeMillis()));
                 subscription.setTokenUser(user.getUsername());
-                iAudit.save("DELETE_SUBSCRIPTION","DELETE SUBSCRIPTION "+subscription.getName()+".",user.getUsername());
+                iAudit.save("DELETE_SUBSCRIPTION","SUBSCRIPCION "+subscription.getName()+" DESACTIVADO.",subscription.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -184,7 +184,7 @@ public class SubscriptionImpl implements ISubscription {
                 subscription.setStatus(true);
                 subscription.setUpdateDate(new Date(System.currentTimeMillis()));
                 subscription.setTokenUser(user.getUsername());
-                iAudit.save("ACTIVATE_SUBSCRIPTION","ACTIVATE SUBSCRIPTION "+subscription.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_SUBSCRIPTION","SUBSCRIPCION "+subscription.getName()+" ACTIVADA.",subscription.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

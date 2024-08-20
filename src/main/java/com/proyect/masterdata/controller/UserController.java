@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -53,30 +54,28 @@ public class UserController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:USER_GET')")
     public ResponseEntity<Page<UserQueryDTO>> list(
-            @RequestParam(value = "user", required = false) String user,
-            @RequestParam(value = "clientRuc", required = true) String clientRuc,
-            @RequestParam(value = "dni", required = false) String dni,
-            @RequestParam(value = "email",required = false) String email,
+            @RequestParam(value = "user",required = false) String user,
+            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "usernames",required = false) List<String> usernames,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<UserQueryDTO>> result = iUser.list(user, clientRuc, dni, email, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<UserQueryDTO>> result = iUser.list(user, names,usernames,sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("pagination/status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:USER_GET')")
     public ResponseEntity<Page<UserQueryDTO>> listFalse(
-            @RequestParam(value = "user", required = false) String user,
-            @RequestParam(value = "clientRuc", required = true) String clientRuc,
-            @RequestParam(value = "dni", required = false) String dni,
-            @RequestParam(value = "email",required = false) String email,
+            @RequestParam(value = "user",required = false) String user,
+            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "usernames",required = false) List<String> usernames,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<UserQueryDTO>> result = iUser.listFalse(user, clientRuc, dni, email, sort, sortColumn, pageNumber, pageSize);
+        CompletableFuture<Page<UserQueryDTO>> result = iUser.listFalse(user, names,usernames,sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -87,6 +86,14 @@ public class UserController {
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iUser.activate(username,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<UserQueryDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InterruptedException, ExecutionException {
+        CompletableFuture<List<UserQueryDTO>> result = iUser.listFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

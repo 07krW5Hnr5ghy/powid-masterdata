@@ -12,7 +12,8 @@ public interface WarehouseStockRepositoryCustom {
     Page<WarehouseStock> searchForWarehouseStock(
             Long clientId,
             List<Long> warehouseIds,
-            List<Long> supplierProductIds,
+            String serial,
+            String productSku,
             String sort,
             String sortColumn,
             Integer pageNumber,

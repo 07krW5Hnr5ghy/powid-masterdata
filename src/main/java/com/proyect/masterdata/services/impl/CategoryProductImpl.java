@@ -78,7 +78,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .sizeType(sizeType)
                             .sizeTypeId(sizeType.getId())
                     .build());
-            iAudit.save("ADD_CATEGORY_PRODUCT","ADD CATEGORY PRODUCT "+newCategoryProduct.getName()+".",user.getUsername());
+            iAudit.save("ADD_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+newCategoryProduct.getName()+" CREADA.",newCategoryProduct.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -127,7 +127,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                                 .sizeType(sizeType)
                                 .sizeTypeId(sizeType.getId())
                         .build());
-                iAudit.save("ADD_CATEGORY_PRODUCT","ADD CATEGORY PRODUCT "+newCategoryProduct.getName()+".",user.getUsername());
+                iAudit.save("ADD_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+newCategoryProduct.getName()+" CREADA.",newCategoryProduct.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -251,7 +251,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                 categoryProduct.setUpdateDate(new Date(System.currentTimeMillis()));
                 categoryProduct.setTokenUser(user.getUsername());
                 categoryProductRepository.save(categoryProduct);
-                iAudit.save("DELETE_CATEGORY_PRODUCT","DELETE CATEGORY PRODUCT "+categoryProduct.getName()+".",user.getUsername());
+                iAudit.save("DELETE_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+categoryProduct.getName()+" ELIMINADA.", categoryProduct.getName(), user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -285,7 +285,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                 categoryProduct.setStatus(true);
                 categoryProduct.setUpdateDate(new Date(System.currentTimeMillis()));
                 categoryProduct.setTokenUser(user.getUsername());
-                iAudit.save("ACTIVATE_CATEGORY_PRODUCT","ACTIVATE CATEGORY PRODUCT "+categoryProduct.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+categoryProduct.getName()+" ACTIVADA.", categoryProduct.getName(), user.getUsername());
                 categoryProductRepository.save(categoryProduct);
                 return ResponseSuccess.builder()
                         .message(Constants.update)
@@ -320,7 +320,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                 categoryProduct.setUpdateDate(new Date(System.currentTimeMillis()));
                 categoryProduct.setTokenUser(user.getUsername());
                 categoryProductRepository.save(categoryProduct);
-                iAudit.save("UPDATE_CATEGORY_PRODUCT","UPDATE CATEGORY PRODUCT "+categoryProduct.getName()+".",user.getUsername());
+                iAudit.save("UPDATE_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+categoryProduct.getName()+" EDITADA.",categoryProduct.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

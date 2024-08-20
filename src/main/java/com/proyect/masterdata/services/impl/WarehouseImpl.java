@@ -65,13 +65,16 @@ public class WarehouseImpl implements IWarehouse {
             Warehouse newWarehouse = warehouseRepository.save(Warehouse.builder()
                     .client(user.getClient())
                     .clientId(user.getClientId())
-                    .location(requestWarehouse.getLocation().toUpperCase())
+                    .phone(requestWarehouse.getPhone())
+                    .address(requestWarehouse.getAddress())
+                    .contact(requestWarehouse.getContact().toUpperCase())
+                    .reference(requestWarehouse.getReference().toUpperCase())
                     .name(requestWarehouse.getName().toUpperCase())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_WAREHOUSE","ADD WAREHOUSE "+newWarehouse.getName()+".",user.getUsername());
+            iAudit.save("ADD_WAREHOUSE","ALMACEN "+newWarehouse.getName()+" CREADO.",newWarehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -111,13 +114,16 @@ public class WarehouseImpl implements IWarehouse {
                 Warehouse newWarehouse = warehouseRepository.save(Warehouse.builder()
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .location(requestWarehouse.getLocation().toUpperCase())
+                        .phone(requestWarehouse.getPhone())
+                        .address(requestWarehouse.getAddress())
+                        .contact(requestWarehouse.getContact().toUpperCase())
+                        .reference(requestWarehouse.getReference().toUpperCase())
                         .name(requestWarehouse.getName().toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_WAREHOUSE","ADD WAREHOUSE "+newWarehouse.getName()+".",user.getUsername());
+                iAudit.save("ADD_WAREHOUSE","ALMACEN "+newWarehouse.getName()+" CREADO.",newWarehouse.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -153,7 +159,7 @@ public class WarehouseImpl implements IWarehouse {
                 warehouse.setStatus(false);
                 warehouse.setUpdateDate(new Date(System.currentTimeMillis()));
                 warehouse.setTokenUser(user.getUsername());
-                iAudit.save("DELETE_WAREHOUSE","DELETE WAREHOUSE "+warehouse.getName()+".",user.getUsername());
+                iAudit.save("DELETE_WAREHOUSE","ALMACEN "+warehouse.getName()+" DESACTIVADO.",warehouse.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -188,7 +194,7 @@ public class WarehouseImpl implements IWarehouse {
                 warehouse.setStatus(false);
                 warehouse.setUpdateDate(new Date(System.currentTimeMillis()));
                 warehouse.setTokenUser(user.getUsername());
-                iAudit.save("ACTIVATE_WAREHOUSE","ACTIVATE WAREHOUSE "+warehouse.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_WAREHOUSE","ALMACEN "+warehouse.getName()+" ACTIVADO.",warehouse.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -238,8 +244,11 @@ public class WarehouseImpl implements IWarehouse {
             }
 
             List<WarehouseDTO> warehouseDTOs = warehousePage.getContent().stream().map(warehouse -> WarehouseDTO.builder()
-                    .location(warehouse.getLocation())
                     .name(warehouse.getName())
+                    .contact(warehouse.getContact())
+                    .phone(warehouse.getPhone())
+                    .address(warehouse.getAddress())
+                    .reference(warehouse.getReference())
                     .registrationDate(warehouse.getRegistrationDate())
                     .updateDate(warehouse.getUpdateDate())
                     .build()).toList();
@@ -266,8 +275,11 @@ public class WarehouseImpl implements IWarehouse {
             }
 
             return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
-                    .location(warehouse.getLocation())
                     .name(warehouse.getName())
+                    .contact(warehouse.getContact())
+                    .phone(warehouse.getPhone())
+                    .address(warehouse.getAddress())
+                    .reference(warehouse.getReference())
                     .registrationDate(warehouse.getRegistrationDate())
                     .updateDate(warehouse.getUpdateDate())
                     .build()).toList();
@@ -292,8 +304,11 @@ public class WarehouseImpl implements IWarehouse {
             }
 
             return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
-                    .location(warehouse.getLocation())
                     .name(warehouse.getName())
+                    .contact(warehouse.getContact())
+                    .phone(warehouse.getPhone())
+                    .address(warehouse.getAddress())
+                    .reference(warehouse.getReference())
                     .registrationDate(warehouse.getRegistrationDate())
                     .updateDate(warehouse.getUpdateDate())
                     .build()).toList();
@@ -318,8 +333,11 @@ public class WarehouseImpl implements IWarehouse {
             }
 
             return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
-                    .location(warehouse.getLocation())
                     .name(warehouse.getName())
+                    .contact(warehouse.getContact())
+                    .phone(warehouse.getPhone())
+                    .address(warehouse.getAddress())
+                    .reference(warehouse.getReference())
                     .registrationDate(warehouse.getRegistrationDate())
                     .updateDate(warehouse.getUpdateDate())
                     .build()).toList();

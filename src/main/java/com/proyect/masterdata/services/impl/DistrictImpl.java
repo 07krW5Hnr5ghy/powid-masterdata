@@ -4,8 +4,6 @@ import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Province;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.DistrictDTO;
-import com.proyect.masterdata.dto.request.RequestDistrict;
-import com.proyect.masterdata.dto.request.RequestDistrictSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -23,9 +21,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-import java.util.Date;
-import java.util.Collections;
-import java.util.List;
+
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -75,7 +72,7 @@ public class DistrictImpl implements IDistrict {
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
-            iAudit.save("ADD_DISTRICT","ADD DISTRICT "+newDistrict.getName()+".",user.toUpperCase());
+            iAudit.save("ADD_DISTRICT","DISTRITO "+newDistrict.getName()+" CREADO.",newDistrict.getName(),user.toUpperCase());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -122,7 +119,7 @@ public class DistrictImpl implements IDistrict {
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .build());
-                iAudit.save("ADD_DISTRICT","ADD DISTRICT "+newDistrict.getName()+".",user.toUpperCase());
+                iAudit.save("ADD_DISTRICT","DISTRITO "+newDistrict.getName()+" CREADO.",newDistrict.getName(),user.toUpperCase());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -160,7 +157,7 @@ public class DistrictImpl implements IDistrict {
                 district.setUpdateDate(new Date(System.currentTimeMillis()));
                 district.setTokenUser(user.getUsername());
                 districtRepository.save(district);
-                iAudit.save("DELETE_DISTRICT","DELETE DISTRICT "+district.getName()+".",user.getUsername());
+                iAudit.save("DELETE_DISTRICT","DISTRITO "+district.getName()+" DESACTIVADO.",district.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -197,7 +194,7 @@ public class DistrictImpl implements IDistrict {
                 district.setUpdateDate(new Date(System.currentTimeMillis()));
                 district.setTokenUser(user.getUsername());
                 districtRepository.save(district);
-                iAudit.save("ACTIVATE_DISTRICT","ACTIVATE DISTRICT "+district.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_DISTRICT","DISTRITO "+district.getName()+" ACTIVADO.",district.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -294,7 +291,12 @@ public class DistrictImpl implements IDistrict {
     public CompletableFuture<List<DistrictDTO>> listFilter() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             try {
-                return districtMapper.listDistrictToListDistrictDTO(districtRepository.findAll());
+                List<DistrictDTO> districtDTOS = new ArrayList<>(districtRepository.findAll().stream().map(district -> DistrictDTO.builder()
+                        .name(district.getName())
+                        .nameProvince(district.getProvince().getName())
+                        .build()).toList());
+                districtDTOS.sort(Comparator.comparing(DistrictDTO::getName,String::compareToIgnoreCase));
+                return districtDTOS;
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

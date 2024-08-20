@@ -3,7 +3,10 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderDTO;
 import com.proyect.masterdata.dto.OrderItemDTO;
-import com.proyect.masterdata.dto.request.*;
+import com.proyect.masterdata.dto.request.RequestOrderItem;
+import com.proyect.masterdata.dto.request.RequestOrderSave;
+import com.proyect.masterdata.dto.request.RequestOrderUpdate;
+import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -15,11 +18,20 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -49,17 +61,22 @@ public class OrderingImpl implements IOrdering {
     private final CourierPictureRepository courierPictureRepository;
     private final StoreRepository storeRepository;
     private final ClosingChannelRepository closingChannelRepository;
-    private final CustomerTypeRepository customerTypeRepository;
-    private final DepartmentRepository departmentRepository;
-    private final ProvinceRepository provinceRepository;
-    private final DistrictRepository districtRepository;
     private final IAudit iAudit;
     private final CustomerRepository customerRepository;
     private final DiscountRepository discountRepository;
     private final DeliveryPointRepository deliveryPointRepository;
     private final ProductPriceRepository productPriceRepository;
+    private final DepartmentRepository departmentRepository;
+    private final ProvinceRepository provinceRepository;
+    private final DistrictRepository districtRepository;
+    private final ProductPictureRepository productPictureRepository;
+    private final CancelledOrderRepository cancelledOrderRepository;
+    private final CancellationReasonRepository cancellationReasonRepository;
     @Override
-    public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(
+            RequestOrderSave requestOrderSave,
+            MultipartFile[] receipts,
+            String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         OrderState orderState;
         Courier courier;
@@ -175,9 +192,14 @@ public class OrderingImpl implements IOrdering {
                     .tokenUser(user.getUsername())
                     .deliveryPoint(deliveryPoint)
                     .deliveryPointId(deliveryPoint.getId())
+                    .receiptFlag(false)
+                    .deliveryFlag(false)
                     .build());
-
-            iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
+            CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
+            if(!paymentReceipts.get().isEmpty()){
+                ordering.setReceiptFlag(true);
+                orderingRepository.save(ordering);
+            }
 
             for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
                 iOrderItem.save(ordering, requestOrderItem,tokenUser);
@@ -188,13 +210,13 @@ public class OrderingImpl implements IOrdering {
                 customerRepository.save(customer);
             }
 
-            iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
+            iAudit.save("ADD_ORDER","PEDIDO "+ordering.getId()+" CREADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
 
-        }catch (RuntimeException e){
+        }catch (RuntimeException | InterruptedException | ExecutionException e){
             e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -202,7 +224,8 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave,MultipartFile[] receipts, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        Path folder = Paths.get("src/main/resources/uploads/orders");
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderState orderState;
@@ -314,9 +337,23 @@ public class OrderingImpl implements IOrdering {
                         .customerId(customer.getId())
                         .deliveryPoint(deliveryPoint)
                         .deliveryPointId(deliveryPoint.getId())
+                        .receiptFlag(false)
+                        .deliveryFlag(false)
                         .build());
+                List<File> fileList = new ArrayList<>();
+                for(MultipartFile multipartFile : receipts){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/orders/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    fileList.add(convFile);
+                }
 
-                iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
+                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptAsync(fileList,ordering.getId(),user.getUsername());
 
                 for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
                     iOrderItem.save(ordering, requestOrderItem,tokenUser);
@@ -327,13 +364,26 @@ public class OrderingImpl implements IOrdering {
                     customerRepository.save(customer);
                 }
 
-                iAudit.save("ADD_ORDER","ADD ORDER "+ordering.getId()+".",user.getUsername());
+                if(!paymentReceipts.get().isEmpty()){
+                    Stream<Path> paths = Files.list(folder);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    ordering.setReceiptFlag(true);
+                    orderingRepository.save(ordering);
+                }
+
+                iAudit.save("ADD_ORDER","PEDIDO "+ordering.getId()+" CREADO.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
                         .build();
 
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -342,28 +392,99 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
-    public CompletableFuture<Page<OrderDTO>> list(Long orderId,String user,String orderState,String courier,String paymentState,String paymentMethod,String saleChannel,String managementType,String storeName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<OrderDTO>> list(
+            Long orderId,
+            String user,
+            String seller,
+            String customer,
+            String customerPhone,
+            String instagram,
+            List<String> departments,
+            List<String> provinces,
+            List<String> districts,
+            List<String> saleChannels,
+            Boolean receiptFlag,
+            Boolean deliveryFlag,
+            List<String> deliveryPoints,
+            List<String> orderStates,
+            List<String> couriers,
+            String paymentState,
+            String paymentMethod,
+            String managementType,
+            String storeName,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Ordering> pageOrdering;
             Long clientId;
-            Long orderStateId;
-            Long courierId;
+            List<Long> departmentIds;
+            List<Long> provinceIds;
+            List<Long> districtIds;
+            List<Long> saleChannelIds;
+            List<Long> deliveryPointIds;
+            List<Long> orderStateIds;
+            List<Long> courierIds;
             Long paymentStateId;
             Long paymentMethodId;
-            Long saleChannelId;
             Long managementTypeId;
             Long storeId;
 
-            if(orderState != null){
-                orderStateId = orderStateRepository.findByName(orderState.toUpperCase()).getId();
+            if(departments != null && !departments.isEmpty()){
+                departmentIds = departmentRepository.findByNameIn(
+                        departments.stream().map(String::toUpperCase).toList()
+                ).stream().map(Department::getId).toList();
             }else{
-                orderStateId = null;
+                departmentIds = new ArrayList<>();
             }
 
-            if(courier != null){
-                courierId = courierRepository.findByName(courier.toUpperCase()).getId();
-            }else {
-                courierId = null;
+            if(provinces != null && !provinces.isEmpty()){
+                provinceIds = provinceRepository.findByNameIn(
+                        provinces.stream().map(String::toUpperCase).toList()
+                ).stream().map(Province::getId).toList();
+            }else{
+                provinceIds = new ArrayList<>();
+            }
+
+            if(districts != null && !districts.isEmpty()){
+                districtIds = districtRepository.findByNameIn(
+                        districts.stream().map(String::toUpperCase).toList()
+                ).stream().map(District::getId).toList();
+            }else{
+                districtIds = new ArrayList<>();
+            }
+
+            if(saleChannels != null && !saleChannels.isEmpty()){
+                saleChannelIds = saleChannelRepository.findByNameIn(
+                        saleChannels.stream().map(String::toUpperCase).toList()
+                ).stream().map(SaleChannel::getId).toList();
+            }else{
+                saleChannelIds = new ArrayList<>();
+            }
+
+            if(deliveryPoints != null && !deliveryPoints.isEmpty()){
+                deliveryPointIds = deliveryPointRepository.findByNameIn(
+                        deliveryPoints.stream().map(String::toUpperCase).toList()
+                ).stream().map(DeliveryPoint::getId).toList();
+            }else{
+                deliveryPointIds = new ArrayList<>();
+            }
+
+            if(orderStates != null && !orderStates.isEmpty()){
+                orderStateIds = orderStateRepository.findByNameIn(
+                        orderStates.stream().map(String::toUpperCase).toList()
+                ).stream().map(OrderState::getId).toList();
+            }else{
+                orderStateIds = new ArrayList<>();
+            }
+
+            if(couriers != null && !couriers.isEmpty()){
+                courierIds = courierRepository.findByNameIn(
+                        couriers.stream().map(String::toUpperCase).toList()
+                ).stream().map(Courier::getId).toList();
+            }else{
+                courierIds = new ArrayList<>();
             }
 
             if(paymentState != null){
@@ -376,12 +497,6 @@ public class OrderingImpl implements IOrdering {
                 paymentMethodId = orderPaymentMethodRepository.findByName(paymentMethod.toUpperCase()).getId();
             }else {
                 paymentMethodId = null;
-            }
-
-            if(saleChannel != null){
-                saleChannelId = saleChannelRepository.findByName(saleChannel.toUpperCase()).getId();
-            }else {
-                saleChannelId = null;
             }
 
             if(managementType != null){
@@ -398,7 +513,30 @@ public class OrderingImpl implements IOrdering {
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-                pageOrdering = orderingRepositoryCustom.searchForOrdering(orderId,clientId,orderStateId,courierId,paymentStateId,paymentMethodId,saleChannelId,managementTypeId,storeId,sort,sortColumn,pageNumber,pageSize);
+                pageOrdering = orderingRepositoryCustom.searchForOrdering(
+                        orderId,
+                        clientId,
+                        seller,
+                        customer,
+                        customerPhone,
+                        instagram,
+                        departmentIds,
+                        provinceIds,
+                        districtIds,
+                        saleChannelIds,
+                        receiptFlag,
+                        deliveryFlag,
+                        deliveryPointIds,
+                        orderStateIds,
+                        courierIds,
+                        paymentStateId,
+                        paymentMethodId,
+                        managementTypeId,
+                        storeId,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
             }catch (RuntimeException e){
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
@@ -469,6 +607,9 @@ public class OrderingImpl implements IOrdering {
                         .discountAmount(BigDecimal.valueOf(order.getDiscountAmount()))
                         .dni(order.getCustomer().getDni())
                         .store(order.getStore().getName())
+                        .receiptFlag(order.getReceiptFlag())
+                        .deliveryFlag(order.getDeliveryFlag())
+                        .orderStateColor(order.getOrderState().getHexColor())
                         .build();
             }).toList();
 
@@ -518,7 +659,8 @@ public class OrderingImpl implements IOrdering {
                 if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
                     totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
                 }
-                return OrderDTO.builder()
+                CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(order.getId());
+                OrderDTO newOrderDTO = OrderDTO.builder()
                         .id(order.getId())
                         .customerName(order.getCustomer().getName())
                         .customerPhone(order.getCustomer().getPhone())
@@ -550,19 +692,29 @@ public class OrderingImpl implements IOrdering {
                         .deliveryPoint(order.getDeliveryPoint().getName())
                         .dni(order.getCustomer().getDni())
                         .store(order.getStore().getName())
+                        .receiptFlag(order.getReceiptFlag())
+                        .deliveryFlag(order.getDeliveryFlag())
+                        .orderStateColor(order.getOrderState().getHexColor())
                         .build();
+                    if(cancelledOrder != null){
+                        newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());
+                    }else{
+                        newOrderDTO.setCancellationReason("NO APLICA");
+                    }
+                return newOrderDTO;
             }).toList();
         });
     }
 
     @Override
-    public ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Ordering ordering;
         OrderState orderState;
         OrderPaymentMethod orderPaymentMethod;
         OrderPaymentState orderPaymentState;
         Courier courier;
+        CancellationReason cancellationReason;
         OrderStock orderStock;
 
         try{
@@ -594,6 +746,34 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }else {
             orderStock = orderStockRepository.findByOrderId(ordering.getId());
+        }
+
+        if(
+                requestOrderUpdate.getCancellationReason() != null &&
+                        Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO") &&
+                        !Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")
+        ){
+            cancellationReason = cancellationReasonRepository.findByNameAndStatusTrue(requestOrderUpdate.getCancellationReason().toUpperCase());
+            if(cancellationReason == null){
+                throw new BadRequestExceptions(Constants.ErrorCancellationReason);
+            }
+            cancelledOrderRepository.save(CancelledOrder.builder()
+                    .orderingId(ordering.getId())
+                    .cancellationReason(cancellationReason)
+                    .cancellationReasonId(cancellationReason.getId())
+                    .ordering(ordering)
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .updateDate(new Date(System.currentTimeMillis()))
+                    .tokenUser(user.getUsername())
+                    .build());
+        }
+
+        if(
+                Objects.equals(ordering.getOrderState().getName(), "ENTREGADO") &&
+                        (requestOrderUpdate.getCancellationReason() != null ||
+                                Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO"))
+        ){
+            throw new BadRequestExceptions(Constants.ErrorOrderCancelledDeliveredStatus);
         }
 
         try{
@@ -641,21 +821,33 @@ public class OrderingImpl implements IOrdering {
             }
 
             orderingRepository.save(ordering);
-            iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
-            iCourierPicture.uploadPicture(requestOrderUpdate.getPictures(),ordering.getId(),user.getUsername());
-            iAudit.save("UPDATE_ORDER","UPDATE ORDER "+ordering.getId()+".",user.getUsername());
+
+            CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
+            if((!ordering.getReceiptFlag()) && (!paymentReceipts.get().isEmpty())){
+                ordering.setReceiptFlag(true);
+                orderingRepository.save(ordering);
+            }
+
+            CompletableFuture<List<String>> deliveryPictures = iCourierPicture.uploadPicture(courierPictures,ordering.getId(),user.getUsername());
+            if((!ordering.getDeliveryFlag())&&(!deliveryPictures.get().isEmpty())){
+                ordering.setDeliveryFlag(true);
+                orderingRepository.save(ordering);
+            }
+            iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.update)
                     .build();
-        }catch (RuntimeException e){
+        }catch (RuntimeException | InterruptedException | ExecutionException e){
             e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        Path folderOrders = Paths.get("src/main/resources/uploads/orders");
+        Path folderCouriers = Paths.get("src/main/resources/uploads/couriers");
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -663,6 +855,7 @@ public class OrderingImpl implements IOrdering {
             OrderPaymentMethod orderPaymentMethod;
             OrderPaymentState orderPaymentState;
             Courier courier;
+            CancellationReason cancellationReason;
             OrderStock orderStock;
 
             try{
@@ -696,6 +889,34 @@ public class OrderingImpl implements IOrdering {
                 orderStock = orderStockRepository.findByOrderId(ordering.getId());
             }
 
+            if(
+                    requestOrderUpdate.getCancellationReason() != null &&
+                            Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO") &&
+                            !Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")
+            ){
+                cancellationReason = cancellationReasonRepository.findByNameAndStatusTrue(requestOrderUpdate.getCancellationReason().toUpperCase());
+                if(cancellationReason == null){
+                    throw new BadRequestExceptions(Constants.ErrorCancellationReason);
+                }
+                cancelledOrderRepository.save(CancelledOrder.builder()
+                        .orderingId(ordering.getId())
+                        .cancellationReason(cancellationReason)
+                        .cancellationReasonId(cancellationReason.getId())
+                        .ordering(ordering)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(user.getUsername())
+                        .build());
+            }
+
+            if(
+                    Objects.equals(ordering.getOrderState().getName(), "ENTREGADO") &&
+                            (requestOrderUpdate.getCancellationReason() != null ||
+                                    Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO"))
+            ){
+                throw new BadRequestExceptions(Constants.ErrorOrderCancelledDeliveredStatus);
+            }
+
             try{
 
                 if(!Objects.equals(orderState.getName(), ordering.getOrderState().getName())){
@@ -722,7 +943,7 @@ public class OrderingImpl implements IOrdering {
                             iGeneralStock.out(orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
                         }
                     }
-                    iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"SALIDA",user);
+                    iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"PEDIDO",user);
                 }
 
                 if(!Objects.equals(orderPaymentMethod.getId(), ordering.getOrderPaymentMethod().getId())){
@@ -741,14 +962,68 @@ public class OrderingImpl implements IOrdering {
                 }
 
                 orderingRepository.save(ordering);
-                iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
-                iCourierPicture.uploadPicture(requestOrderUpdate.getPictures(),ordering.getId(),user.getUsername());
-                iAudit.save("UPDATE_ORDER","UPDATE ORDER "+ordering.getId()+".",user.getUsername());
+                List<File> receiptList = new ArrayList<>();
+                for(MultipartFile multipartFile : receipts){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    receiptList.add(convFile);
+                }
+                List<File> courierPictureList = new ArrayList<>();
+                for(MultipartFile multipartFile:courierPictures){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    courierPictureList.add(convFile);
+                }
+
+                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptAsync(receiptList,ordering.getId(),user.getUsername());
+                CompletableFuture<List<String>> courierPhotos = iCourierPicture.uploadPictureAsync(courierPictureList,ordering.getId(),user.getUsername());
+                if(!paymentReceipts.get().isEmpty()){
+                    if(!ordering.getReceiptFlag()){
+                        ordering.setReceiptFlag(true);
+                        orderingRepository.save(ordering);
+                    }
+                    Stream<Path> paths = Files.list(folderOrders);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+                if(!courierPhotos.get().isEmpty()){
+                    if(!ordering.getDeliveryFlag()){
+                        ordering.setDeliveryFlag(true);
+                        orderingRepository.save(ordering);
+                    }
+                    Stream<Path> paths = Files.list(folderCouriers);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+
+                iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
                         .build();
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException | InterruptedException | ExecutionException e){
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
@@ -798,7 +1073,8 @@ public class OrderingImpl implements IOrdering {
                 }
                 List<CourierPicture> courierPictures = courierPictureRepository.findAllByOrderId(ordering.getId());
                 List<OrderPaymentReceipt> orderPaymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(ordering.getId());
-                return OrderDTO.builder()
+                CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(ordering.getId());
+                OrderDTO newOrderDTO = OrderDTO.builder()
                         .sellerName(ordering.getSeller())
                         .discount(ordering.getDiscount().getName())
                         .deliveryPoint(ordering.getDeliveryPoint().getName())
@@ -833,8 +1109,12 @@ public class OrderingImpl implements IOrdering {
                         .closingChannel(ordering.getClosingChannel().getName())
                         .dni(ordering.getCustomer().getDni())
                         .store(ordering.getStore().getName())
+                        .receiptFlag(ordering.getReceiptFlag())
+                        .deliveryFlag(ordering.getDeliveryFlag())
+                        .orderStateColor(ordering.getOrderState().getHexColor())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                            List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(user.getClientId(),orderItem.getProductId());
                             Double totalPrice = null;
                             if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
                                 totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
@@ -856,7 +1136,7 @@ public class OrderingImpl implements IOrdering {
                                     .quantity(orderItem.getQuantity())
                                     .size(orderItem.getProduct().getSize().getName())
                                     .discount(orderItem.getDiscount().getName())
-                                    .pictures(new ArrayList<>())
+                                    .pictures(productPictures.stream().map(ProductPicture::getProductPictureUrl).toList())
                                     .unitPrice(productPrice.getUnitSalePrice())
                                     .totalPrice(totalPrice)
                                     .color(orderItem.getProduct().getColor().getName())
@@ -867,6 +1147,12 @@ public class OrderingImpl implements IOrdering {
                         }).toList())
                         .id(ordering.getId())
                         .build();
+                if(cancelledOrder != null){
+                    newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());
+                }else{
+                    newOrderDTO.setCancellationReason("NO APLICA");
+                }
+                return newOrderDTO;
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

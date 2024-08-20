@@ -81,4 +81,10 @@ public class SaleChannelController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
+    @GetMapping("filter")
+    public ResponseEntity<List<SaleChannelDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SaleChannelDTO>> result = iSaleChannel.listFilter();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
 }

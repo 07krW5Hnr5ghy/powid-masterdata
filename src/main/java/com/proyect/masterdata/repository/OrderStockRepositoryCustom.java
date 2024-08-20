@@ -13,7 +13,7 @@ import java.util.List;
 public interface OrderStockRepositoryCustom {
     Page<OrderStock> searchForOrderStock(
             Long clientId,
-            List<Long> orderIds,
+            Long orderId,
             List<Long> warehouseIds,
             String sort,
             String sortColumn,

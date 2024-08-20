@@ -11,8 +11,8 @@ import java.util.List;
 public interface SupplierProductRepositoryCustom {
     Page<SupplierProduct> searchForSupplierProduct(
             Long clientId,
-            List<String> serials,
-            List<Long> productIds,
+            String serial,
+            String productSku,
             List<Long> supplierIds,
             String sort,
             String sortColumn,

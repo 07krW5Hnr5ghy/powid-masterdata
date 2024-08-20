@@ -11,4 +11,5 @@ public interface IDeliveryPoint {
     ResponseSuccess save(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<String>> listDeliveryPoints() throws BadRequestExceptions;
+    CompletableFuture<List<String>> listFilter() throws BadRequestExceptions;
 }

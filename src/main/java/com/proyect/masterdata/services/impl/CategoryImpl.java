@@ -73,7 +73,7 @@ public class CategoryImpl implements ICategory {
                     .description(description.toUpperCase())
                     .status(true)
                     .tokenUser(datauser.getUsername().toUpperCase()).build());
-            iAudit.save("ADD_CATEGORY","ADD CATEGORY "+category.getName()+".",datauser.getUsername());
+            iAudit.save("ADD_CATEGORY","CATEGORIA "+category.getName()+" CREADA.",category.getName(),datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -116,7 +116,7 @@ public class CategoryImpl implements ICategory {
                         .description(description.toUpperCase())
                         .status(true)
                         .tokenUser(datauser.getUsername().toUpperCase()).build());
-                iAudit.save("ADD_CATEGORY","ADD CATEGORY "+category.getName()+".",datauser.getUsername());
+                iAudit.save("ADD_CATEGORY","CATEGORIA "+category.getName()+" CREADA.",category.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -155,7 +155,7 @@ public class CategoryImpl implements ICategory {
                 category.setDescription(requestCategory.getDescription().toUpperCase());
                 category.setTokenUser(datauser.getUsername().toUpperCase());
                 category.setUpdateDate(new Date(System.currentTimeMillis()));
-                iAudit.save("UPDATE_CATEGORY","UPDATE CATEGORY "+category.getName()+".",datauser.getUsername());
+                iAudit.save("UPDATE_CATEGORY","CATEGORIA "+category.getName()+" EDITADA.", category.getName(), datauser.getUsername());
                 return categoryMapper.categoryToCategoryDTO(categoryRepository.save(category));
             } catch (RuntimeException e) {
                 log.error(e);
@@ -191,7 +191,7 @@ public class CategoryImpl implements ICategory {
                 category.setStatus(false);
                 category.setRegistrationDate(new Date(System.currentTimeMillis()));
                 categoryRepository.save(category);
-                iAudit.save("DELETE_CATEGORY","DELETE CATEGORY "+category.getName()+".",datauser.getUsername());
+                iAudit.save("DELETE_CATEGORY","CATEGORIA "+category.getName()+" DESACTIVADA.", category.getName(), datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -285,7 +285,7 @@ public class CategoryImpl implements ICategory {
                 category.setStatus(false);
                 category.setUpdateDate(new Date(System.currentTimeMillis()));
                 category.setTokenUser(user.getUsername());
-                iAudit.save("ACTIVATE_CATEGORY","ACTIVATE CATEGORY "+category.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_CATEGORY","CATEGORIA "+category.getName()+" ACTIVADA.", category.getName(), user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

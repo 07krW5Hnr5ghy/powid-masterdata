@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class OrderStateDTO {
     private Long code;
     private String name;
+    private String hexColor;
 }

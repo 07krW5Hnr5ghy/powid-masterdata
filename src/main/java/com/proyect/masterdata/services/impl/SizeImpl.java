@@ -13,6 +13,7 @@ import com.proyect.masterdata.repository.SizeRepository;
 import com.proyect.masterdata.repository.SizeRepositoryCustom;
 import com.proyect.masterdata.repository.SizeTypeRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ISize;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class SizeImpl implements ISize {
     private final UserRepository userRepository;
     private final SizeTypeRepository sizeTypeRepository;
     private final SizeRepositoryCustom sizeRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String sizeType, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -68,7 +69,7 @@ public class SizeImpl implements ISize {
         }
 
         try {
-            sizeRepository.save(Size.builder()
+            Size newSize = sizeRepository.save(Size.builder()
                     .name(name.toUpperCase())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .sizeType(sizeTypeData)
@@ -76,6 +77,7 @@ public class SizeImpl implements ISize {
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
+            iAudit.save("ADD_SIZE","TAMAÑO "+newSize.getName()+" CREADO.",newSize.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -115,7 +117,7 @@ public class SizeImpl implements ISize {
             }
 
             try {
-                sizeRepository.save(Size.builder()
+                Size newSize = sizeRepository.save(Size.builder()
                         .name(name.toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .sizeType(sizeTypeData)
@@ -123,6 +125,7 @@ public class SizeImpl implements ISize {
                         .status(true)
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
+                iAudit.save("ADD_SIZE","TAMAÑO "+newSize.getName()+" CREADO.",newSize.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -161,6 +164,7 @@ public class SizeImpl implements ISize {
                 size.setUpdateDate(new Date(System.currentTimeMillis()));
                 size.setTokenUser(user.getUsername());
                 sizeRepository.save(size);
+                iAudit.save("DELETE_SIZE","TAMAÑO "+size.getName()+" DESACTIVADO.",size.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -175,18 +179,18 @@ public class SizeImpl implements ISize {
     @Override
     public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
+            User user;
             Size size;
 
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 size = sizeRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (size == null) {
@@ -197,6 +201,7 @@ public class SizeImpl implements ISize {
                 size.setStatus(true);
                 size.setUpdateDate(new Date(System.currentTimeMillis()));
                 sizeRepository.save(size);
+                iAudit.save("ACTIVATE_SIZE","TAMAÑO "+size.getName()+" ACTIVADO.",size.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

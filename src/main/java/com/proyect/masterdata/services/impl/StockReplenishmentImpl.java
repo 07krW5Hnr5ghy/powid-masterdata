@@ -94,7 +94,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
                 OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
                 iStockReplenishmentItem.save(orderItem,requestStockReplenishmentItem,user,newStockReplenishment);
             }
-            iAudit.save("ADD_STOCK_REPLENISHMENT","ADD STOCK REPLENISHMENT FOR ORDER "+newStockReplenishment.getOrderId()+".",user.getUsername());
+            iAudit.save("ADD_STOCK_REPLENISHMENT","RESTOCKAJE PARA PEDIDO "+newStockReplenishment.getOrderId()+" CREADO.",newStockReplenishment.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -164,7 +164,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
                     OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
                     iStockReplenishmentItem.save(orderItem,requestStockReplenishmentItem,user,newStockReplenishment);
                 }
-                iAudit.save("ADD_STOCK_REPLENISHMENT","ADD STOCK REPLENISHMENT FOR ORDER "+newStockReplenishment.getOrderId()+".",user.getUsername());
+                iAudit.save("ADD_STOCK_REPLENISHMENT","RESTOCKAJE PARA PEDIDO "+newStockReplenishment.getOrderId()+" CREADO.",newStockReplenishment.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

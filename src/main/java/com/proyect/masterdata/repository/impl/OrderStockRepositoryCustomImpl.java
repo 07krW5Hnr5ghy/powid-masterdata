@@ -23,7 +23,7 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
     @Override
     public Page<OrderStock> searchForOrderStock(
             Long clientId,
-            List<Long> orderIds,
+            Long orderId,
             List<Long> warehouseIds,
             String sort,
             String sortColumn,
@@ -37,7 +37,7 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                orderIds,
+                orderId,
                 warehouseIds,
                 status,
                 criteriaBuilder,
@@ -67,7 +67,7 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
         Long count = getOrderCount(
                 clientId,
-                orderIds,
+                orderId,
                 warehouseIds,
                 status);
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
@@ -75,15 +75,15 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
 
     List<Predicate> predicateConditions(
             Long clientId,
-            List<Long> orderIds,
+            Long orderId,
             List<Long> warehouseIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<OrderStock> itemRoot){
         List<Predicate> conditions = new ArrayList<>();
 
-        if(!orderIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("orderId").in(orderIds)));
+        if(orderId != null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderId"),orderId)));
         }
 
         if(!warehouseIds.isEmpty()){
@@ -143,7 +143,7 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
 
     private Long getOrderCount(
             Long clientId,
-            List<Long> orderIds,
+            Long orderId,
             List<Long> warehouseIds,
             Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -153,7 +153,7 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                orderIds,
+                orderId,
                 warehouseIds,
                 status,
                 criteriaBuilder,

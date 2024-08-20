@@ -67,7 +67,7 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
                         .name(name.toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .build());
-                iAudit.save("ADD_ORDER_PAYMENT_METHOD","ADD ORDER PAYMENT METHOD "+newOrderPaymentMethod.getName()+".",datauser.getUsername());
+                iAudit.save("ADD_ORDER_PAYMENT_METHOD","METODO DE PAGO "+newOrderPaymentMethod.getName()+" CREADO.",newOrderPaymentMethod.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -106,7 +106,7 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
                 orderPaymentMethod.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderPaymentMethod.setTokenUser(datauser.getUsername());
                 orderPaymentMethodRepository.save(orderPaymentMethod);
-                iAudit.save("DELETE_ORDER_PAYMENT_METHOD","DELETE ORDER PAYMENT METHOD "+orderPaymentMethod.getName()+".",datauser.getUsername());
+                iAudit.save("DELETE_ORDER_PAYMENT_METHOD","METODO DE PAGO "+orderPaymentMethod.getName()+" DESACTIVADO.",orderPaymentMethod.getName(),datauser.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -144,7 +144,7 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
                 orderPaymentMethod.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderPaymentMethod.setTokenUser(datauser.getUsername());
                 orderPaymentMethodRepository.save(orderPaymentMethod);
-                iAudit.save("ACTIVATE_ORDER_PAYMENT_METHOD","ACTIVATE ORDER PAYMENT METHOD "+orderPaymentMethod.getName()+".",datauser.getUsername());
+                iAudit.save("ACTIVATE_ORDER_PAYMENT_METHOD","METODO DE PAGO "+orderPaymentMethod.getName()+" ACTIVADO.",orderPaymentMethod.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -221,6 +221,18 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
 
     @Override
     public CompletableFuture<List<OrderPaymentMethodDTO>> listFilter() throws BadRequestExceptions {
-        return null;
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderPaymentMethod> orderPaymentMethods = new ArrayList<>();
+            try {
+                orderPaymentMethods = orderPaymentMethodRepository.findAll();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (orderPaymentMethods.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(orderPaymentMethods);
+        });
     }
 }

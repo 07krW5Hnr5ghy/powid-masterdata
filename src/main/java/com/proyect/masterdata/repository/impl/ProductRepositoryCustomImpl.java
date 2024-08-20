@@ -29,13 +29,14 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     @Override
     public Page<Product> searchForProduct(
             Long clientId,
-            List<String> skus,
+            String sku,
             List<Long> modelIds,
             List<Long> brandIds,
             List<Long> sizeIds,
             List<Long> categoryProductIds,
             List<Long> colorIds,
             List<Long> unitIds,
+            Boolean pictureFlag,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -51,13 +52,14 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                skus,
+                sku,
                 modelIds,
                 brandIds,
                 sizeIds,
                 categoryProductIds,
                 colorIds,
                 unitIds,
+                pictureFlag,
                 status,
                 criteriaBuilder,
                 itemRoot,
@@ -89,26 +91,28 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                skus,
+                sku,
                 modelIds,
                 brandIds,
                 sizeIds,
                 categoryProductIds,
                 colorIds,
                 unitIds,
+                pictureFlag,
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     private List<Predicate> predicateConditions(
             Long clientId,
-            List<String> skus,
+            String sku,
             List<Long> modelIds,
             List<Long> brandIds,
             List<Long> sizeIds,
             List<Long> categoryProductIds,
             List<Long> colorIds,
             List<Long> unitIds,
+            Boolean pictureFlag,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Product> itemRoot,
@@ -116,9 +120,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if (!skus.isEmpty()) {
-            conditions.add(criteriaBuilder
-                    .and(itemRoot.get("sku").in(skus)));
+        if(sku != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("sku")),"%"+sku.toUpperCase()+"%"));
         }
 
         if (!modelIds.isEmpty()) {
@@ -147,6 +150,10 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         if(!unitIds.isEmpty()){
             conditions.add(criteriaBuilder.and(itemRoot.get("unitId").in(unitIds)));
+        }
+
+        if (pictureFlag != null) {
+            conditions.add(criteriaBuilder.equal(itemRoot.get("pictureFlag"), pictureFlag));
         }
 
         if (status) {
@@ -200,13 +207,14 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
     private Long getOrderCount(
             Long clientId,
-            List<String> skus,
+            String sku,
             List<Long> modelIds,
             List<Long> brandIds,
             List<Long> sizeIds,
             List<Long> categoryProductIds,
             List<Long> colorIds,
             List<Long> unitIds,
+            Boolean pictureFlag,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -216,13 +224,14 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                skus,
+                sku,
                 modelIds,
                 brandIds,
                 sizeIds,
                 categoryProductIds,
                 colorIds,
                 unitIds,
+                pictureFlag,
                 status,
                 criteriaBuilder,
                 itemRoot,

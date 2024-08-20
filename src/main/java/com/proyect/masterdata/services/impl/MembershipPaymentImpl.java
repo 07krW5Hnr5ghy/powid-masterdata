@@ -71,7 +71,7 @@ public class MembershipPaymentImpl implements IMembershipPayment {
                         .build());
 
                 iMembership.save(user,newMembershipPayment, requestMembershipPayment.getSubscriptionName(), requestMembershipPayment.getModules(),requestMembershipPayment.getDemo(),user.getUsername());
-                iAudit.save("ADD_MEMBERSHIP_PAYMENT","ADD MEMBERSHIP PAYMENT FOR $"+newMembershipPayment.getGrossAmount()+".",user.getUsername());
+                iAudit.save("ADD_MEMBERSHIP_PAYMENT","PAGO DE MEMBRESIA POR $"+newMembershipPayment.getGrossAmount()+" AGREGADO.",newMembershipPayment.getClient().getRuc(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

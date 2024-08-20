@@ -47,9 +47,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProductSku().toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProduct().toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProduct().toUpperCase());
                 orderStock = orderStockRepository.findByOrderId(orderId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -71,7 +71,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             }
 
             if(orderItem == null){
-                throw new BadRequestExceptions(Constants.ErrorItem);
+                throw new BadRequestExceptions(Constants.ErrorOrderItem);
             }
 
             if(supplierProduct == null){
@@ -104,7 +104,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                         .quantity(requestOrderStockItem.getQuantity())
                         .tokenUser(user.getUsername())
                         .build());
-                iAudit.save("ADD_ORDER_STOCK_ITEM","ADD ORDER STOCK ITEM WITH SUPPLIER PRODUCT "+newOrderStockItem.getSupplierProduct().getSerial()+" WITH "+newOrderStockItem.getQuantity()+".",user.getUsername());
+                iAudit.save("ADD_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+newOrderStockItem.getSupplierProduct().getSerial()+" CON "+newOrderStockItem.getQuantity()+" UNIDADES CREADO.",newOrderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -120,10 +120,10 @@ public class OrderStockItemImpl implements IOrderStockItem {
     @Override
     public CompletableFuture<Page<OrderStockItemDTO>> list(
             String user,
-            List<Long> orders,
+            Long orderId,
             List<String> warehouses,
-            List<String> products,
-            List<String> supplierProducts,
+            String productSku,
+            String serial,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -131,16 +131,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStockItem> pageOrderStock;
             Long clientId;
-            List<Long> orderIds;
             List<Long> warehouseIds;
-            List<Long> productIds;
-            List<Long> supplierProductIds;
-
-            if(orders != null && !orders.isEmpty()){
-                orderIds = orders;
-            }else {
-                orderIds = new ArrayList<>();
-            }
 
             if(warehouses != null && !warehouses.isEmpty()){
                 warehouseIds = warehouseRepository.findByNameIn(
@@ -150,30 +141,14 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 warehouseIds = new ArrayList<>();
             }
 
-            if(products != null && !products.isEmpty()){
-                productIds = productRepository.findBySkuIn(
-                        products.stream().map(String::toUpperCase).toList()
-                ).stream().map(Product::getId).toList();
-            }else{
-                productIds = new ArrayList<>();
-            }
-
-            if(supplierProducts != null && !supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else {
-                supplierProductIds = new ArrayList<>();
-            }
-
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(
                         clientId,
-                        orderIds,
+                        orderId,
                         warehouseIds,
-                        productIds,
-                        supplierProductIds,
+                        productSku,
+                        serial,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -205,10 +180,10 @@ public class OrderStockItemImpl implements IOrderStockItem {
     @Override
     public CompletableFuture<Page<OrderStockItemDTO>> listFalse(
             String user,
-            List<Long> orders,
+            Long orderId,
             List<String> warehouses,
-            List<String> products,
-            List<String> supplierProducts,
+            String productSku,
+            String serial,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -216,16 +191,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStockItem> pageOrderStock;
             Long clientId;
-            List<Long> orderIds;
             List<Long> warehouseIds;
-            List<Long> productIds;
-            List<Long> supplierProductIds;
-
-            if(orders != null && !orders.isEmpty()){
-                orderIds = orders;
-            }else {
-                orderIds = new ArrayList<>();
-            }
 
             if(warehouses != null && !warehouses.isEmpty()){
                 warehouseIds = warehouseRepository.findByNameIn(
@@ -235,30 +201,14 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 warehouseIds = new ArrayList<>();
             }
 
-            if(products != null && !products.isEmpty()){
-                productIds = productRepository.findBySkuIn(
-                        products.stream().map(String::toUpperCase).toList()
-                ).stream().map(Product::getId).toList();
-            }else{
-                productIds = new ArrayList<>();
-            }
-
-            if(supplierProducts != null && !supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else {
-                supplierProductIds = new ArrayList<>();
-            }
-
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageOrderStock = orderStockItemRepositoryCustom.searchForOrderStockItem(
                         clientId,
-                        orderIds,
+                        orderId,
                         warehouseIds,
-                        productIds,
-                        supplierProductIds,
+                        productSku,
+                        serial,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -294,8 +244,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             OrderItem orderItem;
             Product product;
             try{
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProductSerial().toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProductSku().toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProduct().toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProduct().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -312,7 +262,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             }
 
             if(orderItem == null){
-                throw new BadRequestExceptions(Constants.ErrorItem);
+                throw new BadRequestExceptions(Constants.ErrorOrderItem);
             }
 
             try{
@@ -432,7 +382,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderStockItem.setTokenUser(user.getUsername());
                 orderStockItemRepository.save(orderStockItem);
-                iAudit.save("DELETE_ORDER_STOCK_ITEM","DELETE ORDER STOCK ITEM WITH SUPPLIER PRODUCT "+orderStockItem.getSupplierProduct().getSerial()+" WITH "+orderStockItem.getQuantity()+".",user.getUsername());
+                iAudit.save("DELETE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES DESACTIVADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -484,7 +434,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderStockItem.setTokenUser(user.getUsername());
                 orderStockItemRepository.save(orderStockItem);
-                iAudit.save("ACTIVATE_ORDER_STOCK_ITEM","ACTIVATE ORDER STOCK ITEM WITH SUPPLIER PRODUCT "+orderStockItem.getSupplierProduct().getSerial()+" WITH "+orderStockItem.getQuantity()+".",user.getUsername());
+                iAudit.save("ACTIVATE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES ACTIVADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -546,7 +496,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 orderStockItem.setTokenUser(user.getUsername());
                 orderStockItemRepository.save(orderStockItem);
-                iAudit.save("UPDATE_ORDER_STOCK_ITEM","UPDATE ORDER STOCK ITEM WITH SUPPLIER PRODUCT "+orderStockItem.getSupplierProduct().getSerial()+" WITH "+orderStockItem.getQuantity()+".",user.getUsername());
+                iAudit.save("UPDATE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES ACTUALIZADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

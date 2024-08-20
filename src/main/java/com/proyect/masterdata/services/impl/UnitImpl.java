@@ -73,7 +73,7 @@ public class UnitImpl implements IUnit {
                     .updateDate(new Date(System.currentTimeMillis()))
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-            iAudit.save("ADD_UNIT","ADD UNIT "+newUnit.getName()+".",user.getUsername());
+            iAudit.save("ADD_UNIT","UNIDAD "+newUnit.getName()+" CREADA.",newUnit.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -123,7 +123,7 @@ public class UnitImpl implements IUnit {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .tokenUser(tokenUser.toUpperCase())
                         .build());
-                iAudit.save("ADD_UNIT","ADD UNIT "+newUnit.getName()+".",user.getUsername());
+                iAudit.save("ADD_UNIT","UNIDAD "+newUnit.getName()+" CREADA.",newUnit.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -162,7 +162,7 @@ public class UnitImpl implements IUnit {
                 unit.setUpdateDate(new Date(System.currentTimeMillis()));
                 unit.setTokenUser(user.getUsername());
                 unitRepository.save(unit);
-                iAudit.save("DELETE","DELETE UNIT "+unit.getName()+".",user.getUsername());
+                iAudit.save("DELETE_UNIT","UNIDAD "+unit.getName()+" DESACTIVADA.",unit.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -202,7 +202,7 @@ public class UnitImpl implements IUnit {
                 unit.setUpdateDate(new Date(System.currentTimeMillis()));
                 unit.setTokenUser(user.getUsername());
                 unitRepository.save(unit);
-                iAudit.save("ACTIVATE_UNIT","ACTIVATE UNIT "+unit.getName()+".",user.getUsername());
+                iAudit.save("ACTIVATE_UNIT","UNIDAD "+unit.getName()+" ACTIVADA.",unit.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

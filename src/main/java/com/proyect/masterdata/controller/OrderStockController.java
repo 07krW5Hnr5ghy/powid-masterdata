@@ -45,7 +45,7 @@ public class OrderStockController {
     public ResponseEntity<Page<OrderStockDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
-            @RequestParam(value = "orderIds",required = false) List<Long> orderIds,
+            @RequestParam(value = "orderId",required = false) Long orderId,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
@@ -53,7 +53,7 @@ public class OrderStockController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<OrderStockDTO>> result = iOrderStock.list(
                 user,
-                orderIds,
+                orderId,
                 warehouses,
                 sort,
                 sortColumn,

@@ -53,6 +53,12 @@ public class Ordering {
     @Column(name = "advanced_payment")
     private Double advancedPayment;
 
+    @Column(name = "receipt_flag")
+    private Boolean receiptFlag;
+
+    @Column(name = "delivery_flag")
+    private Boolean deliveryFlag;
+
     @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;

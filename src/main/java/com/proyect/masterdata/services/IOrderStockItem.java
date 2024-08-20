@@ -1,6 +1,5 @@
 package com.proyect.masterdata.services;
 
-import com.proyect.masterdata.domain.OrderStock;
 import com.proyect.masterdata.domain.Warehouse;
 import com.proyect.masterdata.dto.OrderStockItemDTO;
 import com.proyect.masterdata.dto.request.RequestOrderStockItem;
@@ -17,20 +16,20 @@ public interface IOrderStockItem {
     CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<Page<OrderStockItemDTO>> list(
             String user,
-            List<Long> orderIds,
+            Long orderId,
             List<String> warehouses,
-            List<String> products,
-            List<String> supplierProductSerials,
+            String productSku,
+            String serial,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<Page<OrderStockItemDTO>> listFalse(
             String user,
-            List<Long> orderIds,
+            Long orderId,
             List<String> warehouses,
-            List<String> products,
-            List<String> supplierProductSerials,
+            String productSku,
+            String serial,
             String sort,
             String sortColumn,
             Integer pageNumber,

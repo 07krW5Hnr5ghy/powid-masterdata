@@ -24,12 +24,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableShipmentItem, schema = Constants.schemaStock)
-public class ShipmentItem {
+@Table(name = Constants.tablePurchaseItem, schema = Constants.schemaStock)
+public class PurchaseItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "shipment_item_id")
+    @Column(name = "purchase_item_id")
     private Long id;
 
     @Column(name = "quantity")
@@ -55,8 +55,8 @@ public class ShipmentItem {
     @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "shipment_id")
-    private Long shipmentId;
+    @Column(name = "purchase_id")
+    private Long purchaseId;
 
     @Column(name = "token_user")
     private String tokenUser;
@@ -70,7 +70,7 @@ public class ShipmentItem {
     private SupplierProduct supplierProduct;
 
     @ManyToOne
-    @JoinColumn(name = "shipment_id",columnDefinition = "shipmentId",insertable = false,updatable = false)
-    private Shipment shipment;
+    @JoinColumn(name = "purchase_id",columnDefinition = "purchaseId",insertable = false,updatable = false)
+    private Purchase purchase;
 
 }

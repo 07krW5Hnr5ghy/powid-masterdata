@@ -10,6 +10,6 @@ import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
 public interface IAudit {
-    CompletableFuture<ResponseSuccess> save(String eventName, String detail, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> save(String eventName, String detail,String reference, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<Page<AuditDTO>> list(String username,String eventName, String clientRuc, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
 }

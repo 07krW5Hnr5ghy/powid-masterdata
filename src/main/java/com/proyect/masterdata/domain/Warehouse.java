@@ -35,12 +35,22 @@ public class Warehouse {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "location")
-    private String location;
+    @Column(name = "contact")
+    private String contact;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "reference")
+    private String reference;
 
     @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
+
 
     @Column(name = "update_date")
     @CreationTimestamp

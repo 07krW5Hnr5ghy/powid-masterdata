@@ -1,14 +1,8 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.request.RequestProductUpdate;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -27,6 +21,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IProduct;
 
 import lombok.AllArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -36,12 +31,13 @@ public class ProductController {
 
     private final IProduct iProduct;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestBody() RequestProductSave product,
+            @RequestPart("requestProduct") RequestProductSave product,
+            @RequestPart("productPictures") MultipartFile[] productPictures,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iProduct.saveAsync(product, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iProduct.saveAsync(product,productPictures, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -67,26 +63,28 @@ public class ProductController {
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> list(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "skus", required = false) List<String> skus,
+            @RequestParam(value = "sku", required = false) String sku,
             @RequestParam(value = "models", required = false) List<String> models,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "sizes", required = false) List<String> sizes,
             @RequestParam(value = "categoryProducts", required = false) List<String> categoryProducts,
             @RequestParam(value = "colors", required = false) List<String> colors,
             @RequestParam(value = "units", required = false) List<String> units,
+            @RequestParam(value = "pictureFlag",required = false) Boolean pictureFlag,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ProductDTO>> result = iProduct.list(
                 user,
-                skus,
+                sku,
                 models,
                 brands,
                 sizes,
                 categoryProducts,
                 colors,
                 units,
+                pictureFlag,
                 sort,
                 sortColumn,
                 pageNumber,
@@ -98,26 +96,28 @@ public class ProductController {
     //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
     public ResponseEntity<Page<ProductDTO>> listFalse(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "skus", required = false) List<String> skus,
+            @RequestParam(value = "sku", required = false) String sku,
             @RequestParam(value = "models", required = false) List<String> models,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "sizes", required = false) List<String> sizes,
             @RequestParam(value = "categoryProducts", required = false) List<String> categoryProducts,
             @RequestParam(value = "colors", required = false) List<String> colors,
             @RequestParam(value = "units", required = false) List<String> units,
+            @RequestParam(value = "pictureFlag",required = false) Boolean pictureFlag,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ProductDTO>> result = iProduct.listFalse(
                 user,
-                skus,
+                sku,
                 models,
                 brands,
                 sizes,
                 categoryProducts,
                 colors,
                 units,
+                pictureFlag,
                 sort,
                 sortColumn,
                 pageNumber,
@@ -158,6 +158,15 @@ public class ProductController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions,ExecutionException,InterruptedException {
         CompletableFuture<List<ProductDTO>> result = iProduct.listFilter(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @PutMapping()
+    public ResponseEntity<ResponseSuccess> addPictures(
+            @RequestPart("productPictures") List<MultipartFile> productPictures,
+            @RequestPart("requestProductUpdate")RequestProductUpdate requestProductUpdate
+            ) throws BadRequestExceptions, InterruptedException, ExecutionException {
+        CompletableFuture<ResponseSuccess> result = iProduct.update(requestProductUpdate,productPictures);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

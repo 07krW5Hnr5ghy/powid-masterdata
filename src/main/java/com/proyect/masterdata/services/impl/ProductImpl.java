@@ -1,13 +1,21 @@
 package com.proyect.masterdata.services.impl;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.request.RequestProductUpdate;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IProductPicture;
 import com.proyect.masterdata.services.IProductPrice;
+import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -23,6 +31,7 @@ import com.proyect.masterdata.utils.Constants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -44,8 +53,7 @@ public class ProductImpl implements IProduct {
     private final IAudit iAudit;
     private final BrandRepository brandRepository;
     @Override
-    public ResponseSuccess save(RequestProductSave product, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(RequestProductSave product,List<MultipartFile> productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         boolean existsProduct;
         Model modelData;
@@ -117,11 +125,17 @@ public class ProductImpl implements IProduct {
                     .clientId(user.getClientId())
                     .tokenUser(tokenUser.toUpperCase())
                     .status(true)
+                    .pictureFlag(false)
                     .registrationDate(new Date(System.currentTimeMillis()))
+                    .updateDate(new Date(System.currentTimeMillis()))
                     .build());
             iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
-            iProductPicture.uploadPicture(product.getPictures(),productData.getId(),user.getUsername());
-            iAudit.save("ADD_PRODUCT","ADD PRODUCT "+productData.getSku()+".",user.getUsername());
+            List<String> pictures = iProductPicture.uploadPicture(productPictures,productData.getId(),user.getUsername());
+            if(!pictures.isEmpty()){
+                productData.setPictureFlag(true);
+                productRepository.save(productData);
+            }
+            iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getSku()+" CREADO.",productData.getSku(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -133,7 +147,8 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product,MultipartFile[] productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        Path folder = Paths.get("src/main/resources/uploads/products");
         return CompletableFuture.supplyAsync(()->{
             User user;
             boolean existsProduct;
@@ -206,16 +221,42 @@ public class ProductImpl implements IProduct {
                         .clientId(user.getClientId())
                         .tokenUser(tokenUser.toUpperCase())
                         .status(true)
+                        .updateDate(new Date(System.currentTimeMillis()))
                         .registrationDate(new Date(System.currentTimeMillis()))
+                        .pictureFlag(false)
                         .build());
                 iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
-                iProductPicture.uploadPicture(product.getPictures(),productData.getId(),user.getUsername());
-                iAudit.save("ADD_PRODUCT","ADD PRODUCT "+productData.getSku()+".",user.getUsername());
+                List<File> fileList = new ArrayList<>();
+                for(MultipartFile multipartFile : productPictures){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/products/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    fileList.add(convFile);
+                }
+                CompletableFuture<List<String>> productPhotos = iProductPicture.uploadPictureAsync(fileList,productData.getId(),user.getUsername());
+                if(!productPhotos.get().isEmpty()){
+                    Stream<Path> paths = Files.list(folder);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    productData.setPictureFlag(true);
+                    productRepository.save(productData);
+                }
+                iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getSku()+" CREADO.",productData.getSku(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
                         .build();
-            } catch (RuntimeException e) {
+            } catch (RuntimeException | IOException | InterruptedException | ExecutionException e) {
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
@@ -249,7 +290,7 @@ public class ProductImpl implements IProduct {
                 product.setUpdateDate(new Date(System.currentTimeMillis()));
                 product.setTokenUser(user.getUsername());
                 productRepository.save(product);
-                iAudit.save("DELETE_PRODUCT","DELETE PRODUCT "+product.getSku()+".",user.getUsername());
+                iAudit.save("DELETE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" DESACTIVADO.",product.getSku(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -288,7 +329,7 @@ public class ProductImpl implements IProduct {
                 product.setUpdateDate(new Date(System.currentTimeMillis()));
                 product.setTokenUser(user.getUsername());
                 productRepository.save(product);
-                iAudit.save("ACTIVATE_PRODUCT","ACTIVATE PRODUCT "+product.getSku()+".",user.getUsername());
+                iAudit.save("ACTIVATE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" ACTIVADO.",product.getSku(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -303,20 +344,20 @@ public class ProductImpl implements IProduct {
     @Override
     public CompletableFuture<Page<ProductDTO>> list(
             String tokenUser,
-            List<String> skus,
+            String sku,
             List<String> models,
             List<String> brands,
             List<String> sizes,
             List<String> categoryProducts,
             List<String> colors,
             List<String> units,
+            Boolean pictureFlag,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<Product> productPage;
-            List<String> skusUppercase;
             List<Long> modelIds;
             List<Long> brandIds;
             List<Long> sizeIds;
@@ -324,12 +365,6 @@ public class ProductImpl implements IProduct {
             List<Long> colorIds;
             List<Long> unitIds;
             Long clientId;
-
-            if (skus!=null&&!skus.isEmpty()){
-                skusUppercase = skus.stream().map(String::toUpperCase).toList();
-            }else{
-                skusUppercase = new ArrayList<>();
-            }
 
             if(models != null && !models.isEmpty()){
                 modelIds = modelRepository.findByNameIn(
@@ -383,13 +418,14 @@ public class ProductImpl implements IProduct {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
                 productPage = productRepositoryCustom.searchForProduct(
                         clientId,
-                        skusUppercase,
+                        sku,
                         modelIds,
                         brandIds,
                         sizeIds,
                         categoryProductIds,
                         colorIds,
                         unitIds,
+                        pictureFlag,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -406,7 +442,7 @@ public class ProductImpl implements IProduct {
             }
 
             List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 List<String> productImages = productPictureRepository.findAllByProductId(product.getId()).stream().map(ProductPicture::getProductPictureUrl).toList();
                 return ProductDTO.builder()
                         .sku(product.getSku())
@@ -420,6 +456,7 @@ public class ProductImpl implements IProduct {
                         .pictures(productImages)
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
+                        .pictureFlag(product.getPictureFlag())
                         .build();
             }).toList();
 
@@ -430,20 +467,20 @@ public class ProductImpl implements IProduct {
     @Override
     public CompletableFuture<Page<ProductDTO>> listFalse(
             String tokenUser,
-            List<String> skus,
+            String sku,
             List<String> models,
             List<String> brands,
             List<String> sizes,
             List<String> categoryProducts,
             List<String> colors,
             List<String> units,
+            Boolean pictureFlag,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Product> productPage;
-            List<String> skusUppercase;
             List<Long> modelIds;
             List<Long> brandIds;
             List<Long> sizeIds;
@@ -451,12 +488,6 @@ public class ProductImpl implements IProduct {
             List<Long> colorIds;
             List<Long> unitIds;
             Long clientId;
-
-            if (skus!=null&&!skus.isEmpty()){
-                skusUppercase = skus.stream().map(String::toUpperCase).toList();
-            }else{
-                skusUppercase = new ArrayList<>();
-            }
 
             if(models != null && !models.isEmpty()){
                 modelIds = modelRepository.findByNameIn(
@@ -510,13 +541,14 @@ public class ProductImpl implements IProduct {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
                 productPage = productRepositoryCustom.searchForProduct(
                         clientId,
-                        skusUppercase,
+                        sku,
                         modelIds,
                         brandIds,
                         sizeIds,
                         categoryProductIds,
                         colorIds,
                         unitIds,
+                        pictureFlag,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -532,7 +564,7 @@ public class ProductImpl implements IProduct {
             }
 
             List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
                         .brand(product.getModel().getBrand().getName())
@@ -542,6 +574,7 @@ public class ProductImpl implements IProduct {
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
+                        .pictureFlag(product.getPictureFlag())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -569,7 +602,7 @@ public class ProductImpl implements IProduct {
             }
 
             return products.stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
                         .brand(product.getModel().getBrand().getName())
@@ -604,7 +637,7 @@ public class ProductImpl implements IProduct {
             }
 
             return products.stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
                         .brand(product.getModel().getBrand().getName())
@@ -641,7 +674,7 @@ public class ProductImpl implements IProduct {
             }
 
             return products.stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
                         .brand(product.getModel().getBrand().getName())
@@ -676,7 +709,7 @@ public class ProductImpl implements IProduct {
             }
 
             return products.stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
                         .sku(product.getSku())
                         .brand(product.getModel().getBrand().getName())
@@ -690,6 +723,82 @@ public class ProductImpl implements IProduct {
                         .updateDate(product.getUpdateDate())
                         .build();
             }).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> update(RequestProductUpdate requestProductUpdate, List<MultipartFile> pictures) throws BadRequestExceptions, InternalErrorExceptions {
+        Path folder = Paths.get("src/main/resources/uploads/products");
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Product product;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(requestProductUpdate.getTokenUser().toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestProductUpdate.getSku().toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(product==null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+
+            try {
+                if(requestProductUpdate.getPrice()!=null){
+                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
+                    productPrice.setStatus(false);
+                    productPriceRepository.save(productPrice);
+                    productPriceRepository.save(ProductPrice.builder()
+                                    .unitSalePrice(requestProductUpdate.getPrice())
+                                    .product(product)
+                                    .productId(product.getId())
+                                    .registrationDate(new Date(System.currentTimeMillis()))
+                                    .updateDate(new Date(System.currentTimeMillis()))
+                                    .tokenUser(user.getUsername())
+                                    .status(true)
+                            .build());
+                }
+                List<File> fileList = new ArrayList<>();
+                for(MultipartFile multipartFile : pictures){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/products/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    fileList.add(convFile);
+                }
+                CompletableFuture<List<String>> productPhotos = iProductPicture.uploadPictureAsync(fileList,product.getId(),user.getUsername());
+                if(!productPhotos.get().isEmpty()){
+                    Stream<Path> paths = Files.list(folder);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    if(!product.getPictureFlag()){
+                        product.setPictureFlag(true);
+                        productRepository.save(product);
+                    }
+                }
+                iAudit.save("UPDATE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" ACTUALIZADO.",product.getSku(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException | IOException | InterruptedException | ExecutionException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 }

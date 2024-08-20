@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class GeneralStockDTO {
     public String supplierProduct;
+    public String productSku;
     public Integer quantity;
     public Date registrationDate;
     public Date updateDate;

@@ -53,7 +53,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                             .updateDate(new Date(System.currentTimeMillis()))
                             .status(true)
                     .build());
-            iAudit.save("ADD_STOCK_REPLENISHMENT_ITEM","ADD STOCK REPLENISHMENT ITEM "+newStockReplenishmentItem.getProduct() + " IN ORDER "+newStockReplenishmentItem.getOrderId() + ".",user.getUsername());
+            iAudit.save("ADD_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+newStockReplenishmentItem.getProduct() + " EN PEDIDO "+newStockReplenishmentItem.getOrderId() + " CREADO EN RESTOCKAJE.",newStockReplenishmentItem.getOrderId().toString(),user.getUsername());
             return newStockReplenishmentItem;
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -80,7 +80,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                         .updateDate(new Date(System.currentTimeMillis()))
                         .status(true)
                         .build());
-                iAudit.save("ADD_STOCK_REPLENISHMENT_ITEM","ADD STOCK REPLENISHMENT ITEM "+newStockReplenishmentItem.getProduct().getSku() + " IN ORDER "+newStockReplenishmentItem.getOrderId() + ".",user.getUsername());
+                iAudit.save("ADD_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+newStockReplenishmentItem.getProduct() + " EN PEDIDO "+newStockReplenishmentItem.getOrderId() + " CREADO EN RESTOCKAJE.",newStockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return newStockReplenishmentItem;
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -140,7 +140,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                                 .product(product)
                                 .productId(product.getId())
                         .build());
-                iAudit.save("ADD_STOCK_REPLENISHMENT_ITEM","ADD STOCK REPLENISHMENT ITEM "+newStockReplenishmentItem.getProduct().getSku() + " IN ORDER "+newStockReplenishmentItem.getOrderId() + ".",user.getUsername());
+                iAudit.save("ADD_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+newStockReplenishmentItem.getProduct() + " EN PEDIDO "+newStockReplenishmentItem.getOrderId() + " AGREGADO EN RESTOCKAJE.",newStockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -182,7 +182,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 stockReplenishmentItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 stockReplenishmentItem.setTokenUser(user.getUsername());
                 stockReplenishmentItemRepository.save(stockReplenishmentItem);
-                iAudit.save("DELETE_STOCK_REPLENISHMENT_ITEM","DELETE STOCK REPLENISHMENT ITEM "+stockReplenishmentItem.getProduct().getSku()+" IN ORDER "+stockReplenishmentItem.getOrderId()+".",user.getUsername());
+                iAudit.save("DELETE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+stockReplenishmentItem.getProduct().getSku()+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" DESACTIVADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -234,7 +234,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 stockReplenishmentItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 stockReplenishmentItem.setTokenUser(user.getUsername());
                 stockReplenishmentItemRepository.save(stockReplenishmentItem);
-                iAudit.save("UPDATE_STOCK_REPLENISHMENT_ITEM","UPDATE STOCK REPLENISHMENT ITEM "+stockReplenishmentItem.getProduct().getSku()+" IN ORDER "+stockReplenishmentItem.getOrderId()+".",user.getUsername());
+                iAudit.save("UPDATE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+stockReplenishmentItem.getProduct().getSku()+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" ACTUALIZADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -275,7 +275,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 stockReplenishmentItem.setUpdateDate(new Date(System.currentTimeMillis()));
                 stockReplenishmentItem.setTokenUser(user.getUsername());
                 stockReplenishmentItemRepository.save(stockReplenishmentItem);
-                iAudit.save("ACTIVATE_STOCK_REPLENISHMENT_ITEM","ACTIVATE STOCK REPLENISHMENT ITEM "+stockReplenishmentItem.getProduct().getSku()+" IN ORDER "+stockReplenishmentItem.getOrderId()+".",user.getUsername());
+                iAudit.save("ACTIVATE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+stockReplenishmentItem.getProduct().getSku()+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" ACTIVADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -325,7 +325,8 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                         sort,
                         sortColumn,
                         pageNumber,
-                        pageSize,true);
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

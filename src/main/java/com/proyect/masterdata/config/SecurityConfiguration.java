@@ -52,20 +52,40 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
-//                    auth.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/entry-channel/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/closing-channel/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/category/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/department/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/province/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/district/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/store-type/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/subscription/**").permitAll();
-//                    auth.requestMatchers(HttpMethod.GET, "/module").permitAll();
-//                    auth.requestMatchers("/file/**").permitAll();
-//                    auth.requestMatchers("/doc/**").permitAll();
-                    // auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
-                    auth.requestMatchers("/**").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/entry-channel/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/closing-channel/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/category/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/department/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/province/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/district/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/store-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/subscription/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/module").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/purchase-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/purchase-document/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/stock-transaction-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/size/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/category-product/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/color/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/size-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/unit-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/unit/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/supplier-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/country/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/sale-channel/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/order-payment-method/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/management-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/delivery-point/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/discount/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/customer-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/order-state/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/order-payment-state/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/cancellation-reason/**").permitAll();
+                    //auth.requestMatchers("/file/**").permitAll();
+                    //auth.requestMatchers("/doc/**").permitAll();
+                    //auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
+                    //auth.requestMatchers("/**").permitAll();
                     auth.anyRequest().authenticated();
                 });
 

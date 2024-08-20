@@ -1,7 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Shipment;
-import com.proyect.masterdata.repository.ShipmentRepositoryCustom;
+import com.proyect.masterdata.domain.Purchase;
+import com.proyect.masterdata.repository.PurchaseRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -16,17 +16,17 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 @Repository
-public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
+public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
 
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<Shipment> searchForShipment(
+    public Page<Purchase> searchForPurchase(
             Long clientId,
             List<String> serials,
             List<Long> warehouseIds,
-            List<Long> shipmentTypeIds,
+            List<Long> purchaseTypeIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -34,9 +34,9 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
             Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Shipment> criteriaQuery = criteriaBuilder.createQuery(Shipment.class);
+        CriteriaQuery<Purchase> criteriaQuery = criteriaBuilder.createQuery(Purchase.class);
 
-        Root<Shipment> itemRoot = criteriaQuery.from(Shipment.class);
+        Root<Purchase> itemRoot = criteriaQuery.from(Purchase.class);
 
         criteriaQuery.select(itemRoot);
 
@@ -44,29 +44,29 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
                 clientId,
                 serials,
                 warehouseIds,
-                shipmentTypeIds,
+                purchaseTypeIds,
                 status,
                 criteriaBuilder,
                 itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
-            List<Order> shipmentList = new ArrayList<>();
+            List<Order> purchaseList = new ArrayList<>();
 
             if (sort.equalsIgnoreCase("ASC")) {
-                shipmentList = listASC(sortColumn, criteriaBuilder, itemRoot);
+                purchaseList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
 
             if (sort.equalsIgnoreCase("DESC")) {
-                shipmentList = listDESC(sortColumn, criteriaBuilder, itemRoot);
+                purchaseList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
 
-            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(shipmentList);
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(purchaseList);
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<Shipment> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<Purchase> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
@@ -75,7 +75,7 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
                 clientId,
                 serials,
                 warehouseIds,
-                shipmentTypeIds,
+                purchaseTypeIds,
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
@@ -84,10 +84,10 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
             Long clientId,
             List<String> serials,
             List<Long> warehouseIds,
-            List<Long> shipmentTypeIds,
+            List<Long> purchaseTypeIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<Shipment> itemRoot) {
+            Root<Purchase> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -103,8 +103,8 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
             conditions.add(criteriaBuilder.and(itemRoot.get("warehouseId").in(warehouseIds)));
         }
 
-        if(!shipmentTypeIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("shipmentTypeId").in(shipmentTypeIds)));
+        if(!purchaseTypeIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("purchaseTypeId").in(purchaseTypeIds)));
         }
 
         if (status) {
@@ -118,67 +118,67 @@ public class ShipmentRepositoryCustomImpl implements ShipmentRepositoryCustom {
         return conditions;
     }
 
-    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Shipment> itemRoot) {
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Purchase> itemRoot) {
 
-        List<Order> shipmentList = new ArrayList<>();
+        List<Order> purchaseList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            shipmentList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
+            purchaseList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
         if (sortColumn.equalsIgnoreCase("warehouseId")) {
-            shipmentList.add(criteriaBuilder.asc(itemRoot.get("warehouseId")));
+            purchaseList.add(criteriaBuilder.asc(itemRoot.get("warehouseId")));
         }
 
-        if (sortColumn.equalsIgnoreCase("shipmentTypeId")) {
-            shipmentList.add(criteriaBuilder.asc(itemRoot.get("shipmentTypeId")));
+        if (sortColumn.equalsIgnoreCase("purchaseTypeId")) {
+            purchaseList.add(criteriaBuilder.asc(itemRoot.get("purchaseTypeId")));
         }
 
         if (sortColumn.equalsIgnoreCase("purchaseSerial")) {
-            shipmentList.add(criteriaBuilder.asc(itemRoot.get("purchaseSerial")));
+            purchaseList.add(criteriaBuilder.asc(itemRoot.get("purchaseSerial")));
         }
 
-        return shipmentList;
+        return purchaseList;
     }
 
-    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Shipment> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Purchase> itemRoot) {
 
-        List<Order> shipmentList = new ArrayList<>();
+        List<Order> purchaseList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            shipmentList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
+            purchaseList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
         if (sortColumn.equalsIgnoreCase("warehouseId")) {
-            shipmentList.add(criteriaBuilder.desc(itemRoot.get("warehouseId")));
+            purchaseList.add(criteriaBuilder.desc(itemRoot.get("warehouseId")));
         }
 
-        if (sortColumn.equalsIgnoreCase("shipmentTypeId")) {
-            shipmentList.add(criteriaBuilder.desc(itemRoot.get("shipmentTypeId")));
+        if (sortColumn.equalsIgnoreCase("purchaseTypeId")) {
+            purchaseList.add(criteriaBuilder.desc(itemRoot.get("purchaseTypeId")));
         }
 
         if (sortColumn.equalsIgnoreCase("purchaseSerial")) {
-            shipmentList.add(criteriaBuilder.desc(itemRoot.get("purchaseSerial")));
+            purchaseList.add(criteriaBuilder.desc(itemRoot.get("purchaseSerial")));
         }
 
-        return shipmentList;
+        return purchaseList;
     }
 
     private Long getOrderCount(
             Long clientId,
             List<String> serials,
             List<Long> warehouseIds,
-            List<Long> shipmentTypeIds,
+            List<Long> purchaseTypeIds,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Shipment> itemRoot = criteriaQuery.from(Shipment.class);
+        Root<Purchase> itemRoot = criteriaQuery.from(Purchase.class);
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
                 serials,
                 warehouseIds,
-                shipmentTypeIds,
+                purchaseTypeIds,
                 status,
                 criteriaBuilder,
                 itemRoot);

@@ -94,7 +94,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                 PreferenceClient preferenceClient = new PreferenceClient();
 
                 Preference preference = preferenceClient.create(preferenceRequest);
-                iAudit.save("SEND_MERCADO_PAGO_PAYMENT","SEND MERCADO PAGO PAYMENT "+preference.getId()+".",user.getUsername());
+                iAudit.save("SEND_MERCADO_PAGO_PAYMENT","ENVIO DE PAGO DE MERCADO PAGO "+preference.getId()+".",preference.getId(),user.getUsername());
                 return preference.getInitPoint();
 
             }catch (RuntimeException e){
@@ -163,7 +163,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                             .paymentGateway("mercado pago")
                             .build();
                     iMembershipPayment.save(requestMembershipPayment,newPayment.getMetadata().get("user_id").toString());
-                    iAudit.save("ADD_MERCADO_PAGO_PAYMENT","ADD MERCADO PAGO PAYMENT "+paymentId+".",user.getUsername());
+                    iAudit.save("ADD_MERCADO_PAGO_PAYMENT","PAGO DE MERCADO PAGO "+paymentId+" AGREGADO.",paymentId.toString(),user.getUsername());
                 }else{
                     throw new BadRequestExceptions(Constants.ErrorMercadoPagoPayment);
                 }

@@ -43,7 +43,10 @@ public class Product {
     private Date updateDate;
 
     @Column(name = "status", nullable = false)
-    private boolean status;
+    private Boolean status;
+
+    @Column(name = "picture_flag")
+    private Boolean pictureFlag;
 
     @Column(name = "model_id", nullable = false)
     private Long modelId;
