@@ -889,21 +889,21 @@ public class Seeder implements CommandLineRunner {
                         iSize.save("accesorios", "accesorios", "admin1");
 
                         // order state
-                        iOrderState.save("pendiente","admin1");
-                        iOrderState.save("entregado", "admin1");
-                        iOrderState.save("preparado", "admin1");
-                        iOrderState.save("pendiente de stock","admin1");
-                        iOrderState.save("pagado","admin1");
-                        iOrderState.save("reservado", "admin1");
-                        iOrderState.save("fallido","admin1");
-                        iOrderState.save("por recoger","admin1");
-                        iOrderState.save("no hay stock","admin1");
-                        iOrderState.save("llamar","admin1");
-                        iOrderState.save("devolucion", "admin1");
-                        iOrderState.save("agendado","admin1");
-                        iOrderState.save("en ruta","admin1");
-                        iOrderState.save("llamado","admin1");
-                        iOrderState.save("cancelado","admin1");
+                        iOrderState.save("pendiente","#f2433d","admin1");
+                        iOrderState.save("entregado", "#52c41a","admin1");
+                        iOrderState.save("preparado","#00FF00", "admin1");
+                        iOrderState.save("pendiente de stock","#faad14","admin1");
+                        iOrderState.save("pagado","#FFA500","admin1");
+                        iOrderState.save("reservado","#2f54eb", "admin1");
+                        iOrderState.save("fallido","#f5222d","admin1");
+                        iOrderState.save("por recoger","#1890ff","admin1");
+                        iOrderState.save("no hay stock","#d9d9d9","admin1");
+                        iOrderState.save("llamar","#722ed1","admin1");
+                        iOrderState.save("devolucion","#ad8b00", "admin1");
+                        iOrderState.save("agendado","#13c2c2","admin1");
+                        iOrderState.save("en ruta","#004d80","admin1");
+                        iOrderState.save("llamado","#008080","admin1");
+                        iOrderState.save("cancelado","#f5222d","admin1");
 
                         // payment state
                         iOrderPaymentState.save("por recaudar","admin1");

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface IOrderState {
-    CompletableFuture<ResponseSuccess> save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> save(String name,String hexColor, String user) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<OrderStateDTO>> listState() throws BadRequestExceptions;
@@ -20,4 +20,5 @@ public interface IOrderState {
             throws BadRequestExceptions;
     CompletableFuture<Page<OrderStateDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
                                         Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<List<OrderStateDTO>> listFilter() throws BadRequestExceptions;
 }

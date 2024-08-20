@@ -3,8 +3,6 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.OrderState;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.OrderStateDTO;
-import com.proyect.masterdata.dto.request.RequestState;
-import com.proyect.masterdata.dto.request.RequestStateSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -23,9 +21,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,12 +31,11 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 public class OrderStateImpl implements IOrderState {
     private final OrderStateRepository orderStateRepository;
-    private final OrderStateMapper stateMapper;
     private final UserRepository userRepository;
     private final OrderStateRepositoryCustom orderStateRepositoryCustom;
     private final IAudit iAudit;
     @Override
-    public CompletableFuture<ResponseSuccess> save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> save(String name,String hexColor, String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User datauser;
             OrderState orderState;
@@ -60,8 +56,14 @@ public class OrderStateImpl implements IOrderState {
             }
 
             try {
-                OrderState newOrderState = orderStateRepository.save(stateMapper.stateToName(RequestStateSave.builder()
-                        .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
+                OrderState newOrderState = orderStateRepository.save(OrderState.builder()
+                                .name(name.toUpperCase())
+                                .hexColor(hexColor)
+                                .status(true)
+                                .registrationDate(new Date(System.currentTimeMillis()))
+                                .updateDate(new Date(System.currentTimeMillis()))
+                                .tokenUser(user.toUpperCase())
+                        .build());
                 iAudit.save("ADD_ORDER_STATE","ESTADO DE PEDIDO "+newOrderState.getName()+" CREADO.",newOrderState.getName(),datauser.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -154,7 +156,7 @@ public class OrderStateImpl implements IOrderState {
     @Override
     public CompletableFuture<List<OrderStateDTO>> listState() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<OrderState> states = new ArrayList<>();
+            List<OrderState> states;
             try {
                 states = orderStateRepository.findAllByStatusTrue();
             } catch (RuntimeException e) {
@@ -164,7 +166,11 @@ public class OrderStateImpl implements IOrderState {
             if (states.isEmpty()) {
                 return Collections.emptyList();
             }
-            return stateMapper.listStateToListStateDTO(states);
+            return states.stream().map(orderState -> OrderStateDTO.builder()
+                    .name(orderState.getName())
+                    .hexColor(orderState.getHexColor())
+                    .code(orderState.getId())
+                    .build()).toList();
         });
     }
 
@@ -183,7 +189,12 @@ public class OrderStateImpl implements IOrderState {
             if (statePage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(stateMapper.listStateToListStateDTO(statePage.getContent()),
+            List<OrderStateDTO> orderStateDTOS = statePage.getContent().stream().map(orderState -> OrderStateDTO.builder()
+                    .name(orderState.getName())
+                    .hexColor(orderState.getHexColor())
+                    .code(orderState.getId())
+                    .build()).toList();
+            return new PageImpl<>(orderStateDTOS,
                     statePage.getPageable(), statePage.getTotalElements());
         });
     }
@@ -203,8 +214,34 @@ public class OrderStateImpl implements IOrderState {
             if (statePage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(stateMapper.listStateToListStateDTO(statePage.getContent()),
+            List<OrderStateDTO> orderStateDTOS = statePage.getContent().stream().map(orderState -> OrderStateDTO.builder()
+                    .name(orderState.getName())
+                    .hexColor(orderState.getHexColor())
+                    .code(orderState.getId())
+                    .build()).toList();
+            return new PageImpl<>(orderStateDTOS,
                     statePage.getPageable(), statePage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<OrderStateDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderState> states;
+            try {
+                states = orderStateRepository.findAll();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (states.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return states.stream().map(orderState -> OrderStateDTO.builder()
+                    .name(orderState.getName())
+                    .hexColor(orderState.getHexColor())
+                    .code(orderState.getId())
+                    .build()).toList();
         });
     }
 }

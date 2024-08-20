@@ -50,4 +50,5 @@ public class OrderDTO {
     private String closingChannel;
     private List<OrderItemDTO> orderItemDTOS;
     private String store;
+    private String orderStateColor;
 }

@@ -403,7 +403,7 @@ public class OrderingImpl implements IOrdering {
             Boolean receiptFlag,
             Boolean deliveryFlag,
             List<String> deliveryPoints,
-            String orderState,
+            List<String> orderStates,
             String courier,
             String paymentState,
             String paymentMethod,
@@ -421,7 +421,7 @@ public class OrderingImpl implements IOrdering {
             List<Long> districtIds;
             List<Long> saleChannelIds;
             List<Long> deliveryPointIds;
-            Long orderStateId;
+            List<Long> orderStateIds;
             Long courierId;
             Long paymentStateId;
             Long paymentMethodId;
@@ -468,10 +468,12 @@ public class OrderingImpl implements IOrdering {
                 deliveryPointIds = new ArrayList<>();
             }
 
-            if(orderState != null){
-                orderStateId = orderStateRepository.findByName(orderState.toUpperCase()).getId();
+            if(orderStates != null && !orderStates.isEmpty()){
+                orderStateIds = orderStateRepository.findByNameIn(
+                        orderStates.stream().map(String::toUpperCase).toList()
+                ).stream().map(OrderState::getId).toList();
             }else{
-                orderStateId = null;
+                orderStateIds = new ArrayList<>();
             }
 
             if(courier != null){
@@ -520,7 +522,7 @@ public class OrderingImpl implements IOrdering {
                         receiptFlag,
                         deliveryFlag,
                         deliveryPointIds,
-                        orderStateId,
+                        orderStateIds,
                         courierId,
                         paymentStateId,
                         paymentMethodId,
@@ -602,6 +604,7 @@ public class OrderingImpl implements IOrdering {
                         .store(order.getStore().getName())
                         .receiptFlag(order.getReceiptFlag())
                         .deliveryFlag(order.getDeliveryFlag())
+                        .orderStateColor(order.getOrderState().getHexColor())
                         .build();
             }).toList();
 
@@ -685,6 +688,7 @@ public class OrderingImpl implements IOrdering {
                         .store(order.getStore().getName())
                         .receiptFlag(order.getReceiptFlag())
                         .deliveryFlag(order.getDeliveryFlag())
+                        .orderStateColor(order.getOrderState().getHexColor())
                         .build();
             }).toList();
         });
@@ -1036,6 +1040,7 @@ public class OrderingImpl implements IOrdering {
                         .store(ordering.getStore().getName())
                         .receiptFlag(ordering.getReceiptFlag())
                         .deliveryFlag(ordering.getDeliveryFlag())
+                        .orderStateColor(ordering.getOrderState().getHexColor())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
                             Double totalPrice = null;

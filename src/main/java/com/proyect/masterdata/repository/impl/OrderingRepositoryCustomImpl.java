@@ -38,7 +38,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             Boolean receiptFlag,
             Boolean deliveryFlag,
             List<Long> deliveryPointIds,
-            Long orderStateId,
+            List<Long> orderStateIds,
             Long courierId,
             Long paymentStateId,
             Long paymentMethodId,
@@ -71,7 +71,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 receiptFlag,
                 deliveryFlag,
                 deliveryPointIds,
-                orderStateId,
+                orderStateIds,
                 courierId,
                 paymentStateId,
                 paymentMethodId,
@@ -119,7 +119,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 receiptFlag,
                 deliveryFlag,
                 deliveryPointIds,
-                orderStateId,
+                orderStateIds,
                 courierId,
                 paymentStateId,
                 paymentMethodId,
@@ -142,7 +142,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             Boolean receiptFlag,
             Boolean deliveryFlag,
             List<Long> deliveryPointIds,
-            Long orderStateId,
+            List<Long> orderStateIds,
             Long courierId,
             Long paymentStateId,
             Long paymentMethodId,
@@ -207,8 +207,8 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             conditions.add(criteriaBuilder.and(itemRoot.get("deliveryPointId").in(deliveryPointIds)));
         }
 
-        if(orderStateId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderStateId"),orderStateId)));
+        if(!orderStateIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("orderStateId").in(orderStateIds)));
         }
 
         if(courierId != null){
@@ -360,7 +360,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
             Boolean receiptFlag,
             Boolean deliveryFlag,
             List<Long> deliveryPointIds,
-            Long orderStateId,
+            List<Long> orderStateIds,
             Long courierId,
             Long paymentStateId,
             Long paymentMethodId,
@@ -388,7 +388,7 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
                 receiptFlag,
                 deliveryFlag,
                 deliveryPointIds,
-                orderStateId,
+                orderStateIds,
                 courierId,
                 paymentStateId,
                 paymentMethodId,

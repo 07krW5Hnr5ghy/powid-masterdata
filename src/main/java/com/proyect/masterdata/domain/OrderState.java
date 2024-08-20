@@ -23,8 +23,11 @@ public class OrderState {
         @Column(name = "order_state_id")
         private Long id;
 
-        @Column(name = "name", length = 50, nullable = false)
+        @Column(name = "name", nullable = false)
         private String name;
+
+        @Column(name = "hex_color",nullable = false)
+        private String hexColor;
 
         @Column(name = "status", nullable = false)
         private Boolean status;

@@ -30,8 +30,9 @@ public class OrderStateController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
+            @RequestParam("hexColor") String hexColor,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrderState.save(name, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iOrderState.save(name,hexColor, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -57,6 +58,13 @@ public class OrderStateController {
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_GET')")
     public ResponseEntity<List<OrderStateDTO>> listState() throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<OrderStateDTO>> result = iOrderState.listState();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_STATE_GET')")
+    public ResponseEntity<List<OrderStateDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderStateDTO>> result = iOrderState.listFilter();
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

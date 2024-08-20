@@ -29,7 +29,7 @@ public interface IOrdering {
             Boolean receiptFlag,
             Boolean deliveryFlag,
             List<String> deliveryPoints,
-            String orderState,
+            List<String> orderStates,
             String courier,
             String paymentState,
             String paymentMethod,
