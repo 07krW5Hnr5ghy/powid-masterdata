@@ -815,131 +815,131 @@ public class Seeder implements CommandLineRunner {
                         iSubscription.save("anual", 12, 20.00, "JROMERO");
 
                         // mock categories
-                        iCategory.save("Joyas y bisuteria", "Joyas y bisuteria", "admin1");
-                        iCategory.save("Moda", "Moda", "admin1");
-                        iCategory.save("Tecnologia", "Tecnologia", "admin1");
-                        iCategory.save("Cosmeticos", "Cosmeticos", "admin1");
-                        iCategory.save("Otro", "Otro", "admin1");
+                        iCategory.save("Joyas y bisuteria", "Joyas y bisuteria", "JROMERO");
+                        iCategory.save("Moda", "Moda", "JROMERO");
+                        iCategory.save("Tecnologia", "Tecnologia", "JROMERO");
+                        iCategory.save("Cosmeticos", "Cosmeticos", "JROMERO");
+                        iCategory.save("Otro", "Otro", "JROMERO");
 
                         // mock closing channels
-                        iClosingChannel.save("whatsapp", "admin1");
-                        iClosingChannel.save("instagram", "admin1");
-                        iClosingChannel.save("facebook", "admin1");
-                        iClosingChannel.save("twitter", "admin1");
-                        iClosingChannel.save("web", "admin1");
-                        iClosingChannel.save("marketplace", "admin1");
-                        iClosingChannel.save("tiktok", "admin1");
-                        iClosingChannel.save("otro", "admin1");
+                        iClosingChannel.save("whatsapp", "JROMERO");
+                        iClosingChannel.save("instagram", "JROMERO");
+                        iClosingChannel.save("facebook", "JROMERO");
+                        iClosingChannel.save("twitter", "JROMERO");
+                        iClosingChannel.save("web", "JROMERO");
+                        iClosingChannel.save("marketplace", "JROMERO");
+                        iClosingChannel.save("tiktok", "JROMERO");
+                        iClosingChannel.save("otro", "JROMERO");
 
                         // mock entry channels
-                        iEntryChannel.save("tiktok", "admin1");
-                        iEntryChannel.save("whatsapp", "admin1");
-                        iEntryChannel.save("instagram", "admin1");
-                        iEntryChannel.save("facebook", "admin1");
-                        iEntryChannel.save("twitter", "admin1");
-                        iEntryChannel.save("web", "admin1");
-                        iEntryChannel.save("otro", "admin1");
+                        iEntryChannel.save("tiktok", "JROMERO");
+                        iEntryChannel.save("whatsapp", "JROMERO");
+                        iEntryChannel.save("instagram", "JROMERO");
+                        iEntryChannel.save("facebook", "JROMERO");
+                        iEntryChannel.save("twitter", "JROMERO");
+                        iEntryChannel.save("web", "JROMERO");
+                        iEntryChannel.save("otro", "JROMERO");
 
                         // mock store types
-                        iStoreType.save("shopify", "admin1");
-                        iStoreType.save("woocommerce", "admin1");
-                        iStoreType.save("tiendada", "admin1");
-                        iStoreType.save("ninguna", "admin1");
-                        iStoreType.save("otro", "admin1");
-                        iStoreType.save("wix", "admin1");
-                        iStoreType.save("prestashop", "admin1");
+                        iStoreType.save("shopify", "JROMERO");
+                        iStoreType.save("woocommerce", "JROMERO");
+                        iStoreType.save("tiendada", "JROMERO");
+                        iStoreType.save("ninguna", "JROMERO");
+                        iStoreType.save("otro", "JROMERO");
+                        iStoreType.save("wix", "JROMERO");
+                        iStoreType.save("prestashop", "JROMERO");
 
                         // mock color
-                        iColor.save("rojo", "admin1");
-                        iColor.save("verde", "admin1");
-                        iColor.save("azul", "admin1");
-                        iColor.save("amarillo", "admin1");
-                        iColor.save("morado", "admin1");
-                        iColor.save("naranja", "admin1");
-                        iColor.save("negro", "admin1");
+                        iColor.save("rojo", "JROMERO");
+                        iColor.save("verde", "JROMERO");
+                        iColor.save("azul", "JROMERO");
+                        iColor.save("amarillo", "JROMERO");
+                        iColor.save("morado", "JROMERO");
+                        iColor.save("naranja", "JROMERO");
+                        iColor.save("negro", "JROMERO");
 
                         // mock size type
-                        iSizeType.save("ropa", "admin1");
-                        iSizeType.save("calzado", "admin1");
-                        iSizeType.save("accesorios", "admin1");
+                        iSizeType.save("ropa", "JROMERO");
+                        iSizeType.save("calzado", "JROMERO");
+                        iSizeType.save("accesorios", "JROMERO");
 
                         // mock category products
-                        iCategoryProduct.save("camisetas", "camisetas","ropa", "admin1");
-                        iCategoryProduct.save("jeans", "jeans","ropa", "admin1");
-                        iCategoryProduct.save("tennis", "tennis","calzado", "admin1");
-                        iCategoryProduct.save("botas", "botas","calzado", "admin1");
-                        iCategoryProduct.save("blusas", "blusas", "ropa","admin1");
-                        iCategoryProduct.save("bisuteria", "adornos", "accesorios","admin1");
+                        iCategoryProduct.save("camisetas", "camisetas","ropa", "JROMERO");
+                        iCategoryProduct.save("jeans", "jeans","ropa", "JROMERO");
+                        iCategoryProduct.save("tennis", "tennis","calzado", "JROMERO");
+                        iCategoryProduct.save("botas", "botas","calzado", "JROMERO");
+                        iCategoryProduct.save("blusas", "blusas", "ropa","JROMERO");
+                        iCategoryProduct.save("bisuteria", "adornos", "accesorios","JROMERO");
 
                         // mock size
-                        iSize.save("s", "ropa", "admin1");
-                        iSize.save("m", "ropa", "admin1");
-                        iSize.save("l", "ropa", "admin1");
-                        iSize.save("xs", "ropa", "admin1");
-                        iSize.save("xm", "ropa", "admin1");
-                        iSize.save("xl", "ropa", "admin1");
+                        iSize.save("s", "ropa", "JROMERO");
+                        iSize.save("m", "ropa", "JROMERO");
+                        iSize.save("l", "ropa", "JROMERO");
+                        iSize.save("xs", "ropa", "JROMERO");
+                        iSize.save("xm", "ropa", "JROMERO");
+                        iSize.save("xl", "ropa", "JROMERO");
 
-                        iSize.save("12", "calzado", "admin1");
-                        iSize.save("18", "calzado", "admin1");
-                        iSize.save("28", "calzado", "admin1");
-                        iSize.save("32","calzado", "admin1");
-                        iSize.save("24",  "calzado", "admin1");
-                        iSize.save("40", "calzado", "admin1");
+                        iSize.save("12", "calzado", "JROMERO");
+                        iSize.save("18", "calzado", "JROMERO");
+                        iSize.save("28", "calzado", "JROMERO");
+                        iSize.save("32","calzado", "JROMERO");
+                        iSize.save("24",  "calzado", "JROMERO");
+                        iSize.save("40", "calzado", "JROMERO");
 
-                        iSize.save("accesorios", "accesorios", "admin1");
+                        iSize.save("accesorios", "accesorios", "JROMERO");
 
                         // order state
-                        iOrderState.save("pendiente","#f2433d","admin1");
-                        iOrderState.save("entregado", "#52c41a","admin1");
-                        iOrderState.save("preparado","#00FF00", "admin1");
-                        iOrderState.save("pendiente de stock","#faad14","admin1");
-                        iOrderState.save("pagado","#FFA500","admin1");
-                        iOrderState.save("reservado","#2f54eb", "admin1");
-                        iOrderState.save("fallido","#f5222d","admin1");
-                        iOrderState.save("por recoger","#1890ff","admin1");
-                        iOrderState.save("no hay stock","#d9d9d9","admin1");
-                        iOrderState.save("llamar","#722ed1","admin1");
-                        iOrderState.save("devolucion","#ad8b00", "admin1");
-                        iOrderState.save("agendado","#13c2c2","admin1");
-                        iOrderState.save("en ruta","#004d80","admin1");
-                        iOrderState.save("llamado","#008080","admin1");
-                        iOrderState.save("cancelado","#f5222d","admin1");
+                        iOrderState.save("pendiente","#f2433d","JROMERO");
+                        iOrderState.save("entregado", "#52c41a","JROMERO");
+                        iOrderState.save("preparado","#00FF00", "JROMERO");
+                        iOrderState.save("pendiente de stock","#faad14","JROMERO");
+                        iOrderState.save("pagado","#FFA500","JROMERO");
+                        iOrderState.save("reservado","#2f54eb", "JROMERO");
+                        iOrderState.save("fallido","#f5222d","JROMERO");
+                        iOrderState.save("por recoger","#1890ff","JROMERO");
+                        iOrderState.save("no hay stock","#d9d9d9","JROMERO");
+                        iOrderState.save("llamar","#722ed1","JROMERO");
+                        iOrderState.save("devolucion","#ad8b00", "JROMERO");
+                        iOrderState.save("agendado","#13c2c2","JROMERO");
+                        iOrderState.save("en ruta","#004d80","JROMERO");
+                        iOrderState.save("llamado","#008080","JROMERO");
+                        iOrderState.save("cancelado","#f5222d","JROMERO");
 
                         // payment state
-                        iOrderPaymentState.save("por recaudar","admin1");
-                        iOrderPaymentState.save("recaudado","admin1");
-                        iOrderPaymentState.save("perdida","admin1");
+                        iOrderPaymentState.save("por recaudar","JROMERO");
+                        iOrderPaymentState.save("recaudado","JROMERO");
+                        iOrderPaymentState.save("perdida","JROMERO");
 
                         // sale channel
-                        iSaleChannel.save("web","admin1");
-                        iSaleChannel.save("ripley","admin1");
+                        iSaleChannel.save("web","JROMERO");
+                        iSaleChannel.save("ripley","JROMERO");
 
                         // management type
-                        iManagementType.save("canje","admin1");
-                        iManagementType.save("venta", "admin1");
-                        iManagementType.save("reserva","admin1");
-                        iManagementType.save("cambio","admin1");
-                        iManagementType.save("preventa","admin1");
-                        iManagementType.save("recupero","admin1");
+                        iManagementType.save("canje","JROMERO");
+                        iManagementType.save("venta", "JROMERO");
+                        iManagementType.save("reserva","JROMERO");
+                        iManagementType.save("cambio","JROMERO");
+                        iManagementType.save("preventa","JROMERO");
+                        iManagementType.save("recupero","JROMERO");
 
                         // payment type
-                        iOrderPaymentMethod.save("yape","admin1");
-                        iOrderPaymentMethod.save("pos","admin1");
-                        iOrderPaymentMethod.save("efectivo","admin1");
-                        iOrderPaymentMethod.save("link","admin1");
-                        iOrderPaymentMethod.save("cambio","admin1");
-                        iOrderPaymentMethod.save("plin","admin1");
-                        iOrderPaymentMethod.save("plataforma mp/web","admin1");
-                        iOrderPaymentMethod.save("bcp","admin1");
-                        iOrderPaymentMethod.save("contraentrega","admin1");
-                        iOrderPaymentMethod.save("canje","admin1");
-                        iOrderPaymentMethod.save("interbank","admin1");
-                        iOrderPaymentMethod.save("banco de la nacion","admin1");
+                        iOrderPaymentMethod.save("yape","JROMERO");
+                        iOrderPaymentMethod.save("pos","JROMERO");
+                        iOrderPaymentMethod.save("efectivo","JROMERO");
+                        iOrderPaymentMethod.save("link","JROMERO");
+                        iOrderPaymentMethod.save("cambio","JROMERO");
+                        iOrderPaymentMethod.save("plin","JROMERO");
+                        iOrderPaymentMethod.save("plataforma mp/web","JROMERO");
+                        iOrderPaymentMethod.save("bcp","JROMERO");
+                        iOrderPaymentMethod.save("contraentrega","JROMERO");
+                        iOrderPaymentMethod.save("canje","JROMERO");
+                        iOrderPaymentMethod.save("interbank","JROMERO");
+                        iOrderPaymentMethod.save("banco de la nacion","JROMERO");
 
                         //unit type
-                        iUnitType.save("ropa","admin1");
-                        iUnitType.save("calzado","admin1");
-                        iUnitType.save("accessorio","admin1");
+                        iUnitType.save("ropa","JROMERO");
+                        iUnitType.save("calzado","JROMERO");
+                        iUnitType.save("accessorio","JROMERO");
 
                         // unit
                         RequestUnit requestUnit1 = RequestUnit.builder()
@@ -947,68 +947,68 @@ public class Seeder implements CommandLineRunner {
                                 .unitType("ropa")
                                 .build();
 
-                        iUnit.save(requestUnit1,"admin1");
+                        iUnit.save(requestUnit1,"JROMERO");
 
                         RequestUnit requestUnit2 = RequestUnit.builder()
                                 .name("par")
                                 .unitType("calzado")
                                 .build();
 
-                        iUnit.save(requestUnit2,"admin1");
+                        iUnit.save(requestUnit2,"JROMERO");
 
                         RequestUnit requestUnit3 = RequestUnit.builder()
                                 .name("accesorio")
                                         .unitType("accessorio")
                                                 .build();
 
-                        iUnit.save(requestUnit3,"admin1");
+                        iUnit.save(requestUnit3,"JROMERO");
 
                         // purchase type
-                        iPurchaseType.save("compra","admin1");
-                        iPurchaseType.save("devolucion","admin1");
-                        iPurchaseType.save("restockaje","admin1");
+                        iPurchaseType.save("compra","JROMERO");
+                        iPurchaseType.save("devolucion","JROMERO");
+                        iPurchaseType.save("restockaje","JROMERO");
 
                         // order return type
-                        iOrderReturnType.save("rechazo","admin1");
-                        iOrderReturnType.save("cambio","admin1");
+                        iOrderReturnType.save("rechazo","JROMERO");
+                        iOrderReturnType.save("cambio","JROMERO");
 
                         // cancellation reason
-                        iCancellationReason.save("No hay stock","admin1");
-                        iCancellationReason.save("Demora en entrega","admin1");
-                        iCancellationReason.save("Mala calidad","admin1");
-                        iCancellationReason.save("Se le daño el producto - 30 dias","admin1");
-                        iCancellationReason.save("Otros motivos","admin1");
-                        iCancellationReason.save("Muy caro el envio","admin1");
-                        iCancellationReason.save("Zona peligrosa","admin1");
-                        iCancellationReason.save("Cliente no confiable para contraentrega","admin1");
-                        iCancellationReason.save("Robo por motorizado","admin1");
-                        iCancellationReason.save("No le gusto producto","admin1");
+                        iCancellationReason.save("No hay stock","JROMERO");
+                        iCancellationReason.save("Demora en entrega","JROMERO");
+                        iCancellationReason.save("Mala calidad","JROMERO");
+                        iCancellationReason.save("Se le daño el producto - 30 dias","JROMERO");
+                        iCancellationReason.save("Otros motivos","JROMERO");
+                        iCancellationReason.save("Muy caro el envio","JROMERO");
+                        iCancellationReason.save("Zona peligrosa","JROMERO");
+                        iCancellationReason.save("Cliente no confiable para contraentrega","JROMERO");
+                        iCancellationReason.save("Robo por motorizado","JROMERO");
+                        iCancellationReason.save("No le gusto producto","JROMERO");
 
                         // payment gateway
-                        iPaymentGateway.save("mercado pago","admin1");
-                        iPaymentGateway.save("demo","admin1");
+                        iPaymentGateway.save("mercado pago","JROMERO");
+                        iPaymentGateway.save("demo","JROMERO");
 
                         // membership states
-                        iMembershipState.save("activa","admin1");
-                        iMembershipState.save("pagada","admin1");
-                        iMembershipState.save("expirada","admin1");
+                        iMembershipState.save("activa","JROMERO");
+                        iMembershipState.save("pagada","JROMERO");
+                        iMembershipState.save("expirada","JROMERO");
                         // purchase documents
-                        iPurchaseDocument.save("factura","admin1");
-                        iPurchaseDocument.save("boleta","admin1");
-                        iPurchaseDocument.save("recibo","admin1");
-                        iPurchaseDocument.save("sin comprobante","admin1");
+                        iPurchaseDocument.save("factura","JROMERO");
+                        iPurchaseDocument.save("boleta","JROMERO");
+                        iPurchaseDocument.save("recibo","JROMERO");
+                        iPurchaseDocument.save("sin comprobante","JROMERO");
                         // customer types
-                        iCustomerType.save("tradicional","admin1");
-                        iCustomerType.save("mayorista","admin1");
+                        iCustomerType.save("tradicional","JROMERO");
+                        iCustomerType.save("mayorista","JROMERO");
                         // discounts
-                        iDiscount.save("monto","admin1");
-                        iDiscount.save("porcentaje","admin1");
-                        iDiscount.save("no aplica","admin1");
+                        iDiscount.save("monto","JROMERO");
+                        iDiscount.save("porcentaje","JROMERO");
+                        iDiscount.save("no aplica","JROMERO");
                         // delivery points
-                        iDeliveryPoint.save("lima","admin1");
-                        iDeliveryPoint.save("punto scharf","admin1");
-                        iDeliveryPoint.save("provincia","admin1");
-                        iDeliveryPoint.save("recojo en tienda","admin1");
+                        iDeliveryPoint.save("lima","JROMERO");
+                        iDeliveryPoint.save("punto scharf","JROMERO");
+                        iDeliveryPoint.save("provincia","JROMERO");
+                        iDeliveryPoint.save("recojo en tienda","JROMERO");
                         // mock users
                         iUserRole.save(business1.getUsername(), "NEGOCIO",business1.getUsername());
                         iUserRole.save(business2.getUsername(),"NEGOCIO",business2.getUsername());
@@ -1821,12 +1821,12 @@ public class Seeder implements CommandLineRunner {
                         iSupplierProduct.save(requestSupplierProduct36, "NTORRES");
 
                         // stock transaction types mocks
-                        iStockTransactionType.save("compra", "admin1");
-                        iStockTransactionType.save("pedido", "admin1");
-                        iStockTransactionType.save("transferencia-entrada", "admin1");
-                        iStockTransactionType.save("transferencia-salida", "admin1");
-                        iStockTransactionType.save("devolucion-comprador","admin1");
-                        iStockTransactionType.save("devolucion-proveedor","admin1");
+                        iStockTransactionType.save("compra", "JROMERO");
+                        iStockTransactionType.save("pedido", "JROMERO");
+                        iStockTransactionType.save("transferencia-entrada", "JROMERO");
+                        iStockTransactionType.save("transferencia-salida", "JROMERO");
+                        iStockTransactionType.save("devolucion-comprador","JROMERO");
+                        iStockTransactionType.save("devolucion-proveedor","JROMERO");
 
                         // warehouse mocks
                         RequestWarehouse warehouse1 = RequestWarehouse.builder()
@@ -1903,7 +1903,7 @@ public class Seeder implements CommandLineRunner {
                                 .phone("000000000")
                                 .build();
 
-                        iCourier.save(requestCourier5,"admin1");
+                        iCourier.save(requestCourier5,"JROMERO");
 
                         // purchases
 
