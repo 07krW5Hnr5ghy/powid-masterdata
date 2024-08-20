@@ -71,6 +71,7 @@ public class OrderingImpl implements IOrdering {
     private final DistrictRepository districtRepository;
     private final ProductPictureRepository productPictureRepository;
     private final CancelledOrderRepository cancelledOrderRepository;
+    private final CancellationReasonRepository cancellationReasonRepository;
     @Override
     public ResponseSuccess save(
             RequestOrderSave requestOrderSave,
@@ -713,6 +714,7 @@ public class OrderingImpl implements IOrdering {
         OrderPaymentMethod orderPaymentMethod;
         OrderPaymentState orderPaymentState;
         Courier courier;
+        CancellationReason cancellationReason;
         OrderStock orderStock;
 
         try{
@@ -744,6 +746,34 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }else {
             orderStock = orderStockRepository.findByOrderId(ordering.getId());
+        }
+
+        if(
+                requestOrderUpdate.getCancellationReason() != null &&
+                        Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO") &&
+                        !Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")
+        ){
+            cancellationReason = cancellationReasonRepository.findByNameAndStatusTrue(requestOrderUpdate.getCancellationReason().toUpperCase());
+            if(cancellationReason == null){
+                throw new BadRequestExceptions(Constants.ErrorCancellationReason);
+            }
+            cancelledOrderRepository.save(CancelledOrder.builder()
+                    .orderingId(ordering.getId())
+                    .cancellationReason(cancellationReason)
+                    .cancellationReasonId(cancellationReason.getId())
+                    .ordering(ordering)
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .updateDate(new Date(System.currentTimeMillis()))
+                    .tokenUser(user.getUsername())
+                    .build());
+        }
+
+        if(
+                Objects.equals(ordering.getOrderState().getName(), "ENTREGADO") &&
+                        (requestOrderUpdate.getCancellationReason() != null ||
+                                Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO"))
+        ){
+            throw new BadRequestExceptions(Constants.ErrorOrderCancelledDeliveredStatus);
         }
 
         try{
@@ -825,6 +855,7 @@ public class OrderingImpl implements IOrdering {
             OrderPaymentMethod orderPaymentMethod;
             OrderPaymentState orderPaymentState;
             Courier courier;
+            CancellationReason cancellationReason;
             OrderStock orderStock;
 
             try{
@@ -856,6 +887,34 @@ public class OrderingImpl implements IOrdering {
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
             }else {
                 orderStock = orderStockRepository.findByOrderId(ordering.getId());
+            }
+
+            if(
+                    requestOrderUpdate.getCancellationReason() != null &&
+                            Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO") &&
+                            !Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")
+            ){
+                cancellationReason = cancellationReasonRepository.findByNameAndStatusTrue(requestOrderUpdate.getCancellationReason().toUpperCase());
+                if(cancellationReason == null){
+                    throw new BadRequestExceptions(Constants.ErrorCancellationReason);
+                }
+                cancelledOrderRepository.save(CancelledOrder.builder()
+                        .orderingId(ordering.getId())
+                        .cancellationReason(cancellationReason)
+                        .cancellationReasonId(cancellationReason.getId())
+                        .ordering(ordering)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(user.getUsername())
+                        .build());
+            }
+
+            if(
+                    Objects.equals(ordering.getOrderState().getName(), "ENTREGADO") &&
+                            (requestOrderUpdate.getCancellationReason() != null ||
+                                    Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO"))
+            ){
+                throw new BadRequestExceptions(Constants.ErrorOrderCancelledDeliveredStatus);
             }
 
             try{

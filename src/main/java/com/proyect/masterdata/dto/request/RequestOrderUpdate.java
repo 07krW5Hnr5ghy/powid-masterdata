@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -19,4 +16,5 @@ public class RequestOrderUpdate {
     public String orderState;
     public String paymentState;
     public String courier;
+    public String cancellationReason;
 }
