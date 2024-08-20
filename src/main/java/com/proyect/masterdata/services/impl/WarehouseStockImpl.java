@@ -144,7 +144,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
     @Override
     public CompletableFuture<Page<WarehouseStockDTO>> list(
             List<String> warehouses,
-            List<String> supplierProducts,
+            String serial,
+            String productSku,
             String user,
             String sort,
             String sortColumn,
@@ -154,15 +155,6 @@ public class WarehouseStockImpl implements IWarehouseStock {
             Page<WarehouseStock> warehouseStockPage;
             Long clientId;
             List<Long> warehouseIds;
-            List<Long> supplierProductIds;
-
-            if(supplierProducts != null && !supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else{
-                supplierProductIds = new ArrayList<>();
-            }
 
             if(warehouses!=null && !warehouses.isEmpty()){
                 warehouseIds = warehouseRepository
@@ -178,7 +170,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
                 warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(
                         clientId,
                         warehouseIds,
-                        supplierProductIds,
+                        serial,
+                        productSku,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -196,6 +189,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
                     .map(warehouseStock -> WarehouseStockDTO.builder()
                             .quantity(warehouseStock.getQuantity())
                             .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
+                            .product(warehouseStock.getSupplierProduct().getProduct().getSku())
                             .warehouse(warehouseStock.getWarehouse().getName())
                             .registrationDate(warehouseStock.getRegistrationDate())
                             .updateDate(warehouseStock.getUpdateDate())
@@ -246,6 +240,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
                     .map(warehouseStock -> WarehouseStockDTO.builder()
                             .quantity(warehouseStock.getQuantity())
                             .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
+                            .product(warehouseStock.getSupplierProduct().getProduct().getSku())
                             .warehouse(warehouseStock.getWarehouse().getName())
                             .registrationDate(warehouseStock.getRegistrationDate())
                             .updateDate(warehouseStock.getUpdateDate())

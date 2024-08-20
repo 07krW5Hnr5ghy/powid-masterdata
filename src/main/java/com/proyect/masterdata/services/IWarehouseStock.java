@@ -20,7 +20,8 @@ public interface IWarehouseStock {
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<WarehouseStockDTO>> list(
                 List<String> warehouses,
-                List<String> supplierProducts,
+                String serial,
+                String productSku,
                 String user,
                 String sort,
                 String sortColumn,
