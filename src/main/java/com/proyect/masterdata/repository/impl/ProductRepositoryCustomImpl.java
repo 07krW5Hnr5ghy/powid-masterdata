@@ -36,6 +36,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             List<Long> categoryProductIds,
             List<Long> colorIds,
             List<Long> unitIds,
+            Boolean pictureFlag,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -58,6 +59,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 categoryProductIds,
                 colorIds,
                 unitIds,
+                pictureFlag,
                 status,
                 criteriaBuilder,
                 itemRoot,
@@ -96,6 +98,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 categoryProductIds,
                 colorIds,
                 unitIds,
+                pictureFlag,
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
@@ -109,6 +112,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             List<Long> categoryProductIds,
             List<Long> colorIds,
             List<Long> unitIds,
+            Boolean pictureFlag,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Product> itemRoot,
@@ -146,6 +150,10 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         if(!unitIds.isEmpty()){
             conditions.add(criteriaBuilder.and(itemRoot.get("unitId").in(unitIds)));
+        }
+
+        if (pictureFlag != null) {
+            conditions.add(criteriaBuilder.equal(itemRoot.get("pictureFlag"), pictureFlag));
         }
 
         if (status) {
@@ -206,6 +214,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             List<Long> categoryProductIds,
             List<Long> colorIds,
             List<Long> unitIds,
+            Boolean pictureFlag,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -222,6 +231,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 categoryProductIds,
                 colorIds,
                 unitIds,
+                pictureFlag,
                 status,
                 criteriaBuilder,
                 itemRoot,

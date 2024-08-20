@@ -125,10 +125,16 @@ public class ProductImpl implements IProduct {
                     .clientId(user.getClientId())
                     .tokenUser(tokenUser.toUpperCase())
                     .status(true)
+                    .pictureFlag(false)
                     .registrationDate(new Date(System.currentTimeMillis()))
+                    .updateDate(new Date(System.currentTimeMillis()))
                     .build());
             iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
-            iProductPicture.uploadPicture(productPictures,productData.getId(),user.getUsername());
+            List<String> pictures = iProductPicture.uploadPicture(productPictures,productData.getId(),user.getUsername());
+            if(!pictures.isEmpty()){
+                productData.setPictureFlag(true);
+                productRepository.save(productData);
+            }
             iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getSku()+" CREADO.",productData.getSku(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -215,7 +221,9 @@ public class ProductImpl implements IProduct {
                         .clientId(user.getClientId())
                         .tokenUser(tokenUser.toUpperCase())
                         .status(true)
+                        .updateDate(new Date(System.currentTimeMillis()))
                         .registrationDate(new Date(System.currentTimeMillis()))
+                        .pictureFlag(false)
                         .build());
                 iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
                 List<File> fileList = new ArrayList<>();
@@ -240,6 +248,8 @@ public class ProductImpl implements IProduct {
                             throw new RuntimeException(e);
                         }
                     });
+                    productData.setPictureFlag(true);
+                    productRepository.save(productData);
                 }
                 iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getSku()+" CREADO.",productData.getSku(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -341,6 +351,7 @@ public class ProductImpl implements IProduct {
             List<String> categoryProducts,
             List<String> colors,
             List<String> units,
+            Boolean pictureFlag,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -414,6 +425,7 @@ public class ProductImpl implements IProduct {
                         categoryProductIds,
                         colorIds,
                         unitIds,
+                        pictureFlag,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -444,6 +456,7 @@ public class ProductImpl implements IProduct {
                         .pictures(productImages)
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
+                        .pictureFlag(product.getPictureFlag())
                         .build();
             }).toList();
 
@@ -461,6 +474,7 @@ public class ProductImpl implements IProduct {
             List<String> categoryProducts,
             List<String> colors,
             List<String> units,
+            Boolean pictureFlag,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -534,6 +548,7 @@ public class ProductImpl implements IProduct {
                         categoryProductIds,
                         colorIds,
                         unitIds,
+                        pictureFlag,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -559,6 +574,7 @@ public class ProductImpl implements IProduct {
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
+                        .pictureFlag(product.getPictureFlag())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -769,6 +785,10 @@ public class ProductImpl implements IProduct {
                             throw new RuntimeException(e);
                         }
                     });
+                    if(!product.getPictureFlag()){
+                        product.setPictureFlag(true);
+                        productRepository.save(product);
+                    }
                 }
                 iAudit.save("UPDATE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" ACTUALIZADO.",product.getSku(),user.getUsername());
                 return ResponseSuccess.builder()

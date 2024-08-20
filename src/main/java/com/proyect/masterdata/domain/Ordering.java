@@ -53,10 +53,10 @@ public class Ordering {
     @Column(name = "advanced_payment")
     private Double advancedPayment;
 
-    @Column(name = "receiptFlag")
+    @Column(name = "receipt_flag")
     private Boolean receiptFlag;
 
-    @Column(name = "deliveryFlag")
+    @Column(name = "delivery_flag")
     private Boolean deliveryFlag;
 
     @Column(name = "registration_date")

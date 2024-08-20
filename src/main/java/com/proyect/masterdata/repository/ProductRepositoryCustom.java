@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ProductRepositoryCustom {
-    public Page<Product> searchForProduct(
+    Page<Product> searchForProduct(
             Long clientId,
             String sku,
             List<Long> modelIds,
@@ -19,6 +19,7 @@ public interface ProductRepositoryCustom {
             List<Long> categoryProductIds,
             List<Long> colorIds,
             List<Long> unitIds,
+            Boolean pictureFlag,
             String sort,
             String sortColumn,
             Integer pageNumber,
