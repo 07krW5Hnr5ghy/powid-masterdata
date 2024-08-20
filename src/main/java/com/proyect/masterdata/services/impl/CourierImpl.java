@@ -386,12 +386,21 @@ public class CourierImpl implements ICourier {
             if(couriers.isEmpty()){
                 return Collections.emptyList();
             }
-            return couriers.stream().map(courier -> CourierDTO.builder()
+            List<CourierDTO> courierDTOS = new ArrayList<>(couriers.stream().map(courier -> CourierDTO.builder()
                     .name(courier.getName())
                     .phone(courier.getPhoneNumber())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
-                    .build()).toList();
+                    .build()).toList());
+            Courier defaultNoCourier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
+            CourierDTO dtoNoCourier = CourierDTO.builder()
+                    .name(defaultNoCourier.getName())
+                    .phone(defaultNoCourier.getPhoneNumber())
+                    .registrationDate(defaultNoCourier.getRegistrationDate())
+                    .updateDate(defaultNoCourier.getUpdateDate())
+                    .build();
+            courierDTOS.add(dtoNoCourier);
+            return courierDTOS;
         });
     }
 }

@@ -24,7 +24,7 @@ public interface OrderingRepositoryCustom {
             Boolean deliveryFlag,
             List<Long> deliveryPointIds,
             List<Long> orderStateIds,
-            Long courierId,
+            List<Long> courierIds,
             Long paymentStateId,
             Long paymentMethodId,
             Long managementTypeId,

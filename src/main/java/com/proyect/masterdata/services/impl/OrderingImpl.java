@@ -404,7 +404,7 @@ public class OrderingImpl implements IOrdering {
             Boolean deliveryFlag,
             List<String> deliveryPoints,
             List<String> orderStates,
-            String courier,
+            List<String> couriers,
             String paymentState,
             String paymentMethod,
             String managementType,
@@ -422,7 +422,7 @@ public class OrderingImpl implements IOrdering {
             List<Long> saleChannelIds;
             List<Long> deliveryPointIds;
             List<Long> orderStateIds;
-            Long courierId;
+            List<Long> courierIds;
             Long paymentStateId;
             Long paymentMethodId;
             Long managementTypeId;
@@ -476,10 +476,12 @@ public class OrderingImpl implements IOrdering {
                 orderStateIds = new ArrayList<>();
             }
 
-            if(courier != null){
-                courierId = courierRepository.findByName(courier.toUpperCase()).getId();
-            }else {
-                courierId = null;
+            if(couriers != null && !couriers.isEmpty()){
+                courierIds = courierRepository.findByNameIn(
+                        couriers.stream().map(String::toUpperCase).toList()
+                ).stream().map(Courier::getId).toList();
+            }else{
+                courierIds = new ArrayList<>();
             }
 
             if(paymentState != null){
@@ -523,7 +525,7 @@ public class OrderingImpl implements IOrdering {
                         deliveryFlag,
                         deliveryPointIds,
                         orderStateIds,
-                        courierId,
+                        courierIds,
                         paymentStateId,
                         paymentMethodId,
                         managementTypeId,

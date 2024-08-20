@@ -30,7 +30,7 @@ public interface IOrdering {
             Boolean deliveryFlag,
             List<String> deliveryPoints,
             List<String> orderStates,
-            String courier,
+            List<String> couriers,
             String paymentState,
             String paymentMethod,
             String managementType,

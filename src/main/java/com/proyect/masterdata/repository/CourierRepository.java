@@ -14,4 +14,5 @@ public interface CourierRepository extends JpaRepository<Courier,Long> {
     List<Courier> findAllByClientIdAndStatusTrue(Long clientId);
     List<Courier> findAllByClientIdAndStatusFalse(Long clientId);
     List<Courier> findAllByClientId(Long clientId);
+    List<Courier> findByNameIn(List<String> names);
 }
