@@ -35,6 +35,9 @@ public class PurchaseItem {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "observations")
+    private String observations;
+
     @Column(name = "registration_date")
     @CreationTimestamp
     private Date registrationDate;
@@ -49,28 +52,25 @@ public class PurchaseItem {
     @Column(name = "supplier_product_id")
     private Long supplierProductId;
 
-    @Column(name = "unit_price")
-    private Double unitPrice;
+    @Column(name = "client_id")
+    private Long clientId;
 
     @Column(name = "purchase_id")
     private Long purchaseId;
 
-    @Column(name = "client_id")
-    private Long clientId;
-
     @Column(name = "token_user")
     private String tokenUser;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
+    private Client client;
 
     @ManyToOne
     @JoinColumn(name = "supplier_product_id", columnDefinition = "supplierProductId", insertable = false, updatable = false)
     private SupplierProduct supplierProduct;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id", columnDefinition = "purchaseId",insertable = false,updatable = false)
+    @JoinColumn(name = "purchase_id",columnDefinition = "purchaseId",insertable = false,updatable = false)
     private Purchase purchase;
-
-    @ManyToOne
-    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
-    private Client client;
 
 }

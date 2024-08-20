@@ -36,9 +36,6 @@ public class Membership {
         @CreationTimestamp
         private Date expirationDate;
 
-        @Column(name = "status", nullable = false)
-        private Boolean status;
-
         @Column(name = "demo", nullable = false)
         private Boolean demo;
 
@@ -48,6 +45,12 @@ public class Membership {
         @Column(name = "subscription_id", nullable = false)
         private Long subscriptionId;
 
+        @Column(name = "membership_payment_id",nullable = false)
+        private Long membershipPaymentId;
+
+        @Column(name = "membership_state_id")
+        private Long membershipStateId;
+
         @ManyToOne()
         @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
         private Client client;
@@ -55,5 +58,13 @@ public class Membership {
         @ManyToOne()
         @JoinColumn(name = "subscription_id", columnDefinition = "subscriptionId", insertable = false, updatable = false)
         private Subscription subscription;
+
+        @ManyToOne()
+        @JoinColumn(name = "membership_payment_id",columnDefinition = "membershipPaymentId",insertable = false,updatable = false)
+        private MembershipPayment membershipPayment;
+
+        @ManyToOne()
+        @JoinColumn(name = "membership_state_id",columnDefinition = "membershipStateId",insertable = false,updatable = false)
+        private MembershipState membershipState;
 
 }

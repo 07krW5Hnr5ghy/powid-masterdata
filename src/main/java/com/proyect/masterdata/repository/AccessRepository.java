@@ -11,11 +11,9 @@ import com.proyect.masterdata.domain.Access;
 
 @Repository
 public interface AccessRepository extends JpaRepository<Access, Long> {
-
-    Boolean existsByName(String name);
-
+    Access findByName(String name);
     Access findByNameAndStatusTrue(String name);
-
-    List<Access> findByNameInAndStatusTrue(List<String> names);
-
+    Access findByNameAndStatusFalse(String name);
+    List<Access> findAllByStatusTrue();
+    List<Access> findAllByStatusFalse();
 }

@@ -1,10 +1,12 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
-import com.proyect.masterdata.dto.OrderItemDTO;
 import com.proyect.masterdata.dto.OrderDTO;
-import com.proyect.masterdata.dto.ProductDTO;
-import com.proyect.masterdata.dto.request.*;
+import com.proyect.masterdata.dto.OrderItemDTO;
+import com.proyect.masterdata.dto.request.RequestOrderItem;
+import com.proyect.masterdata.dto.request.RequestOrderSave;
+import com.proyect.masterdata.dto.request.RequestOrderUpdate;
+import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -16,8 +18,20 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -27,17 +41,12 @@ public class OrderingImpl implements IOrdering {
     private final UserRepository userRepository;
     private final OrderingRepository orderingRepository;
     private final OrderStateRepository orderStateRepository;
-    private final ISale iSale;
-    private final ICustomer iCustomer;
     private final IOrderItem iOrderItem;
     private final OrderingRepositoryCustom orderingRepositoryCustom;
-    private final SaleRepository saleRepository;
-    private final CustomerRepository customerRepository;
     private final OrderItemRepository orderItemRepository;
-    private final ProductPriceRepository productPriceRepository;
     private final ProductRepository productRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
-    private final PaymentStateRepository paymentStateRepository;
+    private final OrderPaymentMethodRepository orderPaymentMethodRepository;
+    private final OrderPaymentStateRepository orderPaymentStateRepository;
     private final CourierRepository courierRepository;
     private final OrderStockItemRepository orderStockItemRepository;
     private final IWarehouseStock iWarehouseStock;
@@ -50,27 +59,51 @@ public class OrderingImpl implements IOrdering {
     private final SaleChannelRepository saleChannelRepository;
     private final ManagementTypeRepository managementTypeRepository;
     private final CourierPictureRepository courierPictureRepository;
+    private final StoreRepository storeRepository;
+    private final ClosingChannelRepository closingChannelRepository;
+    private final IAudit iAudit;
+    private final CustomerRepository customerRepository;
+    private final DiscountRepository discountRepository;
+    private final DeliveryPointRepository deliveryPointRepository;
+    private final ProductPriceRepository productPriceRepository;
+    private final DepartmentRepository departmentRepository;
+    private final ProvinceRepository provinceRepository;
+    private final DistrictRepository districtRepository;
     private final ProductPictureRepository productPictureRepository;
+    private final CancelledOrderRepository cancelledOrderRepository;
+    private final CancellationReasonRepository cancellationReasonRepository;
     @Override
-    public ResponseSuccess save(RequestOrderSave requestOrderSave, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-
+    public ResponseSuccess save(
+            RequestOrderSave requestOrderSave,
+            MultipartFile[] receipts,
+            String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         OrderState orderState;
         Courier courier;
-        PaymentState paymentState;
+        OrderPaymentState orderPaymentState;
         SaleChannel saleChannel;
         ManagementType managementType;
-        PaymentMethod paymentMethod;
-
+        OrderPaymentMethod orderPaymentMethod;
+        Store store;
+        ClosingChannel closingChannel;
+        Customer customer;
+        DeliveryPoint deliveryPoint;
+        Discount discount;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
             courier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
-            paymentState = paymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
+            orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
             saleChannel = saleChannelRepository.findByNameAndStatusTrue(requestOrderSave.getSaleChannel().toUpperCase());
             managementType = managementTypeRepository.findByNameAndStatusTrue(requestOrderSave.getManagementType().toUpperCase());
-            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
+            orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
+            store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
+            closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
+            customer = customerRepository.findByPhone(requestOrderSave.getPhone().toUpperCase());
+            deliveryPoint = deliveryPointRepository.findByNameAndStatusTrue(requestOrderSave.getDeliveryPoint().toUpperCase());
+            discount = discountRepository.findByNameAndStatusTrue(requestOrderSave.getDiscount().toUpperCase());
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -83,7 +116,7 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorSaleChannel);
         }
 
-        if(paymentMethod == null){
+        if(orderPaymentMethod == null){
             throw new BadRequestExceptions(Constants.ErrorPaymentMethod);
         }
 
@@ -91,228 +124,608 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorManagementType);
         }
 
+        if(store == null){
+            throw new BadRequestExceptions(Constants.ErrorStore);
+        }
+
+        if(closingChannel == null){
+            throw new BadRequestExceptions(Constants.ErrorClosingChannel);
+        }
+
+        if(customer == null){
+            throw new BadRequestExceptions(Constants.ErrorCustomer);
+        }
+
+        if(deliveryPoint == null){
+            throw new BadRequestExceptions(Constants.ErrorDeliveryPoint);
+        }
+
+        if(discount == null){
+            throw new BadRequestExceptions(Constants.ErrorDiscount);
+        }
+
         try{
-
-            Ordering ordering = orderingRepository.save(Ordering.builder()
-                            .cancellation(false)
-                            .orderState(orderState)
-                            .orderStateId(orderState.getId())
-                            .client(user.getClient())
-                            .clientId(user.getClientId())
-                            .courier(courier)
-                            .courierId(courier.getId())
-                            .saleChannel(saleChannel)
-                            .saleChannelId(saleChannel.getId())
-                            .paymentState(paymentState)
-                            .paymentStateId(paymentState.getId())
-                            .paymentMethod(paymentMethod)
-                            .paymentMethodId(paymentMethod.getId())
-                            .managementType(managementType)
-                            .managementTypeId(managementType.getId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(user.getUsername())
-                    .build());
-
-            iOrderPaymentReceipt.uploadReceipt(requestOrderSave.getReceipts(),ordering.getId(),user.getUsername());
-
-            double saleAmount = 0.00;
-
-            for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
-
-                Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProductSku().toUpperCase());
+            requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
+                Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
 
                 if(product == null){
                     throw new BadRequestExceptions(Constants.ErrorProduct);
                 }
 
-                ProductPrice productPrice = productPriceRepository.findByProductId(product.getId());
+                if(requestOrderItem.getQuantity() < 1){
+                    throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
+                }
+            });
 
-                saleAmount += (productPrice.getUnitSalePrice() * requestOrderItem.getQuantity());
+            Ordering ordering = orderingRepository.save(Ordering.builder()
+                    .cancellation(false)
+                    .seller(user.getName() + " " + user.getSurname())
+                    .observations(requestOrderSave.getObservations().toUpperCase())
+                    .deliveryAddress(requestOrderSave.getDeliveryAddress())
+                    .deliveryAmount(requestOrderSave.getDeliveryAmount())
+                    .advancedPayment(requestOrderSave.getAdvancedPayment())
+                    .discount(discount)
+                    .discountId(discount.getId())
+                    .discountAmount(requestOrderSave.getDiscountAmount())
+                    .orderState(orderState)
+                    .orderStateId(orderState.getId())
+                    .client(user.getClient())
+                    .clientId(user.getClientId())
+                    .courier(courier)
+                    .courierId(courier.getId())
+                    .saleChannel(saleChannel)
+                    .saleChannelId(saleChannel.getId())
+                    .orderPaymentState(orderPaymentState)
+                    .paymentStateId(orderPaymentState.getId())
+                    .orderPaymentMethod(orderPaymentMethod)
+                    .paymentMethodId(orderPaymentMethod.getId())
+                    .managementType(managementType)
+                    .managementTypeId(managementType.getId())
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .updateDate(new Date(System.currentTimeMillis()))
+                    .store(store)
+                    .storeId(store.getId())
+                    .closingChannel(closingChannel)
+                    .closingChannelId(closingChannel.getId())
+                    .customer(customer)
+                    .customerId(customer.getId())
+                    .tokenUser(user.getUsername())
+                    .deliveryPoint(deliveryPoint)
+                    .deliveryPointId(deliveryPoint.getId())
+                    .receiptFlag(false)
+                    .deliveryFlag(false)
+                    .build());
+            CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
+            if(!paymentReceipts.get().isEmpty()){
+                ordering.setReceiptFlag(true);
+                orderingRepository.save(ordering);
+            }
+
+            for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
                 iOrderItem.save(ordering, requestOrderItem,tokenUser);
             }
 
-            RequestSale requestSale = RequestSale.builder()
-                    .saleChannel(requestOrderSave.getSaleChannel())
-                    .seller(user.getName() + " " + user.getSurname())
-                    .paymentMethod(requestOrderSave.getPaymentMethod())
-                    .observations(requestOrderSave.getObservations())
-                    .managementType(requestOrderSave.getManagementType())
-                    .deliveryAmount(requestOrderSave.getDeliveryAmount())
-                    .deliveryAddress(requestOrderSave.getDeliveryAddress())
-                    .saleAmount(saleAmount)
-                    .advancedPayment(requestOrderSave.getAdvancedPayment())
-                    .build();
+            if(Objects.equals(deliveryPoint.getName(), "PROVINCIA") && !Objects.equals(requestOrderSave.getDni(), "NO APLICA")){
+                customer.setDni(requestOrderSave.getDni());
+                customerRepository.save(customer);
+            }
 
-            iSale.save(ordering,requestSale,tokenUser);
-
-            RequestCustomer requestCustomer = RequestCustomer.builder()
-                    .phone(requestOrderSave.getCustomerPhone())
-                    .name(requestOrderSave.getCustomerName())
-                    .type(requestOrderSave.getCustomerType())
-                    .district(requestOrderSave.getCustomerDistrict())
-                    .province(requestOrderSave.getCustomerProvince())
-                    .department(requestOrderSave.getCustomerDepartment())
-                    .instagram(requestOrderSave.getInstagram())
-                    .reference(requestOrderSave.getCustomerReference())
-                    .address(requestOrderSave.getCustomerAddress())
-                    .build();
-
-            iCustomer.save(ordering,requestCustomer,tokenUser);
-
+            iAudit.save("ADD_ORDER","PEDIDO "+ordering.getId()+" CREADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
 
-        }catch (RuntimeException e){
+        }catch (RuntimeException | InterruptedException | ExecutionException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
     }
 
     @Override
-    public Page<OrderDTO> list(Long orderId,String user,String orderState,String courier,String paymentState,String paymentMethod,String saleChannel,String managementType, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave,MultipartFile[] receipts, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        Path folder = Paths.get("src/main/resources/uploads/orders");
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            OrderState orderState;
+            Courier courier;
+            OrderPaymentState orderPaymentState;
+            SaleChannel saleChannel;
+            ManagementType managementType;
+            OrderPaymentMethod orderPaymentMethod;
+            Store store;
+            ClosingChannel closingChannel;
+            Customer customer;
+            DeliveryPoint deliveryPoint;
+            Discount discount;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
+                courier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
+                orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
+                saleChannel = saleChannelRepository.findByNameAndStatusTrue(requestOrderSave.getSaleChannel().toUpperCase());
+                managementType = managementTypeRepository.findByNameAndStatusTrue(requestOrderSave.getManagementType().toUpperCase());
+                orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
+                store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
+                closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
+                customer = customerRepository.findByPhone(requestOrderSave.getPhone().toUpperCase());
+                deliveryPoint = deliveryPointRepository.findByNameAndStatusTrue(requestOrderSave.getDeliveryPoint().toUpperCase());
+                discount = discountRepository.findByNameAndStatusTrue(requestOrderSave.getDiscount().toUpperCase());
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        Page<Ordering> pageOrdering;
-        Long clientId;
-        Long orderStateId;
-        Long courierId;
-        Long paymentStateId;
-        Long paymentMethodId;
-        Long saleChannelId;
-        Long managementTypeId;
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if(orderState != null){
-            orderStateId = orderStateRepository.findByName(orderState.toUpperCase()).getId();
-        }else{
-            orderStateId = null;
-        }
+            if(saleChannel == null){
+                throw new BadRequestExceptions(Constants.ErrorSaleChannel);
+            }
 
-        if(courier != null){
-            courierId = courierRepository.findByName(courier.toUpperCase()).getId();
-        }else {
-            courierId = null;
-        }
+            if(orderPaymentMethod == null){
+                throw new BadRequestExceptions(Constants.ErrorPaymentMethod);
+            }
 
-        if(paymentState != null){
-            paymentStateId = paymentStateRepository.findByName(paymentState.toUpperCase()).getId();
-        }else {
-            paymentStateId = null;
-        }
+            if(managementType == null){
+                throw new BadRequestExceptions(Constants.ErrorManagementType);
+            }
 
-        if(paymentMethod != null){
-            paymentMethodId = paymentMethodRepository.findByName(paymentMethod.toUpperCase()).getId();
-        }else {
-            paymentMethodId = null;
-        }
+            if(store == null){
+                throw new BadRequestExceptions(Constants.ErrorStore);
+            }
 
-        if(saleChannel != null){
-            saleChannelId = saleChannelRepository.findByName(saleChannel.toUpperCase()).getId();
-        }else {
-            saleChannelId = null;
-        }
+            if(closingChannel == null){
+                throw new BadRequestExceptions(Constants.ErrorClosingChannel);
+            }
 
-        if(managementType != null){
-            managementTypeId = managementTypeRepository.findByName(managementType.toUpperCase()).getId();
-        }else{
-            managementTypeId = null;
-        }
+            if(customer == null){
+                throw new BadRequestExceptions(Constants.ErrorCustomerExist);
+            }
 
-        try{
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-            pageOrdering = orderingRepositoryCustom.searchForOrdering(orderId,clientId,orderStateId,courierId,paymentStateId,paymentMethodId,saleChannelId,managementTypeId,sort,sortColumn,pageNumber,pageSize);
-        }catch (RuntimeException e){
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if(discount == null){
+                throw new BadRequestExceptions(Constants.ErrorDiscount);
+            }
 
-        if(pageOrdering.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
+            try{
+                requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
+                    Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
 
-        List<OrderDTO> orderDTOS = pageOrdering.getContent().stream().map(order -> {
-            Sale sale = saleRepository.findByOrderId(order.getId());
-            Customer customer = customerRepository.findByOrderId(order.getId());
+                    if(product == null){
+                        throw new BadRequestExceptions(Constants.ErrorProduct);
+                    }
 
-            List<OrderItemDTO> orderItemDTOS = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId()).stream().map(item -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(item.getProductId());
-                List<String> productPictures = productPictureRepository.findAllByProductId(item.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
-                Double totalPrice = (productPrice.getUnitSalePrice() * item.getQuantity())-((productPrice.getUnitSalePrice() * item.getQuantity())*(item.getDiscount()/100));
-                return OrderItemDTO.builder()
-                        .id(item.getId())
-                        .product(ProductDTO.builder()
-                                .sku(item.getProduct().getSku())
-                                .model(item.getProduct().getModel().getName())
-                                .color(item.getProduct().getColor().getName())
-                                .size(item.getProduct().getSize().getName())
-                                .category(item.getProduct().getCategoryProduct().getName())
-                                .price(productPrice.getUnitSalePrice())
-                                .unit(item.getProduct().getUnit().getName())
-                                .pictures(productPictures)
-                                .build())
-                        .quantity(item.getQuantity())
-                        .unitPrice(productPrice.getUnitSalePrice())
-                        .totalPrice(totalPrice)
-                        .observations(item.getObservations())
+                    if(requestOrderItem.getQuantity() < 1){
+                        throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
+                    }
+                });
+                Ordering ordering = orderingRepository.save(Ordering.builder()
+                        .cancellation(false)
+                        .seller(user.getName() + " " + user.getSurname())
+                        .observations(requestOrderSave.getObservations().toUpperCase())
+                        .deliveryAddress(requestOrderSave.getDeliveryAddress())
+                        .deliveryAmount(requestOrderSave.getDeliveryAmount())
+                        .advancedPayment(requestOrderSave.getAdvancedPayment())
+                        .discount(discount)
+                        .discountId(discount.getId())
+                        .discountAmount(requestOrderSave.getDiscountAmount())
+                        .orderState(orderState)
+                        .orderStateId(orderState.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .courier(courier)
+                        .courierId(courier.getId())
+                        .saleChannel(saleChannel)
+                        .saleChannelId(saleChannel.getId())
+                        .orderPaymentState(orderPaymentState)
+                        .paymentStateId(orderPaymentState.getId())
+                        .orderPaymentMethod(orderPaymentMethod)
+                        .paymentMethodId(orderPaymentMethod.getId())
+                        .managementType(managementType)
+                        .managementTypeId(managementType.getId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .store(store)
+                        .storeId(store.getId())
+                        .closingChannel(closingChannel)
+                        .closingChannelId(closingChannel.getId())
+                        .tokenUser(user.getUsername())
+                        .customer(customer)
+                        .customerId(customer.getId())
+                        .deliveryPoint(deliveryPoint)
+                        .deliveryPointId(deliveryPoint.getId())
+                        .receiptFlag(false)
+                        .deliveryFlag(false)
+                        .build());
+                List<File> fileList = new ArrayList<>();
+                for(MultipartFile multipartFile : receipts){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/orders/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    fileList.add(convFile);
+                }
+
+                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptAsync(fileList,ordering.getId(),user.getUsername());
+
+                for(RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()){
+                    iOrderItem.save(ordering, requestOrderItem,tokenUser);
+                }
+
+                if(Objects.equals(deliveryPoint.getName(), "PROVINCIA") && !Objects.equals(requestOrderSave.getDni(), "NO APLICA")){
+                    customer.setDni(requestOrderSave.getDni());
+                    customerRepository.save(customer);
+                }
+
+                if(!paymentReceipts.get().isEmpty()){
+                    Stream<Path> paths = Files.list(folder);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    ordering.setReceiptFlag(true);
+                    orderingRepository.save(ordering);
+                }
+
+                iAudit.save("ADD_ORDER","PEDIDO "+ordering.getId()+" CREADO.",ordering.getId().toString(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
                         .build();
-            }).toList();
 
-            List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
-            List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
-
-            return OrderDTO.builder()
-                    .id(order.getId())
-                    .customerName(customer.getName())
-                    .customerPhone(customer.getPhone())
-                    .customerType(customer.getType())
-                    .orderStatus(order.getOrderState().getName())
-                    .department(customer.getDepartment().getName())
-                    .province(customer.getProvince().getName())
-                    .district(customer.getDistrict().getName())
-                    .address(customer.getAddress())
-                    .instagram(customer.getInstagram())
-                    .deliveryAmount(sale.getDeliveryAmount())
-                    .advancedPayment(sale.getAdvancePayment())
-                    .managementType(order.getManagementType().getName())
-                    .reference(customer.getReference())
-                    .duePayment((sale.getSaleAmount()+sale.getDeliveryAmount())-sale.getAdvancePayment())
-                    .saleChannel(order.getSaleChannel().getName())
-                    .sellerName(sale.getSeller())
-                    .registrationDate(order.getRegistrationDate())
-                    .updateDate(order.getUpdateDate())
-                    .paymentMethod(order.getPaymentMethod().getName())
-                    .deliveryAddress(sale.getDeliveryAddress())
-                    .courier(order.getCourier().getName())
-                    .paymentReceipts(paymentReceipts)
-                    .courierPictures(courierPictures)
-                    .items(orderItemDTOS)
-                    .saleAmount(sale.getSaleAmount())
-                    .build();
-        }).toList();
-
-        return new PageImpl<>(orderDTOS,pageOrdering.getPageable(),pageOrdering.getTotalElements());
+            }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<Page<OrderDTO>> list(
+            Long orderId,
+            String user,
+            String seller,
+            String customer,
+            String customerPhone,
+            String instagram,
+            List<String> departments,
+            List<String> provinces,
+            List<String> districts,
+            List<String> saleChannels,
+            Boolean receiptFlag,
+            Boolean deliveryFlag,
+            List<String> deliveryPoints,
+            List<String> orderStates,
+            List<String> couriers,
+            String paymentState,
+            String paymentMethod,
+            String managementType,
+            String storeName,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Ordering> pageOrdering;
+            Long clientId;
+            List<Long> departmentIds;
+            List<Long> provinceIds;
+            List<Long> districtIds;
+            List<Long> saleChannelIds;
+            List<Long> deliveryPointIds;
+            List<Long> orderStateIds;
+            List<Long> courierIds;
+            Long paymentStateId;
+            Long paymentMethodId;
+            Long managementTypeId;
+            Long storeId;
 
+            if(departments != null && !departments.isEmpty()){
+                departmentIds = departmentRepository.findByNameIn(
+                        departments.stream().map(String::toUpperCase).toList()
+                ).stream().map(Department::getId).toList();
+            }else{
+                departmentIds = new ArrayList<>();
+            }
+
+            if(provinces != null && !provinces.isEmpty()){
+                provinceIds = provinceRepository.findByNameIn(
+                        provinces.stream().map(String::toUpperCase).toList()
+                ).stream().map(Province::getId).toList();
+            }else{
+                provinceIds = new ArrayList<>();
+            }
+
+            if(districts != null && !districts.isEmpty()){
+                districtIds = districtRepository.findByNameIn(
+                        districts.stream().map(String::toUpperCase).toList()
+                ).stream().map(District::getId).toList();
+            }else{
+                districtIds = new ArrayList<>();
+            }
+
+            if(saleChannels != null && !saleChannels.isEmpty()){
+                saleChannelIds = saleChannelRepository.findByNameIn(
+                        saleChannels.stream().map(String::toUpperCase).toList()
+                ).stream().map(SaleChannel::getId).toList();
+            }else{
+                saleChannelIds = new ArrayList<>();
+            }
+
+            if(deliveryPoints != null && !deliveryPoints.isEmpty()){
+                deliveryPointIds = deliveryPointRepository.findByNameIn(
+                        deliveryPoints.stream().map(String::toUpperCase).toList()
+                ).stream().map(DeliveryPoint::getId).toList();
+            }else{
+                deliveryPointIds = new ArrayList<>();
+            }
+
+            if(orderStates != null && !orderStates.isEmpty()){
+                orderStateIds = orderStateRepository.findByNameIn(
+                        orderStates.stream().map(String::toUpperCase).toList()
+                ).stream().map(OrderState::getId).toList();
+            }else{
+                orderStateIds = new ArrayList<>();
+            }
+
+            if(couriers != null && !couriers.isEmpty()){
+                courierIds = courierRepository.findByNameIn(
+                        couriers.stream().map(String::toUpperCase).toList()
+                ).stream().map(Courier::getId).toList();
+            }else{
+                courierIds = new ArrayList<>();
+            }
+
+            if(paymentState != null){
+                paymentStateId = orderPaymentStateRepository.findByName(paymentState.toUpperCase()).getId();
+            }else {
+                paymentStateId = null;
+            }
+
+            if(paymentMethod != null){
+                paymentMethodId = orderPaymentMethodRepository.findByName(paymentMethod.toUpperCase()).getId();
+            }else {
+                paymentMethodId = null;
+            }
+
+            if(managementType != null){
+                managementTypeId = managementTypeRepository.findByName(managementType.toUpperCase()).getId();
+            }else{
+                managementTypeId = null;
+            }
+
+            if(storeName != null){
+                storeId = storeRepository.findByNameAndStatusTrue(storeName.toUpperCase()).getId();
+            }else {
+                storeId = null;
+            }
+
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                pageOrdering = orderingRepositoryCustom.searchForOrdering(
+                        orderId,
+                        clientId,
+                        seller,
+                        customer,
+                        customerPhone,
+                        instagram,
+                        departmentIds,
+                        provinceIds,
+                        districtIds,
+                        saleChannelIds,
+                        receiptFlag,
+                        deliveryFlag,
+                        deliveryPointIds,
+                        orderStateIds,
+                        courierIds,
+                        paymentStateId,
+                        paymentMethodId,
+                        managementTypeId,
+                        storeId,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
+            }catch (RuntimeException e){
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(pageOrdering.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<OrderDTO> orderDTOS = pageOrdering.getContent().stream().map(order -> {
+                List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
+                List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
+                List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
+
+                double saleAmount = 0.00;
+                for(OrderItem orderItem : orderItems){
+                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                    }
+                }
+                double totalDuePayment=0;
+                if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
+                    totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
+                if(Objects.equals(order.getDiscount().getName(), "MONTO")){
+                    totalDuePayment = (saleAmount-order.getDiscountAmount()+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
+                if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
+                    totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
+                return OrderDTO.builder()
+                        .id(order.getId())
+                        .customerName(order.getCustomer().getName())
+                        .customerPhone(order.getCustomer().getPhone())
+                        .customerType(order.getCustomer().getCustomerType().getName())
+                        .closingChannel(order.getClosingChannel().getName())
+                        .orderStatus(order.getOrderState().getName())
+                        .department(order.getCustomer().getDistrict().getProvince().getDepartment().getName())
+                        .province(order.getCustomer().getDistrict().getProvince().getName())
+                        .district(order.getCustomer().getDistrict().getName())
+                        .address(order.getCustomer().getAddress())
+                        .instagram(order.getCustomer().getInstagram())
+                        .managementType(order.getManagementType().getName())
+                        .reference(order.getCustomer().getReference())
+                        .saleChannel(order.getSaleChannel().getName())
+                        .sellerName(order.getSeller())
+                        .registrationDate(order.getRegistrationDate())
+                        .updateDate(order.getUpdateDate())
+                        .paymentMethod(order.getOrderPaymentMethod().getName())
+                        .paymentState(order.getOrderPaymentState().getName())
+                        .deliveryAddress(order.getDeliveryAddress())
+                        .courier(order.getCourier().getName())
+                        .paymentReceipts(paymentReceipts)
+                        .courierPictures(courierPictures)
+                        .observations(order.getObservations())
+                        .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
+                        .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
+                        .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
+                        .deliveryPoint(order.getDeliveryPoint().getName())
+                        .discount(order.getDiscount().getName())
+                        .discountAmount(BigDecimal.valueOf(order.getDiscountAmount()))
+                        .dni(order.getCustomer().getDni())
+                        .store(order.getStore().getName())
+                        .receiptFlag(order.getReceiptFlag())
+                        .deliveryFlag(order.getDeliveryFlag())
+                        .orderStateColor(order.getOrderState().getHexColor())
+                        .build();
+            }).toList();
+
+            return new PageImpl<>(orderDTOS,pageOrdering.getPageable(),pageOrdering.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<OrderDTO>> listOrder(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<Ordering> orderingList;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderingList = orderingRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(orderingList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return orderingList.stream().map(order -> {
+                List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
+                List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
+                List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
+                double saleAmount = 0.00;
+                for(OrderItem orderItem : orderItems){
+                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                    }
+                }
+                double totalDuePayment=0;
+                if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
+                    totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
+                if(Objects.equals(order.getDiscount().getName(), "MONTO")){
+                    totalDuePayment = (saleAmount-order.getDiscountAmount()+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
+                if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
+                    totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
+                }
+                CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(order.getId());
+                OrderDTO newOrderDTO = OrderDTO.builder()
+                        .id(order.getId())
+                        .customerName(order.getCustomer().getName())
+                        .customerPhone(order.getCustomer().getPhone())
+                        .customerType(order.getCustomer().getCustomerType().getName())
+                        .orderStatus(order.getOrderState().getName())
+                        .department(order.getCustomer().getDistrict().getProvince().getDepartment().getName())
+                        .province(order.getCustomer().getDistrict().getProvince().getName())
+                        .district(order.getCustomer().getDistrict().getName())
+                        .address(order.getCustomer().getAddress())
+                        .instagram(order.getCustomer().getInstagram())
+                        .managementType(order.getManagementType().getName())
+                        .reference(order.getCustomer().getReference())
+                        .saleChannel(order.getSaleChannel().getName())
+                        .sellerName(order.getSeller())
+                        .registrationDate(order.getRegistrationDate())
+                        .updateDate(order.getUpdateDate())
+                        .paymentMethod(order.getOrderPaymentMethod().getName())
+                        .paymentState(order.getOrderPaymentState().getName())
+                        .deliveryAddress(order.getDeliveryAddress())
+                        .courier(order.getCourier().getName())
+                        .paymentReceipts(paymentReceipts)
+                        .courierPictures(courierPictures)
+                        .observations(order.getObservations())
+                        .closingChannel(order.getClosingChannel().getName())
+                        .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
+                        .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
+                        .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
+                        .deliveryPoint(order.getDeliveryPoint().getName())
+                        .dni(order.getCustomer().getDni())
+                        .store(order.getStore().getName())
+                        .receiptFlag(order.getReceiptFlag())
+                        .deliveryFlag(order.getDeliveryFlag())
+                        .orderStateColor(order.getOrderState().getHexColor())
+                        .build();
+                    if(cancelledOrder != null){
+                        newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());
+                    }else{
+                        newOrderDTO.setCancellationReason("NO APLICA");
+                    }
+                return newOrderDTO;
+            }).toList();
+        });
+    }
+
+    @Override
+    public ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Ordering ordering;
         OrderState orderState;
-        Sale sale;
-        PaymentMethod paymentMethod;
-        PaymentState paymentState;
+        OrderPaymentMethod orderPaymentMethod;
+        OrderPaymentState orderPaymentState;
         Courier courier;
+        CancellationReason cancellationReason;
         OrderStock orderStock;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             ordering = orderingRepository.findById(orderId).orElse(null);
             orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
-            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
-            paymentState = paymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
+            orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
+            orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
             courier = courierRepository.findByNameAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase());
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -325,15 +738,42 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorCourier);
         }
 
-        if(paymentState == null){
+        if(orderPaymentState == null){
             throw new BadRequestExceptions(Constants.ErrorPaymentState);
         }
 
         if(ordering == null){
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }else {
-            sale = saleRepository.findByOrderId(ordering.getId());
             orderStock = orderStockRepository.findByOrderId(ordering.getId());
+        }
+
+        if(
+                requestOrderUpdate.getCancellationReason() != null &&
+                        Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO") &&
+                        !Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")
+        ){
+            cancellationReason = cancellationReasonRepository.findByNameAndStatusTrue(requestOrderUpdate.getCancellationReason().toUpperCase());
+            if(cancellationReason == null){
+                throw new BadRequestExceptions(Constants.ErrorCancellationReason);
+            }
+            cancelledOrderRepository.save(CancelledOrder.builder()
+                    .orderingId(ordering.getId())
+                    .cancellationReason(cancellationReason)
+                    .cancellationReasonId(cancellationReason.getId())
+                    .ordering(ordering)
+                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .updateDate(new Date(System.currentTimeMillis()))
+                    .tokenUser(user.getUsername())
+                    .build());
+        }
+
+        if(
+                Objects.equals(ordering.getOrderState().getName(), "ENTREGADO") &&
+                        (requestOrderUpdate.getCancellationReason() != null ||
+                                Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO"))
+        ){
+            throw new BadRequestExceptions(Constants.ErrorOrderCancelledDeliveredStatus);
         }
 
         try{
@@ -343,36 +783,36 @@ public class OrderingImpl implements IOrdering {
                 ordering.setOrderStateId(orderState.getId());
             }
 
-            if(!Objects.equals(requestOrderUpdate.getObservations(),sale.getObservations()))
+            if(!Objects.equals(requestOrderUpdate.getObservations().toUpperCase(),ordering.getObservations().toUpperCase()))
             {
-                sale.setObservations(requestOrderUpdate.getObservations());
+                ordering.setObservations(requestOrderUpdate.getObservations().toUpperCase());
             }
 
             if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
                 List<OrderItem> orderOrderItems = orderItemRepository.findAllByOrderId(ordering.getId());
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 for(OrderItem orderItem : orderOrderItems){
-                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndItemId(orderStock.getId(), orderItem.getId());
+                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndOrderItemId(orderStock.getId(), orderItem.getId());
                     for(OrderStockItem orderStockItem : orderStockItemList){
                         stockTransactionList.add(RequestStockTransactionItem.builder()
-                                        .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
-                                        .quantity(orderStockItem.getQuantity())
+                                .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                                .quantity(orderStockItem.getQuantity())
                                 .build());
                         iWarehouseStock.out(orderStockItem.getOrderStock().getWarehouse(), orderStockItem.getSupplierProduct(), orderStockItem.getQuantity(),user);
                         iGeneralStock.out(orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
                     }
                 }
-                iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"SALIDA",user);
+                iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"PEDIDO",user);
             }
 
-            if(!Objects.equals(paymentMethod.getId(), ordering.getPaymentMethod().getId())){
-                ordering.setPaymentMethod(paymentMethod);
-                ordering.setPaymentMethodId(paymentMethod.getId());
+            if(!Objects.equals(orderPaymentMethod.getId(), ordering.getOrderPaymentMethod().getId())){
+                ordering.setOrderPaymentMethod(orderPaymentMethod);
+                ordering.setPaymentMethodId(orderPaymentMethod.getId());
             }
 
-            if(!Objects.equals(paymentState.getId(),ordering.getPaymentState().getId())){
-                ordering.setPaymentState(paymentState);
-                ordering.setPaymentStateId(paymentState.getId());
+            if(!Objects.equals(orderPaymentState.getId(),ordering.getOrderPaymentState().getId())){
+                ordering.setOrderPaymentState(orderPaymentState);
+                ordering.setPaymentStateId(orderPaymentState.getId());
             }
 
             if(!Objects.equals(courier.getId(),ordering.getCourier().getId())){
@@ -381,16 +821,342 @@ public class OrderingImpl implements IOrdering {
             }
 
             orderingRepository.save(ordering);
-            saleRepository.save(sale);
-            iOrderPaymentReceipt.uploadReceipt(requestOrderUpdate.getReceipts(),ordering.getId(),user.getUsername());
-            iCourierPicture.uploadPicture(requestOrderUpdate.getPictures(),ordering.getId(),user.getUsername());
 
+            CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
+            if((!ordering.getReceiptFlag()) && (!paymentReceipts.get().isEmpty())){
+                ordering.setReceiptFlag(true);
+                orderingRepository.save(ordering);
+            }
+
+            CompletableFuture<List<String>> deliveryPictures = iCourierPicture.uploadPicture(courierPictures,ordering.getId(),user.getUsername());
+            if((!ordering.getDeliveryFlag())&&(!deliveryPictures.get().isEmpty())){
+                ordering.setDeliveryFlag(true);
+                orderingRepository.save(ordering);
+            }
+            iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.update)
                     .build();
-        }catch (RuntimeException e){
+        }catch (RuntimeException | InterruptedException | ExecutionException e){
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        Path folderOrders = Paths.get("src/main/resources/uploads/orders");
+        Path folderCouriers = Paths.get("src/main/resources/uploads/couriers");
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering ordering;
+            OrderState orderState;
+            OrderPaymentMethod orderPaymentMethod;
+            OrderPaymentState orderPaymentState;
+            Courier courier;
+            CancellationReason cancellationReason;
+            OrderStock orderStock;
+
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                ordering = orderingRepository.findById(orderId).orElse(null);
+                orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
+                orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
+                orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
+                courier = courierRepository.findByNameAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase());
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(courier == null){
+                throw new BadRequestExceptions(Constants.ErrorCourier);
+            }
+
+            if(orderPaymentState == null){
+                throw new BadRequestExceptions(Constants.ErrorPaymentState);
+            }
+
+            if(ordering == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }else {
+                orderStock = orderStockRepository.findByOrderId(ordering.getId());
+            }
+
+            if(
+                    requestOrderUpdate.getCancellationReason() != null &&
+                            Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO") &&
+                            !Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")
+            ){
+                cancellationReason = cancellationReasonRepository.findByNameAndStatusTrue(requestOrderUpdate.getCancellationReason().toUpperCase());
+                if(cancellationReason == null){
+                    throw new BadRequestExceptions(Constants.ErrorCancellationReason);
+                }
+                cancelledOrderRepository.save(CancelledOrder.builder()
+                        .orderingId(ordering.getId())
+                        .cancellationReason(cancellationReason)
+                        .cancellationReasonId(cancellationReason.getId())
+                        .ordering(ordering)
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .tokenUser(user.getUsername())
+                        .build());
+            }
+
+            if(
+                    Objects.equals(ordering.getOrderState().getName(), "ENTREGADO") &&
+                            (requestOrderUpdate.getCancellationReason() != null ||
+                                    Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO"))
+            ){
+                throw new BadRequestExceptions(Constants.ErrorOrderCancelledDeliveredStatus);
+            }
+
+            try{
+
+                if(!Objects.equals(orderState.getName(), ordering.getOrderState().getName())){
+                    ordering.setOrderState(orderState);
+                    ordering.setOrderStateId(orderState.getId());
+                }
+
+                if(!Objects.equals(requestOrderUpdate.getObservations().toUpperCase(),ordering.getObservations().toUpperCase()))
+                {
+                    ordering.setObservations(requestOrderUpdate.getObservations().toUpperCase());
+                }
+
+                if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
+                    List<OrderItem> orderOrderItems = orderItemRepository.findAllByOrderId(ordering.getId());
+                    List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
+                    for(OrderItem orderItem : orderOrderItems){
+                        List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndOrderItemId(orderStock.getId(), orderItem.getId());
+                        for(OrderStockItem orderStockItem : orderStockItemList){
+                            stockTransactionList.add(RequestStockTransactionItem.builder()
+                                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                                    .quantity(orderStockItem.getQuantity())
+                                    .build());
+                            iWarehouseStock.out(orderStockItem.getOrderStock().getWarehouse(), orderStockItem.getSupplierProduct(), orderStockItem.getQuantity(),user);
+                            iGeneralStock.out(orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
+                        }
+                    }
+                    iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"PEDIDO",user);
+                }
+
+                if(!Objects.equals(orderPaymentMethod.getId(), ordering.getOrderPaymentMethod().getId())){
+                    ordering.setOrderPaymentMethod(orderPaymentMethod);
+                    ordering.setPaymentMethodId(orderPaymentMethod.getId());
+                }
+
+                if(!Objects.equals(orderPaymentState.getId(),ordering.getOrderPaymentState().getId())){
+                    ordering.setOrderPaymentState(orderPaymentState);
+                    ordering.setPaymentStateId(orderPaymentState.getId());
+                }
+
+                if(!Objects.equals(courier.getId(),ordering.getCourier().getId())){
+                    ordering.setCourier(courier);
+                    ordering.setCourierId(courier.getId());
+                }
+
+                orderingRepository.save(ordering);
+                List<File> receiptList = new ArrayList<>();
+                for(MultipartFile multipartFile : receipts){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    receiptList.add(convFile);
+                }
+                List<File> courierPictureList = new ArrayList<>();
+                for(MultipartFile multipartFile:courierPictures){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    courierPictureList.add(convFile);
+                }
+
+                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptAsync(receiptList,ordering.getId(),user.getUsername());
+                CompletableFuture<List<String>> courierPhotos = iCourierPicture.uploadPictureAsync(courierPictureList,ordering.getId(),user.getUsername());
+                if(!paymentReceipts.get().isEmpty()){
+                    if(!ordering.getReceiptFlag()){
+                        ordering.setReceiptFlag(true);
+                        orderingRepository.save(ordering);
+                    }
+                    Stream<Path> paths = Files.list(folderOrders);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+                if(!courierPhotos.get().isEmpty()){
+                    if(!ordering.getDeliveryFlag()){
+                        ordering.setDeliveryFlag(true);
+                        orderingRepository.save(ordering);
+                    }
+                    Stream<Path> paths = Files.list(folderCouriers);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+
+                iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            }catch (RuntimeException | IOException | InterruptedException | ExecutionException e){
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<OrderDTO> selectOrder(Long orderId,String username) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering ordering;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                ordering = orderingRepository.findByClientIdAndId(user.getClientId(),orderId);
+            }
+            try {
+                List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
+                double saleAmount = 0.00;
+                for(OrderItem orderItem : orderItems){
+                    ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                    }
+                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                    }
+                }
+                double totalDuePayment=0;
+                if(Objects.equals(ordering.getDiscount().getName(), "PORCENTAJE")){
+                    totalDuePayment = (saleAmount-((saleAmount)*(ordering.getDiscountAmount()/100))+ordering.getDeliveryAmount())-ordering.getAdvancedPayment();
+                }
+                if(Objects.equals(ordering.getDiscount().getName(), "MONTO")){
+                    totalDuePayment = (saleAmount-ordering.getDiscountAmount()+ordering.getDeliveryAmount())-ordering.getAdvancedPayment();
+                }
+                if(Objects.equals(ordering.getDiscount().getName(), "NO APLICA")){
+                    totalDuePayment = (saleAmount+ordering.getDeliveryAmount())-ordering.getAdvancedPayment();
+                }
+                List<CourierPicture> courierPictures = courierPictureRepository.findAllByOrderId(ordering.getId());
+                List<OrderPaymentReceipt> orderPaymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(ordering.getId());
+                CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(ordering.getId());
+                OrderDTO newOrderDTO = OrderDTO.builder()
+                        .sellerName(ordering.getSeller())
+                        .discount(ordering.getDiscount().getName())
+                        .deliveryPoint(ordering.getDeliveryPoint().getName())
+                        .observations(ordering.getObservations())
+                        .closingChannel(ordering.getClosingChannel().getName())
+                        .paymentState(ordering.getOrderPaymentState().getName())
+                        .orderStatus(ordering.getOrderState().getName())
+                        .courierPictures(courierPictures.stream().map(courierPicture -> courierPicture.getPictureUrl().toUpperCase()).toList())
+                        .paymentMethod(ordering.getOrderPaymentMethod().getName())
+                        .paymentReceipts(orderPaymentReceipts.stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList())
+                        .courier(ordering.getCourier().getName())
+                        .address(ordering.getDeliveryAddress().toUpperCase())
+                        .saleChannel(ordering.getSaleChannel().getName())
+                        .managementType(ordering.getManagementType().getName())
+                        .instagram(ordering.getCustomer().getInstagram())
+                        .district(ordering.getCustomer().getDistrict().getName())
+                        .province(ordering.getCustomer().getDistrict().getProvince().getName())
+                        .department(ordering.getCustomer().getDistrict().getProvince().getDepartment().getName())
+                        .customerType(ordering.getCustomer().getCustomerType().getName())
+                        .reference(ordering.getCustomer().getReference())
+                        .customerName(ordering.getCustomer().getName())
+                        .customerPhone(ordering.getCustomer().getPhone())
+                        .deliveryAddress(ordering.getDeliveryAddress().toUpperCase())
+                        .advancedPayment(BigDecimal.valueOf(ordering.getAdvancedPayment()))
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .deliveryAmount(BigDecimal.valueOf(ordering.getDeliveryAmount()))
+                        .discountAmount(BigDecimal.valueOf(ordering.getDiscountAmount()))
+                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
+                        .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2,RoundingMode.HALF_EVEN))
+                        .paymentState(ordering.getOrderPaymentState().getName())
+                        .closingChannel(ordering.getClosingChannel().getName())
+                        .dni(ordering.getCustomer().getDni())
+                        .store(ordering.getStore().getName())
+                        .receiptFlag(ordering.getReceiptFlag())
+                        .deliveryFlag(ordering.getDeliveryFlag())
+                        .orderStateColor(ordering.getOrderState().getHexColor())
+                        .orderItemDTOS(orderItems.stream().map(orderItem -> {
+                            ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                            List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(user.getClientId(),orderItem.getProductId());
+                            Double totalPrice = null;
+                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                            }
+
+                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                            }
+
+                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                            }
+                            return OrderItemDTO.builder()
+                                    .orderId(orderItem.getOrderId())
+                                    .discountAmount(orderItem.getDiscountAmount())
+                                    .sku(orderItem.getProduct().getSku())
+                                    .unit(orderItem.getProduct().getUnit().getName())
+                                    .observations(orderItem.getObservations())
+                                    .quantity(orderItem.getQuantity())
+                                    .size(orderItem.getProduct().getSize().getName())
+                                    .discount(orderItem.getDiscount().getName())
+                                    .pictures(productPictures.stream().map(ProductPicture::getProductPictureUrl).toList())
+                                    .unitPrice(productPrice.getUnitSalePrice())
+                                    .totalPrice(totalPrice)
+                                    .color(orderItem.getProduct().getColor().getName())
+                                    .category(orderItem.getProduct().getCategoryProduct().getName())
+                                    .registrationDate(orderItem.getRegistrationDate())
+                                    .updateDate(orderItem.getUpdateDate())
+                                    .build();
+                        }).toList())
+                        .id(ordering.getId())
+                        .build();
+                if(cancelledOrder != null){
+                    newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());
+                }else{
+                    newOrderDTO.setCancellationReason("NO APLICA");
+                }
+                return newOrderDTO;
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }

@@ -7,10 +7,12 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IUnitType {
-    public ResponseSuccess save(String name,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    public ResponseSuccess saveAll(List<String> names, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    public List<UnitTypeDTO> listUnitType() throws BadRequestExceptions;
+    ResponseSuccess save(String name,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<List<UnitTypeDTO>> listUnitType() throws BadRequestExceptions;
 }

@@ -5,6 +5,8 @@ import com.proyect.masterdata.domain.Onboard;
 import com.proyect.masterdata.domain.OnboardChannel;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface IOnboardChannel {
-    OnboardChannel save(Onboard onboard, ClosingChannel closingChannel) throws InternalErrorExceptions;
+    CompletableFuture<OnboardChannel> save(Onboard onboard, ClosingChannel closingChannel) throws InternalErrorExceptions;
 }

@@ -1,9 +1,12 @@
 package com.proyect.masterdata.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -39,7 +42,7 @@ public class SupplierProductImpl implements ISupplierProduct {
     private final ProductRepository productRepository;
     private final SupplierProductRepository supplierProductRepository;
     private final SupplierProductRepositoryCustom supplierProductRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestSupplierProduct requestSupplierProduct, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -51,8 +54,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplier = supplierRepository.findByRucAndStatusTrue(requestSupplierProduct.getSupplierRuc());
-            product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProductSku());
+            product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProduct());
             supplierProduct = supplierProductRepository.findBySerial(requestSupplierProduct.getSerial());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -61,6 +63,8 @@ public class SupplierProductImpl implements ISupplierProduct {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else {
+            supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplierProduct.getSupplier(), user.getClientId());
         }
 
         if (supplier == null) {
@@ -76,7 +80,7 @@ public class SupplierProductImpl implements ISupplierProduct {
         }
 
         try {
-            supplierProductRepository.save(SupplierProduct.builder()
+            SupplierProduct newSupplierProduct = supplierProductRepository.save(SupplierProduct.builder()
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .product(product)
@@ -89,7 +93,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                     .supplierId(supplier.getId())
                     .tokenUser(user.getUsername())
                     .build());
-
+            iAudit.save("ADD_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+newSupplierProduct.getSerial()+" CREADO.",newSupplierProduct.getSerial(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -102,139 +106,399 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestSupplierProduct> requestSupplierProducts, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestSupplierProduct requestSupplierProduct, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Supplier supplier;
+            Product product;
+            SupplierProduct supplierProduct;
 
-        User user;
-        List<SupplierProduct> supplierProducts;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProduct());
+                supplierProduct = supplierProductRepository.findBySerial(requestSupplierProduct.getSerial());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProducts = supplierProductRepository.findBySerialIn(
-                    requestSupplierProducts.stream().map(supplierProduct -> supplierProduct.getSerial()).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else {
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplierProduct.getSupplier(), user.getClientId());
+            }
 
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (supplier == null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }
 
-        if (supplierProducts.size() > 0) {
-            throw new BadRequestExceptions(Constants.ErrorSupplierExists);
-        }
+            if (product == null) {
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
 
-        try {
-            List<SupplierProduct> supplierProductsList = requestSupplierProducts.stream().map(supplierProduct -> {
+            if (supplierProduct != null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplierProductExists);
+            }
 
-                Supplier supplier = supplierRepository.findByRucAndStatusTrue(supplierProduct.getSupplierRuc());
-
-                if (supplier == null) {
-                    throw new BadRequestExceptions(Constants.ErrorSupplier);
-                }
-
-                Product product = productRepository.findBySkuAndStatusTrue(supplierProduct.getProductSku());
-
-                if (product == null) {
-                    throw new BadRequestExceptions(Constants.ErrorProduct);
-                }
-
-                return SupplierProduct.builder()
-                        .product(product)
-                        .productId(product.getId())
+            try {
+                SupplierProduct newSupplierProduct = supplierProductRepository.save(SupplierProduct.builder()
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .purchasePrice(supplierProduct.getPurchasePrice())
+                        .product(product)
+                        .productId(product.getId())
+                        .purchasePrice(requestSupplierProduct.getPurchasePrice())
                         .registrationDate(new Date(System.currentTimeMillis()))
-                        .serial(supplierProduct.getSerial())
+                        .serial(requestSupplierProduct.getSerial())
                         .status(true)
                         .supplier(supplier)
                         .supplierId(supplier.getId())
-                        .tokenUser(tokenUser.toUpperCase())
+                        .tokenUser(user.getUsername())
+                        .build());
+                iAudit.save("ADD_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+newSupplierProduct.getSerial()+" CREADO.",newSupplierProduct.getSerial(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
                         .build();
-            }).toList();
-
-            supplierProductRepository.saveAll(supplierProductsList);
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public ResponseDelete delete(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplierProduct supplierProduct;
 
-        User user;
-        SupplierProduct supplierProduct;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(serial);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(serial);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (supplierProduct == null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }
 
-        if (supplierProduct == null) {
-            throw new BadRequestExceptions(Constants.ErrorSupplier);
-        }
+            try {
 
-        try {
-
-            supplierProduct.setStatus(false);
-            supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
-            supplierProductRepository.save(supplierProduct);
-
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+                supplierProduct.setStatus(false);
+                supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
+                supplierProduct.setTokenUser(user.getUsername());
+                supplierProductRepository.save(supplierProduct);
+                iAudit.save("DELETE_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" DESACTIVADO.",supplierProduct.getSerial(),user.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<SupplierProductDTO> list(String serial, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<ResponseSuccess> activate(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplierProduct supplierProduct;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                supplierProduct = supplierProductRepository.findBySerialAndStatusFalse(serial);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (supplierProduct == null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }
+
+            try {
+                supplierProduct.setStatus(true);
+                supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
+                supplierProduct.setTokenUser(user.getUsername());
+                supplierProductRepository.save(supplierProduct);
+                iAudit.save("ACTIVATE_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" ACTIVADO.",supplierProduct.getSerial(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            } catch (RuntimeException e) {
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<SupplierProductDTO>> list(
+            String user,
+            String serial,
+            String productSku,
+            List<String> suppliers,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<SupplierProduct> supplierProductPage;
+            Long clientId;
+            List<Long> supplierIds;
 
-        Page<SupplierProduct> supplierProductPage;
-        Long clientId;
+            if(suppliers != null && !suppliers.isEmpty()){
+                supplierIds = supplierRepository.findByRucIn(
+                        suppliers.stream().map(String::toUpperCase).toList()
+                ).stream().map(Supplier::getId).toList();
+            }else{
+                supplierIds = new ArrayList<>();
+            }
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(serial, clientId, sort,
-                    sortColumn, pageNumber, pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(
+                        clientId,
+                        serial,
+                        productSku,
+                        supplierIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (supplierProductPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            if (supplierProductPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
-                .map(supplierProduct -> SupplierProductDTO.builder()
-                        .productSku(supplierProduct.getProduct().getSku())
-                        .purchasePrice(supplierProduct.getPurchasePrice())
-                        .serial(supplierProduct.getSerial())
-                        .supplierRuc(supplierProduct.getSupplier().getBusinessName())
-                        .build())
-                .toList();
+            List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .price(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
+                            .build())
+                    .toList();
 
-        return new PageImpl<>(supplierProductDTOs, supplierProductPage.getPageable(),
-                supplierProductPage.getTotalElements());
+            return new PageImpl<>(supplierProductDTOs, supplierProductPage.getPageable(),
+                    supplierProductPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<SupplierProductDTO>> listFalse(
+            String user,
+            String serial,
+            String productSku,
+            List<String> suppliers,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<SupplierProduct> supplierProductPage;
+            Long clientId;
+            List<Long> supplierIds;
+
+            if(suppliers != null && !suppliers.isEmpty()){
+                supplierIds = supplierRepository.findByRucIn(
+                        suppliers.stream().map(String::toUpperCase).toList()
+                ).stream().map(Supplier::getId).toList();
+            }else{
+                supplierIds = new ArrayList<>();
+            }
+
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(
+                        clientId,
+                        serial,
+                        productSku,
+                        supplierIds,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (supplierProductPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .price(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
+                            .build())
+                    .toList();
+
+            return new PageImpl<>(supplierProductDTOs, supplierProductPage.getPageable(),
+                    supplierProductPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user,String supplier) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierProduct> supplierProducts;
+            Long clientId;
+            Long supplierId;
+
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(supplier != null){
+                    supplierId = supplierRepository.findByClientIdAndRucAndStatusTrue(clientId,supplier.toUpperCase()).getId();
+                }else{
+                    supplierId = null;
+                }
+                if(supplierId != null){
+                    supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(clientId,supplierId);
+                }else {
+                    supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(supplierProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return supplierProducts.stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .price(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
+                            .build())
+                    .toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SupplierProductDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierProduct> supplierProducts;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                supplierProducts = supplierProductRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(supplierProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return supplierProducts.stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .price(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
+                            .build())
+                    .toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierProduct> supplierProducts;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
+                if(id != null){
+                    supplierProducts = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(clientId,id);
+                }else{
+                    supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(supplierProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return supplierProducts.stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .price(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
+                            .build())
+                    .toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user, String productSku) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SupplierProduct> supplierProducts;
+            Long clientId;
+            Long productId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                productId = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase()).getId();
+                supplierProducts = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(clientId,productId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(supplierProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return supplierProducts.stream()
+                    .map(supplierProduct -> SupplierProductDTO.builder()
+                            .productSku(supplierProduct.getProduct().getSku())
+                            .price(supplierProduct.getPurchasePrice())
+                            .serial(supplierProduct.getSerial())
+                            .supplier(supplierProduct.getSupplier().getBusinessName())
+                            .registrationDate(supplierProduct.getRegistrationDate())
+                            .updateDate(supplierProduct.getUpdateDate())
+                            .build())
+                    .toList();
+        });
     }
 
 }

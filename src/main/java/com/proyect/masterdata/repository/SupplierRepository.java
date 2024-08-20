@@ -10,6 +10,15 @@ import com.proyect.masterdata.domain.Supplier;
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     Supplier findByRucAndStatusTrue(String ruc);
-
-    List<Supplier> findByRucInAndStatusTrue(List<String> rucList);
+    Supplier findByRucAndClientId(String ruc,Long clientId);
+    Supplier findByBusinessNameAndClientId(String businessName,Long clientId);
+    Supplier findByRucAndClientIdAndStatusTrue(String ruc,Long clientId);
+    Supplier findByRucAndClientIdAndStatusFalse(String ruc,Long clientId);
+    Supplier findByRuc(String ruc);
+    List<Supplier> findAllByClientIdAndStatusTrue(Long clientId);
+    List<Supplier> findAllByClientIdAndStatusFalse(Long clientId);
+    Supplier findByClientIdAndRucAndStatusTrue(Long clientId,String ruc);
+    Supplier findByClientIdAndRucAndStatusFalse(Long clientId,String ruc);
+    List<Supplier> findAllByClientId(Long clientId);
+    List<Supplier> findByRucIn(List<String> ruc);
 }

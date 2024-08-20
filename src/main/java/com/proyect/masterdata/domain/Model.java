@@ -24,7 +24,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableModel, schema = Constants.schemaArticle)
+@Table(name = Constants.tableModel, schema = Constants.schemaMarketing)
 public class Model {
 
     @Id

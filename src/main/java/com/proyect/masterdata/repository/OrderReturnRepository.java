@@ -1,0 +1,15 @@
+package com.proyect.masterdata.repository;
+
+import com.proyect.masterdata.domain.OrderReturn;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface OrderReturnRepository extends JpaRepository<OrderReturn,Long> {
+    OrderReturn findByOrderId(Long orderId);
+    OrderReturn findByOrderIdAndClientId(Long orderId,Long clientId);
+    List<OrderReturn> findAllByClientIdAndStatusTrue(Long clientId);
+    List<OrderReturn> findAllByClientId(Long clientId);
+}

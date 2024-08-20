@@ -5,11 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class CourierDTO {
-    private String courier;
-    private String phoneNumber;
+    private String name;
+    private String phone;
+    private Date registrationDate;
+    private Date updateDate;
 }

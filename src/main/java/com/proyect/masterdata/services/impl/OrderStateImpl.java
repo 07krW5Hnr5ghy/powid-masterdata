@@ -3,8 +3,6 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.OrderState;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.OrderStateDTO;
-import com.proyect.masterdata.dto.request.RequestState;
-import com.proyect.masterdata.dto.request.RequestStateSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -13,6 +11,7 @@ import com.proyect.masterdata.mapper.OrderStateMapper;
 import com.proyect.masterdata.repository.OrderStateRepository;
 import com.proyect.masterdata.repository.OrderStateRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderState;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -22,216 +21,227 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class OrderStateImpl implements IOrderState {
-    private final OrderStateRepository stateRepository;
-    private final OrderStateMapper stateMapper;
+    private final OrderStateRepository orderStateRepository;
     private final UserRepository userRepository;
     private final OrderStateRepositoryCustom orderStateRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        OrderState state;
+    public CompletableFuture<ResponseSuccess> save(String name,String hexColor, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            OrderState orderState;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            state = stateRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                orderState = orderStateRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (state != null) {
-            throw new BadRequestExceptions(Constants.ErrorStateExist.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (orderState != null) {
+                throw new BadRequestExceptions(Constants.ErrorOrderStateExist.toUpperCase());
+            }
 
-        try {
-            stateRepository.save(stateMapper.stateToName(RequestStateSave.builder()
-                    .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public ResponseSuccess saveAll(List<String> names, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        List<OrderState> states;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            states = stateRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!states.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorStateList.toUpperCase());
-        }
-
-        try {
-            List<RequestStateSave> stateSaves = names.stream().map(data -> RequestStateSave.builder()
-                    .user(user.toUpperCase())
-                    .name(data.toUpperCase())
-                    .build()).toList();
-            stateRepository.saveAll(stateMapper.listStateToListName(stateSaves));
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public OrderStateDTO update(RequestState requestState) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        OrderState state;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestState.getUser().toUpperCase());
-            state = stateRepository.findById(requestState.getCode()).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (state == null) {
-            throw new BadRequestExceptions(Constants.ErrorState.toUpperCase());
-        }
-
-        state.setName(requestState.getName().toUpperCase());
-        state.setStatus(requestState.isStatus());
-        state.setRegistrationDate(new Date(System.currentTimeMillis()));
-        state.setTokenUser(datauser.getUsername().toUpperCase());
-
-        try {
-            return stateMapper.stateToStateDTO(stateRepository.save(state));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                OrderState newOrderState = orderStateRepository.save(OrderState.builder()
+                                .name(name.toUpperCase())
+                                .hexColor(hexColor)
+                                .status(true)
+                                .registrationDate(new Date(System.currentTimeMillis()))
+                                .updateDate(new Date(System.currentTimeMillis()))
+                                .tokenUser(user.toUpperCase())
+                        .build());
+                iAudit.save("ADD_ORDER_STATE","ESTADO DE PEDIDO "+newOrderState.getName()+" CREADO.",newOrderState.getName(),datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        OrderState state;
+    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            OrderState orderState;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            state = stateRepository.findById(code).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                orderState = orderStateRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (state == null) {
-            throw new BadRequestExceptions(Constants.ErrorState.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (orderState == null) {
+                throw new BadRequestExceptions(Constants.ErrorOrderState.toUpperCase());
+            }
 
-        try {
-            state.setStatus(false);
-            state.setRegistrationDate(new Date(System.currentTimeMillis()));
-            stateRepository.save(state);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                orderState.setStatus(false);
+                orderState.setRegistrationDate(new Date(System.currentTimeMillis()));
+                orderState.setTokenUser(datauser.getUsername());
+                orderStateRepository.save(orderState);
+                iAudit.save("DELETE_ORDER_STATE","ESTADO DE PEDIDO "+orderState.getName()+" DESACTIVADO.",orderState.getName(),datauser.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<OrderStateDTO> listState() throws BadRequestExceptions {
-        List<OrderState> states = new ArrayList<>();
-        try {
-            states = stateRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (states.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return stateMapper.listStateToListStateDTO(states);
+    public CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            OrderState orderState;
+
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                orderState = orderStateRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (orderState == null) {
+                throw new BadRequestExceptions(Constants.ErrorOrderState.toUpperCase());
+            }
+
+            try {
+                orderState.setStatus(true);
+                orderState.setRegistrationDate(new Date(System.currentTimeMillis()));
+                orderState.setTokenUser(datauser.getUsername());
+                orderStateRepository.save(orderState);
+                iAudit.save("ACTIVATE_ORDER_STATE","ESTADO DE PEDIDO "+orderState.getName()+" ACTIVADO.",orderState.getName(),datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<OrderStateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<List<OrderStateDTO>> listState() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderState> states;
+            try {
+                states = orderStateRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (states.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return states.stream().map(orderState -> OrderStateDTO.builder()
+                    .name(orderState.getName())
+                    .hexColor(orderState.getHexColor())
+                    .code(orderState.getId())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<OrderStateDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
                                     Integer pageSize) throws BadRequestExceptions {
-        Page<OrderState> statePage;
-        try {
-            statePage = orderStateRepositoryCustom.searchForOrderState(name, user, sort, sortColumn, pageNumber,
-                    pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (statePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(stateMapper.listStateToListStateDTO(statePage.getContent()),
-                statePage.getPageable(), statePage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderState> statePage;
+            try {
+                statePage = orderStateRepositoryCustom.searchForOrderState(name, user, sort, sortColumn, pageNumber,
+                        pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (statePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<OrderStateDTO> orderStateDTOS = statePage.getContent().stream().map(orderState -> OrderStateDTO.builder()
+                    .name(orderState.getName())
+                    .hexColor(orderState.getHexColor())
+                    .code(orderState.getId())
+                    .build()).toList();
+            return new PageImpl<>(orderStateDTOS,
+                    statePage.getPageable(), statePage.getTotalElements());
+        });
     }
 
     @Override
-    public Page<OrderStateDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<OrderStateDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
                                                Integer pageSize) throws BadRequestExceptions {
-        Page<OrderState> statePage;
-        try {
-            statePage = orderStateRepositoryCustom.searchForOrderState(name, user, sort, sortColumn, pageNumber,
-                    pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (statePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(stateMapper.listStateToListStateDTO(statePage.getContent()),
-                statePage.getPageable(), statePage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<OrderState> statePage;
+            try {
+                statePage = orderStateRepositoryCustom.searchForOrderState(name, user, sort, sortColumn, pageNumber,
+                        pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (statePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<OrderStateDTO> orderStateDTOS = statePage.getContent().stream().map(orderState -> OrderStateDTO.builder()
+                    .name(orderState.getName())
+                    .hexColor(orderState.getHexColor())
+                    .code(orderState.getId())
+                    .build()).toList();
+            return new PageImpl<>(orderStateDTOS,
+                    statePage.getPageable(), statePage.getTotalElements());
+        });
     }
 
     @Override
-    public OrderStateDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return stateMapper.stateToStateDTO(stateRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+    public CompletableFuture<List<OrderStateDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<OrderState> states;
+            try {
+                states = orderStateRepository.findAll();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (states.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return states.stream().map(orderState -> OrderStateDTO.builder()
+                    .name(orderState.getName())
+                    .hexColor(orderState.getHexColor())
+                    .code(orderState.getId())
+                    .build()).toList();
+        });
     }
-
 }

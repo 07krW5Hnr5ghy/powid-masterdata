@@ -40,10 +40,39 @@ public class Purchase {
     @Column(name = "client_id")
     private Long clientId;
 
+    @Column(name = "warehouse_id")
+    private Long warehouseId;
+
+    @Column(name = "purchase_type_id")
+    private Long purchaseTypeId;
+
+    @Column(name = "purchase_document_id")
+    private Long purchaseDocumentId;
+
+    @Column(name = "supplier_id")
+    private Long supplierId;
+
     @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id", columnDefinition = "warehouseId", insertable = false, updatable = false)
+    private Warehouse warehouse;
+
+    @ManyToOne
+    @JoinColumn(name = "purchase_document_id",columnDefinition = "purchaseDocumentId",insertable = false,updatable = false)
+    private PurchaseDocument purchaseDocument;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id",columnDefinition = "supplierId", insertable = false, updatable = false)
+    private Supplier supplier;
+
+    @ManyToOne
+    @JoinColumn(name = "purchase_type_id",columnDefinition = "purchaseTypeId",insertable = false,updatable = false)
+    private PurchaseType purchaseType;
+
 }

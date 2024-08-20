@@ -33,11 +33,11 @@ public class Access {
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date dateRegistration;
+    private Date registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date dateUpDate;
+    private Date updateDate;
 
     @Column(name = "token_user", nullable = false)
     private String tokenUser;

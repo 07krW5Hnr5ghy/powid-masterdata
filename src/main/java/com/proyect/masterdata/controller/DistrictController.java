@@ -11,57 +11,44 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/district")
+@RequestMapping("district")
 @AllArgsConstructor
 public class DistrictController {
     private final IDistrict iDistrict;
-
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
-            @RequestParam("user") String user,
-            @RequestParam("province") String province) throws BadRequestExceptions {
-        ResponseSuccess result = iDistrict.save(name, user, province);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestParam("province") String province) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDistrict.saveAsync(name, tokenUser, province);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-
-    @PostMapping(value = "/districts", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> saveall(
-            @RequestParam("user") String user,
-            @RequestParam("codeProvince") String province,
-            @RequestBody() List<String> names) throws BadRequestExceptions {
-        ResponseSuccess result = iDistrict.saveAll(names, user, province);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DistrictDTO> update(
-            @RequestBody() RequestDistrict requestDistrict) throws BadRequestExceptions {
-        DistrictDTO result = iDistrict.update(requestDistrict);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("code") Long code,
-            @RequestParam("user") String user) throws BadRequestExceptions {
-        ResponseDelete result = iDistrict.delete(code, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iDistrict.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-
-    @GetMapping(value = "/listdistrict")
-    public ResponseEntity<List<DistrictDTO>> listProvince() throws BadRequestExceptions {
-        List<DistrictDTO> result = iDistrict.listDistrict();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    @GetMapping(value = "/list-district")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_GET')")
+    public ResponseEntity<List<DistrictDTO>> listProvince() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<DistrictDTO>> result = iDistrict.listDistrict();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-
     @GetMapping(value = "list")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_GET')")
     public ResponseEntity<Page<DistrictDTO>> list(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -70,13 +57,13 @@ public class DistrictController {
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<DistrictDTO> result = iDistrict.list(name, user, codeProvince, nameProvince, sort, sortColumn, pageNumber,
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<DistrictDTO>> result = iDistrict.list(name, user, codeProvince, nameProvince, sort, sortColumn, pageNumber,
                 pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-
     @GetMapping(value = "status-false")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_GET')")
     public ResponseEntity<Page<DistrictDTO>> listStatusFalse(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
@@ -85,23 +72,31 @@ public class DistrictController {
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-        Page<DistrictDTO> result = iDistrict.listStatusFalse(name, user, codeProvince, nameProvince, sort, sortColumn,
+            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<DistrictDTO>> result = iDistrict.listStatusFalse(name, user, codeProvince, nameProvince, sort, sortColumn,
                 pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-
-    @GetMapping(value = "/code")
-    public ResponseEntity<DistrictDTO> findByCode(
-            @RequestParam("code") Long code) throws BadRequestExceptions {
-        DistrictDTO result = iDistrict.findByCode(code);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @GetMapping(value = "province")
     public ResponseEntity<List<DistrictDTO>> findByProvince(
-            @RequestParam("province") String province) throws BadRequestExceptions {
-        List<DistrictDTO> result = iDistrict.listDistrictByProvince(province);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam("province") String province) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<DistrictDTO>> result = iDistrict.listDistrictByProvince(province);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDistrict.activate(name,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_GET')")
+    public ResponseEntity<List<DistrictDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<DistrictDTO>> result = iDistrict.listFilter();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
 }

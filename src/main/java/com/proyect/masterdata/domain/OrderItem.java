@@ -21,14 +21,14 @@ public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "item_id")
+    @Column(name = "order_item_id")
     private Long id;
 
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "discount")
-    private Double discount;
+    @Column(name = "discount_amount")
+    private Double discountAmount;
 
     @Column(name = "observations")
     private String observations;
@@ -41,6 +41,9 @@ public class OrderItem {
 
     @Column(name = "client_id")
     private Long clientId;
+
+    @Column(name = "discount_id")
+    private Long discountId;
 
     @Column(name = "token_user")
     private String tokenUser;
@@ -66,5 +69,9 @@ public class OrderItem {
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "discount_id",columnDefinition = "discountId",insertable = false,updatable = false)
+    private Discount discount;
 
 }

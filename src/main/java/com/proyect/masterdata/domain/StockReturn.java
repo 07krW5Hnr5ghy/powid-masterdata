@@ -44,7 +44,7 @@ public class StockReturn {
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id", columnDefinition = "purchaseId", insertable = false, updatable = false)
+    @JoinColumn(name = "purchase_id",columnDefinition = "purchaseId",insertable = false,updatable = false)
     private Purchase purchase;
 
     @ManyToOne

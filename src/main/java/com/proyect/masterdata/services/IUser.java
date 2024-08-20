@@ -10,14 +10,31 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 public interface IUser {
     ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions;
-
-    UserDTO update(RequestUserSave requestUserSave, String user) throws BadRequestExceptions, InternalErrorExceptions;
-
-    ResponseDelete delete(String user) throws BadRequestExceptions, InternalErrorExceptions;
-
-    Page<UserQueryDTO> list(String user, String clientRuc, String sort, String sortColumn,
+    CompletableFuture<ResponseSuccess> saveAsync(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<UserDTO> update(RequestUserSave requestUserSave, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> delete(String username,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<Page<UserQueryDTO>> list(
+            String user,
+            List<String> names,
+            List<String> usernames,
+            String sort,
+            String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<UserQueryDTO>> listFalse(
+            String user,
+            List<String> names,
+            List<String> usernames,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> activate(String username,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<UserQueryDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

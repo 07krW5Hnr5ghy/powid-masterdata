@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 public class StockReplenishmentItemDTO {
     private Long orderId;
-    private String productSku;
+    private String product;
     private Integer quantity;
     private Date registrationDate;
     private Date updateDate;

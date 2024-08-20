@@ -16,7 +16,6 @@ public class RequestUserSave {
     private String dni;
     private String email;
     private String address;
-    private String gender;
     private String mobile;
     private String password;
     private String district;

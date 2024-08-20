@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestCourier {
     private String courier;
-    private String phoneNumber;
+    private String phone;
 }

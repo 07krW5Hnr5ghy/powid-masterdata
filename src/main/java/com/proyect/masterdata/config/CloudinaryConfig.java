@@ -11,19 +11,22 @@ import java.util.Map;
 
 @Configuration
 public class CloudinaryConfig {
-    @Value("${cloudinary.api.key}")
-    private String apiKey;
+    private final Properties properties;
     @Value("${cloudinary.api.secret}")
     private String apiSecret;
     @Value("${cloudinary.cloud.name}")
     private String cloudName;
     private final Boolean secure = true;
 
+    public CloudinaryConfig(Properties properties) {
+        this.properties = properties;
+    }
+
     @Bean
     public Cloudinary cloudinary(){
         return new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", cloudName,
-                "api_key", apiKey,
+                "api_key", properties.getCloudinaryApiKey(),
                 "api_secret", apiSecret,
                 "secure", true
         ));

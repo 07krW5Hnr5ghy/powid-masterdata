@@ -1,21 +1,17 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.Access;
 import com.proyect.masterdata.domain.Role;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.RoleDTO;
-import com.proyect.masterdata.dto.request.RequestAccessesToRole;
-import com.proyect.masterdata.dto.request.RequestRole;
-import com.proyect.masterdata.dto.request.RequestRoleSave;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.RoleMapper;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.RoleRepository;
 import com.proyect.masterdata.repository.RoleRepositoryCustom;
+import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IRole;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +34,7 @@ public class RoleImpl implements IRole {
     private final RoleMapper roleMapper;
     private final UserRepository userRepository;
     private final RoleRepositoryCustom roleRepositoryCustom;
-    private final AccessRepository accessRepository;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
@@ -62,13 +56,12 @@ public class RoleImpl implements IRole {
         }
 
         try {
-
-            roleRepository.save(Role.builder()
+            Role newRole = roleRepository.save(Role.builder()
                     .name(name.toUpperCase())
                     .status(true)
                     .tokenUser(datauser.getUsername().toUpperCase())
                     .build());
-
+            iAudit.save("ADD_ROLE","ROL "+newRole.getName()+" CREADO.",newRole.getName(),datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -81,158 +74,182 @@ public class RoleImpl implements IRole {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        List<Role> roles;
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            Role role;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            roles = roleRepository.findRoleByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                role = roleRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!roles.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorRoleList.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (role != null) {
+                throw new BadRequestExceptions(Constants.ErrorRoleExists.toUpperCase());
+            }
 
-        try {
+            try {
+                Role newRole = roleRepository.save(Role.builder()
+                        .name(name.toUpperCase())
+                        .status(true)
+                        .tokenUser(datauser.getUsername().toUpperCase())
+                        .build());
+                iAudit.save("ADD_ROLE","ROL "+newRole.getName()+" CREADO.",newRole.getName(),datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
 
-            List<Role> roleSaves = names.stream().map(data -> Role.builder()
-                    .tokenUser(user.toUpperCase())
-                    .name(data.toUpperCase())
-                    .status(true)
-                    .build()).toList();
-
-            roleRepository.saveAll(roleSaves);
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public RoleDTO update(RequestRole requestRole) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        Role role;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestRole.getTokenUser().toUpperCase());
-            role = roleRepository.findById(requestRole.getCode()).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (role == null) {
-            throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
-        }
-
-        role.setName(requestRole.getName().toUpperCase());
-        role.setStatus(requestRole.isStatus());
-        role.setRegistrationDate(new Date(System.currentTimeMillis()));
-        role.setTokenUser(datauser.getUsername().toUpperCase());
-
-        try {
-            return roleMapper.roleToRoleDTO(roleRepository.save(role));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        Role role;
+    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            Role role;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            role = roleRepository.findById(code).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                role = roleRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (role == null) {
-            throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (role == null) {
+                throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
+            }
 
-        try {
-            role.setStatus(false);
-            role.setRegistrationDate(new Date(System.currentTimeMillis()));
-            roleRepository.save(role);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                role.setStatus(false);
+                role.setRegistrationDate(new Date(System.currentTimeMillis()));
+                roleRepository.save(role);
+                iAudit.save("DELETE_ROLE","ROL "+role.getName()+" DESACTIVADO.",role.getName(),datauser.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<RoleDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<RoleDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Role> rolePage;
 
-        Page<Role> rolePage;
+            try {
+                rolePage = roleRepositoryCustom.searchForRole(name, user, sort, sortColumn, pageNumber,
+                        pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        try {
-            rolePage = roleRepositoryCustom.searchForRole(name, user, sort, sortColumn, pageNumber,
-                    pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if (rolePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(roleMapper.listRoleToListRoleDTO(rolePage.getContent()),
-                rolePage.getPageable(), rolePage.getTotalElements());
+            if (rolePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(roleMapper.listRoleToListRoleDTO(rolePage.getContent()),
+                    rolePage.getPageable(), rolePage.getTotalElements());
+        });
     }
 
     @Override
-    public Page<RoleDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<RoleDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Role> rolePage;
 
-        Page<Role> rolePage;
+            try {
 
-        try {
+                rolePage = roleRepositoryCustom.searchForRole(name, user, sort, sortColumn, pageNumber,
+                        pageSize, false);
 
-            rolePage = roleRepositoryCustom.searchForRole(name, user, sort, sortColumn, pageNumber,
-                    pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if (rolePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        if (rolePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            return new PageImpl<>(roleMapper.listRoleToListRoleDTO(rolePage.getContent()),
+                    rolePage.getPageable(), rolePage.getTotalElements());
+        });
+    }
 
-        return new PageImpl<>(roleMapper.listRoleToListRoleDTO(rolePage.getContent()),
-                rolePage.getPageable(), rolePage.getTotalElements());
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            Role role;
+
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                role = roleRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (role == null) {
+                throw new BadRequestExceptions(Constants.ErrorRole.toUpperCase());
+            }
+
+            try {
+                role.setStatus(true);
+                role.setRegistrationDate(new Date(System.currentTimeMillis()));
+                roleRepository.save(role);
+                iAudit.save("ACTIVATE_ROLE","ROL "+role.getName()+" ACTIVADO.",role.getName(),datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<RoleDTO>> listRole() throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Role> roleList;
+            try {
+                roleList = roleRepository.findAllByStatusTrue();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(roleList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return roleMapper.listRoleToListRoleDTO(roleList);
+        });
     }
 
 }

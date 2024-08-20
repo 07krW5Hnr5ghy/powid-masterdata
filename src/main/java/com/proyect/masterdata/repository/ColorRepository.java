@@ -9,12 +9,9 @@ import java.util.List;
 @Repository
 public interface ColorRepository extends JpaRepository<Color, Long> {
     List<Color> findAllByStatusTrue();
-
     List<Color> findAllByStatusFalse();
-
     Color findByIdAndStatusTrue(Long id);
-
     Color findByNameAndStatusTrue(String name);
-
+    Color findByNameAndStatusFalse(String name);
     List<Color> findByNameIn(List<String> names);
 }

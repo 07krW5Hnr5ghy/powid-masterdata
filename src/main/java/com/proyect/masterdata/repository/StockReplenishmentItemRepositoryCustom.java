@@ -4,12 +4,14 @@ import com.proyect.masterdata.domain.StockReplenishmentItem;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface StockReplenishmentItemRepositoryCustom {
     Page<StockReplenishmentItem> searchForStockReplenishmentItem(
             Long clientId,
-            Long orderId,
-            Long productId,
+            List<Long> orderIds,
+            List<Long> productIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

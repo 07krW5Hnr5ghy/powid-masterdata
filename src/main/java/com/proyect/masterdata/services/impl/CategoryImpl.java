@@ -14,6 +14,7 @@ import com.proyect.masterdata.mapper.CategoryMapper;
 import com.proyect.masterdata.repository.CategoryRepository;
 import com.proyect.masterdata.repository.CategoryRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICategory;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -27,18 +28,18 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class CategoryImpl implements ICategory {
-
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final UserRepository userRepository;
     private final CategoryRepositoryCustom categoryRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String description, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -67,11 +68,12 @@ public class CategoryImpl implements ICategory {
         }
 
         try {
-            categoryRepository.save(Category.builder()
+            Category category = categoryRepository.save(Category.builder()
                     .name(name.toUpperCase())
                     .description(description.toUpperCase())
                     .status(true)
                     .tokenUser(datauser.getUsername().toUpperCase()).build());
+            iAudit.save("ADD_CATEGORY","CATEGORIA "+category.getName()+" CREADA.",category.getName(),datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -83,180 +85,235 @@ public class CategoryImpl implements ICategory {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestCreateCategory> categories, String tokenUser)
-            throws BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String description, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            Category categoryName;
+            Category categoryDescription;
 
-        User datauser;
-        List<Category> categoryListNames;
-        List<Category> categoryListDescriptions;
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                categoryName = categoryRepository.findByName(name.toUpperCase());
+                categoryDescription = categoryRepository.findByDescription(description.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            categoryListNames = categoryRepository.findByNameIn(categories
-                    .stream()
-                    .map(category -> category.getName().toUpperCase())
-                    .collect(Collectors.toList()));
-            categoryListDescriptions = categoryRepository.findByDescriptionIn(categories
-                    .stream()
-                    .map(category -> category.getDescription().toUpperCase())
-                    .collect(Collectors.toList()));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (categoryName != null) {
+                throw new BadRequestExceptions(Constants.ErrorCategoryExists.toUpperCase());
+            }
+            if (categoryDescription != null) {
+                throw new BadRequestExceptions(Constants.ErrorCategoryDescriptionExists.toUpperCase());
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!categoryListNames.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorCategoryList.toUpperCase());
-        }
-        if (!categoryListDescriptions.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorCategoryListDescription.toUpperCase());
-        }
-
-        try {
-            List<Category> categorySaves = categories.stream().map(data -> Category.builder()
-                    .tokenUser(tokenUser.toUpperCase())
-                    .name(data.getName().toUpperCase())
-                    .description(data.getDescription().toUpperCase())
-                    .status(true)
-                    .build()).toList();
-            categoryRepository.saveAll(categorySaves);
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                Category category = categoryRepository.save(Category.builder()
+                        .name(name.toUpperCase())
+                        .description(description.toUpperCase())
+                        .status(true)
+                        .tokenUser(datauser.getUsername().toUpperCase()).build());
+                iAudit.save("ADD_CATEGORY","CATEGORIA "+category.getName()+" CREADA.",category.getName(),datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public CategoryDTO update(RequestCategory requestCategory, String tokenUser)
+    public CompletableFuture<CategoryDTO> update(RequestCategory requestCategory, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
 
-        User datauser;
-        Category category;
+            User datauser;
+            Category category;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            category = categoryRepository.findByNameAndStatusTrue(requestCategory.getName().toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                category = categoryRepository.findByNameAndStatusTrue(requestCategory.getName().toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (category == null) {
-            throw new BadRequestExceptions(Constants.ErrorCategory.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (category == null) {
+                throw new BadRequestExceptions(Constants.ErrorCategory.toUpperCase());
+            }
 
-        category.setDescription(requestCategory.getDescription().toUpperCase());
-        category.setTokenUser(datauser.getUsername().toUpperCase());
-        category.setUpdateDate(new Date(System.currentTimeMillis()));
-
-        try {
-            return categoryMapper.categoryToCategoryDTO(categoryRepository.save(category));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                category.setDescription(requestCategory.getDescription().toUpperCase());
+                category.setTokenUser(datauser.getUsername().toUpperCase());
+                category.setUpdateDate(new Date(System.currentTimeMillis()));
+                iAudit.save("UPDATE_CATEGORY","CATEGORIA "+category.getName()+" EDITADA.", category.getName(), datauser.getUsername());
+                return categoryMapper.categoryToCategoryDTO(categoryRepository.save(category));
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
-
     @Override
     @Transactional
-    public ResponseDelete delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(() -> {
 
-        User datauser;
-        Category category;
+            User datauser;
+            Category category;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            category = categoryRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                category = categoryRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
 
-        if (category == null) {
-            throw new BadRequestExceptions(Constants.ErrorCategory.toUpperCase());
-        }
+            if (category == null) {
+                throw new BadRequestExceptions(Constants.ErrorCategory.toUpperCase());
+            }
 
-        try {
-            category.setStatus(false);
-            category.setRegistrationDate(new Date(System.currentTimeMillis()));
-            categoryRepository.save(category);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                category.setStatus(false);
+                category.setRegistrationDate(new Date(System.currentTimeMillis()));
+                categoryRepository.save(category);
+                iAudit.save("DELETE_CATEGORY","CATEGORIA "+category.getName()+" DESACTIVADA.", category.getName(), datauser.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
-
     @Override
-    public List<CategoryDTO> listCategory() throws BadRequestExceptions {
-        List<Category> categories = new ArrayList<>();
+    public CompletableFuture<List<CategoryDTO>> listCategory() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Category> categories;
 
-        try {
-            categories = categoryRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            try {
+                categories = categoryRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        if (categories.isEmpty()) {
-            return Collections.emptyList();
-        }
+            if (categories.isEmpty()) {
+                return Collections.emptyList();
+            }
 
-        return categoryMapper.listCategoryToListCategoryDTO(categories);
+            return categoryMapper.listCategoryToListCategoryDTO(categories);
+        });
     }
-
     @Override
-    public Page<CategoryDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<CategoryDTO>> list(String name, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<Category> categoryPage;
-        try {
-            categoryPage = categoryRepositoryCustom.searchForCategory(name, user, sort, sortColumn, pageNumber,
-                    pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (categoryPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(categoryMapper.listCategoryToListCategoryDTO(categoryPage.getContent()),
-                categoryPage.getPageable(), categoryPage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<Category> categoryPage;
+            try {
+                categoryPage = categoryRepositoryCustom.searchForCategory(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber,
+                        pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (categoryPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(categoryMapper.listCategoryToListCategoryDTO(categoryPage.getContent()),
+                    categoryPage.getPageable(), categoryPage.getTotalElements());
+        });
+    }
+    @Override
+    public CompletableFuture<Page<CategoryDTO>> listStatusFalse(String name, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn,
+            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Category> categoryPage;
+            try {
+                categoryPage = categoryRepositoryCustom.searchForCategory(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber,
+                        pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (categoryPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            return new PageImpl<>(categoryMapper.listCategoryToListCategoryDTO(categoryPage.getContent()),
+                    categoryPage.getPageable(), categoryPage.getTotalElements());
+        });
+    }
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Category category;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                category = categoryRepository.findByNameAndStatusTrue(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(category == null){
+                throw new BadRequestExceptions(Constants.ErrorCategory);
+            }
+
+            try {
+                category.setStatus(false);
+                category.setUpdateDate(new Date(System.currentTimeMillis()));
+                category.setTokenUser(user.getUsername());
+                iAudit.save("ACTIVATE_CATEGORY","CATEGORIA "+category.getName()+" ACTIVADA.", category.getName(), user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<CategoryDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
-            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<Category> categoryPage;
-        try {
-            categoryPage = categoryRepositoryCustom.searchForCategory(name, user, sort, sortColumn, pageNumber,
-                    pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+    public CompletableFuture<List<CategoryDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Category> categories;
 
-        if (categoryPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            try {
+                categories = categoryRepository.findAll();
+            } catch (RuntimeException e) {
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        return new PageImpl<>(categoryMapper.listCategoryToListCategoryDTO(categoryPage.getContent()),
-                categoryPage.getPageable(), categoryPage.getTotalElements());
+            if (categories.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return categoryMapper.listCategoryToListCategoryDTO(categories);
+        });
     }
 
 }

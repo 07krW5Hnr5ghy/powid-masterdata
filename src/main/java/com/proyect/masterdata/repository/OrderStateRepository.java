@@ -12,6 +12,7 @@ public interface OrderStateRepository extends JpaRepository<OrderState, Long> {
     List<OrderState> findAllByStatusFalse();
     OrderState findByIdAndStatusTrue(Long id);
     OrderState findByNameAndStatusTrue(String name);
+    OrderState findByNameAndStatusFalse(String name);
     OrderState findByName(String name);
     List<OrderState> findByNameIn(List<String> names);
 }

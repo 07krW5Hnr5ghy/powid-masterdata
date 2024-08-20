@@ -1,57 +1,82 @@
 package com.proyect.masterdata.controller;
 
-import java.util.List;
-
+import com.proyect.masterdata.dto.CheckStockDTO;
 import com.proyect.masterdata.dto.PurchaseDTO;
+import com.proyect.masterdata.dto.request.RequestPurchase;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
+import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IPurchase;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.proyect.masterdata.dto.PurchaseItemDTO;
-import com.proyect.masterdata.dto.request.RequestPurchaseItem;
-import com.proyect.masterdata.dto.response.ResponseSuccess;
-import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.services.IPurchaseItem;
-
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import lombok.AllArgsConstructor;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("purchase")
 @AllArgsConstructor
 public class PurchaseController {
-
     private final IPurchase iPurchase;
-
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:PURCHASE_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("serial") String serial,
-            @RequestBody() List<RequestPurchaseItem> purchaseList,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iPurchase.save(serial, purchaseList, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestBody() RequestPurchase requestPurchase,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iPurchase.saveAsync(requestPurchase, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-
-    @GetMapping()
+    @GetMapping("pagination")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_GET')")
     public ResponseEntity<Page<PurchaseDTO>> list(
-            @RequestParam(value = "serial", required = false) String serial,
+            @RequestParam(value = "serials", required = false) List<String> serials,
             @RequestParam(value = "user", required = true) String user,
+            @RequestParam(value = "warehouses", required = false) List<String> warehouses,
+            @RequestParam(value = "purchaseTypes", required = false) List<String> purchaseTypes,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<PurchaseDTO> result = iPurchase.list(serial,user,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<PurchaseDTO>> result = iPurchase.list(
+                serials,
+                user,
+                warehouses,
+                purchaseTypes,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_GET')")
+    public ResponseEntity<List<PurchaseDTO>> listPurchase(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<PurchaseDTO>> result = iPurchase.listPurchase(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
+    @GetMapping("filter")
+    public ResponseEntity<List<PurchaseDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<PurchaseDTO>> result = iPurchase.listFilter(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("check-stock")
+    public ResponseEntity<List<CheckStockDTO>> checkStock(
+            @RequestParam("user") String user,
+            @RequestParam("serial") String serial
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CheckStockDTO>> result = iPurchase.checkStock(serial,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

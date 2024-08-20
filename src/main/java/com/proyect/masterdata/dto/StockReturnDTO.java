@@ -12,7 +12,9 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class StockReturnDTO {
-    private String purchaseSerial;
+    private String serial;
+    private String purchase;
     private Date registrationDate;
     private Date updateDate;
+    private String supplier;
 }

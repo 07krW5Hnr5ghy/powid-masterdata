@@ -13,5 +13,8 @@ import java.util.Date;
 @Data
 public class PurchaseDTO {
     private String serial;
+    private String purchaseDocument;
+    private String warehouse;
+    private String purchaseType;
     private Date registrationDate;
 }

@@ -6,7 +6,19 @@ import com.proyect.masterdata.domain.Warehouse;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface OrderStockItemRepositoryCustom {
-    Page<OrderStockItem> searchForOrderStock(Warehouse warehouse, Long orderId, User user, Boolean status, String sort, String sortColumn, Integer pageNumber, Integer pageSize);
+    Page<OrderStockItem> searchForOrderStockItem(
+            Long clientId,
+            Long orderId,
+            List<Long> warehouseIds,
+            String productSku,
+            String serial,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status);
 }

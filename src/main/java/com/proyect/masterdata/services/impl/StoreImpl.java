@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.Store;
 import com.proyect.masterdata.domain.StoreType;
+import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.StoreDTO;
 import com.proyect.masterdata.dto.request.RequestStore;
 import com.proyect.masterdata.dto.request.RequestStoreSave;
@@ -16,6 +17,7 @@ import com.proyect.masterdata.repository.StoreRepositoryCustom;
 import com.proyect.masterdata.repository.StoreTypeRepository;
 import com.proyect.masterdata.repository.ClientRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStore;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,37 +43,31 @@ public class StoreImpl implements IStore {
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     private final StoreTypeRepository storeTypeRepository;
-
+    private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(RequestStoreSave requestStoreSave, String user)
+    public ResponseSuccess save(RequestStoreSave requestStoreSave, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
 
-        boolean existsUser;
+        User user;
         boolean existsStore;
-        Client client;
         StoreType storeType;
 
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsStore = storeRepository
                     .existsByName(requestStoreSave.getName().toUpperCase());
-            client = clientRepository.findByRucAndStatusTrue(requestStoreSave.getClientRuc());
             storeType = storeTypeRepository.findByNameAndStatusTrue(requestStoreSave.getStoreType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
         if (existsStore) {
             throw new BadRequestExceptions(Constants.ErrorStoreExist);
-        }
-
-        if (client == null) {
-            throw new BadRequestExceptions(Constants.ErrorClient);
         }
 
         if (storeType == null) {
@@ -79,18 +76,18 @@ public class StoreImpl implements IStore {
 
         try {
 
-            storeRepository.save(Store.builder()
+            Store newStore = storeRepository.save(Store.builder()
                     .name(requestStoreSave.getName().toUpperCase())
                     .url(requestStoreSave.getUrl())
-                    .clientId(client.getId())
-                    .client(client)
+                    .clientId(user.getClientId())
+                    .client(user.getClient())
                     .storeType(storeType)
                     .storeTypeId(storeType.getId())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
-                    .tokenUser(user.toUpperCase())
+                    .tokenUser(user.getUsername())
                     .build());
-
+            iAudit.save("ADD_STORE","TIENDA "+newStore.getName()+" AGREGADA.",newStore.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -103,215 +100,269 @@ public class StoreImpl implements IStore {
     }
 
     @Override
-    public ResponseSuccess saveAll(String ruc, List<RequestStoreSave> storeList, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestStoreSave requestStoreSave, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            boolean existsStore;
+            StoreType storeType;
 
-        boolean existsUser;
-        List<Store> stores;
-        List<StoreType> storeTypes;
-        Client client;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                existsStore = storeRepository
+                        .existsByName(requestStoreSave.getName().toUpperCase());
+                storeType = storeTypeRepository.findByNameAndStatusTrue(requestStoreSave.getStoreType().toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            stores = storeRepository.findByNameIn(storeList.stream()
-                    .map(store -> store.getName().toUpperCase()).collect(Collectors.toList()));
-            client = clientRepository.findByRucAndStatusTrue(ruc);
-            storeTypes = storeTypeRepository.findByNameInAndStatusTrue(
-                    storeList.stream().map(store -> store.getStoreType().toUpperCase()).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (existsStore) {
+                throw new BadRequestExceptions(Constants.ErrorStoreExist);
+            }
 
-        if (!stores.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorStoreExist);
-        }
+            if (storeType == null) {
+                throw new BadRequestExceptions(Constants.ErrorStoreType);
+            }
 
-        if (client == null) {
-            throw new BadRequestExceptions(Constants.ErrorClient);
-        }
+            try {
 
-        if (storeTypes.size() != storeList.size()) {
-            throw new BadRequestExceptions(Constants.ErrorStoreType);
-        }
+                Store newStore = storeRepository.save(Store.builder()
+                        .name(requestStoreSave.getName().toUpperCase())
+                        .url(requestStoreSave.getUrl())
+                        .clientId(user.getClientId())
+                        .client(user.getClient())
+                        .storeType(storeType)
+                        .storeTypeId(storeType.getId())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .tokenUser(user.getUsername())
+                        .build());
+                iAudit.save("ADD_STORE","TIENDA "+newStore.getName()+" AGREGADA.",newStore.getName(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
 
-        List<Store> storeSaveList = storeList.stream()
-                .map(store -> {
-                    StoreType storeType = storeTypeRepository
-                            .findByNameAndStatusTrue(store.getStoreType().toUpperCase());
-                    return Store.builder()
-                            .name(store.getName().toUpperCase())
-                            .url(store.getUrl())
-                            .client(client)
-                            .clientId(client.getId())
-                            .storeType(storeType)
-                            .storeTypeId(storeType.getId())
-                            .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(user.toUpperCase())
-                            .build();
-                })
-                .toList();
-        try {
-            storeRepository.saveAll(storeSaveList);
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public StoreDTO update(RequestStore requestStore)
+    public CompletableFuture<StoreDTO> update(RequestStore requestStore)
             throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Store store;
 
-        boolean existsUser;
-        Store store;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(requestStore.getTokenUser().toUpperCase());
+                store = storeRepository.findByNameAndStatusTrue(requestStore.getName().toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(requestStore.getUser().toUpperCase());
-            store = storeRepository.findByNameAndStatusTrue(requestStore.getName().toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (store == null) {
+                throw new BadRequestExceptions(Constants.ErrorStore);
+            }
 
-        if (store == null) {
-            throw new BadRequestExceptions(Constants.ErrorStore);
-        }
+            try {
 
-        store.setUrl(requestStore.getUrl());
-        store.setTokenUser(requestStore.getUser().toUpperCase());
-        store.setUpdateDate(new Date(System.currentTimeMillis()));
+                store.setUrl(requestStore.getUrl());
+                store.setTokenUser(requestStore.getTokenUser().toUpperCase());
+                store.setUpdateDate(new Date(System.currentTimeMillis()));
+                iAudit.save("UPDATE_STORE","TIENDA "+store.getName()+" ACTUALIZADA.",store.getName(),user.getUsername());
+                return StoreDTO.builder()
+                        .name(store.getName())
+                        .url(store.getUrl())
+                        .client(store.getClient().getBusiness())
+                        .storeType(store.getStoreType().getName())
+                        .build();
 
-        try {
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 
-            return StoreDTO.builder()
+    @Override
+    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Store store;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                store = storeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (store == null) {
+                throw new BadRequestExceptions(Constants.ErrorStore);
+            }
+
+            try {
+                store.setStatus(false);
+                store.setRegistrationDate(new Date(System.currentTimeMillis()));
+                store.setTokenUser(user.getUsername());
+                storeRepository.save(store);
+                iAudit.save("DELETE_STORE","TIENDA "+store.getName()+" DESACTIVADA.",store.getName(),user.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Store store;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                store = storeRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user==null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if (store == null) {
+                throw new BadRequestExceptions(Constants.ErrorStore);
+            }
+
+            try {
+                store.setStatus(true);
+                store.setRegistrationDate(new Date(System.currentTimeMillis()));
+                store.setTokenUser(user.getUsername());
+                storeRepository.save(store);
+                iAudit.save("ACTIVATE_STORE","TIENDA "+store.getName()+" ACTIVADA.",store.getName(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<StoreDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Store> storePage;
+
+            try {
+
+                storePage = storeRepositoryCustom.searchForStore(name, user, sort, sortColumn,
+                        pageNumber, pageSize, true);
+
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (storePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<StoreDTO> storeDTOs = storePage.getContent().stream().map(store -> StoreDTO.builder()
                     .name(store.getName())
                     .url(store.getUrl())
                     .client(store.getClient().getBusiness())
                     .storeType(store.getStoreType().getName())
-                    .build();
+                    .user(store.getTokenUser())
+                    .build()).toList();
 
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            return new PageImpl<>(
+                    storeDTOs,
+                    storePage.getPageable(), storePage.getTotalElements());
+        });
     }
 
     @Override
-    public ResponseDelete delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-
-        boolean existsUser;
-        Store store;
-
-        try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            store = storeRepository.findByNameAndStatusTrue(name.toUpperCase());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (!existsUser) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (store == null) {
-            throw new BadRequestExceptions(Constants.ErrorStore);
-        }
-
-        store.setStatus(false);
-        store.setRegistrationDate(new Date(System.currentTimeMillis()));
-        store.setTokenUser(user.toUpperCase());
-
-        try {
-
-            storeRepository.save(store);
-
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public Page<StoreDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
-
-        Page<Store> storePage;
-
-        try {
-
-            storePage = storeRepositoryCustom.searchForStore(name, user, sort, sortColumn,
-                    pageNumber, pageSize, true);
-
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (storePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        List<StoreDTO> storeDTOs = storePage.getContent().stream().map(store -> StoreDTO.builder()
-                .name(store.getName())
-                .url(store.getUrl())
-                .client(store.getClient().getBusiness())
-                .storeType(store.getStoreType().getName())
-                .user(store.getTokenUser())
-                .build()).toList();
-
-        return new PageImpl<>(
-                storeDTOs,
-                storePage.getPageable(), storePage.getTotalElements());
-    }
-
-    @Override
-    public Page<StoreDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+    public CompletableFuture<Page<StoreDTO>> listStatusFalse(String name, String user, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Store> storePage;
 
-        Page<Store> storePage;
+            try {
+                storePage = storeRepositoryCustom.searchForStore(name, user, sort, sortColumn,
+                        pageNumber, pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            storePage = storeRepositoryCustom.searchForStore(name, user, sort, sortColumn,
-                    pageNumber, pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (storePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        if (storePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            List<StoreDTO> storeDTOs = storePage.getContent().stream().map(store -> StoreDTO.builder()
+                    .name(store.getName())
+                    .url(store.getUrl())
+                    .client(store.getClient().getBusiness())
+                    .storeType(store.getStoreType().getName())
+                    .user(store.getTokenUser())
+                    .build()).toList();
 
-        List<StoreDTO> storeDTOs = storePage.getContent().stream().map(store -> StoreDTO.builder()
-                .name(store.getName())
-                .url(store.getUrl())
-                .client(store.getClient().getBusiness())
-                .storeType(store.getStoreType().getName())
-                .user(store.getTokenUser())
-                .build()).toList();
-
-        return new PageImpl<>(
-                storeDTOs,
-                storePage.getPageable(), storePage.getTotalElements());
+            return new PageImpl<>(
+                    storeDTOs,
+                    storePage.getPageable(), storePage.getTotalElements());
+        });
     }
 
+    @Override
+    public CompletableFuture<List<StoreDTO>> listStore(String user) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Store> stores;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                stores = storeRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(stores.isEmpty()){
+                return Collections.emptyList();
+            }
+            return stores.stream().map(store -> StoreDTO.builder()
+                    .name(store.getName())
+                    .url(store.getUrl())
+                    .client(store.getClient().getBusiness())
+                    .storeType(store.getStoreType().getName())
+                    .user(store.getTokenUser())
+                    .build()).toList();
+        });
+    }
 }

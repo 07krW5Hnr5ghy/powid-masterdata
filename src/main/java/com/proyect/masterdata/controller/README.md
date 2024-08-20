@@ -756,7 +756,7 @@ http://localhost:8080/masterdata/courier?tokenUser=admin1
 - Request :
 
 {
-    "paymentMethod":"name of the paymentMethod",
+    "orderPaymentMethod":"name of the orderPaymentMethod",
     "orderState":"name of the order state",
     "orderPictures":"array of files for courier pictures"
 }
@@ -779,7 +779,7 @@ http://localhost:8080/masterdata/courier?tokenUser=admin1
 http://localhost:8080/masterdata/courier?tokenUser=admin1
 
 {
-    "paymentMethod":"Link",
+    "orderPaymentMethod":"Link",
     "orderState":"entregado",
     "orderPictures":[...image files]
 }
@@ -1244,7 +1244,7 @@ http://localhost:8080/masterdata/onboard
     "deliveryAmount":"amount of delivery fee with two decimals",
     "advancedPayment":"prepaid amount for the order",
     "saleChannel":"name of the channel of sale",
-    "paymentMethod":"name of the payment method",
+    "orderPaymentMethod":"name of the payment method",
     "managementType":"name of the management type",
     "requestItems":"array of request items",
     "customerName" : "name of the customer",
@@ -1283,7 +1283,7 @@ http://localhost:8080/masterdata/order?tokenUser=gjimenez
 {
 "orderState":"name of the state of the order",
 "observations":"observations about the order",
-"paymentMethod":"name of the payment method",
+"orderPaymentMethod":"name of the payment method",
 "saleChannel" : "channel of sale",
 "receipts":"array of receipts pictures",
 "courier":"name of the courier",
@@ -1310,7 +1310,7 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
 {
 "orderState":"entregado",
 "observations":"",
-"paymentMethod":"link",
+"orderPaymentMethod":"link",
 "saleChannel" : "tienda online",
 "receipts":[...receipt pictures],
 "courier":"marvisur",
@@ -1329,8 +1329,8 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
 2. orderId : filter orders by id
 3. orderState : filter orders by order state name
 4. courier : filter orders by courier name
-5. paymentState : filter orders by payment state name
-6. paymentMethod : filter orders by payment method name
+5. orderPaymentState : filter orders by payment state name
+6. orderPaymentMethod : filter orders by payment method name
 7. saleChannel : filter orders by sale channel name
 8. managementType : filter orders by management type 
 9. sort : sort the values the only valid values are ASC and DESC, default is ASC
@@ -1354,7 +1354,7 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
             "district": "BREÑA",
             "address": "807 IQUIQUE",
             "managementType": "VENTA",
-            "paymentMethod": "LINK",
+            "orderPaymentMethod": "LINK",
             "saleChannel": "TIENDA ONLINE",
             "reference": "",
             "paymentReceipts": [
@@ -1435,7 +1435,7 @@ http://localhost:8080/masterdata/order?orderId=1&tokenUser=gjimenez
 
 - example :
 
-http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez&orderId=1&orderState=entregado&courier=marvisur&paymentState=recaudado&paymentMethod=link&saleChannel=tienda online&managementType=venta
+http://localhost:8080/masterdata/order?pageNumber=0&pageSize=2&user=gjimenez&orderId=1&orderState=entregado&courier=marvisur&orderPaymentState=recaudado&orderPaymentMethod=link&saleChannel=tienda online&managementType=venta
 
 ### POST /order-item protected
 
@@ -1535,6 +1535,55 @@ http://localhost:8080/masterdata/order-item?orderId=3&tokenUser=fcasas
     "observations":"adicionan dos unidades del producto en el pedido"
 }
 
+### GET /order-stock protected
+
+- Description : list order stocks
+
+- Request : none
+
+- Parameters :
+
+1. warehouse : filter order stocks by warehouse
+2. orderId : filter order stocks by order
+3. user : filter orders by the client of the user (required)
+4. sort : sort the values the only valid values are ASC and DESC, default is ASC
+5. sortColumn : select the value that sorts the list in this case name or user
+6. pageNumber : the page number to select of the list the first is page zero (0) (required)
+7. pageSize : number the records per Page (required)
+
+- Response :
+
+{
+    "content": [
+        {
+            "orderId": 1,
+            "warehouse": "LUMINOUS",
+            "registrationDate": "2024-02-21T06:39:41.185+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "pageNumber": 0,
+        "pageSize": 2,
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 1,
+    "first": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "empty": false
+}
+
+- example :
+
+http://localhost:8080/masterdata/order-stock?pageNumber=0&pageSize=2&user=gjimenez&warehouse=luminous&orderId=1
+
 ### POST /order-stock protected
 
 - Description : add a list of order stocks to the database
@@ -1565,7 +1614,7 @@ http://localhost:8080/masterdata/order-item?orderId=3&tokenUser=fcasas
 
 http://localhost:8080/masterdata/order-stock?orderId=1&tokenUser=gjimenez
 
-### GET /order-stock protected
+### GET /order-stock-item protected
 
 - Description : list order stocks
 
@@ -1573,9 +1622,9 @@ http://localhost:8080/masterdata/order-stock?orderId=1&tokenUser=gjimenez
 
 - Parameters :
 
-1. warehouse : filter order stocks by warehouse
-2. orderId : filter order stocks by order
-3. user : filter orders by the client of the user (required)
+1. user : filter orders by the client of the user (required)
+2. orderId : filter order stocks by order id number
+3. supplierProductSerial : filter orders by supplier product serial
 4. sort : sort the values the only valid values are ASC and DESC, default is ASC
 5. sortColumn : select the value that sorts the list in this case name or user
 6. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -1584,48 +1633,39 @@ http://localhost:8080/masterdata/order-stock?orderId=1&tokenUser=gjimenez
 - Response :
 
 {
-"content": [
-    {
-        "orderId": 1,
-        "itemId": 1,
-        "warehouse": "LUMINOUS",
-        "serialSupplierProduct": "A00001A",
-        "quantity": 2,
-        "registrationDate": "2024-01-29T23:31:25.533+00:00",
-        "updateDate": "2024-01-29T23:31:25.533+00:00"
+    "content": [
+        {
+            "orderId": 1,
+            "itemId": 1,
+            "warehouse": "LUMINOUS",
+            "supplierProductSerial": "A00001A",
+            "quantity": 2,
+            "registrationDate": "2024-02-21T07:14:01.911+00:00",
+            "updateDate": "2024-02-21T07:14:01.911+00:00"
+        }
+    ],
+    "pageable": {
+        "sort": [],
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 2,
+        "paged": true,
+        "unpaged": false
     },
-    {
-        "orderId": 1,
-        "itemId": 2,
-        "warehouse": "LUMINOUS",
-        "serialSupplierProduct": "A00002A",
-        "quantity": 1,
-        "registrationDate": "2024-01-29T23:31:25.545+00:00",
-        "updateDate": "2024-01-29T23:31:25.545+00:00"
-    }
-],
-"pageable": {
-"sort": [],
-"offset": 0,
-"pageSize": 2,
-"pageNumber": 0,
-"paged": true,
-"unpaged": false
-},
-"totalPages": 2,
-"last": false,
-"totalElements": 4,
-"size": 2,
-"number": 0,
-"sort": [],
-"first": true,
-"numberOfElements": 2,
-"empty": false
+    "totalPages": 1,
+    "totalElements": 1,
+    "last": true,
+    "size": 2,
+    "number": 0,
+    "sort": [],
+    "numberOfElements": 1,
+    "first": true,
+    "empty": false
 }
 
 - example :
 
-http://localhost:8080/masterdata/order-stock?pageNumber=0&pageSize=2&user=gjimenez
+http://localhost:8080/masterdata/order-stock-item?pageNumber=0&pageSize=2&user=gjimenez&orderId=1&supplierProductSerial=A00001A
 
 
 ### GET /product protected
@@ -1979,17 +2019,17 @@ http://localhost:8080/masterdata/purchase-orderItem?serial=AA00001&tokenUser=gji
     ... more items
 ]
 
-### GET /shipment-orderItem protected
+### GET /purchase-orderItem protected
 
-- Description : list all shipment items
+- Description : list all purchase items
 
 - Request : none
 
 - Parameters : 
 
-1. purchaseSerial : filter shipment items by purchase serial
-2. user : filter shipment items by the client of the user (required)
-3. supplierProductSerial : filter shipment items by supplier product serial
+1. purchaseSerial : filter purchase items by purchase serial
+2. user : filter purchase items by the client of the user (required)
+3. supplierProductSerial : filter purchase items by supplier product serial
 4. sort : sort the values the only valid values are ASC and DESC, default is ASC
 5. sortColumn : select the value that sorts the list in this case name or user
 6. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -2029,20 +2069,20 @@ http://localhost:8080/masterdata/purchase-orderItem?serial=AA00001&tokenUser=gji
 
 - Example : 
 
-http://localhost:8080/masterdata/shipment-orderItem?user=gjimenez&pageNumber=0&pageSize=2&purchaseSerial=AA00001&supplierProductSerial=A00001A
+http://localhost:8080/masterdata/purchase-orderItem?user=gjimenez&pageNumber=0&pageSize=2&purchaseSerial=AA00001&supplierProductSerial=A00001A
 
-### GET /shipment protected
+### GET /purchase protected
 
-- Description : list all active shipments
+- Description : list all active purchases
 
 - Request : none
 
 - Parameters :
 
-1. purchaseSerial : filter shipments by purchase serial
-2. warehouse : filter shipments by warehouse
-3. user : filter shipments by the client of the user (required)
-4. shipmentType : filter shipments by shipment type
+1. purchaseSerial : filter purchases by purchase serial
+2. warehouse : filter purchases by warehouse
+3. user : filter purchases by the client of the user (required)
+4. purchaseType : filter purchases by purchase type
 5. sort : sort the values the only valid values are ASC and DESC, default is ASC
 6. sortColumn : select the value that sorts the list in this case name or user
 7. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -2055,7 +2095,7 @@ http://localhost:8080/masterdata/shipment-orderItem?user=gjimenez&pageNumber=0&p
         {
             "purchaseSerial": "AA00001",
             "warehouse": "LUMINOUS",
-            "shipmentType": "EMBARQUE",
+            "purchaseType": "EMBARQUE",
             "registrationDate": "2024-02-14T01:12:22.576+00:00"
         }
     ],
@@ -2080,19 +2120,19 @@ http://localhost:8080/masterdata/shipment-orderItem?user=gjimenez&pageNumber=0&p
 
 - Example :
 
-http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous&shipmentType=embarque
+http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous&purchaseType=embarque
 
-### POST /shipment protected
+### POST /purchase protected
 
-- Description : add one shipment to the database
+- Description : add one purchase to the database
 
 - Request : 
 
 {
-    "purchaseSerial":"serial of the purchase of the shipment goods",
-    "warehouse":"name of the shipment warehouse",
-    "shipmentType":"name of the shipment type",
-    "requestShipmentList": [
+    "purchaseSerial":"serial of the purchase of the purchase goods",
+    "warehouse":"name of the purchase warehouse",
+    "purchaseType":"name of the purchase type",
+    "requestPurchaseList": [
         {
             "quantity": number of units,
             "observations": observation of the state of the goods,
@@ -2105,7 +2145,7 @@ http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&
 
 - Parameters : 
 
-1. tokenUser : username of who register the shipment
+1. tokenUser : username of who register the purchase
 
 - Response : 
 
@@ -2117,7 +2157,7 @@ http://localhost:8080/masterdata/shipment?user=gjimenez&pageNumber=0&pageSize=2&
 
 - Example :
 
-http://localhost:8080/masterdata/shipment-orderItem?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
+http://localhost:8080/masterdata/purchase-orderItem?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
 
 [
     {
@@ -2129,9 +2169,9 @@ http://localhost:8080/masterdata/shipment-orderItem?serial=SA00001&warehouse=lum
     ... more items
 ]
 
-### GET /shipment-type protected
+### GET /purchase-type protected
 
-- Description : list active shipment types
+- Description : list active purchase types
 
 - Request : none
 
@@ -2140,23 +2180,23 @@ http://localhost:8080/masterdata/shipment-orderItem?serial=SA00001&warehouse=lum
 - Response :
 
 [
-    "name of the shipment type"
+    "name of the purchase type"
 ]
 
 - Example :
 
-http://localhost:8080/masterdata/shipment-type
+http://localhost:8080/masterdata/purchase-type
 
-### POST /shipment-type protected
+### POST /purchase-type protected
 
-- Description : add one shipment type to the database
+- Description : add one purchase type to the database
 
 - Request : none
 
 - Parameters :
 
-1. name : name of the shipment type
-2. tokenUser : username of the user who creates the shipment type
+1. name : name of the purchase type
+2. tokenUser : username of the user who creates the purchase type
 
 - Response :
 
@@ -2168,7 +2208,7 @@ http://localhost:8080/masterdata/shipment-type
 
 - Example :
 
-http://localhost:8080/masterdata/shipment-type?name=embarque&tokenUser=admin1
+http://localhost:8080/masterdata/purchase-type?name=embarque&tokenUser=admin1
 
 ### GET /size-type protected
 

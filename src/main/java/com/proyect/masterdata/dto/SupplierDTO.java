@@ -5,15 +5,23 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class SupplierDTO {
-    private String businessName;
+    private String name;
     private String ruc;
     private String country;
     private String location;
-    private String phoneNumber;
+    private String phone;
     private String email;
+    private String supplierType;
+    private String department;
+    private String province;
+    private String district;
+    private Date registrationDate;
+    private Date updateDate;
 }

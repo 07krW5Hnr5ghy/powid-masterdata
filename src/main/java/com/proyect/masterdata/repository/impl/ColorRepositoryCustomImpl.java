@@ -14,17 +14,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
 public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
-
     @Override
     public Page<Color> searchForColor(
             String name,
-            String user,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -36,7 +39,15 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
         Root<Color> itemRoot = criteriaQuery.from(Color.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> colorList = new ArrayList<>();
@@ -56,13 +67,22 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(name, user, status);
+        long count = getOrderCount(
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             String name,
-            String user,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Color> itemRoot) {
@@ -75,11 +95,36 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
                                     criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
         }
 
-        if (user != null) {
+        if(registrationStartDate!=null){
             conditions.add(
                     criteriaBuilder.and(
-                            criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("tokenUser")), user.toUpperCase())));
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         if (status) {
@@ -101,8 +146,20 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
         if (sortColumn.equalsIgnoreCase("NAME")) {
             colorList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
-        if (sortColumn.equalsIgnoreCase("tokenUser")) {
-            colorList.add(criteriaBuilder.asc(itemRoot.get("tokenUser")));
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            colorList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            colorList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            colorList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            colorList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
         }
         return colorList;
     }
@@ -115,19 +172,42 @@ public class ColorRepositoryCustomImpl implements ColorRepositoryCustom {
         if (sortColumn.equalsIgnoreCase("NAME")) {
             colorList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
-        if (sortColumn.equalsIgnoreCase("tokenUser")) {
-            colorList.add(criteriaBuilder.desc(itemRoot.get("tokenUser")));
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            colorList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            colorList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            colorList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            colorList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
         return colorList;
     }
 
-    private long getOrderCount(String name, String user, Boolean status) {
+    private long getOrderCount(
+            String name,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Color> itemRoot = criteriaQuery.from(Color.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(name, user, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

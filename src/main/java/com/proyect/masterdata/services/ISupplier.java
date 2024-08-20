@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.domain.Page;
 
@@ -14,12 +15,24 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 public interface ISupplier {
         ResponseSuccess save(RequestSupplier requestSupplier, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-
-        ResponseSuccess saveAll(List<RequestSupplier> requestSuppliers, String tokenUser)
-                        throws InternalErrorExceptions, BadRequestExceptions;
-
-        ResponseDelete delete(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-
-        Page<SupplierDTO> list(String name, String ruc, String user, String sort, String sortColumn, Integer pageNumber,
-                        Integer pageSize) throws BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> saveAsync(RequestSupplier requestSupplier, String tokenUser)
+                throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseDelete> delete(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> activate(String ruc, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<Page<SupplierDTO>> list(
+                String user,
+                List<String> names,
+                List<String> rucs,
+                List<String> countries,
+                List<String> supplierTypes,
+                List<String> departments,
+                List<String> provinces,
+                List<String> districts,
+                String sort,
+                String sortColumn,
+                Integer pageNumber,
+                Integer pageSize) throws BadRequestExceptions;
+        CompletableFuture<List<SupplierDTO>> listSuppliers(String user) throws InternalErrorExceptions,BadRequestExceptions;
+        CompletableFuture<List<SupplierDTO>> listSuppliersFalse(String user) throws InternalErrorExceptions,BadRequestExceptions;
+        CompletableFuture<List<SupplierDTO>> listSuppliersFilter(String user) throws InternalErrorExceptions,BadRequestExceptions;
 }

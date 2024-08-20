@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -22,14 +23,14 @@ public class CancelledOrderRepositoryCustomImpl implements CancelledOrderReposit
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<CancelledOrder> searchForCancelledOrder(Long orderId, Long clientId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<CancelledOrder> searchForCancelledOrder(Long orderId, Long clientId, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<CancelledOrder> criteriaQuery = criteriaBuilder.createQuery(CancelledOrder.class);
         Root<CancelledOrder> itemRoot = criteriaQuery.from(CancelledOrder.class);
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicateConditions(orderId, clientId, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(orderId, clientId,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, criteriaBuilder, itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -53,13 +54,17 @@ public class CancelledOrderRepositoryCustomImpl implements CancelledOrderReposit
         orderTypeQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(orderId, clientId);
+        long count = getOrderCount(orderId, clientId,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate);
         return new PageImpl<>(orderTypeQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
             Long orderId,
             Long clientId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             CriteriaBuilder criteriaBuilder,
             Root<CancelledOrder> itemRoot) {
 
@@ -71,6 +76,38 @@ public class CancelledOrderRepositoryCustomImpl implements CancelledOrderReposit
 
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         return conditions;
@@ -91,6 +128,22 @@ public class CancelledOrderRepositoryCustomImpl implements CancelledOrderReposit
             cancelledOrderList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            cancelledOrderList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            cancelledOrderList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            cancelledOrderList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            cancelledOrderList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+
         return cancelledOrderList;
     }
 
@@ -109,17 +162,33 @@ public class CancelledOrderRepositoryCustomImpl implements CancelledOrderReposit
             cancelledOrderList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            cancelledOrderList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            cancelledOrderList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            cancelledOrderList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            cancelledOrderList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+
         return cancelledOrderList;
     }
 
-    private long getOrderCount(Long orderId, Long clientId) {
+    private long getOrderCount(Long orderId, Long clientId,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<CancelledOrder> itemRoot = criteriaQuery.from(CancelledOrder.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(orderId, clientId, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(orderId, clientId,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, criteriaBuilder, itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

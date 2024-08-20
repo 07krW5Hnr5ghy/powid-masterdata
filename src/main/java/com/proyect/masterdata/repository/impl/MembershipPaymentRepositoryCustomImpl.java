@@ -14,18 +14,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
 public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
-
     @Override
-    public Page<MembershipPayment> searchForPayment(
-            Double totalPayment,
-            String month,
-            Long idChannel,
+    public Page<MembershipPayment> searchForMembershipPayment(
+            Long clientId,
+            Double grossAmount,
+            Double netAmount,
+            Double paymentGatewayFee,
+            Double taxAmount,
+            Long paymentGatewayId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -36,7 +43,19 @@ public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentR
         Root<MembershipPayment> itemRoot = criteriaQuery.from(MembershipPayment.class);
 
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(totalPayment, month, idChannel, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                grossAmount,
+                netAmount,
+                paymentGatewayFee,
+                taxAmount,
+                paymentGatewayId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> paymentList = new ArrayList<>();
@@ -56,37 +75,107 @@ public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentR
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(totalPayment, month, idChannel);
+        long count = getOrderCount(
+                clientId,
+                grossAmount,
+                netAmount,
+                paymentGatewayFee,
+                taxAmount,
+                paymentGatewayId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     public List<Predicate> predicateConditions(
-            Double totalPayment,
-            String month,
-            Long idChannel,
+            Long clientId,
+            Double grossAmount,
+            Double netAmount,
+            Double paymentGatewayFee,
+            Double taxAmount,
+            Long paymentGatewayId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
             CriteriaBuilder criteriaBuilder,
             Root<MembershipPayment> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
 
-        if (totalPayment != null) {
+        if (clientId != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    itemRoot.get("totalPayment"), totalPayment)));
+                                    itemRoot.get("clientId"), clientId)));
         }
 
-        if (month != null) {
+        if (grossAmount != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("month")), month.toUpperCase())));
+                                    itemRoot.get("grossAmount"), grossAmount)));
         }
 
-        if (idChannel != null) {
+        if (netAmount != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    itemRoot.get("idChannel"), idChannel)));
+                                    itemRoot.get("netAmount"), netAmount)));
+        }
+
+        if (paymentGatewayFee != null) {
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    itemRoot.get("paymentGatewayFee"), paymentGatewayFee)));
+        }
+
+        if (taxAmount != null) {
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    itemRoot.get("taxAmount"), taxAmount)));
+        }
+
+        if (paymentGatewayId != null) {
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    itemRoot.get("paymentGatewayId"), paymentGatewayId)));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         return conditions;
@@ -97,11 +186,35 @@ public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentR
             CriteriaBuilder criteriaBuilder,
             Root<MembershipPayment> itemRoot) {
         List<Order> paymentList = new ArrayList<>();
-        if (sortColumn.equalsIgnoreCase("totalPayment")) {
-            paymentList.add(criteriaBuilder.asc(itemRoot.get("totalPayment")));
+        if (sortColumn.equalsIgnoreCase("clientId")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
-        if (sortColumn.equalsIgnoreCase("month")) {
-            paymentList.add(criteriaBuilder.asc(itemRoot.get("month")));
+        if (sortColumn.equalsIgnoreCase("grossAmount")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("grossAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("netAmount")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("netAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("paymentGatewayFee")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("paymentGatewayFee")));
+        }
+        if (sortColumn.equalsIgnoreCase("taxAmount")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("taxAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("paymentGatewayId")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("paymentGatewayId")));
+        }
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            paymentList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
         }
         return paymentList;
     }
@@ -111,22 +224,67 @@ public class MembershipPaymentRepositoryCustomImpl implements MembershipPaymentR
             CriteriaBuilder criteriaBuilder,
             Root<MembershipPayment> itemRoot) {
         List<Order> paymentList = new ArrayList<>();
-        if (sortColumn.equalsIgnoreCase("totalPayment")) {
-            paymentList.add(criteriaBuilder.desc(itemRoot.get("totalPayment")));
+        if (sortColumn.equalsIgnoreCase("clientId")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
-        if (sortColumn.equalsIgnoreCase("month")) {
-            paymentList.add(criteriaBuilder.desc(itemRoot.get("month")));
+        if (sortColumn.equalsIgnoreCase("grossAmount")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("grossAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("netAmount")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("netAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("paymentGatewayFee")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("paymentGatewayFee")));
+        }
+        if (sortColumn.equalsIgnoreCase("taxAmount")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("taxAmount")));
+        }
+        if (sortColumn.equalsIgnoreCase("paymentGatewayId")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("paymentGatewayId")));
+        }
+        if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("updateStartDate")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+        }
+        if (sortColumn.equalsIgnoreCase("updateEndDate")) {
+            paymentList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
         return paymentList;
     }
 
-    private long getOrderCount(Double totalPayment, String month, Long idChannel) {
+    private long getOrderCount(
+            Long clientId,
+            Double grossAmount,
+            Double netAmount,
+            Double paymentGatewayFee,
+            Double taxAmount,
+            Long paymentGatewayId,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<MembershipPayment> itemRoot = criteriaQuery.from(MembershipPayment.class);
-
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(totalPayment, month, idChannel, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                grossAmount,
+                netAmount,
+                paymentGatewayFee,
+                taxAmount,
+                paymentGatewayId,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

@@ -4,11 +4,14 @@ import com.proyect.masterdata.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UserRepositoryCustom {
     Page<User> searchForUser(
-            String user,
-            Long cientId,
+            Long clientId,
+            List<String> names,
+            List<String> usernames,
             String sort,
             String sortColumn,
             Integer pageNumber,

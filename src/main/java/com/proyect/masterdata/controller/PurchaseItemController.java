@@ -9,24 +9,45 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @CrossOrigin({ "*" })
 @RequestMapping("purchase-item")
 @AllArgsConstructor
 public class PurchaseItemController {
-
     private final IPurchaseItem iPurchaseItem;
-
-    @GetMapping()
+    @GetMapping("pagination")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
     public ResponseEntity<Page<PurchaseItemDTO>> list(
-            @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "supplierProductSerial", required = false) String supplierProductSerial,
+            @RequestParam(value = "purchases",required = false) List<String> purchases,
+            @RequestParam(value = "warehouses", required = false) List<String> warehouses,
+            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions {
-        Page<PurchaseItemDTO> result = iPurchaseItem.list(serial, user,supplierProductSerial, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+            @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<PurchaseItemDTO>> result = iPurchaseItem.list(
+                user,
+                purchases,
+                warehouses,
+                supplierProducts,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
+    public ResponseEntity<List<PurchaseItemDTO>> listPurchase(
+            @RequestParam("user") String user,
+            @RequestParam(value = "id", required = false) Long id
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<PurchaseItemDTO>> result = iPurchaseItem.listPurchaseItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

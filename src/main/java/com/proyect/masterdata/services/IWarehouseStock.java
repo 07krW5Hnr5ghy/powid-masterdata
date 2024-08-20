@@ -10,14 +10,23 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 public interface IWarehouseStock {
-        public ResponseSuccess in(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
+        ResponseSuccess in(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
                         throws InternalErrorExceptions, BadRequestExceptions;
-
-        public ResponseSuccess out(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
+        ResponseSuccess out(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
                         throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<Page<WarehouseStockDTO>> list(
+                List<String> warehouses,
+                String serial,
+                String productSku,
+                String user,
+                String sort,
+                String sortColumn,
+                Integer pageNumber,
+                Integer pageSize) throws InternalErrorExceptions;
+        CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,String warehouse,String supplierProduct) throws BadRequestExceptions,InternalErrorExceptions;
 
-        public Page<WarehouseStockDTO> list(String warehouse, String user, String sort, String sortColumn,
-                        Integer pageNumber,
-                        Integer pageSize) throws InternalErrorExceptions;
 }

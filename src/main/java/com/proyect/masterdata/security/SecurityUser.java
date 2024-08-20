@@ -1,29 +1,18 @@
 package com.proyect.masterdata.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.UserRole;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.AccessRepository;
 import com.proyect.masterdata.repository.RoleAccessRepository;
 import com.proyect.masterdata.repository.RoleRepository;
 import com.proyect.masterdata.repository.UserRoleRepository;
-import com.proyect.masterdata.domain.Access;
-import com.proyect.masterdata.domain.Role;
-import com.proyect.masterdata.domain.RoleAccess;
-
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @AllArgsConstructor
 public class SecurityUser implements UserDetails {
@@ -37,9 +26,9 @@ public class SecurityUser implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        List<UserRole> userRoles = userRoleRepository.findByUserId(user.getId());
+        List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(user.getId());
         List<Role> roles = roleRepository
-                .findAllById(userRoles.stream().map(userRole -> userRole.getRoleId()).toList());
+                .findAllById(userRoles.stream().map(UserRole::getRoleId).toList());
         List<GrantedAuthority> authoritiesList = new ArrayList<>();
 
         for (Role role : roles) {
@@ -49,7 +38,7 @@ public class SecurityUser implements UserDetails {
             List<RoleAccess> roleAccesses = roleAccessRepository.findByRoleId(role.getId());
 
             List<Access> accesses = accessRepository
-                    .findAllById(roleAccesses.stream().map(roleAccess -> roleAccess.getAccessId()).toList());
+                    .findAllById(roleAccesses.stream().map(RoleAccess::getAccessId).toList());
 
             for (Access access : accesses) {
                 authoritiesList.add(new SimpleGrantedAuthority("ACCESS:" + access.getName()));

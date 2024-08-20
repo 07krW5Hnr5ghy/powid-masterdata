@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 
@@ -26,16 +27,18 @@ public class OrderStockItem {
     private Integer quantity;
 
     @Column(name = "registration_date")
+    @CreationTimestamp
     private Date registrationDate;
 
     @Column(name = "update_date")
+    @CreationTimestamp
     private Date updateDate;
 
     @Column(name = "status")
     private Boolean status;
 
     @Column(name = "item_id")
-    private Long itemId;
+    private Long orderItemId;
 
     @Column(name = "supplier_product_id")
     private Long supplierProductId;
@@ -46,11 +49,14 @@ public class OrderStockItem {
     @Column(name = "client_id")
     private Long clientId;
 
+    @Column(name = "order_id")
+    private Long orderId;
+
     @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "item_id", columnDefinition = "itemId", insertable = false, updatable = false)
+    @JoinColumn(name = "item_id", columnDefinition = "orderItemId", insertable = false, updatable = false)
     private OrderItem orderItem;
 
     @ManyToOne
@@ -64,5 +70,9 @@ public class OrderStockItem {
     @ManyToOne
     @JoinColumn(name = "order_stock_id",columnDefinition = "orderStockId",insertable = false,updatable = false)
     private OrderStock orderStock;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
+    private Ordering ordering;
 
 }

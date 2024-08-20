@@ -13,6 +13,7 @@ import com.proyect.masterdata.mapper.SaleChannelMapper;
 import com.proyect.masterdata.repository.SaleChannelRepository;
 import com.proyect.masterdata.repository.SaleChannelRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ISaleChannel;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class SaleChannelImpl implements ISaleChannel {
     private final SaleChannelMapper saleChannelMapper;
     private final UserRepository userRepository;
     private final SaleChannelRepositoryCustom saleChannelRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
         User datauser;
@@ -57,8 +59,9 @@ public class SaleChannelImpl implements ISaleChannel {
         }
 
         try {
-            saleChannelRepository.save(saleChannelMapper.saleChannelToName(RequestSaleChannelSave.builder()
+            SaleChannel newSaleChannel = saleChannelRepository.save(saleChannelMapper.saleChannelToName(RequestSaleChannelSave.builder()
                     .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
+            iAudit.save("ADD_SALE_CHANNEL","CANAL DE VENTA "+newSaleChannel.getName()+" CREADO.",newSaleChannel.getName(),datauser.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -70,169 +73,188 @@ public class SaleChannelImpl implements ISaleChannel {
     }
 
     @Override
-    public ResponseSuccess saveAll(List<String> names, String user)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        List<SaleChannel> saleChannels;
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            SaleChannel saleChannel;
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            saleChannels = saleChannelRepository.findByNameIn(names.stream().map(String::toUpperCase).toList());
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                saleChannel = saleChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (!saleChannels.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorSaleChannelList.toUpperCase());
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (saleChannel != null) {
+                throw new BadRequestExceptions(Constants.ErrorSaleChannelExists.toUpperCase());
+            }
 
-        try {
-            List<RequestSaleChannelSave> saleChannelSaves = names.stream().map(data -> RequestSaleChannelSave.builder()
-                    .user(user.toUpperCase())
-                    .name(data.toUpperCase())
-                    .build()).toList();
-            saleChannelRepository.saveAll(saleChannelMapper.listSaleChannelToListName(saleChannelSaves));
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public SaleChannelDTO update(RequestSaleChannel requestSaleChannel)
-            throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        SaleChannel saleChannel;
-
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(requestSaleChannel.getUser().toUpperCase());
-            saleChannel = saleChannelRepository.findById(requestSaleChannel.getCode()).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (saleChannel == null) {
-            throw new BadRequestExceptions(Constants.ErrorSaleChannel.toUpperCase());
-        }
-
-        saleChannel.setName(requestSaleChannel.getName().toUpperCase());
-        saleChannel.setTokenUser(datauser.getUsername().toUpperCase());
-        saleChannel.setStatus(requestSaleChannel.isStatus());
-        saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
-
-        try {
-            return saleChannelMapper.saleChannelToSaleChannelDTO(saleChannelRepository.save(saleChannel));
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                SaleChannel newSaleChannel = saleChannelRepository.save(saleChannelMapper.saleChannelToName(RequestSaleChannelSave.builder()
+                        .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
+                iAudit.save("ADD_SALE_CHANNEL","CANAL DE VENTA "+newSaleChannel.getName()+" CREADO.",newSaleChannel.getName(),datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
     @Transactional
-    public ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
-        SaleChannel saleChannel;
+    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            SaleChannel saleChannel;
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                saleChannel = saleChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
-            saleChannel = saleChannelRepository.findById(code).orElse(null);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (saleChannel == null) {
+                throw new BadRequestExceptions(Constants.ErrorSaleChannel.toUpperCase());
+            }
 
-        if (datauser == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-        if (saleChannel == null) {
-            throw new BadRequestExceptions(Constants.ErrorSaleChannel.toUpperCase());
-        }
-
-        try {
-            saleChannel.setStatus(false);
-            saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
-            saleChannelRepository.save(saleChannel);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                saleChannel.setStatus(false);
+                saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
+                saleChannel.setTokenUser(datauser.getUsername());
+                saleChannelRepository.save(saleChannel);
+                iAudit.save("DELETE_SALE_CHANNEL","CANAL DE VENTA "+saleChannel.getName()+" DESACTIVADO.",saleChannel.getName(),datauser.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public List<SaleChannelDTO> listSaleChannel() throws BadRequestExceptions {
-        List<SaleChannel> saleChannels = new ArrayList<>();
-        try {
-            saleChannels = saleChannelRepository.findAllByStatusTrue();
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (saleChannels.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannels);
+    public CompletableFuture<List<SaleChannelDTO>> listSaleChannel() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SaleChannel> saleChannels;
+            try {
+                saleChannels = saleChannelRepository.findAllByStatusTrue();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (saleChannels.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannels);
+        });
     }
 
     @Override
-    public Page<SaleChannelDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<SaleChannelDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<SaleChannel> saleChannelPage;
-        try {
-            saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name, user, sort, sortColumn, pageNumber,
-                    pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (saleChannelPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannelPage.getContent()),
-                saleChannelPage.getPageable(), saleChannelPage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<SaleChannel> saleChannelPage;
+            try {
+                saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name, user, sort, sortColumn, pageNumber,
+                        pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (saleChannelPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannelPage.getContent()),
+                    saleChannelPage.getPageable(), saleChannelPage.getTotalElements());
+        });
     }
 
     @Override
-    public Page<SaleChannelDTO> listStatusFalse(String name, String user, String sort, String sortColumn,
+    public CompletableFuture<Page<SaleChannelDTO>> listStatusFalse(String name, String user, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<SaleChannel> saleChannelPage;
-        try {
-            saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name, user, sort, sortColumn, pageNumber,
-                    pageSize, false);
-        } catch (RuntimeException e) {
-            log.error(e);
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-        if (saleChannelPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        return new PageImpl<>(saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannelPage.getContent()),
-                saleChannelPage.getPageable(), saleChannelPage.getTotalElements());
+        return CompletableFuture.supplyAsync(()->{
+            Page<SaleChannel> saleChannelPage;
+            try {
+                saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name, user, sort, sortColumn, pageNumber,
+                        pageSize, false);
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (saleChannelPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+            return new PageImpl<>(saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannelPage.getContent()),
+                    saleChannelPage.getPageable(), saleChannelPage.getTotalElements());
+        });
     }
 
     @Override
-    public SaleChannelDTO findByCode(Long code) throws BadRequestExceptions {
-        try {
-            return saleChannelMapper.saleChannelToSaleChannelDTO(saleChannelRepository.findByIdAndStatusTrue(code));
-        } catch (RuntimeException e) {
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+    public CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User datauser;
+            SaleChannel saleChannel;
+            try {
+                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                saleChannel = saleChannelRepository.findByNameAndStatusFalse(name.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (datauser == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+            if (saleChannel == null) {
+                throw new BadRequestExceptions(Constants.ErrorSaleChannel.toUpperCase());
+            }
+
+            try {
+                saleChannel.setStatus(true);
+                saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
+                saleChannel.setTokenUser(datauser.getUsername());
+                saleChannelRepository.save(saleChannel);
+                iAudit.save("ACTIVATE_SALE_CHANNEL","CANAL DE VENTA "+saleChannel.getName()+" ACTIVADO.",saleChannel.getName(),datauser.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SaleChannelDTO>> listFilter() throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SaleChannel> saleChannels;
+            try {
+                saleChannels = saleChannelRepository.findAll();
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if (saleChannels.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannels);
+        });
     }
 
 }

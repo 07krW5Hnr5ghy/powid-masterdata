@@ -14,4 +14,6 @@ import lombok.NoArgsConstructor;
 public class ResponseLogin {
     private User user;
     private String jwt;
+    private int code;
+    private String message;
 }

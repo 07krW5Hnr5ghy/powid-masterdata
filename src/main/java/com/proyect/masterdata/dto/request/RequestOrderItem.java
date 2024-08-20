@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestOrderItem {
     private Integer quantity;
-    private Double discount;
-    private String productSku;
+    private String discount;
+    private Double discountAmount;
+    private String product;
     private String observations;
 }

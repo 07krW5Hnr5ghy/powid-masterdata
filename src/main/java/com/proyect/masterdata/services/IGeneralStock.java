@@ -7,14 +7,26 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 public interface IGeneralStock {
-        public ResponseSuccess in(String supplierProductSerial, Integer quantity, String tokenUser)
+        CompletableFuture<ResponseSuccess> in(String supplierProductSerial, Integer quantity, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-
-        public ResponseSuccess out(String supplierProductSerial, Integer quantity, String tokenUser)
+        CompletableFuture<ResponseSuccess> out(String supplierProductSerial, Integer quantity, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-
-        public Page<GeneralStockDTO> list(String user, String sort, String sortColumn,
-                        Integer pageNumber,
-                        Integer pageSize) throws InternalErrorExceptions;
+        CompletableFuture<Page<GeneralStockDTO>> list(
+                String user,
+                String serial,
+                String productSku,
+                Date registrationStartDate,
+                Date registrationEndDate,
+                Date updateStartDate,
+                Date updateEndDate,
+                String sort,
+                String sortColumn,
+                Integer pageNumber,
+                Integer pageSize) throws InternalErrorExceptions;
+        CompletableFuture<List<GeneralStockDTO>> listGeneralStock(String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

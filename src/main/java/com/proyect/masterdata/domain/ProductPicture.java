@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableProductPicture,schema = Constants.schemaArticle)
+@Table(name = Constants.tableProductPicture,schema = Constants.schemaMarketing)
 public class ProductPicture {
 
     @Id

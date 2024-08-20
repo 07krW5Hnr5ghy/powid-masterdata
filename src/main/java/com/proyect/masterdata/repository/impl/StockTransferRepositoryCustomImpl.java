@@ -21,7 +21,15 @@ public class StockTransferRepositoryCustomImpl implements StockTransferRepositor
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<StockTransfer> searchForStockTransfer(Long clientId, Long originWarehouseId, Long destinationWarehouseId, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<StockTransfer> searchForStockTransfer(
+            Long clientId,
+            List<String> serials,
+            List<Long> originWarehouseIds,
+            List<Long> destinationWarehouseIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<StockTransfer> criteriaQuery = criteriaBuilder.createQuery(StockTransfer.class);
 
@@ -29,7 +37,13 @@ public class StockTransferRepositoryCustomImpl implements StockTransferRepositor
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicate(clientId,originWarehouseId, destinationWarehouseId, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                serials,
+                originWarehouseIds,
+                destinationWarehouseIds,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -53,12 +67,21 @@ public class StockTransferRepositoryCustomImpl implements StockTransferRepositor
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(clientId,originWarehouseId, destinationWarehouseId);
+        Long count = getOrderCount(
+                clientId,
+                serials,
+                originWarehouseIds,
+                destinationWarehouseIds);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
-    private List<Predicate> predicate(Long clientId, Long originWarehouseId, Long destinationWarehouseId, CriteriaBuilder criteriaBuilder,
-                                      Root<StockTransfer> itemRoot) {
+    private List<Predicate> predicate(
+            Long clientId,
+            List<String> serials,
+            List<Long> originWarehouseIds,
+            List<Long> destinationWarehouseIds,
+            CriteriaBuilder criteriaBuilder,
+            Root<StockTransfer> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -66,12 +89,16 @@ public class StockTransferRepositoryCustomImpl implements StockTransferRepositor
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (originWarehouseId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("originWarehouseId"), originWarehouseId)));
+        if(!serials.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("serial").in(serials)));
         }
 
-        if (destinationWarehouseId != null) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("destinationWarehouseId"), destinationWarehouseId)));
+        if (!originWarehouseIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("originWarehouseId").in(originWarehouseIds)));
+        }
+
+        if (!destinationWarehouseIds.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("destinationWarehouseId").in(destinationWarehouseIds)));
         }
 
         return conditions;
@@ -116,14 +143,24 @@ public class StockTransferRepositoryCustomImpl implements StockTransferRepositor
         return stockTransferList;
     }
 
-    private Long getOrderCount(Long clientId, Long originWarehouseId, Long destinationWarehouseId) {
+    private Long getOrderCount(
+            Long clientId,
+            List<String> serials,
+            List<Long> originWarehouseIds,
+            List<Long> destinationWarehouseIds) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<StockTransfer> itemRoot = criteriaQuery.from(StockTransfer.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(clientId, originWarehouseId, destinationWarehouseId, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                serials,
+                originWarehouseIds,
+                destinationWarehouseIds,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

@@ -7,7 +7,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
@@ -17,17 +22,38 @@ public class StockTransferItemController {
 
     private final IStockTransferItem iStockTransferItem;
 
-    @GetMapping()
+    @GetMapping("pagination")
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_ITEM_GET')")
     public ResponseEntity<Page<StockTransferItemDTO>> list(
             @RequestParam("user") String user,
-            @RequestParam(value = "stockTransferId",required = false) Long stockTransferId,
-            @RequestParam(value = "supplierProductSerial",required = false) String supplierProductSerial,
+            @RequestParam(value = "stockTransfers",required = false) List<String> stockTransfers,
+            @RequestParam(value = "originWarehouses",required = false) List<String> originWarehouses,
+            @RequestParam(value = "destinationWarehouses",required = false) List<String> destinationWarehouses,
+            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
-    ) throws BadRequestExceptions {
-        Page<StockTransferItemDTO> result = iStockTransferItem.list(user,stockTransferId,supplierProductSerial,sort,sortColumn,pageNumber,pageSize);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<StockTransferItemDTO>> result = iStockTransferItem.list(
+                user,
+                stockTransfers,
+                originWarehouses,
+                destinationWarehouses,
+                supplierProducts,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_ITEM_GET')")
+    public ResponseEntity<List<StockTransferItemDTO>> listStockTransferItem(
+            @RequestParam("user") String user,
+            @RequestParam(value = "id",required = false) Long id
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<StockTransferItemDTO>> result = iStockTransferItem.listStockTransferItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

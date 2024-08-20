@@ -1,61 +1,60 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.domain.MembershipPayment;
-import com.proyect.masterdata.dto.PaymentDTO;
-import com.proyect.masterdata.dto.PaymentUpdateDTO;
-import com.proyect.masterdata.dto.request.RequestMembershipPayment;
-import com.proyect.masterdata.dto.request.RequestMembershipPaymentUpdate;
-import com.proyect.masterdata.dto.response.ResponseSuccess;
+import com.proyect.masterdata.dto.MembershipPaymentDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IMembershipPayment;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("/payment")
+@RequestMapping("membership-payment")
 @AllArgsConstructor
 public class MembershipPaymentController {
-
     private final IMembershipPayment iMembershipPayment;
-
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("membershipId") Long membershipId,
-            @RequestBody() RequestMembershipPayment requestMembershipPayment,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions {
-        ResponseSuccess result = iMembershipPayment.save(membershipId, requestMembershipPayment, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:MEMBERSHIP_PAYMENT_GET')")
+    public ResponseEntity<Page<MembershipPaymentDTO>> list(
+            @RequestParam(value = "user") String user,
+            @RequestParam(value = "grossAmount", required = false) Double grossAmount,
+            @RequestParam(value = "netAmount", required = false) Double netAmount,
+            @RequestParam(value = "paymentGatewayFee", required = false) Double paymentGatewayFee,
+            @RequestParam(value = "taxAmount", required = false) Double taxAmount,
+            @RequestParam(value = "paymentGateway", required = false) String paymentGateway,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sortColumn", required = false) String sortColumn,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<MembershipPaymentDTO>> result = iMembershipPayment.list(
+                user,
+                grossAmount,
+                netAmount,
+                paymentGatewayFee,
+                taxAmount,
+                paymentGateway,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PaymentUpdateDTO> update(
-            @RequestParam("membershipId") Long membershipId,
-            @RequestBody() RequestMembershipPaymentUpdate requestMembershipPaymentUpdate,
-            @RequestParam("user") String tokenUser) throws BadRequestExceptions {
-        PaymentUpdateDTO result = iMembershipPayment.update(membershipId, requestMembershipPaymentUpdate, tokenUser);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    // @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    // public ResponseEntity<Page<MembershipPayment>> list(
-    // @RequestParam(value = "totalPayment", required = false) Double totalPayment,
-    // @RequestParam(value = "month", required = false) String month,
-    // @RequestParam(value = "channel", required = false) String channel,
-    // @RequestParam(value = "sort", required = false) String sort,
-    // @RequestParam(value = "sortColumn", required = false) String sortColumn,
-    // @RequestParam("pageNumber") Integer pageNumber,
-    // @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions {
-    // Page<MembershipPayment> result = iPayment.list(totalPayment, month, channel,
-    // sort, sortColumn, pageNumber,
-    // pageSize);
-    // return new ResponseEntity<>(result, HttpStatus.OK);
-    // }
 
 }

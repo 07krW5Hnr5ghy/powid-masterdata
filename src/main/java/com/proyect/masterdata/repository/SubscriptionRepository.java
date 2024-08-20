@@ -9,11 +9,9 @@ import com.proyect.masterdata.domain.Subscription;
 
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
-
     Subscription findByNameAndStatusTrue(String name);
-
+    Subscription findByNameAndStatusFalse(String name);
     Boolean existsByNameAndStatusTrue(String name);
-
     List<Subscription> findAllByStatusTrue();
 
 }

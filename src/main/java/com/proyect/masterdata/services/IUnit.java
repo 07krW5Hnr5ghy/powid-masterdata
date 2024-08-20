@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.dto.UnitDTO;
 import com.proyect.masterdata.dto.request.RequestUnit;
@@ -11,10 +12,10 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IUnit {
     ResponseSuccess save(RequestUnit requestUnit, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-
-    ResponseSuccess saveAll(List<String> names,String unitType, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-
-    ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-
-    List<UnitDTO> listUnit() throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(RequestUnit requestUnit, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<List<UnitDTO>> listUnit() throws BadRequestExceptions;
+    CompletableFuture<List<UnitDTO>> listUnitByType(String unitTypeName) throws BadRequestExceptions;
+    CompletableFuture<List<UnitDTO>> listFilter() throws BadRequestExceptions;
 }

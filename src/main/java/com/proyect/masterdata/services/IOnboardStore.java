@@ -5,7 +5,8 @@ import com.proyect.masterdata.domain.OnboardStore;
 import com.proyect.masterdata.domain.Store;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
-public interface IOnboardStore {
+import java.util.concurrent.CompletableFuture;
 
-    OnboardStore save(Store store, Onboard onboard) throws InternalErrorExceptions;
+public interface IOnboardStore {
+    CompletableFuture<OnboardStore> save(Store store, Onboard onboard) throws InternalErrorExceptions;
 }

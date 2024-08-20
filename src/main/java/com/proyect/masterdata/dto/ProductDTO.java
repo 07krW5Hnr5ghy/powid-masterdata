@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Builder
@@ -13,6 +14,7 @@ import java.util.List;
 @Data
 public class ProductDTO {
     private String sku;
+    private String brand;
     private String model;
     private String size;
     private String category;
@@ -20,4 +22,7 @@ public class ProductDTO {
     private String unit;
     private Double price;
     private List<String> pictures;
+    private Boolean pictureFlag;
+    private Date registrationDate;
+    private Date updateDate;
 }

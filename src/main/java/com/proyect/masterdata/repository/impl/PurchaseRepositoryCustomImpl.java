@@ -15,13 +15,23 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Repository
 public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
+
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
+
     @Override
-    public Page<Purchase> searchForPurchase(Long clientId, String serial, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Purchase> searchForPurchase(
+            Long clientId,
+            List<String> serials,
+            List<Long> warehouseIds,
+            List<Long> purchaseTypeIds,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Purchase> criteriaQuery = criteriaBuilder.createQuery(Purchase.class);
@@ -30,7 +40,14 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
 
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicate(clientId, serial, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                serials,
+                warehouseIds,
+                purchaseTypeIds,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -45,7 +62,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             }
 
             criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(purchaseList);
-
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
@@ -55,12 +71,23 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(clientId, serial, status);
+        Long count = getOrderCount(
+                clientId,
+                serials,
+                warehouseIds,
+                purchaseTypeIds,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
-    private List<Predicate> predicate(Long clientId, String serial, Boolean status,
-                                      CriteriaBuilder criteriaBuilder, Root<Purchase> itemRoot) {
+    private List<Predicate> predicate(
+            Long clientId,
+            List<String> serials,
+            List<Long> warehouseIds,
+            List<Long> purchaseTypeIds,
+            Boolean status,
+            CriteriaBuilder criteriaBuilder,
+            Root<Purchase> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -68,9 +95,16 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (serial != null) {
-            conditions.add(criteriaBuilder
-                    .and(criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("serial")), serial.toUpperCase())));
+        if(!serials.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("serial").in(serials)));
+        }
+
+        if(!warehouseIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("warehouseId").in(warehouseIds)));
+        }
+
+        if(!purchaseTypeIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("purchaseTypeId").in(purchaseTypeIds)));
         }
 
         if (status) {
@@ -82,7 +116,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
         }
 
         return conditions;
-
     }
 
     private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Purchase> itemRoot) {
@@ -93,8 +126,16 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             purchaseList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
-        if (sortColumn.equalsIgnoreCase("serial")) {
-            purchaseList.add(criteriaBuilder.asc(itemRoot.get("serial")));
+        if (sortColumn.equalsIgnoreCase("warehouseId")) {
+            purchaseList.add(criteriaBuilder.asc(itemRoot.get("warehouseId")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("purchaseTypeId")) {
+            purchaseList.add(criteriaBuilder.asc(itemRoot.get("purchaseTypeId")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("purchaseSerial")) {
+            purchaseList.add(criteriaBuilder.asc(itemRoot.get("purchaseSerial")));
         }
 
         return purchaseList;
@@ -108,19 +149,39 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             purchaseList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
-        if (sortColumn.equalsIgnoreCase("serial")) {
-            purchaseList.add(criteriaBuilder.desc(itemRoot.get("serial")));
+        if (sortColumn.equalsIgnoreCase("warehouseId")) {
+            purchaseList.add(criteriaBuilder.desc(itemRoot.get("warehouseId")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("purchaseTypeId")) {
+            purchaseList.add(criteriaBuilder.desc(itemRoot.get("purchaseTypeId")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("purchaseSerial")) {
+            purchaseList.add(criteriaBuilder.desc(itemRoot.get("purchaseSerial")));
         }
 
         return purchaseList;
     }
 
-    private Long getOrderCount(Long clientId, String serial, Boolean status) {
+    private Long getOrderCount(
+            Long clientId,
+            List<String> serials,
+            List<Long> warehouseIds,
+            List<Long> purchaseTypeIds,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Purchase> itemRoot = criteriaQuery.from(Purchase.class);
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(clientId, serial, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                serials,
+                warehouseIds,
+                purchaseTypeIds,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

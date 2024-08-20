@@ -9,9 +9,13 @@ import com.proyect.masterdata.domain.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-
     boolean existsBySkuAndStatusTrue(String sku);
     List<Product> findBySkuIn(List<String> skuList);
     Product findBySkuAndStatusTrue(String sku);
+    Product findBySkuAndStatusFalse(String sku);
     Product findBySku(String sku);
+    List<Product> findAllByClientIdAndStatusTrue(Long clientId);
+    List<Product> findAllByClientId(Long clientId);
+    List<Product> findAllByClientIdAndStatusFalse(Long clientId);
+    List<Product> findAllByClientIdAndModelIdAndStatusFalse(Long clientId,Long modelId);
 }

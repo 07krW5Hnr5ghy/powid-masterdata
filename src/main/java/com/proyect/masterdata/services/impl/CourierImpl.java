@@ -9,6 +9,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICourier;
 import com.proyect.masterdata.services.ICourierPicture;
 import com.proyect.masterdata.utils.Constants;
@@ -18,10 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -32,192 +32,375 @@ public class CourierImpl implements ICourier {
     private final CourierRepositoryCustom courierRepositoryCustom;
     private final OrderingRepository orderingRepository;
     private final OrderStateRepository orderStateRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
-    private final SaleRepository saleRepository;
+    private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     private final ICourierPicture iCourierPicture;
+    private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Courier courier;
 
-        User user;
-        Courier courier;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            courier = courierRepository.findByName(requestCourier.getCourier().toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if(courier != null){
-            throw new BadRequestExceptions(Constants.ErrorCourierExists);
-        }
-
-        try {
-            courierRepository.save(Courier.builder()
-                            .name(requestCourier.getCourier().toUpperCase())
-                            .phoneNumber(requestCourier.getPhoneNumber())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .client(user.getClient())
-                            .clientId(user.getClientId())
-                            .status(true)
-                            .tokenUser(user.getUsername())
-                    .build());
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-    }
-
-    @Override
-    public ResponseDelete delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        User user;
-        Courier courier;
-
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            courier = courierRepository.findByNameAndStatusTrue(name.toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if(courier == null){
-            throw new BadRequestExceptions(Constants.ErrorCourier);
-        }
-
-        try {
-            courier.setStatus(false);
-            courier.setUpdateDate(new Date(System.currentTimeMillis()));
-            courierRepository.save(courier);
-            return ResponseDelete.builder()
-                    .code(200)
-                    .message(Constants.delete)
-                    .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-    }
-
-    @Override
-    public Page<CourierDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        Page<Courier> pageCourier;
-        Long clientId;
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-            pageCourier = courierRepositoryCustom.searchForCourier(name,clientId,sort,sortColumn,pageNumber,pageSize,true);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if(pageCourier.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
-                .courier(courier.getName())
-                .phoneNumber(courier.getPhoneNumber())
-                .build()).toList();
-
-        return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
-    }
-
-    @Override
-    public Page<CourierDTO> listFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-
-        Page<Courier> pageCourier;
-        Long clientId;
-
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-            pageCourier = courierRepositoryCustom.searchForCourier(name,clientId,sort,sortColumn,pageNumber,pageSize,false);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
-
-        if(pageCourier.isEmpty()){
-            return new PageImpl<>(Collections.emptyList());
-        }
-
-        List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
-                .courier(courier.getName())
-                .phoneNumber(courier.getPhoneNumber())
-                .build()).toList();
-
-        return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
-    }
-
-    @Override
-    public ResponseSuccess updateOrder(Long orderId, RequestCourierOrder requestCourierOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-
-        User user;
-        Ordering ordering;
-        OrderState orderState;
-        PaymentMethod paymentMethod;
-
-        try{
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            ordering = orderingRepository.findById(orderId).orElse(null);
-            orderState = orderStateRepository.findByNameAndStatusTrue(requestCourierOrder.getOrderState().toUpperCase());
-            paymentMethod = paymentMethodRepository.findByNameAndStatusTrue(requestCourierOrder.getPaymentMethod().toUpperCase());
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if(ordering == null){
-            throw new BadRequestExceptions(Constants.ErrorOrdering);
-        }
-
-        if(orderState == null){
-            throw new BadRequestExceptions(Constants.ErrorState);
-        }
-
-        try{
-
-            if(("EN RUTA".equals(ordering.getOrderState().getName())) && !Objects.equals(orderState.getId(), ordering.getOrderStateId())){
-                ordering.setOrderState(orderState);
-                ordering.setOrderStateId(orderState.getId());
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                courier = courierRepository.findByName(requestCourier.getCourier().toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if(!Objects.equals(paymentMethod.getId(), ordering.getPaymentMethodId())){
-                ordering.setPaymentMethod(paymentMethod);
-                ordering.setPaymentMethodId(paymentMethod.getId());
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            ordering.setUpdateDate(new Date(System.currentTimeMillis()));
+            if(courier != null){
+                throw new BadRequestExceptions(Constants.ErrorCourierExists);
+            }
 
-            iCourierPicture.uploadPicture(requestCourierOrder.getOrderPictures(),ordering.getId(),user.getUsername());
-            orderingRepository.save(ordering);
+            try {
+                Courier newCourier = courierRepository.save(Courier.builder()
+                        .name(requestCourier.getCourier().toUpperCase())
+                        .phoneNumber(requestCourier.getPhone())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(new Date(System.currentTimeMillis()))
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .status(true)
+                        .tokenUser(user.getUsername())
+                        .build());
+                iAudit.save("ADD_COURIER","COURIER "+newCourier.getName()+" CREADO.",newCourier.getName(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
+    @Override
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Courier courier;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                courier = courierRepository.findByNameAndStatusTrue(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(courier == null){
+                throw new BadRequestExceptions(Constants.ErrorCourier);
+            }
+
+            try {
+                courier.setStatus(false);
+                courier.setUpdateDate(new Date(System.currentTimeMillis()));
+                courierRepository.save(courier);
+                iAudit.save("DELETE_COURIER","COURIER "+courier.getName()+" DESACTIVADO.",courier.getName(),user.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Courier courier;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                courier = courierRepository.findByNameAndStatusFalse(name.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(courier == null){
+                throw new BadRequestExceptions(Constants.ErrorCourier);
+            }
+
+            try {
+                courier.setStatus(true);
+                courier.setUpdateDate(new Date(System.currentTimeMillis()));
+                courierRepository.save(courier);
+                iAudit.save("ACTIVATE_COURIER","COURIER "+courier.getName()+" ACTIVADO.",courier.getName(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<CourierDTO>> list(
+            String user,
+            List<String> names,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Courier> pageCourier;
+            Long clientId;
+            List<String> namesUppercase;
+            if(names != null && !names.isEmpty()){
+                namesUppercase = names.stream().map(String::toUpperCase).toList();
+            }else{
+                namesUppercase = new ArrayList<>();
+            }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                pageCourier = courierRepositoryCustom.searchForCourier(
+                        clientId,
+                        namesUppercase,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(pageCourier.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
+                    .build()).toList();
+
+            return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<CourierDTO>> listFalse(
+            String user,
+            List<String> names,
+            Date registrationStartDate,
+            Date registrationEndDate,
+            Date updateStartDate,
+            Date updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<Courier> pageCourier;
+            Long clientId;
+
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                pageCourier = courierRepositoryCustom.searchForCourier(
+                        clientId,
+                        names,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(pageCourier.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
+                    .build()).toList();
+
+            return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> updateOrder(Long orderId, RequestCourierOrder requestCourierOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(() -> {
+            User user;
+            Ordering ordering;
+            OrderState orderState;
+            OrderPaymentMethod orderPaymentMethod;
+
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                ordering = orderingRepository.findById(orderId).orElse(null);
+                orderState = orderStateRepository.findByNameAndStatusTrue(requestCourierOrder.getOrderState().toUpperCase());
+                orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestCourierOrder.getPaymentMethod().toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(ordering == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
+
+            if(orderState == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderState);
+            }
+
+            try{
+
+                if(("EN RUTA".equals(ordering.getOrderState().getName())) && !Objects.equals(orderState.getId(), ordering.getOrderStateId())){
+                    ordering.setOrderState(orderState);
+                    ordering.setOrderStateId(orderState.getId());
+                }
+
+                if(!Objects.equals(orderPaymentMethod.getId(), ordering.getPaymentMethodId())){
+                    ordering.setOrderPaymentMethod(orderPaymentMethod);
+                    ordering.setPaymentMethodId(orderPaymentMethod.getId());
+                }
+
+                ordering.setUpdateDate(new Date(System.currentTimeMillis()));
+
+                CompletableFuture<List<String>> deliveryPictures = iCourierPicture.uploadPicture(requestCourierOrder.getOrderPictures(),ordering.getId(),user.getUsername());
+                if(!ordering.getDeliveryFlag() && !deliveryPictures.get().isEmpty()){
+                    ordering.setDeliveryFlag(true);
+                    orderingRepository.save(ordering);
+                }
+                orderingRepository.save(ordering);
+                iAudit.save("UPDATE_COURIER_ORDER","PEDIDO "+ordering.getId()+" EDITADO POR COURIER.",ordering.getId().toString(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException | InterruptedException | ExecutionException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<CourierDTO>> listCouriers(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<Courier> couriers;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                couriers = courierRepository.findAllByClientIdAndStatusTrue(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(couriers.isEmpty()){
+                return Collections.emptyList();
+            }
+            return couriers.stream().map(courier -> CourierDTO.builder()
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<CourierDTO>> listCouriersFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<Courier> couriers;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                couriers = courierRepository.findAllByClientIdAndStatusFalse(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(couriers.isEmpty()){
+                return Collections.emptyList();
+            }
+            return couriers.stream().map(courier -> CourierDTO.builder()
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<CourierDTO>> listFilters(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<Courier> couriers;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                couriers = courierRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(couriers.isEmpty()){
+                return Collections.emptyList();
+            }
+            List<CourierDTO> courierDTOS = new ArrayList<>(couriers.stream().map(courier -> CourierDTO.builder()
+                    .name(courier.getName())
+                    .phone(courier.getPhoneNumber())
+                    .registrationDate(courier.getRegistrationDate())
+                    .updateDate(courier.getUpdateDate())
+                    .build()).toList());
+            Courier defaultNoCourier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
+            CourierDTO dtoNoCourier = CourierDTO.builder()
+                    .name(defaultNoCourier.getName())
+                    .phone(defaultNoCourier.getPhoneNumber())
+                    .registrationDate(defaultNoCourier.getRegistrationDate())
+                    .updateDate(defaultNoCourier.getUpdateDate())
                     .build();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            courierDTOS.add(dtoNoCourier);
+            return courierDTOS;
+        });
     }
 }

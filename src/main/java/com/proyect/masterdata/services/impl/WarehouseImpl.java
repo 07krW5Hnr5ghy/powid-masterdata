@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -33,7 +36,7 @@ public class WarehouseImpl implements IWarehouse {
     private final UserRepository userRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseRepositoryCustom warehouseRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestWarehouse requestWarehouse, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -46,6 +49,7 @@ public class WarehouseImpl implements IWarehouse {
             warehouse = warehouseRepository.findByName(requestWarehouse.getName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
@@ -58,97 +62,285 @@ public class WarehouseImpl implements IWarehouse {
         }
 
         try {
-            warehouseRepository.save(Warehouse.builder()
+            Warehouse newWarehouse = warehouseRepository.save(Warehouse.builder()
                     .client(user.getClient())
                     .clientId(user.getClientId())
-                    .location(requestWarehouse.getLocation().toUpperCase())
+                    .phone(requestWarehouse.getPhone())
+                    .address(requestWarehouse.getAddress())
+                    .contact(requestWarehouse.getContact().toUpperCase())
+                    .reference(requestWarehouse.getReference().toUpperCase())
                     .name(requestWarehouse.getName().toUpperCase())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
                     .tokenUser(tokenUser.toUpperCase())
                     .build());
-
+            iAudit.save("ADD_WAREHOUSE","ALMACEN "+newWarehouse.getName()+" CREADO.",newWarehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e) {
             log.error(e.getMessage());
+            e.printStackTrace();
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
     }
 
     @Override
-    public ResponseSuccess saveAll(List<RequestWarehouse> requestWarehousesList, String tokenUser)
-            throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestWarehouse requestWarehouse, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Warehouse warehouse;
 
-        User user;
-        List<Warehouse> warehouseList;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                warehouse = warehouseRepository.findByName(requestWarehouse.getName().toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
 
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            warehouseList = warehouseRepository.findByNameIn(
-                    requestWarehousesList.stream().map(warehouse -> warehouse.getName().toUpperCase()).toList());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
 
-        if (user == null) {
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }
+            if (warehouse != null) {
+                throw new BadRequestExceptions(Constants.ErrorWarehouseExists);
+            }
 
-        if (!warehouseList.isEmpty()) {
-            throw new BadRequestExceptions(Constants.ErrorWarehouseExists);
-        }
-
-        try {
-            warehouseRepository.saveAll(requestWarehousesList.stream().map(warehouse -> Warehouse.builder()
-                    .client(user.getClient())
-                    .clientId(user.getClientId())
-                    .location(warehouse.getLocation().toUpperCase())
-                    .name(warehouse.getName().toUpperCase())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
-                    .build()).toList());
-
-            return ResponseSuccess.builder()
-                    .code(200)
-                    .message(Constants.register)
-                    .build();
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+            try {
+                Warehouse newWarehouse = warehouseRepository.save(Warehouse.builder()
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .phone(requestWarehouse.getPhone())
+                        .address(requestWarehouse.getAddress())
+                        .contact(requestWarehouse.getContact().toUpperCase())
+                        .reference(requestWarehouse.getReference().toUpperCase())
+                        .name(requestWarehouse.getName().toUpperCase())
+                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .status(true)
+                        .tokenUser(tokenUser.toUpperCase())
+                        .build());
+                iAudit.save("ADD_WAREHOUSE","ALMACEN "+newWarehouse.getName()+" CREADO.",newWarehouse.getName(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
     @Override
-    public Page<WarehouseDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<ResponseDelete> delete(String warehouseName, String tokenUser) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Warehouse warehouse;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(),warehouseName.toUpperCase());
+            }
+            if(warehouse==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouse);
+            }
+            try {
+                warehouse.setStatus(false);
+                warehouse.setUpdateDate(new Date(System.currentTimeMillis()));
+                warehouse.setTokenUser(user.getUsername());
+                iAudit.save("DELETE_WAREHOUSE","ALMACEN "+warehouse.getName()+" DESACTIVADO.",warehouse.getName(),user.getUsername());
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String warehouseName, String tokenUser) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Warehouse warehouse;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(),warehouseName.toUpperCase());
+            }
+            if(warehouse==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouse);
+            }
+            try {
+                warehouse.setStatus(false);
+                warehouse.setUpdateDate(new Date(System.currentTimeMillis()));
+                warehouse.setTokenUser(user.getUsername());
+                iAudit.save("ACTIVATE_WAREHOUSE","ALMACEN "+warehouse.getName()+" ACTIVADO.",warehouse.getName(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<WarehouseDTO>> list(
+            String user,
+            List<String> names,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
-        Page<Warehouse> warehousePage;
-        Long clientId;
+        return CompletableFuture.supplyAsync(()->{
+            Page<Warehouse> warehousePage;
+            Long clientId;
+            List<String> namesUppercase;
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            warehousePage = warehouseRepositoryCustom.searchForWarehouse(name, clientId, sort, sortColumn, pageNumber,
-                    pageSize, true);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if(names != null && !names.isEmpty()){
+                namesUppercase = names.stream().map(String::toUpperCase).toList();
+            }else{
+                namesUppercase = new ArrayList<>();
+            }
 
-        if (warehousePage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                warehousePage = warehouseRepositoryCustom.searchForWarehouse(
+                        clientId,
+                        namesUppercase,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize, true);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        List<WarehouseDTO> warehouseDTOs = warehousePage.getContent().stream().map(warehouse -> WarehouseDTO.builder()
-                .location(warehouse.getLocation())
-                .name(warehouse.getName())
-                .build()).toList();
+            if (warehousePage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        return new PageImpl<>(warehouseDTOs, warehousePage.getPageable(), warehousePage.getTotalElements());
+            List<WarehouseDTO> warehouseDTOs = warehousePage.getContent().stream().map(warehouse -> WarehouseDTO.builder()
+                    .name(warehouse.getName())
+                    .contact(warehouse.getContact())
+                    .phone(warehouse.getPhone())
+                    .address(warehouse.getAddress())
+                    .reference(warehouse.getReference())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
+                    .build()).toList();
+
+            return new PageImpl<>(warehouseDTOs, warehousePage.getPageable(), warehousePage.getTotalElements());
+        });
     }
 
+    @Override
+    public CompletableFuture<List<WarehouseDTO>> listWarehouse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Warehouse> warehouses;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                warehouses = warehouseRepository.findAllByClientIdAndStatusTrue(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (warehouses.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
+                    .name(warehouse.getName())
+                    .contact(warehouse.getContact())
+                    .phone(warehouse.getPhone())
+                    .address(warehouse.getAddress())
+                    .reference(warehouse.getReference())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<WarehouseDTO>> listWarehouseFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Warehouse> warehouses;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                warehouses = warehouseRepository.findAllByClientIdAndStatusFalse(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (warehouses.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
+                    .name(warehouse.getName())
+                    .contact(warehouse.getContact())
+                    .phone(warehouse.getPhone())
+                    .address(warehouse.getAddress())
+                    .reference(warehouse.getReference())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
+                    .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<WarehouseDTO>> listFilters(String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Warehouse> warehouses;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                warehouses = warehouseRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (warehouses.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
+                    .name(warehouse.getName())
+                    .contact(warehouse.getContact())
+                    .phone(warehouse.getPhone())
+                    .address(warehouse.getAddress())
+                    .reference(warehouse.getReference())
+                    .registrationDate(warehouse.getRegistrationDate())
+                    .updateDate(warehouse.getUpdateDate())
+                    .build()).toList();
+        });
+    }
 }

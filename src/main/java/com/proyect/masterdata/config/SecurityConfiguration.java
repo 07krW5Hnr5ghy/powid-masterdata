@@ -62,8 +62,30 @@ public class SecurityConfiguration {
                     auth.requestMatchers(HttpMethod.GET, "/store-type/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/subscription/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/module").permitAll();
-                    auth.requestMatchers("/file/**").permitAll();
-                    // auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
+                    auth.requestMatchers(HttpMethod.GET, "/purchase-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/purchase-document/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/stock-transaction-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/size/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/category-product/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/color/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/size-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/unit-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/unit/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/supplier-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/country/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/sale-channel/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/order-payment-method/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/management-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/delivery-point/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/discount/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/customer-type/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/order-state/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/order-payment-state/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/cancellation-reason/**").permitAll();
+                    //auth.requestMatchers("/file/**").permitAll();
+                    //auth.requestMatchers("/doc/**").permitAll();
+                    //auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
+                    //auth.requestMatchers("/**").permitAll();
                     auth.anyRequest().authenticated();
                 });
 
@@ -115,7 +137,7 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(Arrays.asList("*"));
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS","PATCH","DELETE","PUT"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);

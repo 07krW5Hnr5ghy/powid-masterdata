@@ -9,23 +9,16 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IOrderState {
-    ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
-
-    ResponseSuccess saveAll(List<String> names, String user) throws BadRequestExceptions, InternalErrorExceptions;
-
-    OrderStateDTO update(RequestState requestState) throws BadRequestExceptions, InternalErrorExceptions;
-
-    ResponseDelete delete(Long code, String user) throws BadRequestExceptions, InternalErrorExceptions;
-
-    List<OrderStateDTO> listState() throws BadRequestExceptions;
-
-    Page<OrderStateDTO> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize)
+    CompletableFuture<ResponseSuccess> save(String name,String hexColor, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<List<OrderStateDTO>> listState() throws BadRequestExceptions;
+    CompletableFuture<Page<OrderStateDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize)
             throws BadRequestExceptions;
-
-    Page<OrderStateDTO> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    CompletableFuture<Page<OrderStateDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
                                         Integer pageSize) throws BadRequestExceptions;
-
-    OrderStateDTO findByCode(Long code) throws BadRequestExceptions;
+    CompletableFuture<List<OrderStateDTO>> listFilter() throws BadRequestExceptions;
 }

@@ -20,31 +20,42 @@ import java.util.List;
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
-
     @Override
     public Page<User> searchForUser(
-            String user,
-            Long clientId,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize,
-            Boolean status) {
+                                    Long clientId,
+                                    List<String> names,
+                                    List<String> usernames,
+                                    String sort,
+                                    String sortColumn,
+                                    Integer pageNumber,
+                                    Integer pageSize,
+                                    Boolean status) {
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
         Root<User> itemRoot = criteriaQuery.from(User.class);
-
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(user, clientId, status, criteriaBuilder, itemRoot);
+
+        List<Predicate> conditions = predicate(
+                clientId,
+                names,
+                usernames,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
+
             List<Order> userList = new ArrayList<>();
+
             if (sort.equalsIgnoreCase("ASC")) {
                 userList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
+
             if (sort.equalsIgnoreCase("DESC")) {
                 userList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
+
             criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(userList);
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
@@ -55,24 +66,31 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderCount(user, clientId, status);
+        Long count = getOrderCount(
+                clientId,
+                names,
+                usernames,
+                status);
+
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
-    public List<Predicate> predicateConditions(
-            String username,
+    private List<Predicate> predicate(
             Long clientId,
+            List<String> names,
+            List<String> usernames,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<User> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if (username != null) {
-            conditions.add(
-                    criteriaBuilder.and(
-                            criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("user")), username.toUpperCase())));
+        if (!names.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("name").in(names)));
+        }
+
+        if(!usernames.isEmpty()){
+            conditions.add(criteriaBuilder.and(itemRoot.get("username").in(usernames)));
         }
 
         if (clientId != null) {
@@ -90,15 +108,16 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         return conditions;
     }
 
-    List<Order> listASC(
-            String sortColumn,
-            CriteriaBuilder criteriaBuilder,
-            Root<User> itemRoot) {
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<User> itemRoot) {
 
         List<Order> userList = new ArrayList<>();
 
-        if (sortColumn.equalsIgnoreCase("USER")) {
-            userList.add(criteriaBuilder.asc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("username")) {
+            userList.add(criteriaBuilder.asc(itemRoot.get("username")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("name")) {
+            userList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
@@ -106,33 +125,45 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         }
 
         return userList;
+
     }
 
-    List<Order> listDESC(
-            String sortColumn,
-            CriteriaBuilder criteriaBuilder,
-            Root<User> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<User> itemRoot) {
 
-        List<Order> userList = new ArrayList<>();
+        List<Order> warehouseList = new ArrayList<>();
 
-        if (sortColumn.equalsIgnoreCase("USER")) {
-            userList.add(criteriaBuilder.desc(itemRoot.get("user")));
+        if (sortColumn.equalsIgnoreCase("username")) {
+            warehouseList.add(criteriaBuilder.desc(itemRoot.get("username")));
+        }
+
+        if (sortColumn.equalsIgnoreCase("name")) {
+            warehouseList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            userList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
+            warehouseList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
-        return userList;
+        return warehouseList;
+
     }
 
-    private long getOrderCount(String username, Long clientId, Boolean status) {
+    private Long getOrderCount(
+            Long clientId,
+            List<String> names,
+            List<String> usernames,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<User> itemRoot = criteriaQuery.from(User.class);
-
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(username, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                names,
+                usernames,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

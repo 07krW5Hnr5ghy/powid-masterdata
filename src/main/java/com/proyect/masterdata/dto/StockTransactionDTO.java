@@ -14,6 +14,6 @@ import java.util.Date;
 public class StockTransactionDTO {
     private String serial;
     private String warehouse;
-    private String stockTransactionType;
+    private String transactionType;
     private Date registrationDate;
 }

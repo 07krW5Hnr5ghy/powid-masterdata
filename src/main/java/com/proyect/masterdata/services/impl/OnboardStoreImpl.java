@@ -13,6 +13,8 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.concurrent.CompletableFuture;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -21,19 +23,20 @@ public class OnboardStoreImpl implements IOnboardStore {
     private final OnboardStoreRepository onboardStoreRepository;
 
     @Override
-    public OnboardStore save(Store store, Onboard onboard) throws InternalErrorExceptions {
-
-        try {
-            return onboardStoreRepository.save(OnboardStore.builder()
-                    .onboard(onboard)
-                    .onboardId(onboard.getId())
-                    .store(store)
-                    .storeId(store.getId())
-                    .build());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+    public CompletableFuture<OnboardStore> save(Store store, Onboard onboard) throws InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            try {
+                return onboardStoreRepository.save(OnboardStore.builder()
+                        .onboard(onboard)
+                        .onboardId(onboard.getId())
+                        .store(store)
+                        .storeId(store.getId())
+                        .build());
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 
 }

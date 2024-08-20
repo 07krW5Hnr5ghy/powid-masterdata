@@ -1,10 +1,9 @@
 package com.proyect.masterdata.services.impl;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
     private final SupplierProductRepository supplierProductRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepositoryCustom warehouseStockRepositoryCustom;
-
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess in(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -69,6 +68,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
             if (warehouseStock != null) {
                 warehouseStock.setQuantity(warehouseStock.getQuantity() + quantity);
                 warehouseStock.setUpdateDate(new Date(System.currentTimeMillis()));
+                warehouseStock.setTokenUser(user.getUsername());
                 warehouseStockRepository.save(warehouseStock);
             } else {
                 warehouseStockRepository.save(WarehouseStock.builder()
@@ -83,7 +83,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
                         .tokenUser(user.getUsername())
                         .build());
             }
-
+            iAudit.save("ADD_WAREHOUSE_STOCK","INGRESAN ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" EN ALMACEN "+warehouse.getName()+".",warehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -130,12 +130,11 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
             warehouseStock.setQuantity(warehouseStock.getQuantity() - quantity);
             warehouseStockRepository.save(warehouseStock);
-
+            iAudit.save("DELETE_WAREHOUSE_STOCK","SALIDA DE ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" PARA ALMACEN "+warehouse.getName()+".",warehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
                     .build();
-
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -143,41 +142,111 @@ public class WarehouseStockImpl implements IWarehouseStock {
     }
 
     @Override
-    public Page<WarehouseStockDTO> list(String warehouse, String user, String sort, String sortColumn,
+    public CompletableFuture<Page<WarehouseStockDTO>> list(
+            List<String> warehouses,
+            String serial,
+            String productSku,
+            String user,
+            String sort,
+            String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions {
-        Page<WarehouseStock> warehouseStockPage;
-        Long clientId;
-        Long warehouseId;
+        return CompletableFuture.supplyAsync(()->{
+            Page<WarehouseStock> warehouseStockPage;
+            Long clientId;
+            List<Long> warehouseIds;
 
-        try {
-            clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-            warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
-            warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(clientId, warehouseId, sort,
-                    sortColumn,
-                    pageNumber,
-                    pageSize);
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-            throw new BadRequestExceptions(Constants.ResultsFound);
-        }
+            if(warehouses!=null && !warehouses.isEmpty()){
+                warehouseIds = warehouseRepository
+                        .findByNameIn(
+                                warehouses.stream().map(String::toUpperCase).toList()
+                        ).stream().map(Warehouse::getId).toList();
+            }else{
+                warehouseIds = new ArrayList<>();
+            }
 
-        if (warehouseStockPage.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
-        }
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(
+                        clientId,
+                        warehouseIds,
+                        serial,
+                        productSku,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
 
-        List<WarehouseStockDTO> warehouseStockDTOs = warehouseStockPage.getContent().stream()
-                .map(warehouseStock -> WarehouseStockDTO.builder()
-                        .quantity(warehouseStock.getQuantity())
-                        .supplierProductSerial(warehouseStock.getSupplierProduct().getSerial())
-                        .warehouse(warehouseStock.getWarehouse().getName())
-                        .registrationDate(warehouseStock.getRegistrationDate())
-                        .updateDate(warehouseStock.getUpdateDate())
-                        .build())
-                .toList();
+            if (warehouseStockPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
 
-        return new PageImpl<>(warehouseStockDTOs, warehouseStockPage.getPageable(),
-                warehouseStockPage.getTotalElements());
+            List<WarehouseStockDTO> warehouseStockDTOs = warehouseStockPage.getContent().stream()
+                    .map(warehouseStock -> WarehouseStockDTO.builder()
+                            .quantity(warehouseStock.getQuantity())
+                            .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
+                            .product(warehouseStock.getSupplierProduct().getProduct().getSku())
+                            .warehouse(warehouseStock.getWarehouse().getName())
+                            .registrationDate(warehouseStock.getRegistrationDate())
+                            .updateDate(warehouseStock.getUpdateDate())
+                            .build())
+                    .toList();
+
+            return new PageImpl<>(warehouseStockDTOs, warehouseStockPage.getPageable(),
+                    warehouseStockPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,String warehouse,String supplierProduct) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<WarehouseStock> warehouseStocks;
+            Long clientId;
+            Long warehouseId;
+            Long supplierProductId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(warehouse != null){
+                    warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+                }else{
+                    warehouseId = null;
+                }
+                if(supplierProduct != null){
+                    supplierProductId = supplierProductRepository.findBySerialAndStatusTrue(supplierProduct.toUpperCase()).getId();
+                }else{
+                    supplierProductId = null;
+                }
+                if(warehouseId != null && supplierProductId != null){
+                    warehouseStocks = warehouseStockRepository.findAllByWarehouseIdAndSupplierProductId(warehouseId,supplierProductId);
+                }else if(warehouseId != null){
+                    warehouseStocks = warehouseStockRepository.findAllByClientIdAndWarehouseId(clientId, warehouseId);
+                }else{
+                    warehouseStocks = warehouseStockRepository.findAllByClientId(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(warehouseStocks.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return warehouseStocks.stream()
+                    .map(warehouseStock -> WarehouseStockDTO.builder()
+                            .quantity(warehouseStock.getQuantity())
+                            .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
+                            .product(warehouseStock.getSupplierProduct().getProduct().getSku())
+                            .warehouse(warehouseStock.getWarehouse().getName())
+                            .registrationDate(warehouseStock.getRegistrationDate())
+                            .updateDate(warehouseStock.getUpdateDate())
+                            .build())
+                    .toList();
+        });
     }
 
 }

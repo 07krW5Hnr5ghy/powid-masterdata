@@ -14,7 +14,6 @@ import java.util.List;
 @Data
 public class RequestOrderSave {
     private String observations;
-    private List<MultipartFile> receipts;
     private String deliveryAddress;
     private Double deliveryAmount;
     private Double advancedPayment;
@@ -22,13 +21,11 @@ public class RequestOrderSave {
     private String paymentMethod;
     private String managementType;
     private List<RequestOrderItem> requestOrderItems;
-    private String customerName;
-    private String customerType;
-    private String instagram;
-    private String customerPhone;
-    private String customerAddress;
-    private String customerDistrict;
-    private String customerProvince;
-    private String customerDepartment;
-    private String customerReference;
+    private String storeName;
+    private String closingChannel;
+    private String deliveryPoint;
+    private String discount;
+    private Double discountAmount;
+    private String phone;
+    private String dni;
 }

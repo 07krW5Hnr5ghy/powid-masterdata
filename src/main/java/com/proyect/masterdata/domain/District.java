@@ -32,6 +32,10 @@ public class District {
         @CreationTimestamp
         private Date registrationDate;
 
+        @Column(name = "update_date")
+        @CreationTimestamp
+        private Date updateDate;
+
         @Column(name = "province_id")
         private Long provinceId;
 

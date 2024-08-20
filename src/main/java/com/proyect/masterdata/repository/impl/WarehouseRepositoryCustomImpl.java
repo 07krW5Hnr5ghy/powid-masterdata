@@ -29,15 +29,26 @@ public class WarehouseRepositoryCustomImpl implements WarehouseRepositoryCustom 
     private EntityManager entityManager;
 
     @Override
-    public Page<Warehouse> searchForWarehouse(String name, Long clientId, String sort, String sortColumn,
-            Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Warehouse> searchForWarehouse(
+            Long clientId,
+            List<String> names,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Warehouse> criteriaQuery = criteriaBuilder.createQuery(Warehouse.class);
         Root<Warehouse> itemRoot = criteriaQuery.from(Warehouse.class);
         criteriaQuery.select(itemRoot);
 
-        List<Predicate> conditions = predicate(name, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                names,
+                status,
+                criteriaBuilder,
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -61,19 +72,25 @@ public class WarehouseRepositoryCustomImpl implements WarehouseRepositoryCustom 
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(name, clientId, status);
+        Long count = getOrderCount(
+                clientId,
+                names,
+                status);
 
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
-    private List<Predicate> predicate(String name, Long clientId, Boolean status, CriteriaBuilder criteriaBuilder,
+    private List<Predicate> predicate(
+            Long clientId,
+            List<String> names,
+            Boolean status,
+            CriteriaBuilder criteriaBuilder,
             Root<Warehouse> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if (name != null) {
-            conditions.add(criteriaBuilder.and(
-                    criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("businessName")), name.toUpperCase())));
+        if (!names.isEmpty()) {
+            conditions.add(criteriaBuilder.and(itemRoot.get("name").in(names)));
         }
 
         if (clientId != null) {
@@ -123,12 +140,20 @@ public class WarehouseRepositoryCustomImpl implements WarehouseRepositoryCustom 
 
     }
 
-    private Long getOrderCount(String name, Long clientId, Boolean status) {
+    private Long getOrderCount(
+            Long clientId,
+            List<String> names,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Warehouse> itemRoot = criteriaQuery.from(Warehouse.class);
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(name, clientId, status, criteriaBuilder, itemRoot);
+        List<Predicate> conditions = predicate(
+                clientId,
+                names,
+                status,
+                criteriaBuilder,
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

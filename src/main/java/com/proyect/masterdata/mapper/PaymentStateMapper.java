@@ -1,9 +1,8 @@
 package com.proyect.masterdata.mapper;
 
-import com.proyect.masterdata.domain.PaymentState;
-import com.proyect.masterdata.dto.PaymentStateDTO;
-import com.proyect.masterdata.dto.request.RequestPaymentStateSave;
-import com.proyect.masterdata.dto.request.RequestPaymentState;
+import com.proyect.masterdata.domain.OrderPaymentState;
+import com.proyect.masterdata.dto.OrderPaymentStateDTO;
+import com.proyect.masterdata.dto.request.RequestOrderPaymentStateSave;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -15,12 +14,12 @@ public interface PaymentStateMapper {
     PaymentStateMapper INSTANCE = Mappers.getMapper(PaymentStateMapper.class);
 
     @Mapping(target = "code", source = "id")
-    PaymentStateDTO paymentStateToPaymentStateDTO(PaymentState paymentState);
+    OrderPaymentStateDTO paymentStateToPaymentStateDTO(OrderPaymentState orderPaymentState);
 
-    List<PaymentStateDTO> listPaymentStateToListPaymentStateDTO(List<PaymentState> paymentStateList);
+    List<OrderPaymentStateDTO> listPaymentStateToListPaymentStateDTO(List<OrderPaymentState> orderPaymentStateList);
 
-    PaymentState paymentStateToName(RequestPaymentStateSave requestPaymentStateSave);
+    OrderPaymentState paymentStateToName(RequestOrderPaymentStateSave requestOrderPaymentStateSave);
 
-    List<PaymentState> listPaymentStateToListName(List<RequestPaymentStateSave> requestPaymentStateSaveList);
+    List<OrderPaymentState> listPaymentStateToListName(List<RequestOrderPaymentStateSave> requestOrderPaymentStateSaveList);
 
 }
