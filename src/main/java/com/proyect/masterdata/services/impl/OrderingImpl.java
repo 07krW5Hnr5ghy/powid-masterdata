@@ -69,6 +69,8 @@ public class OrderingImpl implements IOrdering {
     private final DepartmentRepository departmentRepository;
     private final ProvinceRepository provinceRepository;
     private final DistrictRepository districtRepository;
+    private final ProductPictureRepository productPictureRepository;
+    private final CancelledOrderRepository cancelledOrderRepository;
     @Override
     public ResponseSuccess save(
             RequestOrderSave requestOrderSave,
@@ -656,7 +658,8 @@ public class OrderingImpl implements IOrdering {
                 if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
                     totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
                 }
-                return OrderDTO.builder()
+                CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(order.getId());
+                OrderDTO newOrderDTO = OrderDTO.builder()
                         .id(order.getId())
                         .customerName(order.getCustomer().getName())
                         .customerPhone(order.getCustomer().getPhone())
@@ -692,6 +695,12 @@ public class OrderingImpl implements IOrdering {
                         .deliveryFlag(order.getDeliveryFlag())
                         .orderStateColor(order.getOrderState().getHexColor())
                         .build();
+                    if(cancelledOrder != null){
+                        newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());
+                    }else{
+                        newOrderDTO.setCancellationReason("NO APLICA");
+                    }
+                return newOrderDTO;
             }).toList();
         });
     }
@@ -1005,7 +1014,8 @@ public class OrderingImpl implements IOrdering {
                 }
                 List<CourierPicture> courierPictures = courierPictureRepository.findAllByOrderId(ordering.getId());
                 List<OrderPaymentReceipt> orderPaymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(ordering.getId());
-                return OrderDTO.builder()
+                CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(ordering.getId());
+                OrderDTO newOrderDTO = OrderDTO.builder()
                         .sellerName(ordering.getSeller())
                         .discount(ordering.getDiscount().getName())
                         .deliveryPoint(ordering.getDeliveryPoint().getName())
@@ -1045,6 +1055,7 @@ public class OrderingImpl implements IOrdering {
                         .orderStateColor(ordering.getOrderState().getHexColor())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                            List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(user.getClientId(),orderItem.getProductId());
                             Double totalPrice = null;
                             if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
                                 totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
@@ -1066,7 +1077,7 @@ public class OrderingImpl implements IOrdering {
                                     .quantity(orderItem.getQuantity())
                                     .size(orderItem.getProduct().getSize().getName())
                                     .discount(orderItem.getDiscount().getName())
-                                    .pictures(new ArrayList<>())
+                                    .pictures(productPictures.stream().map(ProductPicture::getProductPictureUrl).toList())
                                     .unitPrice(productPrice.getUnitSalePrice())
                                     .totalPrice(totalPrice)
                                     .color(orderItem.getProduct().getColor().getName())
@@ -1077,6 +1088,12 @@ public class OrderingImpl implements IOrdering {
                         }).toList())
                         .id(ordering.getId())
                         .build();
+                if(cancelledOrder != null){
+                    newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());
+                }else{
+                    newOrderDTO.setCancellationReason("NO APLICA");
+                }
+                return newOrderDTO;
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

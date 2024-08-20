@@ -204,7 +204,7 @@ public class OrderStockImpl implements IOrderStock {
     @Override
     public CompletableFuture<Page<OrderStockDTO>> list(
             String user,
-            List<Long> orders,
+            Long orderId,
             List<String> warehouses,
             String sort,
             String sortColumn,
@@ -213,7 +213,6 @@ public class OrderStockImpl implements IOrderStock {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStock> pageOrderStock;
             List<Long> warehouseIds;
-            List<Long> orderIds;
             Long clientId;
 
             if(warehouses != null && !warehouses.isEmpty()){
@@ -224,24 +223,17 @@ public class OrderStockImpl implements IOrderStock {
                 warehouseIds = new ArrayList<>();
             }
 
-            if(orders != null && !orders.isEmpty()){
-                orderIds = orders;
-            }else{
-                orderIds = new ArrayList<>();
-            }
-
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageOrderStock = orderStockRepositoryCustom.searchForOrderStock(
                         clientId,
-                        orderIds,
+                        orderId,
                         warehouseIds,
                         sort,
                         sortColumn,
                         pageNumber,
                         pageSize,
                         true);
-                System.out.println(pageOrderStock.getContent());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

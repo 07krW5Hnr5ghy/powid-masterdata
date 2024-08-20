@@ -51,4 +51,5 @@ public class OrderDTO {
     private List<OrderItemDTO> orderItemDTOS;
     private String store;
     private String orderStateColor;
+    private String cancellationReason;
 }
