@@ -23,7 +23,7 @@ public class OrderPaymentMethod {
         @Column(name = "payment_method_id", nullable = false)
         private Long id;
 
-        @Column(name = "name", length = 50, nullable = false)
+        @Column(name = "name", nullable = false)
         private String name;
 
         @Column(name = "status", nullable = false)

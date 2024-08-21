@@ -23,7 +23,7 @@ public class Store {
         @Column(name = "store_id", unique = true)
         private Long id;
 
-        @Column(name = "name", nullable = false, length = 50)
+        @Column(name = "name", nullable = false)
         private String name;
 
         @Column(name = "url", nullable = false)

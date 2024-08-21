@@ -23,7 +23,7 @@ public class Color {
         @Column(name = "color_id")
         private Long id;
 
-        @Column(name = "name", length = 50)
+        @Column(name = "name")
         private String name;
 
         @Column(name = "status")

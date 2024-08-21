@@ -22,7 +22,7 @@ public class District {
         @Column(name = "district_id")
         private Long id;
 
-        @Column(name = "name", length = 50)
+        @Column(name = "name")
         private String name;
 
         @Column(name = "status")

@@ -30,7 +30,7 @@ public class Subscription {
     @Column(name = "subscription_id")
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "months", nullable = false)
