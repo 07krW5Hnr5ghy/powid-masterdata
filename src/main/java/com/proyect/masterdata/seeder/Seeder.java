@@ -1056,22 +1056,15 @@ public class Seeder implements CommandLineRunner {
                         iStockTransactionType.save("devolucion-comprador",adminUser.getUsername());
                         iStockTransactionType.save("devolucion-proveedor",adminUser.getUsername());
 
-                        RequestUser business1 = RequestUser.builder()
-                                .user("JCOILA")
-                                .dni("11111111")
-                                .email("joel@aranni.com.pe")
-                                .name("JOEL")
-                                .surname("COILA OSNAYO")
-                                .mobile("947424006")
-                                .gender("M")
-                                .address("Iquique 807 - breña")
-                                .password("abc123+")
-                                .district(districtB.getName())
-                                .roleName("NEGOCIO")
-                                .tokenUser(adminUser.getUsername())
-                                .build();
-
-                        iUser.save(business1);
+                        User business1 = userRepository
+                                .save(new User(3L, "JCOILA", "JOEL", "COILA", "11111111", "joel@aranni.com.pe",
+                                        "Iquique 807 - breña", "M",
+                                        "947424006", passwordEncoder.encode("abc123+"), true,
+                                        new Date(System.currentTimeMillis()),
+                                        new Date(System.currentTimeMillis()), districtB.getId(),
+                                        client1.getId(), "JROMERO",
+                                        districtB, client1));
+                        iUserRole.save(business1.getUsername(),"NEGOCIO", adminUser.getUsername());
 
                         // mock stores
                         RequestStoreSave requestStoreSave1 = RequestStoreSave.builder()
@@ -1080,7 +1073,7 @@ public class Seeder implements CommandLineRunner {
                                 .name("SHOPIFY")
                                 .build();
 
-                        iStore.save(requestStoreSave1,"JCOILA");
+                        iStore.save(requestStoreSave1,business1.getUsername());
 
                 }catch (RuntimeException e){
                         e.printStackTrace();
