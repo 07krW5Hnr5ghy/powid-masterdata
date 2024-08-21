@@ -80,6 +80,7 @@ public class UnitImpl implements IUnit {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -131,6 +132,7 @@ public class UnitImpl implements IUnit {
                         .message(Constants.register)
                         .build();
             } catch (RuntimeException e) {
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

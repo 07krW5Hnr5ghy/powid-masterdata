@@ -23,7 +23,7 @@ public class Unit {
     @Column(name = "unit_id")
     private Long id;
 
-    @Column(name = "name", unique = true)
+    @Column(name = "name")
     private String name;
 
     @Column(name = "status")
