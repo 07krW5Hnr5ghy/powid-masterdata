@@ -70,7 +70,7 @@ public class ProductImpl implements IProduct {
             categoryProductData = categoryProductRepository
                     .findByNameAndStatusTrue(product.getCategory().toUpperCase());
             colorData = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
-            unit = unitRepository.findByNameAndStatusTrue(product.getUnit().toUpperCase());
+            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(product.getUnit().toUpperCase(),categoryProductData.getSizeTypeId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -166,7 +166,7 @@ public class ProductImpl implements IProduct {
                 categoryProductData = categoryProductRepository
                         .findByNameAndStatusTrue(product.getCategory().toUpperCase());
                 colorData = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
-                unit = unitRepository.findByNameAndStatusTrue(product.getUnit().toUpperCase());
+                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(product.getUnit().toUpperCase(),categoryProductData.getSizeTypeId());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

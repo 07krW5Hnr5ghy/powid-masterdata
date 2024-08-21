@@ -48,8 +48,9 @@ public class UnitController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
+            @RequestParam("unitType") String unitType,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iUnit.delete(name, tokenUser);
+        CompletableFuture<ResponseDelete> result = iUnit.delete(name,unitType, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -57,8 +58,9 @@ public class UnitController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_DELETE')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
+            @RequestParam("unitType") String unitType,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iUnit.activate(name, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iUnit.activate(name,unitType, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

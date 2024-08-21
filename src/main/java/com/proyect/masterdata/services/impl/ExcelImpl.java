@@ -62,6 +62,7 @@ public class ExcelImpl implements IExcel {
     private final UnitRepository unitRepository;
     private final IAudit iAudit;
     private final ProductPriceRepository productPriceRepository;
+    private final UnitTypeRepository unitTypeRepository;
     @Override
     public CompletableFuture<ResponseSuccess> purchase(RequestPurchaseExcel requestPurchaseExcel, MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -1148,6 +1149,7 @@ public class ExcelImpl implements IExcel {
                     Color color;
                     CategoryProduct categoryProduct=null;
                     Size size;
+                    UnitType unitType=null;
                     Unit unit;
                     Product newProduct = Product.builder().build();
                     ProductPrice productPrice = ProductPrice.builder().build();
@@ -1205,8 +1207,15 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSize(size);
                             newProduct.setSizeId(size.getId());
                         }
+                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==6)){
+                            unitType = unitTypeRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            if(unitType == null){
+                                throw new BadRequestExceptions(Constants.ErrorUnitType);
+                            }
+                        }
                         if((i>=1)&&(cell.getCellType()==STRING)&&(ii==7)){
-                            unit = unitRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            assert unitType != null;
+                            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase(),unitType.getId());
                             if(unit==null){
                                 throw new BadRequestExceptions(Constants.ErrorUnit);
                             }

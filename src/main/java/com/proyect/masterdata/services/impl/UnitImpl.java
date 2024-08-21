@@ -44,7 +44,6 @@ public class UnitImpl implements IUnit {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            unit = unitRepository.findByNameAndStatusTrue(requestUnit.getName().toUpperCase());
             unitType = unitTypeRepository.findByNameAndStatusTrue(requestUnit.getUnitType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -55,12 +54,14 @@ public class UnitImpl implements IUnit {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if (unit != null) {
-            throw new BadRequestExceptions(Constants.ErrorUnitExists);
-        }
-
         if(unitType == null){
             throw new BadRequestExceptions(Constants.ErrorUnitType);
+        }else{
+            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestUnit.getName().toUpperCase(), unitType.getId());
+        }
+
+        if (unit != null) {
+            throw new BadRequestExceptions(Constants.ErrorUnitExists);
         }
 
         try {
@@ -94,7 +95,6 @@ public class UnitImpl implements IUnit {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                unit = unitRepository.findByNameAndStatusTrue(requestUnit.getName().toUpperCase());
                 unitType = unitTypeRepository.findByNameAndStatusTrue(requestUnit.getUnitType().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -105,12 +105,14 @@ public class UnitImpl implements IUnit {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if (unit != null) {
-                throw new BadRequestExceptions(Constants.ErrorUnitExists);
-            }
-
             if(unitType == null){
                 throw new BadRequestExceptions(Constants.ErrorUnitType);
+            }else{
+                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestUnit.getName().toUpperCase(), unitType.getId());
+            }
+
+            if (unit != null) {
+                throw new BadRequestExceptions(Constants.ErrorUnitExists);
             }
 
             try {
@@ -136,14 +138,15 @@ public class UnitImpl implements IUnit {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name,String unitTypeName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
+            UnitType unitType;
             Unit unit;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                unit = unitRepository.findByNameAndStatusTrue(name.toUpperCase());
+                unitType = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -153,8 +156,14 @@ public class UnitImpl implements IUnit {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if (unit == null) {
-                throw new BadRequestExceptions(Constants.ErrorUnit);
+            if(unitType == null){
+                throw new BadRequestExceptions(Constants.ErrorUnitType);
+            }else{
+                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(name.toUpperCase(), unitType.getId());
+            }
+
+            if (unit != null) {
+                throw new BadRequestExceptions(Constants.ErrorUnitExists);
             }
 
             try {
@@ -176,14 +185,15 @@ public class UnitImpl implements IUnit {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String name,String unitTypeName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
+            UnitType unitType;
             Unit unit;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                unit = unitRepository.findByNameAndStatusFalse(name.toUpperCase());
+                unitType = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -191,6 +201,12 @@ public class UnitImpl implements IUnit {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(unitType == null){
+                throw new BadRequestExceptions(Constants.ErrorUnitType);
+            }else{
+                unit = unitRepository.findByNameAndUnitTypeIdAndStatusFalse(name.toUpperCase(),unitType.getId());
             }
 
             if (unit == null) {
