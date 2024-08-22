@@ -1075,6 +1075,13 @@ public class Seeder implements CommandLineRunner {
 
                         iStore.save(requestStoreSave1,business1.getUsername());
 
+                        RequestCourier requestCourier = RequestCourier.builder()
+                                .courier("SIN COURIER")
+                                .phone("000000000")
+                                .build();
+
+                        iCourier.save(requestCourier,adminUser.getUsername());
+
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());
