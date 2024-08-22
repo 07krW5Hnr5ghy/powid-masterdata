@@ -148,7 +148,7 @@ public class ProductImpl implements IProduct {
 
     @Override
     public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product,MultipartFile[] productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folder = Paths.get("src/main/resources/uploads/products");
+        Path folder = Paths.get("/home/powid-masterdata/src/main/resources/uploads/products");
         return CompletableFuture.supplyAsync(()->{
             User user;
             boolean existsProduct;
@@ -231,7 +231,7 @@ public class ProductImpl implements IProduct {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("src/main/resources/uploads/products/"+multipartFile.getOriginalFilename());
+                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/products/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
@@ -728,7 +728,7 @@ public class ProductImpl implements IProduct {
 
     @Override
     public CompletableFuture<ResponseSuccess> update(RequestProductUpdate requestProductUpdate, List<MultipartFile> pictures) throws BadRequestExceptions, InternalErrorExceptions {
-        Path folder = Paths.get("src/main/resources/uploads/products");
+        Path folder = Paths.get("/home/powid-masterdata/src/main/resources/uploads/products");
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -768,7 +768,7 @@ public class ProductImpl implements IProduct {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("src/main/resources/uploads/products/"+multipartFile.getOriginalFilename());
+                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/products/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());

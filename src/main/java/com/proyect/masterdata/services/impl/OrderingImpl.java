@@ -225,7 +225,7 @@ public class OrderingImpl implements IOrdering {
 
     @Override
     public CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave,MultipartFile[] receipts, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folder = Paths.get("src/main/resources/uploads/orders");
+        Path folder = Paths.get("/home/powid-masterdata/src/main/resources/uploads/orders");
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderState orderState;
@@ -345,7 +345,7 @@ public class OrderingImpl implements IOrdering {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("src/main/resources/uploads/orders/"+multipartFile.getOriginalFilename());
+                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/orders/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
@@ -846,8 +846,8 @@ public class OrderingImpl implements IOrdering {
 
     @Override
     public CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folderOrders = Paths.get("src/main/resources/uploads/orders");
-        Path folderCouriers = Paths.get("src/main/resources/uploads/couriers");
+        Path folderOrders = Paths.get("/home/powid-masterdata/src/main/resources/uploads/orders");
+        Path folderCouriers = Paths.get("/home/powid-masterdata/src/main/resources/uploads/couriers");
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -967,7 +967,7 @@ public class OrderingImpl implements IOrdering {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
@@ -979,7 +979,7 @@ public class OrderingImpl implements IOrdering {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
