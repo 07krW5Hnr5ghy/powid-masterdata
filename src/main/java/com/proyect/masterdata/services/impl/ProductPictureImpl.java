@@ -148,6 +148,7 @@ public class ProductPictureImpl implements IProductPicture {
                 iAudit.save("ADD_PRODUCT_PICTURE","FOTOS ("+pictures.size()+") DE PRODUCTO DE MARKETING AGREGADAS.",product.getSku(),user.getUsername());
                 return pictureUrlList;
             }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
