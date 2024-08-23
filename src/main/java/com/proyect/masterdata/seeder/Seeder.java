@@ -1059,7 +1059,7 @@ public class Seeder implements CommandLineRunner {
                         User business1 = userRepository
                                 .save(new User(3L, "JCOILA", "JOEL", "COILA", "11111111", "joel@aranni.com.pe",
                                         "Iquique 807 - breña", "M",
-                                        "947424006", passwordEncoder.encode("abc123+"), true,
+                                        "947424006", passwordEncoder.encode("Powid2024"), true,
                                         new Date(System.currentTimeMillis()),
                                         new Date(System.currentTimeMillis()), districtB.getId(),
                                         client1.getId(), "JROMERO",
