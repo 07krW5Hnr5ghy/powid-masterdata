@@ -82,6 +82,7 @@ public class SecurityConfiguration {
                     auth.requestMatchers(HttpMethod.GET, "/order-state/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/order-payment-state/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/cancellation-reason/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll();
                     //auth.requestMatchers("/file/**").permitAll();
                     //auth.requestMatchers("/doc/**").permitAll();
                     //auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
