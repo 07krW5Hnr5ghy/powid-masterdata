@@ -612,7 +612,6 @@ public class TemplateImpl implements ITemplate {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 brands = brandRepository.findAllByClientIdAndStatusTrue(user.getClientId());
-                System.out.println(brands);
             }
             if(brands.isEmpty()){
                 throw new BadRequestExceptions(Constants.ErrorBrand);
