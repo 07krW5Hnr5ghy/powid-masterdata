@@ -624,7 +624,7 @@ public class TemplateImpl implements ITemplate {
                 throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
             }
             if(unitTypes.isEmpty()){
-                throw new BadRequestExceptions(Constants.ErrorSizeType);
+                throw new BadRequestExceptions(Constants.ErrorUnitType);
             }
             try{
 
@@ -638,6 +638,8 @@ public class TemplateImpl implements ITemplate {
 
                 for(CategoryProduct categoryProduct:categoryProducts){
                     List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeId(categoryProduct.getSizeTypeId());
+                    System.out.println(categoryProduct.getName());
+                    System.out.println(categoryProduct.getSizeType().getName());
                     if(sizes.isEmpty()){
                         throw new BadRequestExceptions(Constants.ErrorSize);
                     }
