@@ -912,6 +912,7 @@ public class Seeder implements CommandLineRunner {
                         iSize.save("40", "calzado", adminUser.getUsername());
 
                         iSize.save("accesorios", "accesorios", adminUser.getUsername());
+                        iSize.save("complementos","complementos",adminUser.getUsername());
 
                         // order state
                         iOrderState.save("pendiente","#f2433d",adminUser.getUsername());
