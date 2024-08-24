@@ -982,6 +982,7 @@ public class TemplateImpl implements ITemplate {
                 return new ByteArrayInputStream(out.toByteArray());
             }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
