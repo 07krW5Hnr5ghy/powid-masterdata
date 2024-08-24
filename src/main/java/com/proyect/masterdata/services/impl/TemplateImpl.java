@@ -856,6 +856,7 @@ public class TemplateImpl implements ITemplate {
 
                 for (int i = 0; i < unitMap.size(); i++) {
                     String category = (String) unitMap.keySet().toArray()[i];
+                    System.out.println(category);
                     Name name = workbook.createName();
                     name.setNameName(category);
                     name.setRefersToFormula("Hidden3!$B$" + (i + 2) + ":$" + (char) ('B' + maxSubcatLength3 - 1) + "$" + (i + 2));

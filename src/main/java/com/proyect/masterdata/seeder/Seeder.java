@@ -861,29 +861,29 @@ public class Seeder implements CommandLineRunner {
                         iCategoryProduct.save("VESTIDO", "VESTIDO","ROPA", adminUser.getUsername());
                         iCategoryProduct.save("SACO", "SACO","ROPA", adminUser.getUsername());
                         iCategoryProduct.save("SHORT", "SHORT", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("PANTALON SASTRE", "PATALON SASTRE", "ROPA",adminUser.getUsername());
+                        iCategoryProduct.save("PANTALON_SASTRE", "PATALON SASTRE", "ROPA",adminUser.getUsername());
                         iCategoryProduct.save("BLAZER", "BLAZER", "ROPA",adminUser.getUsername());
                         iCategoryProduct.save("CHALECO", "CHALECO", "ROPA",adminUser.getUsername());
                         iCategoryProduct.save("POLO", "POLO", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("VESTIDO SHORT", "VESTIDO SHORT", "ROPA",adminUser.getUsername());
+                        iCategoryProduct.save("VESTIDO_SHORT", "VESTIDO SHORT", "ROPA",adminUser.getUsername());
                         iCategoryProduct.save("FALDA", "FALDA", "ROPA",adminUser.getUsername());
                         iCategoryProduct.save("HOODIES", "HOODIES", "ROPA",adminUser.getUsername());
                         iCategoryProduct.save("CHOMPAS", "CHOMPAS", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("PANTALON DENIM", "PANTALON DENIM", "ROPA",adminUser.getUsername());
+                        iCategoryProduct.save("PANTALON_DENIM", "PANTALON DENIM", "ROPA",adminUser.getUsername());
                         iCategoryProduct.save("BOLSOS", "BOLSOS", "COMPLEMENTOS",adminUser.getUsername());
                         iCategoryProduct.save("CARTERAS", "CARTERAS", "COMPLEMENTOS",adminUser.getUsername());
                         iCategoryProduct.save("GORRAS", "GORRAS", "COMPLEMENTOS",adminUser.getUsername());
                         iCategoryProduct.save("MOCHILAS", "MOCHILAS", "COMPLEMENTOS",adminUser.getUsername());
                         iCategoryProduct.save("BILLETERA", "BILLETERA", "COMPLEMENTOS",adminUser.getUsername());
-                        iCategoryProduct.save("BOTIN ALTO", "BOTIN ALTO", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("BOTIN BAJO", "BOTIN BAJO", "CALZADO",adminUser.getUsername());
+                        iCategoryProduct.save("BOTIN_ALTO", "BOTIN ALTO", "CALZADO",adminUser.getUsername());
+                        iCategoryProduct.save("BOTIN_BAJO", "BOTIN BAJO", "CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("ZAPATILLAS", "ZAPATILLAS", "CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("OXFORD", "OXFORD", "CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("BALERINAS", "BALERINAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("SANDALIAS PLANAS", "SANDALIAS PLANAS", "CALZADO",adminUser.getUsername());
+                        iCategoryProduct.save("SANDALIAS_PLANAS", "SANDALIAS PLANAS", "CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("PLATAFORMAS", "PLATAFORMAS", "CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("SANDALIAS", "SANDALIAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("SANDALIAS CON TACO", "SANDALIAS CON TACO", "CALZADO",adminUser.getUsername());
+                        iCategoryProduct.save("SANDALIAS_CON_TACO", "SANDALIAS CON TACO", "CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("CHUNKIS", "CHUNKIS", "CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("ALPARGATAS", "ALPARGATAS", "CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("MULES", "MULES", "CALZADO",adminUser.getUsername());
@@ -892,8 +892,8 @@ public class Seeder implements CommandLineRunner {
                         iCategoryProduct.save("STILETTO", "STILETTO", "CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("SUECOS", "SUECOS", "CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("MOCASIN", "MOCASIN", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("ZAPATILLAS URBANAS", "ZAPATILLAS URBANAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("ACCESORIOS", "ACCESORIOS", "ACCESORIOS",adminUser.getUsername());
+                        iCategoryProduct.save("ZAPATILLAS_URBANAS", "ZAPATILLAS URBANAS", "CALZADO",adminUser.getUsername());
+                        iCategoryProduct.save("ACCESORIOS_", "ACCESORIOS", "ACCESORIOS",adminUser.getUsername());
 
 
                         // mock size
@@ -911,8 +911,8 @@ public class Seeder implements CommandLineRunner {
                         iSize.save("39",  "calzado", adminUser.getUsername());
                         iSize.save("40", "calzado", adminUser.getUsername());
 
-                        iSize.save("accesorios", "accesorios", adminUser.getUsername());
-                        iSize.save("complementos","complementos",adminUser.getUsername());
+                        iSize.save("accesorio", "accesorios", adminUser.getUsername());
+                        iSize.save("complemento","complementos",adminUser.getUsername());
 
                         // order state
                         iOrderState.save("pendiente","#f2433d",adminUser.getUsername());
