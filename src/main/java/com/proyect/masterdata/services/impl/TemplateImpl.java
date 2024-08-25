@@ -864,7 +864,7 @@ public class TemplateImpl implements ITemplate {
                     System.out.println(category);
                     Name name = workbook.createName();
                     name.setNameName(category);
-                    name.setRefersToFormula("Hidden3!$B$" + (i + 2) + ":$"+ iExcel.getExcelColumnReference('B',maxSubcatLength3 - 1) + (char) ('B' + maxSubcatLength3 - 1) + "$" + (i + 2));
+                    name.setRefersToFormula("Hidden3!$B$" + (i + 2) + ":$"+ iExcel.getExcelColumnReference('B',maxSubcatLength3 - 1) + "$" + (i + 2));
                 }
 
                 DataValidationHelper validationHelperUnitType = sheet.getDataValidationHelper();
