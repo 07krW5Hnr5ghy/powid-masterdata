@@ -1409,11 +1409,11 @@ public class ExcelImpl implements IExcel {
         StringBuilder column = new StringBuilder();
         while(index >= 0){
             if(character == 'A'){
-                column.insert(0,(char) ('A'+(index % 26)));
+                column.insert(0,(char) ('A'+((index-1) % 26)));
                 index = (index/26) - 1;
             }
             if(character == 'B'){
-                column.insert(0,(char) ('B'+(index % 25)));
+                column.insert(0,(char) ('B'+((index-2) % 25)));
                 index = (index/26) - 1;
             }
         }
