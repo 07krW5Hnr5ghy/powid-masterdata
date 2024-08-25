@@ -1405,11 +1405,17 @@ public class ExcelImpl implements IExcel {
     }
 
     @Override
-    public String getExcelColumnReference(Integer index) {
+    public String getExcelColumnReference(Character character,Integer index) {
         StringBuilder column = new StringBuilder();
         while(index >= 0){
-            column.insert(0,(char) ('A'+(index % 26)));
-            index = (index/26) - 1;
+            if(character == 'A'){
+                column.insert(0,(char) ('A'+(index % 26)));
+                index = (index/26) - 1;
+            }
+            if(character == 'B'){
+                column.insert(0,(char) ('B'+(index % 25)));
+                index = (index/26) - 1;
+            }
         }
         return column.toString();
     }
