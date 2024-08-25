@@ -18,4 +18,5 @@ public interface IExcel {
     CompletableFuture<ResponseSuccess> orderReturn(Long orderId,MultipartFile multipartFile,String tokenUser) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> product(MultipartFile multipartFile,String tokenUser) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> supplierProduct(MultipartFile multipartFile,String tokenUser) throws BadRequestExceptions;
+    String getExcelColumnReference(Integer index);
 }

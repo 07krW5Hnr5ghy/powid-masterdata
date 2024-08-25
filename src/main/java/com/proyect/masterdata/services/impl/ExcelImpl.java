@@ -1403,4 +1403,14 @@ public class ExcelImpl implements IExcel {
             }
         });
     }
+
+    @Override
+    public String getExcelColumnReference(Integer index) {
+        StringBuilder column = new StringBuilder();
+        while(index >= 0){
+            column.insert(0,(char) ('A'+(index % 26)));
+            index = (index/26) - 1;
+        }
+        return column.toString();
+    }
 }

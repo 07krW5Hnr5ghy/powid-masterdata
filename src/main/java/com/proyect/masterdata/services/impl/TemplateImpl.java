@@ -5,6 +5,7 @@ import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IExcel;
 import com.proyect.masterdata.services.ITemplate;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class TemplateImpl implements ITemplate {
     private final PurchaseTypeRepository purchaseTypeRepository;
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
+    private final IExcel iExcel;
     @Override
     public CompletableFuture<ByteArrayInputStream> purchase(Integer quantity,String supplierRuc, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -730,13 +732,15 @@ public class TemplateImpl implements ITemplate {
 
                 Name categoriesName1 = workbook.createName();
                 categoriesName1.setNameName("brands");
-                categoriesName1.setRefersToFormula("Hidden1!$A$1:$" + (char) ('A' + modelMap.keySet().size() - 1) + "$1");
+                categoriesName1.setRefersToFormula("Hidden1!$A$1:$" + iExcel.getExcelColumnReference(
+                        modelMap.keySet().size() - 1
+                ) + "$1");
 
                 for (int i = 0; i < modelMap.size(); i++) {
                     String category = (String) modelMap.keySet().toArray()[i];
                     Name name = workbook.createName();
                     name.setNameName(category);
-                    name.setRefersToFormula("Hidden1!$B$" + (i + 2) + ":$" + (char) ('B' + maxSubcatLength1 - 1) + "$" + (i + 2));
+                    name.setRefersToFormula("Hidden1!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference(maxSubcatLength1 - 1) + "$" + (i + 2));
                 }
 
                 DataValidationHelper validationHelperBrand = sheet.getDataValidationHelper();
@@ -795,13 +799,13 @@ public class TemplateImpl implements ITemplate {
 
                 Name categoriesName2 = workbook.createName();
                 categoriesName2.setNameName("categories");
-                categoriesName2.setRefersToFormula("Hidden2!$A$1:$" + (char) ('A' + categoryProductSizeMap.keySet().size() - 1) + "$1");
+                categoriesName2.setRefersToFormula("Hidden2!$A$1:$" + iExcel.getExcelColumnReference(categoryProductSizeMap.keySet().size() - 1) + "$1");
 
                 for (int i = 0; i < categoryProductSizeMap.size(); i++) {
                     String category = (String) categoryProductSizeMap.keySet().toArray()[i];
                     Name name = workbook.createName();
                     name.setNameName(category);
-                    name.setRefersToFormula("Hidden2!$B$" + (i + 2) + ":$" + (char) ('B' + maxSubcatLength2 - 1) + "$" + (i + 2));
+                    name.setRefersToFormula("Hidden2!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference(maxSubcatLength2 - 1) + "$" + (i + 2));
                 }
 
                 DataValidationHelper validationHelperCategory = sheet.getDataValidationHelper();
@@ -852,14 +856,14 @@ public class TemplateImpl implements ITemplate {
 
                 Name categoriesName3 = workbook.createName();
                 categoriesName3.setNameName("unit_types");
-                categoriesName3.setRefersToFormula("Hidden3!$A$1:$" + (char) ('A' + unitMap.keySet().size() - 1) + "$1");
+                categoriesName3.setRefersToFormula("Hidden3!$A$1:$" + iExcel.getExcelColumnReference(unitMap.keySet().size() - 1) + "$1");
 
                 for (int i = 0; i < unitMap.size(); i++) {
                     String category = (String) unitMap.keySet().toArray()[i];
                     System.out.println(category);
                     Name name = workbook.createName();
                     name.setNameName(category);
-                    name.setRefersToFormula("Hidden3!$B$" + (i + 2) + ":$" + (char) ('B' + maxSubcatLength3 - 1) + "$" + (i + 2));
+                    name.setRefersToFormula("Hidden3!$B$" + (i + 2) + ":$"+ iExcel.getExcelColumnReference(maxSubcatLength3 - 1) + (char) ('B' + maxSubcatLength3 - 1) + "$" + (i + 2));
                 }
 
                 DataValidationHelper validationHelperUnitType = sheet.getDataValidationHelper();
