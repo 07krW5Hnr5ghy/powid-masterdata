@@ -1,6 +1,8 @@
 package com.proyect.masterdata.repository.impl;
 
+import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.domain.OrderItem;
+import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.repository.OrderItemRepositoryCustom;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
@@ -21,19 +23,37 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<OrderItem> searchForOrderItem(Long clientId, Long orderId, Long productId, Integer quantity, Double discount,String sort,String sortColumn,Integer pageNumber,Integer pageSize,Boolean status) {
+    public Page<OrderItem> searchForOrderItem(
+            Long clientId,
+            Long orderId,
+            String productSku,
+            List<Long> colorIds,
+            List<Long> sizeIds,
+            List<Long> categoryIds,
+            Integer quantity,
+            Double discount,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderItem> criteriaQuery = criteriaBuilder.createQuery(OrderItem.class);
         Root<OrderItem> itemRoot = criteriaQuery.from(OrderItem.class);
+        Join<OrderItem, Product> orderItemProductJoin = itemRoot.join("product");
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
                 clientId,
                 orderId,
-                productId,
+                productSku,
+                colorIds,
+                sizeIds,
+                categoryIds,
                 quantity,
                 discount,
                 criteriaBuilder,
                 itemRoot,
+                orderItemProductJoin,
                 status);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -58,17 +78,30 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
         orderingTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        Long count = getOrderCount(clientId,orderId,productId,quantity,discount,status);
+        Long count = getOrderCount(
+                clientId,
+                orderId,
+                productSku,
+                colorIds,
+                categoryIds,
+                sizeIds,
+                quantity,
+                discount,
+                status);
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
     }
     List<Predicate> predicateConditions(
             Long clientId,
             Long orderId,
-            Long productId,
+            String productSku,
+            List<Long> colorIds,
+            List<Long> sizeIds,
+            List<Long> categoryIds,
             Integer quantity,
             Double discount,
             CriteriaBuilder criteriaBuilder,
             Root<OrderItem> itemRoot,
+            Join<OrderItem,Product> orderItemProductJoin,
             Boolean status){
         List<Predicate> conditions = new ArrayList<>();
 
@@ -80,8 +113,20 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderId"),orderId)));
         }
 
-        if(productId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("productId"),productId)));
+        if(productSku != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(orderItemProductJoin.get("sku")),"%"+productSku.toUpperCase()+"%"));
+        }
+
+        if(!colorIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(orderItemProductJoin.get("colorId").in(colorIds)));
+        }
+
+        if(!sizeIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(orderItemProductJoin.get("sizeId").in(sizeIds)));
+        }
+
+        if(!categoryIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(orderItemProductJoin.get("categoryProductId").in(categoryIds)));
         }
 
         if(quantity != null){
@@ -173,13 +218,35 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
 
     }
 
-    private Long getOrderCount(Long clientId,Long orderId,Long productId,Integer quantity,Double discount,Boolean status){
+    private Long getOrderCount(
+            Long clientId,
+            Long orderId,
+            String productSku,
+            List<Long> colorIds,
+            List<Long> sizeIds,
+            List<Long> categoryIds,
+            Integer quantity,
+            Double discount,
+            Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<OrderItem> itemRoot = criteriaQuery.from(OrderItem.class);
+        Join<OrderItem,Product> orderItemProductJoin = itemRoot.join("product");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(clientId,orderId,productId,quantity,discount,criteriaBuilder,itemRoot,status);
+        List<Predicate> conditions = predicateConditions(
+                clientId,
+                orderId,
+                productSku,
+                colorIds,
+                sizeIds,
+                categoryIds,
+                quantity,
+                discount,
+                criteriaBuilder,
+                itemRoot,
+                orderItemProductJoin,
+                status);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

@@ -76,6 +76,9 @@ public class OrderItemController {
             @RequestParam("user") String user,
             @RequestParam(value = "orderId",required = false) Long orderId,
             @RequestParam(value = "productSku",required = false) String productSku,
+            @RequestParam(value = "colors",required = false) List<String> colors,
+            @RequestParam(value = "sizes",required = false) List<String> sizes,
+            @RequestParam(value = "categories",required = false) List<String> categories,
             @RequestParam(value = "quantity",required = false) Integer quantity,
             @RequestParam(value = "discount",required = false) Double discount,
             @RequestParam(value = "sort",required = false) String sort,
@@ -83,7 +86,19 @@ public class OrderItemController {
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<OrderItemDTO>> result = iOrderItem.listOrderItems(user,orderId,productSku,quantity,discount,sort,sortColumn,pageNumber,pageSize);
+        CompletableFuture<Page<OrderItemDTO>> result = iOrderItem.listOrderItems(
+                user,
+                orderId,
+                productSku,
+                colors,
+                sizes,
+                categories,
+                quantity,
+                discount,
+                sort,
+                sortColumn,
+                pageNumber,
+                pageSize);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

@@ -38,6 +38,9 @@ public class OrderItemImpl implements IOrderItem {
     private final OrderItemRepositoryCustom orderItemRepositoryCustom;
     private final IAudit iAudit;
     private final DiscountRepository discountRepository;
+    private final ColorRepository colorRepository;
+    private final SizeRepository sizeRepository;
+    private final CategoryProductRepository categoryProductRepository;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -410,19 +413,68 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<Page<OrderItemDTO>> listOrderItems(String user, Long orderId, String productSku, Integer quantity, Double discount, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<OrderItemDTO>> listOrderItems(
+            String user,
+            Long orderId,
+            String productSku,
+            List<String> colors,
+            List<String> sizes,
+            List<String> categories,
+            Integer quantity,
+            Double discount,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Long clientId;
+            List<Long> colorIds;
+            List<Long> sizeIds;
+            List<Long> categoryIds;
             Page<OrderItem> pageOrderItem;
-            Long productId;
-            if(productSku != null){
-                productId = productRepository.findBySku(productSku.toUpperCase()).getId();
+            if(colors != null && !colors.isEmpty()){
+                colorIds = colorRepository.findByNameIn(
+                        colors.stream().map(String::toUpperCase).toList()
+                ).stream().map(
+                        Color::getId
+                ).toList();
             }else{
-                productId = null;
+                colorIds = new ArrayList<>();
+            }
+            if(sizes != null && !sizes.isEmpty()){
+                sizeIds = sizeRepository.findByNameIn(
+                        sizes.stream().map(String::toUpperCase).toList()
+                ).stream().map(
+                        Size::getId
+                ).toList();
+            }else{
+                sizeIds = new ArrayList<>();
+            }
+            if(categories != null && !categories.isEmpty()){
+                categoryIds = categoryProductRepository.findByNameIn(
+                        categories.stream().map(String::toUpperCase).toList()
+                ).stream().map(
+                        CategoryProduct::getId
+                ).toList();
+            }else{
+                categoryIds = new ArrayList<>();
             }
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageOrderItem = orderItemRepositoryCustom.searchForOrderItem(clientId,orderId,productId,quantity,discount,sort,sortColumn,pageNumber,pageSize,true);
+                pageOrderItem = orderItemRepositoryCustom.searchForOrderItem(
+                        clientId,
+                        orderId,
+                        productSku,
+                        colorIds,
+                        sizeIds,
+                        categoryIds,
+                        quantity,
+                        discount,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
