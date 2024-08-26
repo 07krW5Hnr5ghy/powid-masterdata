@@ -40,6 +40,7 @@ public class OrderItemImpl implements IOrderItem {
     private final DiscountRepository discountRepository;
     private final ColorRepository colorRepository;
     private final SizeRepository sizeRepository;
+    private final CategoryProductRepository categoryProductRepository;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -418,6 +419,7 @@ public class OrderItemImpl implements IOrderItem {
             String productSku,
             List<String> colors,
             List<String> sizes,
+            List<String> categories,
             Integer quantity,
             Double discount,
             String sort,
@@ -428,6 +430,7 @@ public class OrderItemImpl implements IOrderItem {
             Long clientId;
             List<Long> colorIds;
             List<Long> sizeIds;
+            List<Long> categoryIds;
             Page<OrderItem> pageOrderItem;
             if(colors != null && !colors.isEmpty()){
                 colorIds = colorRepository.findByNameIn(
