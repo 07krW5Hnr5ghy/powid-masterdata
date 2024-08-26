@@ -38,6 +38,7 @@ public class OrderItemImpl implements IOrderItem {
     private final OrderItemRepositoryCustom orderItemRepositoryCustom;
     private final IAudit iAudit;
     private final DiscountRepository discountRepository;
+    private final ColorRepository colorRepository;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -410,16 +411,37 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<Page<OrderItemDTO>> listOrderItems(String user, Long orderId, String productSku, Integer quantity, Double discount, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<OrderItemDTO>> listOrderItems(
+            String user,
+            Long orderId,
+            String productSku,
+            List<String> colors,
+            Integer quantity,
+            Double discount,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Long clientId;
+            List<Long> colorIds;
             Page<OrderItem> pageOrderItem;
+            if(colors != null && !colors.isEmpty()){
+                colorIds = colorRepository.findByNameIn(
+                        colors.stream().map(String::toUpperCase).toList()
+                ).stream().map(
+                        Color::getId
+                ).toList();
+            }else{
+                colorIds = new ArrayList<>();
+            }
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageOrderItem = orderItemRepositoryCustom.searchForOrderItem(
                         clientId,
                         orderId,
                         productSku,
+                        colorIds,
                         quantity,
                         discount,
                         sort,

@@ -1,5 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
+import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.domain.OrderItem;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.repository.OrderItemRepositoryCustom;
@@ -26,6 +27,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             Long clientId,
             Long orderId,
             String productSku,
+            List<Long> colorIds,
             Integer quantity,
             Double discount,
             String sort,
@@ -37,16 +39,19 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
         CriteriaQuery<OrderItem> criteriaQuery = criteriaBuilder.createQuery(OrderItem.class);
         Root<OrderItem> itemRoot = criteriaQuery.from(OrderItem.class);
         Join<OrderItem, Product> orderItemProductJoin = itemRoot.join("product");
+        Join<Product, Color> productColorJoin = orderItemProductJoin.join("color");
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
                 clientId,
                 orderId,
                 productSku,
+                colorIds,
                 quantity,
                 discount,
                 criteriaBuilder,
                 itemRoot,
                 orderItemProductJoin,
+                productColorJoin,
                 status);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -75,6 +80,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
                 clientId,
                 orderId,
                 productSku,
+                colorIds,
                 quantity,
                 discount,
                 status);
@@ -84,11 +90,13 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             Long clientId,
             Long orderId,
             String productSku,
+            List<Long> colorIds,
             Integer quantity,
             Double discount,
             CriteriaBuilder criteriaBuilder,
             Root<OrderItem> itemRoot,
             Join<OrderItem,Product> orderItemProductJoin,
+            Join<Product,Color> productColorJoin,
             Boolean status){
         List<Predicate> conditions = new ArrayList<>();
 
@@ -102,6 +110,10 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
 
         if(productSku != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(orderItemProductJoin.get("sku")),"%"+productSku.toUpperCase()+"%"));
+        }
+
+        if(!colorIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(productColorJoin.get("colorId").in(colorIds)));
         }
 
         if(quantity != null){
@@ -197,6 +209,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             Long clientId,
             Long orderId,
             String productSku,
+            List<Long> colorIds,
             Integer quantity,
             Double discount,
             Boolean status){
@@ -204,17 +217,20 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<OrderItem> itemRoot = criteriaQuery.from(OrderItem.class);
         Join<OrderItem,Product> orderItemProductJoin = itemRoot.join("product");
+        Join<Product, Color> productColorJoin = orderItemProductJoin.join("color");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
                 clientId,
                 orderId,
                 productSku,
+                colorIds,
                 quantity,
                 discount,
                 criteriaBuilder,
                 itemRoot,
                 orderItemProductJoin,
+                productColorJoin,
                 status);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
