@@ -857,7 +857,7 @@ public class Seeder implements CommandLineRunner {
 
                         // mock category products
                         iCategoryProduct.save("BLUSA", "BLUSA","ROPA", adminUser.getUsername());
-                        iCategoryProduct.save("CAMISETA", "CAMISETA","ROPA", adminUser.getUsername());
+                        iCategoryProduct.save("CAMISA", "CAMISA","ROPA", adminUser.getUsername());
                         iCategoryProduct.save("VESTIDO", "VESTIDO","ROPA", adminUser.getUsername());
                         iCategoryProduct.save("SACO", "SACO","ROPA", adminUser.getUsername());
                         iCategoryProduct.save("SHORT", "SHORT", "ROPA",adminUser.getUsername());

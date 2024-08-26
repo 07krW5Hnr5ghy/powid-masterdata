@@ -893,12 +893,11 @@ public class TemplateImpl implements ITemplate {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> supplierProduct(Integer quantity, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> supplierProduct(Integer quantity, String username) throws BadRequestExceptions,InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<Product> products;
             List<Supplier> suppliers;
-            List<SupplierProduct> supplierProducts;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             }catch (RuntimeException e){
@@ -910,13 +909,9 @@ public class TemplateImpl implements ITemplate {
             }else{
                 products = productRepository.findAllByClientIdAndStatusTrue(user.getClientId());
                 suppliers = supplierRepository.findAllByClientIdAndStatusTrue(user.getClientId());
-                supplierProducts = supplierProductRepository.findAllByClientIdAndStatusTrue(user.getClientId());
             }
             if(products.isEmpty()){
                 throw new BadRequestExceptions(Constants.ErrorProduct);
-            }
-            if(supplierProducts.isEmpty()){
-                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
             }
             if(suppliers.isEmpty()){
                 throw new BadRequestExceptions(Constants.ErrorSupplier);
