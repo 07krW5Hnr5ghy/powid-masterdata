@@ -741,7 +741,6 @@ public class TemplateImpl implements ITemplate {
                     String category = (String) modelMap.keySet().toArray()[i];
                     Name name = workbook.createName();
                     name.setNameName(category);
-                    System.out.println("Hidden1!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength1-1) + "$" + (i + 2));
                     name.setRefersToFormula("Hidden1!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength1-1) + "$" + (i + 2));
                 }
 
