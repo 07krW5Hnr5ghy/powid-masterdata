@@ -13,6 +13,7 @@ public interface OrderItemRepositoryCustom {
             Long orderId,
             String productSku,
             List<Long> colorIds,
+            List<Long> sizeIds,
             Integer quantity,
             Double discount,
             String sort,

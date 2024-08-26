@@ -39,6 +39,7 @@ public class OrderItemImpl implements IOrderItem {
     private final IAudit iAudit;
     private final DiscountRepository discountRepository;
     private final ColorRepository colorRepository;
+    private final SizeRepository sizeRepository;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -416,6 +417,7 @@ public class OrderItemImpl implements IOrderItem {
             Long orderId,
             String productSku,
             List<String> colors,
+            List<String> sizes,
             Integer quantity,
             Double discount,
             String sort,
@@ -425,6 +427,7 @@ public class OrderItemImpl implements IOrderItem {
         return CompletableFuture.supplyAsync(()->{
             Long clientId;
             List<Long> colorIds;
+            List<Long> sizeIds;
             Page<OrderItem> pageOrderItem;
             if(colors != null && !colors.isEmpty()){
                 colorIds = colorRepository.findByNameIn(
@@ -435,6 +438,15 @@ public class OrderItemImpl implements IOrderItem {
             }else{
                 colorIds = new ArrayList<>();
             }
+            if(sizes != null && !sizes.isEmpty()){
+                sizeIds = sizeRepository.findByNameIn(
+                        sizes.stream().map(String::toUpperCase).toList()
+                ).stream().map(
+                        Size::getId
+                ).toList();
+            }else{
+                sizeIds = new ArrayList<>();
+            }
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageOrderItem = orderItemRepositoryCustom.searchForOrderItem(
@@ -442,6 +454,7 @@ public class OrderItemImpl implements IOrderItem {
                         orderId,
                         productSku,
                         colorIds,
+                        sizeIds,
                         quantity,
                         discount,
                         sort,

@@ -25,6 +25,7 @@ public interface IOrderItem {
             Long orderId,
             String productSku,
             List<String> colors,
+            List<String> sizes,
             Integer quantity,
             Double discount,
             String sort,

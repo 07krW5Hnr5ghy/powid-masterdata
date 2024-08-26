@@ -28,6 +28,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             Long orderId,
             String productSku,
             List<Long> colorIds,
+            List<Long> sizeIds,
             Integer quantity,
             Double discount,
             String sort,
@@ -45,6 +46,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
                 orderId,
                 productSku,
                 colorIds,
+                sizeIds,
                 quantity,
                 discount,
                 criteriaBuilder,
@@ -79,6 +81,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
                 orderId,
                 productSku,
                 colorIds,
+                sizeIds,
                 quantity,
                 discount,
                 status);
@@ -89,6 +92,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             Long orderId,
             String productSku,
             List<Long> colorIds,
+            List<Long> sizeIds,
             Integer quantity,
             Double discount,
             CriteriaBuilder criteriaBuilder,
@@ -111,6 +115,10 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
 
         if(!colorIds.isEmpty()){
             conditions.add(criteriaBuilder.and(orderItemProductJoin.get("colorId").in(colorIds)));
+        }
+
+        if(!sizeIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(orderItemProductJoin.get("sizeId").in(sizeIds)));
         }
 
         if(quantity != null){
@@ -207,6 +215,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             Long orderId,
             String productSku,
             List<Long> colorIds,
+            List<Long> sizeIds,
             Integer quantity,
             Double discount,
             Boolean status){
@@ -221,6 +230,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
                 orderId,
                 productSku,
                 colorIds,
+                sizeIds,
                 quantity,
                 discount,
                 criteriaBuilder,
