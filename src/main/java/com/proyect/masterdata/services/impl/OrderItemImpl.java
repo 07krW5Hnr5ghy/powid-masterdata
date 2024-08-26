@@ -450,6 +450,15 @@ public class OrderItemImpl implements IOrderItem {
             }else{
                 sizeIds = new ArrayList<>();
             }
+            if(categories != null && !categories.isEmpty()){
+                categoryIds = categoryProductRepository.findByNameIn(
+                        categories.stream().map(String::toUpperCase).toList()
+                ).stream().map(
+                        CategoryProduct::getId
+                ).toList();
+            }else{
+                categoryIds = new ArrayList<>();
+            }
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageOrderItem = orderItemRepositoryCustom.searchForOrderItem(
@@ -458,6 +467,7 @@ public class OrderItemImpl implements IOrderItem {
                         productSku,
                         colorIds,
                         sizeIds,
+                        categoryIds,
                         quantity,
                         discount,
                         sort,

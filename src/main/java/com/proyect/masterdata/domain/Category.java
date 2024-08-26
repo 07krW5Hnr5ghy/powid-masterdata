@@ -23,10 +23,10 @@ public class Category {
         @Column(name = "category_id", unique = true)
         private Long id;
 
-        @Column(name = "name", length = 50)
+        @Column(name = "name")
         private String name;
 
-        @Column(name = "description", length = 50)
+        @Column(name = "description")
         private String description;
 
         @Column(name = "status", columnDefinition = "BOOLEAN DEFAULT TRUE")

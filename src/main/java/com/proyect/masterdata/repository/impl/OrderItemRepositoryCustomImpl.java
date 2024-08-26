@@ -29,6 +29,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             String productSku,
             List<Long> colorIds,
             List<Long> sizeIds,
+            List<Long> categoryIds,
             Integer quantity,
             Double discount,
             String sort,
@@ -47,6 +48,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
                 productSku,
                 colorIds,
                 sizeIds,
+                categoryIds,
                 quantity,
                 discount,
                 criteriaBuilder,
@@ -81,6 +83,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
                 orderId,
                 productSku,
                 colorIds,
+                categoryIds,
                 sizeIds,
                 quantity,
                 discount,
@@ -93,6 +96,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             String productSku,
             List<Long> colorIds,
             List<Long> sizeIds,
+            List<Long> categoryIds,
             Integer quantity,
             Double discount,
             CriteriaBuilder criteriaBuilder,
@@ -119,6 +123,10 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
 
         if(!sizeIds.isEmpty()){
             conditions.add(criteriaBuilder.and(orderItemProductJoin.get("sizeId").in(sizeIds)));
+        }
+
+        if(!categoryIds.isEmpty()){
+            conditions.add(criteriaBuilder.and(orderItemProductJoin.get("categoryProductId").in(categoryIds)));
         }
 
         if(quantity != null){
@@ -216,6 +224,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             String productSku,
             List<Long> colorIds,
             List<Long> sizeIds,
+            List<Long> categoryIds,
             Integer quantity,
             Double discount,
             Boolean status){
@@ -231,6 +240,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
                 productSku,
                 colorIds,
                 sizeIds,
+                categoryIds,
                 quantity,
                 discount,
                 criteriaBuilder,

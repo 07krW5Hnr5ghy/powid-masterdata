@@ -14,6 +14,7 @@ public interface OrderItemRepositoryCustom {
             String productSku,
             List<Long> colorIds,
             List<Long> sizeIds,
+            List<Long> categoryIds,
             Integer quantity,
             Double discount,
             String sort,
