@@ -39,7 +39,6 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
         CriteriaQuery<OrderItem> criteriaQuery = criteriaBuilder.createQuery(OrderItem.class);
         Root<OrderItem> itemRoot = criteriaQuery.from(OrderItem.class);
         Join<OrderItem, Product> orderItemProductJoin = itemRoot.join("product");
-        Join<Product, Color> productColorJoin = orderItemProductJoin.join("color");
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
                 clientId,
@@ -51,7 +50,6 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
                 criteriaBuilder,
                 itemRoot,
                 orderItemProductJoin,
-                productColorJoin,
                 status);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -96,7 +94,6 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
             CriteriaBuilder criteriaBuilder,
             Root<OrderItem> itemRoot,
             Join<OrderItem,Product> orderItemProductJoin,
-            Join<Product,Color> productColorJoin,
             Boolean status){
         List<Predicate> conditions = new ArrayList<>();
 
@@ -113,7 +110,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
         }
 
         if(!colorIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(productColorJoin.get("colorId").in(colorIds)));
+            conditions.add(criteriaBuilder.and(orderItemProductJoin.get("colorId").in(colorIds)));
         }
 
         if(quantity != null){
@@ -217,7 +214,6 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<OrderItem> itemRoot = criteriaQuery.from(OrderItem.class);
         Join<OrderItem,Product> orderItemProductJoin = itemRoot.join("product");
-        Join<Product, Color> productColorJoin = orderItemProductJoin.join("color");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
@@ -230,7 +226,6 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
                 criteriaBuilder,
                 itemRoot,
                 orderItemProductJoin,
-                productColorJoin,
                 status);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
