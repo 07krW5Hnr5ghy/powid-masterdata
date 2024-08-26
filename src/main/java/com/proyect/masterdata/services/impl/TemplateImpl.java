@@ -122,11 +122,9 @@ public class TemplateImpl implements ITemplate {
                 workbook.write(out);
                 workbook.close();
                 return new ByteArrayInputStream(out.toByteArray());
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException e){
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         });
     }
@@ -186,11 +184,9 @@ public class TemplateImpl implements ITemplate {
                 workbook.write(out);
                 workbook.close();
                 return new ByteArrayInputStream(out.toByteArray());
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         });
     }
@@ -212,7 +208,7 @@ public class TemplateImpl implements ITemplate {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
-            if(purchaseType ==null){
+            if(purchaseType==null){
                 throw new BadRequestExceptions(Constants.ErrorPurchaseType);
             }else{
                 purchase = purchaseRepository.findBySerialAndPurchaseTypeId(purchaseSerial.toUpperCase(), purchaseType.getId());
@@ -255,11 +251,9 @@ public class TemplateImpl implements ITemplate {
                 workbook.write(out);
                 workbook.close();
                 return new ByteArrayInputStream(out.toByteArray());
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException e){
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         });
     }
@@ -319,11 +313,9 @@ public class TemplateImpl implements ITemplate {
                 workbook.write(out);
                 workbook.close();
                 return new ByteArrayInputStream(out.toByteArray());
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         });
     }
@@ -412,13 +404,13 @@ public class TemplateImpl implements ITemplate {
 
                 Name categoriesName = workbook.createName();
                 categoriesName.setNameName("Categories");
-                categoriesName.setRefersToFormula("Hidden!$A$1:$" + (char) ('A' + orderStockMap.keySet().size() - 1) + "$1");
+                categoriesName.setRefersToFormula("Hidden!$A$1:$" + iExcel.getExcelColumnReference('A',orderStockMap.keySet().size() - 1) + "$1");
 
                 for (int i = 0; i < orderStockMap.size(); i++) {
                     String category = (String) orderStockMap.keySet().toArray()[i];
                     Name name = workbook.createName();
                     name.setNameName("_"+category);
-                    name.setRefersToFormula("Hidden!$B$" + (i + 2) + ":$" + (char) ('B' + maxSubcatLength - 1) + "$" + (i + 2));
+                    name.setRefersToFormula("Hidden!$B$" + (i + 2) + ":$"+iExcel.getExcelColumnReference('B',maxSubcatLength-1) + "$" + (i + 2));
                 }
 
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
@@ -440,12 +432,10 @@ public class TemplateImpl implements ITemplate {
 
                 return new ByteArrayInputStream(out.toByteArray());
 
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         });
     }
@@ -483,7 +473,6 @@ public class TemplateImpl implements ITemplate {
             try {
                 int records = 0;
                 for(OrderStockItem orderStockItem : orderStockItemList){
-                    System.out.println(orderStockItem);
                     List<SupplierProduct> supplierProductList = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(user.getClientId(), orderStockItem.getOrderItem().getProductId());
                     records +=  supplierProductList.size();
                     orderStockMap.put(orderStockItem.getOrderItem().getProduct().getSku(),supplierProductList.stream().map(SupplierProduct::getSerial).toList());
@@ -548,13 +537,13 @@ public class TemplateImpl implements ITemplate {
 
                 Name categoriesName = workbook.createName();
                 categoriesName.setNameName("skus");
-                categoriesName.setRefersToFormula("Hidden!$A$1:$" + (char) ('A' + orderStockMap.keySet().size() - 1) + "$1");
+                categoriesName.setRefersToFormula("Hidden!$A$1:$" + iExcel.getExcelColumnReference('A',orderStockMap.keySet().size()) + "$1");
 
                 for (int i = 0; i < orderStockMap.size(); i++) {
                     String category = (String) orderStockMap.keySet().toArray()[i];
                     Name name = workbook.createName();
                     name.setNameName("_"+category);
-                    name.setRefersToFormula("Hidden!$B$" + (i + 2) + ":$" + (char) ('B' + maxSubcatLength - 1) + "$" + (i + 2));
+                    name.setRefersToFormula("Hidden!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength-1) +"$" + (i + 2));
                 }
 
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
@@ -614,7 +603,6 @@ public class TemplateImpl implements ITemplate {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 brands = brandRepository.findAllByClientIdAndStatusTrue(user.getClientId());
-                System.out.println(brands);
             }
             if(brands.isEmpty()){
                 throw new BadRequestExceptions(Constants.ErrorBrand);
