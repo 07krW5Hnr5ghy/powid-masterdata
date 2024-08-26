@@ -414,15 +414,19 @@ public class OrderItemImpl implements IOrderItem {
         return CompletableFuture.supplyAsync(()->{
             Long clientId;
             Page<OrderItem> pageOrderItem;
-            Long productId;
-            if(productSku != null){
-                productId = productRepository.findBySku(productSku.toUpperCase()).getId();
-            }else{
-                productId = null;
-            }
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pageOrderItem = orderItemRepositoryCustom.searchForOrderItem(clientId,orderId,productId,quantity,discount,sort,sortColumn,pageNumber,pageSize,true);
+                pageOrderItem = orderItemRepositoryCustom.searchForOrderItem(
+                        clientId,
+                        orderId,
+                        productSku,
+                        quantity,
+                        discount,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

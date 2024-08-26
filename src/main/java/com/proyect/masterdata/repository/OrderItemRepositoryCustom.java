@@ -6,5 +6,15 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderItemRepositoryCustom {
-    Page<OrderItem> searchForOrderItem(Long clientId,Long orderId,Long productId,Integer quantity,Double discount,String sort,String sortColumn,Integer pageNumber,Integer pageSize,Boolean status);
+    Page<OrderItem> searchForOrderItem(
+            Long clientId,
+            Long orderId,
+            String productSku,
+            Integer quantity,
+            Double discount,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status);
 }
