@@ -1,21 +1,17 @@
-package com.proyect.masterdata.dto;
+package com.proyect.masterdata.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ModelDTO {
+public class RequestModel {
     private String name;
     private String brand;
     private String sku;
-    private String user;
-    private Date registrationDate;
-    private Date updateDate;
+    private String tokenUser;
 }

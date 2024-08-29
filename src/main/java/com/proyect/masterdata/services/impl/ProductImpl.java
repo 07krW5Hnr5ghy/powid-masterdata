@@ -65,7 +65,6 @@ public class ProductImpl implements IProduct {
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             existsProduct = productRepository.existsBySkuAndStatusTrue(product.getSku().toUpperCase());
-            modelData = modelRepository.findByName(product.getModel().toUpperCase());
             sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
             categoryProductData = categoryProductRepository
                     .findByNameAndStatusTrue(product.getCategory().toUpperCase());
@@ -78,6 +77,8 @@ public class ProductImpl implements IProduct {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            modelData = modelRepository.findBySkuAndClientIdAndStatusTrue(product.getModel().toUpperCase(),user.getClientId());
         }
 
         if (existsProduct) {
@@ -161,7 +162,6 @@ public class ProductImpl implements IProduct {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 existsProduct = productRepository.existsBySkuAndStatusTrue(product.getSku().toUpperCase());
-                modelData = modelRepository.findByName(product.getModel().toUpperCase());
                 sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
                 categoryProductData = categoryProductRepository
                         .findByNameAndStatusTrue(product.getCategory().toUpperCase());
@@ -174,6 +174,8 @@ public class ProductImpl implements IProduct {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                modelData = modelRepository.findBySkuAndClientIdAndStatusTrue(product.getModel().toUpperCase(),user.getClientId());
             }
 
             if (existsProduct) {
@@ -366,22 +368,6 @@ public class ProductImpl implements IProduct {
             List<Long> unitIds;
             Long clientId;
 
-            if(models != null && !models.isEmpty()){
-                modelIds = modelRepository.findByNameIn(
-                        models.stream().map(String::toUpperCase).toList()
-                ).stream().map(Model::getId).toList();
-            }else {
-                modelIds = new ArrayList<>();
-            }
-
-            if(brands != null && !brands.isEmpty()){
-                brandIds = brandRepository.findByNameIn(
-                        brands.stream().map(String::toUpperCase).toList()
-                ).stream().map(Brand::getId).toList();
-            }else{
-                brandIds = new ArrayList<>();
-            }
-
             if(sizes != null && !sizes.isEmpty()){
                 sizeIds = sizeRepository.findByNameIn(
                         sizes.stream().map(String::toUpperCase).toList()
@@ -416,6 +402,22 @@ public class ProductImpl implements IProduct {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
+                if(brands != null && !brands.isEmpty()){
+                    brandIds = brandRepository.findByClientIdAndNameIn(
+                            clientId,
+                            brands.stream().map(String::toUpperCase).toList()
+                    ).stream().map(Brand::getId).toList();
+                }else{
+                    brandIds = new ArrayList<>();
+                }
+                if(models != null && !models.isEmpty()){
+                    modelIds = modelRepository.findByClientIdAndSkuIn(
+                            clientId,
+                            models.stream().map(String::toUpperCase).toList()
+                    ).stream().map(Model::getId).toList();
+                }else {
+                    modelIds = new ArrayList<>();
+                }
                 productPage = productRepositoryCustom.searchForProduct(
                         clientId,
                         sku,
@@ -489,22 +491,6 @@ public class ProductImpl implements IProduct {
             List<Long> unitIds;
             Long clientId;
 
-            if(models != null && !models.isEmpty()){
-                modelIds = modelRepository.findByNameIn(
-                        models.stream().map(String::toUpperCase).toList()
-                ).stream().map(Model::getId).toList();
-            }else {
-                modelIds = new ArrayList<>();
-            }
-
-            if(brands != null && !brands.isEmpty()){
-                brandIds = brandRepository.findByNameIn(
-                        brands.stream().map(String::toUpperCase).toList()
-                ).stream().map(Brand::getId).toList();
-            }else{
-                brandIds = new ArrayList<>();
-            }
-
             if(sizes != null && !sizes.isEmpty()){
                 sizeIds = sizeRepository.findByNameIn(
                         sizes.stream().map(String::toUpperCase).toList()
@@ -539,6 +525,23 @@ public class ProductImpl implements IProduct {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
+                if(models != null && !models.isEmpty()){
+                    modelIds = modelRepository.findByClientIdAndSkuIn(
+                            clientId,
+                            models.stream().map(String::toUpperCase).toList()
+                    ).stream().map(Model::getId).toList();
+                }else {
+                    modelIds = new ArrayList<>();
+                }
+
+                if(brands != null && !brands.isEmpty()){
+                    brandIds = brandRepository.findByClientIdAndNameIn(
+                            clientId,
+                            brands.stream().map(String::toUpperCase).toList()
+                    ).stream().map(Brand::getId).toList();
+                }else{
+                    brandIds = new ArrayList<>();
+                }
                 productPage = productRepositoryCustom.searchForProduct(
                         clientId,
                         sku,
@@ -662,7 +665,7 @@ public class ProductImpl implements IProduct {
             Long modelId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                modelId = modelRepository.findByNameAndStatusTrue(model.toUpperCase()).getId();
+                modelId = modelRepository.findBySkuAndClientIdAndStatusTrue(model.toUpperCase(),clientId).getId();
                 products = productRepository.findAllByClientIdAndModelIdAndStatusFalse(clientId,modelId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.dto.request.RequestModel;
 import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.dto.ModelDTO;
@@ -13,9 +14,9 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 public interface IModel {
-        ResponseSuccess save(String name, String brand, String tokenUser)
+        ResponseSuccess save(RequestModel requestModel)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<ResponseSuccess> saveAsync(String name, String brand, String tokenUser)
+        CompletableFuture<ResponseSuccess> saveAsync(RequestModel requestModel)
                 throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;

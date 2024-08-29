@@ -1014,6 +1014,10 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellValue("MODELO");
                 cell.setCellStyle(headerStyle);
 
+                cell = headerRow.createCell(2);
+                cell.setCellValue("SKU");
+                cell.setCellStyle(headerStyle);
+
                 // products
                 String[] productList = brands.stream().map(Brand::getName).toList().toArray(new String[0]);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
