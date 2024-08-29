@@ -5,6 +5,7 @@ import com.proyect.masterdata.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository

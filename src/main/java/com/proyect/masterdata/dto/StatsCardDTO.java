@@ -11,12 +11,11 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class StatsCardDTO
-{
+public class StatsCardDTO {
     BigDecimal totalSales;
     Integer totalOrders;
     Integer totalProducts;
-    BigDecimal averageSaleProduct;
+    double averageSaleProduct;
     BigDecimal averageTicket;
     BigDecimal totalDeliveryAmountOrders;
     String orderStatus;
