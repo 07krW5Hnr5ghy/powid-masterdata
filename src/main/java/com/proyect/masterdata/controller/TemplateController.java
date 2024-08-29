@@ -135,4 +135,18 @@ public class TemplateController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(result.get().readAllBytes());
     }
+
+    @GetMapping("model")
+    private ResponseEntity<byte[]> model(
+            @RequestParam("quantity") Integer quantity,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InterruptedException, ExecutionException {
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.model(quantity,user);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=modelos.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(result.get().readAllBytes());
+    }
 }

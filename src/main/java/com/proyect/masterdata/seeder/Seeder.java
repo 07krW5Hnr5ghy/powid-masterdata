@@ -1083,6 +1083,8 @@ public class Seeder implements CommandLineRunner {
 //
 //                        iCourier.save(requestCourier,adminUser.getUsername());
 
+                        iAuditEvent.save("ADD_MODEL_EXCEL","JROMERO");
+                                
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());

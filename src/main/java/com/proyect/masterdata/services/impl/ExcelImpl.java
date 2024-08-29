@@ -63,6 +63,7 @@ public class ExcelImpl implements IExcel {
     private final IAudit iAudit;
     private final ProductPriceRepository productPriceRepository;
     private final UnitTypeRepository unitTypeRepository;
+    private final BrandRepository brandRepository;
     @Override
     public CompletableFuture<ResponseSuccess> purchase(RequestPurchaseExcel requestPurchaseExcel, MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -1126,6 +1127,7 @@ public class ExcelImpl implements IExcel {
                         .findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
@@ -1241,6 +1243,7 @@ public class ExcelImpl implements IExcel {
                             )){
                         newProduct.setStatus(true);
                         newProduct.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        newProduct.setUpdateDate(new Date(System.currentTimeMillis()));
                         newProduct.setTokenUser(user.getUsername());
                         newProduct.setClient(user.getClient());
                         newProduct.setClientId(user.getClientId());
@@ -1305,6 +1308,7 @@ public class ExcelImpl implements IExcel {
                         .findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
@@ -1399,6 +1403,7 @@ public class ExcelImpl implements IExcel {
                         .build();
             }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
@@ -1418,5 +1423,98 @@ public class ExcelImpl implements IExcel {
             }
         }
         return column.toString();
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> model(MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            try {
+                user = userRepository
+                        .findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            try{
+                InputStream inputStream = multipartFile.getInputStream();
+                Workbook workbook = WorkbookFactory.create(inputStream);
+                Sheet sheet = workbook.getSheetAt(0);
+
+                List<Model> models = new ArrayList<>();
+                Set<String> modelNames = new HashSet<>();
+                boolean hasDuplicate = false;
+                int i = 0;
+                for(Row row:sheet){
+                    int ii = 0;
+                    Brand brand;
+                    Model model;
+                    Model newModel = Model.builder().build();
+                    for(Cell cell:row){
+                        if((i>=1) && (cell.getCellType() == STRING) && (ii==0)){
+                            brand = brandRepository.findByNameAndStatusTrue(cell.getStringCellValue().toUpperCase());
+                            if(brand==null){
+                                throw new BadRequestExceptions(Constants.ErrorBrand);
+                            }
+                            newModel.setBrand(brand);
+                            newModel.setBrandId(brand.getId());
+                        }
+                        if((i>=1)&&(cell.getCellType() == STRING) && (ii==1)){
+                            model = modelRepository.findByName(cell.getRichStringCellValue().getString().toUpperCase());
+                            if(model!=null){
+                                throw new BadRequestExceptions(Constants.ErrorModelExists);
+                            }
+                            newModel.setName(cell.getRichStringCellValue().getString().toUpperCase());
+                        }
+                        ii++;
+                    }
+                    if(i>=1 && (
+                            newModel.getName() != null &&
+                                    newModel.getBrand() != null
+                    )){
+                        newModel.setStatus(true);
+                        newModel.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        newModel.setUpdateDate(new Date(System.currentTimeMillis()));
+                        newModel.setTokenUser(user.getUsername());
+                        newModel.setClient(user.getClient());
+                        newModel.setClientId(user.getClientId());
+                        models.add(newModel);
+                    }
+                    if(i>=1 && (
+                            newModel.getName() == null ||
+                                    newModel.getBrand() == null
+                    )){
+                        break;
+                    }
+                    i++;
+                }
+                for(Model model : models){
+                    System.out.println(model.getName());
+                    if(!modelNames.add(model.getName())){
+                        hasDuplicate = true;
+                    }
+                    if(hasDuplicate){
+                        throw new BadRequestExceptions(Constants.ErrorModelExists);
+                    }else{
+                        modelRepository.save(model);
+                        iAudit.save("ADD_MODEL_EXCEL","MODEL "+model.getName()+" CREADO POR EXCEL.",model.getName(),user.getUsername());
+                    }
+                }
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException | IOException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }
