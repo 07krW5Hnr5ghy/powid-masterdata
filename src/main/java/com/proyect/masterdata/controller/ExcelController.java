@@ -96,4 +96,13 @@ public class ExcelController {
         CompletableFuture<ResponseSuccess> result = iExcel.supplierProduct(multipartFile,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @PostMapping("model")
+    public ResponseEntity<ResponseSuccess> model(
+            @RequestPart("multipartFile") MultipartFile multipartFile,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions,ExecutionException,InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iExcel.model(multipartFile,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

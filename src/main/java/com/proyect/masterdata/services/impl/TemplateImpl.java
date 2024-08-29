@@ -979,4 +979,62 @@ public class TemplateImpl implements ITemplate {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<ByteArrayInputStream> model(Integer quantity,String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            List<Brand> brands;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                brands = brandRepository.findAllByClientIdAndStatusTrue(user.getClientId());
+            }
+            if(brands.isEmpty()){
+                throw new BadRequestExceptions(Constants.ErrorBrand);
+            }
+            try{
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                XSSFSheet sheet = workbook.createSheet("modelos");
+                CellStyle headerStyle = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+                Row headerRow = sheet.createRow(0);
+                Cell cell = headerRow.createCell(0);
+                cell.setCellValue("MARCA");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(1);
+                cell.setCellValue("MODELO");
+                cell.setCellStyle(headerStyle);
+
+                // products
+                String[] productList = brands.stream().map(Brand::getName).toList().toArray(new String[0]);
+                DataValidationHelper validationHelper = sheet.getDataValidationHelper();
+                DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(productList);
+                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity+1,0,0);
+                DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
+                sheet.addValidationData(dataValidation);
+
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                workbook.write(out);
+                workbook.close();
+                return new ByteArrayInputStream(out.toByteArray());
+            }catch (RuntimeException | IOException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+        });
+    }
 }

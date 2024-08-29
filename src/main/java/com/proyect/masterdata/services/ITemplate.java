@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.io.ByteArrayInputStream;
 import java.util.concurrent.CompletableFuture;
@@ -14,4 +15,5 @@ public interface ITemplate {
     CompletableFuture<ByteArrayInputStream> orderReturn(Long orderId,String username) throws BadRequestExceptions;
     CompletableFuture<ByteArrayInputStream> product(Integer quantity,String username) throws BadRequestExceptions;
     CompletableFuture<ByteArrayInputStream> supplierProduct(Integer quantity,String username) throws BadRequestExceptions;
+    CompletableFuture<ByteArrayInputStream> model(Integer quantity,String username) throws BadRequestExceptions, InternalErrorExceptions;
 }

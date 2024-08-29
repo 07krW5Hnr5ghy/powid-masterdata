@@ -5,6 +5,7 @@ import com.proyect.masterdata.dto.request.RequestStockReturnExcel;
 import com.proyect.masterdata.dto.request.RequestStockTransferExcel;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.concurrent.CompletableFuture;
@@ -19,4 +20,5 @@ public interface IExcel {
     CompletableFuture<ResponseSuccess> product(MultipartFile multipartFile,String tokenUser) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> supplierProduct(MultipartFile multipartFile,String tokenUser) throws BadRequestExceptions;
     String getExcelColumnReference(Character character,Integer index);
+    CompletableFuture<ResponseSuccess> model(MultipartFile multipartFile,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
 }
