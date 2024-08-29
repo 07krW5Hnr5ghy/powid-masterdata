@@ -133,6 +133,7 @@ public class ModelImpl implements IModel {
                 Model newModel = modelRepository.save(Model.builder()
                         .name(requestModel.getName().toUpperCase())
                         .brand(brandData)
+                        .sku(requestModel.getSku().toUpperCase())
                         .brandId(brandData.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
@@ -294,6 +295,7 @@ public class ModelImpl implements IModel {
             List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
+                    .sku(model.getSku())
                     .user(model.getTokenUser())
                     .registrationDate(model.getRegistrationDate())
                     .updateDate(model.getUpdateDate())
@@ -364,6 +366,7 @@ public class ModelImpl implements IModel {
             List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
+                    .sku(model.getSku())
                     .user(model.getTokenUser())
                     .registrationDate(model.getRegistrationDate())
                     .updateDate(model.getUpdateDate())
@@ -395,6 +398,7 @@ public class ModelImpl implements IModel {
             return models.stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
+                    .sku(model.getSku().toUpperCase())
                     .user(model.getTokenUser())
                     .build()).toList();
         });
@@ -421,6 +425,7 @@ public class ModelImpl implements IModel {
             return models.stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
+                    .sku(model.getSku())
                     .user(model.getTokenUser())
                     .build()).toList();
         });
@@ -449,6 +454,7 @@ public class ModelImpl implements IModel {
             return models.stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
+                    .sku(model.getSku())
                     .user(model.getTokenUser())
                     .build()).toList();
         });
@@ -476,6 +482,7 @@ public class ModelImpl implements IModel {
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .user(model.getTokenUser())
+                    .sku(model.getSku())
                     .build()).toList();
         });
     }

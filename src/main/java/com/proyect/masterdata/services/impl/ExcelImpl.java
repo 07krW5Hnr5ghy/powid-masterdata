@@ -1470,13 +1470,17 @@ public class ExcelImpl implements IExcel {
                             if(model!=null){
                                 throw new BadRequestExceptions(Constants.ErrorModelExists);
                             }
+                            newModel.setSku(cell.getRichStringCellValue().getString().toUpperCase());
+                        }
+                        if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
                             newModel.setName(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         ii++;
                     }
                     if(i>=1 && (
                             newModel.getName() != null &&
-                                    newModel.getBrand() != null
+                                    newModel.getBrand() != null &&
+                                    newModel.getSku() != null
                     )){
                         newModel.setStatus(true);
                         newModel.setRegistrationDate(new Date(System.currentTimeMillis()));
@@ -1488,14 +1492,14 @@ public class ExcelImpl implements IExcel {
                     }
                     if(i>=1 && (
                             newModel.getName() == null ||
-                                    newModel.getBrand() == null
+                                    newModel.getBrand() == null ||
+                                    newModel.getSku() == null
                     )){
                         break;
                     }
                     i++;
                 }
                 for(Model model : models){
-                    System.out.println(model.getName());
                     if(!modelNames.add(model.getName())){
                         hasDuplicate = true;
                     }
