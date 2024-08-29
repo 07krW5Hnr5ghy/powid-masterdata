@@ -1164,7 +1164,7 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSku(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
-                            model = modelRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            model = modelRepository.findBySkuAndClientIdAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model == null){
                                 throw new BadRequestExceptions(Constants.ErrorModel);
                             }
@@ -1458,7 +1458,7 @@ public class ExcelImpl implements IExcel {
                     Model newModel = Model.builder().build();
                     for(Cell cell:row){
                         if((i>=1) && (cell.getCellType() == STRING) && (ii==0)){
-                            brand = brandRepository.findByNameAndStatusTrue(cell.getStringCellValue().toUpperCase());
+                            brand = brandRepository.findByNameAndClientIdAndStatusTrue(cell.getStringCellValue().toUpperCase(),user.getClientId());
                             if(brand==null){
                                 throw new BadRequestExceptions(Constants.ErrorBrand);
                             }
@@ -1466,7 +1466,7 @@ public class ExcelImpl implements IExcel {
                             newModel.setBrandId(brand.getId());
                         }
                         if((i>=1)&&(cell.getCellType() == STRING) && (ii==1)){
-                            model = modelRepository.findByName(cell.getRichStringCellValue().getString().toUpperCase());
+                            model = modelRepository.findBySkuAndClientIdAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model!=null){
                                 throw new BadRequestExceptions(Constants.ErrorModelExists);
                             }

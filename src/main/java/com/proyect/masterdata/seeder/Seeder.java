@@ -7,6 +7,7 @@ import com.proyect.masterdata.dto.request.*;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
 import lombok.RequiredArgsConstructor;
+import org.bouncycastle.cert.ocsp.Req;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -1210,24 +1211,132 @@ public class Seeder implements CommandLineRunner {
                         iBrand.save("lacoste", "JORTIZ");
 
                         // mock models
-                        iModel.save("f90", "nike", "OPEREZ");
-                        iModel.save("m2000", "nike", "OPEREZ");
-                        iModel.save("mercurial", "nike", "OPEREZ");
-                        iModel.save("indigo", "levis", "OPEREZ");
-                        iModel.save("old navy", "levis", "OPEREZ");
-                        iModel.save("ripper", "levis", "OPEREZ");
-                        iModel.save("sweater", "gap", "OPEREZ");
-                        iModel.save("kasper", "gap", "OPEREZ");
-                        iModel.save("sustra", "gap", "OPEREZ");
-                        iModel.save("krust", "adidas", "JORTIZ");
-                        iModel.save("gist", "adidas", "JORTIZ");
-                        iModel.save("thunder", "adidas", "JORTIZ");
-                        iModel.save("yitro", "kenzo", "JORTIZ");
-                        iModel.save("ulcast", "kenzo", "JORTIZ");
-                        iModel.save("reinder", "kenzo", "JORTIZ");
-                        iModel.save("realt", "lacoste", "JORTIZ");
-                        iModel.save("brust", "lacoste", "JORTIZ");
-                        iModel.save("frost", "lacoste", "JORTIZ");
+                        RequestModel requestModel1 = RequestModel.builder()
+                                .name("F90")
+                                .brand("NIKE")
+                                .sku("F90NIKE")
+                                .tokenUser("OPEREZ")
+                                .build();
+                        iModel.save(requestModel1);
+                        RequestModel requestModel2 = RequestModel.builder()
+                                .name("M2000")
+                                .brand("NIKE")
+                                .tokenUser("OPEREZ")
+                                .sku("M2000NIKE")
+                                .build();
+                        iModel.save(requestModel2);
+                        RequestModel requestModel3 = RequestModel.builder()
+                                .name("MERCURIAL")
+                                .brand("NIKE")
+                                .sku("MERCURIALNIKE")
+                                .tokenUser("OPEREZ")
+                                .build();
+                        iModel.save(requestModel3);
+                        RequestModel requestModel4 = RequestModel.builder()
+                                .name("INDIGO")
+                                .brand("LEVIS")
+                                .sku("INDIGOLEVIS")
+                                .tokenUser("OPEREZ")
+                                .build();
+                        iModel.save(requestModel4);
+                        RequestModel requestModel5 = RequestModel.builder()
+                                .name("OLD NAVY")
+                                .brand("LEVIS")
+                                .sku("OLDNAVYLEVIS")
+                                .tokenUser("OPEREZ")
+                                .build();
+                        iModel.save(requestModel5);
+                        RequestModel requestModel6 = RequestModel.builder()
+                                .name("RIPPER")
+                                .brand("LEVIS")
+                                .sku("RIPPERLEVIS")
+                                .tokenUser("OPEREZ")
+                                .build();
+                        iModel.save(requestModel6);
+                        RequestModel requestModel7 = RequestModel.builder()
+                                .name("SWEATER")
+                                .brand("GAP")
+                                .sku("SWEATERGAP")
+                                .tokenUser("OPEREZ")
+                                .build();
+                        iModel.save(requestModel7);
+                        RequestModel requestModel8 = RequestModel.builder()
+                                .name("KASPER")
+                                .brand("GAP")
+                                .sku("KASPERGAP")
+                                .tokenUser("OPEREZ")
+                                .build();
+                        iModel.save(requestModel8);
+                        RequestModel requestModel9 = RequestModel.builder()
+                                .name("SUSTRA")
+                                .brand("GAP")
+                                .sku("SUSTRAGAP")
+                                .tokenUser("OPEREZ")
+                                .build();
+                        iModel.save(requestModel9);
+                        RequestModel requestModel10 = RequestModel.builder()
+                                .name("KRUST")
+                                .brand("ADIDAS")
+                                .sku("KRUSTADIDAS")
+                                .tokenUser("JORTIZ")
+                                .build();
+                        iModel.save(requestModel10);
+                        RequestModel requestModel11 = RequestModel.builder()
+                                .name("GIST")
+                                .brand("ADIDAS")
+                                .sku("GISTADIDAS")
+                                .tokenUser("JORTIZ")
+                                .build();
+                        iModel.save(requestModel11);
+                        RequestModel requestModel12 = RequestModel.builder()
+                                .name("THUNDER")
+                                .brand("ADIDAS")
+                                .sku("THUNDERADIDAS")
+                                .tokenUser("JORTIZ")
+                                .build();
+                        iModel.save(requestModel12);
+                        RequestModel requestModel13 = RequestModel.builder()
+                                .name("YITRO")
+                                .brand("KENZO")
+                                .sku("YITROKENZO")
+                                .tokenUser("JORTIZ")
+                                .build();
+                        iModel.save(requestModel13);
+                        RequestModel requestModel14 = RequestModel.builder()
+                                .name("ULCAST")
+                                .brand("KENZO")
+                                .sku("ULCASTKENZO")
+                                .tokenUser("JORTIZ")
+                                .build();
+                        iModel.save(requestModel14);
+                        RequestModel requestModel15 = RequestModel.builder()
+                                .name("REINDER")
+                                .brand("KENZO")
+                                .sku("REINDERKENZO")
+                                .tokenUser("JORTIZ")
+                                .build();
+                        iModel.save(requestModel15);
+                        RequestModel requestModel16 = RequestModel.builder()
+                                .name("REALT")
+                                .brand("LACOSTE")
+                                .sku("REALTLACOSTE")
+                                .tokenUser("JORTIZ")
+                                .build();
+                        iModel.save(requestModel16);
+                        RequestModel requestModel17 = RequestModel.builder()
+                                .name("BRUST")
+                                .brand("LACOSTE")
+                                .sku("BRUSTLACOSTE")
+                                .tokenUser("JORTIZ")
+                                .build();
+                        iModel.save(requestModel17);
+                        RequestModel requestModel18 = RequestModel.builder()
+                                .name("FROST")
+                                .brand("LACOSTE")
+                                .sku("FROSTLACOSTE")
+                                .tokenUser("JORTIZ")
+                                .build();
+                        iModel.save(requestModel18);
                         // mock products
                         List<MultipartFile> productImages1 = new ArrayList<>();
                         Resource resource1 = resourceLoader.getResource("classpath:static/pictures/bill.jpg");
@@ -1250,7 +1359,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product1 = RequestProductSave.builder().build();
                         product1.setCategory("tennis");
                         product1.setColor("negro");
-                        product1.setModel("f90");
+                        product1.setModel("f90nike");
                         product1.setSize("12");
                         product1.setSku("A00001");
                         product1.setPrice(2.30);
@@ -1261,7 +1370,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product2 = RequestProductSave.builder().build();
                         product2.setCategory("botas");
                         product2.setColor("rojo");
-                        product2.setModel("m2000");
+                        product2.setModel("m2000nike");
                         product2.setSize("24");
                         product2.setSku("A00002");
                         product2.setPrice(5.41);
@@ -1272,7 +1381,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product3 = RequestProductSave.builder().build();
                         product3.setCategory("tennis");
                         product3.setColor("verde");
-                        product3.setModel("mercurial");
+                        product3.setModel("mercurialnike");
                         product3.setSize("24");
                         product3.setSku("A00003");
                         product3.setPrice(3.33);
@@ -1283,7 +1392,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product4 = RequestProductSave.builder().build();
                         product4.setCategory("camisetas");
                         product4.setColor("rojo");
-                        product4.setModel("indigo");
+                        product4.setModel("indigolevis");
                         product4.setSize("s");
                         product4.setSku("A00004");
                         product4.setPrice(7.01);
@@ -1294,7 +1403,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product5 = RequestProductSave.builder().build();
                         product5.setCategory("jeans");
                         product5.setColor("azul");
-                        product5.setModel("old navy");
+                        product5.setModel("oldnavylevis");
                         product5.setSize("m");
                         product5.setSku("A00005");
                         product5.setPrice(4.76);
@@ -1305,7 +1414,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product6 = RequestProductSave.builder().build();
                         product6.setCategory("blusas");
                         product6.setColor("amarillo");
-                        product6.setModel("ripper");
+                        product6.setModel("ripperlevis");
                         product6.setSize("l");
                         product6.setSku("A00006");
                         product6.setPrice(1.34);
@@ -1316,7 +1425,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product7 = RequestProductSave.builder().build();
                         product7.setCategory("blusas");
                         product7.setColor("morado");
-                        product7.setModel("sweater");
+                        product7.setModel("sweatergap");
                         product7.setSize("xs");
                         product7.setSku("A00007");
                         product7.setPrice(8.23);
@@ -1327,7 +1436,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product8 = RequestProductSave.builder().build();
                         product8.setCategory("camisetas");
                         product8.setColor("verde");
-                        product8.setModel("kasper");
+                        product8.setModel("kaspergap");
                         product8.setSize("xm");
                         product8.setSku("A00008");
                         product8.setPrice(6.27);
@@ -1338,7 +1447,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product9 = RequestProductSave.builder().build();
                         product9.setCategory("blusas");
                         product9.setColor("naranja");
-                        product9.setModel("sustra");
+                        product9.setModel("sustragap");
                         product9.setSize("xl");
                         product9.setSku("A00009");
                         product9.setPrice(9.05);
@@ -1349,7 +1458,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product10 = RequestProductSave.builder().build();
                         product10.setCategory("botas");
                         product10.setColor("rojo");
-                        product10.setModel("krust");
+                        product10.setModel("krustadidas");
                         product10.setSize("40");
                         product10.setSku("B00001");
                         product10.setPrice(7.11);
@@ -1360,7 +1469,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product11 = RequestProductSave.builder().build();
                         product11.setCategory("tennis");
                         product11.setColor("verde");
-                        product11.setModel("gist");
+                        product11.setModel("gistadidas");
                         product11.setSize("32");
                         product11.setSku("B00002");
                         product11.setPrice(4.65);
@@ -1371,7 +1480,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product12 = RequestProductSave.builder().build();
                         product12.setCategory("tennis");
                         product12.setColor("azul");
-                        product12.setModel("thunder");
+                        product12.setModel("thunderadidas");
                         product12.setSize("18");
                         product12.setSku("B00003");
                         product12.setPrice(8.38);
@@ -1382,7 +1491,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product13 = RequestProductSave.builder().build();
                         product13.setCategory("camisetas");
                         product13.setColor("negro");
-                        product13.setModel("yitro");
+                        product13.setModel("yitrokenzo");
                         product13.setSize("s");
                         product13.setSku("B00004");
                         product13.setPrice(4.02);
@@ -1393,7 +1502,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product14 = RequestProductSave.builder().build();
                         product14.setCategory("blusas");
                         product14.setColor("morado");
-                        product14.setModel("ulcast");
+                        product14.setModel("ulcastkenzo");
                         product14.setSize("m");
                         product14.setSku("B00005");
                         product14.setPrice(1.99);
@@ -1404,7 +1513,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product15 = RequestProductSave.builder().build();
                         product15.setCategory("jeans");
                         product15.setColor("amarillo");
-                        product15.setModel("reinder");
+                        product15.setModel("reinderkenzo");
                         product15.setSize("l");
                         product15.setSku("B00006");
                         product15.setPrice(6.37);
@@ -1415,7 +1524,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product16 = RequestProductSave.builder().build();
                         product16.setCategory("camisetas");
                         product16.setColor("rojo");
-                        product16.setModel("realt");
+                        product16.setModel("realtlacoste");
                         product16.setSize("xl");
                         product16.setSku("B00007");
                         product16.setPrice(2.97);
@@ -1426,7 +1535,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product17 = RequestProductSave.builder().build();
                         product17.setCategory("blusas");
                         product17.setColor("azul");
-                        product17.setModel("brust");
+                        product17.setModel("brustlacoste");
                         product17.setSize("xs");
                         product17.setSku("B00008");
                         product17.setPrice(5.21);
@@ -1437,7 +1546,7 @@ public class Seeder implements CommandLineRunner {
                         RequestProductSave product18 = RequestProductSave.builder().build();
                         product18.setCategory("camisetas");
                         product18.setColor("naranja");
-                        product18.setModel("frost");
+                        product18.setModel("frostlacoste");
                         product18.setSize("m");
                         product18.setSku("B00009");
                         product18.setPrice(3.53);
