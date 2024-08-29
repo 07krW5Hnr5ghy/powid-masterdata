@@ -1082,7 +1082,8 @@ public class Seeder implements CommandLineRunner {
 //                                .build();
 //
 //                        iCourier.save(requestCourier,adminUser.getUsername());
-                    
+                iSize.save("STD","ROPA","JROMERO");
+                iSize.save("PSZ","ROPA","JROMERO");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());
