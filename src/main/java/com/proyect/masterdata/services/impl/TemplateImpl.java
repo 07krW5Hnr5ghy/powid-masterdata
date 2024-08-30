@@ -86,22 +86,26 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row supplierRow = sheet.createRow(0);
                 Cell supplierHeaderCell = supplierRow.createCell(0);
                 supplierHeaderCell.setCellValue("PROVEEDOR");
-                supplierHeaderCell.setCellStyle(headerStyle);
+                supplierHeaderCell.setCellStyle(headerStyle2);
                 Cell supplierCell = supplierRow.createCell(1);
                 supplierCell.setCellValue(supplier.getBusinessName());
                 Cell supplierHeaderCell2 = supplierRow.createCell(2);
                 supplierHeaderCell2.setCellValue("RUC");
-                supplierHeaderCell2.setCellStyle(headerStyle);
+                supplierHeaderCell2.setCellStyle(headerStyle2);
                 Cell supplierCell2 = supplierRow.createCell(3);
                 supplierCell2.setCellValue(supplier.getRuc());
 
                 Row headerRow = sheet.createRow(1);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("CANTIDAD");
@@ -164,10 +168,14 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("CANTIDAD");
@@ -227,10 +235,14 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("CANTIDAD");
@@ -293,10 +305,14 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("CANTIDAD");
@@ -357,14 +373,18 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU PRODUCTO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(2);
                 cell.setCellValue("CANTIDAD");
@@ -486,14 +506,18 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU PRODUCTO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(2);
                 cell.setCellValue("CANTIDAD");
@@ -501,7 +525,7 @@ public class TemplateImpl implements ITemplate {
 
                 cell = headerRow.createCell(3);
                 cell.setCellValue("TIPO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 XSSFSheet hiddenSheet = workbook.createSheet("Hidden");
                 workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet), true);
@@ -649,38 +673,42 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU PRODUCTO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("MARCA");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(2);
                 cell.setCellValue("MODELO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(3);
                 cell.setCellValue("COLOR");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(4);
                 cell.setCellValue("CATEGORIA");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(5);
                 cell.setCellValue("TAMAÑO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(6);
                 cell.setCellValue("TIPO_UNIDAD");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(7);
                 cell.setCellValue("UNIDAD");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(8);
                 cell.setCellValue("CARACTERISTICAS");
@@ -924,9 +952,15 @@ public class TemplateImpl implements ITemplate {
             try{
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 XSSFSheet sheet = workbook.createSheet("productos_inventario");
+
                 CellStyle headerStyle = workbook.createCellStyle();
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SERIAL");
@@ -934,11 +968,11 @@ public class TemplateImpl implements ITemplate {
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("PRODUCTO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(2);
                 cell.setCellValue("PROVEEDOR");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(3);
                 cell.setCellValue("PRECIO");
@@ -1005,14 +1039,19 @@ public class TemplateImpl implements ITemplate {
             try{
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 XSSFSheet sheet = workbook.createSheet("modelos");
+
                 CellStyle headerStyle = workbook.createCellStyle();
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("MARCA");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("MODELO");
