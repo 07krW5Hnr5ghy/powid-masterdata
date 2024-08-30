@@ -623,7 +623,7 @@ public class TemplateImpl implements ITemplate {
                     if(models.isEmpty()){
                         throw new BadRequestExceptions(Constants.ErrorModel);
                     }
-                    modelMap.put(brand.getName(),models.stream().map(Model::getName).toList());
+                    modelMap.put(brand.getName(),models.stream().map(Model::getSku).toList());
                 }
 
                 for(CategoryProduct categoryProduct:categoryProducts){
@@ -683,6 +683,10 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(8);
+                cell.setCellValue("CARACTERISTICAS");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(9);
                 cell.setCellValue("PRECIO");
                 cell.setCellStyle(headerStyle);
 
@@ -874,7 +878,7 @@ public class TemplateImpl implements ITemplate {
 
                 for(int rowIndex = 1; rowIndex <= quantity;rowIndex++){
                     Row row = sheet.createRow(rowIndex);
-                    Cell priceCell = row.createCell(8);
+                    Cell priceCell = row.createCell(9);
                     priceCell.setCellStyle(priceStyle);
                 }
 

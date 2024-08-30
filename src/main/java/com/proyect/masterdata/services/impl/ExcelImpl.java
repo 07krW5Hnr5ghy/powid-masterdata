@@ -1224,7 +1224,10 @@ public class ExcelImpl implements IExcel {
                             newProduct.setUnit(unit);
                             newProduct.setUnitId(unit.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==NUMERIC)&&(ii==8)){
+                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==8)){
+                            newProduct.setCharacteristics(cell.getRichStringCellValue().getString().toUpperCase());
+                        }
+                        if((i>=1)&&(cell.getCellType()==NUMERIC)&&(ii==9)){
                             if(cell.getNumericCellValue() < 0.01){
                                 throw new BadRequestExceptions(Constants.ErrorProductPriceZero);
                             }
@@ -1239,7 +1242,8 @@ public class ExcelImpl implements IExcel {
                                     newProduct.getCategoryProduct() != null &&
                                     newProduct.getModel() != null &&
                                     productPrice.getUnitSalePrice() != null &&
-                                    newProduct.getColor() != null
+                                    newProduct.getColor() != null &&
+                                    newProduct.getCharacteristics() != null
                             )){
                         newProduct.setStatus(true);
                         newProduct.setRegistrationDate(new Date(System.currentTimeMillis()));
@@ -1261,7 +1265,8 @@ public class ExcelImpl implements IExcel {
                                     productPrice.getUnitSalePrice() == null ||
                                     newProduct.getModel() == null ||
                                     newProduct.getCategoryProduct() == null ||
-                                    newProduct.getColor() == null
+                                    newProduct.getColor() == null ||
+                                    newProduct.getCharacteristics() == null
                     )){
                         break;
                     }
