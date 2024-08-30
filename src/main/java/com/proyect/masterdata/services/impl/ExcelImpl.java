@@ -1172,6 +1172,19 @@ public class ExcelImpl implements IExcel {
                     Product newProduct = Product.builder().build();
                     ProductPrice productPrice = ProductPrice.builder().build();
                     for(int ii = 0;ii <= 9;ii++){
+                        if((i>=1)&&(
+                                (row.getCell(0)==null) ||
+                                        (row.getCell(1)==null)) ||
+                                (row.getCell(2)==null) ||
+                                (row.getCell(3)==null) ||
+                                (row.getCell(4)==null) ||
+                                (row.getCell(5)==null) ||
+                                (row.getCell(6)==null) ||
+                                (row.getCell(7)==null) ||
+                                (row.getCell(9)==null)
+                        ){
+                            break;
+                        }
                         if((i>=1) && (row.getCell(0).getCellType() == STRING) && (ii==0)){
                             product = productRepository.findBySku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                             if(product != null){
@@ -1240,7 +1253,7 @@ public class ExcelImpl implements IExcel {
                             newProduct.setUnit(unit);
                             newProduct.setUnitId(unit.getId());
                         }
-                        if((i>=1)&&(row.getCell(8).getCellType()==STRING)&&(ii==8)){
+                        if((i>=1)&&(row.getCell(8)!=null)&&(row.getCell(8).getCellType()==STRING)&&(ii==8)){
                             newProduct.setCharacteristics(row.getCell(8).getRichStringCellValue().getString().toUpperCase());
                         }
                         if(newProduct.getCharacteristics()==null){
