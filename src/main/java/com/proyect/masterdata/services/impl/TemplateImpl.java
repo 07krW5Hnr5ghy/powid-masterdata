@@ -623,7 +623,7 @@ public class TemplateImpl implements ITemplate {
                     if(models.isEmpty()){
                         throw new BadRequestExceptions(Constants.ErrorModel);
                     }
-                    modelMap.put(brand.getName(),models.stream().map(Model::getSku).toList());
+                    modelMap.put(brand.getName(),models.stream().map(Model::getName).toList());
                 }
 
                 for(CategoryProduct categoryProduct:categoryProducts){
