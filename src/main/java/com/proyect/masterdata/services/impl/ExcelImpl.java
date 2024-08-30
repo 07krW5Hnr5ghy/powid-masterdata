@@ -1540,7 +1540,7 @@ public class ExcelImpl implements IExcel {
                         throw new BadRequestExceptions(Constants.ErrorModelExists);
                     }else{
                         modelRepository.save(model);
-                        iAudit.save("ADD_MODEL_EXCEL","MODEL "+model.getSku()+" CREADO POR EXCEL.",model.getName(),user.getUsername());
+                        iAudit.save("ADD_MODEL_EXCEL","MODEL "+model.getSku()+" CREADO POR EXCEL.",model.getSku(),user.getUsername());
                     }
                 }
                 return ResponseSuccess.builder()
