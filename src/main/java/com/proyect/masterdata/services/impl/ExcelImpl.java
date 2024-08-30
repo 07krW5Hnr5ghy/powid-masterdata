@@ -1162,7 +1162,6 @@ public class ExcelImpl implements IExcel {
                 boolean hasDuplicate = false;
                 int i = 0;
                 for(Row row:sheet){
-                    int ii = 0;
                     Product product;
                     Model model;
                     Color color;
@@ -1172,40 +1171,40 @@ public class ExcelImpl implements IExcel {
                     Unit unit;
                     Product newProduct = Product.builder().build();
                     ProductPrice productPrice = ProductPrice.builder().build();
-                    for(Cell cell:row){
-                        if((i>=1) && (cell.getCellType() == STRING) && (ii==0)){
-                            product = productRepository.findBySku(cell.getRichStringCellValue().getString().toUpperCase());
+                    for(int ii = 0;ii <= 9;ii++){
+                        if((i>=1) && (row.getCell(0).getCellType() == STRING) && (ii==0)){
+                            product = productRepository.findBySku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                             if(product != null){
                                 throw new BadRequestExceptions(Constants.ErrorProductExists);
                             }
-                            newProduct.setSku(cell.getRichStringCellValue().getString().toUpperCase());
+                            newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                         }
-                        if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
-                            model = modelRepository.findByNameAndClientIdAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                        if((i>=1)&&(row.getCell(2).getCellType() == STRING) && (ii==2)){
+                            model = modelRepository.findByNameAndClientIdAndStatusTrue(row.getCell(2).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model == null){
                                 throw new BadRequestExceptions(Constants.ErrorModel);
                             }
                             newProduct.setModel(model);
                             newProduct.setModelId(model.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==3)){
-                            color = colorRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                        if((i>=1)&&(row.getCell(3).getCellType()==STRING)&&(ii==3)){
+                            color = colorRepository.findByNameAndStatusTrue(row.getCell(3).getRichStringCellValue().getString().toUpperCase());
                             if(color==null){
                                 throw new BadRequestExceptions(Constants.ErrorColor);
                             }
                             newProduct.setColor(color);
                             newProduct.setColorId(color.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==4)){
-                            categoryProduct = categoryProductRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                        if((i>=1)&&(row.getCell(4).getCellType()==STRING)&&(ii==4)){
+                            categoryProduct = categoryProductRepository.findByNameAndStatusTrue(row.getCell(4).getRichStringCellValue().getString().toUpperCase());
                             if(categoryProduct==null){
                                 throw new BadRequestExceptions(Constants.ErrorCategory);
                             }
                             newProduct.setCategoryProduct(categoryProduct);
                             newProduct.setCategoryProductId(categoryProduct.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==5)&&(categoryProduct!=null)){
-                            size = sizeRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                        if((i>=1)&&(row.getCell(5).getCellType()==STRING)&&(ii==5)&&(categoryProduct!=null)){
+                            size = sizeRepository.findByNameAndStatusTrue(row.getCell(5).getRichStringCellValue().getString().toUpperCase());
                             if(size==null){
                                 throw new BadRequestExceptions(Constants.ErrorSize);
                             }
@@ -1215,8 +1214,8 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSize(size);
                             newProduct.setSizeId(size.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==NUMERIC)&&(ii==5)&&(categoryProduct!=null)){
-                            size = sizeRepository.findByNameAndStatusTrue(String.valueOf((int) cell.getNumericCellValue()));
+                        if((i>=1)&&(row.getCell(5).getCellType()==NUMERIC)&&(ii==5)&&(categoryProduct!=null)){
+                            size = sizeRepository.findByNameAndStatusTrue(String.valueOf((int) row.getCell(5).getNumericCellValue()));
                             if(size==null){
                                 throw new BadRequestExceptions(Constants.ErrorSize);
                             }
@@ -1226,34 +1225,33 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSize(size);
                             newProduct.setSizeId(size.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==6)){
-                            unitType = unitTypeRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                        if((i>=1)&&(row.getCell(5).getCellType()==STRING)&&(ii==6)){
+                            unitType = unitTypeRepository.findByNameAndStatusTrue(row.getCell(6).getRichStringCellValue().getString().toUpperCase());
                             if(unitType == null){
                                 throw new BadRequestExceptions(Constants.ErrorUnitType);
                             }
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==7)){
+                        if((i>=1)&&(row.getCell(7).getCellType()==STRING)&&(ii==7)){
                             assert unitType != null;
-                            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase(),unitType.getId());
+                            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(row.getCell(7).getRichStringCellValue().getString().toUpperCase(),unitType.getId());
                             if(unit==null){
                                 throw new BadRequestExceptions(Constants.ErrorUnit);
                             }
                             newProduct.setUnit(unit);
                             newProduct.setUnitId(unit.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==8)){
-                            newProduct.setCharacteristics(cell.getRichStringCellValue().getString().toUpperCase());
+                        if((i>=1)&&(row.getCell(8).getCellType()==STRING)&&(ii==8)){
+                            newProduct.setCharacteristics(row.getCell(8).getRichStringCellValue().getString().toUpperCase());
                         }
                         if(newProduct.getCharacteristics()==null){
                             newProduct.setCharacteristics("NO APLICA");
                         }
-                        if((i>=1)&&(cell.getCellType()==NUMERIC)&&(ii==9)){
-                            if(cell.getNumericCellValue() < 0.01){
+                        if((i>=1)&&(row.getCell(9).getCellType()==NUMERIC)&&(ii==9)){
+                            if(row.getCell(9).getNumericCellValue() < 0.01){
                                 throw new BadRequestExceptions(Constants.ErrorProductPriceZero);
                             }
-                            productPrice.setUnitSalePrice(cell.getNumericCellValue());
+                            productPrice.setUnitSalePrice(row.getCell(9).getNumericCellValue());
                         }
-                        ii++;
                     }
                     if(i>=1 && (
                             newProduct.getSku() != null &&
