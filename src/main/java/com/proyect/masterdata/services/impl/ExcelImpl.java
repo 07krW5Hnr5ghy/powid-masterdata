@@ -170,6 +170,9 @@ public class ExcelImpl implements IExcel {
                     }
                     i++;
                 }
+                if(requestPurchaseItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
+                }
                 Set<String> serials = new HashSet<>();
                 boolean hasDuplicate = false;
                 for(RequestPurchaseItem requestPurchaseItem : requestPurchaseItemList){
@@ -332,6 +335,9 @@ public class ExcelImpl implements IExcel {
                         break;
                     }
                     i++;
+                }
+                if(requestStockTransferItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorStockTransferItemZero);
                 }
                 Set<String> skus = new HashSet<>();
                 boolean hasDuplicate = false;
@@ -498,6 +504,9 @@ public class ExcelImpl implements IExcel {
                         break;
                     }
                     i++;
+                }
+                if(requestStockReturnItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorStockReturnItemZero);
                 }
                 Set<String> skus = new HashSet<>();
                 boolean hasDuplicate = false;
@@ -666,6 +675,9 @@ public class ExcelImpl implements IExcel {
                     }
                     i++;
                 }
+                if(requestStockReplenishmentItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorStockReplenishmentItemZero);
+                }
                 Set<String> skus = new HashSet<>();
                 boolean hasDuplicate = false;
                 for(RequestStockReplenishmentItem requestStockReplenishmentItem : requestStockReplenishmentItemList){
@@ -820,6 +832,9 @@ public class ExcelImpl implements IExcel {
                     }
                     i++;
                 }
+                if(requestOrderStockItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorOrderStockItemZero);
+                }
                 Set<String> serials = new HashSet<>();
                 boolean hasDuplicate = false;
                 for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
@@ -834,7 +849,6 @@ public class ExcelImpl implements IExcel {
                         throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
                     }
                 }
-                System.out.println(requestOrderStockItemList);
                 Map<String,Integer> checkCount = requestOrderStockItemList.stream().collect(
                         Collectors.groupingBy(
                                 RequestOrderStockItem::getProduct,
@@ -1009,6 +1023,9 @@ public class ExcelImpl implements IExcel {
                         break;
                     }
                     i++;
+                }
+                if(requestOrderReturnItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorOrderReturnItemZero);
                 }
                 Set<String> serials = new HashSet<>();
                 boolean hasDuplicate = false;
@@ -1227,6 +1244,9 @@ public class ExcelImpl implements IExcel {
                         if((i>=1)&&(cell.getCellType()==STRING)&&(ii==8)){
                             newProduct.setCharacteristics(cell.getRichStringCellValue().getString().toUpperCase());
                         }
+                        if(newProduct.getCharacteristics()==null){
+                            newProduct.setCharacteristics("NO APLICA");
+                        }
                         if((i>=1)&&(cell.getCellType()==NUMERIC)&&(ii==9)){
                             if(cell.getNumericCellValue() < 0.01){
                                 throw new BadRequestExceptions(Constants.ErrorProductPriceZero);
@@ -1242,8 +1262,7 @@ public class ExcelImpl implements IExcel {
                                     newProduct.getCategoryProduct() != null &&
                                     newProduct.getModel() != null &&
                                     productPrice.getUnitSalePrice() != null &&
-                                    newProduct.getColor() != null &&
-                                    newProduct.getCharacteristics() != null
+                                    newProduct.getColor() != null
                             )){
                         newProduct.setStatus(true);
                         newProduct.setRegistrationDate(new Date(System.currentTimeMillis()));
@@ -1265,12 +1284,15 @@ public class ExcelImpl implements IExcel {
                                     productPrice.getUnitSalePrice() == null ||
                                     newProduct.getModel() == null ||
                                     newProduct.getCategoryProduct() == null ||
-                                    newProduct.getColor() == null ||
-                                    newProduct.getCharacteristics() == null
+                                    newProduct.getColor() == null
                     )){
                         break;
                     }
                     i++;
+                }
+
+                if(products.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorProduct);
                 }
 
                 for(int j = 0;j < products.size();j++){
@@ -1391,6 +1413,9 @@ public class ExcelImpl implements IExcel {
                     }
                     i++;
                 }
+                if(supplierProducts.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                }
                 for(SupplierProduct supplierProduct : supplierProducts){
                     if(!skus.add(supplierProduct.getSerial())){
                         hasDuplicate = true;
@@ -1503,6 +1528,9 @@ public class ExcelImpl implements IExcel {
                         break;
                     }
                     i++;
+                }
+                if(models.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorModel);
                 }
                 for(Model model : models){
                     if(!modelNames.add(model.getName())){
