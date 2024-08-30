@@ -42,8 +42,7 @@ public class Audit {
     @Column(name = "reference")
     private String reference;
 
-    @Column(name = "detail")
-    @Lob
+    @Column(name = "detail",columnDefinition = "text")
     private String detail;
 
     @ManyToOne

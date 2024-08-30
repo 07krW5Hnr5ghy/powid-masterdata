@@ -87,6 +87,7 @@ public class GeneralStockImpl implements IGeneralStock {
                         .build();
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
@@ -136,6 +137,7 @@ public class GeneralStockImpl implements IGeneralStock {
                         .build();
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
@@ -175,6 +177,7 @@ public class GeneralStockImpl implements IGeneralStock {
                         pageSize);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
 

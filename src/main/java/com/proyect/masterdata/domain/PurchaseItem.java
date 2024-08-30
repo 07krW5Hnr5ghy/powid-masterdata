@@ -35,7 +35,7 @@ public class PurchaseItem {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "observations")
+    @Column(name = "observations",columnDefinition = "text")
     private String observations;
 
     @Column(name = "registration_date")
