@@ -938,14 +938,20 @@ public class Seeder implements CommandLineRunner {
                         iOrderPaymentState.save("perdida",adminUser.getUsername());
 
                         // sale channel
-                        iSaleChannel.save("FALLABELA",adminUser.getUsername());
+                        iSaleChannel.save("MP FALLABELA",adminUser.getUsername());
+                        iSaleChannel.save("IG ARANNI",adminUser.getUsername());
+                        iSaleChannel.save("IG KUNCA",adminUser.getUsername());
                         iSaleChannel.save("TIENDA OP",adminUser.getUsername());
-                        iSaleChannel.save("VENTA - MAYORISTA",adminUser.getUsername());
-                        iSaleChannel.save("WEB - KUNCA",adminUser.getUsername());
-                        iSaleChannel.save("OESCHLE",adminUser.getUsername());
-                        iSaleChannel.save("RIPLEY",adminUser.getUsername());
-                        iSaleChannel.save("LIVE SHOPPING KUNCA",adminUser.getUsername());
+                        iSaleChannel.save("VENTA B2B",adminUser.getUsername());
+                        iSaleChannel.save("WEB KUNCA.PE",adminUser.getUsername());
+                        iSaleChannel.save("MP RIPLEY",adminUser.getUsername());
                         iSaleChannel.save("WEB KUNCA.SHOP",adminUser.getUsername());
+                        iSaleChannel.save("MERCADO LIBRE",adminUser.getUsername());
+                        iSaleChannel.save("MP YAPE",adminUser.getUsername());
+                        iSaleChannel.save("MP PLATANITOS",adminUser.getUsername());
+                        iSaleChannel.save("WEB ARANNI.PE",adminUser.getUsername());
+                        iSaleChannel.save("LIVE SHOPPING ARANNI",adminUser.getUsername());
+                        iSaleChannel.save("LIVE SHOPPING KUNCA",adminUser.getUsername());
 
                         // management type
                         iManagementType.save("canje",adminUser.getUsername());
