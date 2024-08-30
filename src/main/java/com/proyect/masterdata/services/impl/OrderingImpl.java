@@ -13,6 +13,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -73,6 +74,7 @@ public class OrderingImpl implements IOrdering {
     private final CancelledOrderRepository cancelledOrderRepository;
     private final CancellationReasonRepository cancellationReasonRepository;
     @Override
+    @Transactional
     public ResponseSuccess save(
             RequestOrderSave requestOrderSave,
             MultipartFile[] receipts,
@@ -195,8 +197,8 @@ public class OrderingImpl implements IOrdering {
                     .receiptFlag(false)
                     .deliveryFlag(false)
                     .build());
-            CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
-            if(!paymentReceipts.get().isEmpty()){
+            List<String> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
+            if(!paymentReceipts.isEmpty()){
                 ordering.setReceiptFlag(true);
                 orderingRepository.save(ordering);
             }
@@ -216,7 +218,7 @@ public class OrderingImpl implements IOrdering {
                     .message(Constants.register)
                     .build();
 
-        }catch (RuntimeException | InterruptedException | ExecutionException e){
+        }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -224,6 +226,7 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
+    @Transactional
     public CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave,MultipartFile[] receipts, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         Path folder = Paths.get("src/main/resources/uploads/orders");
         return CompletableFuture.supplyAsync(()->{
@@ -822,8 +825,8 @@ public class OrderingImpl implements IOrdering {
 
             orderingRepository.save(ordering);
 
-            CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
-            if((!ordering.getReceiptFlag()) && (!paymentReceipts.get().isEmpty())){
+            List<String> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
+            if((!ordering.getReceiptFlag()) && (!paymentReceipts.isEmpty())){
                 ordering.setReceiptFlag(true);
                 orderingRepository.save(ordering);
             }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.services.IAudit;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class SupplierProductImpl implements ISupplierProduct {
     private final SupplierProductRepositoryCustom supplierProductRepositoryCustom;
     private final IAudit iAudit;
     @Override
+    @Transactional
     public ResponseSuccess save(RequestSupplierProduct requestSupplierProduct, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -106,6 +108,7 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
+    @Transactional
     public CompletableFuture<ResponseSuccess> saveAsync(RequestSupplierProduct requestSupplierProduct, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;

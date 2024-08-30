@@ -36,62 +36,60 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
     private final OrderPaymentReceiptRepository orderPaymentReceiptRepository;
     private final IAudit iAudit;
     @Override
-    public CompletableFuture<List<String>> uploadReceipt(MultipartFile[] receipts, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            User user;
-            Ordering ordering;
-            List<String> receiptUrlList = new ArrayList<>();
-            try{
-                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                ordering = orderingRepository.findById(orderId).orElse(null);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
+    public List<String> uploadReceipt(MultipartFile[] receipts, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        User user;
+        Ordering ordering;
+        List<String> receiptUrlList = new ArrayList<>();
+        try{
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            ordering = orderingRepository.findById(orderId).orElse(null);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
 
-            if(user == null){
-                throw new BadRequestExceptions(Constants.ErrorUser);
-            }
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
 
-            if(ordering == null){
-                throw new BadRequestExceptions(Constants.ErrorOrdering);
-            }
+        if(ordering == null){
+            throw new BadRequestExceptions(Constants.ErrorOrdering);
+        }
 
-            try{
+        try{
 
-                String folder = (user.getClient().getBusiness() + "_PEDIDOS").replace(" ","_");
-                Date currentDate = new Date(System.currentTimeMillis());
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-                String dateString = dateFormat.format(currentDate);
-                String formattedString = dateString.replace(" ", "_");
-                String filename = "PEDIDO_" + orderId.toString() + "_" + user.getUsername() + "_" + formattedString;
-                String folderPath = folder + "/" + filename;
-                int receiptNumber = 1;
-                if(receipts.length == 0){
-                    return Collections.emptyList();
-                }
-                for(MultipartFile multipartFile : receipts){
-                    String url = iFile.uploadFile(multipartFile,folderPath + "_COMPROBANTE_" + Integer.toString(receiptNumber)).get();
-                    orderPaymentReceiptRepository.save(OrderPaymentReceipt.builder()
-                            .paymentReceiptUrl(url)
-                            .client(user.getClient())
-                            .clientId(user.getClientId())
-                            .ordering(ordering)
-                            .orderId(ordering.getId())
-                            .registrationDate(currentDate)
-                            .tokenUser(user.getUsername())
-                            .build());
-                    receiptUrlList.add(url);
-                    receiptNumber++;
-                }
-                iAudit.save("ADD_ORDER_PAYMENT_RECEIPT","RECIBO DE PAGO PARA PEDIDO "+ordering.getId()+" AGREGADA.",ordering.getId().toString(),user.getUsername());
-                return receiptUrlList;
-            }catch (RuntimeException | IOException | InterruptedException | ExecutionException e){
-                e.printStackTrace();
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            String folder = (user.getClient().getBusiness() + "_PEDIDOS").replace(" ","_");
+            Date currentDate = new Date(System.currentTimeMillis());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+            String dateString = dateFormat.format(currentDate);
+            String formattedString = dateString.replace(" ", "_");
+            String filename = "PEDIDO_" + orderId.toString() + "_" + user.getUsername() + "_" + formattedString;
+            String folderPath = folder + "/" + filename;
+            int receiptNumber = 1;
+            if(receipts.length == 0){
+                return Collections.emptyList();
             }
-        });
+            for(MultipartFile multipartFile : receipts){
+                String url = iFile.uploadFile(multipartFile,folderPath + "_COMPROBANTE_" + Integer.toString(receiptNumber)).get();
+                orderPaymentReceiptRepository.save(OrderPaymentReceipt.builder()
+                        .paymentReceiptUrl(url)
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .ordering(ordering)
+                        .orderId(ordering.getId())
+                        .registrationDate(currentDate)
+                        .tokenUser(user.getUsername())
+                        .build());
+                receiptUrlList.add(url);
+                receiptNumber++;
+            }
+            iAudit.save("ADD_ORDER_PAYMENT_RECEIPT","RECIBO DE PAGO PARA PEDIDO "+ordering.getId()+" AGREGADA.",ordering.getId().toString(),user.getUsername());
+            return receiptUrlList;
+        }catch (RuntimeException | IOException | InterruptedException | ExecutionException e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 
     @Override

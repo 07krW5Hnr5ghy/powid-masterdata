@@ -12,6 +12,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,7 @@ public class PurchaseImpl implements IPurchase {
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     @Override
+    @Transactional
     public ResponseSuccess save(RequestPurchase requestPurchase, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
@@ -153,6 +155,7 @@ public class PurchaseImpl implements IPurchase {
     }
 
     @Override
+    @Transactional
     public CompletableFuture<ResponseSuccess> saveAsync(RequestPurchase requestPurchase, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;

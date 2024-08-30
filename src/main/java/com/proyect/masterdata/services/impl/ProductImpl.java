@@ -15,6 +15,7 @@ import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IProductPicture;
 import com.proyect.masterdata.services.IProductPrice;
+import jakarta.transaction.Transactional;
 import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -53,6 +54,7 @@ public class ProductImpl implements IProduct {
     private final IAudit iAudit;
     private final BrandRepository brandRepository;
     @Override
+    @Transactional
     public ResponseSuccess save(RequestProductSave product,List<MultipartFile> productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         boolean existsProduct;
@@ -125,6 +127,7 @@ public class ProductImpl implements IProduct {
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .tokenUser(tokenUser.toUpperCase())
+                    .characteristics(product.getCharacteristics().toUpperCase())
                     .status(true)
                     .pictureFlag(false)
                     .registrationDate(new Date(System.currentTimeMillis()))
@@ -148,6 +151,7 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
+    @Transactional
     public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product,MultipartFile[] productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         Path folder = Paths.get("src/main/resources/uploads/products");
         return CompletableFuture.supplyAsync(()->{
@@ -221,6 +225,7 @@ public class ProductImpl implements IProduct {
                         .unitId(unit.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
+                        .characteristics(product.getCharacteristics().toUpperCase())
                         .tokenUser(tokenUser.toUpperCase())
                         .status(true)
                         .updateDate(new Date(System.currentTimeMillis()))

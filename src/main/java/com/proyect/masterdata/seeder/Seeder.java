@@ -1364,6 +1364,7 @@ public class Seeder implements CommandLineRunner {
                         product1.setSku("A00001");
                         product1.setPrice(2.30);
                         product1.setUnit("par");
+                        product1.setCharacteristics("characteristics");
 
                         iProduct.save(product1,productImages1, "OPEREZ");
 
@@ -1375,6 +1376,7 @@ public class Seeder implements CommandLineRunner {
                         product2.setSku("A00002");
                         product2.setPrice(5.41);
                         product2.setUnit("par");
+                        product2.setCharacteristics("characteristics");
 
                         iProduct.save(product2,productImages2, "OPEREZ");
 
@@ -1386,6 +1388,7 @@ public class Seeder implements CommandLineRunner {
                         product3.setSku("A00003");
                         product3.setPrice(3.33);
                         product3.setUnit("par");
+                        product3.setCharacteristics("characteristics");
 
                         iProduct.save(product3,productImages1, "OPEREZ");
 
@@ -1397,6 +1400,7 @@ public class Seeder implements CommandLineRunner {
                         product4.setSku("A00004");
                         product4.setPrice(7.01);
                         product4.setUnit("und");
+                        product4.setCharacteristics("characteristics");
 
                         iProduct.save(product4,productImages2, "OPEREZ");
 
@@ -1408,6 +1412,7 @@ public class Seeder implements CommandLineRunner {
                         product5.setSku("A00005");
                         product5.setPrice(4.76);
                         product5.setUnit("und");
+                        product5.setCharacteristics("characteristics");
 
                         iProduct.save(product5, productImages1,"OPEREZ");
 
@@ -1419,6 +1424,7 @@ public class Seeder implements CommandLineRunner {
                         product6.setSku("A00006");
                         product6.setPrice(1.34);
                         product6.setUnit("und");
+                        product6.setCharacteristics("characteristics");
 
                         iProduct.save(product6, productImages2,"OPEREZ");
 
@@ -1430,6 +1436,7 @@ public class Seeder implements CommandLineRunner {
                         product7.setSku("A00007");
                         product7.setPrice(8.23);
                         product7.setUnit("und");
+                        product7.setCharacteristics("characteristics");
 
                         iProduct.save(product7,productImages1, "OPEREZ");
 
@@ -1441,6 +1448,7 @@ public class Seeder implements CommandLineRunner {
                         product8.setSku("A00008");
                         product8.setPrice(6.27);
                         product8.setUnit("und");
+                        product8.setCharacteristics("characteristics");
 
                         iProduct.save(product8,productImages2, "OPEREZ");
 
@@ -1452,6 +1460,7 @@ public class Seeder implements CommandLineRunner {
                         product9.setSku("A00009");
                         product9.setPrice(9.05);
                         product9.setUnit("und");
+                        product9.setCharacteristics("characteristics");
 
                         iProduct.save(product9,productImages1, "OPEREZ");
 
@@ -1463,6 +1472,7 @@ public class Seeder implements CommandLineRunner {
                         product10.setSku("B00001");
                         product10.setPrice(7.11);
                         product10.setUnit("par");
+                        product10.setCharacteristics("characteristics");
 
                         iProduct.save(product10,productImages2, "JORTIZ");
 
@@ -1474,6 +1484,7 @@ public class Seeder implements CommandLineRunner {
                         product11.setSku("B00002");
                         product11.setPrice(4.65);
                         product11.setUnit("par");
+                        product11.setCharacteristics("characteristics");
 
                         iProduct.save(product11,productImages1, "JORTIZ");
 
@@ -1485,6 +1496,7 @@ public class Seeder implements CommandLineRunner {
                         product12.setSku("B00003");
                         product12.setPrice(8.38);
                         product12.setUnit("par");
+                        product12.setCharacteristics("characteristics");
 
                         iProduct.save(product12,productImages2, "JORTIZ");
 
@@ -1496,6 +1508,7 @@ public class Seeder implements CommandLineRunner {
                         product13.setSku("B00004");
                         product13.setPrice(4.02);
                         product13.setUnit("und");
+                        product13.setCharacteristics("characteristics");
 
                         iProduct.save(product13, productImages1,"JORTIZ");
 
@@ -1507,6 +1520,7 @@ public class Seeder implements CommandLineRunner {
                         product14.setSku("B00005");
                         product14.setPrice(1.99);
                         product14.setUnit("und");
+                        product14.setCharacteristics("characteristics");
 
                         iProduct.save(product14,productImages2, "JORTIZ");
 
@@ -1518,6 +1532,7 @@ public class Seeder implements CommandLineRunner {
                         product15.setSku("B00006");
                         product15.setPrice(6.37);
                         product15.setUnit("und");
+                        product15.setCharacteristics("characteristics");
 
                         iProduct.save(product15,productImages1, "JORTIZ");
 
@@ -1529,6 +1544,7 @@ public class Seeder implements CommandLineRunner {
                         product16.setSku("B00007");
                         product16.setPrice(2.97);
                         product16.setUnit("und");
+                        product16.setCharacteristics("characteristics");
 
                         iProduct.save(product16,productImages2, "JORTIZ");
 
@@ -1540,6 +1556,7 @@ public class Seeder implements CommandLineRunner {
                         product17.setSku("B00008");
                         product17.setPrice(5.21);
                         product17.setUnit("und");
+                        product17.setCharacteristics("characteristics");
 
                         iProduct.save(product17,productImages1, "JORTIZ");
 
@@ -1551,6 +1568,7 @@ public class Seeder implements CommandLineRunner {
                         product18.setSku("B00009");
                         product18.setPrice(3.53);
                         product18.setUnit("und");
+                        product18.setCharacteristics("characteristics");
 
                         iProduct.save(product18,productImages2, "JORTIZ");
 
