@@ -45,12 +45,12 @@ public class ModelController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:MODEL_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("name") String name,
+            @RequestParam("sku") String sku,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iModel.delete(name, tokenUser);
+        CompletableFuture<ResponseDelete> result = iModel.delete(sku, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

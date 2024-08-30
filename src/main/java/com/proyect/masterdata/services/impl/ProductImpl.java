@@ -464,6 +464,7 @@ public class ProductImpl implements IProduct {
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .pictureFlag(product.getPictureFlag())
+                        .characteristics(product.getCharacteristics())
                         .build();
             }).toList();
 
@@ -583,6 +584,7 @@ public class ProductImpl implements IProduct {
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
                         .pictureFlag(product.getPictureFlag())
+                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -620,6 +622,7 @@ public class ProductImpl implements IProduct {
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
+                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -655,6 +658,7 @@ public class ProductImpl implements IProduct {
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
+                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -692,6 +696,7 @@ public class ProductImpl implements IProduct {
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
+                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -727,6 +732,7 @@ public class ProductImpl implements IProduct {
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
+                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
