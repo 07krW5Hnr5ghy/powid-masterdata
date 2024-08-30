@@ -11,6 +11,8 @@ import com.proyect.masterdata.domain.Model;
 public interface ModelRepository extends JpaRepository<Model, Long> {
     boolean existsByName(String name);
     Model findBySkuAndClientIdAndStatusTrue(String sku,Long clientId);
+    Model findByNameAndClientIdAndStatusTrue(String name,Long clientId);
+    Model findByNameAndClientId(String name,Long clientId);
     Model findBySkuAndClientId(String sku,Long clientId);
     Model findBySkuAndClientIdAndStatusFalse(String sku,Long clientId);
     List<Model> findByClientIdAndSkuIn(Long clientId,List<String> skus);

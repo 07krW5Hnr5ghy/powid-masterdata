@@ -1181,7 +1181,7 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSku(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
-                            model = modelRepository.findBySkuAndClientIdAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                            model = modelRepository.findByNameAndClientIdAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model == null){
                                 throw new BadRequestExceptions(Constants.ErrorModel);
                             }
@@ -1496,10 +1496,14 @@ public class ExcelImpl implements IExcel {
                             newModel.setBrandId(brand.getId());
                         }
                         if((i>=1)&&(cell.getCellType() == STRING) && (ii==1)){
+                            model = modelRepository.findByNameAndClientId(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                            if(model!=null){
+                                throw new BadRequestExceptions(Constants.ErrorModelExists);
+                            }
                             newModel.setName(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
-                            model = modelRepository.findBySkuAndClientIdAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                            model = modelRepository.findBySkuAndClientId(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model!=null){
                                 throw new BadRequestExceptions(Constants.ErrorModelExists);
                             }

@@ -44,6 +44,7 @@ public class ModelImpl implements IModel {
             throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Model model;
+        Model modelName;
         Brand brandData;
 
         try {
@@ -66,9 +67,13 @@ public class ModelImpl implements IModel {
                     requestModel.getSku().toUpperCase(),
                     user.getClientId()
             );
+            modelName = modelRepository.findByNameAndClientId(
+                    requestModel.getName().toUpperCase(),
+                    user.getClientId()
+            );
         }
 
-        if (model != null) {
+        if (model != null || modelName != null) {
             throw new BadRequestExceptions(Constants.ErrorModelExists);
         }
 
@@ -102,6 +107,7 @@ public class ModelImpl implements IModel {
             User user;
             Model model;
             Brand brandData;
+            Model modelName;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(requestModel.getTokenUser().toUpperCase());
@@ -120,12 +126,16 @@ public class ModelImpl implements IModel {
                 throw new BadRequestExceptions(Constants.ErrorBrand);
             }else{
                 model = modelRepository.findBySkuAndClientId(
+                        requestModel.getSku().toUpperCase(),
+                        user.getClientId()
+                );
+                modelName = modelRepository.findByNameAndClientId(
                         requestModel.getName().toUpperCase(),
                         user.getClientId()
                 );
             }
 
-            if (model == null) {
+            if (model != null || modelName != null) {
                 throw new BadRequestExceptions(Constants.ErrorModelExists);
             }
 
