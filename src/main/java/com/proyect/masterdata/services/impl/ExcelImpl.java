@@ -1496,14 +1496,14 @@ public class ExcelImpl implements IExcel {
                             newModel.setBrandId(brand.getId());
                         }
                         if((i>=1)&&(cell.getCellType() == STRING) && (ii==1)){
+                            newModel.setName(cell.getRichStringCellValue().getString().toUpperCase());
+                        }
+                        if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
                             model = modelRepository.findBySkuAndClientIdAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model!=null){
                                 throw new BadRequestExceptions(Constants.ErrorModelExists);
                             }
                             newModel.setSku(cell.getRichStringCellValue().getString().toUpperCase());
-                        }
-                        if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
-                            newModel.setName(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         ii++;
                     }
