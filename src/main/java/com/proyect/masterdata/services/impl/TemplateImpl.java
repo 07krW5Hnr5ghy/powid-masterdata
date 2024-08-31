@@ -87,8 +87,8 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 Row supplierRow = sheet.createRow(0);
                 Cell supplierHeaderCell = supplierRow.createCell(0);
@@ -169,8 +169,8 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
@@ -236,8 +236,8 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
@@ -306,8 +306,8 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
@@ -374,8 +374,8 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
@@ -507,8 +507,8 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
@@ -674,13 +674,13 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU PRODUCTO");
-                cell.setCellStyle(headerStyle2);
+                cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("MARCA");
@@ -962,8 +962,8 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
@@ -1048,8 +1048,8 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
