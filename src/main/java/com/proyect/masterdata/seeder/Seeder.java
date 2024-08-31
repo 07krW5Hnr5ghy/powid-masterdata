@@ -183,7 +183,7 @@ public class Seeder implements CommandLineRunner {
 //
 //                        Client client1 = clientRepository.save(new Client(2L, "JOEL", "COILA OSNAYO", "20609605601",
 //                                "11111111",
-//                                "KUNCA PERU", "947424006", "Iquique 807 - breña", "joel@aranni.com.pe", true, district.getId(),
+//                                "CORPORACION ARANNI S.A.C", "947424006", "Iquique 807 - breña", "joel@aranni.com.pe", true, district.getId(),
 //                                new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), districtB));
 //
 //                        // mock countries
