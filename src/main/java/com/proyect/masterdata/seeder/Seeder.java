@@ -1105,6 +1105,12 @@ public class Seeder implements CommandLineRunner {
 //                                .storeType("otro")
 //                                .build();
 //                        iStore.save(requestStore2,"JCOILA");
+                        iSaleChannel.save("WHATSAPP","JROMERO");
+                        iDistrict.save("LIMA","JROMERO","LIMA");
+                        iDistrict.save("MIRAFLORES","JROMERO","LIMA");
+                        iDistrict.save("INDEPENDENCIA","JROMERO","LIMA");
+                        iDistrict.save("SAN ISIDRO","JROMERO","LIMA");
+
 
                 }catch (RuntimeException e){
                         e.printStackTrace();
