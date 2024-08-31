@@ -1092,19 +1092,19 @@ public class Seeder implements CommandLineRunner {
 //                        iSize.save("STD","ROPA","JROMERO");
 //                        iSize.save("PSZ","ROPA","JROMERO");
 //                        iCategoryProduct.save("PANTALON","PANTALON","ROPA","JROMERO");
-                        RequestStoreSave requestStore1 = RequestStoreSave.builder()
-                                .name("aranni")
-                                .url("https://www.aranni.com.pe")
-                                .storeType("otro")
-                                .build();
-                          iStore.save(requestStore1,"JCOILA");
-
-                        RequestStoreSave requestStore2 = RequestStoreSave.builder()
-                                .name("kunca")
-                                .url("https://kunca.pe")
-                                .storeType("otro")
-                                .build();
-                        iStore.save(requestStore2,"JCOILA");
+//                        RequestStoreSave requestStore1 = RequestStoreSave.builder()
+//                                .name("aranni")
+//                                .url("https://www.aranni.com.pe")
+//                                .storeType("otro")
+//                                .build();
+//                          iStore.save(requestStore1,"JCOILA");
+//
+//                        RequestStoreSave requestStore2 = RequestStoreSave.builder()
+//                                .name("kunca")
+//                                .url("https://kunca.pe")
+//                                .storeType("otro")
+//                                .build();
+//                        iStore.save(requestStore2,"JCOILA");
 
                 }catch (RuntimeException e){
                         e.printStackTrace();
