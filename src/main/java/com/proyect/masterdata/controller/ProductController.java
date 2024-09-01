@@ -169,4 +169,14 @@ public class ProductController {
         CompletableFuture<ResponseSuccess> result = iProduct.update(requestProductUpdate,productPictures);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("color-size")
+    public ResponseEntity<List<ProductDTO>> listByColorAndSize(
+            @RequestParam("user") String user,
+            @RequestParam("color") String color,
+            @RequestParam("size") String size
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProductDTO>> result = iProduct.listByColorAndSize(color,size,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

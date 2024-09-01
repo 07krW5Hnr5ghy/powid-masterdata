@@ -816,4 +816,43 @@ public class ProductImpl implements IProduct {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<List<ProductDTO>> listByColorAndSize(String color, String size,String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Product> products;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(username.toUpperCase()).getClientId();
+                products = productRepository.findByColorNameAndSizeNameAndClientIdAndStatusTrue(
+                        color.toUpperCase(),
+                        size.toUpperCase(),
+                        clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(products.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return products.stream().map(product -> {
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
+                return ProductDTO.builder()
+                        .sku(product.getSku())
+                        .brand(product.getModel().getBrand().getName())
+                        .model(product.getModel().getName())
+                        .category(product.getCategoryProduct().getName())
+                        .color(product.getColor().getName())
+                        .size(product.getSize().getName())
+                        .unit(product.getUnit().getName())
+                        .price(productPrice.getUnitSalePrice())
+                        .characteristics(product.getCharacteristics())
+                        .registrationDate(product.getRegistrationDate())
+                        .updateDate(product.getUpdateDate())
+                        .build();
+            }).toList();
+        });
+    }
 }

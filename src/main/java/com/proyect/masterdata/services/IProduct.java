@@ -55,4 +55,5 @@ public interface IProduct {
         CompletableFuture<List<ProductDTO>> listProductsModel(String user,String model) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> update(RequestProductUpdate requestProductUpdate, List<MultipartFile> pictures) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<ProductDTO>> listByColorAndSize(String color,String size,String user) throws BadRequestExceptions,InternalErrorExceptions;
 }
