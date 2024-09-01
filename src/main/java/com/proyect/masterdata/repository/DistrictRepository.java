@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface DistrictRepository extends JpaRepository<District, Long> {
-    District findByNameAndProvinceId(String name);
+    District findByNameAndProvinceId(String name,Long provinceId);
     List<District> findByNameIn(List<String> name);
     List<District> findAllByStatusTrue();
     District findByNameAndStatusTrue(String name);

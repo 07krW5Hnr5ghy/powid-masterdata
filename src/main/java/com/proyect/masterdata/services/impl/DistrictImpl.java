@@ -57,7 +57,7 @@ public class DistrictImpl implements IDistrict {
         if (provinceData == null) {
             throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
         }else{
-            district = districtRepository.findByNameAndProvinceId(name.toUpperCase());
+            district = districtRepository.findByNameAndProvinceId(name.toUpperCase(), provinceData.getId());
         }
 
         if (district == null) {
@@ -105,7 +105,7 @@ public class DistrictImpl implements IDistrict {
             if (provinceData == null) {
                 throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
             }else{
-                district = districtRepository.findByNameAndProvinceId(name.toUpperCase());
+                district = districtRepository.findByNameAndProvinceId(name.toUpperCase(), provinceData.getId());
             }
 
             if (district == null) {
