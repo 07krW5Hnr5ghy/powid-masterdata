@@ -145,16 +145,21 @@ public class ExcelImpl implements IExcel {
                             }
                             requestPurchaseItem.setSupplierProduct(supplierProduct.getSerial());
                         }
-                        if(i>=3 && (cell.getCellType() == NUMERIC) && (ii==1)){
+                        if(i>=2 && (cell.getCellType() == NUMERIC) && (ii==1)){
                             if(((int) cell.getNumericCellValue()) < 1){
                                 throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
                             }
                             requestPurchaseItem.setQuantity((int) cell.getNumericCellValue());
                         }
-                        if(i>=4 && (cell.getCellType()==STRING) && (ii==2)){
+                        if(i>=2 && (cell.getCellType()==STRING) && (ii==2)){
                             requestPurchaseItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         ii++;
+                    }
+                    if(i>=2){
+                        System.out.println(requestPurchaseItem.getQuantity());
+                        System.out.println(requestPurchaseItem.getObservations());
+                        System.out.println(requestPurchaseItem.getSupplierProduct());
                     }
                     if(i>=2 && (
                             requestPurchaseItem.getQuantity() != null &&
