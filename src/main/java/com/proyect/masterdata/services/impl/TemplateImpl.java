@@ -982,19 +982,50 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellValue("PRECIO");
                 cell.setCellStyle(headerStyle);
 
+
+                XSSFSheet hiddenSheet1 = workbook.createSheet("Hidden1");
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet1), true);
+
                 // products
                 String[] productList = products.stream().map(Product::getSku).toList().toArray(new String[0]);
+                int rownum1 = 0;
+                Row row1;
+                Cell hiddenCell1;
+                row1 = hiddenSheet1.createRow(rownum1++);
+                int colnum1 = 0;
+                for (String key : productList) {
+                    hiddenCell1 = row1.createCell(colnum1++);
+                    hiddenCell1.setCellValue(key);
+                }
+                Name namedRange1 = workbook.createName();
+                namedRange1.setNameName("Products");
+                String reference1 = "Hidden1!$A$1:" + iExcel.getExcelColumnReference('A',productList.length-1) + "$1";
+                namedRange1.setRefersToFormula(reference1);
+
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(productList);
+                DataValidationConstraint constraint = validationHelper.createFormulaListConstraint("Products");
                 CellRangeAddressList addressList = new CellRangeAddressList(1,quantity+1,1,1);
                 DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
                 sheet.addValidationData(dataValidation);
                 // suppliers
                 String[] supplierList = suppliers.stream().map(Supplier::getBusinessName).toList().toArray(new String[0]);
+                int rownum2 = 1;
+                Row row2;
+                Cell hiddenCell2;
+                row2 = hiddenSheet1.createRow(rownum2++);
+                int colnum2 = 0;
+                for (String key : supplierList) {
+                    hiddenCell2 = row2.createCell(colnum2++);
+                    hiddenCell2.setCellValue(key);
+                }
+                Name namedRange2 = workbook.createName();
+                namedRange2.setNameName("Suppliers");
+                String reference2 = "Hidden1!$A$2:" + iExcel.getExcelColumnReference('A',productList.length-1) + "$2";
+                namedRange2.setRefersToFormula(reference2);
                 DataValidationHelper validationHelper2 = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint2 = validationHelper2.createExplicitListConstraint(supplierList);
+                DataValidationConstraint constraint2 = validationHelper2.createFormulaListConstraint("Suppliers");
                 CellRangeAddressList addressList2 = new CellRangeAddressList(1,quantity+1,2,2);
-                DataValidation dataValidation2 = validationHelper.createValidation(constraint2,addressList2);
+                DataValidation dataValidation2 = validationHelper2.createValidation(constraint2,addressList2);
                 sheet.addValidationData(dataValidation2);
 
                 CellStyle priceStyle = workbook.createCellStyle();
