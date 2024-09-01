@@ -1107,16 +1107,16 @@ public class Seeder implements CommandLineRunner {
 //                        iStore.save(requestStore2,"JCOILA");
                         //iSaleChannel.save("WHATSAPP","JROMERO");
 
-                        iDistrict.save("BELLAVISTA","JROMERO","CALLAO");
-                        iDistrict.save("COMAS","JROMERO","LIMA");
-                        iDistrict.save("INDEPENDENCIA","JROMERO","LIMA");
-                        iDistrict.save("LA VICTORIA","JROMERO","LIMA");
-                        iDistrict.save("MIRAFLORES","JROMERO","LIMA");
-                        iDistrict.save("PUEBLO LIBRE","JROMERO","LIMA");
-                        iDistrict.save("SAN ISIDRO","JROMERO","LIMA");
-                        iDistrict.save("SAN LUIS","JROMERO","LIMA");
-                        iDistrict.save("SAN MIGUEL","JROMERO","LIMA");
-                        iDistrict.save("SANTA ROSA","JROMERO","LIMA");
+//                        iDistrict.save("BELLAVISTA","JROMERO","CALLAO");
+//                        iDistrict.save("COMAS","JROMERO","LIMA");
+//                        iDistrict.save("INDEPENDENCIA","JROMERO","LIMA");
+//                        iDistrict.save("LA VICTORIA","JROMERO","LIMA");
+//                        iDistrict.save("MIRAFLORES","JROMERO","LIMA");
+//                        iDistrict.save("PUEBLO LIBRE","JROMERO","LIMA");
+//                        iDistrict.save("SAN ISIDRO","JROMERO","LIMA");
+//                        iDistrict.save("SAN LUIS","JROMERO","LIMA");
+//                        iDistrict.save("SAN MIGUEL","JROMERO","LIMA");
+//                        iDistrict.save("SANTA ROSA","JROMERO","LIMA");
 
 
                 }catch (RuntimeException e){
