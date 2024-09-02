@@ -19,6 +19,7 @@ public class RequestUser {
     private String gender;
     private String mobile;
     private String password;
+    private String province;
     private String district;
     private String roleName;
     private String tokenUser;

@@ -17,6 +17,7 @@ public class RequestCustomer {
     private String address;
     private String reference;
     private String district;
+    private String province;
     private String tokenUser;
     private String dni;
 }

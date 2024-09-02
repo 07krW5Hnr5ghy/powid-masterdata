@@ -1025,6 +1025,7 @@ public class Seeder implements CommandLineRunner {
                                 .gender("M")
                                 .address(business1.getAddress())
                                 .password("abc123+")
+                                .province(business1.getDistrict().getProvince().getName())
                                 .district(business1.getDistrict().getName())
                                 .tokenUser(business1.getUsername())
                                 .roleName("VENTAS")
@@ -1042,6 +1043,7 @@ public class Seeder implements CommandLineRunner {
                                 .gender("M")
                                 .address(business2.getAddress())
                                 .password("abc123+")
+                                .province(business2.getDistrict().getProvince().getName())
                                 .district(business2.getDistrict().getName())
                                 .tokenUser(business2.getUsername())
                                 .roleName("VENTAS")
@@ -1059,6 +1061,7 @@ public class Seeder implements CommandLineRunner {
                                 .gender("F")
                                 .address(business1.getAddress())
                                 .password("abc123+")
+                                .province(business1.getDistrict().getProvince().getName())
                                 .district(business1.getDistrict().getName())
                                 .tokenUser(business1.getUsername())
                                 .roleName("STOCK")
@@ -1076,6 +1079,7 @@ public class Seeder implements CommandLineRunner {
                                 .gender("F")
                                 .address(business2.getAddress())
                                 .password("abc123+")
+                                .province(business2.getDistrict().getProvince().getName())
                                 .district(business2.getDistrict().getName())
                                 .tokenUser(business2.getUsername())
                                 .roleName("STOCK")
@@ -1093,6 +1097,7 @@ public class Seeder implements CommandLineRunner {
                                 .gender("M")
                                 .address(business1.getAddress())
                                 .password("abc123+")
+                                .province(business1.getDistrict().getProvince().getName())
                                 .district(business1.getDistrict().getName())
                                 .tokenUser(business1.getUsername())
                                 .roleName("MARKETING")
@@ -1110,6 +1115,7 @@ public class Seeder implements CommandLineRunner {
                                 .gender("M")
                                 .address(business2.getAddress())
                                 .password("abc123+")
+                                .province(business2.getDistrict().getProvince().getName())
                                 .district(business2.getDistrict().getName())
                                 .tokenUser(business2.getUsername())
                                 .roleName("MARKETING")
@@ -1127,6 +1133,7 @@ public class Seeder implements CommandLineRunner {
                                 .gender("M")
                                 .address(business1.getAddress())
                                 .password("abc123+")
+                                .province(business1.getDistrict().getProvince().getName())
                                 .district(business1.getDistrict().getName())
                                 .tokenUser(business1.getUsername())
                                 .roleName("SERVICIO_CLIENTE")
@@ -1144,6 +1151,7 @@ public class Seeder implements CommandLineRunner {
                                 .gender("F")
                                 .address(business2.getAddress())
                                 .password("abc123+")
+                                .province(business2.getDistrict().getProvince().getName())
                                 .district(business2.getDistrict().getName())
                                 .tokenUser(business2.getUsername())
                                 .roleName("SERVICIO_CLIENTE")
@@ -1161,6 +1169,7 @@ public class Seeder implements CommandLineRunner {
                                 .gender("M")
                                 .address(business1.getAddress())
                                 .password("abc123+")
+                                .province(business1.getDistrict().getProvince().getName())
                                 .district(business1.getDistrict().getName())
                                 .tokenUser(business1.getUsername())
                                 .roleName("COURIER")
@@ -1178,6 +1187,7 @@ public class Seeder implements CommandLineRunner {
                                 .gender("M")
                                 .address(business2.getAddress())
                                 .password("abc123+")
+                                .province(business2.getDistrict().getProvince().getName())
                                 .district(business2.getDistrict().getName())
                                 .tokenUser(business2.getUsername())
                                 .roleName("COURIER")
@@ -1578,6 +1588,7 @@ public class Seeder implements CommandLineRunner {
                         supplier1.setBusinessName("burgenvillia .corp");
                         supplier1.setRuc("12345678922");
                         supplier1.setCountry("PERÚ");
+                        supplier1.setProvince("LIMA");
                         supplier1.setDistrict("RIMAC");
                         supplier1.setSupplierType("INTERNO");
                         supplier1.setEmail("bg@gmail.com");
@@ -1590,6 +1601,7 @@ public class Seeder implements CommandLineRunner {
                         supplier2.setBusinessName("coltran ltd");
                         supplier2.setRuc("12345678924");
                         supplier2.setCountry("INDIA");
+                        supplier2.setProvince("NO APLICA");
                         supplier2.setDistrict("NO APLICA");
                         supplier2.setSupplierType("DISTRIBUIDOR");
                         supplier2.setEmail("coltran@gmail.com");
@@ -1602,6 +1614,7 @@ public class Seeder implements CommandLineRunner {
                         supplier3.setBusinessName("xincheng ptd");
                         supplier3.setRuc("12345678925");
                         supplier3.setCountry("China");
+                        supplier3.setProvince("NO APLICA");
                         supplier3.setDistrict("NO APLICA");
                         supplier3.setSupplierType("DISTRIBUIDOR");
                         supplier3.setEmail("xincheng@gmail.com");
@@ -1614,6 +1627,7 @@ public class Seeder implements CommandLineRunner {
                         supplier4.setBusinessName("tejidos sa");
                         supplier4.setRuc("12345678926");
                         supplier4.setCountry("España");
+                        supplier4.setProvince("NO APLICA");
                         supplier4.setDistrict("NO APLICA");
                         supplier4.setSupplierType("DISTRIBUIDOR");
                         supplier4.setEmail("tejidos@gmail.com");
@@ -2196,6 +2210,7 @@ public class Seeder implements CommandLineRunner {
                                 .address("807 IQUIQUE")
                                 .customerType("Tradicional")
                                 .instagram("")
+                                .province("LIMA")
                                 .district("BREÑA")
                                 .tokenUser("CROJAS")
                                 .reference("")
@@ -2269,6 +2284,7 @@ public class Seeder implements CommandLineRunner {
                                 .address("AV. JORGE CHAVEZ 420, OFICN LIMA")
                                 .customerType("Tradicional")
                                 .instagram("")
+                                .province("HUARAZ")
                                 .district("INDEPENDENCIA")
                                 .tokenUser("CROJAS")
                                 .dni("NO APLICA")
@@ -2325,6 +2341,7 @@ public class Seeder implements CommandLineRunner {
                                 .address("AV MARAÑÓN 776")
                                 .customerType("Tradicional")
                                 .instagram("")
+                                .province("LIMA")
                                 .district("ATE")
                                 .tokenUser("MAPARICIO")
                                 .dni("NO APLICA")
@@ -2381,6 +2398,7 @@ public class Seeder implements CommandLineRunner {
                                 .address("URB. CAPILLA 130")
                                 .customerType("Tradicional")
                                 .instagram("")
+                                .province("LIMA")
                                 .district("CHORRILLOS")
                                 .tokenUser("MAPARICIO")
                                 .dni("NO APLICA")

@@ -18,5 +18,6 @@ public class RequestClient {
     private String mobile;
     private String address;
     private String email;
+    private String province;
     private String district;
 }

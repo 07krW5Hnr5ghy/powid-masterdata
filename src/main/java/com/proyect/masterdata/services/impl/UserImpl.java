@@ -38,6 +38,7 @@ public class UserImpl implements IUser {
     private final ClientRepository clientRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
+    private final ProvinceRepository provinceRepository;
     private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -48,6 +49,7 @@ public class UserImpl implements IUser {
         boolean existsEmail;
         boolean existsMobile;
         District district;
+        Province province;
         Role role;
 
         try {
@@ -56,7 +58,7 @@ public class UserImpl implements IUser {
             existsDni = userRepository.existsByDni(requestUser.getDni());
             existsEmail = userRepository.existsByEmail(requestUser.getEmail());
             existsMobile = userRepository.existsByMobile(requestUser.getMobile());
-            district = districtRepository.findByNameAndStatusTrue(requestUser.getDistrict().toUpperCase());
+            province = provinceRepository.findByNameAndStatusTrue(requestUser.getProvince().toUpperCase());
             role = roleRepository.findByNameAndStatusTrue(requestUser.getRoleName().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -81,6 +83,12 @@ public class UserImpl implements IUser {
 
         if (existsMobile) {
             throw new BadRequestExceptions(Constants.ErrorUserMobileExist);
+        }
+
+        if(province==null){
+            throw new BadRequestExceptions(Constants.ErrorProvince);
+        }else{
+            district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestUser.getDistrict().toUpperCase(),province.getId());
         }
 
         if (district == null) {
@@ -136,6 +144,7 @@ public class UserImpl implements IUser {
             boolean existsDni;
             boolean existsEmail;
             boolean existsMobile;
+            Province province;
             District district;
             Role role;
 
@@ -145,7 +154,7 @@ public class UserImpl implements IUser {
                 existsDni = userRepository.existsByDni(requestUser.getDni());
                 existsEmail = userRepository.existsByEmail(requestUser.getEmail());
                 existsMobile = userRepository.existsByMobile(requestUser.getMobile());
-                district = districtRepository.findByNameAndStatusTrue(requestUser.getDistrict().toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(requestUser.getProvince().toUpperCase());
                 role = roleRepository.findByNameAndStatusTrue(requestUser.getRoleName().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -170,6 +179,12 @@ public class UserImpl implements IUser {
 
             if (existsMobile) {
                 throw new BadRequestExceptions(Constants.ErrorUserMobileExist);
+            }
+
+            if(province==null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestUser.getDistrict().toUpperCase(),province.getId());
             }
 
             if (district == null) {
