@@ -17,5 +17,6 @@ public class RequestSupplier {
     private String phone;
     private String email;
     private String supplierType;
+    private String province;
     private String district;
 }

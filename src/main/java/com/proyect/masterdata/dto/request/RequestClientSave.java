@@ -18,5 +18,6 @@ public class RequestClientSave {
     String mobile;
     String address;
     String email;
+    String province;
     String district;
 }

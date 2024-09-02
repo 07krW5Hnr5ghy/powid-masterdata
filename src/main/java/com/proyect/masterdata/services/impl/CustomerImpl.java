@@ -1,18 +1,12 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Customer;
-import com.proyect.masterdata.domain.CustomerType;
-import com.proyect.masterdata.domain.District;
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CustomerDTO;
 import com.proyect.masterdata.dto.request.RequestCustomer;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.CustomerRepository;
-import com.proyect.masterdata.repository.CustomerTypeRepository;
-import com.proyect.masterdata.repository.DistrictRepository;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICustomer;
 import com.proyect.masterdata.utils.Constants;
@@ -28,20 +22,22 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class CustomerImp implements ICustomer {
+public class CustomerImpl implements ICustomer {
     private final CustomerRepository customerRepository;
     private final DistrictRepository districtRepository;
+    private final ProvinceRepository provinceRepository;
     private final UserRepository userRepository;
     private final CustomerTypeRepository customerTypeRepository;
     private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestCustomer requestCustomer) throws BadRequestExceptions, InternalErrorExceptions {
         District district;
+        Province province;
         User user;
         Customer customer;
         CustomerType customerType;
         try{
-            district = districtRepository.findByNameAndStatusTrue(requestCustomer.getDistrict().toUpperCase());
+            province = provinceRepository.findByNameAndStatusTrue(requestCustomer.getProvince().toUpperCase());
             user = userRepository.findByUsernameAndStatusTrue(requestCustomer.getTokenUser());
             customer = customerRepository.findByPhone(requestCustomer.getPhone().toUpperCase());
             customerType = customerTypeRepository.findByNameAndStatusTrue(requestCustomer.getCustomerType().toUpperCase());
@@ -49,14 +45,19 @@ public class CustomerImp implements ICustomer {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+        if(province==null){
+            throw new BadRequestExceptions(Constants.ErrorProvince);
+        }else{
+            district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestCustomer.getDistrict().toUpperCase(), province.getId());
+        }
         if(district == null){
             throw new BadRequestExceptions(Constants.ErrorDistrict);
         }
         if(customerType==null){
             throw new BadRequestExceptions(Constants.ErrorCustomerType);
-        }
-        if(user == null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
         }
         if(customer!=null){
             throw new BadRequestExceptions(Constants.ErrorCustomerExist);
@@ -93,11 +94,12 @@ public class CustomerImp implements ICustomer {
     public CompletableFuture<ResponseSuccess> saveAsync(RequestCustomer requestCustomer) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             District district;
+            Province province;
             User user;
             Customer customer;
             CustomerType customerType;
             try{
-                district = districtRepository.findByNameAndStatusTrue(requestCustomer.getDistrict().toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(requestCustomer.getProvince().toUpperCase());
                 user = userRepository.findByUsernameAndStatusTrue(requestCustomer.getTokenUser());
                 customer = customerRepository.findByPhone(requestCustomer.getPhone().toUpperCase());
                 customerType = customerTypeRepository.findByNameAndStatusTrue(requestCustomer.getCustomerType().toUpperCase());
@@ -105,11 +107,13 @@ public class CustomerImp implements ICustomer {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+            if(province==null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestCustomer.getDistrict().toUpperCase(), province.getId());
+            }
             if(district == null){
                 throw new BadRequestExceptions(Constants.ErrorDistrict);
-            }
-            if(user == null){
-                throw new BadRequestExceptions(Constants.ErrorUser);
             }
             if(customerType==null){
                 throw new BadRequestExceptions(Constants.ErrorCustomerType);

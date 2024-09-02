@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.District;
+import com.proyect.masterdata.domain.Province;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.ClientDTO;
 import com.proyect.masterdata.dto.request.RequestClient;
@@ -11,10 +12,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.ClientMapper;
-import com.proyect.masterdata.repository.ClientRepository;
-import com.proyect.masterdata.repository.ClientRepositoryCustom;
-import com.proyect.masterdata.repository.DistrictRepository;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IClient;
 import com.proyect.masterdata.utils.Constants;
@@ -37,6 +35,7 @@ public class ClientImpl implements IClient {
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     private final DistrictRepository districtRepository;
+    private final ProvinceRepository provinceRepository;
     private final ClientMapper clientMapper;
     private final ClientRepositoryCustom clientRepositoryCustom;
     private final IAudit iAudit;
@@ -46,10 +45,11 @@ public class ClientImpl implements IClient {
 
         boolean existsClient;
         District district;
+        Province province;
 
         try {
             existsClient = clientRepository.existsByRuc(requestClientSave.getRuc());
-            district = districtRepository.findByNameAndStatusTrue(requestClientSave.getDistrict().toUpperCase());
+            province = provinceRepository.findByNameAndStatusTrue(requestClientSave.getProvince().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -57,6 +57,12 @@ public class ClientImpl implements IClient {
 
         if (existsClient) {
             throw new BadRequestExceptions(Constants.ErrorClientExist);
+        }
+
+        if(province == null){
+            throw new BadRequestExceptions(Constants.ErrorProvince);
+        }else{
+            district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestClientSave.getDistrict().toUpperCase(),province.getId());
         }
 
         if (district == null) {
@@ -93,10 +99,11 @@ public class ClientImpl implements IClient {
         return CompletableFuture.supplyAsync(()->{
             boolean existsClient;
             District district;
+            Province province;
 
             try {
                 existsClient = clientRepository.existsByRuc(requestClientSave.getRuc());
-                district = districtRepository.findByNameAndStatusTrue(requestClientSave.getDistrict().toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(requestClientSave.getProvince().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -104,6 +111,13 @@ public class ClientImpl implements IClient {
 
             if (existsClient) {
                 throw new BadRequestExceptions(Constants.ErrorClientExist);
+            }
+
+
+            if(province == null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestClientSave.getDistrict().toUpperCase(),province.getId());
             }
 
             if (district == null) {
@@ -145,11 +159,12 @@ public class ClientImpl implements IClient {
             User user;
             Client client;
             District district;
+            Province province;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 client = clientRepository.findByRucAndStatusTrue(requestClient.getRuc());
-                district = districtRepository.findByNameAndStatusTrue(requestClient.getDistrict());
+                province = provinceRepository.findByNameAndStatusTrue(requestClient.getProvince().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -161,6 +176,12 @@ public class ClientImpl implements IClient {
 
             if (client == null) {
                 throw new BadRequestExceptions(Constants.ErrorClient);
+            }
+
+            if(province == null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestClient.getDistrict(),province.getId());
             }
 
             try {
