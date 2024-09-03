@@ -165,6 +165,10 @@ public class ExcelImpl implements IExcel {
                         }
                         ii++;
                     }
+                    if(i>=2){
+                        System.out.println(requestPurchaseItem.getQuantity());
+                        System.out.println(requestPurchaseItem.getSupplierProduct());
+                    }
                     if(i>=2 && (
                             requestPurchaseItem.getQuantity() != null &&
                             requestPurchaseItem.getQuantity() > 0 &&

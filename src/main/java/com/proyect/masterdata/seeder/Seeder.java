@@ -179,7 +179,7 @@ public class Seeder implements CommandLineRunner {
 //
 //                        iDistrict.save("NO APLICA",adminUser.getUsername(),"NO APLICA");
 //
-//                        District districtB = districtRepository.findByNameAndStatusTrue("BREÑA");
+//                        District districtB = districtRepository.findByNameAndProvinceIdAndStatusTrue("BREÑA",194L);
 //
 //                        Client client1 = clientRepository.save(new Client(2L, "JOEL", "COILA OSNAYO", "20609605601",
 //                                "11111111",
@@ -1105,8 +1105,8 @@ public class Seeder implements CommandLineRunner {
 //                                .storeType("otro")
 //                                .build();
 //                        iStore.save(requestStore2,"JCOILA");
-                        //iSaleChannel.save("WHATSAPP","JROMERO");
-
+//                        iSaleChannel.save("WHATSAPP","JROMERO");
+//
 //                        iDistrict.save("BELLAVISTA","JROMERO","CALLAO");
 //                        iDistrict.save("COMAS","JROMERO","LIMA");
 //                        iDistrict.save("INDEPENDENCIA","JROMERO","LIMA");
