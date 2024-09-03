@@ -352,7 +352,7 @@ public class ProductImpl implements IProduct {
     public CompletableFuture<Page<ProductDTO>> list(
             String tokenUser,
             String sku,
-            List<String> models,
+            String model,
             List<String> brands,
             List<String> sizes,
             List<String> categoryProducts,
@@ -365,7 +365,6 @@ public class ProductImpl implements IProduct {
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<Product> productPage;
-            List<Long> modelIds;
             List<Long> brandIds;
             List<Long> sizeIds;
             List<Long> categoryProductIds;
@@ -415,18 +414,10 @@ public class ProductImpl implements IProduct {
                 }else{
                     brandIds = new ArrayList<>();
                 }
-                if(models != null && !models.isEmpty()){
-                    modelIds = modelRepository.findByClientIdAndSkuIn(
-                            clientId,
-                            models.stream().map(String::toUpperCase).toList()
-                    ).stream().map(Model::getId).toList();
-                }else {
-                    modelIds = new ArrayList<>();
-                }
                 productPage = productRepositoryCustom.searchForProduct(
                         clientId,
                         sku,
-                        modelIds,
+                        model,
                         brandIds,
                         sizeIds,
                         categoryProductIds,
@@ -476,7 +467,7 @@ public class ProductImpl implements IProduct {
     public CompletableFuture<Page<ProductDTO>> listFalse(
             String tokenUser,
             String sku,
-            List<String> models,
+            String model,
             List<String> brands,
             List<String> sizes,
             List<String> categoryProducts,
@@ -489,7 +480,6 @@ public class ProductImpl implements IProduct {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Product> productPage;
-            List<Long> modelIds;
             List<Long> brandIds;
             List<Long> sizeIds;
             List<Long> categoryProductIds;
@@ -531,15 +521,6 @@ public class ProductImpl implements IProduct {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                if(models != null && !models.isEmpty()){
-                    modelIds = modelRepository.findByClientIdAndSkuIn(
-                            clientId,
-                            models.stream().map(String::toUpperCase).toList()
-                    ).stream().map(Model::getId).toList();
-                }else {
-                    modelIds = new ArrayList<>();
-                }
-
                 if(brands != null && !brands.isEmpty()){
                     brandIds = brandRepository.findByClientIdAndNameIn(
                             clientId,
@@ -551,7 +532,7 @@ public class ProductImpl implements IProduct {
                 productPage = productRepositoryCustom.searchForProduct(
                         clientId,
                         sku,
-                        modelIds,
+                        model,
                         brandIds,
                         sizeIds,
                         categoryProductIds,

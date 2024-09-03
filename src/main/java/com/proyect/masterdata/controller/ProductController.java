@@ -64,7 +64,7 @@ public class ProductController {
     public ResponseEntity<Page<ProductDTO>> list(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "sku", required = false) String sku,
-            @RequestParam(value = "models", required = false) List<String> models,
+            @RequestParam(value = "model", required = false) String model,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "sizes", required = false) List<String> sizes,
             @RequestParam(value = "categoryProducts", required = false) List<String> categoryProducts,
@@ -78,7 +78,7 @@ public class ProductController {
         CompletableFuture<Page<ProductDTO>> result = iProduct.list(
                 user,
                 sku,
-                models,
+                model,
                 brands,
                 sizes,
                 categoryProducts,
@@ -97,7 +97,7 @@ public class ProductController {
     public ResponseEntity<Page<ProductDTO>> listFalse(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "sku", required = false) String sku,
-            @RequestParam(value = "models", required = false) List<String> models,
+            @RequestParam(value = "model", required = false) String model,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "sizes", required = false) List<String> sizes,
             @RequestParam(value = "categoryProducts", required = false) List<String> categoryProducts,
@@ -111,7 +111,7 @@ public class ProductController {
         CompletableFuture<Page<ProductDTO>> result = iProduct.listFalse(
                 user,
                 sku,
-                models,
+                model,
                 brands,
                 sizes,
                 categoryProducts,

@@ -13,7 +13,7 @@ public interface ProductRepositoryCustom {
     Page<Product> searchForProduct(
             Long clientId,
             String sku,
-            List<Long> modelIds,
+            String model,
             List<Long> brandIds,
             List<Long> sizeIds,
             List<Long> categoryProductIds,
