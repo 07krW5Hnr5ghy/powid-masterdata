@@ -23,11 +23,10 @@ public class TemplateController {
 
     @GetMapping("purchase")
     private ResponseEntity<byte[]> purchase(
-            @RequestParam("quantity") Integer quantity,
             @RequestParam("ruc") String ruc,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ByteArrayInputStream> result = iTemplate.purchase(quantity,ruc,user);
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.purchase(ruc,user);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=compra.xlsx");
         return ResponseEntity.ok()
