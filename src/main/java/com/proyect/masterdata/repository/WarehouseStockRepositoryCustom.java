@@ -14,6 +14,7 @@ public interface WarehouseStockRepositoryCustom {
             List<Long> warehouseIds,
             String serial,
             String productSku,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,
