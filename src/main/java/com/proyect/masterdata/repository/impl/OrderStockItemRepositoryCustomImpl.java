@@ -1,9 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.OrderStock;
-import com.proyect.masterdata.domain.OrderStockItem;
-import com.proyect.masterdata.domain.Product;
-import com.proyect.masterdata.domain.SupplierProduct;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.OrderStockItemRepositoryCustom;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
@@ -32,6 +29,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
             List<Long> warehouseIds,
             String productSku,
             String serial,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -43,6 +41,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
         Join<OrderStockItem, OrderStock> orderStockItemOrderStockJoin = itemRoot.join("orderStock");
         Join<OrderStockItem, SupplierProduct> orderStockItemSupplierProductJoin = itemRoot.join("supplierProduct");
         Join<SupplierProduct, Product> supplierProductProductJoin = orderStockItemSupplierProductJoin.join("product");
+        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
@@ -51,12 +50,14 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
                 warehouseIds,
                 productSku,
                 serial,
+                model,
                 status,
                 criteriaBuilder,
                 itemRoot,
                 orderStockItemOrderStockJoin,
                 orderStockItemSupplierProductJoin,
-                supplierProductProductJoin);
+                supplierProductProductJoin,
+                productModelJoin);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
             List<Order> orderStockList = new ArrayList<>();
@@ -86,6 +87,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
                 warehouseIds,
                 productSku,
                 serial,
+                model,
                 status);
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
     }
@@ -96,12 +98,14 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
             List<Long> warehouseIds,
             String productSku,
             String serial,
+            String model,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<OrderStockItem> itemRoot,
             Join<OrderStockItem, OrderStock> orderStockItemOrderStockJoin,
             Join<OrderStockItem, SupplierProduct> orderStockItemSupplierProductJoin,
-            Join<SupplierProduct,Product> supplierProductProductJoin){
+            Join<SupplierProduct,Product> supplierProductProductJoin,
+            Join<Product,Model> productModelJoin){
         List<Predicate> conditions = new ArrayList<>();
 
         if(clientId != null){
@@ -122,6 +126,10 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
 
         if(serial != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(orderStockItemSupplierProductJoin.get("serial")),"%"+serial.toUpperCase()+"%"));
+        }
+
+        if(model != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
         }
 
         if (status){
@@ -177,6 +185,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
             List<Long> warehouseIds,
             String productSku,
             String serial,
+            String model,
             Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -184,6 +193,7 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
         Join<OrderStockItem, OrderStock> orderStockItemOrderStockJoin = itemRoot.join("orderStock");
         Join<OrderStockItem, SupplierProduct> orderStockItemSupplierProductJoin = itemRoot.join("supplierProduct");
         Join<SupplierProduct, Product> supplierProductProductJoin = orderStockItemSupplierProductJoin.join("product");
+        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
@@ -192,12 +202,14 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
                 warehouseIds,
                 productSku,
                 serial,
+                model,
                 status,
                 criteriaBuilder,
                 itemRoot,
                 orderStockItemOrderStockJoin,
                 orderStockItemSupplierProductJoin,
-                supplierProductProductJoin);
+                supplierProductProductJoin,
+                productModelJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

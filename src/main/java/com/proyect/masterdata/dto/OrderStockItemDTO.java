@@ -16,6 +16,9 @@ public class OrderStockItemDTO {
     private String warehouse;
     private String supplierProduct;
     private String product;
+    private String model;
+    private String color;
+    private String size;
     private Integer quantity;
     private Date registrationDate;
     private Date updateDate;
