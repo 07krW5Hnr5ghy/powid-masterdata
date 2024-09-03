@@ -258,6 +258,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
             List<String> purchases,
             List<String> warehouses,
             List<String> supplierProducts,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -300,6 +301,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
                         purchaseIds,
                         warehouseIds,
                         supplierProductIds,
+                        model,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -318,6 +320,9 @@ public class PurchaseItemImpl implements IPurchaseItem {
                     .quantity(purchaseItem.getQuantity())
                     .supplierProduct(purchaseItem.getSupplierProduct().getSerial())
                     .warehouse(purchaseItem.getPurchase().getWarehouse().getName())
+                    .model(purchaseItem.getSupplierProduct().getProduct().getModel().getName())
+                    .color(purchaseItem.getSupplierProduct().getProduct().getColor().getName())
+                    .size(purchaseItem.getSupplierProduct().getProduct().getSize().getName())
                     .registrationDate(purchaseItem.getRegistrationDate())
                     .build()).toList();
 
@@ -351,6 +356,9 @@ public class PurchaseItemImpl implements IPurchaseItem {
                     .quantity(purchaseItem.getQuantity())
                     .supplierProduct(purchaseItem.getSupplierProduct().getSerial())
                     .warehouse(purchaseItem.getPurchase().getWarehouse().getName())
+                    .model(purchaseItem.getSupplierProduct().getProduct().getModel().getName())
+                    .color(purchaseItem.getSupplierProduct().getProduct().getColor().getName())
+                    .size(purchaseItem.getSupplierProduct().getProduct().getSize().getName())
                     .registrationDate(purchaseItem.getRegistrationDate())
                     .build()).toList();
         });

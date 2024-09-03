@@ -26,6 +26,7 @@ public interface IPurchaseItem {
             List<String> purchases,
             List<String> warehouses,
             List<String> supplierProducts,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,

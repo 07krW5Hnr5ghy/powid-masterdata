@@ -3,8 +3,7 @@ package com.proyect.masterdata.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.proyect.masterdata.domain.Purchase;
-import com.proyect.masterdata.domain.PurchaseItem;
+import com.proyect.masterdata.domain.*;
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -31,6 +30,7 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
             List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> supplierProductIds,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -41,6 +41,9 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
 
         Root<PurchaseItem> itemRoot = criteriaQuery.from(PurchaseItem.class);
         Join<PurchaseItem, Purchase> purchasePurchaseItemJoin = itemRoot.join("purchase");
+        Join<Purchase, SupplierProduct> purchaseSupplierProductJoin = itemRoot.join("supplierProduct");
+        Join<SupplierProduct, Product> supplierProductProductJoin = purchaseSupplierProductJoin.join("product");
+        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
 
         criteriaQuery.select(itemRoot);
 
@@ -49,9 +52,11 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
                 purchaseIds,
                 warehouseIds,
                 supplierProductIds,
+                model,
                 criteriaBuilder,
                 itemRoot,
-                purchasePurchaseItemJoin);
+                purchasePurchaseItemJoin,
+                productModelJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -79,7 +84,8 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
                 clientId,
                 purchaseIds,
                 warehouseIds,
-                supplierProductIds);
+                supplierProductIds,
+                model);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
@@ -88,9 +94,11 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
             List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> supplierProductIds,
+            String model,
             CriteriaBuilder criteriaBuilder,
             Root<PurchaseItem> itemRoot,
-            Join<PurchaseItem, Purchase> purchaseItemPurchaseJoin) {
+            Join<PurchaseItem, Purchase> purchaseItemPurchaseJoin,
+            Join<Product,Model> productModelJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -108,6 +116,11 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
 
         if(!supplierProductIds.isEmpty()){
             conditions.add(criteriaBuilder.and(itemRoot.get("supplierProductId").in(supplierProductIds)));
+        }
+
+
+        if (model != null) {
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
         }
 
         return conditions;
@@ -155,20 +168,26 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
             Long clientId,
             List<Long> purchaseIds,
             List<Long> warehouseIds,
-            List<Long> supplierProductIds) {
+            List<Long> supplierProductIds,
+            String model) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<PurchaseItem> itemRoot = criteriaQuery.from(PurchaseItem.class);
         Join<PurchaseItem, Purchase> purchasePurchaseItemJoin = itemRoot.join("purchase");
+        Join<Purchase, SupplierProduct> purchaseSupplierProductJoin = itemRoot.join("supplierProduct");
+        Join<SupplierProduct, Product> supplierProductProductJoin = purchaseSupplierProductJoin.join("product");
+        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
                 purchaseIds,
                 warehouseIds,
                 supplierProductIds,
+                model,
                 criteriaBuilder,
                 itemRoot,
-                purchasePurchaseItemJoin);
+                purchasePurchaseItemJoin,
+                productModelJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
