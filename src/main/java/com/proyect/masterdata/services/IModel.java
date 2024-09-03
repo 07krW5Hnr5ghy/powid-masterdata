@@ -22,7 +22,7 @@ public interface IModel {
         CompletableFuture<ResponseSuccess> activate(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<ModelDTO>> list(
                 String user,
-                List<String> names,
+                String name,
                 List<String> brands,
                 Date registrationStartDate,
                 Date registrationEndDate,
@@ -34,7 +34,7 @@ public interface IModel {
                 Integer pageSize);
         CompletableFuture<Page<ModelDTO>> listStatusFalse(
                 String user,
-                List<String> names,
+                String name,
                 List<String> brands,
                 Date registrationStartDate,
                 Date registrationEndDate,

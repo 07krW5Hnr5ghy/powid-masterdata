@@ -246,7 +246,7 @@ public class ModelImpl implements IModel {
     @Override
     public CompletableFuture<Page<ModelDTO>> list(
             String user,
-            List<String> names,
+            String name,
             List<String> brands,
             Date registrationStartDate,
             Date registrationEndDate,
@@ -258,17 +258,8 @@ public class ModelImpl implements IModel {
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<Model> pageModel;
-            List<String> modelsUppercase;
             List<Long> brandIds;
             Long clientId;
-
-            if(names != null && !names.isEmpty()){
-                modelsUppercase = names.stream().map(String::toUpperCase).toList();
-            }else{
-                modelsUppercase = new ArrayList<>();
-            }
-
-
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
@@ -282,7 +273,7 @@ public class ModelImpl implements IModel {
                 }
                 pageModel = modelRepositoryCustom.searchForModel(
                         clientId,
-                        modelsUppercase,
+                        name,
                         brandIds,
                         registrationStartDate,
                         registrationEndDate,
@@ -319,7 +310,7 @@ public class ModelImpl implements IModel {
     @Override
     public CompletableFuture<Page<ModelDTO>> listStatusFalse(
             String user,
-            List<String> names,
+            String name,
             List<String> brands,
             Date registrationStartDate,
             Date registrationEndDate,
@@ -335,12 +326,6 @@ public class ModelImpl implements IModel {
             List<Long> brandIds;
             Long clientId;
 
-            if(names != null && !names.isEmpty()){
-                modelsUppercase = names.stream().map(String::toUpperCase).toList();
-            }else{
-                modelsUppercase = new ArrayList<>();
-            }
-
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
                 if (brands != null && !brands.isEmpty()) {
@@ -353,7 +338,7 @@ public class ModelImpl implements IModel {
                 }
                 pageModel = modelRepositoryCustom.searchForModel(
                         clientId,
-                        modelsUppercase,
+                        name,
                         brandIds,
                         registrationStartDate,
                         registrationEndDate,
