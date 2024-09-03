@@ -179,7 +179,7 @@ public class ExcelImpl implements IExcel {
                             requestPurchaseItem.getQuantity() == null ||
                             requestPurchaseItem.getQuantity() < 1 ||
                                     requestPurchaseItem.getSupplierProduct() == null)){
-                        break;
+                        continue;
                     }
                     i++;
                 }
@@ -264,7 +264,7 @@ public class ExcelImpl implements IExcel {
                             purchaseItem.getQuantity() == null ||
                             purchaseItem.getQuantity() < 1 ||
                                     purchaseItem.getSupplierProduct() == null)){
-                        break;
+                        continue;
                     }
                     j++;
                 }
