@@ -50,7 +50,7 @@ public class TemplateImpl implements ITemplate {
     private final ProductRepository productRepository;
     private final IExcel iExcel;
     @Override
-    public CompletableFuture<ByteArrayInputStream> purchase(Integer quantity,String supplierRuc, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> purchase(String supplierRuc, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Supplier supplier;
@@ -103,40 +103,46 @@ public class TemplateImpl implements ITemplate {
                 supplierCell2.setCellValue(supplier.getRuc());
 
                 Row headerRow = sheet.createRow(1);
+
                 Cell cell = headerRow.createCell(0);
-                cell.setCellValue("SKU INVENTARIO");
+                cell.setCellValue("MODELO");
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
+                cell.setCellValue("COLOR");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(2);
+                cell.setCellValue("TIPO TALLA");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(3);
+                cell.setCellValue("TALLA");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(4);
+                cell.setCellValue("SKU INVENTARIO");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(5);
                 cell.setCellValue("CANTIDAD");
                 cell.setCellStyle(headerStyle);
 
-                cell = headerRow.createCell(2);
+                cell = headerRow.createCell(6);
                 cell.setCellValue("OBSERVACIONES");
                 cell.setCellStyle(headerStyle);
-
-                XSSFSheet hiddenSheet1 = workbook.createSheet("Hidden1");
-                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet1), true);
-
-                String[] serialList = supplierProductList.stream().map(SupplierProduct::getSerial).toList().toArray(new String[0]);
-                int rownum1 = 0;
-                Row row1;
-                Cell hiddenCell1;
-                row1 = hiddenSheet1.createRow(rownum1++);
-                int colnum1 = 0;
-                for (String key : serialList) {
-                    hiddenCell1 = row1.createCell(colnum1++);
-                    hiddenCell1.setCellValue(key);
+                int currentRow = 2;
+                for(SupplierProduct supplierProduct:supplierProductList){
+                    Row row = sheet.createRow(currentRow);;
+                    row.createCell(0).setCellValue(supplierProduct.getProduct().getModel().getName());
+                    row.createCell(1).setCellValue(supplierProduct.getProduct().getColor().getName());
+                    row.createCell(2).setCellValue(supplierProduct.getProduct().getSize().getSizeType().getName());
+                    row.createCell(3).setCellValue(supplierProduct.getProduct().getSize().getName());
+                    row.createCell(4).setCellValue(supplierProduct.getSerial());
+                    row.createCell(5).setCellValue(0);
+                    row.createCell(6).setCellValue("NO APLICA");
+                    currentRow++;
                 }
-                Name namedRange1 = workbook.createName();
-                namedRange1.setNameName("SerialProducts");
-                String reference1 = "Hidden1!$A$1:" + iExcel.getExcelColumnReference('A',serialList.length-1) + "$1";
-                namedRange1.setRefersToFormula(reference1);
-                DataValidationHelper validationHelper = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint = validationHelper.createFormulaListConstraint("SerialProducts");
-                CellRangeAddressList addressList = new CellRangeAddressList(2,quantity+1,0,0);
-                DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
-                sheet.addValidationData(dataValidation);
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 workbook.write(out);

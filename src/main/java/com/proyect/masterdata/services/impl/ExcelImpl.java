@@ -138,40 +138,42 @@ public class ExcelImpl implements IExcel {
                     RequestPurchaseItem requestPurchaseItem = RequestPurchaseItem.builder().build();
                     int ii = 0;
                     for(Cell cell:row){
-                        if(i>=2 && (cell.getCellType() == STRING) && (ii == 0)){
+                        if(i>=2 && (cell.getCellType() == STRING) && (ii == 4)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
                             requestPurchaseItem.setSupplierProduct(supplierProduct.getSerial());
                         }
-                        if(i>=2 && (cell.getCellType() == NUMERIC) && (ii == 0)){
+                        if(i>=2 && (cell.getCellType() == NUMERIC) && (ii == 4)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
                             requestPurchaseItem.setSupplierProduct(String.valueOf((int)(cell.getNumericCellValue())));
                         }
-                        if(i>=2 && (cell.getCellType() == NUMERIC) && (ii==1)){
-                            if(((int) cell.getNumericCellValue()) < 1){
-                                throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
+                        if(i>=2 && (cell.getCellType() == NUMERIC) && (ii==5)){
+                            if(((int) cell.getNumericCellValue()) > 0){
+                                requestPurchaseItem.setQuantity((int) cell.getNumericCellValue());
                             }
-                            requestPurchaseItem.setQuantity((int) cell.getNumericCellValue());
                         }
-                        if(i>=2 && (cell.getCellType()==STRING) && (ii==2)){
+                        if(i>=2 && (cell.getCellType()==STRING) && (ii==6)){
                             requestPurchaseItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
+                        }
+                        if(requestPurchaseItem.getObservations()==null){
+                            requestPurchaseItem.setObservations("NO APLICA");
                         }
                         ii++;
                     }
                     if(i>=2 && (
                             requestPurchaseItem.getQuantity() != null &&
-                                    requestPurchaseItem.getObservations() != null &&
+                            requestPurchaseItem.getQuantity() > 0 &&
                                     requestPurchaseItem.getSupplierProduct() != null)){
                         requestPurchaseItemList.add(requestPurchaseItem);
                     }
                     if(i>=2 && (
                             requestPurchaseItem.getQuantity() == null ||
-                                    requestPurchaseItem.getObservations() == null ||
+                            requestPurchaseItem.getQuantity() < 1 ||
                                     requestPurchaseItem.getSupplierProduct() == null)){
                         break;
                     }
@@ -214,18 +216,26 @@ public class ExcelImpl implements IExcel {
                     RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder().build();
                     int ji = 0;
                     for(Cell cell:row){
-                        if(j>=2 && (cell.getCellType() == STRING) && (ji == 0)){
+                        if(j>=2 && (cell.getCellType() == STRING) && (ji == 4)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             requestStockTransactionItem.setSupplierProductSerial(cell.getRichStringCellValue().getString().toUpperCase());
                             purchaseItem.setSupplierProduct(supplierProduct);
                             purchaseItem.setSupplierProductId(supplierProduct.getId());
                         }
-                        if(j>=2 && (cell.getCellType()==NUMERIC)){
-                            purchaseItem.setQuantity((int) cell.getNumericCellValue());
-                            requestStockTransactionItem.setQuantity((int) cell.getNumericCellValue());
+                        if(j>=2 && (cell.getCellType() == NUMERIC) && (ji == 4)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int) (cell.getNumericCellValue())));
+                            requestStockTransactionItem.setSupplierProductSerial(cell.getRichStringCellValue().getString().toUpperCase());
+                            purchaseItem.setSupplierProduct(supplierProduct);
+                            purchaseItem.setSupplierProductId(supplierProduct.getId());
+                        }
+                        if(j>=2 && (cell.getCellType()==NUMERIC)&&(ji == 5)){
+                            if(cell.getNumericCellValue() > 0){
+                                purchaseItem.setQuantity((int) cell.getNumericCellValue());
+                                requestStockTransactionItem.setQuantity((int) cell.getNumericCellValue());
+                            }
 
                         }
-                        if(j>=2 && (cell.getCellType() == STRING) && (ji == 2)){
+                        if(j>=2 && (cell.getCellType() == STRING) && (ji == 6)){
                             purchaseItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
                         }
 
@@ -233,8 +243,8 @@ public class ExcelImpl implements IExcel {
                     }
                     if(j>=2 && (
                             purchaseItem.getQuantity() != null &&
-                                    purchaseItem.getSupplierProduct() != null &&
-                            purchaseItem.getObservations() != null)){
+                            purchaseItem.getQuantity() > 0 &&
+                                    purchaseItem.getSupplierProduct() != null)){
                         purchaseItem.setPurchase(newPurchase);
                         purchaseItem.setPurchaseId(newPurchase.getId());
                         purchaseItem.setClient(user.getClient());
@@ -248,8 +258,8 @@ public class ExcelImpl implements IExcel {
                     }
                     if(j>=2 && (
                             purchaseItem.getQuantity() == null ||
-                                    purchaseItem.getSupplierProduct() == null ||
-                                    purchaseItem.getObservations() == null)){
+                            purchaseItem.getQuantity() < 1 ||
+                                    purchaseItem.getSupplierProduct() == null)){
                         break;
                     }
                     j++;
