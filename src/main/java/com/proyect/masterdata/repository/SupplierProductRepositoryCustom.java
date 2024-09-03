@@ -13,6 +13,7 @@ public interface SupplierProductRepositoryCustom {
             Long clientId,
             String serial,
             String productSku,
+            String model,
             List<Long> supplierIds,
             String sort,
             String sortColumn,

@@ -1,5 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
+import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.repository.SupplierProductRepositoryCustom;
@@ -28,6 +29,7 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
             Long clientId,
             String serial,
             String productSku,
+            String model,
             List<Long> supplierIds,
             String sort,
             String sortColumn,
@@ -39,6 +41,7 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
         CriteriaQuery<SupplierProduct> criteriaQuery = criteriaBuilder.createQuery(SupplierProduct.class);
         Root<SupplierProduct> itemRoot = criteriaQuery.from(SupplierProduct.class);
         Join<SupplierProduct, Product> supplierProductProductJoin = itemRoot.join("product");
+        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
 
         criteriaQuery.select(itemRoot);
 
@@ -46,11 +49,13 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
                 clientId,
                 serial,
                 productSku,
+                model,
                 supplierIds,
                 status,
                 criteriaBuilder,
                 itemRoot,
-                supplierProductProductJoin);
+                supplierProductProductJoin,
+                productModelJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -78,6 +83,7 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
                 clientId,
                 serial,
                 productSku,
+                model,
                 supplierIds,
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
@@ -87,11 +93,13 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
             Long clientId,
             String serial,
             String productSku,
+            String model,
             List<Long> supplierIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<SupplierProduct> itemRoot,
-            Join<SupplierProduct,Product> supplierProductProductJoin) {
+            Join<SupplierProduct,Product> supplierProductProductJoin,
+            Join<Product,Model> productModelJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -110,6 +118,10 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
 
         if (!supplierIds.isEmpty()) {
             conditions.add(criteriaBuilder.and(itemRoot.get("supplierId").in(supplierIds)));
+        }
+
+        if (model != null) {
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
         }
 
         if (status) {
@@ -182,6 +194,7 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
             Long clientId,
             String serial,
             String productSku,
+            String model,
             List<Long> supplierIds,
             Boolean status) {
 
@@ -189,17 +202,20 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<SupplierProduct> itemRoot = criteriaQuery.from(SupplierProduct.class);
         Join<SupplierProduct, Product> supplierProductProductJoin = itemRoot.join("product");
+        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
                 clientId,
                 serial,
                 productSku,
+                model,
                 supplierIds,
                 status,
                 criteriaBuilder,
                 itemRoot,
-                supplierProductProductJoin);
+                supplierProductProductJoin,
+                productModelJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
 

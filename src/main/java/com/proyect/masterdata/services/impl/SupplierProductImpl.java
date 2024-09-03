@@ -251,6 +251,7 @@ public class SupplierProductImpl implements ISupplierProduct {
             String user,
             String serial,
             String productSku,
+            String model,
             List<String> suppliers,
             String sort,
             String sortColumn,
@@ -275,6 +276,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                         clientId,
                         serial,
                         productSku,
+                        model,
                         supplierIds,
                         sort,
                         sortColumn,
@@ -293,6 +295,9 @@ public class SupplierProductImpl implements ISupplierProduct {
             List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
+                            .model(supplierProduct.getProduct().getModel().getName())
+                            .color(supplierProduct.getProduct().getColor().getName())
+                            .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
                             .supplier(supplierProduct.getSupplier().getBusinessName())
@@ -311,6 +316,7 @@ public class SupplierProductImpl implements ISupplierProduct {
             String user,
             String serial,
             String productSku,
+            String model,
             List<String> suppliers,
             String sort,
             String sortColumn,
@@ -336,6 +342,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                         clientId,
                         serial,
                         productSku,
+                        model,
                         supplierIds,
                         sort,
                         sortColumn,
