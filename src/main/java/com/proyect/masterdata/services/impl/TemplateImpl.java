@@ -82,13 +82,17 @@ public class TemplateImpl implements ITemplate {
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 XSSFSheet sheet = workbook.createSheet("compra");
 
+                DataFormat format = workbook.createDataFormat();
+
                 CellStyle headerStyle = workbook.createCellStyle();
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setDataFormat(format.getFormat("@"));
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
                 headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
                 headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setDataFormat(format.getFormat("@"));
 
                 Row supplierRow = sheet.createRow(0);
                 Cell supplierHeaderCell = supplierRow.createCell(0);
