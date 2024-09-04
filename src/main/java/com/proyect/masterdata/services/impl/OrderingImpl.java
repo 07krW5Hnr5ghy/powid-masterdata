@@ -1101,6 +1101,7 @@ public class OrderingImpl implements IOrdering {
                         .reference(ordering.getCustomer().getReference())
                         .customerName(ordering.getCustomer().getName())
                         .customerPhone(ordering.getCustomer().getPhone())
+                        .customerAddress(ordering.getCustomer().getAddress())
                         .deliveryAddress(ordering.getDeliveryAddress().toUpperCase())
                         .advancedPayment(BigDecimal.valueOf(ordering.getAdvancedPayment()))
                         .registrationDate(new Date(System.currentTimeMillis()))
