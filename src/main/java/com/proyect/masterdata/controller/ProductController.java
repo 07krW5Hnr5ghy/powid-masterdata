@@ -179,4 +179,24 @@ public class ProductController {
         CompletableFuture<List<ProductDTO>> result = iProduct.listByColorAndSize(color,size,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("model-color-size")
+    public ResponseEntity<List<ProductDTO>> listByModelAndColorAndSize(
+            @RequestParam("user") String user,
+            @RequestParam("model") String model,
+            @RequestParam("color") String color,
+            @RequestParam("size") String size
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProductDTO>> result = iProduct.listByModelAndSizeAndColor(model,size,color,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @GetMapping("model-color")
+    public ResponseEntity<List<ProductDTO>> listByModelAndColor(
+            @RequestParam("user") String user,
+            @RequestParam("model") String model,
+            @RequestParam("color") String color
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProductDTO>> result = iProduct.listByModelAndColor(model,color,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }
