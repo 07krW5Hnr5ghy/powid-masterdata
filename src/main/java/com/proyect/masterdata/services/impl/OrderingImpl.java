@@ -667,6 +667,7 @@ public class OrderingImpl implements IOrdering {
                         .id(order.getId())
                         .customerName(order.getCustomer().getName())
                         .customerPhone(order.getCustomer().getPhone())
+                        .customerAddress(order.getCustomer().getAddress())
                         .customerType(order.getCustomer().getCustomerType().getName())
                         .orderStatus(order.getOrderState().getName())
                         .department(order.getCustomer().getDistrict().getProvince().getDepartment().getName())
