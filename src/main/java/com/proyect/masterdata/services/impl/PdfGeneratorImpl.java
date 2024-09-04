@@ -80,6 +80,8 @@ public class PdfGeneratorImpl implements IPdfGenerator {
 
                 // Header Section
                 document.add(new Paragraph("#"+ordering.getId()+" "+ordering.getCustomer().getName().toUpperCase()).addStyle(headerStyle).setMargin(0).setPadding(0));
+                document.add(new Paragraph(ordering.getCustomer().getAddress().toUpperCase()).addStyle(normalStyle).setMargin(0).setPadding(0));
+                document.add(new Paragraph(ordering.getCustomer().getReference().toUpperCase()).addStyle(normalStyle).setMargin(0).setPadding(0));
                 document.add(new Paragraph(ordering.getDeliveryAddress()).addStyle(normalStyle).setMargin(0).setPadding(0));
                 document.add(new Paragraph(ordering.getCustomer().getDistrict().getName()).addStyle(normalStyle).setMargin(0).setPadding(0));
                 document.add(new Paragraph(ordering.getCustomer().getDistrict().getProvince().getName()).addStyle(normalStyle).setMargin(0).setPadding(0));
