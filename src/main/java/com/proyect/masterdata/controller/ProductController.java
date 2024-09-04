@@ -143,16 +143,6 @@ public class ProductController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @GetMapping("model")
-    //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
-    public ResponseEntity<List<ProductDTO>> listProductsModel(
-            @RequestParam("user") String user,
-            @RequestParam("model") String model
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<ProductDTO>> result = iProduct.listProductsModel(user,model);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
-    }
-
     @GetMapping("filter")
     public ResponseEntity<List<ProductDTO>> listFilter(
             @RequestParam("user") String user
@@ -197,6 +187,15 @@ public class ProductController {
             @RequestParam("color") String color
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<ProductDTO>> result = iProduct.listByModelAndColor(model,color,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("model")
+    public ResponseEntity<List<ProductDTO>> listByModel(
+            @RequestParam("user") String user,
+            @RequestParam("model") String model
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProductDTO>> result = iProduct.listByModel(model,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

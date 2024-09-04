@@ -648,44 +648,6 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public CompletableFuture<List<ProductDTO>> listProductsModel(String user, String model) throws BadRequestExceptions, InternalErrorExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            List<Product> products;
-            Long clientId;
-            Long modelId;
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                modelId = modelRepository.findBySkuAndClientIdAndStatusTrue(model.toUpperCase(),clientId).getId();
-                products = productRepository.findAllByClientIdAndModelIdAndStatusFalse(clientId,modelId);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
-
-            if(products.isEmpty()){
-                return Collections.emptyList();
-            }
-
-            return products.stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
-                return ProductDTO.builder()
-                        .sku(product.getSku())
-                        .brand(product.getModel().getBrand().getName())
-                        .model(product.getModel().getName())
-                        .category(product.getCategoryProduct().getName())
-                        .color(product.getColor().getName())
-                        .size(product.getSize().getName())
-                        .unit(product.getUnit().getName())
-                        .price(productPrice.getUnitSalePrice())
-                        .characteristics(product.getCharacteristics())
-                        .registrationDate(product.getRegistrationDate())
-                        .updateDate(product.getUpdateDate())
-                        .build();
-            }).toList();
-        });
-    }
-
-    @Override
     public CompletableFuture<List<ProductDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Product> products;
@@ -888,6 +850,45 @@ public class ProductImpl implements IProduct {
                 products = productRepository.findByModelNameAndColorNameAndClientIdAndStatusTrue(
                         model.toUpperCase(),
                         color.toUpperCase(),
+                        clientId
+                );
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(products.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return products.stream().map(product -> {
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
+                return ProductDTO.builder()
+                        .sku(product.getSku())
+                        .brand(product.getModel().getBrand().getName())
+                        .model(product.getModel().getName())
+                        .category(product.getCategoryProduct().getName())
+                        .color(product.getColor().getName())
+                        .size(product.getSize().getName())
+                        .unit(product.getUnit().getName())
+                        .price(productPrice.getUnitSalePrice())
+                        .characteristics(product.getCharacteristics())
+                        .registrationDate(product.getRegistrationDate())
+                        .updateDate(product.getUpdateDate())
+                        .build();
+            }).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<ProductDTO>> listByModel(String modelSku, String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<Product> products;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                products = productRepository.findByModelSkuAndClientIdAndStatusTrue(
+                        modelSku.toUpperCase(),
                         clientId
                 );
             }catch (RuntimeException e){
