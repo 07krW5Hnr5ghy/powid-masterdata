@@ -67,7 +67,7 @@ public class ModelController {
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> list(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
@@ -79,7 +79,7 @@ public class ModelController {
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ModelDTO>> result = iModel.list(
                 user,
-                names,
+                name,
                 brands,
                 registrationStartDate,
                 registrationEndDate,
@@ -96,7 +96,7 @@ public class ModelController {
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> listStatusFalse(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
@@ -108,7 +108,7 @@ public class ModelController {
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ModelDTO>> result = iModel.listStatusFalse(
                 user,
-                names,
+                name,
                 brands,
                 registrationStartDate,
                 registrationEndDate,

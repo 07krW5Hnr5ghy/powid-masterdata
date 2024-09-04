@@ -20,6 +20,7 @@ public interface IGeneralStock {
                 String user,
                 String serial,
                 String productSku,
+                String model,
                 Date registrationStartDate,
                 Date registrationEndDate,
                 Date updateStartDate,

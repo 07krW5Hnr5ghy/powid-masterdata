@@ -13,6 +13,7 @@ public interface PurchaseItemRepositoryCustom {
             List<Long> purchaseIds,
             List<Long> warehouseIds,
             List<Long> supplierProductIds,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,

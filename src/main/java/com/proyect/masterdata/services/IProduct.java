@@ -25,7 +25,7 @@ public interface IProduct {
         CompletableFuture<Page<ProductDTO>> list(
                 String tokenUser,
                 String sku,
-                List<String> models,
+                String model,
                 List<String> brands,
                 List<String> sizes,
                 List<String> categoryProducts,
@@ -39,7 +39,7 @@ public interface IProduct {
         CompletableFuture<Page<ProductDTO>> listFalse(
                 String tokenUser,
                 String sku,
-                List<String> models,
+                String model,
                 List<String> brands,
                 List<String> sizes,
                 List<String> categoryProducts,

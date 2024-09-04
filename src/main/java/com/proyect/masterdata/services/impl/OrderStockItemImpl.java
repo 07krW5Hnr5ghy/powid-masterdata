@@ -124,6 +124,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             List<String> warehouses,
             String productSku,
             String serial,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -149,6 +150,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                         warehouseIds,
                         productSku,
                         serial,
+                        model,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -168,6 +170,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
                     .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
                     .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .color(orderStockItem.getSupplierProduct().getProduct().getColor().getName())
+                    .model(orderStockItem.getSupplierProduct().getProduct().getModel().getName())
+                    .size(orderStockItem.getSupplierProduct().getProduct().getSize().getName())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
@@ -184,6 +189,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             List<String> warehouses,
             String productSku,
             String serial,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -209,6 +215,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                         warehouseIds,
                         productSku,
                         serial,
+                        model,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -228,6 +235,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
                     .product(orderStockItem.getSupplierProduct().getProduct().getSku())
                     .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
+                    .color(orderStockItem.getSupplierProduct().getProduct().getColor().getName())
+                    .model(orderStockItem.getSupplierProduct().getProduct().getModel().getName())
+                    .size(orderStockItem.getSupplierProduct().getProduct().getSize().getName())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())

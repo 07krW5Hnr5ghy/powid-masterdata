@@ -15,6 +15,9 @@ public class PurchaseItemDTO {
     private String warehouse;
     private Integer quantity;
     private String supplierProduct;
+    private String model;
+    private String color;
+    private String size;
     private String purchase;
     private Date registrationDate;
 }

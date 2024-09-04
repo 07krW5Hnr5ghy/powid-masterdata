@@ -16,6 +16,7 @@ public interface OrderStockItemRepositoryCustom {
             List<Long> warehouseIds,
             String productSku,
             String serial,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,

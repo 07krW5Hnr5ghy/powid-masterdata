@@ -30,7 +30,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     public Page<Product> searchForProduct(
             Long clientId,
             String sku,
-            List<Long> modelIds,
+            String model,
             List<Long> brandIds,
             List<Long> sizeIds,
             List<Long> categoryProductIds,
@@ -53,7 +53,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         List<Predicate> conditions = predicateConditions(
                 clientId,
                 sku,
-                modelIds,
+                model,
                 brandIds,
                 sizeIds,
                 categoryProductIds,
@@ -92,7 +92,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         Long count = getOrderCount(
                 clientId,
                 sku,
-                modelIds,
+                model,
                 brandIds,
                 sizeIds,
                 categoryProductIds,
@@ -106,7 +106,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     private List<Predicate> predicateConditions(
             Long clientId,
             String sku,
-            List<Long> modelIds,
+            String model,
             List<Long> brandIds,
             List<Long> sizeIds,
             List<Long> categoryProductIds,
@@ -124,8 +124,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("sku")),"%"+sku.toUpperCase()+"%"));
         }
 
-        if (!modelIds.isEmpty()) {
-            conditions.add(criteriaBuilder.and(itemRoot.get("modelId").in(modelIds)));
+        if (model != null) {
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
         }
 
         if(!brandIds.isEmpty()){
@@ -208,7 +208,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     private Long getOrderCount(
             Long clientId,
             String sku,
-            List<Long> modelIds,
+            String model,
             List<Long> brandIds,
             List<Long> sizeIds,
             List<Long> categoryProductIds,
@@ -225,7 +225,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         List<Predicate> conditions = predicateConditions(
                 clientId,
                 sku,
-                modelIds,
+                model,
                 brandIds,
                 sizeIds,
                 categoryProductIds,

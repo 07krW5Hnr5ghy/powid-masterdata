@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.SupplierProduct;
 import jakarta.persistence.criteria.*;
@@ -32,6 +33,7 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
             Long clientId,
             String serial,
             String productSku,
+            String model,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -46,12 +48,14 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
         Root<GeneralStock> itemRoot = criteriaQuery.from(GeneralStock.class);
         Join<GeneralStock, SupplierProduct> generalStockSupplierProductJoin = itemRoot.join("supplierProduct");
         Join<SupplierProduct, Product> supplierProductProductJoin = generalStockSupplierProductJoin.join("product");
+        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
                 clientId,
                 serial,
                 productSku,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -59,7 +63,8 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
                 criteriaBuilder,
                 itemRoot,
                 generalStockSupplierProductJoin,
-                supplierProductProductJoin);
+                supplierProductProductJoin,
+                productModelJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -87,6 +92,7 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
                 clientId,
                 serial,
                 productSku,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -101,6 +107,7 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
             Long clientId,
             String serial,
             String productSku,
+            String model,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -108,7 +115,8 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
             CriteriaBuilder criteriaBuilder,
             Root<GeneralStock> itemRoot,
             Join<GeneralStock,SupplierProduct> generalStockSupplierProductJoin,
-            Join<SupplierProduct,Product> supplierProductProductJoin) {
+            Join<SupplierProduct,Product> supplierProductProductJoin,
+            Join<Product,Model> productModelJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -122,6 +130,10 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
 
         if(productSku != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplierProductProductJoin.get("sku")),"%"+productSku.toUpperCase()+"%"));
+        }
+
+        if(model != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
         }
 
         if(registrationStartDate!=null){
@@ -227,6 +239,7 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
             Long clientId,
             String serial,
             String productSku,
+            String model,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -237,11 +250,13 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
         Root<GeneralStock> itemRoot = criteriaQuery.from(GeneralStock.class);
         Join<GeneralStock, SupplierProduct> generalStockSupplierProductJoin = itemRoot.join("supplierProduct");
         Join<SupplierProduct, Product> supplierProductProductJoin = generalStockSupplierProductJoin.join("product");
+        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
                 serial,
                 productSku,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -249,7 +264,8 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
                 criteriaBuilder,
                 itemRoot,
                 generalStockSupplierProductJoin,
-                supplierProductProductJoin);
+                supplierProductProductJoin,
+                productModelJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
