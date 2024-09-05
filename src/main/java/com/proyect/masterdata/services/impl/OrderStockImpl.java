@@ -244,7 +244,7 @@ public class OrderStockImpl implements IOrderStock {
             }
 
             List<OrderStockDTO> orderStockDTOS = pageOrderStock.getContent().stream().map(orderStock -> OrderStockDTO.builder()
-                    .orderId(orderStock.getId())
+                    .orderId(orderStock.getOrderId())
                     .warehouse(orderStock.getWarehouse().getName())
                     .registrationDate(orderStock.getRegistrationDate())
                     .build()
@@ -272,7 +272,7 @@ public class OrderStockImpl implements IOrderStock {
             }
 
             return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
-                    .orderId(orderStock.getId())
+                    .orderId(orderStock.getOrderId())
                     .warehouse(orderStock.getWarehouse().getName())
                     .registrationDate(orderStock.getRegistrationDate())
                     .build()
@@ -298,7 +298,7 @@ public class OrderStockImpl implements IOrderStock {
             }
 
             return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
-                    .orderId(orderStock.getId())
+                    .orderId(orderStock.getOrderId())
                     .warehouse(orderStock.getWarehouse().getName())
                     .registrationDate(orderStock.getRegistrationDate())
                     .build()
@@ -324,7 +324,7 @@ public class OrderStockImpl implements IOrderStock {
             }
 
             return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
-                    .orderId(orderStock.getId())
+                    .orderId(orderStock.getOrderId())
                     .warehouse(orderStock.getWarehouse().getName())
                     .registrationDate(orderStock.getRegistrationDate())
                     .build()
