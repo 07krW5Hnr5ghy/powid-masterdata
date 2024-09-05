@@ -1117,12 +1117,12 @@ public class Seeder implements CommandLineRunner {
 //                        iDistrict.save("SAN LUIS","JROMERO","LIMA");
 //                        iDistrict.save("SAN MIGUEL","JROMERO","LIMA");
 //                        iDistrict.save("SANTA ROSA","JROMERO","LIMA");
-                        iColor.save("FUCSIA","JROMERO");
-                        iColor.save("MARRON","JROMERO");
-                        iColor.save("DORADO","JROMERO");
-                        iColor.save("ROSADO","JROMERO");
-                        iColor.save("PLATA QUEMADA","JROMERO");
-                        iCategoryProduct.save("PANTALONES","PANTALONES","ROPA","JROMERO");
+//                        iColor.save("FUCSIA","JROMERO");
+//                        iColor.save("MARRON","JROMERO");
+//                        iColor.save("DORADO","JROMERO");
+//                        iColor.save("ROSADO","JROMERO");
+//                        iColor.save("PLATA QUEMADA","JROMERO");
+//                        iCategoryProduct.save("PANTALONES","PANTALONES","ROPA","JROMERO");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());
