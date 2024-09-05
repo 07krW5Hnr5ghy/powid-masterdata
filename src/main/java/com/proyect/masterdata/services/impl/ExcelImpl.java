@@ -1314,7 +1314,6 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1) && (row.getCell(0).getCellType() == NUMERIC) && (ii==0)){
-                            System.out.println(row.getCell(0).getRichStringCellValue());
                             product = productRepository.findBySku(String.valueOf((int) (row.getCell(0).getNumericCellValue())));
                             if(product != null){
                                 throw new BadRequestExceptions(Constants.ErrorProductExists);
@@ -1322,7 +1321,6 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1)&&(row.getCell(2).getCellType() == STRING) && (ii==2)){
-                            System.out.println(row.getCell(2));
                             model = modelRepository.findByNameAndClientIdAndStatusTrue(row.getCell(2).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model == null){
                                 throw new BadRequestExceptions(Constants.ErrorModel);
@@ -1331,7 +1329,6 @@ public class ExcelImpl implements IExcel {
                             newProduct.setModelId(model.getId());
                         }
                         if((i>=1)&&(row.getCell(3).getCellType()==STRING)&&(ii==3)){
-                            System.out.println(row.getCell(3).getRichStringCellValue());
                             color = colorRepository.findByNameAndStatusTrue(row.getCell(3).getRichStringCellValue().getString().toUpperCase());
                             if(color==null){
                                 throw new BadRequestExceptions(Constants.ErrorColor);
@@ -1348,7 +1345,6 @@ public class ExcelImpl implements IExcel {
                             newProduct.setCategoryProductId(categoryProduct.getId());
                         }
                         if((i>=1)&&(row.getCell(5).getCellType()==STRING)&&(ii==5)&&(categoryProduct!=null)){
-                            System.out.println(row.getCell(5).getRichStringCellValue().getString().toUpperCase());
                             size = sizeRepository.findByNameAndStatusTrue(row.getCell(5).getRichStringCellValue().getString().toUpperCase());
                             if(size==null){
                                 throw new BadRequestExceptions(Constants.ErrorSize);
