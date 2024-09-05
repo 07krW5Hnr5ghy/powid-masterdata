@@ -1353,6 +1353,7 @@ public class ExcelImpl implements IExcel {
                             if(size==null){
                                 throw new BadRequestExceptions(Constants.ErrorSize);
                             }
+
                             if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
                                 throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
                             }
@@ -1370,7 +1371,7 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSize(size);
                             newProduct.setSizeId(size.getId());
                         }
-                        if((i>=1)&&(row.getCell(5).getCellType()==STRING)&&(ii==6)){
+                        if((i>=1)&&(row.getCell(6).getCellType()==STRING)&&(ii==6)){
                             unitType = unitTypeRepository.findByNameAndStatusTrue(row.getCell(6).getRichStringCellValue().getString().toUpperCase());
                             if(unitType == null){
                                 throw new BadRequestExceptions(Constants.ErrorUnitType);

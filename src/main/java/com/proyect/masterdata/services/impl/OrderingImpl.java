@@ -613,6 +613,40 @@ public class OrderingImpl implements IOrdering {
                         .receiptFlag(order.getReceiptFlag())
                         .deliveryFlag(order.getDeliveryFlag())
                         .orderStateColor(order.getOrderState().getHexColor())
+                        .orderItemDTOS(orderItems.stream().map(orderItem -> {
+                            ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                            List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());
+                            Double totalPrice = null;
+                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                            }
+
+                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                            }
+
+                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                            }
+                            return OrderItemDTO.builder()
+                                    .orderId(orderItem.getOrderId())
+                                    .model(orderItem.getProduct().getModel().getName())
+                                    .discountAmount(orderItem.getDiscountAmount())
+                                    .sku(orderItem.getProduct().getSku())
+                                    .unit(orderItem.getProduct().getUnit().getName())
+                                    .observations(orderItem.getObservations())
+                                    .quantity(orderItem.getQuantity())
+                                    .size(orderItem.getProduct().getSize().getName())
+                                    .discount(orderItem.getDiscount().getName())
+                                    .pictures(productPictures.stream().map(ProductPicture::getProductPictureUrl).toList())
+                                    .unitPrice(productPrice.getUnitSalePrice())
+                                    .totalPrice(totalPrice)
+                                    .color(orderItem.getProduct().getColor().getName())
+                                    .category(orderItem.getProduct().getCategoryProduct().getName())
+                                    .registrationDate(orderItem.getRegistrationDate())
+                                    .updateDate(orderItem.getUpdateDate())
+                                    .build();
+                        }).toList())
                         .build();
             }).toList();
 
@@ -699,6 +733,40 @@ public class OrderingImpl implements IOrdering {
                         .receiptFlag(order.getReceiptFlag())
                         .deliveryFlag(order.getDeliveryFlag())
                         .orderStateColor(order.getOrderState().getHexColor())
+                        .orderItemDTOS(orderItems.stream().map(orderItem -> {
+                            ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                            List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());
+                            Double totalPrice = null;
+                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                            }
+
+                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                            }
+
+                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                            }
+                            return OrderItemDTO.builder()
+                                    .orderId(orderItem.getOrderId())
+                                    .discountAmount(orderItem.getDiscountAmount())
+                                    .sku(orderItem.getProduct().getSku())
+                                    .unit(orderItem.getProduct().getUnit().getName())
+                                    .observations(orderItem.getObservations())
+                                    .quantity(orderItem.getQuantity())
+                                    .size(orderItem.getProduct().getSize().getName())
+                                    .discount(orderItem.getDiscount().getName())
+                                    .pictures(productPictures.stream().map(ProductPicture::getProductPictureUrl).toList())
+                                    .unitPrice(productPrice.getUnitSalePrice())
+                                    .totalPrice(totalPrice)
+                                    .color(orderItem.getProduct().getColor().getName())
+                                    .category(orderItem.getProduct().getCategoryProduct().getName())
+                                    .registrationDate(orderItem.getRegistrationDate())
+                                    .updateDate(orderItem.getUpdateDate())
+                                    .model(orderItem.getProduct().getModel().getName())
+                                    .build();
+                        }).toList())
                         .build();
                     if(cancelledOrder != null){
                         newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());
@@ -971,7 +1039,7 @@ public class OrderingImpl implements IOrdering {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/orders/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
@@ -983,7 +1051,7 @@ public class OrderingImpl implements IOrdering {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/"+multipartFile.getOriginalFilename());
+                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/couriers/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
