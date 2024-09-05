@@ -292,4 +292,5 @@ public class Constants {
     public static final String ErrorSupplierProductZero = "Precio de producto de inventario no puede ser cero";
     public static final String ErrorStockReturn = "Devolucion de stock no esta registrado";
     public static final String ErrorOrderCancelledDeliveredStatus = "El pedido no se puede cancelar despues de entregado";
+    public static final String ErrorOrderStockExists = "Ya existe preparacion para el pedido";
 }
