@@ -92,6 +92,18 @@ public class StatsImpl implements IStats {
                 System.out.println(totalSales);
                 System.out.println(totalProducts);
 
+                if(totalSales <= 0.00 && totalProducts < 1){
+                    return StatsCardDTO.builder()
+                            .totalOrders(totalOrdersByDateAndStatus)
+                            .totalSales(BigDecimal.valueOf(totalSales).setScale(2, RoundingMode.HALF_EVEN))
+                            .orderStatus(state)
+                            .totalDeliveryAmountOrders(BigDecimal.valueOf(totalDeliveryAmount).setScale(2, RoundingMode.HALF_EVEN))
+                            .totalProducts(totalProducts)
+                            .averageSaleProduct(0)
+                            .averageTicket(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_EVEN))
+                            .build();
+                }
+
                 double averageSaleProduct;
                 if(totalSales > 0.00 && totalProducts > 0){
                     System.out.println("check");
