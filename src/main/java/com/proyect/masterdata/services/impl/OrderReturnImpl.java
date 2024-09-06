@@ -47,13 +47,14 @@ public class OrderReturnImpl implements IOrderReturn {
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             orderReturn = orderReturnRepository.findByOrderId(orderId);
-            orderStock = orderStockRepository.findByOrderId(orderId);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            orderStock = orderStockRepository.findByOrderIdAndClientId(orderId,user.getClientId());
         }
         if(orderReturn != null){
             throw new BadRequestExceptions(Constants.ErrorOrderReturnExists);
@@ -132,13 +133,14 @@ public class OrderReturnImpl implements IOrderReturn {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 orderReturn = orderReturnRepository.findByOrderId(orderId);
-                orderStock = orderStockRepository.findByOrderId(orderId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                orderStock = orderStockRepository.findByOrderIdAndClientId(orderId,user.getClientId());
             }
             if(orderReturn != null){
                 throw new BadRequestExceptions(Constants.ErrorOrderReturnExists);

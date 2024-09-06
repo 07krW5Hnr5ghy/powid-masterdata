@@ -1047,7 +1047,7 @@ public class ExcelImpl implements IExcel {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 orderReturn = orderReturnRepository.findByOrderId(orderId);
-                orderStock = orderStockRepository.findByOrderId(orderId);
+                orderStock = orderStockRepository.findByOrderIdAndClientId(orderId,user.getClientId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

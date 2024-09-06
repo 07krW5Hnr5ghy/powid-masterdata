@@ -50,7 +50,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProduct().toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProduct().toUpperCase());
-                orderStock = orderStockRepository.findByOrderId(orderId);
+
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -58,6 +58,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                orderStock = orderStockRepository.findByOrderIdAndClientId(orderId,user.getClientId());
             }
 
             if(ordering == null){
@@ -363,7 +365,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-                orderStock = orderStockRepository.findByOrderId(orderId);
+
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
@@ -372,6 +374,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else {
                 clientId = user.getClientId();
+                orderStock = orderStockRepository.findByOrderIdAndClientId(orderId,user.getClientId());
             }
             if(clientId == null){
                 throw new BadRequestExceptions(Constants.ErrorClient);
@@ -415,7 +418,6 @@ public class OrderStockItemImpl implements IOrderStockItem {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-                orderStock = orderStockRepository.findByOrderId(orderId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
@@ -424,6 +426,10 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else {
                 clientId=user.getClientId();
+                orderStock = orderStockRepository.findByOrderIdAndClientId(
+                        orderId,
+                        user.getClientId()
+                );
             }
             if(clientId == null){
                 throw new BadRequestExceptions(Constants.ErrorClient);
@@ -468,7 +474,6 @@ public class OrderStockItemImpl implements IOrderStockItem {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
-                orderStock = orderStockRepository.findByOrderId(orderId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -477,6 +482,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else {
                 clientId = user.getClientId();
+                orderStock = orderStockRepository.findByOrderIdAndClientId(orderId,user.getClientId());
             }
             if(clientId==null){
                 throw new BadRequestExceptions(Constants.ErrorClient);
