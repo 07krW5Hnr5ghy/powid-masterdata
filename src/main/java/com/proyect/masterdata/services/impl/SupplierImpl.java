@@ -47,12 +47,13 @@ public class SupplierImpl implements ISupplier {
         Supplier supplierName;
         SupplierType supplierType;
         District district;
+        Province province;
         Country country;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             supplierType = supplierTypeRepository.findByNameAndStatusTrue(requestSupplier.getSupplierType().toUpperCase());
-            district = districtRepository.findByNameAndStatusTrue(requestSupplier.getDistrict().toUpperCase());
+            province = provinceRepository.findByNameAndStatusTrue(requestSupplier.getProvince().toUpperCase());
             country = countryRepository.findByNameAndStatusTrue(requestSupplier.getCountry().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -76,6 +77,12 @@ public class SupplierImpl implements ISupplier {
 
         if(supplierType == null){
             throw new BadRequestExceptions(Constants.ErrorSupplierType);
+        }
+
+        if(province==null){
+            throw new BadRequestExceptions(Constants.ErrorProvince);
+        }else{
+            district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestSupplier.getDistrict().toUpperCase(),province.getId());
         }
 
         if(district == null){
@@ -123,13 +130,14 @@ public class SupplierImpl implements ISupplier {
             Supplier supplierRuc;
             Supplier supplierName;
             SupplierType supplierType;
+            Province province;
             District district;
             Country country;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 supplierType = supplierTypeRepository.findByNameAndStatusTrue(requestSupplier.getSupplierType().toUpperCase());
-                district = districtRepository.findByNameAndStatusTrue(requestSupplier.getDistrict().toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(requestSupplier.getProvince().toUpperCase());
                 country = countryRepository.findByNameAndStatusTrue(requestSupplier.getCountry().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -153,6 +161,12 @@ public class SupplierImpl implements ISupplier {
 
             if(supplierType == null){
                 throw new BadRequestExceptions(Constants.ErrorSupplierType);
+            }
+
+            if(province==null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestSupplier.getDistrict().toUpperCase(),province.getId());
             }
 
             if(district == null){

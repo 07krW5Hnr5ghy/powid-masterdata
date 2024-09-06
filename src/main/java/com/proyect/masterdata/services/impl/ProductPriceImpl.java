@@ -13,6 +13,7 @@ import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IProductPrice;
 import com.proyect.masterdata.utils.Constants;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class ProductPriceImpl implements IProductPrice {
     private final ProductPriceRepository productPriceRepository;
     private final IAudit iAudit;
     @Override
+    @Transactional
     public ResponseSuccess save(String productSku,Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
@@ -79,6 +81,7 @@ public class ProductPriceImpl implements IProductPrice {
     }
 
     @Override
+    @Transactional
     public CompletableFuture<ResponseSuccess> saveAsync(String productSku, Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;

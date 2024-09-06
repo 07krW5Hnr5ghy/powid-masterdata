@@ -37,42 +37,43 @@ public class DistrictImpl implements IDistrict {
     private final UserRepository userRepository;
     private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(String name, String user, String province)
+    public ResponseSuccess save(String name, String username, String province)
             throws BadRequestExceptions, InternalErrorExceptions {
-        boolean existsUser;
-        boolean existsDistrict;
+        User user;
+        District district;
         Province provinceData;
         try {
-            existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-            existsDistrict = districtRepository.existsByName(name.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (!existsUser) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-        }
-
-        if (existsDistrict) {
-            throw new BadRequestExceptions(Constants.ErrorDistrictExists.toUpperCase());
         }
 
         if (provinceData == null) {
             throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
+        }else{
+            district = districtRepository.findByNameAndProvinceId(name.toUpperCase(), provinceData.getId());
+        }
+
+        if (district != null) {
+            throw new BadRequestExceptions(Constants.ErrorDistrictExists.toUpperCase());
         }
 
         try {
             District newDistrict = districtRepository.save(District.builder()
                     .name(name.toUpperCase())
-                    .tokenUser(user.toUpperCase())
+                    .tokenUser(user.getUsername())
                     .province(provinceData)
                     .provinceId(provinceData.getId())
                     .status(true)
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .build());
-            iAudit.save("ADD_DISTRICT","DISTRITO "+newDistrict.getName()+" CREADO.",newDistrict.getName(),user.toUpperCase());
+            iAudit.save("ADD_DISTRICT","DISTRITO "+newDistrict.getName()+" CREADO.",newDistrict.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -84,42 +85,43 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String user, String province) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String username, String province) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            boolean existsUser;
-            boolean existsDistrict;
+            User user;
+            District district;
             Province provinceData;
             try {
-                existsUser = userRepository.existsByUsernameAndStatusTrue(user.toUpperCase());
-                existsDistrict = districtRepository.existsByName(name.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 provinceData = provinceRepository.findByNameAndStatusTrue(province.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (!existsUser) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
-            }
-
-            if (existsDistrict) {
-                throw new BadRequestExceptions(Constants.ErrorDistrictExists.toUpperCase());
             }
 
             if (provinceData == null) {
                 throw new BadRequestExceptions(Constants.ErrorProvinceExist.toUpperCase());
+            }else{
+                district = districtRepository.findByNameAndProvinceId(name.toUpperCase(), provinceData.getId());
+            }
+
+            if (district != null) {
+                throw new BadRequestExceptions(Constants.ErrorDistrictExists.toUpperCase());
             }
 
             try {
                 District newDistrict = districtRepository.save(District.builder()
                         .name(name.toUpperCase())
-                        .tokenUser(user.toUpperCase())
+                        .tokenUser(user.getUsername())
                         .province(provinceData)
                         .provinceId(provinceData.getId())
                         .status(true)
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .build());
-                iAudit.save("ADD_DISTRICT","DISTRITO "+newDistrict.getName()+" CREADO.",newDistrict.getName(),user.toUpperCase());
+                iAudit.save("ADD_DISTRICT","DISTRITO "+newDistrict.getName()+" CREADO.",newDistrict.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -132,13 +134,14 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String username,String provinceName) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             District district;
+            Province province;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                district = districtRepository.findByNameAndStatusTrue(name.toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(provinceName.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -146,6 +149,12 @@ public class DistrictImpl implements IDistrict {
 
             if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+
+            if(province == null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(name.toUpperCase(), province.getId());
             }
 
             if (district == null) {
@@ -169,13 +178,14 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String name, String username,String provinceName) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             District district;
+            Province province;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                district = districtRepository.findByNameAndStatusFalse(name.toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(provinceName.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -183,6 +193,12 @@ public class DistrictImpl implements IDistrict {
 
             if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }
+
+            if(province == null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusFalse(name.toUpperCase(),province.getId());
             }
 
             if (district == null) {

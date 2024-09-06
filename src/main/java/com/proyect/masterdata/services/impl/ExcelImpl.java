@@ -63,6 +63,7 @@ public class ExcelImpl implements IExcel {
     private final IAudit iAudit;
     private final ProductPriceRepository productPriceRepository;
     private final UnitTypeRepository unitTypeRepository;
+    private final BrandRepository brandRepository;
     @Override
     public CompletableFuture<ResponseSuccess> purchase(RequestPurchaseExcel requestPurchaseExcel, MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -137,37 +138,49 @@ public class ExcelImpl implements IExcel {
                     RequestPurchaseItem requestPurchaseItem = RequestPurchaseItem.builder().build();
                     int ii = 0;
                     for(Cell cell:row){
-                        if(i>=2 && (cell.getCellType() == STRING) && (ii == 0)){
+                        if(i>=2 && (cell.getCellType() == STRING) && (ii == 4)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
                             requestPurchaseItem.setSupplierProduct(supplierProduct.getSerial());
                         }
-                        if(i>=3 && (cell.getCellType() == NUMERIC) && (ii==1)){
-                            if(((int) cell.getNumericCellValue()) < 1){
-                                throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
+                        if(i>=2 && (cell.getCellType() == NUMERIC) && (ii == 4)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
+                            if(supplierProduct == null){
+                                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
-                            requestPurchaseItem.setQuantity((int) cell.getNumericCellValue());
+                            requestPurchaseItem.setSupplierProduct(String.valueOf((int)(cell.getNumericCellValue())));
                         }
-                        if(i>=4 && (cell.getCellType()==STRING) && (ii==2)){
+                        if(i>=2 && (cell.getCellType() == NUMERIC) && (ii==5)){
+                            if(((int) cell.getNumericCellValue()) > 0){
+                                requestPurchaseItem.setQuantity((int) cell.getNumericCellValue());
+                            }
+                        }
+                        if(i>=2 && (cell.getCellType()==STRING) && (ii==6)){
                             requestPurchaseItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
+                        }
+                        if(requestPurchaseItem.getObservations()==null){
+                            requestPurchaseItem.setObservations("NO APLICA");
                         }
                         ii++;
                     }
                     if(i>=2 && (
                             requestPurchaseItem.getQuantity() != null &&
-                                    requestPurchaseItem.getObservations() != null &&
+                            requestPurchaseItem.getQuantity() > 0 &&
                                     requestPurchaseItem.getSupplierProduct() != null)){
                         requestPurchaseItemList.add(requestPurchaseItem);
                     }
                     if(i>=2 && (
                             requestPurchaseItem.getQuantity() == null ||
-                                    requestPurchaseItem.getObservations() == null ||
+                            requestPurchaseItem.getQuantity() < 1 ||
                                     requestPurchaseItem.getSupplierProduct() == null)){
-                        break;
+                        continue;
                     }
                     i++;
+                }
+                if(requestPurchaseItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
                 }
                 Set<String> serials = new HashSet<>();
                 boolean hasDuplicate = false;
@@ -203,18 +216,26 @@ public class ExcelImpl implements IExcel {
                     RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder().build();
                     int ji = 0;
                     for(Cell cell:row){
-                        if(j>=2 && (cell.getCellType() == STRING) && (ji == 0)){
+                        if(j>=2 && (cell.getCellType() == STRING) && (ji == 4)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             requestStockTransactionItem.setSupplierProductSerial(cell.getRichStringCellValue().getString().toUpperCase());
                             purchaseItem.setSupplierProduct(supplierProduct);
                             purchaseItem.setSupplierProductId(supplierProduct.getId());
                         }
-                        if(j>=2 && (cell.getCellType()==NUMERIC)){
-                            purchaseItem.setQuantity((int) cell.getNumericCellValue());
-                            requestStockTransactionItem.setQuantity((int) cell.getNumericCellValue());
+                        if(j>=2 && (cell.getCellType() == NUMERIC) && (ji == 4)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int) (cell.getNumericCellValue())));
+                            requestStockTransactionItem.setSupplierProductSerial(cell.getRichStringCellValue().getString().toUpperCase());
+                            purchaseItem.setSupplierProduct(supplierProduct);
+                            purchaseItem.setSupplierProductId(supplierProduct.getId());
+                        }
+                        if(j>=2 && (cell.getCellType()==NUMERIC)&&(ji == 5)){
+                            if(cell.getNumericCellValue() > 0){
+                                purchaseItem.setQuantity((int) cell.getNumericCellValue());
+                                requestStockTransactionItem.setQuantity((int) cell.getNumericCellValue());
+                            }
 
                         }
-                        if(j>=2 && (cell.getCellType() == STRING) && (ji == 2)){
+                        if(j>=2 && (cell.getCellType() == STRING) && (ji == 6)){
                             purchaseItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
                         }
 
@@ -222,8 +243,8 @@ public class ExcelImpl implements IExcel {
                     }
                     if(j>=2 && (
                             purchaseItem.getQuantity() != null &&
-                                    purchaseItem.getSupplierProduct() != null &&
-                            purchaseItem.getObservations() != null)){
+                            purchaseItem.getQuantity() > 0 &&
+                                    purchaseItem.getSupplierProduct() != null)){
                         purchaseItem.setPurchase(newPurchase);
                         purchaseItem.setPurchaseId(newPurchase.getId());
                         purchaseItem.setClient(user.getClient());
@@ -237,9 +258,9 @@ public class ExcelImpl implements IExcel {
                     }
                     if(j>=2 && (
                             purchaseItem.getQuantity() == null ||
-                                    purchaseItem.getSupplierProduct() == null ||
-                                    purchaseItem.getObservations() == null)){
-                        break;
+                            purchaseItem.getQuantity() < 1 ||
+                                    purchaseItem.getSupplierProduct() == null)){
+                        continue;
                     }
                     j++;
                 }
@@ -309,6 +330,14 @@ public class ExcelImpl implements IExcel {
                             requestStockTransferItem.setSupplierProductSerial(supplierProduct.getSerial());
                             originWarehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(originWarehouse.getId(),supplierProduct.getId());
                         }
+                        if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==0)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
+                            if(supplierProduct == null){
+                                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                            }
+                            requestStockTransferItem.setSupplierProductSerial(supplierProduct.getSerial());
+                            originWarehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(originWarehouse.getId(),supplierProduct.getId());
+                        }
                         if((i>=1) && (cell.getCellType() == NUMERIC) && (ii==1) && (originWarehouseStock != null)){
                             if(((int) cell.getNumericCellValue())<1){
                                 throw new BadRequestExceptions(Constants.ErrorStockTransferItemZero);
@@ -331,6 +360,9 @@ public class ExcelImpl implements IExcel {
                         break;
                     }
                     i++;
+                }
+                if(requestStockTransferItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorStockTransferItemZero);
                 }
                 Set<String> skus = new HashSet<>();
                 boolean hasDuplicate = false;
@@ -364,8 +396,13 @@ public class ExcelImpl implements IExcel {
                     int ji = 0;
                     for(Cell cell:row){
                         if(j>=1 && (cell.getCellType() == STRING) && (ji==0)){
-                            System.out.println(cell.getRichStringCellValue().getString().toUpperCase());
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            stockTransferItem.setSupplierProduct(supplierProduct);
+                            stockTransferItem.setSupplierProductId(supplierProduct.getId());
+                            requestStockTransactionItem.setSupplierProductSerial(supplierProduct.getSerial());
+                        }
+                        if(j>=1 && (cell.getCellType() == NUMERIC) && (ji==0)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int) (cell.getNumericCellValue())));
                             stockTransferItem.setSupplierProduct(supplierProduct);
                             stockTransferItem.setSupplierProductId(supplierProduct.getId());
                             requestStockTransactionItem.setSupplierProductSerial(supplierProduct.getSerial());
@@ -466,6 +503,17 @@ public class ExcelImpl implements IExcel {
                                 throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
                             }
                         }
+                        if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==0)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
+                            if(supplierProduct == null){
+                                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                            }
+                            requestStockReturnItem.setSupplierProductSerial(supplierProduct.getSerial());
+                            purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
+                            if(purchaseItem == null){
+                                throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
+                            }
+                        }
                         if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==1) && (supplierProduct != null)){
                             if(((int) cell.getNumericCellValue()) < 1){
                                 throw new BadRequestExceptions(Constants.ErrorStockReturnItemZero);
@@ -497,6 +545,9 @@ public class ExcelImpl implements IExcel {
                         break;
                     }
                     i++;
+                }
+                if(requestStockReturnItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorStockReturnItemZero);
                 }
                 Set<String> skus = new HashSet<>();
                 boolean hasDuplicate = false;
@@ -531,6 +582,15 @@ public class ExcelImpl implements IExcel {
                     for(Cell cell:row){
                         if(j>=1 && (cell.getCellType() == STRING) && (ji==0)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
+                            requestStockTransactionItem.setSupplierProductSerial(supplierProduct.getSerial());
+                            stockReturnItem.setSupplierProduct(supplierProduct);
+                            stockReturnItem.setSupplierProductId(supplierProduct.getId());
+                            stockReturnItem.setPurchaseItem(purchaseItem);
+                            stockReturnItem.setPurchaseItemId(purchaseItem.getId());
+                        }
+                        if(j>=1 && (cell.getCellType() == NUMERIC) && (ji==0)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
                             purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
                             requestStockTransactionItem.setSupplierProductSerial(supplierProduct.getSerial());
                             stockReturnItem.setSupplierProduct(supplierProduct);
@@ -642,6 +702,28 @@ public class ExcelImpl implements IExcel {
                                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
                             }
                         }
+                        if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==0)){
+                            product = productRepository.findBySkuAndStatusTrue(String.valueOf((int) (cell.getNumericCellValue())));
+                            if(product == null){
+                                throw new BadRequestExceptions(Constants.ErrorProduct);
+                            }
+                            requestStockReplenishmentItem.setProductSku(product.getSku());
+                            orderItem = orderItemRepository.findByOrderIdAndProductId(orderId,product.getId());
+                            if(orderItem == null){
+                                throw new BadRequestExceptions(Constants.ErrorOrderItem);
+                            }
+                        }
+                        if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==0)){
+                            product = productRepository.findBySkuAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
+                            if(product == null){
+                                throw new BadRequestExceptions(Constants.ErrorProduct);
+                            }
+                            requestStockReplenishmentItem.setProductSku(product.getSku());
+                            orderItem = orderItemRepository.findByOrderIdAndProductId(orderId,product.getId());
+                            if(orderItem == null){
+                                throw new BadRequestExceptions(Constants.ErrorOrderItem);
+                            }
+                        }
                         if(i>=1 && (cell.getCellType()==NUMERIC)&&(ii==1)&&(orderItem != null)){
                             if(((int)cell.getNumericCellValue())<1){
                                 throw new BadRequestExceptions(Constants.ErrorStockReplenishmentItemZero);
@@ -664,6 +746,9 @@ public class ExcelImpl implements IExcel {
                         break;
                     }
                     i++;
+                }
+                if(requestStockReplenishmentItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorStockReplenishmentItemZero);
                 }
                 Set<String> skus = new HashSet<>();
                 boolean hasDuplicate = false;
@@ -693,6 +778,13 @@ public class ExcelImpl implements IExcel {
                     for(Cell cell:row){
                         if(j>=1 && (cell.getCellType()==STRING)&&(ji==0)){
                             product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            stockReplenishmentItem.setProduct(product);
+                            stockReplenishmentItem.setProductId(product.getId());
+                            stockReplenishmentItem.setOrdering(ordering);
+                            stockReplenishmentItem.setOrderId(ordering.getId());
+                        }
+                        if(j>=1 && (cell.getCellType()==NUMERIC)&&(ji==0)){
+                            product = productRepository.findBySkuAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
                             stockReplenishmentItem.setProduct(product);
                             stockReplenishmentItem.setProductId(product.getId());
                             stockReplenishmentItem.setOrdering(ordering);
@@ -777,7 +869,18 @@ public class ExcelImpl implements IExcel {
                     RequestOrderStockItem requestOrderStockItem = RequestOrderStockItem.builder().build();
                     for(Cell cell:row){
                         if(i>=1 && (cell.getCellType() == STRING) && ii==0){
-                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase().substring(1));
+                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            if(product == null){
+                                throw new BadRequestExceptions(Constants.ErrorProduct);
+                            }
+                            orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
+                            if(orderItem == null){
+                                throw new BadRequestExceptions(Constants.ErrorOrderItem);
+                            }
+                            requestOrderStockItem.setProduct(product.getSku());
+                        }
+                        if(i>=1 && (cell.getCellType() == NUMERIC) && ii==0){
+                            product = productRepository.findBySkuAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
                             if(product == null){
                                 throw new BadRequestExceptions(Constants.ErrorProduct);
                             }
@@ -789,6 +892,13 @@ public class ExcelImpl implements IExcel {
                         }
                         if(i>=1 && (cell.getCellType() == STRING) && ii==1){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            if(supplierProduct == null){
+                                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                            }
+                            requestOrderStockItem.setSupplierProduct(supplierProduct.getSerial());
+                        }
+                        if(i>=1 && (cell.getCellType() == NUMERIC) && ii==1){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
@@ -819,6 +929,9 @@ public class ExcelImpl implements IExcel {
                     }
                     i++;
                 }
+                if(requestOrderStockItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorOrderStockItemZero);
+                }
                 Set<String> serials = new HashSet<>();
                 boolean hasDuplicate = false;
                 for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
@@ -833,7 +946,6 @@ public class ExcelImpl implements IExcel {
                         throw new BadRequestExceptions(Constants.ErrorOrderStockQuantity);
                     }
                 }
-                System.out.println(requestOrderStockItemList);
                 Map<String,Integer> checkCount = requestOrderStockItemList.stream().collect(
                         Collectors.groupingBy(
                                 RequestOrderStockItem::getProduct,
@@ -868,7 +980,13 @@ public class ExcelImpl implements IExcel {
                     OrderStockItem orderStockItem = OrderStockItem.builder().build();
                     for(Cell cell:row){
                         if(j>=1 && (cell.getCellType() == STRING) && ji==0){
-                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase().substring(1));
+                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
+                            orderStockItem.setOrderItem(orderItem);
+                            orderStockItem.setOrderItemId(orderItem.getId());
+                        }
+                        if(j>=1 && (cell.getCellType() == NUMERIC) && ji==0){
+                            product = productRepository.findBySkuAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
                             orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
                             orderStockItem.setOrderItem(orderItem);
                             orderStockItem.setOrderItemId(orderItem.getId());
@@ -929,7 +1047,7 @@ public class ExcelImpl implements IExcel {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 orderReturn = orderReturnRepository.findByOrderId(orderId);
-                orderStock = orderStockRepository.findByOrderId(orderId);
+                orderStock = orderStockRepository.findByOrderIdAndClientId(orderId,user.getClientId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -958,7 +1076,14 @@ public class ExcelImpl implements IExcel {
                     int ii = 0;
                     for(Cell cell:row){
                         if((i>=1) && (cell.getCellType() == STRING) && (ii==0)){
-                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().substring(1).toUpperCase());
+                            product = productRepository.findBySkuAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            if(product==null){
+                                throw new BadRequestExceptions(Constants.ErrorProduct);
+                            }
+                            requestOrderReturnItem.setProductSku(product.getSku());
+                        }
+                        if((i>=1) && (cell.getCellType() == NUMERIC) && (ii==0)){
+                            product = productRepository.findBySkuAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
                             if(product==null){
                                 throw new BadRequestExceptions(Constants.ErrorProduct);
                             }
@@ -966,6 +1091,17 @@ public class ExcelImpl implements IExcel {
                         }
                         if(i>=1 && (cell.getCellType() == STRING) && (ii==1)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                            if(supplierProduct==null){
+                                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                            }
+                            orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
+                            if(orderStockItem == null){
+                                throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
+                            }
+                            requestOrderReturnItem.setSupplierProductSerial(supplierProduct.getSerial());
+                        }
+                        if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==1)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int) (cell.getNumericCellValue())));
                             if(supplierProduct==null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
@@ -1008,6 +1144,9 @@ public class ExcelImpl implements IExcel {
                         break;
                     }
                     i++;
+                }
+                if(requestOrderReturnItemList.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorOrderReturnItemZero);
                 }
                 Set<String> serials = new HashSet<>();
                 boolean hasDuplicate = false;
@@ -1126,6 +1265,7 @@ public class ExcelImpl implements IExcel {
                         .findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
@@ -1143,7 +1283,6 @@ public class ExcelImpl implements IExcel {
                 boolean hasDuplicate = false;
                 int i = 0;
                 for(Row row:sheet){
-                    int ii = 0;
                     Product product;
                     Model model;
                     Color color;
@@ -1153,40 +1292,72 @@ public class ExcelImpl implements IExcel {
                     Unit unit;
                     Product newProduct = Product.builder().build();
                     ProductPrice productPrice = ProductPrice.builder().build();
-                    for(Cell cell:row){
-                        if((i>=1) && (cell.getCellType() == STRING) && (ii==0)){
-                            product = productRepository.findBySku(cell.getRichStringCellValue().getString().toUpperCase());
+                    for(int ii = 0;ii <= 9;ii++){
+                        if((i>=1)&&(
+                                (row.getCell(0)==null) ||
+                                        (row.getCell(1)==null)) ||
+                                (row.getCell(2)==null) ||
+                                (row.getCell(3)==null) ||
+                                (row.getCell(4)==null) ||
+                                (row.getCell(5)==null) ||
+                                (row.getCell(6)==null) ||
+                                (row.getCell(7)==null) ||
+                                (row.getCell(9)==null)
+                        ){
+                            break;
+                        }
+                        if((i>=1) && (row.getCell(0).getCellType() == STRING) && (ii==0)){
+                            product = productRepository.findBySku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                             if(product != null){
                                 throw new BadRequestExceptions(Constants.ErrorProductExists);
                             }
-                            newProduct.setSku(cell.getRichStringCellValue().getString().toUpperCase());
+                            newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                         }
-                        if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
-                            model = modelRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                        if((i>=1) && (row.getCell(0).getCellType() == NUMERIC) && (ii==0)){
+                            product = productRepository.findBySku(String.valueOf((int) (row.getCell(0).getNumericCellValue())));
+                            if(product != null){
+                                throw new BadRequestExceptions(Constants.ErrorProductExists);
+                            }
+                            newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
+                        }
+                        if((i>=1)&&(row.getCell(2).getCellType() == STRING) && (ii==2)){
+                            model = modelRepository.findByNameAndClientIdAndStatusTrue(row.getCell(2).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model == null){
                                 throw new BadRequestExceptions(Constants.ErrorModel);
                             }
                             newProduct.setModel(model);
                             newProduct.setModelId(model.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==3)){
-                            color = colorRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                        if((i>=1)&&(row.getCell(3).getCellType()==STRING)&&(ii==3)){
+                            color = colorRepository.findByNameAndStatusTrue(row.getCell(3).getRichStringCellValue().getString().toUpperCase());
                             if(color==null){
                                 throw new BadRequestExceptions(Constants.ErrorColor);
                             }
                             newProduct.setColor(color);
                             newProduct.setColorId(color.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==4)){
-                            categoryProduct = categoryProductRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                        if((i>=1)&&(row.getCell(4).getCellType()==STRING)&&(ii==4)){
+                            categoryProduct = categoryProductRepository.findByNameAndStatusTrue(row.getCell(4).getRichStringCellValue().getString().toUpperCase());
                             if(categoryProduct==null){
                                 throw new BadRequestExceptions(Constants.ErrorCategory);
                             }
                             newProduct.setCategoryProduct(categoryProduct);
                             newProduct.setCategoryProductId(categoryProduct.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==5)&&(categoryProduct!=null)){
-                            size = sizeRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                        if((i>=1)&&(row.getCell(5).getCellType()==STRING)&&(ii==5)&&(categoryProduct!=null)){
+                            size = sizeRepository.findByNameAndStatusTrue(row.getCell(5).getRichStringCellValue().getString().toUpperCase());
+                            if(size==null){
+                                throw new BadRequestExceptions(Constants.ErrorSize);
+                            }
+
+                            if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
+                                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
+                            }
+                            newProduct.setSize(size);
+                            newProduct.setSizeId(size.getId());
+                        }
+                        if((i>=1)&&(row.getCell(5).getCellType()==NUMERIC)&&(ii==5)&&(categoryProduct!=null)){
+                            size = sizeRepository.findByNameAndStatusTrue(String.valueOf((int) row.getCell(5).getNumericCellValue()));
                             if(size==null){
                                 throw new BadRequestExceptions(Constants.ErrorSize);
                             }
@@ -1196,39 +1367,33 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSize(size);
                             newProduct.setSizeId(size.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==NUMERIC)&&(ii==5)&&(categoryProduct!=null)){
-                            size = sizeRepository.findByNameAndStatusTrue(String.valueOf((int) cell.getNumericCellValue()));
-                            if(size==null){
-                                throw new BadRequestExceptions(Constants.ErrorSize);
-                            }
-                            if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
-                                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
-                            }
-                            newProduct.setSize(size);
-                            newProduct.setSizeId(size.getId());
-                        }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==6)){
-                            unitType = unitTypeRepository.findByNameAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
+                        if((i>=1)&&(row.getCell(6).getCellType()==STRING)&&(ii==6)){
+                            unitType = unitTypeRepository.findByNameAndStatusTrue(row.getCell(6).getRichStringCellValue().getString().toUpperCase());
                             if(unitType == null){
                                 throw new BadRequestExceptions(Constants.ErrorUnitType);
                             }
                         }
-                        if((i>=1)&&(cell.getCellType()==STRING)&&(ii==7)){
+                        if((i>=1)&&(row.getCell(7).getCellType()==STRING)&&(ii==7)){
                             assert unitType != null;
-                            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase(),unitType.getId());
+                            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(row.getCell(7).getRichStringCellValue().getString().toUpperCase(),unitType.getId());
                             if(unit==null){
                                 throw new BadRequestExceptions(Constants.ErrorUnit);
                             }
                             newProduct.setUnit(unit);
                             newProduct.setUnitId(unit.getId());
                         }
-                        if((i>=1)&&(cell.getCellType()==NUMERIC)&&(ii==8)){
-                            if(cell.getNumericCellValue() < 0.01){
+                        if((i>=1)&&(row.getCell(8)!=null)&&(row.getCell(8).getCellType()==STRING)&&(ii==8)){
+                            newProduct.setCharacteristics(row.getCell(8).getRichStringCellValue().getString().toUpperCase());
+                        }
+                        if(newProduct.getCharacteristics()==null){
+                            newProduct.setCharacteristics("NO APLICA");
+                        }
+                        if((i>=1)&&(row.getCell(9).getCellType()==NUMERIC)&&(ii==9)){
+                            if(row.getCell(9).getNumericCellValue() < 0.01){
                                 throw new BadRequestExceptions(Constants.ErrorProductPriceZero);
                             }
-                            productPrice.setUnitSalePrice(cell.getNumericCellValue());
+                            productPrice.setUnitSalePrice(row.getCell(9).getNumericCellValue());
                         }
-                        ii++;
                     }
                     if(i>=1 && (
                             newProduct.getSku() != null &&
@@ -1241,6 +1406,7 @@ public class ExcelImpl implements IExcel {
                             )){
                         newProduct.setStatus(true);
                         newProduct.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        newProduct.setUpdateDate(new Date(System.currentTimeMillis()));
                         newProduct.setTokenUser(user.getUsername());
                         newProduct.setClient(user.getClient());
                         newProduct.setClientId(user.getClientId());
@@ -1263,6 +1429,10 @@ public class ExcelImpl implements IExcel {
                         break;
                     }
                     i++;
+                }
+
+                if(products.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorProduct);
                 }
 
                 for(int j = 0;j < products.size();j++){
@@ -1305,6 +1475,7 @@ public class ExcelImpl implements IExcel {
                         .findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
@@ -1334,6 +1505,13 @@ public class ExcelImpl implements IExcel {
                             }
                             newSupplierProduct.setSerial(cell.getStringCellValue().toUpperCase());
                         }
+                        if((i>=1) && (cell.getCellType() == NUMERIC) && (ii==0)){
+                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
+                            if(supplierProduct!=null){
+                                throw new BadRequestExceptions(Constants.ErrorSupplierExists);
+                            }
+                            newSupplierProduct.setSerial(String.valueOf((int)(cell.getNumericCellValue())));
+                        }
                         if((i>=1) && (cell.getCellType() == STRING) && (ii==1)){
                             product = productRepository.findBySkuAndStatusTrue(cell.getStringCellValue().toUpperCase());
                             if(product == null){
@@ -1359,9 +1537,9 @@ public class ExcelImpl implements IExcel {
                         ii++;
                     }
                     if(i>=1 && (
-                            newSupplierProduct.getSerial() != null ||
-                                    newSupplierProduct.getProduct() != null ||
-                                    newSupplierProduct.getSupplier() != null ||
+                            newSupplierProduct.getSerial() != null &&
+                                    newSupplierProduct.getProduct() != null &&
+                                    newSupplierProduct.getSupplier() != null &&
                                     newSupplierProduct.getPurchasePrice() != null
                             )){
                         newSupplierProduct.setStatus(true);
@@ -1382,6 +1560,9 @@ public class ExcelImpl implements IExcel {
                     }
                     i++;
                 }
+                if(supplierProducts.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+                }
                 for(SupplierProduct supplierProduct : supplierProducts){
                     if(!skus.add(supplierProduct.getSerial())){
                         hasDuplicate = true;
@@ -1399,6 +1580,7 @@ public class ExcelImpl implements IExcel {
                         .build();
             }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
@@ -1418,5 +1600,109 @@ public class ExcelImpl implements IExcel {
             }
         }
         return column.toString();
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> model(MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            try {
+                user = userRepository
+                        .findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if (user == null) {
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            try{
+                InputStream inputStream = multipartFile.getInputStream();
+                Workbook workbook = WorkbookFactory.create(inputStream);
+                Sheet sheet = workbook.getSheetAt(0);
+
+                List<Model> models = new ArrayList<>();
+                Set<String> modelNames = new HashSet<>();
+                boolean hasDuplicate = false;
+                int i = 0;
+                for(Row row:sheet){
+                    int ii = 0;
+                    Brand brand;
+                    Model model;
+                    Model newModel = Model.builder().build();
+                    for(Cell cell:row){
+                        if((i>=1) && (cell.getCellType() == STRING) && (ii==0)){
+                            brand = brandRepository.findByNameAndClientIdAndStatusTrue(cell.getStringCellValue().toUpperCase(),user.getClientId());
+                            if(brand==null){
+                                throw new BadRequestExceptions(Constants.ErrorBrand);
+                            }
+                            newModel.setBrand(brand);
+                            newModel.setBrandId(brand.getId());
+                        }
+                        if((i>=1)&&(cell.getCellType() == STRING) && (ii==1)){
+                            model = modelRepository.findByNameAndClientId(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                            if(model!=null){
+                                throw new BadRequestExceptions(Constants.ErrorModelExists);
+                            }
+                            newModel.setName(cell.getRichStringCellValue().getString().toUpperCase());
+                        }
+                        if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
+                            model = modelRepository.findBySkuAndClientId(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                            if(model!=null){
+                                throw new BadRequestExceptions(Constants.ErrorModelExists);
+                            }
+                            newModel.setSku(cell.getRichStringCellValue().getString().toUpperCase());
+                        }
+                        ii++;
+                    }
+                    if(i>=1 && (
+                            newModel.getName() != null &&
+                                    newModel.getBrand() != null &&
+                                    newModel.getSku() != null
+                    )){
+                        newModel.setStatus(true);
+                        newModel.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        newModel.setUpdateDate(new Date(System.currentTimeMillis()));
+                        newModel.setTokenUser(user.getUsername());
+                        newModel.setClient(user.getClient());
+                        newModel.setClientId(user.getClientId());
+                        models.add(newModel);
+                    }
+                    if(i>=1 && (
+                            newModel.getName() == null ||
+                                    newModel.getBrand() == null ||
+                                    newModel.getSku() == null
+                    )){
+                        break;
+                    }
+                    i++;
+                }
+                if(models.isEmpty()){
+                    throw new BadRequestExceptions(Constants.ErrorModel);
+                }
+                for(Model model : models){
+                    if(!modelNames.add(model.getSku())){
+                        hasDuplicate = true;
+                    }
+                    if(hasDuplicate){
+                        throw new BadRequestExceptions(Constants.ErrorModelExists);
+                    }else{
+                        modelRepository.save(model);
+                        iAudit.save("ADD_MODEL_EXCEL","MODEL "+model.getSku()+" CREADO POR EXCEL.",model.getSku(),user.getUsername());
+                    }
+                }
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException | IOException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }

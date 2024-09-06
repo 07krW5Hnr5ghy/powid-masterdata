@@ -56,6 +56,7 @@ public class AuthenticationImpl implements IAuthentication {
     private final MembershipStateRepository membershipStateRepository;
     private final IAudit iAudit;
     private final UserRoleRepository userRoleRepository;
+    private final ProvinceRepository provinceRepository;
 
     public CompletableFuture<LoginDTO> loginUser(String username, String password) {
         return CompletableFuture.supplyAsync(() -> {
@@ -126,6 +127,7 @@ public class AuthenticationImpl implements IAuthentication {
             boolean existsClientMobile = false;
             boolean category = false;
             District district = null;
+            Province province;
             List<ClosingChannel> closingChannels;
             List<Module> modules;
 
@@ -138,7 +140,7 @@ public class AuthenticationImpl implements IAuthentication {
                 existsClientDni = clientRepository.existsByDni(requestOnboarding.getDni());
                 existsClientEmail = clientRepository.existsByEmail(requestOnboarding.getEmail());
                 existsClientMobile = clientRepository.existsByMobile(requestOnboarding.getMobile());
-                district = districtRepository.findByNameAndStatusTrue(requestOnboarding.getDistrict().toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(requestOnboarding.getProvince().toUpperCase());
                 closingChannels = closingChannelRepository.findByNameInAndStatusTrue(
                         requestOnboarding.getClosingChannels().stream().map(name -> name.toUpperCase()).toList());
                 category = categoryRepository.existsByNameAndStatusTrue(requestOnboarding.getCategory().toUpperCase());
@@ -179,6 +181,12 @@ public class AuthenticationImpl implements IAuthentication {
 
             if (existsClientMobile) {
                 throw new BadRequestExceptions(Constants.ErrorClientMobileExist);
+            }
+
+            if(province == null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestOnboarding.getDistrict().toUpperCase(),province.getId());
             }
 
             if (district == null) {

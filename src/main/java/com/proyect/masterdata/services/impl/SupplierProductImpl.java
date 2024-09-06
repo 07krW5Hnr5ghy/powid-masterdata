@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.services.IAudit;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class SupplierProductImpl implements ISupplierProduct {
     private final SupplierProductRepositoryCustom supplierProductRepositoryCustom;
     private final IAudit iAudit;
     @Override
+    @Transactional
     public ResponseSuccess save(RequestSupplierProduct requestSupplierProduct, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -106,6 +108,7 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
+    @Transactional
     public CompletableFuture<ResponseSuccess> saveAsync(RequestSupplierProduct requestSupplierProduct, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
@@ -248,6 +251,7 @@ public class SupplierProductImpl implements ISupplierProduct {
             String user,
             String serial,
             String productSku,
+            String model,
             List<String> suppliers,
             String sort,
             String sortColumn,
@@ -272,6 +276,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                         clientId,
                         serial,
                         productSku,
+                        model,
                         supplierIds,
                         sort,
                         sortColumn,
@@ -290,6 +295,9 @@ public class SupplierProductImpl implements ISupplierProduct {
             List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
+                            .model(supplierProduct.getProduct().getModel().getName())
+                            .color(supplierProduct.getProduct().getColor().getName())
+                            .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
                             .supplier(supplierProduct.getSupplier().getBusinessName())
@@ -308,6 +316,7 @@ public class SupplierProductImpl implements ISupplierProduct {
             String user,
             String serial,
             String productSku,
+            String model,
             List<String> suppliers,
             String sort,
             String sortColumn,
@@ -333,6 +342,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                         clientId,
                         serial,
                         productSku,
+                        model,
                         supplierIds,
                         sort,
                         sortColumn,
@@ -351,6 +361,9 @@ public class SupplierProductImpl implements ISupplierProduct {
             List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
+                            .model(supplierProduct.getProduct().getModel().getName())
+                            .color(supplierProduct.getProduct().getColor().getName())
+                            .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
                             .supplier(supplierProduct.getSupplier().getBusinessName())
@@ -395,6 +408,9 @@ public class SupplierProductImpl implements ISupplierProduct {
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
+                            .model(supplierProduct.getProduct().getModel().getName())
+                            .color(supplierProduct.getProduct().getColor().getName())
+                            .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
                             .supplier(supplierProduct.getSupplier().getBusinessName())
@@ -425,6 +441,9 @@ public class SupplierProductImpl implements ISupplierProduct {
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
+                            .model(supplierProduct.getProduct().getModel().getName())
+                            .color(supplierProduct.getProduct().getColor().getName())
+                            .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
                             .supplier(supplierProduct.getSupplier().getBusinessName())
@@ -459,6 +478,9 @@ public class SupplierProductImpl implements ISupplierProduct {
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
+                            .model(supplierProduct.getProduct().getModel().getName())
+                            .color(supplierProduct.getProduct().getColor().getName())
+                            .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
                             .supplier(supplierProduct.getSupplier().getBusinessName())
@@ -491,6 +513,9 @@ public class SupplierProductImpl implements ISupplierProduct {
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
                             .productSku(supplierProduct.getProduct().getSku())
+                            .model(supplierProduct.getProduct().getModel().getName())
+                            .color(supplierProduct.getProduct().getColor().getName())
+                            .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
                             .serial(supplierProduct.getSerial())
                             .supplier(supplierProduct.getSupplier().getBusinessName())

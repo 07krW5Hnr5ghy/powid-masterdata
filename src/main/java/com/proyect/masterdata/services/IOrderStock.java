@@ -25,4 +25,6 @@ public interface IOrderStock {
     CompletableFuture<List<OrderStockDTO>> listOrderStock(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderStockDTO>> listOrderStockFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderStockDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<OrderStockDTO> listOrderStock(Long id,String user) throws BadRequestExceptions,InternalErrorExceptions;
+
 }

@@ -14,6 +14,7 @@ import java.util.Date;
 public class ModelDTO {
     private String name;
     private String brand;
+    private String sku;
     private String user;
     private Date registrationDate;
     private Date updateDate;

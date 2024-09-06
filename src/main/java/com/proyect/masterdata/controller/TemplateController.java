@@ -23,11 +23,10 @@ public class TemplateController {
 
     @GetMapping("purchase")
     private ResponseEntity<byte[]> purchase(
-            @RequestParam("quantity") Integer quantity,
             @RequestParam("ruc") String ruc,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ByteArrayInputStream> result = iTemplate.purchase(quantity,ruc,user);
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.purchase(ruc,user);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=compra.xlsx");
         return ResponseEntity.ok()
@@ -130,6 +129,20 @@ public class TemplateController {
         CompletableFuture<ByteArrayInputStream> result = iTemplate.supplierProduct(quantity,user);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=productos_inventario.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(result.get().readAllBytes());
+    }
+
+    @GetMapping("model")
+    private ResponseEntity<byte[]> model(
+            @RequestParam("quantity") Integer quantity,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InterruptedException, ExecutionException {
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.model(quantity,user);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=modelos.xlsx");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)

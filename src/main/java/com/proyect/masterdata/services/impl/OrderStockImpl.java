@@ -43,6 +43,7 @@ public class OrderStockImpl implements IOrderStock {
         Warehouse warehouse;
         Ordering ordering;
         OrderState orderState;
+        OrderStock orderStock;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -56,6 +57,8 @@ public class OrderStockImpl implements IOrderStock {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            orderStock = orderStockRepository.findByOrderIdAndClientId(orderId,user.getClientId());
         }
 
         if(warehouse == null){
@@ -68,6 +71,10 @@ public class OrderStockImpl implements IOrderStock {
 
         if(orderState == null){
             throw new BadRequestExceptions(Constants.ErrorOrderState);
+        }
+
+        if(orderStock != null){
+            throw new BadRequestExceptions(Constants.ErrorOrderStockExists);
         }
 
         try{
@@ -88,7 +95,7 @@ public class OrderStockImpl implements IOrderStock {
                     throw new BadRequestExceptions(Constants.ErrorOrderStockProductQuantity);
                 }
             });
-            OrderStock orderStock = orderStockRepository.save(OrderStock.builder()
+            OrderStock newOrderStock = orderStockRepository.save(OrderStock.builder()
                     .ordering(ordering)
                     .orderId(ordering.getId())
                     .status(true)
@@ -101,12 +108,12 @@ public class OrderStockImpl implements IOrderStock {
                     .tokenUser(user.getUsername())
                     .build());
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
-                iOrderStockItem.save(orderStock.getOrderId(),requestOrderStockItem,user.getUsername());
+                iOrderStockItem.save(newOrderStock.getOrderId(),requestOrderStockItem,user.getUsername());
             }
             ordering.setOrderState(orderState);
             ordering.setOrderStateId(orderState.getId());
             orderingRepository.save(ordering);
-            iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+orderStock.getOrderId()+" CREADA.",orderStock.getOrderId().toString(),user.getUsername());
+            iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+newOrderStock.getOrderId()+" CREADA.",newOrderStock.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .message(Constants.register)
                     .code(200)
@@ -125,6 +132,7 @@ public class OrderStockImpl implements IOrderStock {
             Warehouse warehouse;
             Ordering ordering;
             OrderState orderState;
+            OrderStock orderStock;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -138,6 +146,8 @@ public class OrderStockImpl implements IOrderStock {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                orderStock = orderStockRepository.findByOrderIdAndClientId(orderId,user.getClientId());
             }
 
             if(warehouse == null){
@@ -150,6 +160,10 @@ public class OrderStockImpl implements IOrderStock {
 
             if(orderState == null){
                 throw new BadRequestExceptions(Constants.ErrorOrderState);
+            }
+
+            if(orderStock !=  null){
+                throw new BadRequestExceptions(Constants.ErrorOrderStock);
             }
 
             try{
@@ -170,7 +184,7 @@ public class OrderStockImpl implements IOrderStock {
                         throw new BadRequestExceptions(Constants.ErrorOrderStockProductQuantity);
                     }
                 });
-                OrderStock orderStock = orderStockRepository.save(OrderStock.builder()
+                OrderStock newOrderStock = orderStockRepository.save(OrderStock.builder()
                         .ordering(ordering)
                         .orderId(ordering.getId())
                         .status(true)
@@ -183,12 +197,12 @@ public class OrderStockImpl implements IOrderStock {
                         .tokenUser(user.getUsername())
                         .build());
                 for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
-                    iOrderStockItem.save(orderStock.getOrderId(),requestOrderStockItem,user.getUsername());
+                    iOrderStockItem.save(newOrderStock.getOrderId(),requestOrderStockItem,user.getUsername());
                 }
                 ordering.setOrderState(orderState);
                 ordering.setOrderStateId(orderState.getId());
                 orderingRepository.save(ordering);
-                iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+orderStock.getOrderId()+" CREADA.",orderStock.getOrderId().toString(),user.getUsername());
+                iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+newOrderStock.getOrderId()+" CREADA.",newOrderStock.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -244,7 +258,7 @@ public class OrderStockImpl implements IOrderStock {
             }
 
             List<OrderStockDTO> orderStockDTOS = pageOrderStock.getContent().stream().map(orderStock -> OrderStockDTO.builder()
-                    .orderId(orderStock.getId())
+                    .orderId(orderStock.getOrderId())
                     .warehouse(orderStock.getWarehouse().getName())
                     .registrationDate(orderStock.getRegistrationDate())
                     .build()
@@ -272,7 +286,7 @@ public class OrderStockImpl implements IOrderStock {
             }
 
             return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
-                    .orderId(orderStock.getId())
+                    .orderId(orderStock.getOrderId())
                     .warehouse(orderStock.getWarehouse().getName())
                     .registrationDate(orderStock.getRegistrationDate())
                     .build()
@@ -298,7 +312,7 @@ public class OrderStockImpl implements IOrderStock {
             }
 
             return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
-                    .orderId(orderStock.getId())
+                    .orderId(orderStock.getOrderId())
                     .warehouse(orderStock.getWarehouse().getName())
                     .registrationDate(orderStock.getRegistrationDate())
                     .build()
@@ -324,11 +338,32 @@ public class OrderStockImpl implements IOrderStock {
             }
 
             return orderStocks.stream().map(orderStock -> OrderStockDTO.builder()
-                    .orderId(orderStock.getId())
+                    .orderId(orderStock.getOrderId())
                     .warehouse(orderStock.getWarehouse().getName())
                     .registrationDate(orderStock.getRegistrationDate())
                     .build()
             ).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<OrderStockDTO> listOrderStock(Long id,String user) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            OrderStock orderStock;
+            Long clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderStock = orderStockRepository.findByOrderIdAndClientId(id,clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            return OrderStockDTO.builder()
+                    .orderId(orderStock.getOrderId())
+                    .warehouse(orderStock.getWarehouse().getName())
+                    .registrationDate(orderStock.getRegistrationDate())
+                    .build();
         });
     }
 }

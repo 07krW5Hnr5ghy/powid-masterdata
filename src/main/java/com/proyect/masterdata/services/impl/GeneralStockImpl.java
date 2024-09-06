@@ -87,6 +87,7 @@ public class GeneralStockImpl implements IGeneralStock {
                         .build();
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
@@ -136,6 +137,7 @@ public class GeneralStockImpl implements IGeneralStock {
                         .build();
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
@@ -146,6 +148,7 @@ public class GeneralStockImpl implements IGeneralStock {
             String user,
             String serial,
             String productSku,
+            String model,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,
@@ -165,6 +168,7 @@ public class GeneralStockImpl implements IGeneralStock {
                         clientId,
                         serial,
                         productSku,
+                        model,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
@@ -175,6 +179,7 @@ public class GeneralStockImpl implements IGeneralStock {
                         pageSize);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
 
@@ -187,6 +192,10 @@ public class GeneralStockImpl implements IGeneralStock {
                             .quantity(generalStock.getQuantity())
                             .supplierProduct(generalStock.getSupplierProduct().getSerial())
                             .productSku(generalStock.getSupplierProduct().getProduct().getSku())
+                            .model(generalStock.getSupplierProduct().getProduct().getModel().getName())
+                            .color(generalStock.getSupplierProduct().getProduct().getColor().getName())
+                            .supplier(generalStock.getSupplierProduct().getSupplier().getBusinessName())
+                            .size(generalStock.getSupplierProduct().getProduct().getSize().getName())
                             .registrationDate(generalStock.getRegistrationDate())
                             .updateDate(generalStock.getUpdateDate())
                             .build())
@@ -219,6 +228,10 @@ public class GeneralStockImpl implements IGeneralStock {
                             .quantity(generalStock.getQuantity())
                             .supplierProduct(generalStock.getSupplierProduct().getSerial())
                             .productSku(generalStock.getSupplierProduct().getProduct().getSku())
+                            .model(generalStock.getSupplierProduct().getProduct().getModel().getName())
+                            .color(generalStock.getSupplierProduct().getProduct().getColor().getName())
+                            .supplier(generalStock.getSupplierProduct().getSupplier().getBusinessName())
+                            .size(generalStock.getSupplierProduct().getProduct().getSize().getName())
                             .registrationDate(generalStock.getRegistrationDate())
                             .updateDate(generalStock.getUpdateDate())
                             .build())

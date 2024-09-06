@@ -14,7 +14,7 @@ import java.util.List;
 public interface ModelRepositoryCustom {
     Page<Model> searchForModel(
             Long clientId,
-            List<String> names,
+            String name,
             List<Long> brandIds,
             Date registrationStartDate,
             Date registrationEndDate,

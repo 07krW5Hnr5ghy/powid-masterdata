@@ -12,6 +12,7 @@ public interface GeneralStockRepositoryCustom {
             Long clientId,
             String serial,
             String productSku,
+            String model,
             Date registrationStartDate,
             Date registrationEndDate,
             Date updateStartDate,

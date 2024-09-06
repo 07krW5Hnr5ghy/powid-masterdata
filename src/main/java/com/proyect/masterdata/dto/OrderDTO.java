@@ -19,6 +19,7 @@ public class OrderDTO {
     private String customerName;
     private String customerType;
     private String customerPhone;
+    private String customerAddress;
     private String instagram;
     private String department;
     private String province;

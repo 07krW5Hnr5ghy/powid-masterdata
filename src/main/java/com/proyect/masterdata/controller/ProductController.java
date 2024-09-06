@@ -64,7 +64,7 @@ public class ProductController {
     public ResponseEntity<Page<ProductDTO>> list(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "sku", required = false) String sku,
-            @RequestParam(value = "models", required = false) List<String> models,
+            @RequestParam(value = "model", required = false) String model,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "sizes", required = false) List<String> sizes,
             @RequestParam(value = "categoryProducts", required = false) List<String> categoryProducts,
@@ -78,7 +78,7 @@ public class ProductController {
         CompletableFuture<Page<ProductDTO>> result = iProduct.list(
                 user,
                 sku,
-                models,
+                model,
                 brands,
                 sizes,
                 categoryProducts,
@@ -97,7 +97,7 @@ public class ProductController {
     public ResponseEntity<Page<ProductDTO>> listFalse(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "sku", required = false) String sku,
-            @RequestParam(value = "models", required = false) List<String> models,
+            @RequestParam(value = "model", required = false) String model,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "sizes", required = false) List<String> sizes,
             @RequestParam(value = "categoryProducts", required = false) List<String> categoryProducts,
@@ -111,7 +111,7 @@ public class ProductController {
         CompletableFuture<Page<ProductDTO>> result = iProduct.listFalse(
                 user,
                 sku,
-                models,
+                model,
                 brands,
                 sizes,
                 categoryProducts,
@@ -143,16 +143,6 @@ public class ProductController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @GetMapping("model")
-    //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
-    public ResponseEntity<List<ProductDTO>> listProductsModel(
-            @RequestParam("user") String user,
-            @RequestParam("model") String model
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<ProductDTO>> result = iProduct.listProductsModel(user,model);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
-    }
-
     @GetMapping("filter")
     public ResponseEntity<List<ProductDTO>> listFilter(
             @RequestParam("user") String user
@@ -167,6 +157,45 @@ public class ProductController {
             @RequestPart("requestProductUpdate")RequestProductUpdate requestProductUpdate
             ) throws BadRequestExceptions, InterruptedException, ExecutionException {
         CompletableFuture<ResponseSuccess> result = iProduct.update(requestProductUpdate,productPictures);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("color-size")
+    public ResponseEntity<List<ProductDTO>> listByColorAndSize(
+            @RequestParam("user") String user,
+            @RequestParam("color") String color,
+            @RequestParam("size") String size
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProductDTO>> result = iProduct.listByColorAndSize(color,size,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("model-color-size")
+    public ResponseEntity<List<ProductDTO>> listByModelAndColorAndSize(
+            @RequestParam("user") String user,
+            @RequestParam("model") String model,
+            @RequestParam("color") String color,
+            @RequestParam("size") String size
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProductDTO>> result = iProduct.listByModelAndSizeAndColor(model,size,color,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @GetMapping("model-color")
+    public ResponseEntity<List<ProductDTO>> listByModelAndColor(
+            @RequestParam("user") String user,
+            @RequestParam("model") String model,
+            @RequestParam("color") String color
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProductDTO>> result = iProduct.listByModelAndColor(model,color,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("model")
+    public ResponseEntity<List<ProductDTO>> listByModel(
+            @RequestParam("user") String user,
+            @RequestParam("model") String model
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ProductDTO>> result = iProduct.listByModel(model,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

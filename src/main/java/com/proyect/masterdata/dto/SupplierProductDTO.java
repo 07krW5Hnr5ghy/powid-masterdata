@@ -14,6 +14,9 @@ import java.util.Date;
 public class SupplierProductDTO {
     private String serial;
     private String productSku;
+    private String model;
+    private String color;
+    private String size;
     private String supplier;
     private Double price;
     private Date registrationDate;

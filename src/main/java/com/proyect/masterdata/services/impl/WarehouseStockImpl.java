@@ -146,6 +146,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
             List<String> warehouses,
             String serial,
             String productSku,
+            String model,
             String user,
             String sort,
             String sortColumn,
@@ -172,6 +173,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
                         warehouseIds,
                         serial,
                         productSku,
+                        model,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -190,6 +192,10 @@ public class WarehouseStockImpl implements IWarehouseStock {
                             .quantity(warehouseStock.getQuantity())
                             .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
                             .product(warehouseStock.getSupplierProduct().getProduct().getSku())
+                            .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
+                            .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
+                            .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
+                            .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
                             .warehouse(warehouseStock.getWarehouse().getName())
                             .registrationDate(warehouseStock.getRegistrationDate())
                             .updateDate(warehouseStock.getUpdateDate())
@@ -242,6 +248,10 @@ public class WarehouseStockImpl implements IWarehouseStock {
                             .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
                             .product(warehouseStock.getSupplierProduct().getProduct().getSku())
                             .warehouse(warehouseStock.getWarehouse().getName())
+                            .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
+                            .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
+                            .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
+                            .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
                             .registrationDate(warehouseStock.getRegistrationDate())
                             .updateDate(warehouseStock.getUpdateDate())
                             .build())

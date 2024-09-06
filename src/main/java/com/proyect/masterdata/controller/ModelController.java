@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.request.RequestModel;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,19 +39,18 @@ public class ModelController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:MODEL_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("name") String name,
-            @RequestParam("brand") String brand,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iModel.saveAsync(name, brand, tokenUser);
+            @RequestBody() RequestModel requestModel
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iModel.saveAsync(requestModel);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:MODEL_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("name") String name,
+            @RequestParam("sku") String sku,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iModel.delete(name, tokenUser);
+        CompletableFuture<ResponseDelete> result = iModel.delete(sku, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -67,7 +67,7 @@ public class ModelController {
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> list(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
@@ -79,7 +79,7 @@ public class ModelController {
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ModelDTO>> result = iModel.list(
                 user,
-                names,
+                name,
                 brands,
                 registrationStartDate,
                 registrationEndDate,
@@ -96,7 +96,7 @@ public class ModelController {
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<Page<ModelDTO>> listStatusFalse(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "brands", required = false) List<String> brands,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
@@ -108,7 +108,7 @@ public class ModelController {
             @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ModelDTO>> result = iModel.listStatusFalse(
                 user,
-                names,
+                name,
                 brands,
                 registrationStartDate,
                 registrationEndDate,

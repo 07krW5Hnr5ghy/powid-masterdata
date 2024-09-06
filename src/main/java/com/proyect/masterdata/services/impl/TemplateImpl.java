@@ -50,7 +50,7 @@ public class TemplateImpl implements ITemplate {
     private final ProductRepository productRepository;
     private final IExcel iExcel;
     @Override
-    public CompletableFuture<ByteArrayInputStream> purchase(Integer quantity,String supplierRuc, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> purchase(String supplierRuc, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Supplier supplier;
@@ -82,41 +82,71 @@ public class TemplateImpl implements ITemplate {
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 XSSFSheet sheet = workbook.createSheet("compra");
 
+                DataFormat format = workbook.createDataFormat();
+
                 CellStyle headerStyle = workbook.createCellStyle();
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setDataFormat(format.getFormat("@"));
+
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setDataFormat(format.getFormat("@"));
 
                 Row supplierRow = sheet.createRow(0);
                 Cell supplierHeaderCell = supplierRow.createCell(0);
                 supplierHeaderCell.setCellValue("PROVEEDOR");
-                supplierHeaderCell.setCellStyle(headerStyle);
+                supplierHeaderCell.setCellStyle(headerStyle2);
                 Cell supplierCell = supplierRow.createCell(1);
                 supplierCell.setCellValue(supplier.getBusinessName());
                 Cell supplierHeaderCell2 = supplierRow.createCell(2);
                 supplierHeaderCell2.setCellValue("RUC");
-                supplierHeaderCell2.setCellStyle(headerStyle);
+                supplierHeaderCell2.setCellStyle(headerStyle2);
                 Cell supplierCell2 = supplierRow.createCell(3);
                 supplierCell2.setCellValue(supplier.getRuc());
 
                 Row headerRow = sheet.createRow(1);
+
                 Cell cell = headerRow.createCell(0);
-                cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellValue("MODELO");
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
+                cell.setCellValue("COLOR");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(2);
+                cell.setCellValue("TIPO TALLA");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(3);
+                cell.setCellValue("TALLA");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(4);
+                cell.setCellValue("SKU INVENTARIO");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(5);
                 cell.setCellValue("CANTIDAD");
                 cell.setCellStyle(headerStyle);
 
-                cell = headerRow.createCell(2);
+                cell = headerRow.createCell(6);
                 cell.setCellValue("OBSERVACIONES");
                 cell.setCellStyle(headerStyle);
-
-                String[] serialList = supplierProductList.stream().map(SupplierProduct::getSerial).toList().toArray(new String[0]);
-                DataValidationHelper validationHelper = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
-                CellRangeAddressList addressList = new CellRangeAddressList(2,quantity+1,0,0);
-                DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
-                sheet.addValidationData(dataValidation);
+                int currentRow = 2;
+                for(SupplierProduct supplierProduct:supplierProductList){
+                    Row row = sheet.createRow(currentRow);;
+                    row.createCell(0).setCellValue(supplierProduct.getProduct().getModel().getName());
+                    row.createCell(1).setCellValue(supplierProduct.getProduct().getColor().getName());
+                    row.createCell(2).setCellValue(supplierProduct.getProduct().getSize().getSizeType().getName());
+                    row.createCell(3).setCellValue(supplierProduct.getProduct().getSize().getName());
+                    row.createCell(4).setCellValue(supplierProduct.getSerial());
+                    row.createCell(5).setCellValue(0);
+                    row.createCell(6).setCellValue("NO APLICA");
+                    currentRow++;
+                }
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 workbook.write(out);
@@ -164,18 +194,38 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("CANTIDAD");
                 cell.setCellStyle(headerStyle);
 
+                XSSFSheet hiddenSheet1 = workbook.createSheet("Hidden1");
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet1), true);
+
                 String[] serialList = warehouseStockList.stream().map(warehouseStockItem -> warehouseStockItem.getSupplierProduct().getSerial()).toList().toArray(new String[0]);
+                int rownum1 = 0;
+                Row row1;
+                Cell hiddenCell1;
+                row1 = hiddenSheet1.createRow(rownum1++);
+                int colnum1 = 0;
+                for (String key : serialList) {
+                    hiddenCell1 = row1.createCell(colnum1++);
+                    hiddenCell1.setCellValue(key);
+                }
+                Name namedRange1 = workbook.createName();
+                namedRange1.setNameName("WarehouseStock");
+                String reference1 = "Hidden1!$A$1:" + iExcel.getExcelColumnReference('A',serialList.length-1) + "$1";
+                namedRange1.setRefersToFormula(reference1);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
+                DataValidationConstraint constraint = validationHelper.createFormulaListConstraint("WarehouseStock");
                 CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);
                 DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
                 sheet.addValidationData(dataValidation);
@@ -227,10 +277,14 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("CANTIDAD");
@@ -240,9 +294,25 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellValue("OBSERVACIONES");
                 cell.setCellStyle(headerStyle);
 
+                XSSFSheet hiddenSheet1 = workbook.createSheet("Hidden1");
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet1), true);
+
                 String[] serialList = purchaseItemList.stream().map(purchaseItem -> purchaseItem.getSupplierProduct().getSerial()).toList().toArray(new String[0]);
+                int rownum1 = 0;
+                Row row1;
+                Cell hiddenCell1;
+                row1 = hiddenSheet1.createRow(rownum1++);
+                int colnum1 = 0;
+                for (String key : serialList) {
+                    hiddenCell1 = row1.createCell(colnum1++);
+                    hiddenCell1.setCellValue(key);
+                }
+                Name namedRange1 = workbook.createName();
+                namedRange1.setNameName("PurchaseItems");
+                String reference1 = "Hidden1!$A$1:" + iExcel.getExcelColumnReference('A',serialList.length-1) + "$1";
+                namedRange1.setRefersToFormula(reference1);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
+                DataValidationConstraint constraint = validationHelper.createFormulaListConstraint("PurchaseItems");
                 CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);
                 DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
                 sheet.addValidationData(dataValidation);
@@ -293,18 +363,38 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("CANTIDAD");
                 cell.setCellStyle(headerStyle);
 
+                XSSFSheet hiddenSheet1 = workbook.createSheet("Hidden1");
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet1), true);
+
                 String[] serialList = supplierProductList.stream().map(SupplierProduct::getSerial).toList().toArray(new String[0]);
+                int rownum1 = 0;
+                Row row1;
+                Cell hiddenCell1;
+                row1 = hiddenSheet1.createRow(rownum1++);
+                int colnum1 = 0;
+                for (String key : serialList) {
+                    hiddenCell1 = row1.createCell(colnum1++);
+                    hiddenCell1.setCellValue(key);
+                }
+                Name namedRange1 = workbook.createName();
+                namedRange1.setNameName("SupplierProducts");
+                String reference1 = "Hidden1!$A$1:" + iExcel.getExcelColumnReference('A',serialList.length-1) + "$1";
+                namedRange1.setRefersToFormula(reference1);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(serialList);
+                DataValidationConstraint constraint = validationHelper.createFormulaListConstraint("SupplierProducts");
                 CellRangeAddressList addressList = new CellRangeAddressList(1,serialList.length,0,0);
                 DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
                 sheet.addValidationData(dataValidation);
@@ -357,14 +447,18 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU PRODUCTO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(2);
                 cell.setCellValue("CANTIDAD");
@@ -462,7 +556,7 @@ public class TemplateImpl implements ITemplate {
             if(ordering==null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
             }else{
-                orderStock = orderStockRepository.findByOrderId(ordering.getId());
+                orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
             }
             if(orderStock==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderStock);
@@ -486,14 +580,18 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU PRODUCTO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("SKU INVENTARIO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(2);
                 cell.setCellValue("CANTIDAD");
@@ -501,7 +599,7 @@ public class TemplateImpl implements ITemplate {
 
                 cell = headerRow.createCell(3);
                 cell.setCellValue("TIPO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 XSSFSheet hiddenSheet = workbook.createSheet("Hidden");
                 workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet), true);
@@ -649,6 +747,10 @@ public class TemplateImpl implements ITemplate {
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU PRODUCTO");
@@ -656,33 +758,37 @@ public class TemplateImpl implements ITemplate {
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("MARCA");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(2);
                 cell.setCellValue("MODELO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(3);
                 cell.setCellValue("COLOR");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(4);
                 cell.setCellValue("CATEGORIA");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(5);
                 cell.setCellValue("TAMAÑO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(6);
                 cell.setCellValue("TIPO_UNIDAD");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(7);
                 cell.setCellValue("UNIDAD");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(8);
+                cell.setCellValue("CARACTERISTICAS");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(9);
                 cell.setCellValue("PRECIO");
                 cell.setCellStyle(headerStyle);
 
@@ -745,14 +851,6 @@ public class TemplateImpl implements ITemplate {
                     DataValidation modelValidation = validationHelperBrand.createValidation(modelConstraint, modelAddressList);
                     sheet.addValidationData(modelValidation);
                 }
-
-                // color validation list
-                String[] colorArray = colors.stream().map(Color::getName).toList().toArray(new String[0]);
-                DataValidationHelper validationHelperColor = sheet.getDataValidationHelper();
-                DataValidationConstraint colorConstraint = validationHelperColor.createExplicitListConstraint(colorArray);
-                CellRangeAddressList colorAddressList = new CellRangeAddressList(1,quantity,3,3);
-                DataValidation colorDataValidation = validationHelperColor.createValidation(colorConstraint,colorAddressList);
-                sheet.addValidationData(colorDataValidation);
 
                 // size and size type dependent validation lists
                 XSSFSheet hiddenSheet2 = workbook.createSheet("Hidden2");
@@ -868,13 +966,37 @@ public class TemplateImpl implements ITemplate {
                     sheet.addValidationData(unitValidation);
                 }
 
+                XSSFSheet hiddenSheet4 = workbook.createSheet("Hidden4");
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet4), true);
+
+                // color validation list
+                String[] colorArray = colors.stream().map(Color::getName).toList().toArray(new String[0]);
+                int rownum4 = 0;
+                Row row4;
+                Cell hiddenCell4;
+                row1 = hiddenSheet4.createRow(rownum4++);
+                int colnum4 = 0;
+                for (String key : colorArray) {
+                    hiddenCell4 = row1.createCell(colnum4++);
+                    hiddenCell4.setCellValue(key);
+                }
+                Name namedRange4 = workbook.createName();
+                namedRange4.setNameName("Colors");
+                String reference1 = "Hidden4!$A$1:" + iExcel.getExcelColumnReference('A',colorArray.length-1) + "$1";
+                namedRange4.setRefersToFormula(reference1);
+                DataValidationHelper validationHelperColor = sheet.getDataValidationHelper();
+                DataValidationConstraint colorConstraint = validationHelperColor.createFormulaListConstraint("Colors");
+                CellRangeAddressList colorAddressList = new CellRangeAddressList(1,quantity,3,3);
+                DataValidation colorDataValidation = validationHelperColor.createValidation(colorConstraint,colorAddressList);
+                sheet.addValidationData(colorDataValidation);
+
                 CellStyle priceStyle = workbook.createCellStyle();
                 DataFormat priceFormat = workbook.createDataFormat();
                 priceStyle.setDataFormat(priceFormat.getFormat("_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"));
 
                 for(int rowIndex = 1; rowIndex <= quantity;rowIndex++){
                     Row row = sheet.createRow(rowIndex);
-                    Cell priceCell = row.createCell(8);
+                    Cell priceCell = row.createCell(9);
                     priceCell.setCellStyle(priceStyle);
                 }
 
@@ -924,9 +1046,15 @@ public class TemplateImpl implements ITemplate {
             try{
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 XSSFSheet sheet = workbook.createSheet("productos_inventario");
+
                 CellStyle headerStyle = workbook.createCellStyle();
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SERIAL");
@@ -934,29 +1062,60 @@ public class TemplateImpl implements ITemplate {
 
                 cell = headerRow.createCell(1);
                 cell.setCellValue("PRODUCTO");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(2);
                 cell.setCellValue("PROVEEDOR");
-                cell.setCellStyle(headerStyle);
+                cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(3);
                 cell.setCellValue("PRECIO");
                 cell.setCellStyle(headerStyle);
 
+
+                XSSFSheet hiddenSheet1 = workbook.createSheet("Hidden1");
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet1), true);
+
                 // products
                 String[] productList = products.stream().map(Product::getSku).toList().toArray(new String[0]);
+                int rownum1 = 0;
+                Row row1;
+                Cell hiddenCell1;
+                row1 = hiddenSheet1.createRow(rownum1++);
+                int colnum1 = 0;
+                for (String key : productList) {
+                    hiddenCell1 = row1.createCell(colnum1++);
+                    hiddenCell1.setCellValue(key);
+                }
+                Name namedRange1 = workbook.createName();
+                namedRange1.setNameName("Products");
+                String reference1 = "Hidden1!$A$1:" + iExcel.getExcelColumnReference('A',productList.length-1) + "$1";
+                namedRange1.setRefersToFormula(reference1);
+
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(productList);
+                DataValidationConstraint constraint = validationHelper.createFormulaListConstraint("Products");
                 CellRangeAddressList addressList = new CellRangeAddressList(1,quantity+1,1,1);
                 DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
                 sheet.addValidationData(dataValidation);
                 // suppliers
                 String[] supplierList = suppliers.stream().map(Supplier::getBusinessName).toList().toArray(new String[0]);
+                int rownum2 = 1;
+                Row row2;
+                Cell hiddenCell2;
+                row2 = hiddenSheet1.createRow(rownum2++);
+                int colnum2 = 0;
+                for (String key : supplierList) {
+                    hiddenCell2 = row2.createCell(colnum2++);
+                    hiddenCell2.setCellValue(key);
+                }
+                Name namedRange2 = workbook.createName();
+                namedRange2.setNameName("Suppliers");
+                String reference2 = "Hidden1!$A$2:" + iExcel.getExcelColumnReference('A',productList.length-1) + "$2";
+                namedRange2.setRefersToFormula(reference2);
                 DataValidationHelper validationHelper2 = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint2 = validationHelper2.createExplicitListConstraint(supplierList);
+                DataValidationConstraint constraint2 = validationHelper2.createFormulaListConstraint("Suppliers");
                 CellRangeAddressList addressList2 = new CellRangeAddressList(1,quantity+1,2,2);
-                DataValidation dataValidation2 = validationHelper.createValidation(constraint2,addressList2);
+                DataValidation dataValidation2 = validationHelper2.createValidation(constraint2,addressList2);
                 sheet.addValidationData(dataValidation2);
 
                 CellStyle priceStyle = workbook.createCellStyle();
@@ -977,6 +1136,89 @@ public class TemplateImpl implements ITemplate {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ByteArrayInputStream> model(Integer quantity,String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            List<Brand> brands;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                brands = brandRepository.findAllByClientIdAndStatusTrue(user.getClientId());
+            }
+            if(brands.isEmpty()){
+                throw new BadRequestExceptions(Constants.ErrorBrand);
+            }
+            try{
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                XSSFSheet sheet = workbook.createSheet("modelos");
+
+                CellStyle headerStyle = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+                CellStyle headerStyle2 = workbook.createCellStyle();
+                headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
+                headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+                Row headerRow = sheet.createRow(0);
+                Cell cell = headerRow.createCell(0);
+                cell.setCellValue("MARCA");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(1);
+                cell.setCellValue("MODELO");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(2);
+                cell.setCellValue("SKU");
+                cell.setCellStyle(headerStyle);
+
+                XSSFSheet hiddenSheet1 = workbook.createSheet("Hidden1");
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet1), true);
+
+                // products
+                String[] productList = brands.stream().map(Brand::getName).toList().toArray(new String[0]);
+                int rownum1 = 0;
+                Row row1;
+                Cell hiddenCell1;
+                row1 = hiddenSheet1.createRow(rownum1++);
+                int colnum1 = 0;
+                for (String key : productList) {
+                    hiddenCell1 = row1.createCell(colnum1++);
+                    hiddenCell1.setCellValue(key);
+                }
+                Name namedRange1 = workbook.createName();
+                namedRange1.setNameName("Brands");
+                String reference1 = "Hidden1!$A$1:" + iExcel.getExcelColumnReference('A',productList.length-1) + "$1";
+                namedRange1.setRefersToFormula(reference1);
+                DataValidationHelper validationHelper = sheet.getDataValidationHelper();
+                DataValidationConstraint constraint = validationHelper.createFormulaListConstraint("Brands");
+                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity+1,0,0);
+                DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
+                sheet.addValidationData(dataValidation);
+
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                workbook.write(out);
+                workbook.close();
+                return new ByteArrayInputStream(out.toByteArray());
+            }catch (RuntimeException | IOException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
         });
     }
 }

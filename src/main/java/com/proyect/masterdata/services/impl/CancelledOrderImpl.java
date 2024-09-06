@@ -74,7 +74,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
             if(ordering == null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
             }else {
-                orderStock = orderStockRepository.findByOrderId(ordering.getId());
+                orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
             }
 
             if(warehouseData == null){

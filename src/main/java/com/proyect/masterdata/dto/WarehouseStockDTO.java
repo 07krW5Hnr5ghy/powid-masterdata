@@ -15,6 +15,10 @@ public class WarehouseStockDTO {
     public String warehouse;
     public String supplierProduct;
     public String product;
+    public String model;
+    public String color;
+    public String size;
+    public String supplier;
     public Integer quantity;
     public Date registrationDate;
     public Date updateDate;

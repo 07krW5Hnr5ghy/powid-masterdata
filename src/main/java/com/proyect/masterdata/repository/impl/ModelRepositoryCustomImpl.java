@@ -34,7 +34,7 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
     @Override
     public Page<Model> searchForModel(
             Long clientId,
-            List<String> names,
+            String name,
             List<Long> brandIds,
             Date registrationStartDate,
             Date registrationEndDate,
@@ -52,7 +52,7 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
-                names,
+                name,
                 brandIds,
                 clientId,
                 registrationStartDate,
@@ -87,7 +87,7 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         long count = getOrderCount(
-                names,
+                name,
                 brandIds,
                 clientId,
                 registrationStartDate,
@@ -99,7 +99,7 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
     }
 
     public List<Predicate> predicateConditions(
-            List<String> names,
+            String name,
             List<Long> brandIds,
             Long clientId,
             Date registrationStartDate,
@@ -112,8 +112,8 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if (!names.isEmpty()) {
-            conditions.add(criteriaBuilder.and(itemRoot.get("name").in(names)));
+        if(name!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("name")),"%"+name.toUpperCase()+"%"));
         }
 
         if (!brandIds.isEmpty()) {
@@ -243,7 +243,7 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
     }
 
     private long getOrderCount(
-            List<String> names,
+            String name,
             List<Long> brandIds,
             Long clientId,
             Date registrationStartDate,
@@ -258,7 +258,7 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom {
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
-                names,
+                name,
                 brandIds,
                 clientId,
                 registrationStartDate,

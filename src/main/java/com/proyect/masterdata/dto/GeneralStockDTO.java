@@ -14,6 +14,10 @@ import lombok.NoArgsConstructor;
 public class GeneralStockDTO {
     public String supplierProduct;
     public String productSku;
+    public String model;
+    public String color;
+    public String size;
+    public String supplier;
     public Integer quantity;
     public Date registrationDate;
     public Date updateDate;

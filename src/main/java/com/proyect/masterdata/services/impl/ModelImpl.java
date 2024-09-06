@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.request.RequestModel;
 import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,23 +34,21 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class ModelImpl implements IModel {
-
     private final ModelRepository modelRepository;
     private final UserRepository userRepository;
     private final BrandRepository brandRepository;
     private final ModelRepositoryCustom modelRepositoryCustom;
     private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(String name, String brand, String tokenUser)
+    public ResponseSuccess save(RequestModel requestModel)
             throws InternalErrorExceptions, BadRequestExceptions {
         User user;
-        boolean existsModel;
+        Model model;
+        Model modelName;
         Brand brandData;
 
         try {
-            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            existsModel = modelRepository.existsByName(name.toUpperCase());
-            brandData = brandRepository.findByName(brand.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(requestModel.getTokenUser().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -57,26 +56,38 @@ public class ModelImpl implements IModel {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
-        }
-
-        if (existsModel) {
-            throw new BadRequestExceptions(Constants.ErrorModelExists);
+        }else{
+            brandData = brandRepository.findByNameAndClientId(requestModel.getBrand().toUpperCase(),user.getClientId());
         }
 
         if (brandData == null) {
             throw new BadRequestExceptions(Constants.ErrorBrand);
+        }else{
+            model = modelRepository.findBySkuAndClientId(
+                    requestModel.getSku().toUpperCase(),
+                    user.getClientId()
+            );
+            modelName = modelRepository.findByNameAndClientId(
+                    requestModel.getName().toUpperCase(),
+                    user.getClientId()
+            );
+        }
+
+        if (model != null || modelName != null) {
+            throw new BadRequestExceptions(Constants.ErrorModelExists);
         }
 
         try {
             Model newModel = modelRepository.save(Model.builder()
-                    .name(name.toUpperCase())
+                    .name(requestModel.getName().toUpperCase())
                     .brand(brandData)
                     .brandId(brandData.getId())
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .registrationDate(new Date(System.currentTimeMillis()))
                     .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
+                    .sku(requestModel.getSku().toUpperCase())
+                    .tokenUser(user.getUsername())
                     .build());
             iAudit.save("ADD_MODEL","MODELO "+newModel.getName()+" CREADO.",newModel.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -90,17 +101,16 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String brand, String tokenUser)
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestModel requestModel)
             throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            boolean existsModel;
+            Model model;
             Brand brandData;
+            Model modelName;
 
             try {
-                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                existsModel = modelRepository.existsByName(name.toUpperCase());
-                brandData = brandRepository.findByName(brand.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(requestModel.getTokenUser().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -108,26 +118,38 @@ public class ModelImpl implements IModel {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
-            }
-
-            if (existsModel) {
-                throw new BadRequestExceptions(Constants.ErrorModelExists);
+            }else{
+                brandData = brandRepository.findByNameAndClientId(requestModel.getBrand().toUpperCase(),user.getClientId());
             }
 
             if (brandData == null) {
                 throw new BadRequestExceptions(Constants.ErrorBrand);
+            }else{
+                model = modelRepository.findBySkuAndClientId(
+                        requestModel.getSku().toUpperCase(),
+                        user.getClientId()
+                );
+                modelName = modelRepository.findByNameAndClientId(
+                        requestModel.getName().toUpperCase(),
+                        user.getClientId()
+                );
+            }
+
+            if (model != null || modelName != null) {
+                throw new BadRequestExceptions(Constants.ErrorModelExists);
             }
 
             try {
                 Model newModel = modelRepository.save(Model.builder()
-                        .name(name.toUpperCase())
+                        .name(requestModel.getName().toUpperCase())
                         .brand(brandData)
+                        .sku(requestModel.getSku().toUpperCase())
                         .brandId(brandData.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .status(true)
-                        .tokenUser(tokenUser.toUpperCase())
+                        .tokenUser(user.getUsername())
                         .build());
                 iAudit.save("ADD_MODEL","MODELO "+newModel.getName()+" CREADO.",newModel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -142,14 +164,13 @@ public class ModelImpl implements IModel {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Model modelData;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                modelData = modelRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -157,6 +178,8 @@ public class ModelImpl implements IModel {
 
             if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                modelData = modelRepository.findBySkuAndClientIdAndStatusTrue(sku.toUpperCase(),user.getClientId());
             }
 
             if (modelData == null) {
@@ -188,7 +211,6 @@ public class ModelImpl implements IModel {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                modelData = modelRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -196,6 +218,8 @@ public class ModelImpl implements IModel {
 
             if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                modelData = modelRepository.findBySkuAndClientIdAndStatusFalse(name.toUpperCase(),user.getClientId());
             }
 
             if (modelData == null) {
@@ -222,7 +246,7 @@ public class ModelImpl implements IModel {
     @Override
     public CompletableFuture<Page<ModelDTO>> list(
             String user,
-            List<String> names,
+            String name,
             List<String> brands,
             Date registrationStartDate,
             Date registrationEndDate,
@@ -234,29 +258,22 @@ public class ModelImpl implements IModel {
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<Model> pageModel;
-            List<String> modelsUppercase;
             List<Long> brandIds;
             Long clientId;
 
-            if(names != null && !names.isEmpty()){
-                modelsUppercase = names.stream().map(String::toUpperCase).toList();
-            }else{
-                modelsUppercase = new ArrayList<>();
-            }
-
-            if (brands != null && !brands.isEmpty()) {
-                brandIds = brandRepository.findByNameIn(
-                        brands.stream().map(String::toUpperCase).toList()
-                ).stream().map(Brand::getId).toList();
-            } else {
-                brandIds = new ArrayList<>();
-            }
-
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                if (brands != null && !brands.isEmpty()) {
+                    brandIds = brandRepository.findByClientIdAndNameIn(
+                            clientId,
+                            brands.stream().map(String::toUpperCase).toList()
+                    ).stream().map(Brand::getId).toList();
+                } else {
+                    brandIds = new ArrayList<>();
+                }
                 pageModel = modelRepositoryCustom.searchForModel(
                         clientId,
-                        modelsUppercase,
+                        name,
                         brandIds,
                         registrationStartDate,
                         registrationEndDate,
@@ -279,6 +296,7 @@ public class ModelImpl implements IModel {
             List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
+                    .sku(model.getSku())
                     .user(model.getTokenUser())
                     .registrationDate(model.getRegistrationDate())
                     .updateDate(model.getUpdateDate())
@@ -292,7 +310,7 @@ public class ModelImpl implements IModel {
     @Override
     public CompletableFuture<Page<ModelDTO>> listStatusFalse(
             String user,
-            List<String> names,
+            String name,
             List<String> brands,
             Date registrationStartDate,
             Date registrationEndDate,
@@ -308,25 +326,19 @@ public class ModelImpl implements IModel {
             List<Long> brandIds;
             Long clientId;
 
-            if(names != null && !names.isEmpty()){
-                modelsUppercase = names.stream().map(String::toUpperCase).toList();
-            }else{
-                modelsUppercase = new ArrayList<>();
-            }
-
-            if (brands != null && !brands.isEmpty()) {
-                brandIds = brandRepository.findByNameIn(
-                        brands.stream().map(String::toUpperCase).toList()
-                ).stream().map(Brand::getId).toList();
-            } else {
-                brandIds = new ArrayList<>();
-            }
-
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                if (brands != null && !brands.isEmpty()) {
+                    brandIds = brandRepository.findByClientIdAndNameIn(
+                            clientId,
+                            brands.stream().map(String::toUpperCase).toList()
+                    ).stream().map(Brand::getId).toList();
+                } else {
+                    brandIds = new ArrayList<>();
+                }
                 pageModel = modelRepositoryCustom.searchForModel(
                         clientId,
-                        modelsUppercase,
+                        name,
                         brandIds,
                         registrationStartDate,
                         registrationEndDate,
@@ -349,6 +361,7 @@ public class ModelImpl implements IModel {
             List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
+                    .sku(model.getSku())
                     .user(model.getTokenUser())
                     .registrationDate(model.getRegistrationDate())
                     .updateDate(model.getUpdateDate())
@@ -380,6 +393,7 @@ public class ModelImpl implements IModel {
             return models.stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
+                    .sku(model.getSku().toUpperCase())
                     .user(model.getTokenUser())
                     .build()).toList();
         });
@@ -406,6 +420,7 @@ public class ModelImpl implements IModel {
             return models.stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
+                    .sku(model.getSku())
                     .user(model.getTokenUser())
                     .build()).toList();
         });
@@ -420,7 +435,7 @@ public class ModelImpl implements IModel {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                brandId = brandRepository.findByName(brand.toUpperCase()).getId();
+                brandId = brandRepository.findByNameAndClientId(brand.toUpperCase(),clientId).getId();
                 models = modelRepository.findAllByClientIdAndBrandIdAndStatusTrue(clientId,brandId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -434,6 +449,7 @@ public class ModelImpl implements IModel {
             return models.stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
+                    .sku(model.getSku())
                     .user(model.getTokenUser())
                     .build()).toList();
         });
@@ -461,6 +477,7 @@ public class ModelImpl implements IModel {
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .user(model.getTokenUser())
+                    .sku(model.getSku())
                     .build()).toList();
         });
     }

@@ -37,8 +37,9 @@ public class DistrictController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iDistrict.delete(name, tokenUser);
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestParam("province") String province) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iDistrict.delete(name, tokenUser,province);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping(value = "/list-district")
@@ -86,9 +87,10 @@ public class DistrictController {
     @PostMapping("activate")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestParam("province") String province
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iDistrict.activate(name,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iDistrict.activate(name,tokenUser,province);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

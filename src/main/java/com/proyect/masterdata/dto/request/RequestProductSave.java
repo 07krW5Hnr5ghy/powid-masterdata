@@ -20,4 +20,5 @@ public class RequestProductSave {
     private String size;
     private String unit;
     private Double price;
+    private String characteristics;
 }

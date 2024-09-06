@@ -25,7 +25,7 @@ public interface IProduct {
         CompletableFuture<Page<ProductDTO>> list(
                 String tokenUser,
                 String sku,
-                List<String> models,
+                String model,
                 List<String> brands,
                 List<String> sizes,
                 List<String> categoryProducts,
@@ -39,7 +39,7 @@ public interface IProduct {
         CompletableFuture<Page<ProductDTO>> listFalse(
                 String tokenUser,
                 String sku,
-                List<String> models,
+                String model,
                 List<String> brands,
                 List<String> sizes,
                 List<String> categoryProducts,
@@ -52,7 +52,10 @@ public interface IProduct {
                 Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<List<ProductDTO>> listProducts(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listProductsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
-        CompletableFuture<List<ProductDTO>> listProductsModel(String user,String model) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> update(RequestProductUpdate requestProductUpdate, List<MultipartFile> pictures) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<ProductDTO>> listByColorAndSize(String color,String size,String user) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<ProductDTO>> listByModelAndSizeAndColor(String model,String size,String color,String user) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<ProductDTO>> listByModelAndColor(String model,String color,String user) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<ProductDTO>> listByModel(String modelSku,String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

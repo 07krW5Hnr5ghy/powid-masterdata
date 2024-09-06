@@ -9,15 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestCustomer {
+public class RequestModel {
     private String name;
-    private String customerType;
-    private String instagram;
-    private String phone;
-    private String address;
-    private String reference;
-    private String district;
-    private String province;
+    private String brand;
+    private String sku;
     private String tokenUser;
-    private String dni;
 }

@@ -148,7 +148,6 @@ public class BrandImpl implements IBrand {
             Brand brand;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                brand = brandRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -156,6 +155,8 @@ public class BrandImpl implements IBrand {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                brand = brandRepository.findByNameAndClientIdAndStatusTrue(name.toUpperCase(),user.getClientId());
             }
 
             if (brand == null) {
@@ -304,7 +305,6 @@ public class BrandImpl implements IBrand {
             Brand brand;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                brand = brandRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -312,6 +312,8 @@ public class BrandImpl implements IBrand {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                brand = brandRepository.findByNameAndClientIdAndStatusFalse(name.toUpperCase(),user.getClientId());
             }
 
             if (brand == null) {

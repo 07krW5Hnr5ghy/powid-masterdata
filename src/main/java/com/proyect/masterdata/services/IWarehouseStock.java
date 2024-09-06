@@ -22,6 +22,7 @@ public interface IWarehouseStock {
                 List<String> warehouses,
                 String serial,
                 String productSku,
+                String model,
                 String user,
                 String sort,
                 String sortColumn,
