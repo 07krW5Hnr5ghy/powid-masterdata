@@ -1202,6 +1202,7 @@ public class OrderingImpl implements IOrdering {
                             }
                             return OrderItemDTO.builder()
                                     .orderId(orderItem.getOrderId())
+                                    .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(orderItem.getProduct().getSku())
                                     .unit(orderItem.getProduct().getUnit().getName())
