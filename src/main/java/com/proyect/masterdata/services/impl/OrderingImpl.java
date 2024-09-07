@@ -817,7 +817,7 @@ public class OrderingImpl implements IOrdering {
         if(ordering == null){
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }else {
-            orderStock = orderStockRepository.findByOrderId(ordering.getId());
+            orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
         }
 
         if(
@@ -958,7 +958,7 @@ public class OrderingImpl implements IOrdering {
             if(ordering == null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
             }else {
-                orderStock = orderStockRepository.findByOrderId(ordering.getId());
+                orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
             }
 
             if(
@@ -1202,6 +1202,7 @@ public class OrderingImpl implements IOrdering {
                             }
                             return OrderItemDTO.builder()
                                     .orderId(orderItem.getOrderId())
+                                    .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(orderItem.getProduct().getSku())
                                     .unit(orderItem.getProduct().getUnit().getName())

@@ -85,7 +85,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             if(orderItem == null){
                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
             }else{
-                orderStock = orderStockRepository.findByOrderId(orderItem.getOrderId());
+                orderStock = orderStockRepository.findByOrderIdAndClientId(orderItem.getOrderId(),user.getClientId());
             }
             if(orderStock == null){
                 throw new BadRequestExceptions(Constants.ErrorOrderStock);

@@ -80,4 +80,13 @@ public class OrderStockController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
+    @GetMapping("detail")
+    public ResponseEntity<OrderStockDTO> detail(
+            @RequestParam("user") String user,
+            @RequestParam("orderStockId") Long orderStockId
+    ) throws BadRequestExceptions,ExecutionException,InterruptedException {
+        CompletableFuture<OrderStockDTO> result = iOrderStock.listOrderStock(orderStockId,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
 }
