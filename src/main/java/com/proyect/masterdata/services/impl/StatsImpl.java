@@ -51,18 +51,24 @@ public class StatsImpl implements IStats {
                 orderingListByDate = orderingRepository.findByClientIdAndUpdateDateBetween(user.getClientId(),updateStartDate,updateEndDate);
             }
             if (orderState==null){
-                orderingListByDateAndStatus = orderingRepository.findByClientIdAndUpdateDateBetween(user.getClientId(),updateStartDate,updateEndDate);
+                orderingListByDateAndStatus = orderingRepository.findByUpdateDateBetween(updateStartDate,updateEndDate);
             }else {
                 orderingListByDateAndStatus = orderingRepository.findByClientIdAndUpdateDateBetweenAndOrderStateId(user.getClientId(),updateStartDate,updateEndDate,orderState.getId());
             }
             try{
                 Integer totalOrdersByDate = orderingListByDate.size();
                 int totalOrdersByDateAndStatus = orderingListByDateAndStatus.size();
+                System.out.println(orderingListByDate);
                 String state;
+                String stateColor;
                 if(orderState!=null){
+                    System.out.println(orderState.getName());
+                    System.out.println(orderState.getHexColor());
                     state = orderState.getName();
+                    stateColor = orderState.getHexColor();
                 }else{
-                    state = "NO APLICA";
+                    state = "TODOS";
+                    stateColor = "#d9d9d9";
                 }
                 double totalSales = 0.00;
                 Double totalDeliveryAmount = 0.00;
@@ -120,6 +126,7 @@ public class StatsImpl implements IStats {
                         .totalProducts(totalProducts)
                         .averageSaleProduct(averageSaleProduct)
                         .averageTicket(BigDecimal.valueOf(totalProducts/totalOrdersByDateAndStatus))
+                        .orderStatusColor(stateColor)
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());

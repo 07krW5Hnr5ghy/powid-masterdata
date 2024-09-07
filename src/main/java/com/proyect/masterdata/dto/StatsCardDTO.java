@@ -19,4 +19,5 @@ public class StatsCardDTO {
     BigDecimal averageTicket;
     BigDecimal totalDeliveryAmountOrders;
     String orderStatus;
+    String orderStatusColor;
 }

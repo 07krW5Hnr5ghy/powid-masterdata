@@ -2,6 +2,8 @@ package com.proyect.masterdata.repository;
 
 import com.proyect.masterdata.domain.Ordering;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -13,4 +15,5 @@ public interface OrderingRepository extends JpaRepository<Ordering,Long> {
     Ordering findByClientIdAndId(Long clientId,Long id);
     List<Ordering> findByClientIdAndUpdateDateBetween(Long clientId,Date startDate,Date endDate);
     List<Ordering> findByClientIdAndUpdateDateBetweenAndOrderStateId(Long clientId,Date startDate,Date endDate,Long orderStateId);
+    List<Ordering> findByUpdateDateBetween(Date startDate, Date endDate);
 }
