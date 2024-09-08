@@ -34,4 +34,6 @@ public interface IOrderItem {
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderItemDTO>> listByOrder(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<OrderItemDTO>> listByOrderFalse(String user,Long orderId) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> activate(Long orderId,String productSku,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
 }
