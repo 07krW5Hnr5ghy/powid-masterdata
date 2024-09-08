@@ -59,6 +59,17 @@ public class OrderItemController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
+    @PostMapping("activate")
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_DELETE')")
+    public ResponseEntity<ResponseDelete> activateItem(
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("productSku") String productSku,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iOrderItem.activate(orderId,productSku,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_PUT')")
     public ResponseEntity<ResponseSuccess> updateItem(
@@ -108,6 +119,15 @@ public class OrderItemController {
             @RequestParam("orderId") Long orderId
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<OrderItemDTO>> result = iOrderItem.listByOrder(user,orderId);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("order-false")
+    public ResponseEntity<List<OrderItemDTO>> listByOrderFalse(
+            @RequestParam("user") String user,
+            @RequestParam("orderId") Long orderId
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<OrderItemDTO>> result = iOrderItem.listByOrderFalse(user,orderId);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
