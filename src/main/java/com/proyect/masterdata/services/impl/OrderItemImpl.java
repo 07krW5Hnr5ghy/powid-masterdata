@@ -567,4 +567,102 @@ public class OrderItemImpl implements IOrderItem {
             }).toList();
         });
     }
+
+    @Override
+    public CompletableFuture<List<OrderItemDTO>> listByOrderFalse(String user, Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Long clientId;
+            List<OrderItem> orderItemList;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusFalse(clientId,orderId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(orderItemList.isEmpty()){
+                return Collections.emptyList();
+            }
+            return orderItemList.stream().map(orderItem -> {
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                Double totalPrice = null;
+                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                }
+
+                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                }
+
+                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                }
+                return OrderItemDTO.builder()
+                        .unit(orderItem.getProduct().getUnit().getName())
+                        .orderId(orderItem.getOrderId())
+                        .color(orderItem.getProduct().getColor().getName())
+                        .size(orderItem.getProduct().getSize().getName())
+                        .sku(orderItem.getProduct().getSku())
+                        .model(orderItem.getProduct().getModel().getName())
+                        .category(orderItem.getProduct().getCategoryProduct().getName())
+                        .quantity(orderItem.getQuantity())
+                        .unitPrice(productPrice.getUnitSalePrice())
+                        .discountAmount(orderItem.getDiscountAmount())
+                        .discount(orderItem.getDiscount().getName())
+                        .totalPrice(totalPrice)
+                        .build();
+            }).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> activate(Long orderId, String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering ordering;
+            OrderItem orderItem;
+            Product product;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                ordering = orderingRepository.findById(orderId).orElse(null);
+                product = productRepository.findBySku(productSku.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(ordering == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
+
+            if(product == null){
+                throw new InternalErrorExceptions(Constants.ErrorProduct);
+            }else {
+                orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
+            }
+
+            if(orderItem == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderItem);
+            }
+
+            try{
+                orderItem.setStatus(true);
+                orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderItem.setTokenUser(user.getUsername());
+                orderItemRepository.save(orderItem);
+                iAudit.save("ACTIVATE_ORDER_ITEM","PRODUCTO "+orderItem.getProduct().getSku()+" DE PEDIDO "+orderItem.getOrderId()+" ACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
+                return ResponseDelete.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 }
