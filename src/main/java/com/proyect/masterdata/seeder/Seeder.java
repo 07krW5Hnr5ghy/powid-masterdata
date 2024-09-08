@@ -2692,6 +2692,7 @@ public class Seeder implements CommandLineRunner {
 //                        requestOrderReturnItemList.add(requestOrderReturnItem2);
 //
 //                        iOrderReturn.save(1L,requestOrderReturnItemList,"AYEPES");
+                        iAuditEvent.save("ACTIVATE_ORDER_ITEM","JROMERO");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());
