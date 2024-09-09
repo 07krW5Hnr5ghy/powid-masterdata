@@ -14,10 +14,12 @@ import java.math.BigDecimal;
 public class StatsCardDTO {
     BigDecimal totalSales;
     Integer totalOrders;
+    Integer totalOrdersByRangeDate;
     Integer totalProducts;
-    double averageSaleProduct;
+    BigDecimal averageSaleProduct;
     BigDecimal averageTicket;
     BigDecimal totalDeliveryAmountOrders;
+    BigDecimal percentageOfOrders;
     String orderStatus;
     String orderStatusColor;
 }

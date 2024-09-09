@@ -56,19 +56,18 @@ public class StatsImpl implements IStats {
                 orderingListByDateAndStatus = orderingRepository.findByClientIdAndUpdateDateBetweenAndOrderStateId(user.getClientId(),updateStartDate,updateEndDate,orderState.getId());
             }
             try{
-                Integer totalOrdersByDate = orderingListByDate.size();
+                int totalOrdersByDate;
                 int totalOrdersByDateAndStatus = orderingListByDateAndStatus.size();
-                System.out.println(orderingListByDate);
+                if(orderingListByDate.isEmpty()){
+                    totalOrdersByDate = 0;
+                }else{
+                    totalOrdersByDate = orderingListByDate.size();
+                }
                 String state;
-                String stateColor;
                 if(orderState!=null){
-                    System.out.println(orderState.getName());
-                    System.out.println(orderState.getHexColor());
                     state = orderState.getName();
-                    stateColor = orderState.getHexColor();
                 }else{
                     state = "TODOS";
-                    stateColor = "#d9d9d9";
                 }
                 double totalSales = 0.00;
                 Double totalDeliveryAmount = 0.00;
@@ -95,38 +94,44 @@ public class StatsImpl implements IStats {
                     totalProducts += totalProductsByOrder;
                 }
 
-                System.out.println(totalSales);
-                System.out.println(totalProducts);
-
                 if(totalSales <= 0.00 && totalProducts < 1){
                     return StatsCardDTO.builder()
                             .totalOrders(totalOrdersByDateAndStatus)
                             .totalSales(BigDecimal.valueOf(totalSales).setScale(2, RoundingMode.HALF_EVEN))
                             .orderStatus(state)
-                            .totalDeliveryAmountOrders(BigDecimal.valueOf(totalDeliveryAmount).setScale(2, RoundingMode.HALF_EVEN))
+                            .totalDeliveryAmountOrders(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_EVEN))
                             .totalProducts(totalProducts)
-                            .averageSaleProduct(0)
+                            .totalOrdersByRangeDate(0)
+                            .averageSaleProduct(BigDecimal.valueOf(0.00).setScale(2,RoundingMode.HALF_EVEN))
                             .averageTicket(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_EVEN))
+                            .percentageOfOrders(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_EVEN))
                             .build();
                 }
 
                 double averageSaleProduct;
                 if(totalSales > 0.00 && totalProducts > 0){
-                    System.out.println("check");
                     averageSaleProduct = totalSales/totalProducts;
                 }else{
                     averageSaleProduct = 0.00;
                 }
 
+                BigDecimal totalOrdersByDateAndStatusBD = BigDecimal.valueOf(totalOrdersByDateAndStatus);
+                BigDecimal totalOrdersByDateBD = BigDecimal.valueOf(totalOrdersByDate);
+
+                BigDecimal percentage = totalOrdersByDateAndStatusBD
+                        .divide(totalOrdersByDateBD, 2, RoundingMode.HALF_UP) // Divide with 2 decimal places
+                        .multiply(BigDecimal.valueOf(100L)).setScale(2,RoundingMode.HALF_EVEN);
+
                 return StatsCardDTO.builder()
                         .totalOrders(totalOrdersByDateAndStatus)
+                        .totalOrdersByRangeDate(totalOrdersByDate)
                         .totalSales(BigDecimal.valueOf(totalSales).setScale(2, RoundingMode.HALF_EVEN))
                         .orderStatus(state)
                         .totalDeliveryAmountOrders(BigDecimal.valueOf(totalDeliveryAmount).setScale(2, RoundingMode.HALF_EVEN))
                         .totalProducts(totalProducts)
-                        .averageSaleProduct(averageSaleProduct)
-                        .averageTicket(BigDecimal.valueOf(totalProducts/totalOrdersByDateAndStatus))
-                        .orderStatusColor(stateColor)
+                        .averageSaleProduct(BigDecimal.valueOf(averageSaleProduct).setScale(2,RoundingMode.HALF_EVEN))
+                        .averageTicket(BigDecimal.valueOf(totalProducts/totalOrdersByDateAndStatus).setScale(2,RoundingMode.HALF_EVEN))
+                        .percentageOfOrders(percentage)
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
