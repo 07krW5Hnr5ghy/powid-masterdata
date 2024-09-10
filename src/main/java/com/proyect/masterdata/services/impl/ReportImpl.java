@@ -72,18 +72,22 @@ public class ReportImpl implements IReport {
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(3);
-                cell.setCellValue("COLOR");
+                cell.setCellValue("CATEGORIA");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(4);
-                cell.setCellValue("TALLA");
+                cell.setCellValue("COLOR");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(5);
-                cell.setCellValue("PROVEEDOR");
+                cell.setCellValue("TALLA");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(6);
+                cell.setCellValue("PROVEEDOR");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(7);
                 cell.setCellValue("CANTIDAD");
                 cell.setCellStyle(headerStyle);
 
@@ -93,10 +97,11 @@ public class ReportImpl implements IReport {
                     row.createCell(0).setCellValue(generalStock.getSupplierProduct().getSerial());
                     row.createCell(1).setCellValue(generalStock.getSupplierProduct().getProduct().getSku());
                     row.createCell(2).setCellValue(generalStock.getSupplierProduct().getProduct().getModel().getName());
-                    row.createCell(3).setCellValue(generalStock.getSupplierProduct().getProduct().getColor().getName());
-                    row.createCell(4).setCellValue(generalStock.getSupplierProduct().getProduct().getSize().getName());
-                    row.createCell(5).setCellValue(generalStock.getSupplierProduct().getSupplier().getBusinessName());
-                    row.createCell(6).setCellValue(generalStock.getQuantity());
+                    row.createCell(3).setCellValue(generalStock.getSupplierProduct().getProduct().getCategoryProduct().getName());
+                    row.createCell(4).setCellValue(generalStock.getSupplierProduct().getProduct().getColor().getName());
+                    row.createCell(5).setCellValue(generalStock.getSupplierProduct().getProduct().getSize().getName());
+                    row.createCell(6).setCellValue(generalStock.getSupplierProduct().getSupplier().getBusinessName());
+                    row.createCell(7).setCellValue(generalStock.getQuantity());
                     currentRow++;
                 }
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -156,18 +161,22 @@ public class ReportImpl implements IReport {
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(4);
-                cell.setCellValue("COLOR");
+                cell.setCellValue("CATEGORIA");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(5);
-                cell.setCellValue("TALLA");
+                cell.setCellValue("COLOR");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(6);
-                cell.setCellValue("PROVEEDOR");
+                cell.setCellValue("TALLA");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(7);
+                cell.setCellValue("PROVEEDOR");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(8);
                 cell.setCellValue("CANTIDAD");
                 cell.setCellStyle(headerStyle);
 
@@ -178,10 +187,11 @@ public class ReportImpl implements IReport {
                     row.createCell(1).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSku());
                     row.createCell(2).setCellValue(warehouseStock.getWarehouse().getName());
                     row.createCell(3).setCellValue(warehouseStock.getSupplierProduct().getProduct().getModel().getName());
-                    row.createCell(4).setCellValue(warehouseStock.getSupplierProduct().getProduct().getColor().getName());
-                    row.createCell(5).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSize().getName());
-                    row.createCell(6).setCellValue(warehouseStock.getSupplierProduct().getSupplier().getBusinessName());
-                    row.createCell(7).setCellValue(warehouseStock.getQuantity());
+                    row.createCell(4).setCellValue(warehouseStock.getSupplierProduct().getProduct().getCategoryProduct().getName());
+                    row.createCell(5).setCellValue(warehouseStock.getSupplierProduct().getProduct().getColor().getName());
+                    row.createCell(6).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSize().getName());
+                    row.createCell(7).setCellValue(warehouseStock.getSupplierProduct().getSupplier().getBusinessName());
+                    row.createCell(8).setCellValue(warehouseStock.getQuantity());
                     currentRow++;
                 }
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
