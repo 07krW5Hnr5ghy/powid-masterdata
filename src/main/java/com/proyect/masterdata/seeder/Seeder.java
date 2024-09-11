@@ -1133,7 +1133,7 @@ public class Seeder implements CommandLineRunner {
 //                        iColor.save("MELON","JROMERO");
 //                        iColor.save("CHOCOLATE","JROMERO");
 //                        iColor.save("MOSTAZA","JROMERO");
-                        iCategoryProduct.save("ENTERIZO","ENTERIZO","ROPA","JROMERO");
+//                        iCategoryProduct.save("ENTERIZO","ENTERIZO","ROPA","JROMERO");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());
