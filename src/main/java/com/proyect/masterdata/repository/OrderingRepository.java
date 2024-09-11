@@ -1,6 +1,7 @@
 package com.proyect.masterdata.repository;
 
 import com.proyect.masterdata.domain.Ordering;
+import com.proyect.masterdata.dto.DailySaleSummaryDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +17,12 @@ public interface OrderingRepository extends JpaRepository<Ordering,Long> {
     List<Ordering> findByClientIdAndUpdateDateBetween(Long clientId,Date startDate,Date endDate);
     List<Ordering> findByClientIdAndUpdateDateBetweenAndOrderStateId(Long clientId,Date startDate,Date endDate,Long orderStateId);
     List<Ordering> findByUpdateDateBetween(Date startDate, Date endDate);
+    @Query("SELECT new com.proyect.masterdata.dto.DailySaleSummaryDTO(o.registrationDate, SUM(p.price * p.quantity), COUNT(DISTINCT o)) " +  // Add COUNT(DISTINCT o)
+            "FROM Product p JOIN p.order o " +
+            "WHERE o.orderDate BETWEEN :startDate AND :endDate " +
+            "GROUP BY o.orderDate " +
+            "ORDER BY o.orderDate")
+    List<DailySaleSummaryDTO> findSalesSummaryByDateRange(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
 }

@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.DailySaleSummaryDTO;
 import com.proyect.masterdata.dto.StatsCardDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +34,7 @@ public class StatsImpl implements IStats {
             Date updateStartDate,
             Date updateEndDate,
             String orderStateName,
-            String username) throws BadRequestExceptions, InterruptedException {
+            String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderState orderState;
@@ -136,6 +138,57 @@ public class StatsImpl implements IStats {
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySales(Date updateStartDate, Date updateEndDate, String orderStateName, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            OrderState orderState;
+            List<Ordering> orderingListByDate;
+            List<Ordering> orderingListByDateAndStatus;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                orderState = orderStateRepository.findByName(orderStateName);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                orderingListByDate = orderingRepository.findByClientIdAndUpdateDateBetween(user.getClientId(),updateStartDate,updateEndDate);
+            }
+            if (orderState==null){
+                orderingListByDateAndStatus = orderingRepository.findByUpdateDateBetween(updateStartDate,updateEndDate);
+            }else {
+                orderingListByDateAndStatus = orderingRepository.findByClientIdAndUpdateDateBetweenAndOrderStateId(user.getClientId(),updateStartDate,updateEndDate,orderState.getId());
+            }
+            try{
+                int totalOrdersByDate;
+                int totalOrdersByDateAndStatus = orderingListByDateAndStatus.size();
+                if(orderingListByDate.isEmpty()){
+                    totalOrdersByDate = 0;
+                }else{
+                    totalOrdersByDate = orderingListByDate.size();
+                }
+                String state;
+                if(orderState!=null){
+                    state = orderState.getName();
+                }else{
+                    state = "TODOS";
+                }
+                double totalSales = 0.00;
+                Double totalDeliveryAmount = 0.00;
+                int totalProducts = 0;
+                List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
+                for(Ordering ordering:orderingListByDateAndStatus){
+
+                }
+            }catch (RuntimeException e){
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
