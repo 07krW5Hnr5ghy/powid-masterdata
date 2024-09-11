@@ -145,15 +145,13 @@ public class StatsImpl implements IStats {
     }
 
     @Override
-    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySales(Date registrationStartDate, Date registrationEndDate, String orderStateName, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySales(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            OrderState orderState;
             List<Ordering> orderingListByDate;
             List<Ordering> orderingListByDateAndStatus;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                orderState = orderStateRepository.findByName(orderStateName);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -163,30 +161,29 @@ public class StatsImpl implements IStats {
             }else{
                 orderingListByDate = orderingRepository.findByClientIdAndUpdateDateBetween(user.getClientId(),registrationStartDate,registrationEndDate);
             }
-            if (orderState==null){
-                orderingListByDateAndStatus = orderingRepository.findByUpdateDateBetween(registrationStartDate,registrationEndDate);
-            }else {
-                orderingListByDateAndStatus = orderingRepository.findByClientIdAndUpdateDateBetweenAndOrderStateId(user.getClientId(),registrationStartDate,registrationEndDate,orderState.getId());
-            }
             try{
                 int totalOrdersByDate;
-                int totalOrdersByDateAndStatus = orderingListByDateAndStatus.size();
                 if(orderingListByDate.isEmpty()){
                     totalOrdersByDate = 0;
                 }else{
                     totalOrdersByDate = orderingListByDate.size();
                 }
                 String state;
-                if(orderState!=null){
-                    state = orderState.getName();
-                }else{
-                    state = "TODOS";
-                }
                 double totalSales = 0.00;
                 Double totalDeliveryAmount = 0.00;
                 int totalProducts = 0;
                 List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
-                orderingListByDate.stream().collect(Collectors.groupingBy(Ordering::getRegistrationDate)).values().stream().map(orderings -> DailySaleSummaryDTO.builder().date(orderings.get())).collect(Collectors.toList());
+                List<DailySaleSummaryDTO> orderDates = orderingRepository.findAllOrdersByDate(
+                        user.getClientId(),
+                        registrationStartDate,
+                        registrationEndDate).stream().map(result -> {
+                            return DailySaleSummaryDTO.builder()
+                                    .date((Date) result[0])
+                                    .totalOrders(((Long) result[1]).intValue())
+                                    .build();
+                }).toList();
+                System.out.println(orderDates);
+                return dailySaleSummaryDTOS;
             }catch (RuntimeException e){
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

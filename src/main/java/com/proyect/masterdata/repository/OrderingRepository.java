@@ -17,4 +17,11 @@ public interface OrderingRepository extends JpaRepository<Ordering,Long> {
     List<Ordering> findByClientIdAndUpdateDateBetween(Long clientId,Date startDate,Date endDate);
     List<Ordering> findByClientIdAndUpdateDateBetweenAndOrderStateId(Long clientId,Date startDate,Date endDate,Long orderStateId);
     List<Ordering> findByUpdateDateBetween(Date startDate, Date endDate);
+    @Query("SELECT FUNCTION('Date',o.registrationDate),COUNT(o) FROM Ordering o WHERE o.clientId = :clientId AND o.registrationDate BETWEEN :startDate AND :endDate GROUP BY FUNCTION('DATE', o.registrationDate) ORDER BY FUNCTION('DATE', o.registrationDate) ASC")
+    List<Object[]> findAllOrdersByDate(
+            @Param("clientId") Long clientId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate
+    );
+
 }

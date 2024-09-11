@@ -43,13 +43,11 @@ public class StatsController {
     ResponseEntity<List<DailySaleSummaryDTO>> dailySaleSummary(
             @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
             @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
-            @RequestParam(value = "orderState",required = false) String orderState,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<DailySaleSummaryDTO>> result = iStats.listDailySales(
                 registrationDateStart,
                 registrationDateEnd,
-                orderState,
                 user
         );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
