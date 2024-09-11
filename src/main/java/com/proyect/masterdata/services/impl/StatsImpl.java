@@ -144,7 +144,7 @@ public class StatsImpl implements IStats {
     }
 
     @Override
-    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySales(Date updateStartDate, Date updateEndDate, String orderStateName, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySales(Date registrationStartDate, Date registrationEndDate, String orderStateName, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderState orderState;
@@ -160,12 +160,12 @@ public class StatsImpl implements IStats {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                orderingListByDate = orderingRepository.findByClientIdAndUpdateDateBetween(user.getClientId(),updateStartDate,updateEndDate);
+                orderingListByDate = orderingRepository.findByClientIdAndUpdateDateBetween(user.getClientId(),registrationStartDate,registrationEndDate);
             }
             if (orderState==null){
-                orderingListByDateAndStatus = orderingRepository.findByUpdateDateBetween(updateStartDate,updateEndDate);
+                orderingListByDateAndStatus = orderingRepository.findByUpdateDateBetween(registrationStartDate,registrationEndDate);
             }else {
-                orderingListByDateAndStatus = orderingRepository.findByClientIdAndUpdateDateBetweenAndOrderStateId(user.getClientId(),updateStartDate,updateEndDate,orderState.getId());
+                orderingListByDateAndStatus = orderingRepository.findByClientIdAndUpdateDateBetweenAndOrderStateId(user.getClientId(),registrationStartDate,registrationEndDate,orderState.getId());
             }
             try{
                 int totalOrdersByDate;
@@ -184,10 +184,8 @@ public class StatsImpl implements IStats {
                 double totalSales = 0.00;
                 Double totalDeliveryAmount = 0.00;
                 int totalProducts = 0;
-                List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
-                for(Ordering ordering:orderingListByDateAndStatus){
-
-                }
+                List<DailySaleSummaryDTO> dailySaleSummaryDTOS = orderingRepository.findSalesSummaryByDateRange(registrationStartDate,registrationEndDate);
+                return dailySaleSummaryDTOS;
             }catch (RuntimeException e){
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

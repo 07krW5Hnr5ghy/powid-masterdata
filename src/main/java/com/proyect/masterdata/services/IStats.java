@@ -16,8 +16,8 @@ public interface IStats {
             String orderState,
             String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<DailySaleSummaryDTO>> listDailySales(
-            Date updateStartDate,
-            Date updateEndDate,
+            Date registrationStartDate,
+            Date registrationEndDate,
             String orderState,
             String user
     ) throws BadRequestExceptions, InternalErrorExceptions;
