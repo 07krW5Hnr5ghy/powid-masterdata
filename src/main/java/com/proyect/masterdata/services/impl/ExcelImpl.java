@@ -1311,6 +1311,7 @@ public class ExcelImpl implements IExcel {
                             break;
                         }
                         if((i>=1) && (row.getCell(0).getCellType() == STRING) && (ii==0)){
+                            System.out.println(row.getCell(0).getRichStringCellValue());
                             product = productRepository.findBySku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                             if(product != null){
                                 throw new BadRequestExceptions(Constants.ErrorProductExists);
@@ -1318,6 +1319,7 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1) && (row.getCell(0).getCellType() == NUMERIC) && (ii==0)){
+                            System.out.println(row.getCell(0).getRichStringCellValue());
                             product = productRepository.findBySku(String.valueOf((int) (row.getCell(0).getNumericCellValue())));
                             if(product != null){
                                 throw new BadRequestExceptions(Constants.ErrorProductExists);
@@ -1325,6 +1327,7 @@ public class ExcelImpl implements IExcel {
                             newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1)&&(row.getCell(2).getCellType() == STRING) && (ii==2)){
+                            System.out.println(row.getCell(2).getRichStringCellValue());
                             model = modelRepository.findByNameAndClientIdAndStatusTrue(row.getCell(2).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model == null){
                                 throw new BadRequestExceptions(Constants.ErrorModel);
