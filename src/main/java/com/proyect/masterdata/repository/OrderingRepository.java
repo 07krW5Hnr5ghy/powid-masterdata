@@ -17,12 +17,4 @@ public interface OrderingRepository extends JpaRepository<Ordering,Long> {
     List<Ordering> findByClientIdAndUpdateDateBetween(Long clientId,Date startDate,Date endDate);
     List<Ordering> findByClientIdAndUpdateDateBetweenAndOrderStateId(Long clientId,Date startDate,Date endDate,Long orderStateId);
     List<Ordering> findByUpdateDateBetween(Date startDate, Date endDate);
-    @Query("SELECT new com.proyect.masterdata.dto.DailySaleSummaryDTO(o.registrationDate, SUM(p.price * p.quantity), COUNT(DISTINCT o)) " +  // Add COUNT(DISTINCT o)
-            "FROM OrderItem p JOIN p.order o " +
-            "WHERE o.orderDate BETWEEN :startDate AND :endDate " +
-            "GROUP BY o.orderDate " +
-            "ORDER BY o.orderDate")
-    List<DailySaleSummaryDTO> findSalesSummaryByDateRange(
-            @Param("startDate") Date startDate,
-            @Param("endDate") Date endDate);
 }

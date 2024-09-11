@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -184,8 +185,8 @@ public class StatsImpl implements IStats {
                 double totalSales = 0.00;
                 Double totalDeliveryAmount = 0.00;
                 int totalProducts = 0;
-                List<DailySaleSummaryDTO> dailySaleSummaryDTOS = orderingRepository.findSalesSummaryByDateRange(registrationStartDate,registrationEndDate);
-                return dailySaleSummaryDTOS;
+                List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
+                orderingListByDate.stream().collect(Collectors.groupingBy(Ordering::getRegistrationDate)).values().stream().map(orderings -> DailySaleSummaryDTO.builder().date(orderings.get())).collect(Collectors.toList());
             }catch (RuntimeException e){
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
