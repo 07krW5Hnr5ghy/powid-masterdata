@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.DailySaleSummaryDTO;
 import com.proyect.masterdata.dto.StatsCardDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -35,5 +37,35 @@ public class StatsController {
                 user
         );
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("summary")
+    ResponseEntity<List<DailySaleSummaryDTO>> dailySaleSummary(
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<DailySaleSummaryDTO>> result = iStats.listDailySales(
+                registrationDateStart,
+                registrationDateEnd,
+                user
+        );
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("summary-state")
+    ResponseEntity<List<DailySaleSummaryDTO>> dailySaleSummaryByState(
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("orderState") String state,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<DailySaleSummaryDTO>> result = iStats.listDailySalesByStatus(
+                registrationDateStart,
+                registrationDateEnd,
+                state,
+                user
+        );
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

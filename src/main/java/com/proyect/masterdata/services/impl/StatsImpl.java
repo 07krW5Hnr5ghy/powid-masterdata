@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.DailySaleSummaryDTO;
 import com.proyect.masterdata.dto.StatsCardDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -13,10 +14,17 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +40,7 @@ public class StatsImpl implements IStats {
             Date updateStartDate,
             Date updateEndDate,
             String orderStateName,
-            String username) throws BadRequestExceptions, InterruptedException {
+            String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderState orderState;
@@ -135,6 +143,151 @@ public class StatsImpl implements IStats {
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySales(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            List<Ordering> orderingListByDate;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                orderingListByDate = orderingRepository.findByClientIdAndUpdateDateBetween(user.getClientId(),registrationStartDate,registrationEndDate);
+            }
+            try{
+                List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
+                List<DailySaleSummaryDTO> orderDates = orderingRepository.findAllOrdersByDate(
+                        user.getClientId(),
+                        registrationStartDate,
+                        registrationEndDate).stream().map(result -> DailySaleSummaryDTO.builder()
+                                    .date((Date) result[0])
+                                    .orderState("TODOS")
+                                    .totalOrders(((Long) result[1]).intValue())
+                                    .build()
+                ).toList();
+
+                for(DailySaleSummaryDTO dailySaleSummaryDTO:orderDates){
+                    double dailyTotalSales = 0.00;
+                    for(Ordering ordering:orderingListByDate){
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        String formattedDate = sdf.format(ordering.getRegistrationDate());
+                        if(dailySaleSummaryDTO.getDate().toString().equals(formattedDate)){
+                            List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
+                                    user.getClientId(),
+                                    ordering.getId()
+                            );
+                            for(OrderItem orderItem:orderItemList){
+                                ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                                double totalPrice = 0.00;
+                                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                }
+                                dailyTotalSales+=totalPrice;
+                            }
+                        }
+                    }
+                    dailySaleSummaryDTO.setTotalSalePerDay(BigDecimal.valueOf(dailyTotalSales).setScale(2,RoundingMode.HALF_EVEN));
+                    dailySaleSummaryDTOS.add(dailySaleSummaryDTO);
+                }
+                return dailySaleSummaryDTOS;
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySalesByStatus(Date registrationStartDate, Date registrationEndDate, String status, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            OrderState orderState;
+            List<Ordering> orderingListByDateAndStatus;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                orderState = orderStateRepository.findByNameAndStatusTrue(status.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(orderState==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderState);
+            }else{
+                orderingListByDateAndStatus = orderingRepository.findByClientIdAndUpdateDateBetweenAndOrderStateId(
+                        user.getClientId(),
+                        registrationStartDate,
+                        registrationEndDate,
+                        orderState.getId()
+                );
+            }
+            try{
+                List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
+                List<DailySaleSummaryDTO> orderDates = orderingRepository.findOrderCountByDateAndStatus(
+                        user.getClientId(),
+                        orderState.getId(),
+                        registrationStartDate,
+                        registrationEndDate).stream().map(result -> DailySaleSummaryDTO.builder()
+                            .orderState(orderState.getName())
+                            .date((Date) result[0])
+                            .totalOrders(((Long) result[1]).intValue())
+                            .build()
+                ).toList();
+
+                for(DailySaleSummaryDTO dailySaleSummaryDTO:orderDates){
+                    double dailyTotalSales = 0.00;
+                    for(Ordering ordering:orderingListByDateAndStatus){
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        String formattedDate = sdf.format(ordering.getRegistrationDate());
+                        if(dailySaleSummaryDTO.getDate().toString().equals(formattedDate)){
+                            List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
+                                    user.getClientId(),
+                                    ordering.getId()
+                            );
+                            for(OrderItem orderItem:orderItemList){
+                                ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                                double totalPrice = 0.00;
+                                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                }
+                                dailyTotalSales+=totalPrice;
+                            }
+                        }
+                    }
+                    dailySaleSummaryDTO.setTotalSalePerDay(BigDecimal.valueOf(dailyTotalSales).setScale(2,RoundingMode.HALF_EVEN));
+                    dailySaleSummaryDTOS.add(dailySaleSummaryDTO);
+                }
+                return dailySaleSummaryDTOS;
+            }catch (RuntimeException e){
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
