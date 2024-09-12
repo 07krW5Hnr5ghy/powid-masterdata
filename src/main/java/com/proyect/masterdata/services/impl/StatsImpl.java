@@ -202,7 +202,6 @@ public class StatsImpl implements IStats {
                                     totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                                 }
                                 dailyTotalSales+=totalPrice;
-                                System.out.println(dailyTotalSales);
                             }
                         }
                     }
@@ -281,7 +280,6 @@ public class StatsImpl implements IStats {
                                     totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                                 }
                                 dailyTotalSales+=totalPrice;
-                                System.out.println(dailyTotalSales);
                             }
                         }
                     }
