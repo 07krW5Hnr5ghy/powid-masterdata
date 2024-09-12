@@ -52,4 +52,20 @@ public class StatsController {
         );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("summary-state")
+    ResponseEntity<List<DailySaleSummaryDTO>> dailySaleSummaryByState(
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("orderState") String state,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<DailySaleSummaryDTO>> result = iStats.listDailySalesByStatus(
+                registrationDateStart,
+                registrationDateEnd,
+                state,
+                user
+        );
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

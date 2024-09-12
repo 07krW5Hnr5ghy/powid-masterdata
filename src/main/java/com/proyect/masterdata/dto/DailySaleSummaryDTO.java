@@ -16,4 +16,5 @@ public class DailySaleSummaryDTO {
     BigDecimal totalSalePerDay;
     Integer totalOrders;
     Date date;
+    String orderState;
 }

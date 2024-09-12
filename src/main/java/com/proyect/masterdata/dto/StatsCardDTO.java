@@ -21,5 +21,4 @@ public class StatsCardDTO {
     BigDecimal totalDeliveryAmountOrders;
     BigDecimal percentageOfOrders;
     String orderStatus;
-    String orderStatusColor;
 }
