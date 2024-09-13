@@ -12,13 +12,15 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Data
 public class StatsCardDTO {
-    BigDecimal totalSales;
+    BigDecimal totalSalesByStatus;
     Integer totalOrders;
     Integer totalOrdersByRangeDate;
+    BigDecimal totalSalesByRangeDate;
     Integer totalProducts;
     BigDecimal averageSaleProduct;
     BigDecimal averageTicket;
     BigDecimal totalDeliveryAmountOrders;
     BigDecimal percentageOfOrders;
+    BigDecimal percentageOfSales;
     String orderStatus;
 }

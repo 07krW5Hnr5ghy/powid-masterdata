@@ -56,12 +56,12 @@ public class StatsImpl implements IStats {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                orderingListByDate = orderingRepository.findByClientIdAndUpdateDateBetween(user.getClientId(),updateStartDate,updateEndDate);
+                orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(user.getClientId(),updateStartDate,updateEndDate);
             }
             if (orderState==null){
-                orderingListByDateAndStatus = orderingRepository.findByUpdateDateBetween(updateStartDate,updateEndDate);
+                orderingListByDateAndStatus = orderingRepository.findByRegistrationDateBetween(updateStartDate,updateEndDate);
             }else {
-                orderingListByDateAndStatus = orderingRepository.findByClientIdAndUpdateDateBetweenAndOrderStateId(user.getClientId(),updateStartDate,updateEndDate,orderState.getId());
+                orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetweenAndOrderStateId(user.getClientId(),updateStartDate,updateEndDate,orderState.getId());
             }
             try{
                 int totalOrdersByDate;
@@ -78,68 +78,106 @@ public class StatsImpl implements IStats {
                     state = "TODOS";
                 }
                 double totalSales = 0.00;
-                Double totalDeliveryAmount = 0.00;
+                double totalDeliveryAmount = 0.00;
                 int totalProducts = 0;
-                for(Ordering ordering:orderingListByDateAndStatus){
+                for(Ordering ordering:orderingListByDate){
                     double totalSaleByOrder = 0.00;
                     Integer totalProductsByOrder = 0;
-                    List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(ordering.getId());
+                    List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
                     for(OrderItem orderItem:orderItems){
+                        double totalPrice = 0.00;
                         ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                         if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                            totalSaleByOrder += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                            totalPrice += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
                         }
                         if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                            totalSaleByOrder += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                            totalPrice += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
                         }
                         if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                            totalSaleByOrder += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                            totalPrice += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                         }
+                        totalSaleByOrder+=totalPrice;
                         totalProductsByOrder += orderItem.getQuantity();
                     }
                     totalSales += totalSaleByOrder;
                     totalDeliveryAmount += ordering.getDeliveryAmount();
                     totalProducts += totalProductsByOrder;
                 }
+                double totalSalesByStatus = 0.00;
+                double totalDeliveryAmountByStatus = 0.00;
+                int totalProductsByStatus = 0;
+                for(Ordering ordering:orderingListByDateAndStatus){
+                    double totalSaleByOrder = 0.00;
+                    Integer totalProductsByOrder = 0;
+                    List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
+                    for(OrderItem orderItem:orderItems){
+                        double totalPrice = 0.00;
+                        ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                        if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                            totalPrice += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                        }
+                        if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                            totalPrice += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                        }
+                        if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                            totalPrice += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                        }
+                        totalSaleByOrder +=  totalPrice;
+                        totalProductsByOrder += orderItem.getQuantity();
+                    }
+                    totalSalesByStatus += totalSaleByOrder;
+                    totalDeliveryAmountByStatus += ordering.getDeliveryAmount();
+                    totalProductsByStatus += totalProductsByOrder;
+                }
 
-                if(totalSales <= 0.00 && totalProducts < 1){
+                if(totalSalesByStatus <= 0.00 && totalProductsByStatus < 1){
                     return StatsCardDTO.builder()
                             .totalOrders(totalOrdersByDateAndStatus)
-                            .totalSales(BigDecimal.valueOf(totalSales).setScale(2, RoundingMode.HALF_EVEN))
+                            .totalSalesByStatus(BigDecimal.valueOf(totalSalesByStatus).setScale(2, RoundingMode.HALF_EVEN))
                             .orderStatus(state)
                             .totalDeliveryAmountOrders(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_EVEN))
-                            .totalProducts(totalProducts)
+                            .totalProducts(totalProductsByStatus)
+                            .totalSalesByRangeDate(BigDecimal.valueOf(0.00).setScale(2,RoundingMode.HALF_EVEN))
                             .totalOrdersByRangeDate(0)
                             .averageSaleProduct(BigDecimal.valueOf(0.00).setScale(2,RoundingMode.HALF_EVEN))
                             .averageTicket(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_EVEN))
                             .percentageOfOrders(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_EVEN))
+                            .percentageOfSales(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_EVEN))
                             .build();
                 }
 
                 double averageSaleProduct;
-                if(totalSales > 0.00 && totalProducts > 0){
-                    averageSaleProduct = totalSales/totalProducts;
+                if(totalSalesByStatus > 0.00 && totalProductsByStatus > 0){
+                    averageSaleProduct = totalSalesByStatus/totalProductsByStatus;
                 }else{
                     averageSaleProduct = 0.00;
                 }
 
+                BigDecimal totalSalesByDateAndStatusBD = BigDecimal.valueOf(totalSalesByStatus);
+                BigDecimal totalSalesByDateBD = BigDecimal.valueOf(totalSales);
                 BigDecimal totalOrdersByDateAndStatusBD = BigDecimal.valueOf(totalOrdersByDateAndStatus);
                 BigDecimal totalOrdersByDateBD = BigDecimal.valueOf(totalOrdersByDate);
 
-                BigDecimal percentage = totalOrdersByDateAndStatusBD
-                        .divide(totalOrdersByDateBD, 2, RoundingMode.HALF_UP) // Divide with 2 decimal places
+                BigDecimal percentageOfSales = totalSalesByDateAndStatusBD
+                        .divide(totalSalesByDateBD, 2, RoundingMode.HALF_EVEN) // Divide with 2 decimal places
+                        .multiply(BigDecimal.valueOf(100L)).setScale(2,RoundingMode.HALF_EVEN);
+
+                BigDecimal percentageOfOrders = totalOrdersByDateAndStatusBD
+                        .divide(totalOrdersByDateBD, 2, RoundingMode.HALF_EVEN) // Divide with 2 decimal places
                         .multiply(BigDecimal.valueOf(100L)).setScale(2,RoundingMode.HALF_EVEN);
 
                 return StatsCardDTO.builder()
                         .totalOrders(totalOrdersByDateAndStatus)
+                        .totalSalesByRangeDate(BigDecimal.valueOf(totalSales).setScale(2,RoundingMode.HALF_EVEN))
                         .totalOrdersByRangeDate(totalOrdersByDate)
-                        .totalSales(BigDecimal.valueOf(totalSales).setScale(2, RoundingMode.HALF_EVEN))
+                        .totalSalesByStatus(BigDecimal.valueOf(totalSalesByStatus).setScale(2, RoundingMode.HALF_EVEN))
                         .orderStatus(state)
-                        .totalDeliveryAmountOrders(BigDecimal.valueOf(totalDeliveryAmount).setScale(2, RoundingMode.HALF_EVEN))
-                        .totalProducts(totalProducts)
+                        .totalDeliveryAmountOrders(BigDecimal.valueOf(totalDeliveryAmountByStatus).setScale(2, RoundingMode.HALF_EVEN))
+                        .totalProducts(totalProductsByStatus)
                         .averageSaleProduct(BigDecimal.valueOf(averageSaleProduct).setScale(2,RoundingMode.HALF_EVEN))
-                        .averageTicket(BigDecimal.valueOf(totalProducts/totalOrdersByDateAndStatus).setScale(2,RoundingMode.HALF_EVEN))
-                        .percentageOfOrders(percentage)
+                        .averageTicket(BigDecimal.valueOf(totalProductsByStatus/totalOrdersByDateAndStatus).setScale(2,RoundingMode.HALF_EVEN))
+                        .percentageOfOrders(percentageOfOrders)
+                        .percentageOfSales(percentageOfSales)
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -163,7 +201,7 @@ public class StatsImpl implements IStats {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                orderingListByDate = orderingRepository.findByClientIdAndUpdateDateBetween(user.getClientId(),registrationStartDate,registrationEndDate);
+                orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(user.getClientId(),registrationStartDate,registrationEndDate);
             }
             try{
                 List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
@@ -176,10 +214,11 @@ public class StatsImpl implements IStats {
                                     .totalOrders(((Long) result[1]).intValue())
                                     .build()
                 ).toList();
-
+                double totalSales = 0.00;
                 for(DailySaleSummaryDTO dailySaleSummaryDTO:orderDates){
                     double dailyTotalSales = 0.00;
                     for(Ordering ordering:orderingListByDate){
+                        double orderTotalSales = 0.00;
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                         String formattedDate = sdf.format(ordering.getRegistrationDate());
                         if(dailySaleSummaryDTO.getDate().toString().equals(formattedDate)){
@@ -201,10 +240,12 @@ public class StatsImpl implements IStats {
                                 if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
                                     totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                                 }
-                                dailyTotalSales+=totalPrice;
+                                orderTotalSales+=totalPrice;
                             }
                         }
+                        dailyTotalSales+=orderTotalSales;
                     }
+                    totalSales+=dailyTotalSales;
                     dailySaleSummaryDTO.setTotalSalePerDay(BigDecimal.valueOf(dailyTotalSales).setScale(2,RoundingMode.HALF_EVEN));
                     dailySaleSummaryDTOS.add(dailySaleSummaryDTO);
                 }
@@ -235,7 +276,7 @@ public class StatsImpl implements IStats {
             if(orderState==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderState);
             }else{
-                orderingListByDateAndStatus = orderingRepository.findByClientIdAndUpdateDateBetweenAndOrderStateId(
+                orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetweenAndOrderStateId(
                         user.getClientId(),
                         registrationStartDate,
                         registrationEndDate,
@@ -258,6 +299,7 @@ public class StatsImpl implements IStats {
                 for(DailySaleSummaryDTO dailySaleSummaryDTO:orderDates){
                     double dailyTotalSales = 0.00;
                     for(Ordering ordering:orderingListByDateAndStatus){
+                        double orderTotalSales = 0.00;
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                         String formattedDate = sdf.format(ordering.getRegistrationDate());
                         if(dailySaleSummaryDTO.getDate().toString().equals(formattedDate)){
@@ -279,9 +321,10 @@ public class StatsImpl implements IStats {
                                 if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
                                     totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                                 }
-                                dailyTotalSales+=totalPrice;
+                                orderTotalSales+=totalPrice;
                             }
                         }
+                        dailyTotalSales+=orderTotalSales;
                     }
                     dailySaleSummaryDTO.setTotalSalePerDay(BigDecimal.valueOf(dailyTotalSales).setScale(2,RoundingMode.HALF_EVEN));
                     dailySaleSummaryDTOS.add(dailySaleSummaryDTO);
