@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IReport;
+import com.proyect.masterdata.services.IUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class ReportController {
     private final IReport iReport;
+    private final IUtil iUtil;
     @GetMapping("general-stock")
     private ResponseEntity<byte[]> general(
             @RequestParam("user") String user

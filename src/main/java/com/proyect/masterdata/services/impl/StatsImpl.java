@@ -7,6 +7,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IStats;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,10 +36,11 @@ public class StatsImpl implements IStats {
     private final OrderingRepository orderingRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductPriceRepository productPriceRepository;
+    private final IUtil iUtil;
     @Override
     public CompletableFuture<StatsCardDTO> listCardStats(
-            Date updateStartDate,
-            Date updateEndDate,
+            Date registrationStartDate,
+            Date registrationEndDate,
             String orderStateName,
             String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -46,9 +48,13 @@ public class StatsImpl implements IStats {
             OrderState orderState;
             List<Ordering> orderingListByDate;
             List<Ordering> orderingListByDateAndStatus;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByName(orderStateName);
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -56,12 +62,21 @@ public class StatsImpl implements IStats {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(user.getClientId(),updateStartDate,updateEndDate);
+                orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd);
             }
             if (orderState==null){
-                orderingListByDateAndStatus = orderingRepository.findByRegistrationDateBetween(updateStartDate,updateEndDate);
+                orderingListByDateAndStatus = orderingRepository.findByRegistrationDateBetween(
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd);
             }else {
-                orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetweenAndOrderStateId(user.getClientId(),updateStartDate,updateEndDate,orderState.getId());
+                orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetweenAndOrderStateId(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd,
+                        orderState.getId());
             }
             try{
                 int totalOrdersByDate;
@@ -192,8 +207,12 @@ public class StatsImpl implements IStats {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<Ordering> orderingListByDate;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -201,14 +220,17 @@ public class StatsImpl implements IStats {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(user.getClientId(),registrationStartDate,registrationEndDate);
+                orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd);
             }
             try{
                 List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
                 List<DailySaleSummaryDTO> orderDates = orderingRepository.findAllOrdersByDate(
                         user.getClientId(),
-                        registrationStartDate,
-                        registrationEndDate).stream().map(result -> DailySaleSummaryDTO.builder()
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd).stream().map(result -> DailySaleSummaryDTO.builder()
                                     .date((Date) result[0])
                                     .orderState("TODOS")
                                     .totalOrders(((Long) result[1]).intValue())
@@ -263,9 +285,13 @@ public class StatsImpl implements IStats {
             User user;
             OrderState orderState;
             List<Ordering> orderingListByDateAndStatus;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue(status.toUpperCase());
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -278,8 +304,8 @@ public class StatsImpl implements IStats {
             }else{
                 orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetweenAndOrderStateId(
                         user.getClientId(),
-                        registrationStartDate,
-                        registrationEndDate,
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd,
                         orderState.getId()
                 );
             }
@@ -288,8 +314,8 @@ public class StatsImpl implements IStats {
                 List<DailySaleSummaryDTO> orderDates = orderingRepository.findOrderCountByDateAndStatus(
                         user.getClientId(),
                         orderState.getId(),
-                        registrationStartDate,
-                        registrationEndDate).stream().map(result -> DailySaleSummaryDTO.builder()
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd).stream().map(result -> DailySaleSummaryDTO.builder()
                             .orderState(orderState.getName())
                             .date((Date) result[0])
                             .totalOrders(((Long) result[1]).intValue())
