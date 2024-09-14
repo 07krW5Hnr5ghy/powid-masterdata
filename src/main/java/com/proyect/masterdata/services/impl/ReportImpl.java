@@ -288,6 +288,8 @@ public class ReportImpl implements IReport {
                 cell.setCellStyle(headerStyle);
 
                 List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
+                System.out.println(registrationStartDate);
+                System.out.println(registrationEndDate);
                 List<DailySaleSummaryDTO> orderDates = orderingRepository.findAllOrdersByDate(
                         user.getClientId(),
                         registrationStartDate,
@@ -316,6 +318,8 @@ public class ReportImpl implements IReport {
                         double orderTotalSales = 0.00;
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                         String formattedDate = sdf.format(ordering.getRegistrationDate());
+
+                        System.out.println(dailySaleSummaryDTO.getDate());
                         if(dailySaleSummaryDTO.getDate().toString().equals(formattedDate)){
                             List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
                                     user.getClientId(),
