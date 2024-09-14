@@ -28,18 +28,14 @@ public class StatsController {
 
     @GetMapping("card")
     ResponseEntity<StatsCardDTO> cardStatistics(
-            @RequestParam("updateDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateDateStart,
-            @RequestParam("updateDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
             @RequestParam(value = "orderState",required = false) String orderState,
             @RequestParam("user") String user
     ) throws InternalErrorExceptions, BadRequestExceptions, InterruptedException, ExecutionException, ParseException {
-        Date utcUpdateDateStart = iUtil.setToUTCStartOfDay(updateDateStart);
-        Date utcUpdateDateEnd = iUtil.setToUTCStartOfDay(updateDateEnd);
-        System.out.println(utcUpdateDateStart);
-        System.out.println(utcUpdateDateEnd);
         CompletableFuture<StatsCardDTO> result = iStats.listCardStats(
-                utcUpdateDateStart,
-                utcUpdateDateEnd,
+                registrationDateStart,
+                registrationDateEnd,
                 orderState,
                 user
         );
@@ -67,10 +63,6 @@ public class StatsController {
             @RequestParam("orderState") String state,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException, ParseException {
-        Date utcUpdateDateStart = iUtil.setToUTCStartOfDay(registrationDateStart);
-        Date utcUpdateDateEnd = iUtil.setToUTCStartOfDay(registrationDateEnd);
-        System.out.println(utcUpdateDateStart);
-        System.out.println(utcUpdateDateEnd);
         CompletableFuture<List<DailySaleSummaryDTO>> result = iStats.listDailySalesByStatus(
                 registrationDateStart,
                 registrationDateEnd,

@@ -6,6 +6,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IReport;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -37,6 +38,7 @@ public class ReportImpl implements IReport {
     private final OrderItemRepository orderItemRepository;
     private final ProductPriceRepository productPriceRepository;
     private final OrderStateRepository orderStateRepository;
+    private final IUtil iUtil;
     @Override
     public CompletableFuture<ByteArrayInputStream> generalStockReport(String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -219,9 +221,13 @@ public class ReportImpl implements IReport {
             List<Ordering> orderingListByDate;
             List<Ordering> orderingListByDateAndStatus;
             OrderState orderState;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue("ENTREGADO");
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -236,8 +242,8 @@ public class ReportImpl implements IReport {
             }else{
                 orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetweenAndOrderStateId(
                         user.getClientId(),
-                        registrationStartDate,
-                        registrationEndDate,
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd,
                         orderState.getId()
                 );
             }
@@ -288,12 +294,10 @@ public class ReportImpl implements IReport {
                 cell.setCellStyle(headerStyle);
 
                 List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
-                System.out.println(registrationStartDate);
-                System.out.println(registrationEndDate);
                 List<DailySaleSummaryDTO> orderDates = orderingRepository.findAllOrdersByDate(
                         user.getClientId(),
-                        registrationStartDate,
-                        registrationEndDate).stream().map(result -> DailySaleSummaryDTO.builder()
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd).stream().map(result -> DailySaleSummaryDTO.builder()
                         .date((Date) result[0])
                         .orderState("TODOS")
                         .totalOrders(((Long) result[1]).intValue())
@@ -318,8 +322,6 @@ public class ReportImpl implements IReport {
                         double orderTotalSales = 0.00;
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                         String formattedDate = sdf.format(ordering.getRegistrationDate());
-
-                        System.out.println(dailySaleSummaryDTO.getDate());
                         if(dailySaleSummaryDTO.getDate().toString().equals(formattedDate)){
                             List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
                                     user.getClientId(),

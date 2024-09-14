@@ -54,13 +54,9 @@ public class ReportController {
             @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        Date utcUpdateDateStart = iUtil.setToUTCStartOfDay(registrationDateStart);
-        Date utcUpdateDateEnd = iUtil.setToUTCStartOfDay(registrationDateEnd);
-        System.out.println(utcUpdateDateStart);
-        System.out.println(utcUpdateDateEnd);
         CompletableFuture<ByteArrayInputStream> result = iReport.dailySalesSummary(
-                utcUpdateDateStart,
-                utcUpdateDateEnd,
+                registrationDateStart,
+                registrationDateEnd,
                 user
         );
         HttpHeaders headers = new HttpHeaders();
