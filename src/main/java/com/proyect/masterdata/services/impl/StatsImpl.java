@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.DailySaleSummaryDTO;
+import com.proyect.masterdata.dto.SellerSalesDto;
 import com.proyect.masterdata.dto.StatsCardDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -68,7 +69,8 @@ public class StatsImpl implements IStats {
                         utcRegistrationDateEnd);
             }
             if (orderState==null){
-                orderingListByDateAndStatus = orderingRepository.findByRegistrationDateBetween(
+                orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                        user.getClientId(),
                         utcRegistrationDateStart,
                         utcRegistrationDateEnd);
             }else {
@@ -359,6 +361,48 @@ public class StatsImpl implements IStats {
             }catch (RuntimeException e){
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SellerSalesDto>> listSellerSales(
+            Date registrationStartDate,
+            Date registrationEndDate,
+            String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            List<SellerSalesDto> orderingList;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                orderingList = orderingRepository.findByClientIdAndRegistrationDateBetweenCountSeller(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd
+                ).stream().map(result -> SellerSalesDto.builder()
+                        .seller(result[0].toString())
+                        .orderCount((long) result[1])
+                        .build()
+                ).toList();
+            }
+            try{
+                System.out.println(orderingList);
+                return (List<SellerSalesDto>) new ArrayList<SellerSalesDto>();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.ErrorUser);
             }
         });
     }
