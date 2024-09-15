@@ -375,6 +375,7 @@ public class StatsImpl implements IStats {
             List<SellerSalesDto> orderingList;
             Date utcRegistrationDateStart;
             Date utcRegistrationDateEnd;
+            List<Ordering> orderingListByDate;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
@@ -385,7 +386,8 @@ public class StatsImpl implements IStats {
             }
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
-            }else{
+            }
+            try{
                 orderingList = orderingRepository.findByClientIdAndRegistrationDateBetweenCountSeller(
                         user.getClientId(),
                         utcRegistrationDateStart,
@@ -395,10 +397,47 @@ public class StatsImpl implements IStats {
                         .orderCount((long) result[1])
                         .build()
                 ).toList();
-            }
-            try{
-                System.out.println(orderingList);
-                return (List<SellerSalesDto>) new ArrayList<SellerSalesDto>();
+                orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd);
+                for(SellerSalesDto sellerSalesDto:orderingList){
+                    double sellerTotalSales = 0.00;
+                    int sellerTotalProducts = 0;
+                    for(Ordering ordering:orderingListByDate){
+                        double orderTotalSales = 0.00;
+                        int orderTotalProducts = 0;
+                        if(Objects.equals(sellerSalesDto.getSeller(), ordering.getSeller())){
+                            List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
+                                    user.getClientId(),
+                                    ordering.getId()
+                            );
+                            for(OrderItem orderItem:orderItemList){
+                                ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                                double totalPrice = 0.00;
+                                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                }
+                                orderTotalSales+=totalPrice;
+                                orderTotalProducts += orderItem.getQuantity();
+                            }
+                            sellerTotalSales+=orderTotalSales;
+                            sellerTotalProducts+=orderTotalProducts;
+                        }
+                    }
+                    sellerSalesDto.setTotalSales(BigDecimal.valueOf(sellerTotalSales).setScale(2,RoundingMode.HALF_EVEN));
+                    sellerSalesDto.setProductCount(sellerTotalProducts);
+                    sellerSalesDto.setAverageTicket(BigDecimal.valueOf(sellerTotalProducts/sellerSalesDto.getOrderCount()).setScale(2,RoundingMode.HALF_EVEN));
+                }
+                return orderingList;
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
