@@ -47,5 +47,21 @@ public interface OrderingRepository extends JpaRepository<Ordering,Long> {
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate
     );
-    List<Ordering> findByClientIdAndRegistrationDateBetweenAndSellerAndOrderStateId(Long clientId,Date startDate, Date endDate,String seller,Long orderStateId);
+
+    @Query("SELECT o.seller, d.department.name, p.province.name, dis.district.name, sc.name COUNT(o) " +
+            "FROM Ordering o " +
+            "JOIN o.customer c " +
+            "JOIN c.district dis " +
+            "JOIN dis.province p " +
+            "JOIN p.department d " +
+            "JOIN o.saleChannel sc " +
+            "WHERE o.clientId = :clientId " +
+            "AND o.registrationDate BETWEEN :startDate AND :endDate " +
+            "GROUP BY o.seller,d.name, p.name, dis.name, sc.name " +
+            "ORDER BY o.seller ASC,d.name ASC, p.name ASC, dis.name ASC, sc.name ASC")
+    List<Object[]> findByClientIdAndRegistrationDateBetweenCountSellerDistrictChannel(
+            @Param("clientId") Long clientId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate
+    );
 }

@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.DailySaleSummaryDTO;
+import com.proyect.masterdata.dto.SalesBySellerDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
@@ -428,6 +429,46 @@ public class ReportImpl implements IReport {
                 workbook.close();
                 return new ByteArrayInputStream(out.toByteArray());
             }catch (RuntimeException | IOException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ByteArrayInputStream> SalesBySellerSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            List<SalesBySellerDTO> salesBySellerDTOS;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            try{
+                salesBySellerDTOS = orderingRepository.findByClientIdAndRegistrationDateBetweenCountSellerDistrictChannel(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd
+                ).stream().map(result -> SalesBySellerDTO.builder()
+                        .seller(result[0].toString())
+                        .department(result[1].toString())
+                        .province(result[2].toString())
+                        .district(result[3].toString())
+                        .saleChannel(result[4].toString())
+                        .totalOrders((long) result[5])
+                        .build()
+                ).toList();
+            }catch (RuntimeException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
