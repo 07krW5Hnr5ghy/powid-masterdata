@@ -16,7 +16,6 @@ public interface OrderingRepository extends JpaRepository<Ordering,Long> {
     Ordering findByClientIdAndId(Long clientId,Long id);
     List<Ordering> findByClientIdAndRegistrationDateBetween(Long clientId,Date startDate,Date endDate);
     List<Ordering> findByClientIdAndRegistrationDateBetweenAndOrderStateId(Long clientId,Date startDate,Date endDate,Long orderStateId);
-    List<Ordering> findByRegistrationDateBetween(Date startDate, Date endDate);
     @Query("SELECT FUNCTION('Date',o.registrationDate),COUNT(o) FROM Ordering o WHERE o.clientId = :clientId AND o.registrationDate BETWEEN :startDate AND :endDate GROUP BY FUNCTION('DATE', o.registrationDate) ORDER BY FUNCTION('DATE', o.registrationDate) ASC")
     List<Object[]> findAllOrdersByDate(
             @Param("clientId") Long clientId,
@@ -37,4 +36,16 @@ public interface OrderingRepository extends JpaRepository<Ordering,Long> {
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate
     );
+    @Query("SELECT o.seller, COUNT(o) " +
+            "FROM Ordering o " +
+            "WHERE o.clientId = :clientId " +
+            "AND o.registrationDate BETWEEN :startDate AND :endDate " +
+            "GROUP BY o.seller " +
+            "ORDER BY o.seller ASC")
+    List<Object[]> findByClientIdAndRegistrationDateBetweenCountSeller(
+            @Param("clientId") Long clientId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate
+    );
+    List<Ordering> findByClientIdAndRegistrationDateBetweenAndSellerAndOrderStateId(Long clientId,Date startDate, Date endDate,String seller,Long orderStateId);
 }
