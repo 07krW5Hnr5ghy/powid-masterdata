@@ -15,4 +15,7 @@ public interface IReport {
     CompletableFuture<ByteArrayInputStream> dailySalesSummary(Date registrationStartDate,
                                                               Date registrationEndDate,
                                                               String username) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ByteArrayInputStream> SalesBySellerSummary(Date registrationStartDate,
+                                                              Date registrationEndDate,
+                                                              String username) throws BadRequestExceptions,InternalErrorExceptions;
 }

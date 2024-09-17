@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.DailySaleSummaryDTO;
+import com.proyect.masterdata.dto.SellerSalesDTO;
 import com.proyect.masterdata.dto.StatsCardDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -67,6 +68,20 @@ public class StatsController {
                 registrationDateStart,
                 registrationDateEnd,
                 state,
+                user
+        );
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("seller")
+    ResponseEntity<List<SellerSalesDTO>> dailySaleSummaryByState(
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException, ParseException {
+        CompletableFuture<List<SellerSalesDTO>> result = iStats.listSellerSales(
+                registrationDateStart,
+                registrationDateEnd,
                 user
         );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);

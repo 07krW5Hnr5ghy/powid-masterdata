@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.DailySaleSummaryDTO;
+import com.proyect.masterdata.dto.SellerSalesDTO;
 import com.proyect.masterdata.dto.StatsCardDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -15,17 +16,12 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +64,8 @@ public class StatsImpl implements IStats {
                         utcRegistrationDateEnd);
             }
             if (orderState==null){
-                orderingListByDateAndStatus = orderingRepository.findByRegistrationDateBetween(
+                orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                        user.getClientId(),
                         utcRegistrationDateStart,
                         utcRegistrationDateEnd);
             }else {
@@ -359,6 +356,87 @@ public class StatsImpl implements IStats {
             }catch (RuntimeException e){
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SellerSalesDTO>> listSellerSales(
+            Date registrationStartDate,
+            Date registrationEndDate,
+            String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            List<SellerSalesDTO> orderingList;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
+            List<Ordering> orderingListByDate;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            try{
+                orderingList = orderingRepository.findByClientIdAndRegistrationDateBetweenCountSeller(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd
+                ).stream().map(result -> SellerSalesDTO.builder()
+                        .seller(result[0].toString())
+                        .orderCount((long) result[1])
+                        .build()
+                ).toList();
+                orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd);
+                for(SellerSalesDTO sellerSalesDto:orderingList){
+                    double sellerTotalSales = 0.00;
+                    int sellerTotalProducts = 0;
+                    for(Ordering ordering:orderingListByDate){
+                        double orderTotalSales = 0.00;
+                        int orderTotalProducts = 0;
+                        if(Objects.equals(sellerSalesDto.getSeller(), ordering.getSeller())){
+                            List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
+                                    user.getClientId(),
+                                    ordering.getId()
+                            );
+                            for(OrderItem orderItem:orderItemList){
+                                ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                                double totalPrice = 0.00;
+                                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                }
+                                orderTotalSales+=totalPrice;
+                                orderTotalProducts += orderItem.getQuantity();
+                            }
+                            sellerTotalSales+=orderTotalSales;
+                            sellerTotalProducts+=orderTotalProducts;
+                        }
+                    }
+                    sellerSalesDto.setTotalSales(BigDecimal.valueOf(sellerTotalSales).setScale(2,RoundingMode.HALF_EVEN));
+                    sellerSalesDto.setProductCount(sellerTotalProducts);
+                    sellerSalesDto.setAverageTicket(BigDecimal.valueOf(sellerTotalProducts/sellerSalesDto.getOrderCount()).setScale(2,RoundingMode.HALF_EVEN));
+                }
+                return orderingList;
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.ErrorUser);
             }
         });
     }
