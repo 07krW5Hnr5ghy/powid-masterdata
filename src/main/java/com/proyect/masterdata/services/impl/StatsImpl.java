@@ -2,7 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.DailySaleSummaryDTO;
-import com.proyect.masterdata.dto.SellerSalesDto;
+import com.proyect.masterdata.dto.SellerSalesDTO;
 import com.proyect.masterdata.dto.StatsCardDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -16,17 +16,12 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -366,13 +361,13 @@ public class StatsImpl implements IStats {
     }
 
     @Override
-    public CompletableFuture<List<SellerSalesDto>> listSellerSales(
+    public CompletableFuture<List<SellerSalesDTO>> listSellerSales(
             Date registrationStartDate,
             Date registrationEndDate,
             String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            List<SellerSalesDto> orderingList;
+            List<SellerSalesDTO> orderingList;
             Date utcRegistrationDateStart;
             Date utcRegistrationDateEnd;
             List<Ordering> orderingListByDate;
@@ -392,7 +387,7 @@ public class StatsImpl implements IStats {
                         user.getClientId(),
                         utcRegistrationDateStart,
                         utcRegistrationDateEnd
-                ).stream().map(result -> SellerSalesDto.builder()
+                ).stream().map(result -> SellerSalesDTO.builder()
                         .seller(result[0].toString())
                         .orderCount((long) result[1])
                         .build()
@@ -401,7 +396,7 @@ public class StatsImpl implements IStats {
                         user.getClientId(),
                         utcRegistrationDateStart,
                         utcRegistrationDateEnd);
-                for(SellerSalesDto sellerSalesDto:orderingList){
+                for(SellerSalesDTO sellerSalesDto:orderingList){
                     double sellerTotalSales = 0.00;
                     int sellerTotalProducts = 0;
                     for(Ordering ordering:orderingListByDate){

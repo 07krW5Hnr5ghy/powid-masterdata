@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.DailySaleSummaryDTO;
 import com.proyect.masterdata.dto.SalesBySellerDTO;
+import com.proyect.masterdata.dto.SalesBySellerFinalDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
@@ -455,7 +456,11 @@ public class ReportImpl implements IReport {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
             try{
-                salesBySellerDTOS = orderingRepository.findByClientIdAndRegistrationDateBetweenCountSellerDistrictChannel(
+                List<Ordering> orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd);
+                salesBySellerDTOS = orderingRepository.findByClientIdAndRegistrationDateBetweenCountReport(
                         user.getClientId(),
                         utcRegistrationDateStart,
                         utcRegistrationDateEnd
@@ -464,11 +469,177 @@ public class ReportImpl implements IReport {
                         .department(result[1].toString())
                         .province(result[2].toString())
                         .district(result[3].toString())
-                        .saleChannel(result[4].toString())
+                        .closingChannel(result[4].toString())
                         .totalOrders((long) result[5])
                         .build()
                 ).toList();
-            }catch (RuntimeException e){
+                System.out.println(salesBySellerDTOS);
+                List<SalesBySellerFinalDTO> salesBySellerFinalDTOS = new ArrayList<>();
+
+                for(SalesBySellerDTO salesBySellerDTO:salesBySellerDTOS){
+                    int totalOrdersPerRecord = 0;
+                    int totalDeliveredOrderPerRecord = 0;
+                    SalesBySellerFinalDTO salesBySellerFinalDTOCurrent = SalesBySellerFinalDTO.builder().build();
+                    for(Ordering ordering:orderingList){
+                        if(Objects.equals(salesBySellerDTO.getSeller(), ordering.getSeller())){
+                            salesBySellerFinalDTOCurrent.setSeller(salesBySellerDTO.getSeller());
+                            if(Objects.equals(salesBySellerDTO.getDepartment(), ordering.getCustomer().getDistrict().getProvince().getDepartment().getName())){
+                                salesBySellerFinalDTOCurrent.setDepartment(salesBySellerDTO.getDepartment());
+                                if(Objects.equals(salesBySellerDTO.getProvince(), ordering.getCustomer().getDistrict().getProvince().getName())){
+                                    salesBySellerFinalDTOCurrent.setProvince(salesBySellerDTO.getProvince());
+                                    if(Objects.equals(salesBySellerDTO.getDistrict(), ordering.getCustomer().getDistrict().getName())){
+                                        salesBySellerFinalDTOCurrent.setDistrict(salesBySellerDTO.getDistrict());
+                                        if(Objects.equals(salesBySellerDTO.getClosingChannel(), ordering.getClosingChannel().getName())){
+                                            salesBySellerFinalDTOCurrent.setClosingChannel(ordering.getClosingChannel().getName());
+                                            List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
+                                                    user.getClientId(),
+                                                    ordering.getId());
+                                            for(OrderItem orderItem:orderItemList){
+                                                if(salesBySellerFinalDTOCurrent.getCategory()==null){
+                                                    salesBySellerFinalDTOCurrent.setCategory(orderItem.getProduct().getCategoryProduct().getName());
+                                                }
+                                                if(salesBySellerFinalDTOCurrent.getBrand()==null){
+                                                    salesBySellerFinalDTOCurrent.setBrand(orderItem.getProduct().getModel().getBrand().getName());
+                                                }
+                                                if(salesBySellerFinalDTOCurrent.getModel()==null){
+                                                    salesBySellerFinalDTOCurrent.setModel(orderItem.getProduct().getModel().getName());
+                                                }
+                                                if(Objects.equals(salesBySellerFinalDTOCurrent.getCategory(), orderItem.getProduct().getCategoryProduct().getName())){
+
+                                                    if(Objects.equals(salesBySellerFinalDTOCurrent.getBrand(), orderItem.getProduct().getModel().getBrand().getName())){
+                                                        double totalSalesPerRecord = 0;
+                                                        int totalProducts = 0;
+                                                        if(Objects.equals(salesBySellerFinalDTOCurrent.getModel(), orderItem.getProduct().getModel().getName())){
+                                                            ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                                                            double totalPrice = 0.00;
+                                                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                                            }
+
+                                                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                                            }
+
+                                                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                                            }
+
+                                                            if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
+                                                                totalDeliveredOrderPerRecord += 1;
+                                                            }
+                                                            totalOrdersPerRecord += 1;
+                                                            totalSalesPerRecord += totalPrice;
+                                                            totalProducts += orderItem.getQuantity();
+                                                        }
+                                                        salesBySellerFinalDTOCurrent.setTotalOrders(totalOrdersPerRecord);
+                                                        salesBySellerFinalDTOCurrent.setTotalSales(BigDecimal.valueOf(totalSalesPerRecord).setScale(2,RoundingMode.HALF_EVEN));
+                                                        salesBySellerFinalDTOCurrent.setTotalProducts(totalProducts);
+                                                        salesBySellerFinalDTOCurrent.setAverageTicket(BigDecimal.valueOf(totalProducts/totalOrdersPerRecord));
+                                                        salesBySellerFinalDTOCurrent.setTotalDeliveredOrders(totalDeliveredOrderPerRecord);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    salesBySellerFinalDTOS.add(salesBySellerFinalDTOCurrent);
+                }
+                System.out.println(salesBySellerFinalDTOS);
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                XSSFSheet sheet = workbook.createSheet("ventas_vendedor");
+
+                DataFormat format = workbook.createDataFormat();
+
+                CellStyle headerStyle = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setDataFormat(format.getFormat("@"));
+
+                CellStyle moneyStyle = workbook.createCellStyle();
+                moneyStyle.setDataFormat(format.getFormat("$#,##0.00"));
+
+                Row headerRow = sheet.createRow(0);
+
+                Cell cell = headerRow.createCell(0);
+                cell.setCellValue("VENDEDOR");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(1);
+                cell.setCellValue("DEPARTAMENTO");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(2);
+                cell.setCellValue("PROVINCIA");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(3);
+                cell.setCellValue("DISTRITO");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(4);
+                cell.setCellValue("CANAL CIERRE");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(5);
+                cell.setCellValue("CATEGORIA");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(6);
+                cell.setCellValue("MARCA");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(7);
+                cell.setCellValue("MODEL");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(8);
+                cell.setCellValue("VENTAS TOTALES");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(9);
+                cell.setCellValue("TOTAL PRODUCTOS");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(10);
+                cell.setCellValue("TOTAL PEDIDOS");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(11);
+                cell.setCellValue("TICKET PROMEDIO");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(12);
+                cell.setCellValue("PEDIDOS ENTREGADOS");
+                cell.setCellStyle(headerStyle);
+
+                int currentRow = 1;
+                for(SalesBySellerFinalDTO salesBySellerDTO:salesBySellerFinalDTOS){
+                    Row row = sheet.createRow(currentRow);
+                    row.createCell(0).setCellValue(salesBySellerDTO.getSeller());
+                    row.createCell(1).setCellValue(salesBySellerDTO.getDepartment());
+                    row.createCell(2).setCellValue(salesBySellerDTO.getProvince());
+                    row.createCell(3).setCellValue(salesBySellerDTO.getDistrict());
+                    row.createCell(4).setCellValue(salesBySellerDTO.getClosingChannel());
+                    row.createCell(5).setCellValue(salesBySellerDTO.getCategory());
+                    row.createCell(6).setCellValue(salesBySellerDTO.getBrand());
+                    row.createCell(7).setCellValue(salesBySellerDTO.getModel());
+                    row.createCell(8).setCellValue(salesBySellerDTO.getTotalSales().doubleValue());
+                    row.getCell(8).setCellStyle(moneyStyle);
+                    row.createCell(9).setCellValue(salesBySellerDTO.getTotalProducts());
+                    row.createCell(10).setCellValue(salesBySellerDTO.getTotalOrders());
+                    row.createCell(11).setCellValue(salesBySellerDTO.getAverageTicket().doubleValue());
+                    row.createCell(12).setCellValue(salesBySellerDTO.getTotalDeliveredOrders());
+                    currentRow++;
+                }
+
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                workbook.write(out);
+                workbook.close();
+                return new ByteArrayInputStream(out.toByteArray());
+            }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

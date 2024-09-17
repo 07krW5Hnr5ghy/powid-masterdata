@@ -5,15 +5,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SalesBySellerDTO {
+public class SalesBySellerFinalDTO {
     private String seller;
     private String department;
     private String province;
     private String district;
     private String closingChannel;
-    private Long totalOrders;
+    private String category;
+    private String brand;
+    private String model;
+    private Integer totalProducts;
+    private Integer totalOrders;
+    private BigDecimal averageTicket;
+    private BigDecimal totalSales;
+    private Integer TotalDeliveredOrders;
 }
