@@ -31,6 +31,7 @@ public class StatsImpl implements IStats {
     private final OrderItemRepository orderItemRepository;
     private final ProductPriceRepository productPriceRepository;
     private final IUtil iUtil;
+    private final BrandRepository brandRepository;
     @Override
     public CompletableFuture<StatsCardDTO> listCardStats(
             Date registrationStartDate,
@@ -447,6 +448,7 @@ public class StatsImpl implements IStats {
             List<Ordering> orderingListByDate;
             Date utcRegistrationDateStart;
             Date utcRegistrationDateEnd;
+            List<Brand> brands;
             try{
                 user =  userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
@@ -459,62 +461,89 @@ public class StatsImpl implements IStats {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-               orderingList = orderingRepository.findAllOrdersByDate(
+                brands = brandRepository.findAllByClientIdAndStatusTrue(user.getClientId());
+                orderingList = orderingRepository.findAllOrdersByDate(
                        user.getClientId(),
                        utcRegistrationDateStart,
                        utcRegistrationDateEnd
-               ).stream().map(result -> DailySaleSummaryDTO.builder()
-                       .date((Date) result[0])
-                       .build()
-               ).toList();
-               orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
-                       user.getClientId(),
-                       utcRegistrationDateStart,
-                       utcRegistrationDateEnd
-               );
+                   ).stream().map(result -> DailySaleSummaryDTO.builder()
+                           .date((Date) result[0])
+                           .build()
+                ).toList();
+                orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                           user.getClientId(),
+                           utcRegistrationDateStart,
+                           utcRegistrationDateEnd
+                );
             }
             try{
                 List<SalesBrandDTO> salesBrandDTOS = new ArrayList<>();
-                double totalSalesByBrand = 0.00;
-                for(DailySaleSummaryDTO dailySaleSummaryDTO:orderingList){
-                    SalesBrandDTO salesBrandDTOCurrent = SalesBrandDTO.builder().build();
-                    salesBrandDTOCurrent.setDate(dailySaleSummaryDTO.getDate());
+                for(Brand brand:brands){
+                    for(DailySaleSummaryDTO dailySaleSummaryDTO:orderingList){
+                        SalesBrandDTO salesBrandDTOCurrent = SalesBrandDTO.builder().build();
+                        salesBrandDTOCurrent.setBrand(brand.getName());
+                        salesBrandDTOCurrent.setDate(dailySaleSummaryDTO.getDate());
+                        salesBrandDTOS.add(salesBrandDTOCurrent);
+                    }
+                }
+                for(SalesBrandDTO salesBrandDTO:salesBrandDTOS){
+                    double totalSalesByDateAndBrand = 0.00;
+                    int totalProductsByDateAndBrand = 0;
+                    int totalOrdersByDateAndBrand = 0;
+                    double totalSalesByDateAndBrandDelivered = 0.00;
                     for(Ordering ordering:orderingListByDate){
-                        if(dailySaleSummaryDTO.getDate() == ordering.getRegistrationDate()){
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        String formattedDate = sdf.format(ordering.getRegistrationDate());
+                        if(Objects.equals(salesBrandDTO.getDate().toString(), formattedDate)){
                             List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
                                     user.getClientId(),
                                     ordering.getId()
                             );
-                            double totalOrderSaleByBrand = 0.00;
+                            double orderTotalSales = 0.00;
+                            double orderTotalSalesDelivered = 0.00;
+                            int orderTotalProducts = 0;
+                            boolean brandOrderFlag = false;
                             for(OrderItem orderItem:orderItemList){
+                                if(Objects.equals(orderItem.getProduct().getModel().getBrand().getName(), salesBrandDTO.getBrand())){
+                                    brandOrderFlag = true;
+                                    ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                                    double totalPrice = 0.00;
+                                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                        totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                    }
 
-                                ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
-                                double totalPrice = 0.00;
-                                if(salesBrandDTOCurrent.getBrand() == null){
-                                    salesBrandDTOCurrent.setBrand(orderItem.getProduct().getModel().getBrand().getName());
-                                }
-                                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-                                }
+                                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                        totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                    }
 
-                                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
-                                }
+                                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                        totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                    }
 
-                                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-                                }
-
-                                if(Objects.equals(orderItem.getProduct().getModel().getBrand().getName(), salesBrandDTOCurrent.getBrand())){
-                                    totalOrderSaleByBrand += totalPrice;
+                                    if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
+                                        orderTotalSalesDelivered += totalPrice;
+                                    }
+                                    orderTotalSales+=totalPrice;
+                                    orderTotalProducts += orderItem.getQuantity();
                                 }
                             }
-                            totalSalesByBrand += totalOrderSaleByBrand;
+                            if(brandOrderFlag){
+                                totalOrdersByDateAndBrand++;
+                            }
+                            totalSalesByDateAndBrand += orderTotalSales;
+                            totalProductsByDateAndBrand += orderTotalProducts;
+                            totalSalesByDateAndBrandDelivered += orderTotalSalesDelivered;
                         }
-
                     }
-                    salesBrandDTOCurrent.setTotalSales(BigDecimal.valueOf(totalSalesByBrand).setScale(2,RoundingMode.HALF_EVEN));
-                    salesBrandDTOS.add(salesBrandDTOCurrent);
+                    salesBrandDTO.setTotalSales(BigDecimal.valueOf(totalSalesByDateAndBrand));
+                    salesBrandDTO.setTotalProducts(totalProductsByDateAndBrand);
+                    salesBrandDTO.setTotalOrders(totalOrdersByDateAndBrand);
+                    if(totalProductsByDateAndBrand < 1 || totalOrdersByDateAndBrand < 1){
+                        salesBrandDTO.setAverageTicket(BigDecimal.valueOf(0.00).setScale(2,RoundingMode.HALF_EVEN));
+                    }else{
+                        salesBrandDTO.setAverageTicket(BigDecimal.valueOf(totalProductsByDateAndBrand/totalOrdersByDateAndBrand).setScale(2,RoundingMode.HALF_EVEN));
+                    }
+                    salesBrandDTO.setDeliveredAmount(BigDecimal.valueOf(totalSalesByDateAndBrandDelivered).setScale(2,RoundingMode.HALF_EVEN));
                 }
                 return salesBrandDTOS;
             } catch (RuntimeException e){

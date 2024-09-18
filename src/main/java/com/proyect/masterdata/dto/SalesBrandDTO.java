@@ -17,6 +17,7 @@ public class SalesBrandDTO {
     private Date date;
     private BigDecimal totalSales;
     private Integer totalOrders;
+    private Integer totalProducts;
     private BigDecimal averageTicket;
     private BigDecimal deliveredAmount;
 }
