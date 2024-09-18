@@ -1,9 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
-import com.proyect.masterdata.dto.DailySaleSummaryDTO;
-import com.proyect.masterdata.dto.SellerSalesDTO;
-import com.proyect.masterdata.dto.StatsCardDTO;
+import com.proyect.masterdata.dto.*;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
@@ -437,6 +435,92 @@ public class StatsImpl implements IStats {
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.ErrorUser);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SalesBrandDTO>> listSalesBrand(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            List<DailySaleSummaryDTO> orderingList;
+            List<Ordering> orderingListByDate;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
+            try{
+                user =  userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+               orderingList = orderingRepository.findAllOrdersByDate(
+                       user.getClientId(),
+                       utcRegistrationDateStart,
+                       utcRegistrationDateEnd
+               ).stream().map(result -> DailySaleSummaryDTO.builder()
+                       .date((Date) result[0])
+                       .build()
+               ).toList();
+               orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                       user.getClientId(),
+                       utcRegistrationDateStart,
+                       utcRegistrationDateEnd
+               );
+            }
+            try{
+                List<SalesBrandDTO> salesBrandDTOS = new ArrayList<>();
+                double totalSalesByBrand = 0.00;
+                for(DailySaleSummaryDTO dailySaleSummaryDTO:orderingList){
+                    SalesBrandDTO salesBrandDTOCurrent = SalesBrandDTO.builder().build();
+                    salesBrandDTOCurrent.setDate(dailySaleSummaryDTO.getDate());
+                    for(Ordering ordering:orderingListByDate){
+                        if(dailySaleSummaryDTO.getDate() == ordering.getRegistrationDate()){
+                            List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
+                                    user.getClientId(),
+                                    ordering.getId()
+                            );
+                            double totalOrderSaleByBrand = 0.00;
+                            for(OrderItem orderItem:orderItemList){
+
+                                ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                                double totalPrice = 0.00;
+                                if(salesBrandDTOCurrent.getBrand() == null){
+                                    salesBrandDTOCurrent.setBrand(orderItem.getProduct().getModel().getBrand().getName());
+                                }
+                                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                }
+
+                                if(Objects.equals(orderItem.getProduct().getModel().getBrand().getName(), salesBrandDTOCurrent.getBrand())){
+                                    totalOrderSaleByBrand += totalPrice;
+                                }
+                            }
+                            totalSalesByBrand += totalOrderSaleByBrand;
+                        }
+
+                    }
+                    salesBrandDTOCurrent.setTotalSales(BigDecimal.valueOf(totalSalesByBrand).setScale(2,RoundingMode.HALF_EVEN));
+                    salesBrandDTOS.add(salesBrandDTOCurrent);
+                }
+                return salesBrandDTOS;
+            } catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
     }
