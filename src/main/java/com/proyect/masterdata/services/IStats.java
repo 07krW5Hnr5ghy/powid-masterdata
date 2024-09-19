@@ -1,8 +1,6 @@
 package com.proyect.masterdata.services;
 
-import com.proyect.masterdata.dto.DailySaleSummaryDTO;
-import com.proyect.masterdata.dto.SellerSalesDTO;
-import com.proyect.masterdata.dto.StatsCardDTO;
+import com.proyect.masterdata.dto.*;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
@@ -28,6 +26,11 @@ public interface IStats {
             String user
     ) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<SellerSalesDTO>> listSellerSales(
+            Date registrationStartDate,
+            Date registrationEndDate,
+            String user
+    ) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<SalesBrandDTO>> listSalesBrand(
             Date registrationStartDate,
             Date registrationEndDate,
             String user

@@ -460,7 +460,7 @@ public class ReportImpl implements IReport {
                         user.getClientId(),
                         utcRegistrationDateStart,
                         utcRegistrationDateEnd);
-                salesBySellerDTOS = orderingRepository.findByClientIdAndRegistrationDateBetweenCountReport(
+                salesBySellerDTOS = orderingRepository.findByClientIdAndRegistrationDateBetweenCountSeller(
                         user.getClientId(),
                         utcRegistrationDateStart,
                         utcRegistrationDateEnd
