@@ -1,9 +1,6 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.DailySaleSummaryDTO;
-import com.proyect.masterdata.dto.SalesBrandDTO;
-import com.proyect.masterdata.dto.SellerSalesDTO;
-import com.proyect.masterdata.dto.StatsCardDTO;
+import com.proyect.masterdata.dto.*;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.services.IStats;
@@ -95,6 +92,20 @@ public class StatsController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException{
         CompletableFuture<List<SalesBrandDTO>> result = iStats.listSalesBrand(
+                registrationDateStart,
+                registrationDateEnd,
+                user
+        );
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("status")
+    ResponseEntity<List<SalesStatusDTO>> saleSummaryStatus(
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException{
+        CompletableFuture<List<SalesStatusDTO>> result = iStats.listSalesStatus(
                 registrationDateStart,
                 registrationDateEnd,
                 user
