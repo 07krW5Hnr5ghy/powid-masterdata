@@ -112,4 +112,18 @@ public class StatsController {
         );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("channel")
+    ResponseEntity<List<SalesChannelDTO>> saleSummaryChannel(
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException{
+        CompletableFuture<List<SalesChannelDTO>> result = iStats.listSalesChannel(
+                registrationDateStart,
+                registrationDateEnd,
+                user
+        );
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }
