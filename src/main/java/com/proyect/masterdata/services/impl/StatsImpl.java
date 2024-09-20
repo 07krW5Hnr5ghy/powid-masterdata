@@ -553,4 +553,88 @@ public class StatsImpl implements IStats {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<List<SalesStatusDTO>> listSalesStatus(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            List<SalesStatusDTO> salesStatusDTOS;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
+            List<Ordering> orderingList;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                salesStatusDTOS = orderingRepository.findByClientIdAndStateIdRegistrationDateBetween(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd
+                ).stream().map(result -> SalesStatusDTO.builder()
+                                .status((String) result[0])
+                                .totalOrders((Long) result[1])
+                                .build()
+                        ).toList();
+                orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd
+                );
+            }
+            try{
+                for(SalesStatusDTO salesStatusDTO:salesStatusDTOS){
+                    double totalSalesByStatus = 0.00;
+                    int totalProductsByStatus = 0;
+                    for(Ordering ordering:orderingList){
+                        if(Objects.equals(salesStatusDTO.getStatus(), ordering.getOrderState().getName())){
+                            List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
+                                    user.getClientId(),
+                                    ordering.getId()
+                            );
+                            double orderTotalSales = 0.00;
+                            int orderTotalProducts = 0;
+                            for(OrderItem orderItem:orderItemList){
+                                ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                                double totalPrice = 0.00;
+                                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                }
+
+                                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                }
+                                orderTotalSales+=totalPrice;
+                                orderTotalProducts += orderItem.getQuantity();
+                            }
+                            totalSalesByStatus += orderTotalSales;
+                            totalProductsByStatus += orderTotalProducts;
+                        }
+                    }
+                    salesStatusDTO.setTotalSales(BigDecimal.valueOf(totalSalesByStatus).setScale(2,RoundingMode.HALF_EVEN));
+                    salesStatusDTO.setTotalProducts(totalProductsByStatus);
+                    if(totalProductsByStatus < 1 || salesStatusDTO.getTotalOrders() < 1){
+                        salesStatusDTO.setAverageTicket(BigDecimal.valueOf(0.00).setScale(2,RoundingMode.HALF_EVEN));
+                    }else{
+                        salesStatusDTO.setAverageTicket(BigDecimal.valueOf(totalProductsByStatus/salesStatusDTO.getTotalOrders()).setScale(2,RoundingMode.HALF_EVEN));
+                    }
+                }
+                return salesStatusDTOS;
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 }
