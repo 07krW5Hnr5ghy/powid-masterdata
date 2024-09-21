@@ -45,4 +45,9 @@ public interface IStats {
             Date registrationEndDate,
             String user
     ) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<SalesCategoryDTO>> listCategories(
+            Date registrationStartDate,
+            Date registrationEndDate,
+            String user
+    ) throws BadRequestExceptions,InternalErrorExceptions;
 }

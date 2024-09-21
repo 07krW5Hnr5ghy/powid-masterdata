@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,8 @@ public class StatsImpl implements IStats {
     private final ProductPriceRepository productPriceRepository;
     private final IUtil iUtil;
     private final BrandRepository brandRepository;
+    private final CategoryProductRepository categoryProductRepository;
+    private final SaleChannelRepository saleChannelRepository;
     @Override
     public CompletableFuture<StatsCardDTO> listCardStats(
             Date registrationStartDate,
@@ -714,6 +717,106 @@ public class StatsImpl implements IStats {
                     }
                 }
                 return salesChannelDTOS;
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<SalesCategoryDTO>> listCategories(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            List<Ordering> orderingList;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
+            List<CategoryProduct> categoryProducts;
+            List<SaleChannel> saleChannels;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                categoryProducts = categoryProductRepository.findAll();
+                saleChannels = saleChannelRepository.findAll();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd
+                );
+            }
+            try {
+                List<SalesCategoryDTO> salesCategoryDTOS = new ArrayList<>();
+                for(CategoryProduct categoryProduct:categoryProducts){
+                    for(SaleChannel saleChannel:saleChannels){
+                        SalesCategoryDTO salesCategoryDTOCurrent = SalesCategoryDTO.builder().build();
+                        salesCategoryDTOCurrent.setCategory(categoryProduct.getName());
+                        salesCategoryDTOCurrent.setSaleChannel(saleChannel.getName());
+                        salesCategoryDTOS.add(salesCategoryDTOCurrent);
+                    }
+                }
+                for(SalesCategoryDTO salesCategoryDTO:salesCategoryDTOS){
+                    double totalSalesByCategory = 0.00;
+                    int totalProductsByCategory = 0;
+                    int totalOrdersByCategory = 0;
+                    for(Ordering ordering:orderingList){
+                        List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
+                                user.getClientId(),
+                                ordering.getId()
+                        );
+                        double orderTotalSales = 0.00;
+                        int orderTotalProducts = 0;
+                        boolean orderFlag = false;
+                        if(Objects.equals(salesCategoryDTO.getSaleChannel(), ordering.getSaleChannel().getName())){
+                            for(OrderItem orderItem:orderItemList){
+                                if(Objects.equals(salesCategoryDTO.getCategory(), orderItem.getProduct().getCategoryProduct().getName())){
+                                    orderFlag = true;
+                                    ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                                    double totalPrice = 0.00;
+                                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                        totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                    }
+
+                                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                        totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                    }
+
+                                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                        totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                    }
+
+                                    orderTotalSales+=totalPrice;
+                                    orderTotalProducts += orderItem.getQuantity();
+                                }
+                            }
+                            if(orderFlag){
+                                totalOrdersByCategory++;
+                            }
+                            totalSalesByCategory += orderTotalSales;
+                            totalProductsByCategory += orderTotalProducts;
+                        }
+
+                    }
+                    salesCategoryDTO.setTotalSales(BigDecimal.valueOf(totalSalesByCategory).setScale(2,RoundingMode.HALF_EVEN));
+                    salesCategoryDTO.setTotalProducts(totalProductsByCategory);
+                    salesCategoryDTO.setTotalOrders(totalOrdersByCategory);
+                    if(totalProductsByCategory < 1 || salesCategoryDTO.getTotalOrders() < 1){
+                        salesCategoryDTO.setAverageTicket(BigDecimal.valueOf(0.00).setScale(2,RoundingMode.HALF_EVEN));
+                    }else{
+                        salesCategoryDTO.setAverageTicket(BigDecimal.valueOf(totalProductsByCategory/totalOrdersByCategory).setScale(2,RoundingMode.HALF_EVEN));
+                    }
+                }
+                return salesCategoryDTOS.stream()
+                        .filter(data -> data.getTotalSales().compareTo(BigDecimal.ZERO) > 0.00)
+                        .toList();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
