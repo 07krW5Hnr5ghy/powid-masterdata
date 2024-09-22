@@ -13,10 +13,10 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class SalesByBrandDTO {
+    private String seller;
     private String brand;
-    private Date date;
     private BigDecimal totalSales;
     private Integer totalOrders;
     private BigDecimal averageTicket;
-    private BigDecimal deliveredAmount;
+    private Integer totalProducts;
 }
