@@ -73,7 +73,7 @@ public class ReportController {
             @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ByteArrayInputStream> result = iReport.SalesBySellerSummary(
+        CompletableFuture<ByteArrayInputStream> result = iReport.salesBySellerSummary(
                 registrationDateStart,
                 registrationDateEnd,
                 user
@@ -92,13 +92,32 @@ public class ReportController {
             @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ByteArrayInputStream> result = iReport.SalesByBrandSummary(
+        CompletableFuture<ByteArrayInputStream> result = iReport.salesByBrandSummary(
                 registrationDateStart,
                 registrationDateEnd,
                 user
         );
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=venta_marca.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(result.get().readAllBytes());
+    }
+
+    @GetMapping("brand/daily")
+    private ResponseEntity<byte[]> salesBrandDaily(
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ByteArrayInputStream> result = iReport.dailySalesByBrandSummary(
+                registrationDateStart,
+                registrationDateEnd,
+                user
+        );
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=venta_marca_diario.xlsx");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
