@@ -386,6 +386,7 @@ public class ReportImpl implements IReport {
                 int currentRow = 1;
                 double totalSales = 0.00;
                 double totalDeliveredSales = 0.00;
+                double totalDeliveredOrders = 0;
                 int totalOrders = 0;
                 for(DailySaleSummaryDTO dailySaleSummaryDTO:dailySaleSummaryDTOS){
                     Row row = sheet.createRow(currentRow);
@@ -408,8 +409,9 @@ public class ReportImpl implements IReport {
                                                     dailySaleSummaryDTO.getTotalSalePerDay().doubleValue())
                             );
                             row.getCell(5).setCellStyle(percentageStyle);
+                            totalDeliveredOrders+=dailySaleSummaryDeliveredDTO.getTotalOrders();
                         }else{
-                            row.createCell(3).setCellValue(dailySaleSummaryDeliveredDTO.getTotalOrders());
+                            row.createCell(3).setCellValue(0);
                             row.createCell(4).setCellValue(0.00);
                             row.getCell(4).setCellStyle(moneyStyle);
                             row.createCell(5).setCellValue(0.00);
@@ -422,10 +424,11 @@ public class ReportImpl implements IReport {
                 finalRow.createCell(1).setCellValue(totalSales);
                 finalRow.getCell(1).setCellStyle(moneyStyle);
                 finalRow.createCell(2).setCellValue(totalOrders);
-                finalRow.createCell(3).setCellValue(totalDeliveredSales);
-                finalRow.getCell(3).setCellStyle(moneyStyle);
-                finalRow.createCell(4).setCellValue(totalDeliveredSales/totalSales);
-                finalRow.getCell(4).setCellStyle(percentageStyle);
+                finalRow.createCell(3).setCellValue(totalDeliveredOrders);
+                finalRow.createCell(4).setCellValue(totalDeliveredSales);
+                finalRow.getCell(4).setCellStyle(moneyStyle);
+                finalRow.createCell(5).setCellValue(totalDeliveredSales/totalSales);
+                finalRow.getCell(5).setCellStyle(percentageStyle);
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 workbook.write(out);
                 workbook.close();
@@ -439,7 +442,7 @@ public class ReportImpl implements IReport {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> SalesBySellerSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ByteArrayInputStream> salesBySellerSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<SalesBySellerDTO> salesBySellerDTOS;
@@ -654,7 +657,7 @@ public class ReportImpl implements IReport {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> SalesByBrandSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ByteArrayInputStream> salesByBrandSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Date utcRegistrationDateStart;
@@ -784,7 +787,173 @@ public class ReportImpl implements IReport {
                     row.createCell(3).setCellValue(salesByBrandDTO.getTotalOrders());
                     row.createCell(4).setCellValue(salesByBrandDTO.getTotalProducts());
                     row.createCell(5).setCellValue(salesByBrandDTO.getAverageTicket().doubleValue());
-                    row.getCell(5).setCellStyle(moneyStyle);
+                    currentRow++;
+                }
+
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                workbook.write(out);
+                workbook.close();
+                return new ByteArrayInputStream(out.toByteArray());
+            }catch (RuntimeException | IOException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ByteArrayInputStream> dailySalesByBrandSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Date utcRegistrationDateStart;
+            Date utcRegistrationDateEnd;
+            List<Ordering> orderingList;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
+                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            try {
+                List<SalesByBrandDailyDTO> salesByBrandDailyDTOS = new ArrayList<>();
+                List<DailySaleSummaryDTO> orderDates = orderingRepository.findAllOrdersByDate(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd).stream().map(result -> DailySaleSummaryDTO.builder()
+                        .date((Date) result[0])
+                        .orderState("TODOS")
+                        .totalOrders(((Long) result[1]).intValue())
+                        .build()
+                ).toList();
+                orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
+                        user.getClientId(),
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd);
+                List<User> userList = userRepository.findAllByClientId(user.getClientId());
+                List<Brand> brandList = brandRepository.findAllByClientId(user.getClientId());
+                for(User userData:userList){
+                    for(Brand brand:brandList){
+                        for(DailySaleSummaryDTO dailySaleSummaryDTO:orderDates){
+                            SalesByBrandDailyDTO salesByBrandDailyDTO = SalesByBrandDailyDTO.builder().build();
+                            salesByBrandDailyDTO.setBrand(brand.getName());
+                            salesByBrandDailyDTO.setSeller(userData.getName() + " " + userData.getSurname());
+                            salesByBrandDailyDTO.setDate(dailySaleSummaryDTO.getDate());
+                            salesByBrandDailyDTOS.add(salesByBrandDailyDTO);
+                        }
+                    }
+                }
+                for(SalesByBrandDailyDTO salesByBrandDailyDTO:salesByBrandDailyDTOS){
+                    double totalSalesByBrandAndSeller = 0.00;
+                    int totalOrdersByBrandAndSeller = 0;
+                    int totalProductsByBrandAndSeller = 0;
+                    for(Ordering ordering:orderingList){
+                        double orderSalesByBrandAndSeller = 0.00;
+                        int orderProductsByBrandAndSeller = 0;
+                        boolean orderFlag = false;
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        String formattedDate = sdf.format(ordering.getRegistrationDate());
+                        if(Objects.equals(salesByBrandDailyDTO.getDate().toString(), formattedDate)){
+                            if(Objects.equals(ordering.getSeller(), salesByBrandDailyDTO.getSeller())){
+                                List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
+                                        user.getClientId(),
+                                        ordering.getId());
+                                for(OrderItem orderItem:orderItemList){
+                                    if(Objects.equals(orderItem.getProduct().getModel().getBrand().getName(), salesByBrandDailyDTO.getBrand())){
+                                        ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                                        double totalPrice = 0.00;
+                                        if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+                                            totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                        }
+
+                                        if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                            totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                        }
+
+                                        if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                            totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                        }
+                                        orderFlag = true;
+                                        orderProductsByBrandAndSeller+=orderItem.getQuantity();
+                                        orderSalesByBrandAndSeller+=totalPrice;
+                                    }
+                                }
+                            }
+                        }
+                        if(orderFlag){
+                            totalOrdersByBrandAndSeller++;
+                        }
+                        totalSalesByBrandAndSeller += orderSalesByBrandAndSeller;
+                        totalProductsByBrandAndSeller += orderProductsByBrandAndSeller;
+                    }
+                    salesByBrandDailyDTO.setTotalSales(BigDecimal.valueOf(totalSalesByBrandAndSeller).setScale(2,RoundingMode.HALF_EVEN));
+                    salesByBrandDailyDTO.setTotalOrders(totalOrdersByBrandAndSeller);
+                    salesByBrandDailyDTO.setTotalProducts(totalProductsByBrandAndSeller);
+                    if(salesByBrandDailyDTO.getTotalSales().compareTo(BigDecimal.ZERO) > 0.00 && salesByBrandDailyDTO.getTotalProducts() > 0){
+                        salesByBrandDailyDTO.setAverageTicket(BigDecimal.valueOf(totalProductsByBrandAndSeller/totalOrdersByBrandAndSeller).setScale(2,RoundingMode.HALF_EVEN));
+                    }else{
+                        salesByBrandDailyDTO.setAverageTicket(BigDecimal.valueOf(0.00));
+                    }
+                }
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                XSSFSheet sheet = workbook.createSheet("ventas_marca");
+
+                DataFormat format = workbook.createDataFormat();
+
+                CellStyle headerStyle = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setDataFormat(format.getFormat("@"));
+
+                CellStyle moneyStyle = workbook.createCellStyle();
+                moneyStyle.setDataFormat(format.getFormat("$#,##0.00"));
+
+                Row headerRow = sheet.createRow(0);
+
+                Cell cell = headerRow.createCell(0);
+                cell.setCellValue("FECHA");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(1);
+                cell.setCellValue("VENDEDOR");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(2);
+                cell.setCellValue("MARCA");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(3);
+                cell.setCellValue("VENTA TOTAL");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(4);
+                cell.setCellValue("CANT PEDIDOS");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(5);
+                cell.setCellValue("CANT PRODUCTOS");
+                cell.setCellStyle(headerStyle);
+
+                cell = headerRow.createCell(6);
+                cell.setCellValue("TICKET PROMEDIO");
+                cell.setCellStyle(headerStyle);
+
+                int currentRow = 1;
+                for(SalesByBrandDailyDTO salesByBrandDailyDTO:salesByBrandDailyDTOS){
+                    Row row = sheet.createRow(currentRow);
+                    row.createCell(0).setCellValue(salesByBrandDailyDTO.getDate());
+                    row.createCell(1).setCellValue(salesByBrandDailyDTO.getSeller());
+                    row.createCell(2).setCellValue(salesByBrandDailyDTO.getBrand());
+                    row.createCell(3).setCellValue(salesByBrandDailyDTO.getTotalSales().doubleValue());
+                    row.getCell(3).setCellStyle(moneyStyle);
+                    row.createCell(4).setCellValue(salesByBrandDailyDTO.getTotalOrders());
+                    row.createCell(5).setCellValue(salesByBrandDailyDTO.getTotalProducts());
+                    row.createCell(6).setCellValue(salesByBrandDailyDTO.getAverageTicket().doubleValue());
                     currentRow++;
                 }
 
