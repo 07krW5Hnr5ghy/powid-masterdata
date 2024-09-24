@@ -142,4 +142,23 @@ public class ReportController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(result.get().readAllBytes());
     }
+
+    @GetMapping("category")
+    private ResponseEntity<byte[]> salesCategory(
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ByteArrayInputStream> result = iReport.salesByCategory(
+                registrationDateStart,
+                registrationDateEnd,
+                user
+        );
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=venta_categoria.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(result.get().readAllBytes());
+    }
 }
