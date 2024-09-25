@@ -551,7 +551,7 @@ public class OrderingImpl implements IOrdering {
             List<OrderDTO> orderDTOS = pageOrdering.getContent().stream().map(order -> {
                 List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
                 List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
-                List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
+                List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
 
                 double saleAmount = 0.00;
                 for(OrderItem orderItem : orderItems){
