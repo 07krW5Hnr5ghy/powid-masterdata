@@ -10,6 +10,7 @@ import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,9 @@ public class StatsImpl implements IStats {
     private final CategoryProductRepository categoryProductRepository;
     private final SaleChannelRepository saleChannelRepository;
     private final StatsRepository statsRepository;
+
+    @Autowired
+    private final Executor asyncExecutor;
     @Override
     public CompletableFuture<StatsCardDTO> listCardStats(
             Date registrationStartDate,
@@ -826,6 +831,6 @@ public class StatsImpl implements IStats {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-        });
+        },asyncExecutor);
     }
 }
