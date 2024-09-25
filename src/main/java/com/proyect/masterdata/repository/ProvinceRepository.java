@@ -13,4 +13,5 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
     Province findByNameAndStatusTrue(String name);
     Province findByNameAndStatusFalse(String name);
     List<Province> findAllByDepartmentIdAndStatusTrue(Long departmentId);
+    List<Province> findAllByDepartmentId(Long departmentId);
 }
