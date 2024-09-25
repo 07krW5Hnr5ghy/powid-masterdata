@@ -1,5 +1,8 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.OrderItem;
+import com.proyect.masterdata.domain.ProductPrice;
+import com.proyect.masterdata.repository.ProductPriceRepository;
 import com.proyect.masterdata.services.IUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -9,12 +12,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.TimeZone;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class UtilImpl implements IUtil {
+
+    private final ProductPriceRepository productPriceRepository;
 
     @Override
     public Date setToUTCStartOfDay(Date date) {
@@ -26,5 +32,19 @@ public class UtilImpl implements IUtil {
         calendar.set(Calendar.MILLISECOND, 0);
         calendar.add(Calendar.DAY_OF_MONTH, 1);
         return calendar.getTime();
+    }
+
+    @Override
+    public double calculateTotalPrice(OrderItem orderItem) {
+        ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+        double totalPrice = productPrice.getUnitSalePrice() * orderItem.getQuantity();
+
+        if (Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+            totalPrice -= totalPrice * (orderItem.getDiscountAmount() / 100);
+        } else if (Objects.equals(orderItem.getDiscount().getName(), "MONTO")) {
+            totalPrice -= orderItem.getDiscountAmount();
+        }
+
+        return totalPrice;
     }
 }
