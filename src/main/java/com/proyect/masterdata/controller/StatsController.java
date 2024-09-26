@@ -6,6 +6,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.services.IStats;
 import com.proyect.masterdata.services.IUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -128,15 +129,19 @@ public class StatsController {
     }
 
     @GetMapping("category")
-    ResponseEntity<List<SalesCategoryDTO>> saleSummaryCategory(
+    ResponseEntity<Page<SalesCategoryDTO>> saleSummaryCategory(
             @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
             @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
-            @RequestParam("user") String user
+            @RequestParam("user") String user,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException{
-        CompletableFuture<List<SalesCategoryDTO>> result = iStats.listCategories(
+        CompletableFuture<Page<SalesCategoryDTO>> result = iStats.listCategories(
                 registrationDateStart,
                 registrationDateEnd,
-                user
+                user,
+                page,
+                size
         );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
