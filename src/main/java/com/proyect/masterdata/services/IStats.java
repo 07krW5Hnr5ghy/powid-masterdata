@@ -3,6 +3,7 @@ package com.proyect.masterdata.services;
 import com.proyect.masterdata.dto.*;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import org.springframework.data.domain.Page;
 
 import java.util.Date;
 import java.util.List;
@@ -45,9 +46,11 @@ public interface IStats {
             Date registrationEndDate,
             String user
     ) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<List<SalesCategoryDTO>> listCategories(
+    CompletableFuture<Page<SalesCategoryDTO>> listCategories(
             Date registrationStartDate,
             Date registrationEndDate,
-            String user
+            String user,
+            Integer page,
+            Integer size
     ) throws BadRequestExceptions,InternalErrorExceptions;
 }
