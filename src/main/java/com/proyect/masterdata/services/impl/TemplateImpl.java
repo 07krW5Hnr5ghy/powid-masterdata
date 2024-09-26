@@ -113,38 +113,43 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
-                cell.setCellValue("COLOR");
+                cell.setCellValue("PRODUCTO SKU");
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(2);
-                cell.setCellValue("TIPO TALLA");
+                cell.setCellValue("COLOR");
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(3);
-                cell.setCellValue("TALLA");
+                cell.setCellValue("TIPO TALLA");
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(4);
-                cell.setCellValue("SKU INVENTARIO");
+                cell.setCellValue("TALLA");
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(5);
+                cell.setCellValue("SKU INVENTARIO");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(6);
                 cell.setCellValue("CANTIDAD");
                 cell.setCellStyle(headerStyle);
 
-                cell = headerRow.createCell(6);
+                cell = headerRow.createCell(7);
                 cell.setCellValue("OBSERVACIONES");
                 cell.setCellStyle(headerStyle);
                 int currentRow = 2;
                 for(SupplierProduct supplierProduct:supplierProductList){
                     Row row = sheet.createRow(currentRow);;
                     row.createCell(0).setCellValue(supplierProduct.getProduct().getModel().getName());
-                    row.createCell(1).setCellValue(supplierProduct.getProduct().getColor().getName());
-                    row.createCell(2).setCellValue(supplierProduct.getProduct().getSize().getSizeType().getName());
-                    row.createCell(3).setCellValue(supplierProduct.getProduct().getSize().getName());
-                    row.createCell(4).setCellValue(supplierProduct.getSerial());
-                    row.createCell(5).setCellValue(0);
-                    row.createCell(6).setCellValue("NO APLICA");
+                    row.createCell(1).setCellValue(supplierProduct.getProduct().getSku());
+                    row.createCell(2).setCellValue(supplierProduct.getProduct().getColor().getName());
+                    row.createCell(3).setCellValue(supplierProduct.getProduct().getSize().getSizeType().getName());
+                    row.createCell(4).setCellValue(supplierProduct.getProduct().getSize().getName());
+                    row.createCell(5).setCellValue(supplierProduct.getSerial());
+                    row.createCell(6).setCellValue(0);
+                    row.createCell(7).setCellValue("NO APLICA");
                     currentRow++;
                 }
 
