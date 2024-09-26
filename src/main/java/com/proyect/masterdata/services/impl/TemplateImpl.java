@@ -113,7 +113,7 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
-                cell.setCellValue("MODELO");
+                cell.setCellValue("PRODUCTO SKU");
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(2);
