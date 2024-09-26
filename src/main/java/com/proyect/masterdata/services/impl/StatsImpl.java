@@ -11,6 +11,9 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -648,7 +651,10 @@ public class StatsImpl implements IStats {
     }
 
     @Override
-    public CompletableFuture<List<SalesChannelDTO>> listSalesChannel(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<SalesChannelDTO>> listSalesChannel(
+            Date registrationStartDate,
+            Date registrationEndDate,
+            String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Date utcRegistrationDateStart;
@@ -732,7 +738,13 @@ public class StatsImpl implements IStats {
     }
 
     @Override
-    public CompletableFuture<List<SalesCategoryDTO>> listCategories(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<SalesCategoryDTO>> listCategories(
+            Date registrationStartDate,
+            Date registrationEndDate,
+            String username,
+            Integer page,
+            Integer size
+    ) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<Ordering> orderingList;
@@ -823,9 +835,21 @@ public class StatsImpl implements IStats {
                 }
 
                 // Filter out DTOs with zero sales
-                return salesCategoryDTOS.stream()
+                List<SalesCategoryDTO> filteredSalesCategoryDTOS = salesCategoryDTOS.stream()
                         .filter(data -> data.getTotalSales().compareTo(BigDecimal.ZERO) > 0)
                         .toList();
+
+                // Implement pagination logic here
+                int start = Math.min(page * size, filteredSalesCategoryDTOS.size());
+                int end = Math.min((page + 1) * size, filteredSalesCategoryDTOS.size());
+
+                Page<SalesCategoryDTO> pagedResult = new PageImpl<>(
+                        filteredSalesCategoryDTOS.subList(start, end),
+                        PageRequest.of(page, size),
+                        filteredSalesCategoryDTOS.size()
+                );
+
+                return pagedResult;
 
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
