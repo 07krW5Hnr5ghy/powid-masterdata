@@ -565,8 +565,6 @@ public class ExcelImpl implements IExcel {
                 }
                 StockReturn newStockReturn = stockReturnRepository.save(StockReturn.builder()
                         .serial(requestStockReturnExcel.getSerial().toUpperCase())
-                                .purchase(purchase)
-                                .purchaseId(purchase.getId())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
                         .client(user.getClient())
@@ -590,8 +588,6 @@ public class ExcelImpl implements IExcel {
                             requestStockTransactionItem.setSupplierProductSerial(supplierProduct.getSerial());
                             stockReturnItem.setSupplierProduct(supplierProduct);
                             stockReturnItem.setSupplierProductId(supplierProduct.getId());
-                            stockReturnItem.setPurchaseItem(purchaseItem);
-                            stockReturnItem.setPurchaseItemId(purchaseItem.getId());
                         }
                         if(j>=1 && (cell.getCellType() == NUMERIC) && (ji==0)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
@@ -599,8 +595,6 @@ public class ExcelImpl implements IExcel {
                             requestStockTransactionItem.setSupplierProductSerial(supplierProduct.getSerial());
                             stockReturnItem.setSupplierProduct(supplierProduct);
                             stockReturnItem.setSupplierProductId(supplierProduct.getId());
-                            stockReturnItem.setPurchaseItem(purchaseItem);
-                            stockReturnItem.setPurchaseItemId(purchaseItem.getId());
                         }
                         if(j>=1&&(cell.getCellType()==NUMERIC)&&(ji==1)){
                             stockReturnItem.setQuantity((int) cell.getNumericCellValue());
@@ -615,8 +609,6 @@ public class ExcelImpl implements IExcel {
                             stockReturnItem.getQuantity() != null &&
                                     stockReturnItem.getSupplierProduct() != null &&
                             stockReturnItem.getObservations() != null)){
-                        stockReturnItem.setPurchase(purchase);
-                        stockReturnItem.setPurchaseId(purchase.getId());
                         stockReturnItem.setStockReturn(newStockReturn);
                         stockReturnItem.setStockReturnId(newStockReturn.getId());
                         stockReturnItem.setStatus(true);

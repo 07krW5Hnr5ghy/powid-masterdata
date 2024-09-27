@@ -15,6 +15,7 @@ public class RequestStockReturn {
     private String serial;
     private String purchaseSerial;
     private String warehouse;
+    private String supplier;
     private List<RequestStockReturnItem> requestStockReturnItemList;
     private String tokenUser;
 }

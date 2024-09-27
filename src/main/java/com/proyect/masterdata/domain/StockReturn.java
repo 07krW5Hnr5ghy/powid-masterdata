@@ -34,21 +34,28 @@ public class StockReturn {
     @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "purchase_id")
-    private Long purchaseId;
-
     @Column(name = "client_id")
     private Long clientId;
+
+    @Column(name = "supplier_id")
+    private Long supplierId;
+
+    @Column(name = "warehouse_id")
+    private Long warehouseId;
 
     @Column(name = "token_user")
     private String tokenUser;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id",columnDefinition = "purchaseId",insertable = false,updatable = false)
-    private Purchase purchase;
-
-    @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id", columnDefinition = "supplierId", insertable = false, updatable = false)
+    private Supplier supplier;
+
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id", columnDefinition = "warehouseId", insertable = false, updatable = false)
+    private Warehouse warehouse;
 
 }

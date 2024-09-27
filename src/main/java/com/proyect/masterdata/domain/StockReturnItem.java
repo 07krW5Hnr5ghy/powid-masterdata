@@ -31,17 +31,11 @@ public class StockReturnItem {
     @Column(name = "supplier_product_id")
     private Long supplierProductId;
 
-    @Column(name = "purchase_id")
-    private Long purchaseId;
-
     @Column(name = "registration_date")
     private Date registrationDate;
 
     @Column(name = "client_id")
     private Long clientId;
-
-    @Column(name = "purchase_item_id")
-    private Long purchaseItemId;
 
     @Column(name = "status")
     private Boolean status;
@@ -59,14 +53,6 @@ public class StockReturnItem {
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
-
-    @ManyToOne
-    @JoinColumn(name = "purchase_id",columnDefinition = "purchaseId",insertable = false,updatable = false)
-    private Purchase purchase;
-
-    @ManyToOne
-    @JoinColumn(name = "purchase_item_id",columnDefinition = "purchaseItemId",insertable = false,updatable = false)
-    private PurchaseItem purchaseItem;
 
     @ManyToOne
     @JoinColumn(name = "stock_return_id", columnDefinition = "stockReturnId", insertable = false, updatable = false)
