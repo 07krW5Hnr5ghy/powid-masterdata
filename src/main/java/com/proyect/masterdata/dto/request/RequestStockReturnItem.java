@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RequestStockReturnItem {
-    private String supplierProductSerial;
+    private String supplierProduct;
     private Integer quantity;
     private String observations;
 }

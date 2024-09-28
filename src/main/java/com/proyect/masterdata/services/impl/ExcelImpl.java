@@ -501,7 +501,7 @@ public class ExcelImpl implements IExcel {
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
-                            requestStockReturnItem.setSupplierProductSerial(supplierProduct.getSerial());
+                            requestStockReturnItem.setSupplierProduct(supplierProduct.getSerial());
                             purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
                             if(purchaseItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
@@ -512,7 +512,7 @@ public class ExcelImpl implements IExcel {
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
-                            requestStockReturnItem.setSupplierProductSerial(supplierProduct.getSerial());
+                            requestStockReturnItem.setSupplierProduct(supplierProduct.getSerial());
                             purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
                             if(purchaseItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
@@ -539,13 +539,13 @@ public class ExcelImpl implements IExcel {
                     if(i>=1 && (
                             requestStockReturnItem.getQuantity() != null &&
                                     requestStockReturnItem.getObservations() != null &&
-                                    requestStockReturnItem.getSupplierProductSerial() != null)){
+                                    requestStockReturnItem.getSupplierProduct() != null)){
                         requestStockReturnItemList.add(requestStockReturnItem);
                     }
                     if(i>=1 && (
                             requestStockReturnItem.getQuantity() == null &&
                                     requestStockReturnItem.getObservations() == null &&
-                                    requestStockReturnItem.getSupplierProductSerial() == null)){
+                                    requestStockReturnItem.getSupplierProduct() == null)){
                         break;
                     }
                     i++;
@@ -556,7 +556,7 @@ public class ExcelImpl implements IExcel {
                 Set<String> skus = new HashSet<>();
                 boolean hasDuplicate = false;
                 for(RequestStockReturnItem requestStockReturnItem : requestStockReturnItemList){
-                    if(!skus.add(requestStockReturnItem.getSupplierProductSerial())){
+                    if(!skus.add(requestStockReturnItem.getSupplierProduct())){
                         hasDuplicate = true;
                     }
                     if(hasDuplicate){

@@ -34,15 +34,15 @@ public class StockReturnItemImpl implements IStockReturnItem {
     private final PurchaseRepository purchaseRepository;
     private final IAudit iAudit;
     @Override
-    public StockReturnItem save(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
+    public StockReturnItem save(StockReturn stockReturn, SupplierProduct supplierProduct, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
 
         try{
-            iAudit.save("ADD_STOCK_RETURN_ITEM","PRODUCTO DE INVENTARIO "+requestStockReturnItem.getSupplierProductSerial().toUpperCase()+" AGREGADO A DEVOLUCION DE STOCK "+stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
+            iAudit.save("ADD_STOCK_RETURN_ITEM","PRODUCTO DE INVENTARIO "+requestStockReturnItem.getSupplierProduct().toUpperCase()+" AGREGADO A DEVOLUCION DE STOCK "+stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
             return stockReturnItemRepository.save(StockReturnItem.builder()
                             .tokenUser(user.getUsername())
                             .quantity(requestStockReturnItem.getQuantity())
-                            .supplierProduct(purchaseItem.getSupplierProduct())
-                            .supplierProductId(purchaseItem.getSupplierProductId())
+                            .supplierProduct(supplierProduct)
+                            .supplierProductId(supplierProduct.getId())
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .stockReturn(stockReturn)
@@ -58,15 +58,15 @@ public class StockReturnItemImpl implements IStockReturnItem {
     }
 
     @Override
-    public CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn, PurchaseItem purchaseItem, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn,SupplierProduct supplierProduct, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             try{
-                iAudit.save("ADD_STOCK_RETURN_ITEM","PRODUCTO DE INVENTARIO "+requestStockReturnItem.getSupplierProductSerial().toUpperCase()+" AGREGADO A DEVOLUCION DE STOCK "+stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
+                iAudit.save("ADD_STOCK_RETURN_ITEM","PRODUCTO DE INVENTARIO "+requestStockReturnItem.getSupplierProduct().toUpperCase()+" AGREGADO A DEVOLUCION DE STOCK "+stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
                 return stockReturnItemRepository.save(StockReturnItem.builder()
                         .tokenUser(user.getUsername())
                         .quantity(requestStockReturnItem.getQuantity())
-                        .supplierProduct(purchaseItem.getSupplierProduct())
-                        .supplierProductId(purchaseItem.getSupplierProductId())
+                        .supplierProduct(supplierProduct)
+                        .supplierProductId(supplierProduct.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .stockReturn(stockReturn)
@@ -86,7 +86,6 @@ public class StockReturnItemImpl implements IStockReturnItem {
     public CompletableFuture<Page<StockReturnItemDTO>> list(
             String user,
             List<String> stockReturns,
-            List<String> purchases,
             List<String> suppliers,
             List<String> supplierProducts,
             String sort,
@@ -107,14 +106,6 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 ).stream().map(StockReturn::getId).toList();
             }else {
                 stockReturnIds = new ArrayList<>();
-            }
-
-            if(purchases != null && !purchases.isEmpty()){
-                purchaseIds = purchaseRepository.findBySerialIn(
-                        purchases.stream().map(String::toUpperCase).toList()
-                ).stream().map(com.proyect.masterdata.domain.Purchase::getId).toList();
-            }else {
-                purchaseIds = new ArrayList<>();
             }
 
             if(suppliers != null && !suppliers.isEmpty()){
@@ -138,7 +129,6 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 pageStockReturn = stockReturnItemRepositoryCustom.searchForStockReturnItem(
                         clientId,
                         stockReturnIds,
-                        purchaseIds,
                         supplierIds,
                         supplierProductIds,
                         sort,

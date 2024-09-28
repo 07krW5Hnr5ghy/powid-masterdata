@@ -11,7 +11,6 @@ public interface StockReturnItemRepositoryCustom {
     Page<StockReturnItem> searchForStockReturnItem(
             Long clientId,
             List<Long> stockReturnIds,
-            List<Long> purchaseIds,
             List<Long> supplierIds,
             List<Long> supplierProductIds,
             String sort,
