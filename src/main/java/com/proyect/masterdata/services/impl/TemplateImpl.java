@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -247,33 +248,27 @@ public class TemplateImpl implements ITemplate {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> stockReturn(Integer quantity, String purchaseSerial, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> stockReturn(String warehouseName, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Purchase purchase;
-            PurchaseType purchaseType;
-            List<PurchaseItem> purchaseItemList;
+            Warehouse warehouse;
+            List<WarehouseStock> warehouseStockList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                purchaseType = purchaseTypeRepository.findByNameAndStatusTrue("EMBARQUE");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
-            }
-            if(purchaseType==null){
-                throw new BadRequestExceptions(Constants.ErrorPurchaseType);
             }else{
-                purchase = purchaseRepository.findBySerialAndPurchaseTypeId(purchaseSerial.toUpperCase(), purchaseType.getId());
+                warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(), warehouseName.toUpperCase());
             }
-            if(purchase ==null){
-                throw new BadRequestExceptions(Constants.ErrorPurchase);
+            if(warehouse==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouse);
             }else{
-                purchaseItemList = purchaseItemRepository.findAllByClientIdAndPurchaseId(user.getClientId(), purchase.getId());
+                warehouseStockList = warehouseStockRepository.findAllByClientIdAndWarehouseId(user.getClientId(),warehouse.getId());
             }
-
             try{
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 XSSFSheet sheet = workbook.createSheet("devolucion_inventario");
@@ -292,35 +287,58 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(1);
+                cell.setCellValue("SKU PRODUCTO");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(2);
+                cell.setCellValue("MODEL");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(3);
+                cell.setCellValue("COLOR");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(4);
+                cell.setCellValue("TALLA");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(5);
+                cell.setCellValue("PROVEEDOR");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(6);
+                cell.setCellValue("STOCK ACTUAL");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(7);
                 cell.setCellValue("CANTIDAD");
                 cell.setCellStyle(headerStyle);
 
-                cell = headerRow.createCell(2);
+                cell = headerRow.createCell(8);
                 cell.setCellValue("OBSERVACIONES");
                 cell.setCellStyle(headerStyle);
 
                 XSSFSheet hiddenSheet1 = workbook.createSheet("Hidden1");
                 workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet1), true);
 
-                String[] serialList = purchaseItemList.stream().map(purchaseItem -> purchaseItem.getSupplierProduct().getSerial()).toList().toArray(new String[0]);
-                int rownum1 = 0;
-                Row row1;
-                Cell hiddenCell1;
-                row1 = hiddenSheet1.createRow(rownum1++);
-                int colnum1 = 0;
-                for (String key : serialList) {
-                    hiddenCell1 = row1.createCell(colnum1++);
-                    hiddenCell1.setCellValue(key);
+                List<WarehouseStock> filteredWarehouseStockList = warehouseStockList.stream()
+                        .filter(data -> data.getQuantity() > 0)
+                        .toList();
+
+                int currentRow = 1;
+                for(WarehouseStock warehouseStock:filteredWarehouseStockList){
+                    Row row = sheet.createRow(currentRow);
+                    row.createCell(0).setCellValue(warehouseStock.getSupplierProduct().getSerial());
+                    row.createCell(1).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSku());
+                    row.createCell(2).setCellValue(warehouseStock.getSupplierProduct().getProduct().getModel().getName());
+                    row.createCell(3).setCellValue(warehouseStock.getSupplierProduct().getProduct().getColor().getName());
+                    row.createCell(4).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSize().getName());
+                    row.createCell(5).setCellValue(warehouseStock.getSupplierProduct().getSupplier().getBusinessName());
+                    row.createCell(6).setCellValue(warehouseStock.getQuantity());
+                    row.createCell(7).setCellValue(0);
+                    row.createCell(8).setCellValue("NO APLICA");
+                    currentRow++;
                 }
-                Name namedRange1 = workbook.createName();
-                namedRange1.setNameName("PurchaseItems");
-                String reference1 = "Hidden1!$A$1:" + iExcel.getExcelColumnReference('A',serialList.length-1) + "$1";
-                namedRange1.setRefersToFormula(reference1);
-                DataValidationHelper validationHelper = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint = validationHelper.createFormulaListConstraint("PurchaseItems");
-                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);
-                DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
-                sheet.addValidationData(dataValidation);
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 workbook.write(out);

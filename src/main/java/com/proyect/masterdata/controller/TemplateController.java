@@ -52,11 +52,10 @@ public class TemplateController {
 
     @GetMapping("stock-return")
     private ResponseEntity<byte[]> stockReturn(
-            @RequestParam("quantity") Integer quantity,
-            @RequestParam("purchaseSerial") String purchaseSerial,
+            @RequestParam("warehouse") String warehouse,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ByteArrayInputStream> result = iTemplate.stockReturn(quantity,purchaseSerial,user);
+        CompletableFuture<ByteArrayInputStream> result = iTemplate.stockReturn(warehouse,user);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=devolucion_inventario.xlsx");
         return ResponseEntity.ok()
