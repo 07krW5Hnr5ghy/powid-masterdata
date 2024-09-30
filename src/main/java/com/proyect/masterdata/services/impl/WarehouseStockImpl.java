@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,11 +18,6 @@ import com.proyect.masterdata.dto.WarehouseStockDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.SupplierProductRepository;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.repository.WarehouseRepository;
-import com.proyect.masterdata.repository.WarehouseStockRepository;
-import com.proyect.masterdata.repository.WarehouseStockRepositoryCustom;
 import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
 
@@ -38,6 +34,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
     private final SupplierProductRepository supplierProductRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepositoryCustom warehouseStockRepositoryCustom;
+    private final SupplierRepository supplierRepository;
     private final IAudit iAudit;
     @Override
     public ResponseSuccess in(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
@@ -243,6 +240,59 @@ public class WarehouseStockImpl implements IWarehouseStock {
             }
 
             return warehouseStocks.stream()
+                    .map(warehouseStock -> WarehouseStockDTO.builder()
+                            .quantity(warehouseStock.getQuantity())
+                            .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
+                            .product(warehouseStock.getSupplierProduct().getProduct().getSku())
+                            .warehouse(warehouseStock.getWarehouse().getName())
+                            .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
+                            .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
+                            .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
+                            .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
+                            .registrationDate(warehouseStock.getRegistrationDate())
+                            .updateDate(warehouseStock.getUpdateDate())
+                            .build())
+                    .toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<WarehouseStockDTO>> listWarehouseAndSupplier(String user, String warehouse, String supplier) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<WarehouseStock> warehouseStocks;
+            Long clientId;
+            Long warehouseId;
+            Long supplierId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(warehouse != null){
+                    warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
+                }else{
+                    warehouseId = null;
+                }
+                if(supplier != null){
+                    supplierId = supplierRepository.findByClientIdAndRucAndStatusTrue(clientId,supplier).getId();
+                }else{
+                    supplierId = null;
+                }
+                if(warehouseId != null && supplierId != null){
+                    warehouseStocks = warehouseStockRepository.findByClientIdAndWarehouseIdAndSupplierProduct_Supplier_Id(clientId,warehouseId,supplierId);
+                }else if(warehouseId != null){
+                    warehouseStocks = warehouseStockRepository.findAllByClientIdAndWarehouseId(clientId, warehouseId);
+                }else{
+                    warehouseStocks = warehouseStockRepository.findAllByClientId(clientId);
+                }
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(warehouseStocks.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            return warehouseStocks.stream()
+                    .filter(data -> data.getQuantity() > 0)
                     .map(warehouseStock -> WarehouseStockDTO.builder()
                             .quantity(warehouseStock.getQuantity())
                             .supplierProduct(warehouseStock.getSupplierProduct().getSerial())

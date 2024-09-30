@@ -29,5 +29,6 @@ public interface IWarehouseStock {
                 Integer pageNumber,
                 Integer pageSize) throws InternalErrorExceptions;
         CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,String warehouse,String supplierProduct) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<WarehouseStockDTO>> listWarehouseAndSupplier(String user,String warehouse,String supplier) throws BadRequestExceptions,InternalErrorExceptions;
 
 }
