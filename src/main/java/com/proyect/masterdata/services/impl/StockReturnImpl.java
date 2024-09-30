@@ -269,6 +269,7 @@ public class StockReturnImpl implements IStockReturn {
                     .serial(stockReturn.getSerial())
                     .updateDate(stockReturn.getUpdateDate())
                     .supplier(stockReturn.getSupplier().getBusinessName())
+                    .warehouse(stockReturn.getWarehouse().getName())
                     .build()).toList();
             return new PageImpl<>(stockReturnDTOS,pageStockReturn.getPageable(),pageStockReturn.getTotalElements());
         });
@@ -296,6 +297,7 @@ public class StockReturnImpl implements IStockReturn {
                     .serial(stockReturn.getSerial())
                     .updateDate(stockReturn.getUpdateDate())
                     .supplier(stockReturn.getSupplier().getBusinessName())
+                    .warehouse(stockReturn.getWarehouse().getName())
                     .build()).toList();
         });
     }
@@ -322,6 +324,7 @@ public class StockReturnImpl implements IStockReturn {
                     .serial(stockReturn.getSerial())
                     .updateDate(stockReturn.getUpdateDate())
                     .supplier(stockReturn.getSupplier().getBusinessName())
+                    .warehouse(stockReturn.getWarehouse().getName())
                     .build()).toList();
         });
     }
@@ -348,6 +351,7 @@ public class StockReturnImpl implements IStockReturn {
                     .serial(stockReturn.getSerial())
                     .updateDate(stockReturn.getUpdateDate())
                     .supplier(stockReturn.getSupplier().getBusinessName())
+                    .warehouse(stockReturn.getWarehouse().getName())
                     .build()).toList();
         });
     }

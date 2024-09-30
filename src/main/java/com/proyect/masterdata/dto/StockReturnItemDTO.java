@@ -14,6 +14,10 @@ import java.util.Date;
 public class StockReturnItemDTO {
     private String serial;
     private String supplierProduct;
+    private String productSku;
+    private String model;
+    private String color;
+    private String size;
     private Integer quantity;
     private String observations;
     private Date registrationDate;
