@@ -293,6 +293,11 @@ public class TemplateImpl implements ITemplate {
                 supplierHeaderCell2.setCellStyle(headerStyle2);
                 Cell supplierCell2 = supplierRow.createCell(3);
                 supplierCell2.setCellValue(supplier.getRuc());
+                Cell supplierHeaderCell3 = supplierRow.createCell(4);
+                supplierHeaderCell3.setCellValue("ALMACEN");
+                supplierHeaderCell3.setCellStyle(headerStyle2);
+                Cell supplierCell3 = supplierRow.createCell(5);
+                supplierCell3.setCellValue(warehouse.getName());
 
                 Row headerRow = sheet.createRow(1);
                 Cell cell = headerRow.createCell(0);

@@ -458,6 +458,7 @@ public class ExcelImpl implements IExcel {
             User user;
             StockReturn stockReturn;
             Warehouse warehouse;
+            Supplier supplier;
             List<RequestStockReturnItem> requestStockReturnItemList = new ArrayList<>();
             try{
                 user = userRepository.findByUsernameAndStatusTrue(requestStockReturnExcel.getTokenUser().toUpperCase());
@@ -469,12 +470,6 @@ public class ExcelImpl implements IExcel {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
-            }else {
-                warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(), requestStockReturnExcel.getWarehouse().toUpperCase());
-            }
-
-            if(warehouse==null){
-                throw new BadRequestExceptions(Constants.ErrorWarehouse);
             }
 
             if(stockReturn != null){
@@ -485,6 +480,17 @@ public class ExcelImpl implements IExcel {
                 InputStream inputStream = multipartFile.getInputStream();
                 Workbook workbook = WorkbookFactory.create(inputStream);
                 Sheet sheet = workbook.getSheetAt(0);
+                Row headerDataRow = sheet.getRow(0);
+                Cell supplierCell = headerDataRow.getCell(3);
+                Cell warehouseCell = headerDataRow.getCell(5);
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(supplierCell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                if(supplier == null){
+                    throw new BadRequestExceptions(Constants.ErrorSupplier);
+                }
+                warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(), warehouseCell.getRichStringCellValue().getString().toUpperCase());
+                if(warehouse==null){
+                    throw new BadRequestExceptions(Constants.ErrorWarehouse);
+                }
                 int i = 0;
                 for(Row row:sheet){
                     SupplierProduct supplierProduct = null;
@@ -492,28 +498,28 @@ public class ExcelImpl implements IExcel {
                     RequestStockReturnItem requestStockReturnItem = RequestStockReturnItem.builder().build();
                     int ii = 0;
                     for(Cell cell:row){
-                        if(i>=1 && (cell.getCellType() == STRING) && (ii==0)){
+                        if(i>=2 && (cell.getCellType() == STRING) && (ii==0)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
                             requestStockReturnItem.setSupplierProduct(supplierProduct.getSerial());
                         }
-                        if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==0)){
+                        if(i>=2 && (cell.getCellType() == NUMERIC) && (ii==0)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
                             if(supplierProduct == null){
                                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                             }
                             requestStockReturnItem.setSupplierProduct(supplierProduct.getSerial());
                         }
-                        if(i>=1 && (cell.getCellType() == NUMERIC) && (ii==7) && (supplierProduct != null)){
+                        if(i>=2 && (cell.getCellType() == NUMERIC) && (ii==7) && (supplierProduct != null)){
                             warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(),supplierProduct.getId());
                             if(((int) cell.getNumericCellValue()) > warehouseStock.getQuantity()){
                                 throw new BadRequestExceptions(Constants.ErrorStockReturnWarehouseQuantity);
                             }
                             requestStockReturnItem.setQuantity(((int)cell.getNumericCellValue()));
                         }
-                        if(i>=1&&(cell.getCellType() == STRING) && (ii==8)){
+                        if(i>=2&&(cell.getCellType() == STRING) && (ii==8)){
                             requestStockReturnItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         if(requestStockReturnItem.getObservations()==null){
@@ -521,19 +527,20 @@ public class ExcelImpl implements IExcel {
                         }
                         ii++;
                     }
-                    if(i>=1 && (
+                    System.out.println(requestStockReturnItem);
+                    if(i>=2 && (
                             requestStockReturnItem.getQuantity() != null &&
                                     requestStockReturnItem.getQuantity() > 0 &&
                                     requestStockReturnItem.getObservations() != null &&
                                     requestStockReturnItem.getSupplierProduct() != null)){
                         requestStockReturnItemList.add(requestStockReturnItem);
                     }
-                    if(i>=1 && (
+                    if(i>=2 && (
                             requestStockReturnItem.getQuantity() == null ||
                                     requestStockReturnItem.getQuantity() < 1 ||
                                     requestStockReturnItem.getObservations() == null ||
                                     requestStockReturnItem.getSupplierProduct() == null)){
-                        break;
+                        continue;
                     }
                     i++;
                 }
@@ -554,6 +561,10 @@ public class ExcelImpl implements IExcel {
                         .serial(requestStockReturnExcel.getSerial().toUpperCase())
                         .registrationDate(new Date(System.currentTimeMillis()))
                         .updateDate(new Date(System.currentTimeMillis()))
+                                .supplier(supplier)
+                                .supplierId(supplier.getId())
+                                .warehouse(warehouse)
+                                .warehouseId(warehouse.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .tokenUser(user.getUsername())
@@ -568,23 +579,23 @@ public class ExcelImpl implements IExcel {
                     StockReturnItem stockReturnItem = StockReturnItem.builder().build();
                     RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder().build();
                     for(Cell cell:row){
-                        if(j>=1 && (cell.getCellType() == STRING) && (ji==0)){
+                        if(j>=2 && (cell.getCellType() == STRING) && (ji==0)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             requestStockTransactionItem.setSupplierProductSerial(supplierProduct.getSerial());
                             stockReturnItem.setSupplierProduct(supplierProduct);
                             stockReturnItem.setSupplierProductId(supplierProduct.getId());
                         }
-                        if(j>=1 && (cell.getCellType() == NUMERIC) && (ji==0)){
+                        if(j>=2 && (cell.getCellType() == NUMERIC) && (ji==0)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
                             requestStockTransactionItem.setSupplierProductSerial(supplierProduct.getSerial());
                             stockReturnItem.setSupplierProduct(supplierProduct);
                             stockReturnItem.setSupplierProductId(supplierProduct.getId());
                         }
-                        if(j>=1&&(cell.getCellType()==NUMERIC)&&(ji==7)){
+                        if(j>=2&&(cell.getCellType()==NUMERIC)&&(ji==7)){
                             stockReturnItem.setQuantity((int) cell.getNumericCellValue());
                             requestStockTransactionItem.setQuantity((int) cell.getNumericCellValue());
                         }
-                        if(j>=1&&(cell.getCellType()==STRING)&&(ji==8)){
+                        if(j>=2&&(cell.getCellType()==STRING)&&(ji==8)){
                             stockReturnItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         if(stockReturnItem.getObservations()==null){
@@ -592,7 +603,7 @@ public class ExcelImpl implements IExcel {
                         }
                         ji++;
                     }
-                    if(j>=1 && (
+                    if(j>=2 && (
                             stockReturnItem.getQuantity() != null &&
                                     stockReturnItem.getQuantity() > 0 &&
                                     stockReturnItem.getSupplierProduct() != null &&
@@ -609,12 +620,12 @@ public class ExcelImpl implements IExcel {
                         iGeneralStock.out(stockReturnItem.getSupplierProduct().getSerial(),stockReturnItem.getQuantity(),user.getUsername());
                         requestStockTransactionItemList.add(requestStockTransactionItem);
                     }
-                    if(j>=1 && (
+                    if(j>=2 && (
                             stockReturnItem.getQuantity() == null ||
                                     stockReturnItem.getQuantity() < 1 ||
                                     stockReturnItem.getSupplierProduct() == null ||
                             stockReturnItem.getObservations() == null)){
-                        break;
+                        continue;
                     }
                     j++;
                 }
