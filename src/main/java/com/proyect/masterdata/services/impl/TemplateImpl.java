@@ -31,8 +31,6 @@ public class TemplateImpl implements ITemplate {
     private final SupplierProductRepository supplierProductRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepository warehouseStockRepository;
-    private final PurchaseRepository purchaseRepository;
-    private final PurchaseItemRepository purchaseItemRepository;
     private final OrderingRepository orderingRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderStockRepository orderStockRepository;
@@ -42,11 +40,9 @@ public class TemplateImpl implements ITemplate {
     private final ModelRepository modelRepository;
     private final ColorRepository colorRepository;
     private final CategoryProductRepository categoryProductRepository;
-    private final SizeTypeRepository sizeTypeRepository;
     private final UnitTypeRepository unitTypeRepository;
     private final SizeRepository sizeRepository;
     private final UnitRepository unitRepository;
-    private final PurchaseTypeRepository purchaseTypeRepository;
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
     private final IExcel iExcel;
@@ -248,10 +244,11 @@ public class TemplateImpl implements ITemplate {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> stockReturn(String warehouseName, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> stockReturn(String warehouseName,String supplierRuc, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Warehouse warehouse;
+            Supplier supplier;
             List<WarehouseStock> warehouseStockList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
@@ -263,11 +260,15 @@ public class TemplateImpl implements ITemplate {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(), warehouseName.toUpperCase());
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(supplierRuc,user.getClientId());
+            }
+            if(supplier==null){
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
             }
             if(warehouse==null){
                 throw new BadRequestExceptions(Constants.ErrorWarehouse);
             }else{
-                warehouseStockList = warehouseStockRepository.findAllByClientIdAndWarehouseId(user.getClientId(),warehouse.getId());
+                warehouseStockList = warehouseStockRepository.findByClientIdAndWarehouseIdAndSupplierProduct_Supplier_Id(user.getClientId(),warehouse.getId(),supplier.getId());
             }
             try{
                 XSSFWorkbook workbook = new XSSFWorkbook();
@@ -281,7 +282,19 @@ public class TemplateImpl implements ITemplate {
                 headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
                 headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-                Row headerRow = sheet.createRow(0);
+                Row supplierRow = sheet.createRow(0);
+                Cell supplierHeaderCell = supplierRow.createCell(0);
+                supplierHeaderCell.setCellValue("PROVEEDOR");
+                supplierHeaderCell.setCellStyle(headerStyle2);
+                Cell supplierCell = supplierRow.createCell(1);
+                supplierCell.setCellValue(supplier.getBusinessName());
+                Cell supplierHeaderCell2 = supplierRow.createCell(2);
+                supplierHeaderCell2.setCellValue("RUC");
+                supplierHeaderCell2.setCellStyle(headerStyle2);
+                Cell supplierCell2 = supplierRow.createCell(3);
+                supplierCell2.setCellValue(supplier.getRuc());
+
+                Row headerRow = sheet.createRow(1);
                 Cell cell = headerRow.createCell(0);
                 cell.setCellValue("SKU INVENTARIO");
                 cell.setCellStyle(headerStyle2);
@@ -325,7 +338,7 @@ public class TemplateImpl implements ITemplate {
                         .filter(data -> data.getQuantity() > 0)
                         .toList();
 
-                int currentRow = 1;
+                int currentRow = 2;
                 for(WarehouseStock warehouseStock:filteredWarehouseStockList){
                     Row row = sheet.createRow(currentRow);
                     row.createCell(0).setCellValue(warehouseStock.getSupplierProduct().getSerial());

@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class RequestStockReturnExcel {
     private String serial;
-    private String purchaseSerial;
     private String warehouse;
+    private String supplier;
     private String tokenUser;
 }
