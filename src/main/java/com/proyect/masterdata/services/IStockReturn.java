@@ -16,7 +16,7 @@ public interface IStockReturn {
     CompletableFuture<ResponseSuccess> saveAsync(RequestStockReturn requestStockReturn) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<Page<StockReturnDTO>> list(
             String user,
-            List<String> serials,
+            String serial,
             List<String> suppliers,
             String sort,
             String sortColumn,

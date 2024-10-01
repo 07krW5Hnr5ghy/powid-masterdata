@@ -8,9 +8,9 @@ import java.util.List;
 
 @Repository
 public interface StockReturnRepositoryCustom {
-    Page<StockReturn> searchForStockReturnItem(
+    Page<StockReturn> searchForStockReturn(
             Long clientId,
-            List<String> serials,
+            String serial,
             List<Long> supplierIds,
             String sort,
             String sortColumn,
