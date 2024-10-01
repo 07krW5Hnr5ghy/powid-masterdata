@@ -35,6 +35,18 @@ public class UtilImpl implements IUtil {
     }
 
     @Override
+    public Date setToUTCEndOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT-5"));
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime();
+    }
+
+    @Override
     public double calculateTotalPrice(OrderItem orderItem) {
         ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
         double totalPrice = productPrice.getUnitSalePrice() * orderItem.getQuantity();

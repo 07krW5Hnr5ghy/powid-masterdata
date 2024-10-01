@@ -61,7 +61,7 @@ public class StatsImpl implements IStats {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByName(orderStateName);
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -220,7 +220,9 @@ public class StatsImpl implements IStats {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                System.out.println(utcRegistrationDateStart);
+                System.out.println(utcRegistrationDateEnd);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -299,7 +301,7 @@ public class StatsImpl implements IStats {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue(status.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -385,7 +387,7 @@ public class StatsImpl implements IStats {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -464,7 +466,7 @@ public class StatsImpl implements IStats {
             try{
                 user =  userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
@@ -577,7 +579,7 @@ public class StatsImpl implements IStats {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -664,7 +666,7 @@ public class StatsImpl implements IStats {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username);
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -762,7 +764,7 @@ public class StatsImpl implements IStats {
 
                 // Convert registration dates to UTC
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
 
                 // Fetch all category products and sale channels using Criteria API
                 categoryProducts = statsRepository.findAllCategoryProducts();

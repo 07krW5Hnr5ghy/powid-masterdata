@@ -232,7 +232,7 @@ public class ReportImpl implements IReport {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue("ENTREGADO");
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -455,7 +455,7 @@ public class ReportImpl implements IReport {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -678,7 +678,7 @@ public class ReportImpl implements IReport {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -828,7 +828,7 @@ public class ReportImpl implements IReport {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -1003,7 +1003,7 @@ public class ReportImpl implements IReport {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -1170,7 +1170,7 @@ public class ReportImpl implements IReport {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCStartOfDay(registrationEndDate);
+                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
