@@ -89,7 +89,7 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (!serial.isEmpty()) {
+        if (serial!=null) {
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("serial")),"%"+serial.toUpperCase()+"%"));
         }
 

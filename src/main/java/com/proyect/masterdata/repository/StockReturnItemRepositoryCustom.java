@@ -10,7 +10,7 @@ import java.util.List;
 public interface StockReturnItemRepositoryCustom {
     Page<StockReturnItem> searchForStockReturnItem(
             Long clientId,
-            List<Long> stockReturnIds,
+            String serial,
             List<Long> supplierIds,
             List<Long> supplierProductIds,
             String sort,

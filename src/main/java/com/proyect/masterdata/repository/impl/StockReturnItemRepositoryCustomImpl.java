@@ -25,7 +25,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
     @Override
     public Page<StockReturnItem> searchForStockReturnItem(
             Long clientId,
-            List<Long> stockReturnIds,
+            String serial,
             List<Long> supplierIds,
             List<Long> supplierProductIds,
             String sort,
@@ -40,7 +40,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicate(
                 clientId,
-                stockReturnIds,
+                serial,
                 supplierIds,
                 supplierProductIds,
                 criteriaBuilder,
@@ -71,7 +71,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                stockReturnIds,
+                serial,
                 supplierIds,
                 supplierProductIds
                 );
@@ -80,7 +80,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
 
     public List<Predicate> predicate(
             Long clientId,
-            List<Long> stockReturnIds,
+            String serial,
             List<Long> supplierIds,
             List<Long> supplierProductIds,
             CriteriaBuilder criteriaBuilder,
@@ -93,8 +93,8 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (!stockReturnIds.isEmpty()) {
-            conditions.add(criteriaBuilder.and(itemRoot.get("stockReturnId").in(stockReturnIds)));
+        if (serial != null) {
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(stockReturnItemStockReturnJoin.get("serial")),"%"+serial.toUpperCase()+"%"));
         }
 
         if(!supplierIds.isEmpty()){
@@ -116,10 +116,6 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
             stockReturnList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
-        if (sortColumn.equalsIgnoreCase("purchaseId")) {
-            stockReturnList.add(criteriaBuilder.asc(itemRoot.get("purchaseId")));
-        }
-
         if (sortColumn.equalsIgnoreCase("supplierProductId")) {
             stockReturnList.add(criteriaBuilder.asc(itemRoot.get("supplierProductId")));
         }
@@ -135,10 +131,6 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
             stockReturnList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
-        if (sortColumn.equalsIgnoreCase("purchaseId")) {
-            stockReturnList.add(criteriaBuilder.desc(itemRoot.get("purchaseId")));
-        }
-
         if (sortColumn.equalsIgnoreCase("supplierProductId")) {
             stockReturnList.add(criteriaBuilder.desc(itemRoot.get("supplierProductId")));
         }
@@ -148,7 +140,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
 
     private Long getOrderCount(
             Long clientId,
-            List<Long> stockReturnIds,
+            String serial,
             List<Long> supplierIds,
             List<Long> supplierProductIds) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -159,7 +151,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
-                stockReturnIds,
+                serial,
                 supplierIds,
                 supplierProductIds,
                 criteriaBuilder,

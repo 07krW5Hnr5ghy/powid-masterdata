@@ -85,7 +85,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
     @Override
     public CompletableFuture<Page<StockReturnItemDTO>> list(
             String user,
-            List<String> stockReturns,
+            String serial,
             List<String> suppliers,
             List<String> supplierProducts,
             String sort,
@@ -95,18 +95,8 @@ public class StockReturnItemImpl implements IStockReturnItem {
         return CompletableFuture.supplyAsync(()->{
             Page<StockReturnItem> pageStockReturn;
             Long clientId;
-            List<Long> stockReturnIds;
-            List<Long> purchaseIds;
             List<Long> supplierIds;
             List<Long> supplierProductIds;
-
-            if(stockReturns != null && !stockReturns.isEmpty()){
-                stockReturnIds = stockReturnRepository.findBySerialIn(
-                        stockReturns.stream().map(String::toUpperCase).toList()
-                ).stream().map(StockReturn::getId).toList();
-            }else {
-                stockReturnIds = new ArrayList<>();
-            }
 
             if(suppliers != null && !suppliers.isEmpty()){
                 supplierIds = supplierRepository.findByRucIn(
@@ -128,7 +118,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageStockReturn = stockReturnItemRepositoryCustom.searchForStockReturnItem(
                         clientId,
-                        stockReturnIds,
+                        serial,
                         supplierIds,
                         supplierProductIds,
                         sort,

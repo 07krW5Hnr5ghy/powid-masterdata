@@ -26,7 +26,7 @@ public class StockReturnItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_ITEM_GET')")
     public ResponseEntity<Page<StockReturnItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "stockReturns", required = false) List<String> stockReturns,
+            @RequestParam(value = "serial", required = false) String serial,
             @RequestParam(value = "suppliers", required = false) List<String> suppliers,
             @RequestParam(value = "supplierProducts", required = false) List<String> supplierProducts,
             @RequestParam(value = "sort", required = false) String sort,
@@ -35,7 +35,7 @@ public class StockReturnItemController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<StockReturnItemDTO>> result = iStockReturnItem.list(
                 user,
-                stockReturns,
+                serial,
                 suppliers,
                 supplierProducts,
                 sort,
