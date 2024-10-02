@@ -12,7 +12,7 @@ public interface StockReturnItemRepositoryCustom {
             Long clientId,
             String serial,
             List<Long> supplierIds,
-            List<Long> supplierProductIds,
+            String supplierProduct,
             String sort,
             String sortColumn,
             Integer pageNumber,

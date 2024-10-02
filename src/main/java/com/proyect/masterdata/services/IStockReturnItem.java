@@ -17,7 +17,7 @@ public interface IStockReturnItem {
             String user,
             String serial,
             List<String> suppliers,
-            List<String> supplierProducts,
+            String supplierProduct,
             String sort,
             String sortColumn,
             Integer pageNumber,

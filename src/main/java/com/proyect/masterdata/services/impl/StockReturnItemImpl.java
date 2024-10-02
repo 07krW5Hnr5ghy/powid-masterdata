@@ -87,7 +87,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
             String user,
             String serial,
             List<String> suppliers,
-            List<String> supplierProducts,
+            String supplierProduct,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -96,7 +96,6 @@ public class StockReturnItemImpl implements IStockReturnItem {
             Page<StockReturnItem> pageStockReturn;
             Long clientId;
             List<Long> supplierIds;
-            List<Long> supplierProductIds;
 
             if(suppliers != null && !suppliers.isEmpty()){
                 supplierIds = supplierRepository.findByRucIn(
@@ -106,21 +105,13 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 supplierIds = new ArrayList<>();
             }
 
-            if(supplierProducts != null && !supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else {
-                supplierProductIds = new ArrayList<>();
-            }
-
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pageStockReturn = stockReturnItemRepositoryCustom.searchForStockReturnItem(
                         clientId,
                         serial,
                         supplierIds,
-                        supplierProductIds,
+                        supplierProduct,
                         sort,
                         sortColumn,
                         pageNumber,
