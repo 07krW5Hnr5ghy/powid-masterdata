@@ -28,6 +28,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
             String supplierProduct,
             String product,
             String model,
+            String color,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -39,6 +40,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
         Join<StockReturnItem, SupplierProduct> stockReturnItemSupplierProductJoin = itemRoot.join("supplierProduct");
         Join<SupplierProduct, Product> supplierProductProductJoin = stockReturnItemSupplierProductJoin.join("product");
         Join<Product,Model> productModelJoin = supplierProductProductJoin.join("model");
+        Join<Product,Color> productColorJoin = supplierProductProductJoin.join("color");
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicate(
@@ -48,12 +50,14 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
                 supplierProduct,
                 product,
                 model,
+                color,
                 criteriaBuilder,
                 itemRoot,
                 stockReturnItemStockReturnJoin,
                 stockReturnItemSupplierProductJoin,
                 supplierProductProductJoin,
-                productModelJoin);
+                productModelJoin,
+                productColorJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -83,7 +87,8 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
                 supplierIds,
                 supplierProduct,
                 product,
-                model
+                model,
+                color
                 );
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
@@ -95,12 +100,14 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
             String supplierProduct,
             String product,
             String model,
+            String color,
             CriteriaBuilder criteriaBuilder,
             Root<StockReturnItem> itemRoot,
             Join<StockReturnItem,StockReturn> stockReturnItemStockReturnJoin,
             Join<StockReturnItem, SupplierProduct> stockReturnItemSupplierProductJoin,
             Join<SupplierProduct,Product> supplierProductProductJoin,
-            Join<Product,Model> productModelJoin
+            Join<Product,Model> productModelJoin,
+            Join<Product,Color> productColorJoin
             ) {
 
         List<Predicate> conditions = new ArrayList<>();
@@ -127,6 +134,10 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
 
         if(model!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
+        }
+
+        if(color!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productColorJoin.get("name")),"%"+color.toUpperCase()+"%"));
         }
 
         return conditions;
@@ -168,7 +179,8 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
             List<Long> supplierIds,
             String supplierProduct,
             String product,
-            String model) {
+            String model,
+            String color) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<StockReturnItem> itemRoot = criteriaQuery.from(StockReturnItem.class);
@@ -176,6 +188,7 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
         Join<StockReturnItem, SupplierProduct> stockReturnItemSupplierProductJoin = itemRoot.join("supplierProduct");
         Join<SupplierProduct, Product> supplierProductProductJoin = stockReturnItemSupplierProductJoin.join("product");
         Join<Product,Model> productModelJoin = supplierProductProductJoin.join("model");
+        Join<Product,Color> productColorJoin = supplierProductProductJoin.join("color");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
@@ -185,12 +198,14 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
                 supplierProduct,
                 product,
                 model,
+                color,
                 criteriaBuilder,
                 itemRoot,
                 stockReturnItemStockReturnJoin,
                 stockReturnItemSupplierProductJoin,
                 supplierProductProductJoin,
-                productModelJoin);
+                productModelJoin,
+                productColorJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
