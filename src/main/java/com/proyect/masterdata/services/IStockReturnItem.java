@@ -19,6 +19,7 @@ public interface IStockReturnItem {
             List<String> suppliers,
             String supplierProduct,
             String product,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,

@@ -14,6 +14,7 @@ public interface StockReturnItemRepositoryCustom {
             List<Long> supplierIds,
             String supplierProduct,
             String product,
+            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,
