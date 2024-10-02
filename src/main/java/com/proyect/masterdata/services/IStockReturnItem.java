@@ -21,6 +21,7 @@ public interface IStockReturnItem {
             String product,
             String model,
             String color,
+            String size,
             String sort,
             String sortColumn,
             Integer pageNumber,
