@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
@@ -752,6 +749,7 @@ public class StatsImpl implements IStats {
             List<Ordering> orderingList;
             Date utcRegistrationDateStart;
             Date utcRegistrationDateEnd;
+            List<SalesCategoryRawDTO> salesCategoryRawDTOS = new ArrayList<>();
             List<CategoryProduct> categoryProducts;
             List<SaleChannel> saleChannels;
 
@@ -761,26 +759,41 @@ public class StatsImpl implements IStats {
                 if (user == null) {
                     throw new BadRequestExceptions(Constants.ErrorUser);
                 }
+                categoryProducts = categoryProductRepository.findAll();
+                saleChannels = saleChannelRepository.findAll();
 
                 // Convert registration dates to UTC
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
                 utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
 
-                // Fetch all category products and sale channels using Criteria API
-                categoryProducts = statsRepository.findAllCategoryProducts();
-                saleChannels = statsRepository.findAllSaleChannels();
-
-                // Fetch ordering list using Criteria API
-                orderingList = statsRepository.findOrdersByClientAndRegistrationDate(user.getClientId(), utcRegistrationDateStart, utcRegistrationDateEnd);
-
+                orderItemRepository.findOrderItemsByDateRangeAndClientId(
+                        utcRegistrationDateStart,
+                        utcRegistrationDateEnd,
+                        user.getClientId()
+                ).forEach(item->{
+                    salesCategoryRawDTOS.add(
+                            SalesCategoryRawDTO.builder()
+                                    .orderId((Long) item[0])
+                                    .registrationDate((Date) item[1])
+                                    .orderDiscountAmount((Double) item[3])
+                                    .orderDiscountName((String) item[4])
+                                    .saleChannelName((String) item[5])
+                                    .quantity((Integer) item[7])
+                                    .orderItemDiscountAmount((Double) item[8])
+                                    .orderItemDiscountName((String) item[9])
+                                    .categoryName((String) item[10])
+                                    .unitSalePrice((Double) item[11])
+                                    .build()
+                    );
+                });
             } catch (RuntimeException e) {
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
             try {
                 List<SalesCategoryDTO> salesCategoryDTOS = new ArrayList<>();
-
                 // Initialize DTO for each category and sale channel combination
                 for (CategoryProduct categoryProduct : categoryProducts) {
                     for (SaleChannel saleChannel : saleChannels) {
@@ -792,27 +805,35 @@ public class StatsImpl implements IStats {
                     }
                 }
 
-                // Accumulate sales and orders
                 for (SalesCategoryDTO salesCategoryDTO : salesCategoryDTOS) {
                     double totalSalesByCategory = 0.00;
                     int totalProductsByCategory = 0;
                     int totalOrdersByCategory = 0;
 
-                    for (Ordering ordering : orderingList) {
-                        if (Objects.equals(salesCategoryDTO.getSaleChannel(), ordering.getSaleChannel().getName())) {
-                            List<OrderItem> orderItemList = statsRepository.findOrderItemsByClientAndOrder(user.getClientId(), ordering.getId());
+                    for (SalesCategoryRawDTO salesCategoryRawDTO : salesCategoryRawDTOS) {
+                        if (Objects.equals(salesCategoryDTO.getSaleChannel(), salesCategoryRawDTO.getSaleChannelName())) {
 
                             double orderTotalSales = 0.00;
                             int orderTotalProducts = 0;
                             boolean orderFlag = false;
-
-                            for (OrderItem orderItem : orderItemList) {
-                                if (Objects.equals(salesCategoryDTO.getCategory(), orderItem.getProduct().getCategoryProduct().getName())) {
-                                    orderFlag = true;
-                                    double totalPrice = iUtil.calculateTotalPrice(orderItem);
-                                    orderTotalSales += totalPrice;
-                                    orderTotalProducts += orderItem.getQuantity();
+                            if (Objects.equals(salesCategoryDTO.getCategory(), salesCategoryRawDTO.getCategoryName())) {
+                                orderFlag = true;
+                                double orderItemPrice = 0.00;
+                                if (salesCategoryRawDTO.getOrderItemDiscountName() != null) {
+                                    if (salesCategoryRawDTO.getOrderItemDiscountName().equals("MONTO")) {
+                                        orderItemPrice = (salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity()) - salesCategoryRawDTO.getOrderItemDiscountAmount();
+                                    } else if (salesCategoryRawDTO.getOrderItemDiscountName().equals("PORCENTAJE")) {
+                                        double discount = (salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity()) * (salesCategoryRawDTO.getOrderItemDiscountAmount() / 100);
+                                        orderItemPrice = (salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity()) - discount;
+                                    } else if (salesCategoryRawDTO.getOrderItemDiscountName().equals("NO APLICA")) {
+                                        orderItemPrice = salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity();
+                                    }
+                                } else {
+                                    // Fallback in case orderItemDiscountName is null or doesn't match any condition
+                                    orderItemPrice = salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity();
                                 }
+                                orderTotalSales += orderItemPrice;
+                                orderTotalProducts += salesCategoryRawDTO.getQuantity();
                             }
 
                             if (orderFlag) {
@@ -854,6 +875,7 @@ public class StatsImpl implements IStats {
                 return pagedResult;
 
             } catch (RuntimeException e) {
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

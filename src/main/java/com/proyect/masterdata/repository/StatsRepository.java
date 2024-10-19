@@ -15,5 +15,4 @@ public interface StatsRepository {
     List<SaleChannel> findAllSaleChannels();
     List<Ordering> findOrdersByClientAndRegistrationDate(Long clientId, Date startDate, Date endDate);
     List<OrderItem> findOrderItemsByClientAndOrder(Long clientId, Long orderId);
-
 }
