@@ -1167,6 +1167,7 @@ public class ReportImpl implements IReport {
             Date utcRegistrationDateStart;
             Date utcRegistrationDateEnd;
             List<Ordering> orderingList;
+            List<SalesCategoryReportRawDTO> salesCategoryReportRawDTOS = new ArrayList<>();
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
@@ -1180,10 +1181,27 @@ public class ReportImpl implements IReport {
             }
             try {
                 List<SalesByCategoryDTO> salesByCategoryDTOS = new ArrayList<>();
-                orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
-                        user.getClientId(),
+                orderItemRepository.findOrderItemsWithBrandByDateRangeAndClientId(
                         utcRegistrationDateStart,
-                        utcRegistrationDateEnd);
+                        utcRegistrationDateEnd,
+                        user.getClientId()
+                ).forEach(item->{
+                    salesCategoryReportRawDTOS.add(
+                            SalesCategoryReportRawDTO.builder()
+                                    .orderId((Long) item[0])
+                                    .registrationDate((Date) item[1])
+                                    .orderDiscountAmount((Double) item[3])
+                                    .orderDiscountName((String) item[4])
+                                    .quantity((Integer) item[6])
+                                    .orderItemDiscountAmount((Double) item[7])
+                                    .orderItemDiscountName((String) item[8])
+                                    .categoryName((String) item[9])
+                                    .unitSalePrice((Double) item[10])
+                                    .brandName((String) item[11])
+                                    .closingChannelName((String) item[12])
+                                    .build()
+                    );
+                });
                 List<ClosingChannel> closingChannelList = closingChannelRepository.findAll();
                 List<CategoryProduct> categoryProductList = categoryProductRepository.findAll();
                 List<Brand> brandList = brandRepository.findAllByClientId(user.getClientId());
@@ -1202,34 +1220,27 @@ public class ReportImpl implements IReport {
                     double totalSalesByCategoryAndBrandAndClosingChannel = 0.00;
                     int totalOrdersByCategoryAndBrandAndClosingChannel = 0;
                     int totalProductsByCategoryAndBrandAndClosingChannel = 0;
-                    for(Ordering ordering:orderingList){
+                    for(SalesCategoryReportRawDTO salesCategoryReportRawDTO:salesCategoryReportRawDTOS){
                         double orderSalesByCategoryAndBrandAndClosingChannel = 0.00;
                         int orderProductsByCategoryAndBrandAndClosingChannel = 0;
                         boolean orderFlag = false;
-                        if(Objects.equals(salesByCategoryDTO.getClosingChannel(), ordering.getClosingChannel().getName())){
-                            List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
-                                    user.getClientId(),
-                                    ordering.getId());
-                            for(OrderItem orderItem:orderItemList){
-                                if(Objects.equals(orderItem.getProduct().getModel().getBrand().getName(), salesByCategoryDTO.getBrand())){
-                                    if(Objects.equals(orderItem.getProduct().getCategoryProduct().getName(), salesByCategoryDTO.getCategory())){
-                                        ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
-                                        double totalPrice = 0.00;
-                                        if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                                            totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-                                        }
-
-                                        if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                                            totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
-                                        }
-
-                                        if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                                            totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-                                        }
-                                        orderFlag = true;
-                                        orderProductsByCategoryAndBrandAndClosingChannel+=orderItem.getQuantity();
-                                        orderSalesByCategoryAndBrandAndClosingChannel+=totalPrice;
+                        if(Objects.equals(salesByCategoryDTO.getClosingChannel(), salesCategoryReportRawDTO.getClosingChannelName())){
+                            if(Objects.equals(salesCategoryReportRawDTO.getBrandName(), salesByCategoryDTO.getBrand())){
+                                if(Objects.equals(salesCategoryReportRawDTO.getCategoryName(), salesByCategoryDTO.getCategory())){
+                                    double totalPrice = 0.00;
+                                    if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "PORCENTAJE")){
+                                        totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())-((salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())*(salesCategoryReportRawDTO.getOrderItemDiscountAmount()/100));
                                     }
+                                    if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "MONTO")){
+                                        totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())-(salesCategoryReportRawDTO.getOrderItemDiscountAmount());
+                                    }
+                                    if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "NO APLICA")){
+                                        totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity());
+                                    }
+                                    System.out.println(totalPrice);
+                                    orderFlag = true;
+                                    orderProductsByCategoryAndBrandAndClosingChannel+=salesCategoryReportRawDTO.getQuantity();
+                                    orderSalesByCategoryAndBrandAndClosingChannel+=totalPrice;
                                 }
                             }
                         }

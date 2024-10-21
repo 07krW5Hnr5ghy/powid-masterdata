@@ -49,4 +49,35 @@ public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
             @Param("endDate") Date endDate,
             @Param("clientId") Long clientId
     );
+    @Query(value = "SELECT " +
+            "o.order_id AS orderId, " +
+            "o.registration_date AS registrationDate, " +
+            "o.client_id AS clientId, " +
+            "o.discount_amount AS orderDiscountAmount, " +
+            "d1.name AS orderDiscountName, " +
+            "oi.order_item_id AS orderItemId, " +
+            "oi.quantity AS quantity, " +
+            "oi.discount_amount AS orderItemDiscountAmount, " +
+            "d2.name AS orderItemDiscountName, " +
+            "cp.name AS categoryName, " +
+            "pp.unit_sale_price AS unitSalePrice, " +
+            "b.name AS brandName, " +
+            "cc.name AS closingChannelName " +
+            "FROM ordering.order o " +
+            "JOIN ordering.order_item oi ON o.order_id = oi.order_id " +
+            "JOIN marketing.product p ON oi.product_id = p.product_id " +
+            "JOIN master.category_product cp ON p.category_product_id = cp.category_product_id " +
+            "JOIN marketing.product_price pp ON p.product_id = pp.product_id AND pp.status = TRUE " +
+            "JOIN marketing.model m ON m.model_id = p.product_id " +
+            "JOIN marketing.brand b ON b.brand_id = m.brand_id " +
+            "LEFT JOIN master.discount d1 ON o.discount_id = d1.discount_id " +
+            "LEFT JOIN master.discount d2 ON oi.discount_id = d2.discount_id " +
+            "LEFT JOIN master.closing_channel cc ON o.closing_channel_id = cc.closing_channel_id " +
+            "WHERE o.registration_date BETWEEN :startDate AND :endDate " +
+            "AND o.client_id = :clientId", nativeQuery = true)
+    List<Object[]> findOrderItemsWithBrandByDateRangeAndClientId(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("clientId") Long clientId
+    );
 }
