@@ -783,6 +783,7 @@ public class StatsImpl implements IStats {
                                     .orderItemDiscountName((String) item[9])
                                     .categoryName((String) item[10])
                                     .unitSalePrice((Double) item[11])
+                                    .orderItemStatus((Boolean) item[12])
                                     .build()
                     );
                 });
@@ -817,23 +818,25 @@ public class StatsImpl implements IStats {
                             int orderTotalProducts = 0;
                             boolean orderFlag = false;
                             if (Objects.equals(salesCategoryDTO.getCategory(), salesCategoryRawDTO.getCategoryName())) {
-                                orderFlag = true;
-                                double orderItemPrice = 0.00;
-                                if (salesCategoryRawDTO.getOrderItemDiscountName() != null) {
-                                    if (salesCategoryRawDTO.getOrderItemDiscountName().equals("MONTO")) {
-                                        orderItemPrice = (salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity()) - salesCategoryRawDTO.getOrderItemDiscountAmount();
-                                    } else if (salesCategoryRawDTO.getOrderItemDiscountName().equals("PORCENTAJE")) {
-                                        double discount = (salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity()) * (salesCategoryRawDTO.getOrderItemDiscountAmount() / 100);
-                                        orderItemPrice = (salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity()) - discount;
-                                    } else if (salesCategoryRawDTO.getOrderItemDiscountName().equals("NO APLICA")) {
+                                if(salesCategoryRawDTO.getOrderItemStatus()){
+                                    orderFlag = true;
+                                    double orderItemPrice = 0.00;
+                                    if (salesCategoryRawDTO.getOrderItemDiscountName() != null) {
+                                        if (salesCategoryRawDTO.getOrderItemDiscountName().equals("MONTO")) {
+                                            orderItemPrice = (salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity()) - salesCategoryRawDTO.getOrderItemDiscountAmount();
+                                        } else if (salesCategoryRawDTO.getOrderItemDiscountName().equals("PORCENTAJE")) {
+                                            double discount = (salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity()) * (salesCategoryRawDTO.getOrderItemDiscountAmount() / 100);
+                                            orderItemPrice = (salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity()) - discount;
+                                        } else if (salesCategoryRawDTO.getOrderItemDiscountName().equals("NO APLICA")) {
+                                            orderItemPrice = salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity();
+                                        }
+                                    } else {
+                                        // Fallback in case orderItemDiscountName is null or doesn't match any condition
                                         orderItemPrice = salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity();
                                     }
-                                } else {
-                                    // Fallback in case orderItemDiscountName is null or doesn't match any condition
-                                    orderItemPrice = salesCategoryRawDTO.getUnitSalePrice() * salesCategoryRawDTO.getQuantity();
+                                    orderTotalSales += orderItemPrice;
+                                    orderTotalProducts += salesCategoryRawDTO.getQuantity();
                                 }
-                                orderTotalSales += orderItemPrice;
-                                orderTotalProducts += salesCategoryRawDTO.getQuantity();
                             }
 
                             if (orderFlag) {

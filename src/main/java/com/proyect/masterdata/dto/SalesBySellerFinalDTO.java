@@ -19,7 +19,6 @@ public class SalesBySellerFinalDTO {
     private String closingChannel;
     private String category;
     private String brand;
-    private String model;
     private Integer totalProducts;
     private Integer totalOrders;
     private BigDecimal averageTicket;

@@ -21,11 +21,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +42,8 @@ public class ReportImpl implements IReport {
     private final ClosingChannelRepository closingChannelRepository;
     private final CategoryProductRepository categoryProductRepository;
     private final DepartmentRepository departmentRepository;
+    private final ProvinceRepository provinceRepository;
+    private final DistrictRepository districtRepository;
     @Override
     public CompletableFuture<ByteArrayInputStream> generalStockReport(String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -464,84 +464,102 @@ public class ReportImpl implements IReport {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
             try{
-                List<Ordering> orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
-                        user.getClientId(),
+                List<SalesSellerReportRawDTO> salesSellerReportRawDTOS = new ArrayList<>();
+                orderItemRepository.findOrderItemsWithSellerByDateRangeAndClientId(
                         utcRegistrationDateStart,
-                        utcRegistrationDateEnd);
+                        utcRegistrationDateEnd,
+                        user.getClientId()
+                ).forEach(item->{
+                    salesSellerReportRawDTOS.add(
+                            SalesSellerReportRawDTO.builder()
+                                    .orderId((Long) item[0])
+                                    .registrationDate((Date) item[1])
+                                    .orderDiscountAmount((Double) item[3])
+                                    .orderDiscountName((String) item[4])
+                                    .quantity((Integer) item[6])
+                                    .orderItemDiscountAmount((Double) item[7])
+                                    .orderItemDiscountName((String) item[8])
+                                    .categoryName((String) item[9])
+                                    .unitSalePrice((Double) item[10])
+                                    .brandName((String) item[11])
+                                    .closingChannelName((String) item[12])
+                                    .seller((String) item[13])
+                                    .department((String) item[14])
+                                    .province((String) item[15])
+                                    .district((String) item[16])
+                                    .orderState((String) item[17])
+                                    .orderItemStatus((Boolean) item[18])
+                                    .build()
+                    );
+                });
                 List<User> userList = userRepository.findAllByClientId(user.getClientId());
                 List<CategoryProduct> categoryProductList = categoryProductRepository.findAll();
                 List<Brand> brandList = brandRepository.findAllByClientId(user.getClientId());
+                List<ClosingChannel> closingChannelList = closingChannelRepository.findAll();
+                List<DistrictReportDTO> districtReportDTOS = new ArrayList<>();
+                districtRepository.findDepartmentsProvincesDistricts().forEach(item->{
+                    districtReportDTOS.add(DistrictReportDTO.builder()
+                                    .department((String) item[0])
+                                    .province((String) item[1])
+                                    .district((String) item[2])
+                            .build());
+                });
                 List<SalesBySellerFinalDTO> salesBySellerFinalDTOS = new ArrayList<>();
-                salesBySellerDTOS = orderingRepository.findByClientIdAndRegistrationDateBetweenCountSellerReport(
-                        user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd
-                ).stream().map(result -> SalesBySellerDTO.builder()
-                        .seller(result[0].toString())
-                        .department(result[1].toString())
-                        .province(result[2].toString())
-                        .district(result[3].toString())
-                        .closingChannel(result[4].toString())
-                        .totalOrders((long) result[5])
-                        .build()
-                ).toList();
-                for(SalesBySellerDTO salesBySellerDTO:salesBySellerDTOS){
-                    for(User userData:userList){
-                        for(CategoryProduct categoryProduct:categoryProductList){
-                            for(Brand brand:brandList){
-                                SalesBySellerFinalDTO salesBySellerFinalDTO = SalesBySellerFinalDTO.builder().build();
-                                salesBySellerFinalDTO.setSeller(userData.getName() + " " + userData.getSurname());
-                                salesBySellerFinalDTO.setDepartment(salesBySellerDTO.getDepartment());
-                                salesBySellerFinalDTO.setProvince(salesBySellerDTO.getProvince());
-                                salesBySellerFinalDTO.setDistrict(salesBySellerDTO.getDistrict());
-                                salesBySellerFinalDTO.setClosingChannel(salesBySellerDTO.getClosingChannel());
-                                salesBySellerFinalDTO.setCategory(categoryProduct.getName());
-                                salesBySellerFinalDTO.setBrand(brand.getName());
-                                salesBySellerFinalDTOS.add(salesBySellerFinalDTO);
+
+                for(User userData:userList){
+                    for(DistrictReportDTO districtReportDTO:districtReportDTOS){
+                        for(ClosingChannel closingChannel:closingChannelList){
+                            for(CategoryProduct categoryProduct:categoryProductList){
+                                for(Brand brand:brandList){
+                                    SalesBySellerFinalDTO salesBySellerFinalDTO = SalesBySellerFinalDTO.builder().build();
+                                    salesBySellerFinalDTO.setSeller(userData.getName() + " " + userData.getSurname());
+                                    salesBySellerFinalDTO.setDepartment(districtReportDTO.getDepartment());
+                                    salesBySellerFinalDTO.setProvince(districtReportDTO.getProvince());
+                                    salesBySellerFinalDTO.setDistrict(districtReportDTO.getDistrict());
+                                    salesBySellerFinalDTO.setClosingChannel(closingChannel.getName());
+                                    salesBySellerFinalDTO.setCategory(categoryProduct.getName());
+                                    salesBySellerFinalDTO.setBrand(brand.getName());
+                                    salesBySellerFinalDTOS.add(salesBySellerFinalDTO);
+                                }
                             }
                         }
                     }
                 }
-
                 for(SalesBySellerFinalDTO salesBySellerFinalDTO:salesBySellerFinalDTOS){
                     double totalSalesBySeller = 0.00;
                     int totalOrdersBySeller = 0;
                     int totalDeliveredOrdersBySeller = 0;
                     int totalProductsBySeller = 0;
-                    for(Ordering ordering:orderingList){
+                    for(SalesSellerReportRawDTO salesSellerReportRawDTO:salesSellerReportRawDTOS){
                         double orderSalesBySeller = 0.00;
                         int orderProductsBySeller = 0;
                         boolean orderFlag = false;
                         boolean deliveredOrderFlag = false;
-                        if(Objects.equals(ordering.getSeller(), salesBySellerFinalDTO.getSeller())){
-                            if(Objects.equals(ordering.getCustomer().getDistrict().getProvince().getDepartment().getName(), salesBySellerFinalDTO.getDepartment())){
-                                if(Objects.equals(ordering.getCustomer().getDistrict().getProvince().getName(), salesBySellerFinalDTO.getProvince())){
-                                    if(Objects.equals(ordering.getCustomer().getDistrict().getName(), salesBySellerFinalDTO.getDistrict())){
-                                        if(Objects.equals(ordering.getClosingChannel().getName(), salesBySellerFinalDTO.getClosingChannel())){
-                                            List<OrderItem> orderItemList = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(
-                                                    user.getClientId(),
-                                                    ordering.getId());
-                                            for(OrderItem orderItem:orderItemList){
-                                                if(Objects.equals(orderItem.getProduct().getModel().getBrand().getName(), salesBySellerFinalDTO.getBrand())){
-                                                    if(Objects.equals(orderItem.getProduct().getCategoryProduct().getName(), salesBySellerFinalDTO.getCategory())){
-                                                        ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                        if(Objects.equals(salesSellerReportRawDTO.getSeller(), salesBySellerFinalDTO.getSeller())){
+                            if(Objects.equals(salesSellerReportRawDTO.getDepartment(), salesBySellerFinalDTO.getDepartment())){
+                                if(Objects.equals(salesSellerReportRawDTO.getProvince(), salesBySellerFinalDTO.getProvince())){
+                                    if(Objects.equals(salesSellerReportRawDTO.getDistrict(), salesBySellerFinalDTO.getDistrict())){
+                                        if(Objects.equals(salesSellerReportRawDTO.getClosingChannelName(), salesBySellerFinalDTO.getClosingChannel())){
+                                            if(Objects.equals(salesSellerReportRawDTO.getBrandName(), salesBySellerFinalDTO.getBrand())){
+                                                if(Objects.equals(salesSellerReportRawDTO.getCategoryName(), salesBySellerFinalDTO.getCategory())){
+                                                    if(salesSellerReportRawDTO.getOrderItemStatus()){
                                                         double totalPrice = 0.00;
-                                                        if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                                                            totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                                                        if(Objects.equals(salesSellerReportRawDTO.getOrderItemDiscountName(), "PORCENTAJE")){
+                                                            totalPrice = (salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity())-((salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity())*(salesSellerReportRawDTO.getOrderDiscountAmount()/100));
                                                         }
 
-                                                        if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                                                            totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                                                        if(Objects.equals(salesSellerReportRawDTO.getOrderDiscountName(), "MONTO")){
+                                                            totalPrice = (salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity())-(salesSellerReportRawDTO.getOrderDiscountAmount());
                                                         }
 
-                                                        if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                                                            totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                                        if(Objects.equals(salesSellerReportRawDTO.getOrderDiscountName(), "NO APLICA")){
+                                                            totalPrice = (salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity());
                                                         }
-                                                        if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
+                                                        if(Objects.equals(salesSellerReportRawDTO.getOrderState(), "ENTREGADO")){
                                                             deliveredOrderFlag = true;
                                                         }
                                                         orderFlag = true;
-                                                        orderProductsBySeller+=orderItem.getQuantity();
+                                                        orderProductsBySeller+=salesSellerReportRawDTO.getQuantity();
                                                         orderSalesBySeller+=totalPrice;
                                                     }
                                                 }
@@ -1199,6 +1217,7 @@ public class ReportImpl implements IReport {
                                     .unitSalePrice((Double) item[10])
                                     .brandName((String) item[11])
                                     .closingChannelName((String) item[12])
+                                    .orderItemStatus((Boolean) item[13])
                                     .build()
                     );
                 });
@@ -1227,20 +1246,21 @@ public class ReportImpl implements IReport {
                         if(Objects.equals(salesByCategoryDTO.getClosingChannel(), salesCategoryReportRawDTO.getClosingChannelName())){
                             if(Objects.equals(salesCategoryReportRawDTO.getBrandName(), salesByCategoryDTO.getBrand())){
                                 if(Objects.equals(salesCategoryReportRawDTO.getCategoryName(), salesByCategoryDTO.getCategory())){
-                                    double totalPrice = 0.00;
-                                    if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "PORCENTAJE")){
-                                        totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())-((salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())*(salesCategoryReportRawDTO.getOrderItemDiscountAmount()/100));
+                                    if(salesCategoryReportRawDTO.getOrderItemStatus()){
+                                        double totalPrice = 0.00;
+                                        if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "PORCENTAJE")){
+                                            totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())-((salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())*(salesCategoryReportRawDTO.getOrderItemDiscountAmount()/100));
+                                        }
+                                        if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "MONTO")){
+                                            totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())-(salesCategoryReportRawDTO.getOrderItemDiscountAmount());
+                                        }
+                                        if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "NO APLICA")){
+                                            totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity());
+                                        }
+                                        orderFlag = true;
+                                        orderProductsByCategoryAndBrandAndClosingChannel+=salesCategoryReportRawDTO.getQuantity();
+                                        orderSalesByCategoryAndBrandAndClosingChannel+=totalPrice;
                                     }
-                                    if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "MONTO")){
-                                        totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())-(salesCategoryReportRawDTO.getOrderItemDiscountAmount());
-                                    }
-                                    if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "NO APLICA")){
-                                        totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity());
-                                    }
-                                    System.out.println(totalPrice);
-                                    orderFlag = true;
-                                    orderProductsByCategoryAndBrandAndClosingChannel+=salesCategoryReportRawDTO.getQuantity();
-                                    orderSalesByCategoryAndBrandAndClosingChannel+=totalPrice;
                                 }
                             }
                         }

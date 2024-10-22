@@ -25,4 +25,5 @@ public class SalesCategoryReportRawDTO {
     private Double unitSalePrice;
     private Double orderItemPrice;
     private String brandName;
+    private Boolean orderItemStatus;
 }
