@@ -488,6 +488,7 @@ public class ReportImpl implements IReport {
                                     .province((String) item[15])
                                     .district((String) item[16])
                                     .orderState((String) item[17])
+                                    .orderItemStatus((Boolean) item[18])
                                     .build()
                     );
                 });
@@ -541,24 +542,26 @@ public class ReportImpl implements IReport {
                                         if(Objects.equals(salesSellerReportRawDTO.getClosingChannelName(), salesBySellerFinalDTO.getClosingChannel())){
                                             if(Objects.equals(salesSellerReportRawDTO.getBrandName(), salesBySellerFinalDTO.getBrand())){
                                                 if(Objects.equals(salesSellerReportRawDTO.getCategoryName(), salesBySellerFinalDTO.getCategory())){
-                                                    double totalPrice = 0.00;
-                                                    if(Objects.equals(salesSellerReportRawDTO.getOrderItemDiscountName(), "PORCENTAJE")){
-                                                        totalPrice = (salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity())-((salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity())*(salesSellerReportRawDTO.getOrderDiscountAmount()/100));
-                                                    }
+                                                    if(salesSellerReportRawDTO.getOrderItemStatus()){
+                                                        double totalPrice = 0.00;
+                                                        if(Objects.equals(salesSellerReportRawDTO.getOrderItemDiscountName(), "PORCENTAJE")){
+                                                            totalPrice = (salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity())-((salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity())*(salesSellerReportRawDTO.getOrderDiscountAmount()/100));
+                                                        }
 
-                                                    if(Objects.equals(salesSellerReportRawDTO.getOrderDiscountName(), "MONTO")){
-                                                        totalPrice = (salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity())-(salesSellerReportRawDTO.getOrderDiscountAmount());
-                                                    }
+                                                        if(Objects.equals(salesSellerReportRawDTO.getOrderDiscountName(), "MONTO")){
+                                                            totalPrice = (salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity())-(salesSellerReportRawDTO.getOrderDiscountAmount());
+                                                        }
 
-                                                    if(Objects.equals(salesSellerReportRawDTO.getOrderDiscountName(), "NO APLICA")){
-                                                        totalPrice = (salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity());
+                                                        if(Objects.equals(salesSellerReportRawDTO.getOrderDiscountName(), "NO APLICA")){
+                                                            totalPrice = (salesSellerReportRawDTO.getUnitSalePrice() * salesSellerReportRawDTO.getQuantity());
+                                                        }
+                                                        if(Objects.equals(salesSellerReportRawDTO.getOrderState(), "ENTREGADO")){
+                                                            deliveredOrderFlag = true;
+                                                        }
+                                                        orderFlag = true;
+                                                        orderProductsBySeller+=salesSellerReportRawDTO.getQuantity();
+                                                        orderSalesBySeller+=totalPrice;
                                                     }
-                                                    if(Objects.equals(salesSellerReportRawDTO.getOrderState(), "ENTREGADO")){
-                                                        deliveredOrderFlag = true;
-                                                    }
-                                                    orderFlag = true;
-                                                    orderProductsBySeller+=salesSellerReportRawDTO.getQuantity();
-                                                    orderSalesBySeller+=totalPrice;
                                                 }
                                             }
                                         }
@@ -1214,6 +1217,7 @@ public class ReportImpl implements IReport {
                                     .unitSalePrice((Double) item[10])
                                     .brandName((String) item[11])
                                     .closingChannelName((String) item[12])
+                                    .orderItemStatus((Boolean) item[13])
                                     .build()
                     );
                 });
@@ -1242,20 +1246,21 @@ public class ReportImpl implements IReport {
                         if(Objects.equals(salesByCategoryDTO.getClosingChannel(), salesCategoryReportRawDTO.getClosingChannelName())){
                             if(Objects.equals(salesCategoryReportRawDTO.getBrandName(), salesByCategoryDTO.getBrand())){
                                 if(Objects.equals(salesCategoryReportRawDTO.getCategoryName(), salesByCategoryDTO.getCategory())){
-                                    double totalPrice = 0.00;
-                                    if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "PORCENTAJE")){
-                                        totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())-((salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())*(salesCategoryReportRawDTO.getOrderItemDiscountAmount()/100));
+                                    if(salesCategoryReportRawDTO.getOrderItemStatus()){
+                                        double totalPrice = 0.00;
+                                        if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "PORCENTAJE")){
+                                            totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())-((salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())*(salesCategoryReportRawDTO.getOrderItemDiscountAmount()/100));
+                                        }
+                                        if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "MONTO")){
+                                            totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())-(salesCategoryReportRawDTO.getOrderItemDiscountAmount());
+                                        }
+                                        if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "NO APLICA")){
+                                            totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity());
+                                        }
+                                        orderFlag = true;
+                                        orderProductsByCategoryAndBrandAndClosingChannel+=salesCategoryReportRawDTO.getQuantity();
+                                        orderSalesByCategoryAndBrandAndClosingChannel+=totalPrice;
                                     }
-                                    if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "MONTO")){
-                                        totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity())-(salesCategoryReportRawDTO.getOrderItemDiscountAmount());
-                                    }
-                                    if(Objects.equals(salesCategoryReportRawDTO.getOrderItemDiscountName(), "NO APLICA")){
-                                        totalPrice = (salesCategoryReportRawDTO.getUnitSalePrice() * salesCategoryReportRawDTO.getQuantity());
-                                    }
-                                    System.out.println(totalPrice);
-                                    orderFlag = true;
-                                    orderProductsByCategoryAndBrandAndClosingChannel+=salesCategoryReportRawDTO.getQuantity();
-                                    orderSalesByCategoryAndBrandAndClosingChannel+=totalPrice;
                                 }
                             }
                         }

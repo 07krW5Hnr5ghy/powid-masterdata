@@ -30,4 +30,5 @@ public class SalesSellerReportRawDTO {
     private String province;
     private String district;
     private String orderState;
+    private Boolean orderItemStatus;
 }

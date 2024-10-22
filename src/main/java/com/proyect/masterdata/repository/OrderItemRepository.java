@@ -33,7 +33,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
             "oi.discount_amount AS orderItemDiscountAmount, " +
             "d2.name AS orderItemDiscountName, " +
             "cp.name AS categoryName, " +
-            "pp.unit_sale_price AS unitSalePrice " +
+            "pp.unit_sale_price AS unitSalePrice, " +
+            "oi.status AS orderItemStatus " +
             "FROM ordering.order o " +
             "JOIN ordering.order_item oi ON o.order_id = oi.order_id " +
             "JOIN marketing.product p ON oi.product_id = p.product_id " +
@@ -62,7 +63,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
             "cp.name AS categoryName, " +
             "pp.unit_sale_price AS unitSalePrice, " +
             "b.name AS brandName, " +
-            "cc.name AS closingChannelName " +
+            "cc.name AS closingChannelName, " +
+            "oi.status AS orderItemStatus " +
             "FROM ordering.order o " +
             "JOIN ordering.order_item oi ON o.order_id = oi.order_id " +
             "JOIN marketing.product p ON oi.product_id = p.product_id " +
@@ -99,7 +101,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
             "de.name AS departmentName, " +
             "pr.name AS provinceName, " +
             "di.name AS districtName, " +
-            "os.name AS orderStateName " +
+            "os.name AS orderStateName, " +
+            "oi.status AS orderItemStatus " +
             "FROM ordering.order o " +
             "JOIN ordering.order_item oi ON o.order_id = oi.order_id " +
             "JOIN master.order_state os ON os.order_state_id = o.order_state_id " +

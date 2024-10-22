@@ -25,4 +25,5 @@ public class SalesCategoryRawDTO {
     private String categoryName;
     private Double unitSalePrice;
     private Double orderItemPrice;
+    private Boolean orderItemStatus;
 }
