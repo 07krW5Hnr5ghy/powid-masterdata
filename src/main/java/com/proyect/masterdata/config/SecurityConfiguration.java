@@ -86,8 +86,8 @@ public class SecurityConfiguration {
                     //auth.requestMatchers("/file/**").permitAll();
                     //auth.requestMatchers("/doc/**").permitAll();
                     //auth.requestMatchers("/color/**").hasAuthority("AUTH_ROLE:ADMINISTRATOR");
-                    //auth.requestMatchers("/**").permitAll();
-                    auth.anyRequest().authenticated();
+                    auth.requestMatchers("/**").permitAll();
+                    //auth.anyRequest().authenticated();
                 });
 
         http

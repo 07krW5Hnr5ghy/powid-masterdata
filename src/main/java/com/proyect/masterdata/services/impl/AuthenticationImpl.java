@@ -76,20 +76,20 @@ public class AuthenticationImpl implements IAuthentication {
                 if (user == null) {
                     throw new BadRequestExceptions(Constants.ErrorAuthentication);
                 }else {
-                    activeMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getId(), activeState.getId());
+                    //activeMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getId(), activeState.getId());
                 }
 
-                if(activeMembership != null){
-                    if(activeMembership.getExpirationDate().compareTo(currentDate) < 0){
-                        iMembership.delete(user.getUsername());
-                        payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(),payedState.getId());
-                        if(payedMembership != null){
-                            payedMembership.setMembershipState(activeState);
-                            payedMembership.setMembershipStateId(activeState.getId());
-                            membershipRepository.save(payedMembership);
-                        }
-                    }
-                }
+//                if(activeMembership != null){
+//                    if(activeMembership.getExpirationDate().compareTo(currentDate) < 0){
+//                        iMembership.delete(user.getUsername());
+//                        payedMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(),payedState.getId());
+//                        if(payedMembership != null){
+//                            payedMembership.setMembershipState(activeState);
+//                            payedMembership.setMembershipStateId(activeState.getId());
+//                            membershipRepository.save(payedMembership);
+//                        }
+//                    }
+//                }
 
                 Authentication auth = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(username.toUpperCase(), password));
@@ -107,7 +107,7 @@ public class AuthenticationImpl implements IAuthentication {
                         .build();
 
             } catch (AuthenticationException e) {
-                log.error(e);
+                log.error(e.getStackTrace());
                 throw new BadRequestExceptions(Constants.ErrorAuthentication);
             }
         });
