@@ -25,13 +25,13 @@ public class StockTransferItem {
     private UUID id;
 
     @Column(name = "supplier_product_id")
-    private Long supplierProductId;
+    private UUID supplierProductId;
 
     @Column(name = "quantity")
     private Integer quantity;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -42,7 +42,7 @@ public class StockTransferItem {
     private OffsetDateTime updateDate;
 
     @Column(name = "stock_transfer_id")
-    private Long stockTransferId;
+    private UUID stockTransferId;
 
     @Column(name = "user_id")
     private UUID userId;

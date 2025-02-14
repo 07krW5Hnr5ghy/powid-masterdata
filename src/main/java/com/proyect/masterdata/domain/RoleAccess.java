@@ -26,10 +26,10 @@ public class RoleAccess {
     private UUID id;
 
     @Column(name = "role_id", nullable = false)
-    private Long roleId;
+    private UUID roleId;
 
     @Column(name = "access_id", nullable = false)
-    private Long accessId;
+    private UUID accessId;
 
     @Column(name = "user_id")
     private UUID userId;

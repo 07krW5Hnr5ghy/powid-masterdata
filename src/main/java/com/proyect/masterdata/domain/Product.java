@@ -46,22 +46,22 @@ public class Product {
     private Boolean pictureFlag;
 
     @Column(name = "model_id", nullable = false)
-    private Long modelId;
+    private UUID modelId;
 
     @Column(name = "color_id", nullable = false)
-    private Long colorId;
+    private UUID colorId;
 
     @Column(name = "category_product_id", nullable = false)
-    private Long categoryProductId;
+    private UUID categoryProductId;
 
     @Column(name = "size_id", nullable = false)
-    private Long sizeId;
+    private UUID sizeId;
 
     @Column(name = "unit_id")
-    private Long unitId;
+    private UUID unitId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "user_id")
     private UUID userId;

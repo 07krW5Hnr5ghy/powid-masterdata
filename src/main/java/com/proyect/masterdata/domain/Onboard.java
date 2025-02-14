@@ -50,13 +50,13 @@ public class Onboard {
     private Boolean demo;
 
     @Column(name = "client_id", nullable = false)
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "entry_channel_id", nullable = false)
-    private Long entryChannelId;
+    private UUID entryChannelId;
 
     @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    private UUID categoryId;
 
     @OneToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)

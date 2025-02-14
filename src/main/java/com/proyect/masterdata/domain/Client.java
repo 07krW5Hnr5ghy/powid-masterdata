@@ -54,7 +54,7 @@ public class Client {
         private Boolean status;
 
         @Column(name = "district_id", nullable = false)
-        private Long districtId;
+        private UUID districtId;
 
         @Column(name = "registration_date")
         @CreationTimestamp

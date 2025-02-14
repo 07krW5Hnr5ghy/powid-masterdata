@@ -51,13 +51,13 @@ public class PurchaseItem {
     private Boolean status;
 
     @Column(name = "supplier_product_id")
-    private Long supplierProductId;
+    private UUID supplierProductId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "purchase_id")
-    private Long purchaseId;
+    private UUID purchaseId;
 
     @Column(name = "user_id")
     private UUID userId;

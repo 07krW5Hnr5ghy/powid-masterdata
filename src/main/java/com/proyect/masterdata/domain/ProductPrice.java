@@ -44,7 +44,7 @@ public class ProductPrice {
     private Boolean status;
 
     @Column(name = "product_id")
-    private Long productId;
+    private UUID productId;
 
     @Column(name = "user_id")
     private UUID userId;

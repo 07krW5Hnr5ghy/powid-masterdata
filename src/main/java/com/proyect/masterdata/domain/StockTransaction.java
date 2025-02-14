@@ -27,13 +27,13 @@ public class StockTransaction {
     private String serial;
 
     @Column(name = "stock_transaction_type_id")
-    private Long stockTransactionTypeId;
+    private UUID stockTransactionTypeId;
 
     @Column(name = "warehouse_id")
-    private Long warehouseId;
+    private UUID warehouseId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "user_id")
     private UUID userId;

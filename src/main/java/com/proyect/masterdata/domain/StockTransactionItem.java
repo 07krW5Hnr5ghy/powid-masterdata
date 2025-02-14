@@ -41,13 +41,13 @@ public class StockTransactionItem {
     private OffsetDateTime registrationDate;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "supplier_product_id")
-    private Long supplierProductId;
+    private UUID supplierProductId;
 
     @Column(name = "stock_transaction_id")
-    private Long stockTransactionId;
+    private UUID stockTransactionId;
 
     @Column(name = "user_id")
     private UUID userId;

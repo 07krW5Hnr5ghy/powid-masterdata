@@ -42,13 +42,13 @@ public class Customer {
     private String dni;
 
     @Column(name = "customer_type_id")
-    private Long customerTypeId;
+    private UUID customerTypeId;
 
     @Column(name = "district_id")
-    private Long districtId;
+    private UUID districtId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "user_id")
     private UUID userId;

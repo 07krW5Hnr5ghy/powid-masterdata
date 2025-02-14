@@ -38,7 +38,7 @@ public class District {
         private OffsetDateTime updateDate;
 
         @Column(name = "province_id")
-        private Long provinceId;
+        private UUID provinceId;
 
         @ManyToOne
         @JoinColumn(name = "province_id", columnDefinition = "provinceId", insertable = false, updatable = false)

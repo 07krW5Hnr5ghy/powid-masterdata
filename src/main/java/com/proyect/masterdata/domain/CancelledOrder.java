@@ -33,13 +33,13 @@ public class CancelledOrder {
     private OffsetDateTime updateDate;
 
     @Column(name = "order_id")
-    private Long orderingId;
+    private UUID orderingId;
 
     @Column(name = "cancellation_reason_id")
-    private Long cancellationReasonId;
+    private UUID cancellationReasonId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "user_id")
     private UUID userId;

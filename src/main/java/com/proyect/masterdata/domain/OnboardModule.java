@@ -31,10 +31,10 @@ public class OnboardModule {
     private UUID id;
 
     @Column(name = "onboard_id")
-    private Long onboardId;
+    private UUID onboardId;
 
     @Column(name = "module_id")
-    private Long moduleId;
+    private UUID moduleId;
 
     @ManyToOne
     @JoinColumn(name = "onboard_id", columnDefinition = "onboardId", insertable = false, updatable = false)

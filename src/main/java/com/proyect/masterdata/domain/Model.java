@@ -51,10 +51,10 @@ public class Model {
     private OffsetDateTime updateDate;
 
     @Column(name = "brand_id")
-    private Long brandId;
+    private UUID brandId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @ManyToOne
     @JoinColumn(name = "brand_id", columnDefinition = "brandId", insertable = false, updatable = false)

@@ -34,10 +34,10 @@ public class MembershipModule {
     private UUID id;
 
     @Column(name = "membership_id", nullable = false)
-    private Long membershipId;
+    private UUID membershipId;
 
     @Column(name = "module_id", nullable = false)
-    private Long moduleId;
+    private UUID moduleId;
 
     @Column(name = "registration_date", nullable = false)
     @CreationTimestamp

@@ -39,19 +39,19 @@ public class OrderStockItem {
     private Boolean status;
 
     @Column(name = "item_id")
-    private Long orderItemId;
+    private UUID orderItemId;
 
     @Column(name = "supplier_product_id")
-    private Long supplierProductId;
+    private UUID supplierProductId;
 
     @Column(name = "order_stock_id")
-    private Long orderStockId;
+    private UUID orderStockId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "order_id")
-    private Long orderId;
+    private UUID orderId;
 
     @Column(name = "user_id")
     private UUID userId;

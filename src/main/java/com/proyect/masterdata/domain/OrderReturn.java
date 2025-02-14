@@ -35,13 +35,13 @@ public class OrderReturn {
     private UUID userId;
 
     @Column(name = "order_id")
-    private Long orderId;
+    private UUID orderId;
 
     @Column(name = "order_stock_id")
-    private Long orderStockId;
+    private UUID orderStockId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "status")
     private Boolean status;

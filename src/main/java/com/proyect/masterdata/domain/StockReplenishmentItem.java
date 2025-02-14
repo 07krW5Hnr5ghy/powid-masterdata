@@ -27,16 +27,16 @@ public class StockReplenishmentItem {
     private Integer quantity;
 
     @Column(name = "order_id")
-    private Long orderId;
+    private UUID orderId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "product_id")
-    private Long productId;
+    private UUID productId;
 
     @Column(name = "stock_replenishment_id")
-    private Long stockReplenishmentId;
+    private UUID stockReplenishmentId;
 
     @Column(name = "user_id")
     private UUID userId;

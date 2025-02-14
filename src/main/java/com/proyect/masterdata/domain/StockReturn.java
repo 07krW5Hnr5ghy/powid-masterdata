@@ -36,13 +36,13 @@ public class StockReturn {
     private Boolean status;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "supplier_id")
-    private Long supplierId;
+    private UUID supplierId;
 
     @Column(name = "warehouse_id")
-    private Long warehouseId;
+    private UUID warehouseId;
 
     @Column(name = "user_id")
     private UUID userId;

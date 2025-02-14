@@ -35,16 +35,16 @@ public class OrderItem {
     private String observations;
 
     @Column(name = "product_id")
-    private Long productId;
+    private UUID productId;
 
     @Column(name = "order_id")
-    private Long orderId;
+    private UUID orderId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "discount_id")
-    private Long discountId;
+    private UUID discountId;
 
     @Column(name = "user_id")
     private UUID userId;

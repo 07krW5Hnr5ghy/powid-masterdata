@@ -39,7 +39,7 @@ public class Size {
         private OffsetDateTime updateDate;
 
         @Column(name = "size_type_id", nullable = false)
-        private Long sizeTypeId;
+        private UUID sizeTypeId;
 
         @ManyToOne
         @JoinColumn(name = "size_type_id", columnDefinition = "sizeTypeId", insertable = false, updatable = false)

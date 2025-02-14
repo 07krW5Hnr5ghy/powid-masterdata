@@ -41,16 +41,16 @@ public class Membership {
         private Boolean demo;
 
         @Column(name = "client_id", nullable = false)
-        private Long clientId;
+        private UUID clientId;
 
         @Column(name = "subscription_id", nullable = false)
-        private Long subscriptionId;
+        private UUID subscriptionId;
 
         @Column(name = "membership_payment_id",nullable = false)
-        private Long membershipPaymentId;
+        private UUID membershipPaymentId;
 
         @Column(name = "membership_state_id")
-        private Long membershipStateId;
+        private UUID membershipStateId;
 
         @ManyToOne()
         @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)

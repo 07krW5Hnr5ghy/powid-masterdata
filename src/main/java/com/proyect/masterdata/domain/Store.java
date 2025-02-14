@@ -42,13 +42,13 @@ public class Store {
         private OffsetDateTime updateDate;
 
         @Column(name = "client_id", nullable = false)
-        private Long clientId;
+        private UUID clientId;
 
         @Column(name = "user_id")
         private UUID userId;
 
         @Column(name = "store_type_id", nullable = false)
-        private Long storeTypeId;
+        private UUID storeTypeId;
 
         @OneToOne
         @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)

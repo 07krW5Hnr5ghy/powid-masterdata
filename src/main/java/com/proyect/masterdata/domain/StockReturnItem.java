@@ -30,19 +30,19 @@ public class StockReturnItem {
     private String observations;
 
     @Column(name = "supplier_product_id")
-    private Long supplierProductId;
+    private UUID supplierProductId;
 
     @Column(name = "registration_date")
     private OffsetDateTime registrationDate;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "status")
     private Boolean status;
 
     @Column(name = "stock_return_id")
-    private Long stockReturnId;
+    private UUID stockReturnId;
 
     @Column(name = "user_id")
     private UUID userId;

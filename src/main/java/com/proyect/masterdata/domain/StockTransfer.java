@@ -28,13 +28,13 @@ public class StockTransfer {
     private String serial;
 
     @Column(name = "origin_warehouse_id")
-    private Long originWarehouseId;
+    private UUID originWarehouseId;
 
     @Column(name = "destination_warehouse_id")
-    private Long destinationWarehouseId;
+    private UUID destinationWarehouseId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "registration_date")
     @CreationTimestamp

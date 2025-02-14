@@ -24,16 +24,16 @@ public class OrderReturnItem {
     private UUID id;
 
     @Column(name = "order_return_id")
-    private Long orderReturnId;
+    private UUID orderReturnId;
 
     @Column(name = "product_id")
-    private Long productId;
+    private UUID productId;
 
     @Column(name = "order_return_type_id")
-    private Long orderReturnTypeId;
+    private UUID orderReturnTypeId;
 
     @Column(name = "supplier_product_id")
-    private Long supplierProductId;
+    private UUID supplierProductId;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -53,7 +53,7 @@ public class OrderReturnItem {
     private UUID userId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @ManyToOne()
     @JoinColumn(name = "order_return_id",columnDefinition = "orderReturnId",insertable = false,updatable = false)

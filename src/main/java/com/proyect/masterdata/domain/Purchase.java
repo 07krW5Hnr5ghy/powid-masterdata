@@ -39,19 +39,19 @@ public class Purchase {
     private Boolean status;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "warehouse_id")
-    private Long warehouseId;
+    private UUID warehouseId;
 
     @Column(name = "purchase_type_id")
-    private Long purchaseTypeId;
+    private UUID purchaseTypeId;
 
     @Column(name = "purchase_document_id")
-    private Long purchaseDocumentId;
+    private UUID purchaseDocumentId;
 
     @Column(name = "supplier_id")
-    private Long supplierId;
+    private UUID supplierId;
 
     @Column(name = "user_id")
     private UUID userId;

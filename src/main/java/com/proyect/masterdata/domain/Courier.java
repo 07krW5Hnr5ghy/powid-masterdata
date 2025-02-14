@@ -42,7 +42,7 @@ public class Courier {
     private UUID userId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @ManyToOne
     @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)

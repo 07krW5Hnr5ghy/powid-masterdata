@@ -36,10 +36,10 @@ public class StockReplenishment {
     private OffsetDateTime updateDate;
 
     @Column(name = "order_id")
-    private Long orderId;
+    private UUID orderId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "user_id")
     private UUID userId;

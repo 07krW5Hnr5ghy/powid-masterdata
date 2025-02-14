@@ -33,10 +33,10 @@ public class MembershipModuleRole {
     private UUID id;
 
     @Column(name = "membership_module_id", nullable = false)
-    private Long membershipModuleId;
+    private UUID membershipModuleId;
 
     @Column(name = "role_id", nullable = false)
-    private Long roleId;
+    private UUID roleId;
 
     @Column(name = "registration_date", nullable = false)
     @CreationTimestamp

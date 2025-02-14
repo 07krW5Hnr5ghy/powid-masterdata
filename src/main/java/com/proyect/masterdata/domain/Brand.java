@@ -39,7 +39,7 @@ public class Brand {
     private OffsetDateTime updateDate;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "user_id")
     private UUID userId;

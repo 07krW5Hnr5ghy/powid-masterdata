@@ -24,7 +24,7 @@ public class OrderPaymentReceipt {
     private UUID id;
 
     @Column(name = "order_id")
-    private Long orderId;
+    private UUID orderId;
 
     @Column(name = "payment_receipt_url")
     private String paymentReceiptUrl;
@@ -37,7 +37,7 @@ public class OrderPaymentReceipt {
     private UUID userId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @ManyToOne
     @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)

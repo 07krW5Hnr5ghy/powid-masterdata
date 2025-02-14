@@ -63,10 +63,10 @@ public class User {
     private OffsetDateTime updateDate;
 
     @Column(name = "district_id", updatable = false, nullable = false)
-    private Long districtId;
+    private UUID districtId;
 
     @Column(name = "client_id", nullable = false)
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "user_token_id")
     private UUID userId;

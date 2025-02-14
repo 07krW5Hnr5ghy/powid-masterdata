@@ -45,13 +45,13 @@ public class WarehouseStock {
     private OffsetDateTime updateDate;
 
     @Column(name = "warehouse_id")
-    private Long warehouseId;
+    private UUID warehouseId;
 
     @Column(name = "supplier_product_id")
-    private Long supplierProductId;
+    private UUID supplierProductId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "user_id")
     private UUID userId;

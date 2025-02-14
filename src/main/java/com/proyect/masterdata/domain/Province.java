@@ -35,7 +35,7 @@ public class Province {
         private OffsetDateTime registrationDate;
 
         @Column(name = "department_id", nullable = false)
-        private Long departmentId;
+        private UUID departmentId;
 
         @Column(name = "user_id")
         private UUID userId;

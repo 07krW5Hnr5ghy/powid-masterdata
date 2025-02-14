@@ -62,40 +62,40 @@ public class Ordering {
     private OffsetDateTime updateDate;
 
     @Column(name = "order_state_id")
-    private Long orderStateId;
+    private UUID orderStateId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "courier_id")
-    private Long courierId;
+    private UUID courierId;
 
     @Column(name = "delivery_point_id")
-    private Long deliveryPointId;
+    private UUID deliveryPointId;
 
     @Column(name = "payment_state_id")
-    private Long paymentStateId;
+    private UUID paymentStateId;
 
     @Column(name = "payment_method_id")
-    private Long paymentMethodId;
+    private UUID paymentMethodId;
 
     @Column(name = "sale_channel_id")
-    private Long saleChannelId;
+    private UUID saleChannelId;
 
     @Column(name = "management_type_id")
-    private Long managementTypeId;
+    private UUID managementTypeId;
 
     @Column(name = "store_id")
-    private Long storeId;
+    private UUID storeId;
 
     @Column(name = "closing_channel_id")
-    private Long closingChannelId;
+    private UUID closingChannelId;
 
     @Column(name = "customer_id")
-    private Long customerId;
+    private UUID customerId;
 
     @Column(name = "discount_id")
-    private Long discountId;
+    private UUID discountId;
 
     @Column(name = "user_id")
     private UUID userId;

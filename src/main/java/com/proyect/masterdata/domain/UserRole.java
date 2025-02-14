@@ -25,10 +25,10 @@ public class UserRole {
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private UUID userId;
 
     @Column(name = "role_id", nullable = false)
-    private Long roleId;
+    private UUID roleId;
 
     @Column(name = "user_token_id")
     private String userTokenId;

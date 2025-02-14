@@ -45,10 +45,10 @@ public class MembershipPayment {
         private OffsetDateTime updateDate;
 
         @Column(name = "payment_gateway_id")
-        private Long paymentGatewayId;
+        private UUID paymentGatewayId;
 
         @Column(name = "client_id")
-        private Long clientId;
+        private UUID clientId;
 
         @Column(name = "user_id")
         private UUID userId;

@@ -25,7 +25,7 @@ public class CourierPicture {
     private UUID id;
 
     @Column(name = "order_id")
-    private Long orderId;
+    private UUID orderId;
 
     @Column(name = "picture_url")
     private String pictureUrl;
@@ -38,7 +38,7 @@ public class CourierPicture {
     private UUID userId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @ManyToOne
     @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)

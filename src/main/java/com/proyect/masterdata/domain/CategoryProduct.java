@@ -44,7 +44,7 @@ public class CategoryProduct {
     private OffsetDateTime updateDate;
 
     @Column(name = "size_type_id")
-    private Long sizeTypeId;
+    private UUID sizeTypeId;
 
     @Column(name = "user_id")
     private UUID userId;

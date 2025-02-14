@@ -24,10 +24,10 @@ public class OrderStock {
     private UUID id;
 
     @Column(name = "order_id")
-    private Long orderId;
+    private UUID orderId;
 
     @Column(name = "warehouse_id")
-    private Long warehouseId;
+    private UUID warehouseId;
 
     @Column(name = "status")
     private Boolean status;
@@ -42,7 +42,7 @@ public class OrderStock {
     private UUID userId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @ManyToOne
     @JoinColumn(name = "order_id", columnDefinition = "orderId", insertable = false, updatable = false)

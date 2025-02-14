@@ -40,7 +40,7 @@ public class Unit {
     private UUID userId;
 
     @Column(name = "unit_type_id")
-    private Long unitTypeId;
+    private UUID unitTypeId;
 
     @ManyToOne
     @JoinColumn(name = "unit_type_id",columnDefinition = "unitTypeId",insertable = false,updatable = false)

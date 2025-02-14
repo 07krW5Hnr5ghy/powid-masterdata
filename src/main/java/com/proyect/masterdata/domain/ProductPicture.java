@@ -25,7 +25,7 @@ public class ProductPicture {
     private UUID id;
 
     @Column(name = "product_id")
-    private Long productId;
+    private UUID productId;
 
     @Column(name = "product_picture_url")
     private String productPictureUrl;
@@ -38,7 +38,7 @@ public class ProductPicture {
     private UUID userId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @ManyToOne
     @JoinColumn(name = "product_id",columnDefinition = "productId",insertable = false,updatable = false)

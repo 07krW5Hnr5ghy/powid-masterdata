@@ -27,10 +27,10 @@ public class Audit {
     private UUID userId;
 
     @Column(name = "audit_event_id")
-    private Long auditEventId;
+    private UUID auditEventId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "registration_date")
     @CreationTimestamp
