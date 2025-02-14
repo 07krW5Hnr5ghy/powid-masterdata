@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -30,7 +31,7 @@ public class MembershipModule {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "membership_module_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "membership_id", nullable = false)
     private Long membershipId;
@@ -58,7 +59,7 @@ public class MembershipModule {
     private Module module;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne()
     @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)

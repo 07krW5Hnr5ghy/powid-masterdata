@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -20,7 +21,7 @@ public class StockReturn {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "stock_return_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "serial")
     private String serial;
@@ -44,7 +45,7 @@ public class StockReturn {
     private Long warehouseId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)

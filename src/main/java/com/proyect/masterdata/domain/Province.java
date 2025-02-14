@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -21,7 +22,7 @@ public class Province {
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "province_id")
-        private String id;
+        private UUID id;
 
         @Column(name = "name", nullable = false)
         private String name;
@@ -37,7 +38,7 @@ public class Province {
         private Long departmentId;
 
         @Column(name = "user_id")
-        private String userId;
+        private UUID userId;
 
         @ManyToOne
         @JoinColumn(name = "department_id", columnDefinition = "departmentId", insertable = false, updatable = false)

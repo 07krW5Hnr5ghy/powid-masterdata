@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import com.proyect.masterdata.utils.Constants;
 
@@ -28,7 +29,7 @@ public class ProductPrice {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "product_price_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "unit_sale_price")
     private Double unitSalePrice;
@@ -46,7 +47,7 @@ public class ProductPrice {
     private Long productId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false, updatable = false)

@@ -18,6 +18,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -30,7 +31,7 @@ public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "model_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -64,7 +65,7 @@ public class Model {
     private Client client;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne()
     @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)

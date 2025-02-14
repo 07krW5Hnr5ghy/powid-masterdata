@@ -21,10 +21,10 @@ public class Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "audit_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @Column(name = "audit_event_id")
     private Long auditEventId;

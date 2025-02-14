@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,7 +24,7 @@ public class CategoryProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "category_product_id", unique = true)
-    private String id;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -46,7 +47,7 @@ public class CategoryProduct {
     private Long sizeTypeId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "size_type_id", columnDefinition = "sizeTypeId", insertable = false, updatable = false)

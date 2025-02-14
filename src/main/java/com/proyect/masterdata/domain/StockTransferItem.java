@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -21,7 +22,7 @@ public class StockTransferItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "stock_transfer_item_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "supplier_product_id")
     private Long supplierProductId;
@@ -44,7 +45,7 @@ public class StockTransferItem {
     private Long stockTransferId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne()
     @JoinColumn(name = "supplier_product_id",columnDefinition = "supplierProductId",insertable = false,updatable = false)

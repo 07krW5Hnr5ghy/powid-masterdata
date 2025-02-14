@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -21,7 +22,7 @@ public class AuditEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "audit_event_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -38,7 +39,7 @@ public class AuditEvent {
     private OffsetDateTime updateDate;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)

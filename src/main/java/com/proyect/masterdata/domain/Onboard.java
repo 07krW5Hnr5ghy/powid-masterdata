@@ -16,6 +16,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -27,7 +29,7 @@ public class Onboard {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "onboard_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "ecommerce", nullable = false)
     private Boolean ecommerce;

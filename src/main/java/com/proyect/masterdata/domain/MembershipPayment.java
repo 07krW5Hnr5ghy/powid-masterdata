@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -21,7 +22,7 @@ public class MembershipPayment {
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "membership_payment_id", nullable = false)
-        private String id;
+        private UUID id;
 
         @Column(name = "net_amount", nullable = false)
         private Double netAmount;
@@ -50,7 +51,7 @@ public class MembershipPayment {
         private Long clientId;
 
         @Column(name = "user_id")
-        private String userId;
+        private UUID userId;
 
         @ManyToOne()
         @JoinColumn(name = "payment_gateway_id",columnDefinition = "paymentGatewayId",insertable = false,updatable = false)

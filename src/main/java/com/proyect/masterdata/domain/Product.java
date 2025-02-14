@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -22,7 +23,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "product_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "sku", nullable = false)
     private String sku;
@@ -63,7 +64,7 @@ public class Product {
     private Long clientId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "model_id", columnDefinition = "modelId", insertable = false, updatable = false)

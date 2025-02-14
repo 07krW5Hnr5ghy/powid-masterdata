@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -22,7 +23,7 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_item_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -46,7 +47,7 @@ public class OrderItem {
     private Long discountId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @Column(name = "status")
     private Boolean status;

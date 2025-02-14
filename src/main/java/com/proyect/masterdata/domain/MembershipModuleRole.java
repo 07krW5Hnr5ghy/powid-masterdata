@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -29,7 +30,7 @@ public class MembershipModuleRole {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "membership_module_role_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "membership_module_id", nullable = false)
     private Long membershipModuleId;
@@ -56,7 +57,7 @@ public class MembershipModuleRole {
     private Role role;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne()
     @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)

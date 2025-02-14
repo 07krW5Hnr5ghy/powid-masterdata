@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -21,7 +22,7 @@ public class CancelledOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "cancelled_order_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -41,7 +42,7 @@ public class CancelledOrder {
     private Long clientId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "order_id",columnDefinition = "orderId", insertable = false,updatable = false)

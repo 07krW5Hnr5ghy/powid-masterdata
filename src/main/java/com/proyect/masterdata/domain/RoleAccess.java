@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import com.proyect.masterdata.utils.Constants;
 
@@ -22,7 +23,7 @@ public class RoleAccess {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "role_access_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "role_id", nullable = false)
     private Long roleId;
@@ -31,7 +32,7 @@ public class RoleAccess {
     private Long accessId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @Column(name = "registration_date")
     @CreationTimestamp

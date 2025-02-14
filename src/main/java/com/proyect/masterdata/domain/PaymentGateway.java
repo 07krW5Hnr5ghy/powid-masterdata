@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -21,7 +22,7 @@ public class PaymentGateway {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "payment_gateway_id", nullable = false)
-    private String id;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -35,7 +36,7 @@ public class PaymentGateway {
     private OffsetDateTime updateDate;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @Column(name = "status")
     private Boolean status;

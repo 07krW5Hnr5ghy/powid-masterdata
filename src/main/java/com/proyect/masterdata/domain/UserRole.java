@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -21,7 +22,7 @@ public class UserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_role_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;

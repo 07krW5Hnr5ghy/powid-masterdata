@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -30,7 +31,7 @@ public class GeneralStock {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "general_stock_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -50,7 +51,7 @@ public class GeneralStock {
     private Long clientId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "supplier_product_id", columnDefinition = "supplierProductId", insertable = false, updatable = false)

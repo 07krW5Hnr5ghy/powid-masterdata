@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -20,7 +21,7 @@ public class OrderPaymentReceipt {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_payment_receipt")
-    private String id;
+    private UUID id;
 
     @Column(name = "order_id")
     private Long orderId;
@@ -33,7 +34,7 @@ public class OrderPaymentReceipt {
     private OffsetDateTime registrationDate;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @Column(name = "client_id")
     private Long clientId;

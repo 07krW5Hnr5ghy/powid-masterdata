@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import com.proyect.masterdata.utils.Constants;
 
@@ -21,7 +22,7 @@ public class Unit {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "unit_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -36,7 +37,7 @@ public class Unit {
     private OffsetDateTime updateDate;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @Column(name = "unit_type_id")
     private Long unitTypeId;

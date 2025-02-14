@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -21,7 +22,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -68,7 +69,7 @@ public class User {
     private Long clientId;
 
     @Column(name = "user_token_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -22,7 +23,7 @@ public class Membership {
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "membership_id")
-        private String id;
+        private UUID id;
 
         @Column(name = "registration_date", nullable = false)
         @CreationTimestamp

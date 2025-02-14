@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -30,7 +31,7 @@ public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "supplier_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "business_name")
     private String businessName;
@@ -56,7 +57,7 @@ public class Supplier {
     private OffsetDateTime updateDate;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @Column(name = "client_id")
     private Long clientId;

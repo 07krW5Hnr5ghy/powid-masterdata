@@ -11,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -23,7 +24,7 @@ public class Client {
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "client_id")
-        private String id;
+        private UUID id;
 
         @Column(name = "name", nullable = false)
         private String name;

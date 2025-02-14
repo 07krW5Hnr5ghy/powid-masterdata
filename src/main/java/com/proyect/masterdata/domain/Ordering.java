@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,7 +24,7 @@ public class Ordering {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "cancellation")
     private Boolean cancellation;
@@ -97,7 +98,7 @@ public class Ordering {
     private Long discountId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "order_state_id", columnDefinition = "orderStateId", insertable = false, updatable = false)

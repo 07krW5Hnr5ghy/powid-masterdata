@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,7 +24,7 @@ public class ClosingChannel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "closing_channel_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -40,7 +41,7 @@ public class ClosingChannel {
     private OffsetDateTime updateDate;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @ManyToOne()
     @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
