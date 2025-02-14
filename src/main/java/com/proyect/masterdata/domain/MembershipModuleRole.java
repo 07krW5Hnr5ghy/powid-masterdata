@@ -27,9 +27,9 @@ import lombok.NoArgsConstructor;
 public class MembershipModuleRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "membership_module_role_id")
-    private Long id;
+    private String id;
 
     @Column(name = "membership_module_id", nullable = false)
     private Long membershipModuleId;

@@ -19,9 +19,9 @@ import java.util.Date;
 public class CancellationReason {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "cancellation_reason_id")
-    private Long id;
+    private String id;
 
     @Column(name = "name")
     private String name;

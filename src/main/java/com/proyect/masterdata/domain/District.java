@@ -18,9 +18,9 @@ import java.util.Date;
 @Table(name = Constants.tableDistrict, schema = Constants.schemaMaster)
 public class District {
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "district_id")
-        private Long id;
+        private String id;
 
         @Column(name = "name")
         private String name;

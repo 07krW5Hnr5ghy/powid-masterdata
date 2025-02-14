@@ -19,9 +19,9 @@ import java.util.Date;
 public class Store {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "store_id", unique = true)
-        private Long id;
+        private String id;
 
         @Column(name = "name", nullable = false)
         private String name;

@@ -28,9 +28,9 @@ import lombok.NoArgsConstructor;
 public class SupplierProduct {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "supplier_product_id")
-    private Long id;
+    private String id;
 
     @Column(name = "serial")
     private String serial;

@@ -25,9 +25,9 @@ import lombok.NoArgsConstructor;
 public class Onboard {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "onboard_id")
-    private Long id;
+    private String id;
 
     @Column(name = "ecommerce", nullable = false)
     private Boolean ecommerce;

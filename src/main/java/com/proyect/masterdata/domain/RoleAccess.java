@@ -20,9 +20,9 @@ import org.hibernate.annotations.CreationTimestamp;
 public class RoleAccess {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "role_access_id")
-    private Long id;
+    private String id;
 
     @Column(name = "role_id", nullable = false)
     private Long roleId;

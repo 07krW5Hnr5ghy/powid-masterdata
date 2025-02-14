@@ -28,9 +28,9 @@ import lombok.NoArgsConstructor;
 public class WarehouseStock {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "warehouse_stock_id")
-    private Long id;
+    private String id;
 
     @Column(name = "quantity")
     private Integer quantity;

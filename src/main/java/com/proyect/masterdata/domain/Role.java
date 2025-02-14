@@ -19,9 +19,9 @@ import java.util.Date;
 public class Role {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "role_id")
-        private Long id;
+        private String id;
 
         @Column(name = "name", nullable = false)
         private String name;

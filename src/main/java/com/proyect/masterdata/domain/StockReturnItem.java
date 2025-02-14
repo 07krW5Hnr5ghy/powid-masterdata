@@ -18,9 +18,9 @@ import java.util.Date;
 public class StockReturnItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "stock_return_item_id")
-    private Long id;
+    private String id;
 
     @Column(name = "quantity")
     private Integer quantity;

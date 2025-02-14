@@ -19,9 +19,9 @@ import java.util.Date;
 public class MembershipPayment {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "membership_payment_id", nullable = false)
-        private Long id;
+        private String id;
 
         @Column(name = "net_amount", nullable = false)
         private Double netAmount;

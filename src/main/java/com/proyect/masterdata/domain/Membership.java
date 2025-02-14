@@ -20,9 +20,9 @@ import org.hibernate.annotations.CreationTimestamp;
 public class Membership {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "membership_id")
-        private Long id;
+        private String id;
 
         @Column(name = "registration_date", nullable = false)
         @CreationTimestamp

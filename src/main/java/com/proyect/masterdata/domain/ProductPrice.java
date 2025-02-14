@@ -26,9 +26,9 @@ import lombok.NoArgsConstructor;
 public class ProductPrice {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "product_price_id")
-    private Long id;
+    private String id;
 
     @Column(name = "unit_sale_price")
     private Double unitSalePrice;

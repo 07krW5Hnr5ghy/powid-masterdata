@@ -18,9 +18,9 @@ import java.util.Date;
 public class OrderStock {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_stock_id")
-    private Long id;
+    private String id;
 
     @Column(name = "order_id")
     private Long orderId;

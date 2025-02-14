@@ -18,9 +18,9 @@ import java.util.Date;
 @Table(name = Constants.tableCountry, schema = Constants.schemaMaster)
 public class Country {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "country_id")
-    private Long id;
+    private String id;
 
     @Column(name = "name")
     private String name;

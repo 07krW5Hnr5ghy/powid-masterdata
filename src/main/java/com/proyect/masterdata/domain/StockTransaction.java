@@ -18,9 +18,9 @@ import java.util.Date;
 public class StockTransaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "stock_transaction_id")
-    private Long id;
+    private String id;
 
     @Column(name = "serial")
     private String serial;

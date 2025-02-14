@@ -17,9 +17,9 @@ import java.util.Date;
 @Table(name = Constants.tableDiscount, schema = Constants.schemaMaster)
 public class Discount {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "discount_id")
-    private Long id;
+    private String id;
 
     @Column(name = "name")
     private String name;

@@ -19,9 +19,9 @@ import java.util.Date;
 public class PaymentGateway {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "payment_gateway_id", nullable = false)
-    private Long id;
+    private String id;
 
     @Column(name = "name")
     private String name;

@@ -18,9 +18,9 @@ import java.util.Date;
 @Table(name = Constants.tableMembershipPaymentState,schema = Constants.schemaPayment)
 public class MembershipPaymentState {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "membership_payment_state_id", nullable = false)
-    private Long id;
+    private String id;
 
     @Column(name = "name")
     private String name;

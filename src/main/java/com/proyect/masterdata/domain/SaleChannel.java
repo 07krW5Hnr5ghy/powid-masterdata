@@ -18,9 +18,9 @@ import java.util.Date;
 @Table(name = Constants.tableSaleChannel, schema = Constants.schemaMaster)
 public class SaleChannel {
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "sale_channel_id")
-        private Long id;
+        private String id;
 
         @Column(name = "name", nullable = false)
         private String name;

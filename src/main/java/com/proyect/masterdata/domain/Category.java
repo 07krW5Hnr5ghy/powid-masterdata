@@ -19,9 +19,9 @@ import java.util.Date;
 public class Category {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "category_id", unique = true)
-        private Long id;
+        private String id;
 
         @Column(name = "name")
         private String name;

@@ -19,9 +19,9 @@ import java.util.Date;
 public class CancelledOrder {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "cancelled_order_id")
-    private Long id;
+    private String id;
 
     @Column(name = "registration_date")
     @CreationTimestamp

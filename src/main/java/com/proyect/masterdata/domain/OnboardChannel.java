@@ -24,9 +24,9 @@ import lombok.NoArgsConstructor;
 public class OnboardChannel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "onboard_channel_id")
-    private Long id;
+    private String id;
 
     @Column(name = "onboard_id", nullable = false)
     private Long onboardId;

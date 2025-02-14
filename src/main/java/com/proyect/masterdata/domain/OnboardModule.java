@@ -24,9 +24,9 @@ import lombok.NoArgsConstructor;
 public class OnboardModule {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "onboard_module_id")
-    private Long id;
+    private String id;
 
     @Column(name = "onboard_id")
     private Long onboardId;

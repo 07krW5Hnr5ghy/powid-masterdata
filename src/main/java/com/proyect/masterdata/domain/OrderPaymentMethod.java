@@ -19,9 +19,9 @@ import java.util.Date;
 public class OrderPaymentMethod {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "payment_method_id", nullable = false)
-        private Long id;
+        private String id;
 
         @Column(name = "name", nullable = false)
         private String name;

@@ -18,9 +18,9 @@ import java.util.Date;
 @Table(name = Constants.tableOrderPaymentReceipt,schema = Constants.schemaOrder)
 public class OrderPaymentReceipt {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_payment_receipt")
-    private Long id;
+    private String id;
 
     @Column(name = "order_id")
     private Long orderId;

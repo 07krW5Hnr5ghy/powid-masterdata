@@ -19,9 +19,9 @@ import java.util.Date;
 public class CourierPicture {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "courier_picture_id")
-    private Long id;
+    private String id;
 
     @Column(name = "order_id")
     private Long orderId;

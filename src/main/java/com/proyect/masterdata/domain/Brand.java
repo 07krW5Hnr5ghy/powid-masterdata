@@ -28,9 +28,9 @@ import lombok.NoArgsConstructor;
 public class Brand {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "brand_id")
-    private Long id;
+    private String id;
 
     @Column(name = "name")
     private String name;

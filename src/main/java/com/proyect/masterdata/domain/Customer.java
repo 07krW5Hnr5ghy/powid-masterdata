@@ -18,9 +18,9 @@ import java.util.Date;
 @Table(name = Constants.tableCustomer,schema = Constants.schemaOrder)
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "customer_id")
-    private Long id;
+    private String id;
 
     @Column(name = "name")
     private String name;

@@ -28,9 +28,9 @@ import com.proyect.masterdata.utils.Constants;
 public class MembershipModule {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "membership_module_id")
-    private Long id;
+    private String id;
 
     @Column(name = "membership_id", nullable = false)
     private Long membershipId;

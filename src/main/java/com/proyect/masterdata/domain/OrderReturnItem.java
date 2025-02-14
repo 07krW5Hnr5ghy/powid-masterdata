@@ -18,9 +18,9 @@ import java.util.Date;
 @Table(name = Constants.tableOrderReturnItem, schema = Constants.schemaOrder)
 public class OrderReturnItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_return_item_id")
-    private Long id;
+    private String id;
 
     @Column(name = "order_return_id")
     private Long orderReturnId;

@@ -26,9 +26,9 @@ import lombok.NoArgsConstructor;
 public class StoreType {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "store_type_id")
-    private Long id;
+    private String id;
 
     @Column(name = "name", nullable = false)
     private String name;
