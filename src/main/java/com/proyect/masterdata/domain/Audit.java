@@ -19,12 +19,12 @@ import java.util.Date;
 public class Audit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "audit_id")
-    private Long id;
+    private String id;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @Column(name = "audit_event_id")
     private Long auditEventId;
