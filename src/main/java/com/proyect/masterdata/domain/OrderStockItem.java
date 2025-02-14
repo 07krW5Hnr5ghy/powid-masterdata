@@ -52,8 +52,8 @@ public class OrderStockItem {
     @Column(name = "order_id")
     private Long orderId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @ManyToOne
     @JoinColumn(name = "item_id", columnDefinition = "orderItemId", insertable = false, updatable = false)
@@ -74,5 +74,9 @@ public class OrderStockItem {
     @ManyToOne
     @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
     private Ordering ordering;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

@@ -62,8 +62,8 @@ public class Product {
     @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "token_user", nullable = false)
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @ManyToOne
     @JoinColumn(name = "model_id", columnDefinition = "modelId", insertable = false, updatable = false)
@@ -88,4 +88,8 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

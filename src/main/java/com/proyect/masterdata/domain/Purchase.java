@@ -52,8 +52,8 @@ public class Purchase {
     @Column(name = "supplier_id")
     private Long supplierId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
@@ -74,5 +74,9 @@ public class Purchase {
     @ManyToOne
     @JoinColumn(name = "purchase_type_id",columnDefinition = "purchaseTypeId",insertable = false,updatable = false)
     private PurchaseType purchaseType;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

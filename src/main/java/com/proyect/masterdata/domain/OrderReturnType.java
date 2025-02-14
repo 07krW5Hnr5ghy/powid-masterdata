@@ -36,6 +36,10 @@ public class OrderReturnType {
     @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "tokenUser")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

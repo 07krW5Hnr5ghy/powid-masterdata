@@ -4,12 +4,7 @@ import java.time.OffsetDateTime;
 
 import com.proyect.masterdata.utils.Constants;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,6 +35,10 @@ public class EntryChannel {
     @Column(name = "update_date")
     private OffsetDateTime updateDate;
 
-    @Column(name = "token_user", nullable = false)
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

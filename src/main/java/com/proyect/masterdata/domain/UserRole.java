@@ -29,8 +29,8 @@ public class UserRole {
     @Column(name = "role_id", nullable = false)
     private Long roleId;
 
-    @Column(name = "token_user", nullable = false)
-    private String tokenUser;
+    @Column(name = "user_token_id")
+    private String userTokenId;
 
     @Column(name = "status")
     private Boolean status;
@@ -48,7 +48,7 @@ public class UserRole {
     private Role role;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", columnDefinition = "userId", insertable = false, updatable = false)
+    @JoinColumn(name = "user_token_id", columnDefinition = "userTokenId", insertable = false, updatable = false)
     private User user;
 
 }

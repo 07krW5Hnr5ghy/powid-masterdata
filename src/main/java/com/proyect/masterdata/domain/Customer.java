@@ -49,8 +49,8 @@ public class Customer {
     @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -71,4 +71,8 @@ public class Customer {
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false,updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

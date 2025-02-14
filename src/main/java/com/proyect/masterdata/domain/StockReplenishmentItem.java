@@ -37,8 +37,8 @@ public class StockReplenishmentItem {
     @Column(name = "stock_replenishment_id")
     private Long stockReplenishmentId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @Column(name = "status")
     private Boolean status;
@@ -64,5 +64,9 @@ public class StockReplenishmentItem {
     @ManyToOne
     @JoinColumn(name = "stock_replenishment_id",columnDefinition = "stockReplenishmentId",insertable = false,updatable = false)
     private StockReplenishment stockReplenishment;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

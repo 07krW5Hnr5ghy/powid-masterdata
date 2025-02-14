@@ -57,4 +57,11 @@ public class MembershipModule {
     @JoinColumn(name = "module_id", columnDefinition = "moduleId", insertable = false, updatable = false)
     private Module module;
 
+    @Column(name = "user_id")
+    private String userId;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
+
 }

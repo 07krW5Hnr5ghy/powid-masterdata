@@ -30,8 +30,8 @@ public class RoleAccess {
     @Column(name = "access_id", nullable = false)
     private Long accessId;
 
-    @Column(name = "token_user", nullable = false)
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -51,4 +51,8 @@ public class RoleAccess {
     @ManyToOne
     @JoinColumn(name = "access_id", columnDefinition = "accessId", insertable = false, updatable = false)
     private Access access;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

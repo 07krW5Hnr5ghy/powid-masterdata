@@ -43,7 +43,11 @@ public class District {
         @JoinColumn(name = "province_id", columnDefinition = "provinceId", insertable = false, updatable = false)
         private Province province;
 
-        @Column(name = "token_user")
-        private String tokenUser;
+        @Column(name = "user_id")
+        private String userId;
+
+        @ManyToOne()
+        @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+        private User user;
 
 }

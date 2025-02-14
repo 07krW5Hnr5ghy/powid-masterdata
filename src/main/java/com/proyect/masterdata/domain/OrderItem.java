@@ -45,8 +45,8 @@ public class OrderItem {
     @Column(name = "discount_id")
     private Long discountId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @Column(name = "status")
     private Boolean status;
@@ -73,5 +73,9 @@ public class OrderItem {
     @ManyToOne
     @JoinColumn(name = "discount_id",columnDefinition = "discountId",insertable = false,updatable = false)
     private Discount discount;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

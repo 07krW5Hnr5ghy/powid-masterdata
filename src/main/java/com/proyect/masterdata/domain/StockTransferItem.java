@@ -43,8 +43,8 @@ public class StockTransferItem {
     @Column(name = "stock_transfer_id")
     private Long stockTransferId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @ManyToOne()
     @JoinColumn(name = "supplier_product_id",columnDefinition = "supplierProductId",insertable = false,updatable = false)
@@ -57,4 +57,8 @@ public class StockTransferItem {
     @ManyToOne()
     @JoinColumn(name = "stock_transfer_id",columnDefinition = "stockTransferId",insertable = false,updatable = false)
     private StockTransfer stockTransfer;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

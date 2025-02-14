@@ -43,8 +43,8 @@ public class StockTransfer {
     @CreationTimestamp
     private OffsetDateTime updateDate;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @ManyToOne()
     @JoinColumn(name = "origin_warehouse_id", columnDefinition = "originWarehouseId",insertable = false,updatable = false)
@@ -57,4 +57,8 @@ public class StockTransfer {
     @ManyToOne()
     @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

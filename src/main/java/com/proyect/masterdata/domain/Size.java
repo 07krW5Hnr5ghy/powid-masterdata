@@ -44,6 +44,10 @@ public class Size {
         @JoinColumn(name = "size_type_id", columnDefinition = "sizeTypeId", insertable = false, updatable = false)
         private SizeType sizeType;
 
-        @Column(name = "token_user", nullable = false)
-        private String tokenUser;
+        @Column(name = "user_id")
+        private String userId;
+
+        @ManyToOne()
+        @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+        private User user;
 }

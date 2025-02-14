@@ -63,6 +63,10 @@ public class Model {
     @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

@@ -67,8 +67,8 @@ public class User {
     @Column(name = "client_id", nullable = false)
     private Long clientId;
 
-    @Column(name = "token_user", nullable = false)
-    private String tokenUser;
+    @Column(name = "user_token_id")
+    private String userId;
 
     @ManyToOne
     @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)
@@ -77,5 +77,9 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @Column(name="user_token_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

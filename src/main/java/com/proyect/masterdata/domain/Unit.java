@@ -35,8 +35,8 @@ public class Unit {
     @Column(name = "update_date")
     private OffsetDateTime updateDate;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @Column(name = "unit_type_id")
     private Long unitTypeId;
@@ -44,4 +44,8 @@ public class Unit {
     @ManyToOne
     @JoinColumn(name = "unit_type_id",columnDefinition = "unitTypeId",insertable = false,updatable = false)
     private UnitType unitType;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

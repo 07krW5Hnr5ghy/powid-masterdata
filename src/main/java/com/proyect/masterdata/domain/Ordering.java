@@ -96,8 +96,8 @@ public class Ordering {
     @Column(name = "discount_id")
     private Long discountId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @ManyToOne
     @JoinColumn(name = "order_state_id", columnDefinition = "orderStateId", insertable = false, updatable = false)
@@ -146,5 +146,9 @@ public class Ordering {
     @ManyToOne
     @JoinColumn(name = "discount_id",columnDefinition = "discountId",insertable = false,updatable = false)
     private Discount discount;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

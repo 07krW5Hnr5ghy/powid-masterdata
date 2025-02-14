@@ -48,8 +48,8 @@ public class OrderReturnItem {
     @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @Column(name = "client_id")
     private Long clientId;
@@ -73,4 +73,8 @@ public class OrderReturnItem {
     @ManyToOne()
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

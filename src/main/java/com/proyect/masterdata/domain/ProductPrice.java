@@ -45,10 +45,14 @@ public class ProductPrice {
     @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @ManyToOne
     @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false, updatable = false)
     private Product product;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

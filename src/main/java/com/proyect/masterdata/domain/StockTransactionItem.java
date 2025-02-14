@@ -48,8 +48,8 @@ public class StockTransactionItem {
     @Column(name = "stock_transaction_id")
     private Long stockTransactionId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
@@ -62,5 +62,9 @@ public class StockTransactionItem {
     @ManyToOne
     @JoinColumn(name = "stock_transaction_id",columnDefinition = "stockTransactionId",insertable = false,updatable = false)
     private StockTransaction stockTransaction;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

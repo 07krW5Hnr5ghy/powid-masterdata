@@ -34,7 +34,7 @@ public class Membership {
 
         @Column(name = "expiration_date")
         @CreationTimestamp
-        private Date expirationDate;
+        private OffsetDateTime expirationDate;
 
         @Column(name = "demo", nullable = false)
         private Boolean demo;
@@ -66,5 +66,9 @@ public class Membership {
         @ManyToOne()
         @JoinColumn(name = "membership_state_id",columnDefinition = "membershipStateId",insertable = false,updatable = false)
         private MembershipState membershipState;
+
+        @ManyToOne()
+        @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+        private User user;
 
 }

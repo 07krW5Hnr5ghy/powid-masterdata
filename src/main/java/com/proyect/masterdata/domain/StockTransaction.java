@@ -34,8 +34,8 @@ public class StockTransaction {
     @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
 
     @Column(name = "registration_date")
     private OffsetDateTime registrationDate;
@@ -51,4 +51,8 @@ public class StockTransaction {
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

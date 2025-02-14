@@ -43,8 +43,8 @@ public class Store {
         @Column(name = "client_id", nullable = false)
         private Long clientId;
 
-        @Column(name = "token_user", nullable = false)
-        private String tokenUser;
+        @Column(name = "user_id")
+        private String userId;
 
         @Column(name = "store_type_id", nullable = false)
         private Long storeTypeId;
@@ -56,4 +56,8 @@ public class Store {
         @ManyToOne
         @JoinColumn(name = "store_type_id", columnDefinition = "storeTypeId", insertable = false, updatable = false)
         private StoreType storeType;
+
+        @ManyToOne()
+        @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+        private User user;
 }

@@ -32,9 +32,6 @@ public class Audit {
     @Column(name = "client_id")
     private Long clientId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
-
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;

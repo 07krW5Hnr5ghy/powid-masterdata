@@ -36,11 +36,15 @@ public class Province {
         @Column(name = "department_id", nullable = false)
         private Long departmentId;
 
-        @Column(name = "token_user", nullable = false)
-        private String tokenUser;
+        @Column(name = "user_id")
+        private String userId;
 
         @ManyToOne
         @JoinColumn(name = "department_id", columnDefinition = "departmentId", insertable = false, updatable = false)
         private Department department;
+
+        @ManyToOne()
+        @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+        private User user;
 
 }

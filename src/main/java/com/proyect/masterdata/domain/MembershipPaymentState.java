@@ -36,4 +36,11 @@ public class MembershipPaymentState {
     @CreationTimestamp
     private OffsetDateTime updateDate;
 
+    @Column(name = "user_id")
+    private String userId;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
+
 }
