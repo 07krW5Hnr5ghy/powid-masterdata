@@ -19,9 +19,9 @@ import java.util.Date;
 public class AuditEvent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "audit_event_id")
-    private Long id;
+    private String id;
 
     @Column(name = "name")
     private String name;
@@ -37,7 +37,11 @@ public class AuditEvent {
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private String userId;
+
+    @ManyToOne
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }
