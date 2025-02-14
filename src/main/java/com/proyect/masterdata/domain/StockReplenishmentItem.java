@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 @Entity
 @Builder
@@ -44,10 +44,10 @@ public class StockReplenishmentItem {
     private Boolean status;
 
     @Column(name = "registration_date")
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @ManyToOne
     @JoinColumn(name = "order_id", columnDefinition = "orderId", insertable = false,updatable = false)

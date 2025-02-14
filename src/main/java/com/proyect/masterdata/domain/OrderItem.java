@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 @Entity
 @Builder
@@ -53,10 +53,10 @@ public class OrderItem {
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @ManyToOne
     @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false,updatable = false)

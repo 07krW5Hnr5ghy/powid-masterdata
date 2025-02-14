@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 @Entity
 @Builder
@@ -38,7 +38,7 @@ public class StockTransaction {
     private String tokenUser;
 
     @Column(name = "registration_date")
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @ManyToOne
     @JoinColumn(name = "stock_transaction_type_id", columnDefinition = "stockTransactionTypeId", insertable = false, updatable = false)

@@ -1,6 +1,6 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import com.proyect.masterdata.utils.Constants;
 
@@ -30,10 +30,10 @@ public class Unit {
     private Boolean status;
 
     @Column(name = "registration_date")
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "token_user")
     private String tokenUser;

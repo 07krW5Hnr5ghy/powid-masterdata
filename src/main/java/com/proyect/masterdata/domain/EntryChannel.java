@@ -1,6 +1,6 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import com.proyect.masterdata.utils.Constants;
 
@@ -35,10 +35,10 @@ public class EntryChannel {
     private Boolean status;
 
     @Column(name = "registration_date")
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "token_user", nullable = false)
     private String tokenUser;
