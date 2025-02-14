@@ -21,9 +21,9 @@ import lombok.NoArgsConstructor;
 public class Access {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "access_id")
-    private Long id;
+    private String id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -39,6 +39,10 @@ public class Access {
     @CreationTimestamp
     private Date updateDate;
 
-    @Column(name = "token_user", nullable = false)
-    private String tokenUser;
+    @Column(name="user_id")
+    private String userId;
+
+    @ManyToOne()
+    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }
