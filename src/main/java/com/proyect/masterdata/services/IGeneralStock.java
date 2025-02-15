@@ -7,6 +7,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,10 +22,10 @@ public interface IGeneralStock {
                 String serial,
                 String productSku,
                 String model,
-                Date registrationStartDate,
-                Date registrationEndDate,
-                Date updateStartDate,
-                Date updateEndDate,
+                OffsetDateTime registrationStartDate,
+                OffsetDateTime registrationEndDate,
+                OffsetDateTime updateStartDate,
+                OffsetDateTime updateEndDate,
                 String sort,
                 String sortColumn,
                 Integer pageNumber,

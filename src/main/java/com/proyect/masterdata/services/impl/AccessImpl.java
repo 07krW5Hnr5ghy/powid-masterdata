@@ -220,7 +220,7 @@ public class AccessImpl implements IAccess {
     }
 
     @Override
-    public CompletableFuture<Page<AccessDTO>> listPagination(String name,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<AccessDTO>> listPagination(String name,OffsetDateTime registrationStartDate,OffsetDateTime registrationEndDate,OffsetDateTime updateStartDate,OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber,
                                 Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<Access> accessPage;
@@ -249,7 +249,7 @@ public class AccessImpl implements IAccess {
     }
 
     @Override
-    public CompletableFuture<Page<AccessDTO>> listFalse(String name,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<AccessDTO>> listFalse(String name,OffsetDateTime registrationStartDate,OffsetDateTime registrationEndDate,OffsetDateTime updateStartDate,OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber,
                                                         Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<Access> accessPage;

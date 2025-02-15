@@ -23,10 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -170,8 +167,9 @@ public class BrandImpl implements IBrand {
 
             try {
                 brand.setStatus(false);
-                brand.setUpdateDate(new Date(System.currentTimeMillis()));
-                brand.setTokenUser(tokenUser.toUpperCase());
+                brand.setUpdateDate(OffsetDateTime.now());
+                brand.setUser(user);
+                brand.setUserId(user.getId());
                 brandRepository.save(brand);
                 iAudit.save("DELETE_BRAND","MARCA "+brand.getName()+" DESACTIVADA.", brand.getName(), user.getUsername());
                 return ResponseDelete.builder()
@@ -200,7 +198,7 @@ public class BrandImpl implements IBrand {
         return CompletableFuture.supplyAsync(()->{
             Page<Brand> brandPage;
             List<String> brandsUppercase;
-            Long clientId;
+            UUID clientId;
 
             if(names != null && !names.isEmpty()){
                 brandsUppercase = names.stream().map(String::toUpperCase).toList();

@@ -9,6 +9,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IProvince {
@@ -19,9 +20,9 @@ public interface IProvince {
         CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<List<ProvinceDTO>> listProvince() throws BadRequestExceptions;
-        CompletableFuture<Page<ProvinceDTO>> list(String name, String user, Long codeDepartment, String nameDepartment, String sort,
-                        String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-        CompletableFuture<Page<ProvinceDTO>> listStatusFalse(String name, String user, Long codeDepartment, String nameDepartment,
+        CompletableFuture<Page<ProvinceDTO>> list(String name, String user, UUID codeDepartment, String nameDepartment, String sort,
+                                                  String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+        CompletableFuture<Page<ProvinceDTO>> listStatusFalse(String name, String user, UUID codeDepartment, String nameDepartment,
                         String sort, String sortColumn, Integer pageNumber, Integer pageSize)
                         throws BadRequestExceptions;
         CompletableFuture<List<ProvinceDTO>> listProvinceByDepartment(String department)

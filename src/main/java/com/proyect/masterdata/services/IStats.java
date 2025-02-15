@@ -7,48 +7,49 @@ import org.springframework.data.domain.Page;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IStats {
     CompletableFuture<StatsCardDTO> listCardStats(
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID updateStartDate,
+            UUID updateEndDate,
             String orderState,
             String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<DailySaleSummaryDTO>> listDailySales(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            UUID registrationStartDate,
+            UUID registrationEndDate,
             String user
     ) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<DailySaleSummaryDTO>> listDailySalesByStatus(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            UUID registrationStartDate,
+            UUID registrationEndDate,
             String status,
             String user
     ) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<SellerSalesDTO>> listSellerSales(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            UUID registrationStartDate,
+            UUID registrationEndDate,
             String user
     ) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<SalesBrandDTO>> listSalesBrand(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            UUID registrationStartDate,
+            UUID registrationEndDate,
             String user
     ) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<SalesStatusDTO>> listSalesStatus(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            UUID registrationStartDate,
+            UUID registrationEndDate,
             String user
     ) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<SalesChannelDTO>> listSalesChannel(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            UUID registrationStartDate,
+            UUID registrationEndDate,
             String user
     ) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<SalesCategoryDTO>> listCategories(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            UUID registrationStartDate,
+            UUID registrationEndDate,
             String user,
             Integer page,
             Integer size

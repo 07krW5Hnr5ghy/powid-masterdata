@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.domain.Page;
@@ -41,7 +42,7 @@ public interface ISupplierProduct {
                 Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user, String supplier) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<SupplierProductDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
-        CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user, UUID id) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user,String productSku) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

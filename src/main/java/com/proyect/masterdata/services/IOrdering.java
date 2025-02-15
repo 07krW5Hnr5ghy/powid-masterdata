@@ -9,14 +9,16 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IOrdering {
     ResponseSuccess save(RequestOrderSave requestOrderSave, MultipartFile[] receipts, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave, MultipartFile[] receipts, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<Page<OrderDTO>> list(
-            Long orderId,
+            UUID orderId,
             String user,
             String seller,
             String customer,
@@ -41,6 +43,11 @@ public interface IOrdering {
             Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<List<OrderDTO>> listOrder(String user) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<OrderDTO> selectOrder(Long orderId,String username) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> updateAsync(
+            UUID orderId,
+            RequestOrderUpdate requestOrderUpdate,
+            MultipartFile[] receipts,
+            MultipartFile[] courierPictures,
+            String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<OrderDTO> selectOrder(UUID orderId,String username) throws InternalErrorExceptions,BadRequestExceptions;
 }

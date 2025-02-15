@@ -158,11 +158,11 @@ public class AuditEventImpl implements IAuditEvent {
     }
 
     @Override
-    public CompletableFuture<Page<AuditEventDTO>> listPagination(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<AuditEventDTO>> listPagination(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<AuditEvent> auditEventPage;
             try {
-                auditEventPage = auditEventRepositoryCustom.searchForAuditEvent(name,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate,sort,sortColumn,pageNumber,pageSize,true);
+                auditEventPage = auditEventRepositoryCustom.searchForAuditEvent(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate,sort,sortColumn,pageNumber,pageSize,true);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -180,11 +180,11 @@ public class AuditEventImpl implements IAuditEvent {
     }
 
     @Override
-    public CompletableFuture<Page<AuditEventDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<AuditEventDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<AuditEvent> auditEventPage;
             try {
-                auditEventPage = auditEventRepositoryCustom.searchForAuditEvent(name,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate,sort,sortColumn,pageNumber,pageSize,false);
+                auditEventPage = auditEventRepositoryCustom.searchForAuditEvent(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate,sort,sortColumn,pageNumber,pageSize,false);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

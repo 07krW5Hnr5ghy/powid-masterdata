@@ -9,14 +9,15 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IStockReplenishment {
-    ResponseSuccess save(Long orderId, List<RequestStockReplenishmentItem> requestStockReplenishmentItems, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<ResponseSuccess> saveAsync(Long orderId, List<RequestStockReplenishmentItem> requestStockReplenishmentItems, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    ResponseSuccess save(UUID orderId, List<RequestStockReplenishmentItem> requestStockReplenishmentItems, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(UUID orderId, List<RequestStockReplenishmentItem> requestStockReplenishmentItems, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<Page<StockReplenishmentDTO>> list(
             String user,
-            List<Long> orderIds,
+            List<UUID> orderIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

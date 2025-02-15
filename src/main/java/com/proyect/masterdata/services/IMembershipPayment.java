@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,10 +22,10 @@ public interface IMembershipPayment {
                 Double paymentGatewayFee,
                 Double taxAmount,
                 String paymentGateway,
-                Date registrationStartDate,
-                Date registrationEndDate,
-                Date updateStartDate,
-                Date updateEndDate,
+                OffsetDateTime registrationStartDate,
+                OffsetDateTime registrationEndDate,
+                OffsetDateTime updateStartDate,
+                OffsetDateTime updateEndDate,
                 String sort,
                 String sortColumn,
                 Integer pageNumber,

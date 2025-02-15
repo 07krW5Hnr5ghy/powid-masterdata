@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -58,10 +59,11 @@ public class CancellationReasonImpl implements ICancellationReason {
 
             CancellationReason newCancellationReason = cancellationReasonRepository.save(CancellationReason.builder()
                             .name(name.toUpperCase())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                             .status(true)
-                            .tokenUser(tokenUser.toUpperCase())
+                            .user(user)
+                            .userId(user.getId())
                     .build());
             iAudit.save("ADD_CANCELLATION_REASON","RAZON DE CANCELACION "+newCancellationReason.getName()+" CREADA .",newCancellationReason.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -101,10 +103,11 @@ public class CancellationReasonImpl implements ICancellationReason {
 
                 CancellationReason newCancellationReason = cancellationReasonRepository.save(CancellationReason.builder()
                         .name(name.toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(tokenUser.toUpperCase())
+                                .user(user)
+                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_CANCELLATION_REASON","RAZON DE CANCELACION "+newCancellationReason.getName()+" CREADA.",newCancellationReason.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -126,7 +129,17 @@ public class CancellationReasonImpl implements ICancellationReason {
             Page<CancellationReason> cancellationReasonPage;
 
             try {
-                cancellationReasonPage = cancellationReasonRepositoryCustom.searchForCancellationReason(name,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber, pageSize, true);
+                cancellationReasonPage = cancellationReasonRepositoryCustom.searchForCancellationReason(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateStartDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

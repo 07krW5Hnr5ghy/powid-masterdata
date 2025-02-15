@@ -11,6 +11,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -23,10 +24,10 @@ public interface IMembership {
             String user,
             String membershipState,
             String subscription,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -35,10 +36,10 @@ public interface IMembership {
             String user,
             String membershipState,
             String subscription,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,

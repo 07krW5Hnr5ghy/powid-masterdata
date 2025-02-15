@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IStockReturnItem {
@@ -26,6 +27,6 @@ public interface IStockReturnItem {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<List<StockReturnItemDTO>> listStockReturnItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
-    CompletableFuture<List<StockReturnItemDTO>> listStockReturnItemFalse(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<List<StockReturnItemDTO>> listStockReturnItem(String user, UUID id) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<List<StockReturnItemDTO>> listStockReturnItemFalse(String user,UUID id) throws InternalErrorExceptions,BadRequestExceptions;
 }

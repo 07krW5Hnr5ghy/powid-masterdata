@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.StockTransaction;
@@ -27,5 +28,5 @@ public interface IStockTransactionItem {
                 String sortColumn,
                 Integer pageNumber,
                 Integer pageSize) throws BadRequestExceptions;
-        CompletableFuture<List<StockTransactionItemDTO>> listStockTransactionItem(String user,Long id) throws InternalErrorExceptions,BadRequestExceptions;
+        CompletableFuture<List<StockTransactionItemDTO>> listStockTransactionItem(String user, UUID id) throws InternalErrorExceptions,BadRequestExceptions;
 }
