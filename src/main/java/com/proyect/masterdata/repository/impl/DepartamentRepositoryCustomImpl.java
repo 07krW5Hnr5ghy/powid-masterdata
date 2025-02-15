@@ -21,7 +21,14 @@ public class DepartamentRepositoryCustomImpl implements DepartmentRepositoryCust
     private EntityManager entityManager;
 
     @Override
-    public Page<Department> searchForDepartment(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Department> searchForDepartment(
+            String name,
+            String user,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Department> criteriaQuery = criteriaBuilder.createQuery(Department.class);
         Root<Department> itemRoot = criteriaQuery.from(Department.class);

@@ -2,6 +2,7 @@ package com.proyect.masterdata.repository.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.proyect.masterdata.domain.*;
 import jakarta.persistence.criteria.*;
@@ -26,10 +27,10 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
 
     @Override
     public Page<PurchaseItem> searchForPurchaseItem(
-            Long clientId,
-            List<Long> purchaseIds,
-            List<Long> warehouseIds,
-            List<Long> supplierProductIds,
+            UUID clientId,
+            List<UUID> purchaseIds,
+            List<UUID> warehouseIds,
+            List<UUID> supplierProductIds,
             String model,
             String sort,
             String sortColumn,
@@ -90,10 +91,10 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
     }
 
     private List<Predicate> predicate(
-            Long clientId,
-            List<Long> purchaseIds,
-            List<Long> warehouseIds,
-            List<Long> supplierProductIds,
+            UUID clientId,
+            List<UUID> purchaseIds,
+            List<UUID> warehouseIds,
+            List<UUID> supplierProductIds,
             String model,
             CriteriaBuilder criteriaBuilder,
             Root<PurchaseItem> itemRoot,
@@ -165,10 +166,10 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
     }
 
     private Long getOrderCount(
-            Long clientId,
-            List<Long> purchaseIds,
-            List<Long> warehouseIds,
-            List<Long> supplierProductIds,
+            UUID clientId,
+            List<UUID> purchaseIds,
+            List<UUID> warehouseIds,
+            List<UUID> supplierProductIds,
             String model) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

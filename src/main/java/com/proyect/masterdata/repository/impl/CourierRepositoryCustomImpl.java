@@ -13,9 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
@@ -23,12 +25,12 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
     private EntityManager entityManager;
     @Override
     public Page<Courier> searchForCourier(
-            Long clientId,
+            UUID clientId,
             List<String> names,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -83,12 +85,12 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
     }
 
     public List<Predicate> predicateConditions(
-            Long clientId,
+            UUID clientId,
             List<String> names,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Courier> itemRoot){
@@ -211,12 +213,12 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             List<String> names,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

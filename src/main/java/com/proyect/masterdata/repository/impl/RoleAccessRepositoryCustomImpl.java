@@ -15,13 +15,21 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class RoleAccessRepositoryCustomImpl implements RoleAccessRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<RoleAccess> searchForRoleAccess(Long roleId, Long accessId, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<RoleAccess> searchForRoleAccess(
+            UUID roleId, 
+            UUID accessId, 
+            String sort, 
+            String sortColumn, 
+            Integer pageNumber, 
+            Integer pageSize, 
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<RoleAccess> criteriaQuery = criteriaBuilder.createQuery(RoleAccess.class);
 
@@ -58,7 +66,7 @@ public class RoleAccessRepositoryCustomImpl implements RoleAccessRepositoryCusto
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
-    private List<Predicate> predicate(Long roleId, Long accessId, Boolean status,
+    private List<Predicate> predicate(UUID roleId, UUID accessId, Boolean status,
                                       CriteriaBuilder criteriaBuilder, Root<RoleAccess> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
@@ -113,7 +121,7 @@ public class RoleAccessRepositoryCustomImpl implements RoleAccessRepositoryCusto
         return roleAccessList;
     }
 
-    private Long getOrderCount(Long roleId, Long accessId, Boolean status) {
+    private Long getOrderCount(UUID roleId, UUID accessId, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<RoleAccess> itemRoot = criteriaQuery.from(RoleAccess.class);

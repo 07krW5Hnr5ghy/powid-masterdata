@@ -5,12 +5,13 @@ import org.springframework.stereotype.Repository;
 import com.proyect.masterdata.domain.RoleAccess;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
-public interface RoleAccessRepository extends JpaRepository<RoleAccess, Long> {
-    List<RoleAccess> findByRoleId(Long roleId);
-    RoleAccess findByRoleIdAndAccessId(Long roleId,Long AccessId);
-    RoleAccess findByRoleIdAndAccessIdAndStatusTrue(Long roleId,Long AccessId);
+public interface RoleAccessRepository extends JpaRepository<RoleAccess, UUID> {
+    List<RoleAccess> findByRoleId(UUID roleId);
+    RoleAccess findByRoleIdAndAccessId(UUID roleId,UUID AccessId);
+    RoleAccess findByRoleIdAndAccessIdAndStatusTrue(UUID roleId,UUID AccessId);
 }

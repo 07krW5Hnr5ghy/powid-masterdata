@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepositoryCustom {
@@ -22,9 +23,9 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
     private EntityManager entityManager;
     @Override
     public Page<StockReturnItem> searchForStockReturnItem(
-            Long clientId,
+            UUID clientId,
             String serial,
-            List<Long> supplierIds,
+            List<UUID> supplierIds,
             String supplierProduct,
             String product,
             String model,
@@ -99,9 +100,9 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
     }
 
     public List<Predicate> predicate(
-            Long clientId,
+            UUID clientId,
             String serial,
-            List<Long> supplierIds,
+            List<UUID> supplierIds,
             String supplierProduct,
             String product,
             String model,
@@ -185,9 +186,9 @@ public class StockReturnItemRepositoryCustomImpl implements StockReturnItemRepos
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             String serial,
-            List<Long> supplierIds,
+            List<UUID> supplierIds,
             String supplierProduct,
             String product,
             String model,

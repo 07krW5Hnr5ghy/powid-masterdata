@@ -15,6 +15,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 @Repository
 public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
 
@@ -23,10 +25,10 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
 
     @Override
     public Page<Purchase> searchForPurchase(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> warehouseIds,
-            List<Long> purchaseTypeIds,
+            List<UUID> warehouseIds,
+            List<UUID> purchaseTypeIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -81,10 +83,10 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
     }
 
     private List<Predicate> predicate(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> warehouseIds,
-            List<Long> purchaseTypeIds,
+            List<UUID> warehouseIds,
+            List<UUID> purchaseTypeIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Purchase> itemRoot) {
@@ -165,10 +167,10 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> warehouseIds,
-            List<Long> purchaseTypeIds,
+            List<UUID> warehouseIds,
+            List<UUID> purchaseTypeIds,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

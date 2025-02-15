@@ -1,8 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Purchase;
 import com.proyect.masterdata.domain.StockReturn;
-import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.repository.StockReturnRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCustom {
@@ -24,9 +23,9 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
     private EntityManager entityManager;
     @Override
     public Page<StockReturn> searchForStockReturn(
-            Long clientId,
+            UUID clientId,
             String serial,
-            List<Long> supplierIds,
+            List<UUID> supplierIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -76,9 +75,9 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
     }
 
     public List<Predicate> predicate(
-            Long clientId,
+            UUID clientId,
             String serial,
-            List<Long> supplierIds,
+            List<UUID> supplierIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<StockReturn> itemRoot) {
@@ -131,9 +130,9 @@ public class StockReturnRepositoryCustomImpl implements StockReturnRepositoryCus
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             String serial,
-            List<Long> supplierIds,
+            List<UUID> supplierIds,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

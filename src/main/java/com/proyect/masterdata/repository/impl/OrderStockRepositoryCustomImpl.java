@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCustom {
@@ -22,9 +23,9 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
     private EntityManager entityManager;
     @Override
     public Page<OrderStock> searchForOrderStock(
-            Long clientId,
-            Long orderId,
-            List<Long> warehouseIds,
+            UUID clientId,
+            UUID orderId,
+            List<UUID> warehouseIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -74,9 +75,9 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
     }
 
     List<Predicate> predicateConditions(
-            Long clientId,
-            Long orderId,
-            List<Long> warehouseIds,
+            UUID clientId,
+            UUID orderId,
+            List<UUID> warehouseIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<OrderStock> itemRoot){
@@ -142,9 +143,9 @@ public class OrderStockRepositoryCustomImpl implements OrderStockRepositoryCusto
     }
 
     private Long getOrderCount(
-            Long clientId,
-            Long orderId,
-            List<Long> warehouseIds,
+            UUID clientId,
+            UUID orderId,
+            List<UUID> warehouseIds,
             Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

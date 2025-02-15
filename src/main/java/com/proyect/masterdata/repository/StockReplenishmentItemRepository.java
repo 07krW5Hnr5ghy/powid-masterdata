@@ -5,12 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface StockReplenishmentItemRepository extends JpaRepository<StockReplenishmentItem,Long> {
-    List<StockReplenishmentItem> findAllByClientIdAndStatusTrue(Long clientId);
-    List<StockReplenishmentItem> findAllByClientIdAndStatusFalse(Long clientId);
-    StockReplenishmentItem findByOrderIdAndProductId(Long orderId,Long productId);
-    StockReplenishmentItem findByOrderIdAndProductIdAndStatusTrue(Long orderId,Long productId);
-    StockReplenishmentItem findByOrderIdAndProductIdAndStatusFalse(Long orderId,Long productId);
+public interface StockReplenishmentItemRepository extends JpaRepository<StockReplenishmentItem, UUID> {
+    List<StockReplenishmentItem> findAllByClientIdAndStatusTrue(UUID clientId);
+    List<StockReplenishmentItem> findAllByClientIdAndStatusFalse(UUID clientId);
+    StockReplenishmentItem findByOrderIdAndProductId(UUID orderId,UUID productId);
+    StockReplenishmentItem findByOrderIdAndProductIdAndStatusTrue(UUID orderId,UUID productId);
+    StockReplenishmentItem findByOrderIdAndProductIdAndStatusFalse(UUID orderId,UUID productId);
 }

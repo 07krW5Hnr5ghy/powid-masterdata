@@ -22,6 +22,7 @@ import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -73,8 +74,10 @@ public class BrandImpl implements IBrand {
             Brand newBrand = brandRepository.save(Brand.builder()
                     .name(name.toUpperCase())
                     .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(tokenUser.toUpperCase())
+                    .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .build());
@@ -124,8 +127,10 @@ public class BrandImpl implements IBrand {
                 Brand newBrand = brandRepository.save(Brand.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(tokenUser.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
+                                .updateDate(OffsetDateTime.now())
+                                .user(user)
+                                .userId(user.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .build());

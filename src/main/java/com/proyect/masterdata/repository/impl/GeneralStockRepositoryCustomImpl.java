@@ -1,12 +1,13 @@
 package com.proyect.masterdata.repository.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.proyect.masterdata.domain.GeneralStock;
 import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.SupplierProduct;
+import com.proyect.masterdata.repository.GeneralStockRepositoryCustom;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -15,12 +16,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.proyect.masterdata.domain.GeneralStock;
-import com.proyect.masterdata.repository.GeneralStockRepositoryCustom;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryCustom {
@@ -30,14 +29,14 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
 
     @Override
     public Page<GeneralStock> searchForGeneralStock(
-            Long clientId,
+            UUID clientId,
             String serial,
             String productSku,
             String model,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -104,14 +103,14 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
     }
 
     private List<Predicate> predicate(
-            Long clientId,
+            UUID clientId,
             String serial,
             String productSku,
             String model,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             CriteriaBuilder criteriaBuilder,
             Root<GeneralStock> itemRoot,
             Join<GeneralStock,SupplierProduct> generalStockSupplierProductJoin,
@@ -236,14 +235,14 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             String serial,
             String productSku,
             String model,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate
     ) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

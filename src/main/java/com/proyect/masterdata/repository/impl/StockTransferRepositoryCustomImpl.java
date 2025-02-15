@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class StockTransferRepositoryCustomImpl implements StockTransferRepositoryCustom {
@@ -22,10 +23,10 @@ public class StockTransferRepositoryCustomImpl implements StockTransferRepositor
     private EntityManager entityManager;
     @Override
     public Page<StockTransfer> searchForStockTransfer(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> originWarehouseIds,
-            List<Long> destinationWarehouseIds,
+            List<UUID> originWarehouseIds,
+            List<UUID> destinationWarehouseIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -76,10 +77,10 @@ public class StockTransferRepositoryCustomImpl implements StockTransferRepositor
     }
 
     private List<Predicate> predicate(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> originWarehouseIds,
-            List<Long> destinationWarehouseIds,
+            List<UUID> originWarehouseIds,
+            List<UUID> destinationWarehouseIds,
             CriteriaBuilder criteriaBuilder,
             Root<StockTransfer> itemRoot) {
 
@@ -144,10 +145,10 @@ public class StockTransferRepositoryCustomImpl implements StockTransferRepositor
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> originWarehouseIds,
-            List<Long> destinationWarehouseIds) {
+            List<UUID> originWarehouseIds,
+            List<UUID> destinationWarehouseIds) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

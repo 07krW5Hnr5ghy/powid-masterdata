@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class StockTransactionItemRepositoryCustomImpl implements StockTransactionItemRepositoryCustom {
@@ -27,11 +28,11 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
 
     @Override
     public Page<StockTransactionItem> searchForStockTransactionItem(
-            Long clientId,
-            List<Long> stockTransactionIds,
-            List<Long> supplierProductIds,
-            List<Long> warehouseIds,
-            List<Long> stockTransactionTypesIds,
+            UUID clientId,
+            List<UUID> stockTransactionIds,
+            List<UUID> supplierProductIds,
+            List<UUID> warehouseIds,
+            List<UUID> stockTransactionTypesIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -92,11 +93,11 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
     }
 
     private List<Predicate> predicate(
-            Long clientId,
-            List<Long> stockTransactionIds,
-            List<Long> supplierProductIds,
-            List<Long> warehouseIds,
-            List<Long> stockTransactionTypeIds,
+            UUID clientId,
+            List<UUID> stockTransactionIds,
+            List<UUID> supplierProductIds,
+            List<UUID> warehouseIds,
+            List<UUID> stockTransactionTypeIds,
             CriteriaBuilder criteriaBuilder,
             Root<StockTransactionItem> itemRoot,
             Join<StockTransaction,Warehouse> stockTransactionWarehouseJoin,
@@ -168,11 +169,11 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
     }
 
     private Long getOrderCount(
-            Long clientId,
-            List<Long> stockTransactionIds,
-            List<Long> supplierProductIds,
-            List<Long> warehouseIds,
-            List<Long> stockTransactionTypeIds
+            UUID clientId,
+            List<UUID> stockTransactionIds,
+            List<UUID> supplierProductIds,
+            List<UUID> warehouseIds,
+            List<UUID> stockTransactionTypeIds
     ) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

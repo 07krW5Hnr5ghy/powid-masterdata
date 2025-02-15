@@ -6,15 +6,16 @@ import org.springframework.stereotype.Repository;
 import com.proyect.masterdata.domain.SupplierProduct;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface SupplierProductRepositoryCustom {
     Page<SupplierProduct> searchForSupplierProduct(
-            Long clientId,
+            UUID clientId,
             String serial,
             String productSku,
             String model,
-            List<Long> supplierIds,
+            List<UUID> supplierIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

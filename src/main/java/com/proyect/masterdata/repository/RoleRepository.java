@@ -6,12 +6,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Long> {
+public interface RoleRepository extends JpaRepository<Role, UUID> {
     List<Role> findAllByStatusTrue();
     List<Role> findAllByStatusFalse();
-    Role findByIdAndStatusTrue(Long id);
+    Role findByIdAndStatusTrue(UUID id);
     Role findByName(String name);
     Role findByNameAndStatusTrue(String name);
     Role findByNameAndStatusFalse(String name);

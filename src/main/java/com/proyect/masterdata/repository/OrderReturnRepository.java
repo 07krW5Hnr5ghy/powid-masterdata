@@ -5,11 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface OrderReturnRepository extends JpaRepository<OrderReturn,Long> {
-    OrderReturn findByOrderId(Long orderId);
-    OrderReturn findByOrderIdAndClientId(Long orderId,Long clientId);
-    List<OrderReturn> findAllByClientIdAndStatusTrue(Long clientId);
-    List<OrderReturn> findAllByClientId(Long clientId);
+public interface OrderReturnRepository extends JpaRepository<OrderReturn, UUID> {
+    OrderReturn findByOrderId(UUID orderId);
+    OrderReturn findByOrderIdAndClientId(UUID orderId,UUID clientId);
+    List<OrderReturn> findAllByClientIdAndStatusTrue(UUID clientId);
+    List<OrderReturn> findAllByClientId(UUID clientId);
 }

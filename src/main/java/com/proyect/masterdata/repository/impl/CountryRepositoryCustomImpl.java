@@ -22,7 +22,13 @@ public class CountryRepositoryCustomImpl implements CountryRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Country> searchForCountry(String name, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Country> searchForCountry(
+            String name,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Country> criteriaQuery = criteriaBuilder.createQuery(Country.class);
         Root<Country> itemRoot = criteriaQuery.from(Country.class);

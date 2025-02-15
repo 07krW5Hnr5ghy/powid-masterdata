@@ -2,6 +2,7 @@ package com.proyect.masterdata.repository.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.proyect.masterdata.domain.District;
 import com.proyect.masterdata.domain.Province;
@@ -28,14 +29,14 @@ public class SupplierRepositoryCustomImpl implements SupplierRepositoryCustom {
 
     @Override
     public Page<Supplier> searchForSupplier(
-            Long clientId,
+            UUID clientId,
             List<String> names,
             List<String> rucs,
-            List<Long> countryIds,
-            List<Long> supplierTypeIds,
-            List<Long> departmentIds,
-            List<Long> provinceIds,
-            List<Long> districtIds,
+            List<UUID> countryIds,
+            List<UUID> supplierTypeIds,
+            List<UUID> departmentIds,
+            List<UUID> provinceIds,
+            List<UUID> districtIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -103,14 +104,14 @@ public class SupplierRepositoryCustomImpl implements SupplierRepositoryCustom {
     }
 
     private List<Predicate> predicateConditions(
-            Long clientId,
+            UUID clientId,
             List<String> names,
             List<String> rucs,
-            List<Long> countryIds,
-            List<Long> supplierTypeIds,
-            List<Long> departmentIds,
-            List<Long> provinceIds,
-            List<Long> districtIds,
+            List<UUID> countryIds,
+            List<UUID> supplierTypeIds,
+            List<UUID> departmentIds,
+            List<UUID> provinceIds,
+            List<UUID> districtIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Supplier> itemRoot,
@@ -203,14 +204,14 @@ public class SupplierRepositoryCustomImpl implements SupplierRepositoryCustom {
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             List<String> names,
             List<String> rucs,
-            List<Long> countryIds,
-            List<Long> supplierTypeIds,
-            List<Long> departmentIds,
-            List<Long> provinceIds,
-            List<Long> districtIds,
+            List<UUID> countryIds,
+            List<UUID> supplierTypeIds,
+            List<UUID> departmentIds,
+            List<UUID> provinceIds,
+            List<UUID> districtIds,
             Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

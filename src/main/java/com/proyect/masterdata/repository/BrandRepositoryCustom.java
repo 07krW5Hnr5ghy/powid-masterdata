@@ -5,18 +5,20 @@ import com.proyect.masterdata.domain.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface BrandRepositoryCustom {
     Page<Brand> searchForBrand(
-            Long clientId,
+            UUID clientId,
             List<String> names,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,

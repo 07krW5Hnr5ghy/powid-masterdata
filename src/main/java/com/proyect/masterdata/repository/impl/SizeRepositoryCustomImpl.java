@@ -22,8 +22,14 @@ public class SizeRepositoryCustomImpl implements SizeRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Size> searchForSize(String name, String user, String sort,
-            String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Size> searchForSize(
+            String name,
+            String user,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Size> criteriaQuery = criteriaBuilder.createQuery(Size.class);
         Root<Size> itemRoot = criteriaQuery.from(Size.class);

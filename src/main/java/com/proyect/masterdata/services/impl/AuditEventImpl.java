@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -50,9 +51,11 @@ public class AuditEventImpl implements IAuditEvent {
         try {
             auditEventRepository.save(AuditEvent.builder()
                             .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                             .name(name.toUpperCase())
-                            .tokenUser(user.getUsername())
+                            .user(user)
+                            .userId(user.getId())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -85,9 +88,11 @@ public class AuditEventImpl implements IAuditEvent {
             try {
                 auditEventRepository.save(AuditEvent.builder()
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                                .updateDate(OffsetDateTime.now())
                         .name(name.toUpperCase())
-                        .tokenUser(user.getUsername())
+                                .user(user)
+                                .userId(user.getId())
                         .build());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -120,8 +125,9 @@ public class AuditEventImpl implements IAuditEvent {
             }
             try {
                 auditEvent.setStatus(false);
-                auditEvent.setUpdateDate(new Date(System.currentTimeMillis()));
-                auditEvent.setTokenUser(user.getUsername());
+                auditEvent.setUpdateDate(OffsetDateTime.now());
+                auditEvent.setUser(user);
+                auditEvent.setUserId(user.getId());
                 auditEventRepository.save(auditEvent);
                 return ResponseDelete.builder()
                         .code(200)

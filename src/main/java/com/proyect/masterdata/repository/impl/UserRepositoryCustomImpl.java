@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {
@@ -22,7 +23,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private EntityManager entityManager;
     @Override
     public Page<User> searchForUser(
-                                    Long clientId,
+                                    UUID clientId,
                                     List<String> names,
                                     List<String> usernames,
                                     String sort,
@@ -76,7 +77,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     }
 
     private List<Predicate> predicate(
-            Long clientId,
+            UUID clientId,
             List<String> names,
             List<String> usernames,
             Boolean status,
@@ -149,7 +150,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             List<String> names,
             List<String> usernames,
             Boolean status) {

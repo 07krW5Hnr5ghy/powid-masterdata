@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class StockTransactionRepositoryCustomImpl implements StockTransactionRepositoryCustom {
@@ -22,10 +23,10 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
     private EntityManager entityManager;
     @Override
     public Page<StockTransaction> searchForStockTransaction(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> warehouseIds,
-            List<Long> stockTransactionTypeIds,
+            List<UUID> warehouseIds,
+            List<UUID> stockTransactionTypeIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -78,10 +79,10 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
     }
 
     private List<Predicate> predicate(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> warehouseIds,
-            List<Long> stockTransactionTypeIds,
+            List<UUID> warehouseIds,
+            List<UUID> stockTransactionTypeIds,
             CriteriaBuilder criteriaBuilder,
             Root<StockTransaction> itemRoot) {
 
@@ -154,10 +155,10 @@ public class StockTransactionRepositoryCustomImpl implements StockTransactionRep
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> warehouseIds,
-            List<Long> stockTransactionTypeIds) {
+            List<UUID> warehouseIds,
+            List<UUID> stockTransactionTypeIds) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

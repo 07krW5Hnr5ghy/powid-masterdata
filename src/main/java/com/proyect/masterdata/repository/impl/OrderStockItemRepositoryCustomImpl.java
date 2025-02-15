@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class OrderStockItemRepositoryCustomImpl implements OrderStockItemRepositoryCustom {
@@ -24,9 +25,9 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
 
     @Override
     public Page<OrderStockItem> searchForOrderStockItem(
-            Long clientId,
-            Long orderId,
-            List<Long> warehouseIds,
+            UUID clientId,
+            UUID orderId,
+            List<UUID> warehouseIds,
             String productSku,
             String serial,
             String model,
@@ -93,9 +94,9 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
     }
 
     List<Predicate> predicateConditions(
-            Long clientId,
-            Long orderId,
-            List<Long> warehouseIds,
+            UUID clientId,
+            UUID orderId,
+            List<UUID> warehouseIds,
             String productSku,
             String serial,
             String model,
@@ -180,9 +181,9 @@ public class OrderStockItemRepositoryCustomImpl implements OrderStockItemReposit
     }
 
     private Long getOrderCount(
-            Long clientId,
-            Long orderId,
-            List<Long> warehouseIds,
+            UUID clientId,
+            UUID orderId,
+            List<UUID> warehouseIds,
             String productSku,
             String serial,
             String model,

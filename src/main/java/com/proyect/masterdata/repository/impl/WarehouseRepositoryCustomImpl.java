@@ -2,6 +2,7 @@ package com.proyect.masterdata.repository.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -30,7 +31,7 @@ public class WarehouseRepositoryCustomImpl implements WarehouseRepositoryCustom 
 
     @Override
     public Page<Warehouse> searchForWarehouse(
-            Long clientId,
+            UUID clientId,
             List<String> names,
             String sort,
             String sortColumn,
@@ -81,7 +82,7 @@ public class WarehouseRepositoryCustomImpl implements WarehouseRepositoryCustom 
     }
 
     private List<Predicate> predicate(
-            Long clientId,
+            UUID clientId,
             List<String> names,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
@@ -141,7 +142,7 @@ public class WarehouseRepositoryCustomImpl implements WarehouseRepositoryCustom 
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             List<String> names,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

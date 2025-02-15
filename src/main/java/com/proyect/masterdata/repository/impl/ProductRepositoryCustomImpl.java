@@ -2,6 +2,7 @@ package com.proyect.masterdata.repository.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.proyect.masterdata.domain.Model;
 import jakarta.persistence.criteria.*;
@@ -28,14 +29,14 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
     @Override
     public Page<Product> searchForProduct(
-            Long clientId,
+            UUID clientId,
             String sku,
             String model,
-            List<Long> brandIds,
-            List<Long> sizeIds,
-            List<Long> categoryProductIds,
-            List<Long> colorIds,
-            List<Long> unitIds,
+            List<UUID> brandIds,
+            List<UUID> sizeIds,
+            List<UUID> categoryProductIds,
+            List<UUID> colorIds,
+            List<UUID> unitIds,
             Boolean pictureFlag,
             String sort,
             String sortColumn,
@@ -104,14 +105,14 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
 
     private List<Predicate> predicateConditions(
-            Long clientId,
+            UUID clientId,
             String sku,
             String model,
-            List<Long> brandIds,
-            List<Long> sizeIds,
-            List<Long> categoryProductIds,
-            List<Long> colorIds,
-            List<Long> unitIds,
+            List<UUID> brandIds,
+            List<UUID> sizeIds,
+            List<UUID> categoryProductIds,
+            List<UUID> colorIds,
+            List<UUID> unitIds,
             Boolean pictureFlag,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
@@ -206,14 +207,14 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             String sku,
             String model,
-            List<Long> brandIds,
-            List<Long> sizeIds,
-            List<Long> categoryProductIds,
-            List<Long> colorIds,
-            List<Long> unitIds,
+            List<UUID> brandIds,
+            List<UUID> sizeIds,
+            List<UUID> categoryProductIds,
+            List<UUID> colorIds,
+            List<UUID> unitIds,
             Boolean pictureFlag,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

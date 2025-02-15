@@ -13,9 +13,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class MembershipRepositoryCustomImpl implements MembershipRepositoryCustom {
@@ -23,13 +24,13 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
     private EntityManager entityManager;
     @Override
     public Page<Membership> searchForMembership(
-            Long clientId, 
-            Long membershipStateId,
-            Long subscriptionId,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID clientId,
+            UUID membershipStateId,
+            UUID subscriptionId,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort, 
             String sortColumn, 
             Integer pageNumber, 
@@ -83,13 +84,13 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
     }
 
     public List<Predicate> predicateConditions(
-            Long clientId,
-            Long stateId,
-            Long subscriptionId,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID clientId,
+            UUID membershipStateId,
+            UUID subscriptionId,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Membership> itemRoot
@@ -103,11 +104,11 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
                                     itemRoot.get("clientId"),clientId)));
         }
 
-        if(stateId!=null){
+        if(membershipStateId!=null){
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    itemRoot.get("membershipStateId"),stateId)));
+                                    itemRoot.get("membershipStateId"),membershipStateId)));
         }
 
         if(subscriptionId!=null){
@@ -200,8 +201,8 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
         if(sortColumn.equalsIgnoreCase("clientId")){
             membershipList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
-        if(sortColumn.equalsIgnoreCase("stateId")){
-            membershipList.add(criteriaBuilder.desc(itemRoot.get("stateId")));
+        if(sortColumn.equalsIgnoreCase("membershipStateId")){
+            membershipList.add(criteriaBuilder.desc(itemRoot.get("membershipStateId")));
         }
         if(sortColumn.equalsIgnoreCase("subscriptionId")){
             membershipList.add(criteriaBuilder.desc(itemRoot.get("subscriptionId")));
@@ -225,13 +226,13 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
     }
 
     private long getOrderCount(
-            Long clientId,
-            Long stateId,
-            Long subscriptionId,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID clientId,
+            UUID membershipStateId,
+            UUID subscriptionId,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -240,7 +241,7 @@ public class MembershipRepositoryCustomImpl implements MembershipRepositoryCusto
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                stateId,
+                membershipStateId,
                 subscriptionId,
                 registrationStartDate,
                 registrationEndDate,

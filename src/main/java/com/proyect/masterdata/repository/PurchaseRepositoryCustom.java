@@ -5,14 +5,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface PurchaseRepositoryCustom {
     Page<Purchase> searchForPurchase(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> warehouseIds,
-            List<Long> purchaseTypeIds,
+            List<UUID> warehouseIds,
+            List<UUID> purchaseTypeIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

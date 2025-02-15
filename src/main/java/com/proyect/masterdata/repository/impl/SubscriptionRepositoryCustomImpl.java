@@ -29,8 +29,14 @@ public class SubscriptionRepositoryCustomImpl implements SubscriptionRepositoryC
     private EntityManager entityManager;
 
     @Override
-    public Page<Subscription> searchForSubscription(String name, String user, String sort, String sortColumn,
-            Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Subscription> searchForSubscription(
+            String name,
+            String user,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Subscription> criteriaQuery = criteriaBuilder.createQuery(Subscription.class);

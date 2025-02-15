@@ -5,16 +5,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface OrderItemRepositoryCustom {
     Page<OrderItem> searchForOrderItem(
-            Long clientId,
-            Long orderId,
+            UUID clientId,
+            UUID orderId,
             String productSku,
-            List<Long> colorIds,
-            List<Long> sizeIds,
-            List<Long> categoryIds,
+            List<UUID> colorIds,
+            List<UUID> sizeIds,
+            List<UUID> categoryIds,
             Integer quantity,
             Double discount,
             String sort,

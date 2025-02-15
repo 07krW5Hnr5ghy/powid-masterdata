@@ -13,8 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -22,7 +22,17 @@ public class CancellationReasonRepositoryCustomImpl implements CancellationReaso
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<CancellationReason> searchForCancellationReason(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<CancellationReason> searchForCancellationReason(
+            String name, 
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate, 
+            OffsetDateTime updateStartDate, 
+            OffsetDateTime updateEndDate, 
+            String sort, 
+            String sortColumn, 
+            Integer pageNumber, 
+            Integer pageSize, 
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<CancellationReason> criteriaQuery = criteriaBuilder.createQuery(CancellationReason.class);
         Root<CancellationReason> itemRoot = criteriaQuery.from(CancellationReason.class);
@@ -59,10 +69,10 @@ public class CancellationReasonRepositoryCustomImpl implements CancellationReaso
 
     public List<Predicate> predicateConditions(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<CancellationReason> itemRoot) {
@@ -177,7 +187,7 @@ public class CancellationReasonRepositoryCustomImpl implements CancellationReaso
         return cancellationReasonList;
     }
 
-    private long getOrderCount(String name,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, Boolean status) {
+    private long getOrderCount(String name,OffsetDateTime registrationStartDate,OffsetDateTime registrationEndDate,OffsetDateTime updateStartDate,OffsetDateTime updateEndDate, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

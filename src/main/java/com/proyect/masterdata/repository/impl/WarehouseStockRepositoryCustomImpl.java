@@ -2,6 +2,7 @@ package com.proyect.masterdata.repository.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.proyect.masterdata.domain.*;
 import jakarta.persistence.criteria.*;
@@ -26,8 +27,8 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
 
     @Override
     public Page<WarehouseStock> searchForWarehouseStock(
-            Long clientId,
-            List<Long> warehouseIds,
+            UUID clientId,
+            List<UUID> warehouseIds,
             String serial,
             String productSku,
             String model,
@@ -91,11 +92,11 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
     }
 
     private List<Predicate> predicate(
-            List<Long> warehouseIds,
+            List<UUID> warehouseIds,
             String serial,
             String productSku,
             String model,
-            Long clientId,
+            UUID clientId,
             CriteriaBuilder criteriaBuilder,
             Root<WarehouseStock> itemRoot,
             Join<WarehouseStock,SupplierProduct> warehouseStockSupplierProductJoin,
@@ -160,11 +161,11 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
     }
 
     private Long getOrderCount(
-            List<Long> warehouseIds,
+            List<UUID> warehouseIds,
             String serial,
             String productSku,
             String model,
-            Long clientId) {
+            UUID clientId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<WarehouseStock> itemRoot = criteriaQuery.from(WarehouseStock.class);

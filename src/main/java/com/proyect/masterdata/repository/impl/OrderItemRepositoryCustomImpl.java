@@ -1,6 +1,5 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Color;
 import com.proyect.masterdata.domain.OrderItem;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.repository.OrderItemRepositoryCustom;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom {
@@ -24,12 +24,12 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
     private EntityManager entityManager;
     @Override
     public Page<OrderItem> searchForOrderItem(
-            Long clientId,
-            Long orderId,
+            UUID clientId,
+            UUID orderId,
             String productSku,
-            List<Long> colorIds,
-            List<Long> sizeIds,
-            List<Long> categoryIds,
+            List<UUID> colorIds,
+            List<UUID> sizeIds,
+            List<UUID> categoryIds,
             Integer quantity,
             Double discount,
             String sort,
@@ -91,12 +91,12 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
         return new PageImpl<>(orderingTypedQuery.getResultList(),pageable,count);
     }
     List<Predicate> predicateConditions(
-            Long clientId,
-            Long orderId,
+            UUID clientId,
+            UUID orderId,
             String productSku,
-            List<Long> colorIds,
-            List<Long> sizeIds,
-            List<Long> categoryIds,
+            List<UUID> colorIds,
+            List<UUID> sizeIds,
+            List<UUID> categoryIds,
             Integer quantity,
             Double discount,
             CriteriaBuilder criteriaBuilder,
@@ -219,12 +219,12 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
     }
 
     private Long getOrderCount(
-            Long clientId,
-            Long orderId,
+            UUID clientId,
+            UUID orderId,
             String productSku,
-            List<Long> colorIds,
-            List<Long> sizeIds,
-            List<Long> categoryIds,
+            List<UUID> colorIds,
+            List<UUID> sizeIds,
+            List<UUID> categoryIds,
             Integer quantity,
             Double discount,
             Boolean status){

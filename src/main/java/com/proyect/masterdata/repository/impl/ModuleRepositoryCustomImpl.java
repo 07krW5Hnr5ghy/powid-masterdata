@@ -21,7 +21,14 @@ public class ModuleRepositoryCustomImpl implements ModuleRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Module> searchForModule(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Module> searchForModule(
+            String name,
+            String user,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Module> criteriaQuery = criteriaBuilder.createQuery(Module.class);
         Root<Module> itemRoot = criteriaQuery.from(Module.class);

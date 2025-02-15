@@ -7,29 +7,30 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface OrderingRepositoryCustom {
     Page<Ordering> searchForOrdering(
-            Long orderId,
-            Long clientId,
+            UUID orderId,
+            UUID clientId,
             String seller,
             String customer,
             String customerPhone,
             String instagram,
-            List<Long> departmentIds,
-            List<Long> provinceIds,
-            List<Long> districtIds,
-            List<Long> saleChannelIds,
+            List<UUID> departmentIds,
+            List<UUID> provinceIds,
+            List<UUID> districtIds,
+            List<UUID> saleChannelIds,
             Boolean receiptFlag,
             Boolean deliveryFlag,
-            List<Long> deliveryPointIds,
-            List<Long> orderStateIds,
-            List<Long> courierIds,
-            Long paymentStateId,
-            Long paymentMethodId,
-            Long managementTypeId,
-            Long storeId,
+            List<UUID> deliveryPointIds,
+            List<UUID> orderStateIds,
+            List<UUID> courierIds,
+            UUID paymentStateId,
+            UUID paymentMethodId,
+            UUID managementTypeId,
+            UUID storeId,
             String sort,
             String sortColumn,
             Integer pageNumber,

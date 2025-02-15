@@ -1,24 +1,23 @@
 package com.proyect.masterdata.repository;
 
-import com.proyect.masterdata.domain.Model;
+import com.proyect.masterdata.domain.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
-import com.proyect.masterdata.domain.Product;
-
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface ProductRepositoryCustom {
     Page<Product> searchForProduct(
-            Long clientId,
+            UUID clientId,
             String sku,
             String model,
-            List<Long> brandIds,
-            List<Long> sizeIds,
-            List<Long> categoryProductIds,
-            List<Long> colorIds,
-            List<Long> unitIds,
+            List<UUID> brandIds,
+            List<UUID> sizeIds,
+            List<UUID> categoryProductIds,
+            List<UUID> colorIds,
+            List<UUID> unitIds,
             Boolean pictureFlag,
             String sort,
             String sortColumn,

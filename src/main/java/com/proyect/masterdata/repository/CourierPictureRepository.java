@@ -5,8 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface CourierPictureRepository extends JpaRepository<CourierPicture,Long> {
-    List<CourierPicture> findAllByOrderId(Long orderId);
+public interface CourierPictureRepository extends JpaRepository<CourierPicture, UUID> {
+    List<CourierPicture> findAllByOrderId(UUID orderId);
 }

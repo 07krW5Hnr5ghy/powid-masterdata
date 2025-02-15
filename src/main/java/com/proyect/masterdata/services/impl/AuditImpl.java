@@ -17,9 +17,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -56,9 +58,8 @@ public class AuditImpl implements IAudit {
                                 .client(user.getClient())
                                 .clientId(user.getClientId())
                                 .detail(detail.toUpperCase())
-                                .registrationDate(new Date(System.currentTimeMillis()))
+                                .registrationDate(OffsetDateTime.now())
                                 .reference(reference.toUpperCase())
-                                .tokenUser(user.getUsername())
                                 .user(user)
                                 .userId(user.getId())
                         .build());
@@ -74,12 +75,23 @@ public class AuditImpl implements IAudit {
     }
 
     @Override
-    public CompletableFuture<Page<AuditDTO>> list(String username, String eventName, String clientRuc,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<AuditDTO>> list(
+            String username,
+            String eventName,
+            String clientRuc,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Audit> auditPage;
-            Long userId;
-            Long clientId;
-            Long auditEventId;
+            UUID userId;
+            UUID clientId;
+            UUID auditEventId;
             if(username != null){
                 userId = userRepository.findByUsernameAndStatusTrue(username.toUpperCase()).getId();
             }else {

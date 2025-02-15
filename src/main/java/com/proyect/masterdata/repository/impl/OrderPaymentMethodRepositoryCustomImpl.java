@@ -22,7 +22,14 @@ public class OrderPaymentMethodRepositoryCustomImpl implements OrderPaymentMetho
     private EntityManager entityManager;
 
     @Override
-    public Page<OrderPaymentMethod> searchForPaymentMethod(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<OrderPaymentMethod> searchForPaymentMethod(
+            String name,
+            String user,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderPaymentMethod> criteriaQuery = criteriaBuilder.createQuery(OrderPaymentMethod.class);
         Root<OrderPaymentMethod> itemRoot = criteriaQuery.from(OrderPaymentMethod.class);
