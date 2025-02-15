@@ -14,11 +14,9 @@ import java.util.List;
 public interface ProvinceMapper {
     ProvinceMapper INSTANCE = Mappers.getMapper(ProvinceMapper.class);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "registrationDate", ignore = true)
     @Mapping(target = "name", source = "requestProvinceSave.name")
-    @Mapping(target = "tokenUser", source = "requestProvinceSave.user")
     @Mapping(target = "departmentId", source = "requestProvinceSave.codeDepartment")
     Province provinceToName(RequestProvinceSave requestProvinceSave);
 

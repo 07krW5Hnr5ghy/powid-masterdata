@@ -11,5 +11,4 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestSaleChannelSave {
     private String name;
-    private String user;
 }

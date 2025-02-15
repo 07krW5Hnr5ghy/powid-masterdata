@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -98,61 +99,119 @@ public class Seeder implements CommandLineRunner {
         public void run(String... args) throws Exception {
 
                 try{
-                        // example one role and one access
-
-                        Access access = accessRepository
-                                .save(new Access(1L, "USER_GET", true, new Date(System.currentTimeMillis()),
-                                        new Date(System.currentTimeMillis()), "SISTEMA"));
-
-                        Role role = roleRepository.save(new Role(
-                                1L, "ADMINISTRACION", true, new Date(System.currentTimeMillis()),
-                                new Date(System.currentTimeMillis()), "SISTEMA"));
-
                         // department, province and district to create system user
 
-                        Department department = departmentRepository
-                                .save(new Department(1L, "SISTEMA", true, new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()),
-                                        "SISTEMA"));
+                        Department department = departmentRepository.save(Department.builder()
+                                        .name("SISTEMA")
+                                        .status(true)
+                                        .registrationDate(OffsetDateTime.now())
+                                        .updateDate(OffsetDateTime.now())
+                                .build());
 
-                        Province province = provinceRepository.save(new Province(1L, "SISTEMA", true,
-                                new Date(System.currentTimeMillis()), department.getId(), "SISTEMA", department));
+                        Province province = provinceRepository.save(Province.builder()
+                                        .name("SISTEMA")
+                                        .status(true)
+                                        .department(department)
+                                        .departmentId(department.getId())
+                                        .registrationDate(OffsetDateTime.now())
+                                        .updateDate(OffsetDateTime.now())
+                                .build());
 
-                        District district = districtRepository
-                                .save(new District(1L, "SISTEMA", true, new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()),
-                                        province.getId(),
-                                        province, "SISTEMA"));
+                        District district = districtRepository.save(District.builder()
+                                        .name("SISTEMA")
+                                        .status(true)
+                                        .registrationDate(OffsetDateTime.now())
+                                        .updateDate(OffsetDateTime.now())
+                                .build());
 
-                        Client systemClient = clientRepository.save(new Client(1L, "SISTEMA", "SISTEMA", "SISTEMA", "SISTEMA",
-                                "SISTEMA", "SISTEMA", "SISTEMA", "SISTEMA", true, district.getId(),
-                                new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), district));
+                        Client systemClient = clientRepository.save(Client.builder()
+                                        .name("SISTEMA")
+                                        .surname("SISTEMA")
+                                        .ruc("SISTEMA")
+                                        .dni("SISTEMA")
+                                        .business("SISTEMA")
+                                        .mobile("SISTEMA")
+                                        .address("SISTEMA")
+                                        .email("SISTEMA")
+                                        .status(true)
+                                        .district(district)
+                                        .districtId(district.getId())
+                                        .registrationDate(OffsetDateTime.now())
+                                        .updateDate(OffsetDateTime.now())
+                                .build());
 
-                        User adminUser = userRepository
-                                .save(new User(1L, "JROMERO", "JUAN", "ROMERO", "00000000", "jca@gmail.com",
-                                        "cr 12 h 34", "M",
-                                        "000000000", passwordEncoder.encode("n>53F-8W5L7Dw+"), true,
-                                        new Date(System.currentTimeMillis()),
-                                        new Date(System.currentTimeMillis()), district.getId(),
-                                        systemClient.getId(), "SISTEMA",
-                                        district, systemClient));
+                        User adminUser = userRepository.save(User.builder()
+                                        .username("JROMERO")
+                                        .name("JUAN")
+                                        .surname("ROMERO")
+                                        .dni("00000000")
+                                        .email("jca@gmail.com")
+                                        .address("cr 12 h 34")
+                                        .gender("M")
+                                        .mobile("00000000")
+                                        .password(passwordEncoder.encode("n>53F-8W5L7Dw+"))
+                                        .status(true)
+                                        .registrationDate(OffsetDateTime.now())
+                                        .updateDate(OffsetDateTime.now())
+                                .build());
 
-                        userRoleRepository.save(
-                                new UserRole(1L, adminUser.getId(), role.getId(), adminUser.getUsername(),true,
-                                        new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()),role,adminUser));
+                        // example one role and one access
+                        Access access = accessRepository.save(Access.builder()
+                                .name("USER_GET")
+                                .status(true)
+                                .registrationDate(OffsetDateTime.now())
+                                .updateDate(OffsetDateTime.now())
+                                .user(adminUser)
+                                .userId(adminUser.getId())
+                                .build());
 
-                        roleAccessRepository.save(
-                                new RoleAccess(1L, role.getId(), access.getId(), adminUser.getUsername(),
-                                        new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()),true,role,access));
+                        Role role = roleRepository.save(Role.builder()
+                                .user(adminUser)
+                                .userId(adminUser.getId())
+                                .name("ADMINISTRACION")
+                                .status(true)
+                                .registrationDate(OffsetDateTime.now())
+                                .updateDate(OffsetDateTime.now())
+                                .build());
+
+                        userRoleRepository.save(UserRole.builder()
+                                        .user(adminUser)
+                                        .userId(adminUser.getId())
+                                        .role(role)
+                                        .roleId(role.getId())
+                                        .status(true)
+                                        .registrationDate(OffsetDateTime.now())
+                                        .updateDate(OffsetDateTime.now())
+                                .build());
+
+                        roleAccessRepository.save(RoleAccess.builder()
+                                        .role(role)
+                                        .access(access)
+                                        .user(adminUser)
+                                        .registrationDate(OffsetDateTime.now())
+                                        .updateDate(OffsetDateTime.now())
+                                        .status(true)
+                                        .roleId(role.getId())
+                                        .accessId(access.getId())
+                                .build());
 
                         // user for register new users
-
-                        User registerUser = userRepository.save(
-                                new User(2L, "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER", "REGISTER",
-                                        "REGISTER",
-                                        "REGISTER", passwordEncoder.encode("321abc+"), true,
-                                        new Date(System.currentTimeMillis()),
-                                        new Date(System.currentTimeMillis()), district.getId(),
-                                        systemClient.getId(), adminUser.getUsername(),
-                                        district, systemClient));
+                        User registerUser = userRepository.save(User.builder()
+                                        .username("REGISTER")
+                                        .name("REGISTER")
+                                        .surname("REGISTER")
+                                        .dni("REGISTER")
+                                        .email("REGISTER")
+                                        .address("REGISTER")
+                                        .gender("REGISTER")
+                                        .mobile("00000000")
+                                        .password(passwordEncoder.encode("321abc+"))
+                                        .status(true)
+                                        .registrationDate(OffsetDateTime.now())
+                                        .updateDate(OffsetDateTime.now())
+                                        .client(systemClient)
+                                        .clientId(systemClient.getId())
+                                .build());
 
                         // mock departments peru
                         List<LocationDTO> listDepartment = iJsonFileReader.filterDepartment();
@@ -181,10 +240,21 @@ public class Seeder implements CommandLineRunner {
 
                         District districtB = districtRepository.findByNameAndProvinceIdAndStatusTrue("BREÑA",194L);
 
-                        Client client1 = clientRepository.save(new Client(2L, "JOEL", "COILA OSNAYO", "20609605601",
-                                "11111111",
-                                "CORPORACION ARANNI S.A.C", "947424006", "Iquique 807 - breña", "joel@aranni.com.pe", true, district.getId(),
-                                new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), districtB));
+                        Client client1 = clientRepository.save(Client.builder()
+                                        .name("JOEL")
+                                        .surname("COILA OSNAYO")
+                                        .ruc("20609605601")
+                                        .dni("1111111")
+                                        .business("CORPORACION ARANNI S.A.C")
+                                        .mobile("947424006")
+                                        .address("Iquique 807 - breña")
+                                        .email("joel@aranni.com.pe")
+                                        .registrationDate(OffsetDateTime.now())
+                                        .updateDate(OffsetDateTime.now())
+                                        .status(true)
+                                        .district(districtB)
+                                        .districtId(districtB.getId())
+                                .build());
 
                         // mock countries
 
@@ -1064,14 +1134,21 @@ public class Seeder implements CommandLineRunner {
                         iStockTransactionType.save("devolucion-comprador",adminUser.getUsername());
                         iStockTransactionType.save("devolucion-proveedor",adminUser.getUsername());
 
-                        User business1 = userRepository
-                                .save(new User(3L, "JCOILA", "JOEL", "COILA", "11111111", "joel@aranni.com.pe",
-                                        "Iquique 807 - breña", "M",
-                                        "947424006", passwordEncoder.encode("Powip2024"), true,
-                                        new Date(System.currentTimeMillis()),
-                                        new Date(System.currentTimeMillis()), districtB.getId(),
-                                        client1.getId(), "JROMERO",
-                                        districtB, client1));
+                        User business1 = userRepository.save(User.builder()
+                                .username("JCOILA")
+                                .name("JUAN")
+                                .surname("ROMERO")
+                                .dni("00000000")
+                                .email("jca@gmail.com")
+                                .address("cr 12 h 34")
+                                .gender("M")
+                                .mobile("00000000")
+                                .password(passwordEncoder.encode("n>53F-8W5L7Dw+"))
+                                .status(true)
+                                .registrationDate(OffsetDateTime.now())
+                                .updateDate(OffsetDateTime.now())
+                                .build());
+
                         iUserRole.save(business1.getUsername(),"NEGOCIO", adminUser.getUsername());
 
                         // mock stores
@@ -1123,8 +1200,8 @@ public class Seeder implements CommandLineRunner {
                         iColor.save("ROSADO","JROMERO");
                         iColor.save("PLATA QUEMADA","JROMERO");
                         iCategoryProduct.save("PANTALONES","PANTALONES","ROPA","JROMERO");
-                          iColor.save("LACRE","JROMERO");
-                          iCategoryProduct.save("TOPS","TOPS","ROPA","JROMERO");
+                        iColor.save("LACRE","JROMERO");
+                        iCategoryProduct.save("TOPS","TOPS","ROPA","JROMERO");
                         iAuditEvent.save("ACTIVATE_ORDER_ITEM","JROMERO");
                         iColor.save("CELESTE","JROMERO");
                         iColor.save("LILA","JROMERO");

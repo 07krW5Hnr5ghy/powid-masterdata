@@ -22,7 +22,6 @@ public interface OrderStateMapper {
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "registrationDate", ignore = true)
     @Mapping(target = "name", source = "requestStateSave.name")
-    @Mapping(target = "tokenUser", source = "requestStateSave.user")
     OrderState stateToName(RequestStateSave requestStateSave);
 
     List<OrderState> listStateToListName(List<RequestStateSave> requestStateSaveList);

@@ -62,25 +62,10 @@ public class User {
     @CreationTimestamp
     private OffsetDateTime updateDate;
 
-    @Column(name = "district_id", updatable = false, nullable = false)
-    private UUID districtId;
-
     @Column(name = "client_id", nullable = false)
     private UUID clientId;
-
-    @Column(name = "user_token_id")
-    private UUID userId;
-
-    @ManyToOne
-    @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)
-    private District district;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
-
-    @ManyToOne()
-    @Column(name="user_token_id",columnDefinition = "userId",insertable = false,updatable = false)
-    private User user;
-
 }

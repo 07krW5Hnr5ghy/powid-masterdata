@@ -13,5 +13,4 @@ public class RequestDepartment {
     private Long code;
     private String name;
     private boolean status;
-    private String user;
 }

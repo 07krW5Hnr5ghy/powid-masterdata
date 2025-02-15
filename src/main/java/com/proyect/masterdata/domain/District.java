@@ -44,11 +44,4 @@ public class District {
         @JoinColumn(name = "province_id", columnDefinition = "provinceId", insertable = false, updatable = false)
         private Province province;
 
-        @Column(name = "user_id")
-        private UUID userId;
-
-        @ManyToOne()
-        @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
-        private User user;
-
 }

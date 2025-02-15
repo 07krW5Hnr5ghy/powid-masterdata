@@ -5,12 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class RequestProvinceSave {
     private String name;
-    private String user;
-    private Long codeDepartment;
+    private UUID codeDepartment;
 }

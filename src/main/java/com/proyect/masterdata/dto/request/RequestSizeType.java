@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class RequestSizeType {
     private Long code;
     private String name;
-    private String user;
     private boolean status;
 }

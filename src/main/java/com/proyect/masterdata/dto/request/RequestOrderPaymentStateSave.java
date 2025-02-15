@@ -11,5 +11,4 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestOrderPaymentStateSave {
     private String name;
-    private String user;
 }

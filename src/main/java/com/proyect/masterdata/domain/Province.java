@@ -34,18 +34,15 @@ public class Province {
         @CreationTimestamp
         private OffsetDateTime registrationDate;
 
+        @Column(name = "update_date", nullable = false)
+        @CreationTimestamp
+        private OffsetDateTime updateDate;
+
         @Column(name = "department_id", nullable = false)
         private UUID departmentId;
-
-        @Column(name = "user_id")
-        private UUID userId;
 
         @ManyToOne
         @JoinColumn(name = "department_id", columnDefinition = "departmentId", insertable = false, updatable = false)
         private Department department;
-
-        @ManyToOne()
-        @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
-        private User user;
 
 }
