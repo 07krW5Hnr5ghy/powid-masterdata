@@ -160,6 +160,8 @@ public class OrderingImpl implements IOrdering {
                 }
             });
 
+            Long newOrderNumber = orderingRepository.countByClientId(user.getClientId())+1L;
+
             Ordering ordering = orderingRepository.save(Ordering.builder()
                     .cancellation(false)
                     .seller(user.getName() + " " + user.getSurname())
@@ -198,6 +200,7 @@ public class OrderingImpl implements IOrdering {
                     .deliveryPointId(deliveryPoint.getId())
                     .receiptFlag(false)
                     .deliveryFlag(false)
+                    .orderNumber(newOrderNumber)
                     .build());
             List<String> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
             if(!paymentReceipts.isEmpty()){
@@ -307,6 +310,7 @@ public class OrderingImpl implements IOrdering {
                         throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
                     }
                 });
+                Long newOrderNumber = orderingRepository.countByClientId(user.getClientId())+1L;
                 Ordering ordering = orderingRepository.save(Ordering.builder()
                         .cancellation(false)
                         .seller(user.getName() + " " + user.getSurname())
@@ -345,6 +349,7 @@ public class OrderingImpl implements IOrdering {
                         .deliveryPointId(deliveryPoint.getId())
                         .receiptFlag(false)
                         .deliveryFlag(false)
+                        .orderNumber(newOrderNumber)
                         .build());
                 List<File> fileList = new ArrayList<>();
                 for(MultipartFile multipartFile : receipts){

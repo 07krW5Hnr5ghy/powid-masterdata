@@ -88,4 +88,6 @@ public interface OrderingRepository extends JpaRepository<Ordering, UUID> {
             @Param("startDate") OffsetDateTime startDate,
             @Param("endDate") OffsetDateTime endDate
     );
+
+    Long countByClientId(UUID clientId);
 }
