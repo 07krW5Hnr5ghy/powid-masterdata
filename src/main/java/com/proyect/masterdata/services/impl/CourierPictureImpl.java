@@ -22,10 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -39,7 +37,7 @@ public class CourierPictureImpl implements ICourierPicture {
     private final IFile iFile;
     private final IAudit iAudit;
     @Override
-    public CompletableFuture<List<String>> uploadPicture(MultipartFile[] pictures, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<String>> uploadPicture(MultipartFile[] pictures, UUID orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -86,8 +84,9 @@ public class CourierPictureImpl implements ICourierPicture {
                             .clientId(user.getClientId())
                             .ordering(ordering)
                             .orderId(ordering.getId())
-                            .registrationDate(currentDate)
-                            .tokenUser(user.getUsername())
+                            .registrationDate(OffsetDateTime.now())
+                                    .user(user)
+                                    .userId(user.getId())
                             .build());
                     picturesUrlList.add(url);
                     pictureNumber++;
@@ -101,7 +100,7 @@ public class CourierPictureImpl implements ICourierPicture {
     }
 
     @Override
-    public CompletableFuture<List<String>> uploadPictureAsync(List<File> pictures, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<String>> uploadPictureAsync(List<File> pictures, UUID orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -140,8 +139,9 @@ public class CourierPictureImpl implements ICourierPicture {
                             .clientId(user.getClientId())
                             .ordering(ordering)
                             .orderId(ordering.getId())
-                            .registrationDate(currentDate)
-                            .tokenUser(user.getUsername())
+                            .registrationDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
                             .build());
                     picturesUrlList.add(url);
                     pictureNumber++;

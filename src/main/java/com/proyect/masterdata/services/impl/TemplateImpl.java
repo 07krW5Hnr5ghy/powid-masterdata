@@ -370,7 +370,7 @@ public class TemplateImpl implements ITemplate {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> stockReplenishment(Long orderId, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> stockReplenishment(UUID orderId, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -452,7 +452,7 @@ public class TemplateImpl implements ITemplate {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> orderStock(Long orderId, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> orderStock(UUID orderId, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -576,7 +576,7 @@ public class TemplateImpl implements ITemplate {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> orderReturn(Long orderId, String username) throws BadRequestExceptions {
+    public CompletableFuture<ByteArrayInputStream> orderReturn(UUID orderId, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;

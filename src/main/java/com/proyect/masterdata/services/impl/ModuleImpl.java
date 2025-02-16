@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,9 +65,10 @@ public class ModuleImpl implements IModule {
             Module newModule = moduleRepository.save(Module.builder()
                     .name(name.toUpperCase())
                     .monthlyPrice(price)
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
+                    .user(user)
+                    .userId(user.getId())
                     .build());
             iAudit.save("ADD_MODULE","MODULO "+newModule.getName()+".",newModule.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -107,9 +109,10 @@ public class ModuleImpl implements IModule {
                 Module newModule = moduleRepository.save(Module.builder()
                         .name(name.toUpperCase())
                         .monthlyPrice(price)
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(tokenUser.toUpperCase())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 iAudit.save("ADD_MODULE","MODULO "+newModule.getName()+" CREADO.",newModule.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -148,7 +151,7 @@ public class ModuleImpl implements IModule {
             }
 
             module.setMonthlyPrice(requestModule.getMontlyPrice());
-            module.setUpdateDate(new Date(System.currentTimeMillis()));
+            module.setUpdateDate(OffsetDateTime.now());
             iAudit.save("UPDATE_MODULE","MODULO ACTUALIZADO "+module.getName()+" CON PRECIO "+module.getMonthlyPrice()+".",module.getName(),user.getUsername());
             try {
                 return moduleMapper.moduleToModuleDTO(moduleRepository.save(module));
@@ -183,8 +186,9 @@ public class ModuleImpl implements IModule {
 
             try {
                 module.setStatus(false);
-                module.setUpdateDate(new Date(System.currentTimeMillis()));
-                module.setTokenUser(user.getUsername());
+                module.setUpdateDate(OffsetDateTime.now());
+                module.setUser(user);
+                module.setUserId(user.getId());
                 moduleRepository.save(module);
                 iAudit.save("DELETE_MODULE","MODULO "+module.getName()+" DESACTIVADO.",module.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -223,8 +227,9 @@ public class ModuleImpl implements IModule {
 
             try {
                 module.setStatus(true);
-                module.setTokenUser(user.getUsername());
-                module.setUpdateDate(new Date(System.currentTimeMillis()));
+                module.setUser(user);
+                module.setUserId(user.getId());
+                module.setUpdateDate(OffsetDateTime.now());
                 moduleRepository.save(module);
                 iAudit.save("ACTIVATE_MODULE","MODULO "+module.getName()+" ACTIVADO.",module.getName(),user.getUsername());
                 return ResponseSuccess.builder()

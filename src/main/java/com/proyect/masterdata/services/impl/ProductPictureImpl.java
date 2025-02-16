@@ -21,10 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -38,7 +36,7 @@ public class ProductPictureImpl implements IProductPicture {
     private final ProductRepository productRepository;
     private final IAudit iAudit;
     @Override
-    public List<String> uploadPicture(List<MultipartFile> pictures, Long productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public List<String> uploadPicture(List<MultipartFile> pictures, UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Product product;
         List<String> pictureUrlList = new ArrayList<>();
@@ -84,8 +82,9 @@ public class ProductPictureImpl implements IProductPicture {
                         .productId(productId)
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
-                        .registrationDate(currentDate)
+                        .user(user)
+                        .userId(user.getId())
+                        .registrationDate(OffsetDateTime.now())
                         .build());
                 pictureUrlList.add(url);
                 pictureNumber++;
@@ -100,7 +99,7 @@ public class ProductPictureImpl implements IProductPicture {
     }
 
     @Override
-    public CompletableFuture<List<String>> uploadPictureAsync(List<File> pictures, Long productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<String>> uploadPictureAsync(List<File> pictures, UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -139,8 +138,9 @@ public class ProductPictureImpl implements IProductPicture {
                             .productId(productId)
                             .client(user.getClient())
                             .clientId(user.getClientId())
-                            .tokenUser(user.getUsername())
-                            .registrationDate(currentDate)
+                            .user(user)
+                            .userId(user.getId())
+                            .registrationDate(OffsetDateTime.now())
                             .build());
                     pictureUrlList.add(url);
                     pictureNumber++;

@@ -23,8 +23,8 @@ public interface UserMapper {
     @Mapping(target = "mobile", source = "mobile")
     @Mapping(target = "password", source = "password")
     @Mapping(target = "status", source = "status")
-    @Mapping(target = "district", ignore = true)
     @Mapping(target = "userType", ignore = true)
+    @Mapping(target = "district", source = "district.name")
     UserDTO userToUserDTO(User user);
 
     List<UserDTO> listUserToListUserDTO(List<User> userList);

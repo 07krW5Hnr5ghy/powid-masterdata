@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -43,8 +44,8 @@ public class StatsImpl implements IStats {
     private final Executor asyncExecutor;
     @Override
     public CompletableFuture<StatsCardDTO> listCardStats(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
             String orderStateName,
             String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -52,13 +53,13 @@ public class StatsImpl implements IStats {
             OrderState orderState;
             List<Ordering> orderingListByDate;
             List<Ordering> orderingListByDateAndStatus;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByName(orderStateName);
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -68,19 +69,19 @@ public class StatsImpl implements IStats {
             }else{
                 orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd);
+                        registrationStartDate,
+                        registrationEndDate);
             }
             if (orderState==null){
                 orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd);
+                        registrationStartDate,
+                        registrationEndDate);
             }else {
                 orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetweenAndOrderStateId(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd,
+                        registrationStartDate,
+                        registrationEndDate,
                         orderState.getId());
             }
             try{
@@ -208,18 +209,15 @@ public class StatsImpl implements IStats {
     }
 
     @Override
-    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySales(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySales(OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<Ordering> orderingListByDate;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
-                System.out.println(utcRegistrationDateStart);
-                System.out.println(utcRegistrationDateEnd);
+                System.out.println(registrationEndDate);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -229,15 +227,15 @@ public class StatsImpl implements IStats {
             }else{
                 orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd);
+                        registrationStartDate,
+                        registrationEndDate);
             }
             try{
                 List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
                 List<DailySaleSummaryDTO> orderDates = orderingRepository.findAllOrdersByDate(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd).stream().map(result -> DailySaleSummaryDTO.builder()
+                        registrationStartDate,
+                        registrationEndDate).stream().map(result -> DailySaleSummaryDTO.builder()
                                     .date((Date) result[0])
                                     .orderState("TODOS")
                                     .totalOrders(((Long) result[1]).intValue())
@@ -287,18 +285,18 @@ public class StatsImpl implements IStats {
     }
 
     @Override
-    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySalesByStatus(Date registrationStartDate, Date registrationEndDate, String status, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<DailySaleSummaryDTO>> listDailySalesByStatus(OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, String status, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderState orderState;
             List<Ordering> orderingListByDateAndStatus;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue(status.toUpperCase());
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -311,8 +309,8 @@ public class StatsImpl implements IStats {
             }else{
                 orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetweenAndOrderStateId(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd,
+                        registrationStartDate,
+                        registrationEndDate,
                         orderState.getId()
                 );
             }
@@ -321,8 +319,8 @@ public class StatsImpl implements IStats {
                 List<DailySaleSummaryDTO> orderDates = orderingRepository.findOrderCountByDateAndStatus(
                         user.getClientId(),
                         orderState.getId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd).stream().map(result -> DailySaleSummaryDTO.builder()
+                        registrationStartDate,
+                        registrationEndDate).stream().map(result -> DailySaleSummaryDTO.builder()
                             .orderState(orderState.getName())
                             .date((Date) result[0])
                             .totalOrders(((Long) result[1]).intValue())
@@ -372,19 +370,19 @@ public class StatsImpl implements IStats {
 
     @Override
     public CompletableFuture<List<SellerSalesDTO>> listSellerSales(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
             String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<SellerSalesDTO> orderingList;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             List<Ordering> orderingListByDate;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -395,8 +393,8 @@ public class StatsImpl implements IStats {
             try{
                 orderingList = orderingRepository.findByClientIdAndRegistrationDateBetweenCountSeller(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd
+                        registrationStartDate,
+                        registrationEndDate
                 ).stream().map(result -> SellerSalesDTO.builder()
                         .seller(result[0].toString())
                         .orderCount((long) result[1])
@@ -404,8 +402,8 @@ public class StatsImpl implements IStats {
                 ).toList();
                 orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd);
+                        registrationStartDate,
+                        registrationEndDate);
                 for(SellerSalesDTO sellerSalesDto:orderingList){
                     double sellerTotalSales = 0.00;
                     int sellerTotalProducts = 0;
@@ -452,18 +450,18 @@ public class StatsImpl implements IStats {
     }
 
     @Override
-    public CompletableFuture<List<SalesBrandDTO>> listSalesBrand(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<SalesBrandDTO>> listSalesBrand(OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<DailySaleSummaryDTO> orderingList;
             List<Ordering> orderingListByDate;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             List<Brand> brands;
             try{
                 user =  userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
@@ -475,16 +473,16 @@ public class StatsImpl implements IStats {
                 brands = brandRepository.findAllByClientIdAndStatusTrue(user.getClientId());
                 orderingList = orderingRepository.findAllOrdersByDate(
                        user.getClientId(),
-                       utcRegistrationDateStart,
-                       utcRegistrationDateEnd
+                       registrationStartDate,
+                       registrationEndDate
                    ).stream().map(result -> DailySaleSummaryDTO.builder()
                            .date((Date) result[0])
                            .build()
                 ).toList();
                 orderingListByDate = orderingRepository.findByClientIdAndRegistrationDateBetween(
                            user.getClientId(),
-                           utcRegistrationDateStart,
-                           utcRegistrationDateEnd
+                           registrationStartDate,
+                           registrationEndDate
                 );
             }
             try{
@@ -566,17 +564,17 @@ public class StatsImpl implements IStats {
     }
 
     @Override
-    public CompletableFuture<List<SalesStatusDTO>> listSalesStatus(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<SalesStatusDTO>> listSalesStatus(OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<SalesStatusDTO> salesStatusDTOS;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             List<Ordering> orderingList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -586,8 +584,8 @@ public class StatsImpl implements IStats {
             }else{
                 salesStatusDTOS = orderingRepository.findByClientIdAndStateRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd
+                        registrationStartDate,
+                        registrationEndDate
                 ).stream().map(result -> SalesStatusDTO.builder()
                                 .status((String) result[0])
                                 .totalOrders((Long) result[1])
@@ -595,8 +593,8 @@ public class StatsImpl implements IStats {
                         ).toList();
                 orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd
+                        registrationStartDate,
+                        registrationEndDate
                 );
             }
             try{
@@ -651,19 +649,19 @@ public class StatsImpl implements IStats {
 
     @Override
     public CompletableFuture<List<SalesChannelDTO>> listSalesChannel(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
             String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             List<Ordering> orderingList;
             List<SalesChannelDTO> salesChannelDTOS;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username);
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -673,8 +671,8 @@ public class StatsImpl implements IStats {
             }else{
                 salesChannelDTOS = orderingRepository.findByClientIdAndSaleChannelRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd
+                        registrationStartDate,
+                        registrationEndDate
                 ).stream().map(result -> SalesChannelDTO.builder()
                         .saleChannel((String) result[0])
                         .totalOrders((Long) result[1])
@@ -682,8 +680,8 @@ public class StatsImpl implements IStats {
                 ).toList();
                 orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd
+                        registrationStartDate,
+                        registrationEndDate
                 );
             }
             try{
@@ -738,8 +736,8 @@ public class StatsImpl implements IStats {
 
     @Override
     public CompletableFuture<Page<SalesCategoryDTO>> listCategories(
-            Date registrationStartDate,
-            Date registrationEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
             String username,
             Integer page,
             Integer size
@@ -747,8 +745,8 @@ public class StatsImpl implements IStats {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<Ordering> orderingList;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             List<SalesCategoryRawDTO> salesCategoryRawDTOS = new ArrayList<>();
             List<CategoryProduct> categoryProducts;
             List<SaleChannel> saleChannels;
@@ -763,18 +761,18 @@ public class StatsImpl implements IStats {
                 saleChannels = saleChannelRepository.findAll();
 
                 // Convert registration dates to UTC
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
 
                 orderItemRepository.findOrderItemsByDateRangeAndClientId(
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd,
+                        registrationStartDate,
+                        registrationEndDate,
                         user.getClientId()
                 ).forEach(item->{
                     salesCategoryRawDTOS.add(
                             SalesCategoryRawDTO.builder()
-                                    .orderId((Long) item[0])
-                                    .registrationDate((Date) item[1])
+                                    .orderId((UUID) item[0])
+                                    .registrationDate((OffsetDateTime) item[1])
                                     .orderDiscountAmount((Double) item[3])
                                     .orderDiscountName((String) item[4])
                                     .saleChannelName((String) item[5])

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -36,19 +37,19 @@ public class RoleImpl implements IRole {
     private final RoleRepositoryCustom roleRepositoryCustom;
     private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
+    public ResponseSuccess save(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        User user;
         Role role;
 
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             role = roleRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser == null) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if (role != null) {
@@ -59,9 +60,9 @@ public class RoleImpl implements IRole {
             Role newRole = roleRepository.save(Role.builder()
                     .name(name.toUpperCase())
                     .status(true)
-                    .tokenUser(datauser.getUsername().toUpperCase())
+                    .user(user).userId(user.getId())
                     .build());
-            iAudit.save("ADD_ROLE","ROL "+newRole.getName()+" CREADO.",newRole.getName(),datauser.getUsername());
+            iAudit.save("ADD_ROLE","ROL "+newRole.getName()+" CREADO.",newRole.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -74,20 +75,20 @@ public class RoleImpl implements IRole {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             Role role;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 role = roleRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (role != null) {
@@ -98,9 +99,9 @@ public class RoleImpl implements IRole {
                 Role newRole = roleRepository.save(Role.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .tokenUser(datauser.getUsername().toUpperCase())
+                        .user(user).userId(user.getId())
                         .build());
-                iAudit.save("ADD_ROLE","ROL "+newRole.getName()+" CREADO.",newRole.getName(),datauser.getUsername());
+                iAudit.save("ADD_ROLE","ROL "+newRole.getName()+" CREADO.",newRole.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -115,20 +116,20 @@ public class RoleImpl implements IRole {
 
     @Override
     @Transactional
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             Role role;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 role = roleRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (role == null) {
@@ -137,9 +138,9 @@ public class RoleImpl implements IRole {
 
             try {
                 role.setStatus(false);
-                role.setRegistrationDate(new Date(System.currentTimeMillis()));
+                role.setRegistrationDate(OffsetDateTime.now());
                 roleRepository.save(role);
-                iAudit.save("DELETE_ROLE","ROL "+role.getName()+" DESACTIVADO.",role.getName(),datauser.getUsername());
+                iAudit.save("DELETE_ROLE","ROL "+role.getName()+" DESACTIVADO.",role.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -152,13 +153,13 @@ public class RoleImpl implements IRole {
     }
 
     @Override
-    public CompletableFuture<Page<RoleDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<RoleDTO>> list(String name, String username, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Role> rolePage;
 
             try {
-                rolePage = roleRepositoryCustom.searchForRole(name, user, sort, sortColumn, pageNumber,
+                rolePage = roleRepositoryCustom.searchForRole(name, username, sort, sortColumn, pageNumber,
                         pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e);
@@ -174,14 +175,14 @@ public class RoleImpl implements IRole {
     }
 
     @Override
-    public CompletableFuture<Page<RoleDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<RoleDTO>> listStatusFalse(String name, String username, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Role> rolePage;
 
             try {
 
-                rolePage = roleRepositoryCustom.searchForRole(name, user, sort, sortColumn, pageNumber,
+                rolePage = roleRepositoryCustom.searchForRole(name, username, sort, sortColumn, pageNumber,
                         pageSize, false);
 
             } catch (RuntimeException e) {
@@ -201,18 +202,18 @@ public class RoleImpl implements IRole {
     @Override
     public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             Role role;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 role = roleRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (role == null) {
@@ -221,9 +222,9 @@ public class RoleImpl implements IRole {
 
             try {
                 role.setStatus(true);
-                role.setRegistrationDate(new Date(System.currentTimeMillis()));
+                role.setRegistrationDate(OffsetDateTime.now());
                 roleRepository.save(role);
-                iAudit.save("ACTIVATE_ROLE","ROL "+role.getName()+" ACTIVADO.",role.getName(),datauser.getUsername());
+                iAudit.save("ACTIVATE_ROLE","ROL "+role.getName()+" ACTIVADO.",role.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

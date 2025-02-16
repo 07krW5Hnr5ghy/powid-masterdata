@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -44,7 +45,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     private final OrderReturnItemRepositoryCustom orderReturnItemRepositoryCustom;
     private final WarehouseRepository warehouseRepository;
     @Override
-    public CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> save(UUID orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             SupplierProduct supplierProduct;
@@ -114,9 +115,10 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                         .quantity(requestOrderReturnItem.getQuantity())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user)
+                        .userId(user.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .status(true)
@@ -137,7 +139,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(Long orderId, String supplierProductSerial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID orderId, String supplierProductSerial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderReturn orderReturn;
@@ -165,8 +167,9 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             }
             try{
                 orderReturnItem.setStatus(false);
-                orderReturnItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderReturnItem.setTokenUser(user.getUsername());
+                orderReturnItem.setUpdateDate(OffsetDateTime.now());
+                orderReturnItem.setUser(user);
+                orderReturnItem.setUserId(user.getId());
                 orderReturnItemRepository.save(orderReturnItem);
                 iGeneralStock.out(supplierProduct.getSerial(), orderReturnItem.getQuantity(), user.getUsername());
                 iWarehouseStock.out(orderReturn.getOrderStock().getWarehouse(),supplierProduct, orderReturnItem.getQuantity(), user);
@@ -184,7 +187,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(Long orderId, String supplierProductSerial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> activate(UUID orderId, String supplierProductSerial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderReturn orderReturn;
@@ -212,8 +215,9 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             }
             try{
                 orderReturnItem.setStatus(true);
-                orderReturnItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderReturnItem.setTokenUser(user.getUsername());
+                orderReturnItem.setUpdateDate(OffsetDateTime.now());
+                orderReturnItem.setUser(user);
+                orderReturnItem.setUserId(user.getId());
                 orderReturnItemRepository.save(orderReturnItem);
                 iGeneralStock.in(supplierProduct.getSerial(), orderReturnItem.getQuantity(), user.getUsername());
                 iWarehouseStock.in(orderReturn.getOrderStock().getWarehouse(),supplierProduct, orderReturnItem.getQuantity(), user);
@@ -231,7 +235,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> update(Long orderId, String supplierProductSerial, Integer quantity, String tokenUser) throws InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> update(UUID orderId, String supplierProductSerial, Integer quantity, String tokenUser) throws InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderReturn orderReturn;
@@ -278,8 +282,9 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                     warehouseStock.setQuantity(warehouseStock.getQuantity()+(orderReturnItem.getQuantity()-quantity));
                 }
                 orderReturnItem.setQuantity(quantity);
-                orderReturnItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderReturnItem.setTokenUser(user.getUsername());
+                orderReturnItem.setUpdateDate(OffsetDateTime.now());
+                orderReturnItem.setUser(user);
+                orderReturnItem.setUserId(user.getId());
                 orderReturnItemRepository.save(orderReturnItem);
                 iAudit.save("UPDATE_ORDER_RETURN_ITEM","PRODUCTO DE DEVOLUCION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderReturnItem.getSupplierProduct().getSerial()+" CON "+orderReturnItem.getQuantity()+" UNIDADES ACTUALIZADO.",orderReturnItem.getOrderReturn().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -295,9 +300,9 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     }
 
     @Override
-    public CompletableFuture<List<OrderReturnItemDTO>> list(String user, Long orderId) throws BadRequestExceptions {
+    public CompletableFuture<List<OrderReturnItemDTO>> list(String user, UUID orderId) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<OrderReturnItem> orderReturnItemList;
             OrderReturn orderReturn;
             try{
@@ -324,8 +329,8 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                     .product(orderReturnItem.getProduct().getSku())
                     .supplierProduct(orderReturnItem.getSupplierProduct().getSerial())
                     .returnType(orderReturnItem.getOrderReturnType().getName())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .updateDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
+                    .updateDate(OffsetDateTime.now())
                     .quantity(orderReturnItem.getQuantity())
                     .warehouse(orderReturnItem.getOrderReturn().getOrderStock().getWarehouse().getName())
                     .build()).toList();
@@ -335,27 +340,27 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     @Override
     public CompletableFuture<Page<OrderReturnItemDTO>> listPagination(
             String user,
-            List<Long> orders,
+            List<UUID> orders,
             List<String> products,
             List<String> supplierProducts,
             List<String> warehouses,
             List<String> orderReturnTypes,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderReturnItem> orderReturnItemPage;
-            Long clientId;
-            List<Long> orderIds;
-            List<Long> productIds;
-            List<Long> supplierProductIds;
-            List<Long> warehouseIds;
-            List<Long> orderReturnTypeIds;
+            UUID clientId;
+            List<UUID> orderIds;
+            List<UUID> productIds;
+            List<UUID> supplierProductIds;
+            List<UUID> warehouseIds;
+            List<UUID> orderReturnTypeIds;
             if(orders != null && !orders.isEmpty()){
                 orderIds = orders;
             }else{
@@ -433,27 +438,27 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     @Override
     public CompletableFuture<Page<OrderReturnItemDTO>> listFalse(
             String user,
-            List<Long> orders,
+            List<UUID> orders,
             List<String> products,
             List<String> supplierProducts,
             List<String> warehouses,
             List<String> orderReturnTypes,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderReturnItem> orderReturnItemPage;
-            Long clientId;
-            List<Long> orderIds;
-            List<Long> productIds;
-            List<Long> supplierProductIds;
-            List<Long> warehouseIds;
-            List<Long> orderReturnTypeIds;
+            UUID clientId;
+            List<UUID> orderIds;
+            List<UUID> productIds;
+            List<UUID> supplierProductIds;
+            List<UUID> warehouseIds;
+            List<UUID> orderReturnTypeIds;
             if(orders != null && !orders.isEmpty()){
                 orderIds = orders;
             }else{

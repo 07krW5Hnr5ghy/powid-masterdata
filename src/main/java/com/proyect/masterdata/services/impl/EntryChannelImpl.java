@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -63,8 +64,9 @@ public class EntryChannelImpl implements IEntryChannel {
                 EntryChannel newEntryChannel = entryChannelRepository.save(EntryChannel.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(tokenUser.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
+                        .user(user)
+                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_ENTRY_CHANNEL","CANAL DE ENTRADA "+newEntryChannel.getName()+" CREADO.",newEntryChannel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -81,10 +83,10 @@ public class EntryChannelImpl implements IEntryChannel {
     @Override
     public CompletableFuture<Page<EntryChannelDTO>> listEntryChannel(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -119,7 +121,7 @@ public class EntryChannelImpl implements IEntryChannel {
     }
 
     @Override
-    public CompletableFuture<Page<EntryChannelDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<EntryChannelDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<EntryChannel> entryChannelPage;
 
@@ -185,8 +187,9 @@ public class EntryChannelImpl implements IEntryChannel {
             }
             try {
                 entryChannel.setStatus(false);
-                entryChannel.setUpdateDate(new Date(System.currentTimeMillis()));
-                entryChannel.setTokenUser(user.getUsername());
+                entryChannel.setUpdateDate(OffsetDateTime.now());
+                entryChannel.setUser(user);
+                entryChannel.setUserId(user.getId());
                 entryChannelRepository.save(entryChannel);
                 iAudit.save("DELETE_ENTRY_CHANNEL","CANAL DE ENTRADA "+entryChannel.getName()+" DESACTIVADO.",entryChannel.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -220,8 +223,9 @@ public class EntryChannelImpl implements IEntryChannel {
             }
             try {
                 entryChannel.setStatus(true);
-                entryChannel.setUpdateDate(new Date(System.currentTimeMillis()));
-                entryChannel.setTokenUser(user.getUsername());
+                entryChannel.setUpdateDate(OffsetDateTime.now());
+                entryChannel.setUser(user);
+                entryChannel.setUserId(user.getId());
                 entryChannelRepository.save(entryChannel);
                 iAudit.save("ACTIVATE_ENTRY_CHANNEL","CANAL DE ENTRADA "+entryChannel.getName()+" ACTIVADO.",entryChannel.getName(),user.getUsername());
                 return ResponseSuccess.builder()

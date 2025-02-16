@@ -42,7 +42,7 @@ public interface IOrdering {
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<List<OrderDTO>> listOrder(String user) throws BadRequestExceptions,InternalErrorExceptions;
-    ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    ResponseSuccess update(UUID orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> updateAsync(
             UUID orderId,
             RequestOrderUpdate requestOrderUpdate,

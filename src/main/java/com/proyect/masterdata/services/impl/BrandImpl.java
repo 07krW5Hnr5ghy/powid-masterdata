@@ -187,10 +187,10 @@ public class BrandImpl implements IBrand {
     public CompletableFuture<Page<BrandDTO>> listPagination(
             String tokenUser,
             List<String> names,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -234,7 +234,7 @@ public class BrandImpl implements IBrand {
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
-                    .tokenUser(brand.getTokenUser())
+                    .tokenUser(brand.getUser().getUsername())
                     .build()).toList();
 
             return new PageImpl<>(brandDTOs, brandPage.getPageable(),
@@ -246,10 +246,10 @@ public class BrandImpl implements IBrand {
     public CompletableFuture<Page<BrandDTO>> listStatusFalse(
             String tokenUser,
             List<String> names,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -257,7 +257,7 @@ public class BrandImpl implements IBrand {
         return CompletableFuture.supplyAsync(() -> {
             Page<Brand> brandPage;
             List<String> brandsUppercase;
-            Long clientId;
+            UUID clientId;
 
             if(names != null && !names.isEmpty()){
                 brandsUppercase = names.stream().map(String::toUpperCase).toList();
@@ -293,7 +293,7 @@ public class BrandImpl implements IBrand {
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
-                    .tokenUser(brand.getTokenUser())
+                    .tokenUser(brand.getUser().getUsername())
                     .build()).toList();
 
             return new PageImpl<>(brandDTOs, brandPage.getPageable(),
@@ -325,8 +325,9 @@ public class BrandImpl implements IBrand {
 
             try {
                 brand.setStatus(true);
-                brand.setUpdateDate(new Date(System.currentTimeMillis()));
-                brand.setTokenUser(tokenUser.toUpperCase());
+                brand.setUpdateDate(OffsetDateTime.now());
+                brand.setUser(user);
+                brand.setUserId(user.getId());
                 brandRepository.save(brand);
                 iAudit.save("ACTIVATE_BRAND","MARCA "+brand.getName()+" ACTIVADA.", brand.getName(), user.getUsername());
                 return ResponseSuccess.builder()
@@ -344,7 +345,7 @@ public class BrandImpl implements IBrand {
     public CompletableFuture<List<BrandDTO>> listBrands(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(() -> {
             List<Brand> brands;
-            Long clientId;
+            UUID clientId;
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -363,7 +364,7 @@ public class BrandImpl implements IBrand {
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
-                    .tokenUser(brand.getTokenUser())
+                    .tokenUser(brand.getUser().getUsername())
                     .build()).toList();
         });
     }
@@ -372,7 +373,7 @@ public class BrandImpl implements IBrand {
     public CompletableFuture<List<BrandDTO>> listBrandsFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Brand> brands;
-            Long clientId;
+            UUID clientId;
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -391,7 +392,7 @@ public class BrandImpl implements IBrand {
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
-                    .tokenUser(brand.getTokenUser())
+                    .tokenUser(brand.getUser().getUsername())
                     .build()).toList();
         });
     }
@@ -400,7 +401,7 @@ public class BrandImpl implements IBrand {
     public CompletableFuture<List<BrandDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Brand> brands;
-            Long clientId;
+            UUID clientId;
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -419,7 +420,7 @@ public class BrandImpl implements IBrand {
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
-                    .tokenUser(brand.getTokenUser())
+                    .tokenUser(brand.getUser().getUsername())
                     .build()).toList();
         });
     }

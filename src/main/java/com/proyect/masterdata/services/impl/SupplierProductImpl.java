@@ -1,9 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.services.IAudit;
@@ -88,12 +86,12 @@ public class SupplierProductImpl implements ISupplierProduct {
                     .product(product)
                     .productId(product.getId())
                     .purchasePrice(requestSupplierProduct.getPurchasePrice())
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .serial(requestSupplierProduct.getSerial())
                     .status(true)
                     .supplier(supplier)
                     .supplierId(supplier.getId())
-                    .tokenUser(user.getUsername())
+                    .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+newSupplierProduct.getSerial()+" CREADO.",newSupplierProduct.getSerial(),user.getUsername());
             return ResponseSuccess.builder()
@@ -150,12 +148,12 @@ public class SupplierProductImpl implements ISupplierProduct {
                         .product(product)
                         .productId(product.getId())
                         .purchasePrice(requestSupplierProduct.getPurchasePrice())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .serial(requestSupplierProduct.getSerial())
                         .status(true)
                         .supplier(supplier)
                         .supplierId(supplier.getId())
-                        .tokenUser(user.getUsername())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+newSupplierProduct.getSerial()+" CREADO.",newSupplierProduct.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -194,8 +192,9 @@ public class SupplierProductImpl implements ISupplierProduct {
             try {
 
                 supplierProduct.setStatus(false);
-                supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
-                supplierProduct.setTokenUser(user.getUsername());
+                supplierProduct.setUpdateDate(OffsetDateTime.now());
+                supplierProduct.setUser(user);
+                supplierProduct.setUserId(user.getId());
                 supplierProductRepository.save(supplierProduct);
                 iAudit.save("DELETE_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" DESACTIVADO.",supplierProduct.getSerial(),user.getUsername());
                 return ResponseDelete.builder()
@@ -232,8 +231,9 @@ public class SupplierProductImpl implements ISupplierProduct {
 
             try {
                 supplierProduct.setStatus(true);
-                supplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
-                supplierProduct.setTokenUser(user.getUsername());
+                supplierProduct.setUpdateDate(OffsetDateTime.now());
+                supplierProduct.setUser(user);
+                supplierProduct.setUserId(user.getId());
                 supplierProductRepository.save(supplierProduct);
                 iAudit.save("ACTIVATE_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" ACTIVADO.",supplierProduct.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -259,8 +259,8 @@ public class SupplierProductImpl implements ISupplierProduct {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<SupplierProduct> supplierProductPage;
-            Long clientId;
-            List<Long> supplierIds;
+            UUID clientId;
+            List<UUID> supplierIds;
 
             if(suppliers != null && !suppliers.isEmpty()){
                 supplierIds = supplierRepository.findByRucIn(
@@ -325,8 +325,8 @@ public class SupplierProductImpl implements ISupplierProduct {
     ) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<SupplierProduct> supplierProductPage;
-            Long clientId;
-            List<Long> supplierIds;
+            UUID clientId;
+            List<UUID> supplierIds;
 
             if(suppliers != null && !suppliers.isEmpty()){
                 supplierIds = supplierRepository.findByRucIn(
@@ -381,8 +381,8 @@ public class SupplierProductImpl implements ISupplierProduct {
     public CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user,String supplier) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<SupplierProduct> supplierProducts;
-            Long clientId;
-            Long supplierId;
+            UUID clientId;
+            UUID supplierId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -425,7 +425,7 @@ public class SupplierProductImpl implements ISupplierProduct {
     public CompletableFuture<List<SupplierProductDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<SupplierProduct> supplierProducts;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 supplierProducts = supplierProductRepository.findAllByClientId(clientId);
@@ -455,10 +455,10 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user,UUID id) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<SupplierProduct> supplierProducts;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
                 if(id != null){
@@ -495,8 +495,8 @@ public class SupplierProductImpl implements ISupplierProduct {
     public CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user, String productSku) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<SupplierProduct> supplierProducts;
-            Long clientId;
-            Long productId;
+            UUID clientId;
+            UUID productId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 productId = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase()).getId();

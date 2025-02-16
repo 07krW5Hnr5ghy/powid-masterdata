@@ -42,6 +42,9 @@ public class User {
     @Column(name = "address", nullable = false)
     private String address;
 
+    @Column(name = "district_id", nullable = false)
+    private UUID districtId;
+
     @Column(name = "gender", nullable = false)
     private String gender;
 
@@ -68,4 +71,8 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)
+    private District district;
 }

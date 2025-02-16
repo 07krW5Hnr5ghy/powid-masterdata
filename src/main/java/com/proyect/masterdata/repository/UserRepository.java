@@ -18,6 +18,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByDni(String dni);
     boolean existsByEmail(String email);
     boolean existsByMobile(String mobile);
-    User findByClientId(Long clientId);
-    List<User> findAllByClientId(Long clientId);
+    User findByClientId(UUID clientId);
+    List<User> findAllByClientId(UUID clientId);
 }

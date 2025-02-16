@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -55,10 +56,11 @@ public class ManagementTypeImpl implements IManagementType {
 
             try{
                 ManagementType newManagement = managementTypeRepository.save(ManagementType.builder()
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
                         .name(name.toUpperCase())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_MANAGEMENT_TYPE","TIPO DE GESTION "+newManagement.getName()+" CREADO.",newManagement.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -91,8 +93,9 @@ public class ManagementTypeImpl implements IManagementType {
             }
             try {
                 managementType.setStatus(false);
-                managementType.setUpdateDate(new Date(System.currentTimeMillis()));
-                managementType.setTokenUser(user.getUsername());
+                managementType.setUpdateDate(OffsetDateTime.now());
+                managementType.setUser(user);
+                managementType.setUserId(user.getId());
                 managementTypeRepository.save(managementType);
                 iAudit.save("DELETE_MANAGEMENT_TYPE","TIPO DE GESTION "+managementType.getName()+" DESACTIVADO.",managementType.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -126,8 +129,9 @@ public class ManagementTypeImpl implements IManagementType {
             }
             try {
                 managementType.setStatus(true);
-                managementType.setUpdateDate(new Date(System.currentTimeMillis()));
-                managementType.setTokenUser(user.getUsername());
+                managementType.setUpdateDate(OffsetDateTime.now());
+                managementType.setUser(user);
+                managementType.setUserId(user.getId());
                 managementTypeRepository.save(managementType);
                 iAudit.save("ACTIVATE_MANAGEMENT_TYPE","TIPO DE GESTION "+managementType.getName()+" ACTIVADO.",managementType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -144,10 +148,10 @@ public class ManagementTypeImpl implements IManagementType {
     @Override
     public CompletableFuture<Page<ManagementTypeDTO>> listPagination(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -184,7 +188,7 @@ public class ManagementTypeImpl implements IManagementType {
     }
 
     @Override
-    public CompletableFuture<Page<ManagementTypeDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<Page<ManagementTypeDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<ManagementType> managementTypePage;
             try {

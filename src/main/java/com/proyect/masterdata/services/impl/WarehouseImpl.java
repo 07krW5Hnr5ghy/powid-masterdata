@@ -1,8 +1,9 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+import java.util.UUID;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -70,9 +71,9 @@ public class WarehouseImpl implements IWarehouse {
                     .contact(requestWarehouse.getContact().toUpperCase())
                     .reference(requestWarehouse.getReference().toUpperCase())
                     .name(requestWarehouse.getName().toUpperCase())
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
+                    .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_WAREHOUSE","ALMACEN "+newWarehouse.getName()+" CREADO.",newWarehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -119,9 +120,9 @@ public class WarehouseImpl implements IWarehouse {
                         .contact(requestWarehouse.getContact().toUpperCase())
                         .reference(requestWarehouse.getReference().toUpperCase())
                         .name(requestWarehouse.getName().toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(tokenUser.toUpperCase())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_WAREHOUSE","ALMACEN "+newWarehouse.getName()+" CREADO.",newWarehouse.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -157,8 +158,9 @@ public class WarehouseImpl implements IWarehouse {
             }
             try {
                 warehouse.setStatus(false);
-                warehouse.setUpdateDate(new Date(System.currentTimeMillis()));
-                warehouse.setTokenUser(user.getUsername());
+                warehouse.setUpdateDate(OffsetDateTime.now());
+                warehouse.setUser(user);
+                warehouse.setUserId(user.getId());
                 iAudit.save("DELETE_WAREHOUSE","ALMACEN "+warehouse.getName()+" DESACTIVADO.",warehouse.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
@@ -192,8 +194,9 @@ public class WarehouseImpl implements IWarehouse {
             }
             try {
                 warehouse.setStatus(false);
-                warehouse.setUpdateDate(new Date(System.currentTimeMillis()));
-                warehouse.setTokenUser(user.getUsername());
+                warehouse.setUpdateDate(OffsetDateTime.now());
+                warehouse.setUser(user);
+                warehouse.setUserId(user.getId());
                 iAudit.save("ACTIVATE_WAREHOUSE","ALMACEN "+warehouse.getName()+" ACTIVADO.",warehouse.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -216,7 +219,7 @@ public class WarehouseImpl implements IWarehouse {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Warehouse> warehousePage;
-            Long clientId;
+            UUID clientId;
             List<String> namesUppercase;
 
             if(names != null && !names.isEmpty()){
@@ -261,7 +264,7 @@ public class WarehouseImpl implements IWarehouse {
     public CompletableFuture<List<WarehouseDTO>> listWarehouse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Warehouse> warehouses;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 warehouses = warehouseRepository.findAllByClientIdAndStatusTrue(clientId);
@@ -290,7 +293,7 @@ public class WarehouseImpl implements IWarehouse {
     public CompletableFuture<List<WarehouseDTO>> listWarehouseFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Warehouse> warehouses;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 warehouses = warehouseRepository.findAllByClientIdAndStatusFalse(clientId);
@@ -319,7 +322,7 @@ public class WarehouseImpl implements IWarehouse {
     public CompletableFuture<List<WarehouseDTO>> listFilters(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Warehouse> warehouses;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 warehouses = warehouseRepository.findAllByClientId(clientId);

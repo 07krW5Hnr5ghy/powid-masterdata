@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -64,7 +65,7 @@ public class ProvinceController {
     public ResponseEntity<Page<ProvinceDTO>> list(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
-            @RequestParam("codeDepartment") Long codeDepartment,
+            @RequestParam("codeDepartment") UUID codeDepartment,
             @RequestParam("nameDepartment") String nameDepartment,
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,
@@ -80,7 +81,7 @@ public class ProvinceController {
     public ResponseEntity<Page<ProvinceDTO>> listStatusFalse(
             @RequestParam("name") String name,
             @RequestParam("user") String user,
-            @RequestParam("codeDepartment") Long codeDepartment,
+            @RequestParam("codeDepartment") UUID codeDepartment,
             @RequestParam("nameDepartment") String nameDepartment,
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,

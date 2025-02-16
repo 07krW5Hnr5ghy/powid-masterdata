@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -43,7 +44,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
     private final OrderItemRepository orderItemRepository;
     private final ProductPriceRepository productPriceRepository;
     @Override
-    public CompletableFuture<InputStream> generateOrderReport(Long orderId,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<InputStream> generateOrderReport(UUID orderId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;

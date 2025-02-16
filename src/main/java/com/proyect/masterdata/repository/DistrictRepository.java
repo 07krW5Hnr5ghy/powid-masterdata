@@ -15,6 +15,7 @@ public interface DistrictRepository extends JpaRepository<District, UUID> {
     District findByNameAndProvinceId(String name,UUID provinceId);
     List<District> findByNameIn(List<String> name);
     List<District> findAllByStatusTrue();
+    District findByNameAndStatusTrue(String name);
     District findByNameAndProvinceIdAndStatusTrue(String name,UUID provinceId);
     District findByNameAndProvinceIdAndStatusFalse(String name,UUID provinceId);
     List<District> findAllByProvinceIdAndStatusTrue(UUID provinceId);

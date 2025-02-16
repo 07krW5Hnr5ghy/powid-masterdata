@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -82,7 +83,7 @@ public class ClientImpl implements IClient {
                     .district(district)
                     .districtId(district.getId())
                     .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .build());
             return ResponseSuccess.builder()
                     .code(200)
@@ -139,7 +140,7 @@ public class ClientImpl implements IClient {
                         .district(district)
                         .districtId(district.getId())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .build());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -189,7 +190,7 @@ public class ClientImpl implements IClient {
                 client.setName(requestClient.getName().toUpperCase());
                 client.setSurname(requestClient.getSurname().toUpperCase());
                 client.setDni(requestClient.getDni());
-                client.setUpdateDate(new Date(System.currentTimeMillis()));
+                client.setUpdateDate(OffsetDateTime.now());
                 client.setMobile(requestClient.getMobile());
                 client.setAddress(requestClient.getAddress().toUpperCase());
                 client.setEmail(requestClient.getEmail());
@@ -228,7 +229,7 @@ public class ClientImpl implements IClient {
             }
             try {
                 client.setStatus(false);
-                client.setUpdateDate(new Date(System.currentTimeMillis()));
+                client.setUpdateDate(OffsetDateTime.now());
                 clientRepository.save(client);
                 iAudit.save("DELETE_CLIENT","CLIENTE "+client.getRuc()+" DESACTIVADO.",client.getRuc(),user.getUsername());
                 return ResponseDelete.builder()
@@ -243,7 +244,7 @@ public class ClientImpl implements IClient {
     }
 
     @Override
-    public CompletableFuture<Page<ClientDTO>> list(String ruc, String business, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn,
+    public CompletableFuture<Page<ClientDTO>> list(String ruc, String business, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Client> clientPage;
@@ -291,7 +292,7 @@ public class ClientImpl implements IClient {
     }
 
     @Override
-    public CompletableFuture<Page<ClientDTO>> listFalse(String ruc, String business, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<Page<ClientDTO>> listFalse(String ruc, String business, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Client> clientPage;
 
@@ -347,7 +348,7 @@ public class ClientImpl implements IClient {
             }
             try {
                 client.setStatus(true);
-                client.setRegistrationDate(new Date(System.currentTimeMillis()));
+                client.setRegistrationDate(OffsetDateTime.now());
                 clientRepository.save(client);
                 iAudit.save("ACTIVATE_CLIENT","CLIENTE "+client.getRuc()+" ACTIVADO.",client.getRuc(),user.getUsername());
                 return ResponseSuccess.builder()

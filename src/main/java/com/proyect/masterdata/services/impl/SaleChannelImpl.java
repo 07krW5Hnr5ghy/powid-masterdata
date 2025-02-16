@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,19 +40,19 @@ public class SaleChannelImpl implements ISaleChannel {
     private final SaleChannelRepositoryCustom saleChannelRepositoryCustom;
     private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
+    public ResponseSuccess save(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        User user;
         SaleChannel saleChannel;
 
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             saleChannel = saleChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser == null) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if (saleChannel != null) {
@@ -59,9 +60,15 @@ public class SaleChannelImpl implements ISaleChannel {
         }
 
         try {
-            SaleChannel newSaleChannel = saleChannelRepository.save(saleChannelMapper.saleChannelToName(RequestSaleChannelSave.builder()
-                    .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
-            iAudit.save("ADD_SALE_CHANNEL","CANAL DE VENTA "+newSaleChannel.getName()+" CREADO.",newSaleChannel.getName(),datauser.getUsername());
+            SaleChannel newSaleChannel = saleChannelRepository.save(SaleChannel.builder()
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .name(name.toUpperCase())
+                            .status(true)
+                            .user(user)
+                            .userId(user.getId())
+                    .build());
+            iAudit.save("ADD_SALE_CHANNEL","CANAL DE VENTA "+newSaleChannel.getName()+" CREADO.",newSaleChannel.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -73,20 +80,20 @@ public class SaleChannelImpl implements ISaleChannel {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             SaleChannel saleChannel;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 saleChannel = saleChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (saleChannel != null) {
@@ -94,9 +101,15 @@ public class SaleChannelImpl implements ISaleChannel {
             }
 
             try {
-                SaleChannel newSaleChannel = saleChannelRepository.save(saleChannelMapper.saleChannelToName(RequestSaleChannelSave.builder()
-                        .name(name.toUpperCase()).user(datauser.getUsername().toUpperCase()).build()));
-                iAudit.save("ADD_SALE_CHANNEL","CANAL DE VENTA "+newSaleChannel.getName()+" CREADO.",newSaleChannel.getName(),datauser.getUsername());
+                SaleChannel newSaleChannel = saleChannelRepository.save(SaleChannel.builder()
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .name(name.toUpperCase())
+                        .status(true)
+                        .user(user)
+                        .userId(user.getId())
+                        .build());
+                iAudit.save("ADD_SALE_CHANNEL","CANAL DE VENTA "+newSaleChannel.getName()+" CREADO.",newSaleChannel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -110,19 +123,19 @@ public class SaleChannelImpl implements ISaleChannel {
 
     @Override
     @Transactional
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             SaleChannel saleChannel;
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 saleChannel = saleChannelRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (saleChannel == null) {
@@ -131,10 +144,10 @@ public class SaleChannelImpl implements ISaleChannel {
 
             try {
                 saleChannel.setStatus(false);
-                saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
-                saleChannel.setTokenUser(datauser.getUsername());
+                saleChannel.setRegistrationDate(OffsetDateTime.now());
+                saleChannel.setUser(user);saleChannel.setUserId(user.getId());
                 saleChannelRepository.save(saleChannel);
-                iAudit.save("DELETE_SALE_CHANNEL","CANAL DE VENTA "+saleChannel.getName()+" DESACTIVADO.",saleChannel.getName(),datauser.getUsername());
+                iAudit.save("DELETE_SALE_CHANNEL","CANAL DE VENTA "+saleChannel.getName()+" DESACTIVADO.",saleChannel.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -164,12 +177,12 @@ public class SaleChannelImpl implements ISaleChannel {
     }
 
     @Override
-    public CompletableFuture<Page<SaleChannelDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<SaleChannelDTO>> list(String name, String username, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<SaleChannel> saleChannelPage;
             try {
-                saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name, user, sort, sortColumn, pageNumber,
+                saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name, username, sort, sortColumn, pageNumber,
                         pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e);
@@ -184,12 +197,12 @@ public class SaleChannelImpl implements ISaleChannel {
     }
 
     @Override
-    public CompletableFuture<Page<SaleChannelDTO>> listStatusFalse(String name, String user, String sort, String sortColumn,
+    public CompletableFuture<Page<SaleChannelDTO>> listStatusFalse(String name, String username, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<SaleChannel> saleChannelPage;
             try {
-                saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name, user, sort, sortColumn, pageNumber,
+                saleChannelPage = saleChannelRepositoryCustom.searchForSaleChannel(name, username, sort, sortColumn, pageNumber,
                         pageSize, false);
             } catch (RuntimeException e) {
                 log.error(e);
@@ -204,19 +217,19 @@ public class SaleChannelImpl implements ISaleChannel {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             SaleChannel saleChannel;
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 saleChannel = saleChannelRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (saleChannel == null) {
@@ -225,10 +238,10 @@ public class SaleChannelImpl implements ISaleChannel {
 
             try {
                 saleChannel.setStatus(true);
-                saleChannel.setRegistrationDate(new Date(System.currentTimeMillis()));
-                saleChannel.setTokenUser(datauser.getUsername());
+                saleChannel.setRegistrationDate(OffsetDateTime.now());
+                saleChannel.setUser(user);saleChannel.setUserId(user.getId());
                 saleChannelRepository.save(saleChannel);
-                iAudit.save("ACTIVATE_SALE_CHANNEL","CANAL DE VENTA "+saleChannel.getName()+" ACTIVADO.",saleChannel.getName(),datauser.getUsername());
+                iAudit.save("ACTIVATE_SALE_CHANNEL","CANAL DE VENTA "+saleChannel.getName()+" ACTIVADO.",saleChannel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

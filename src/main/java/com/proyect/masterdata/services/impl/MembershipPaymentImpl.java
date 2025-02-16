@@ -19,9 +19,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -64,8 +66,8 @@ public class MembershipPaymentImpl implements IMembershipPayment {
                         .grossAmount(requestMembershipPayment.getGrossAmount())
                         .taxAmount(requestMembershipPayment.getTaxAmount())
                         .paymentGatewayFee(requestMembershipPayment.getPaymentGatewayFee())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .paymentGateway(paymentGateway)
                         .paymentGatewayId(paymentGateway.getId())
                         .build());
@@ -92,18 +94,18 @@ public class MembershipPaymentImpl implements IMembershipPayment {
             Double paymentGatewayFee,
             Double taxAmount,
             String paymentGateway,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<MembershipPayment> membershipPaymentPage;
-            Long clientId;
-            Long paymentGatewayId;
+            UUID clientId;
+            UUID paymentGatewayId;
 
             if(paymentGateway != null){
                 paymentGatewayId = paymentGatewayRepository.findByNameAndStatusTrue(paymentGateway.toUpperCase()).getId();

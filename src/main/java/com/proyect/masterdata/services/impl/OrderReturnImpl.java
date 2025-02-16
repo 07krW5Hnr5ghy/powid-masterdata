@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -40,7 +41,7 @@ public class OrderReturnImpl implements IOrderReturn {
     private final IAudit iAudit;
     private final WarehouseRepository warehouseRepository;
     @Override
-    public ResponseSuccess save(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(UUID orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
         OrderReturn orderReturn;
         OrderStock orderStock;
@@ -98,7 +99,8 @@ public class OrderReturnImpl implements IOrderReturn {
                     .orderId(orderStock.getOrderId())
                     .orderStock(orderStock)
                     .orderStockId(orderStock.getId())
-                    .tokenUser(user.getUsername())
+                    .user(user)
+                            .userId(user.getId())
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .status(true)
@@ -125,7 +127,7 @@ public class OrderReturnImpl implements IOrderReturn {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(Long orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(UUID orderId, List<RequestOrderReturnItem> requestOrderReturnItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderReturn orderReturn;
@@ -184,7 +186,8 @@ public class OrderReturnImpl implements IOrderReturn {
                         .orderId(orderStock.getOrderId())
                         .orderStock(orderStock)
                         .orderStockId(orderStock.getId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                                .userId(user.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .status(true)
@@ -215,7 +218,7 @@ public class OrderReturnImpl implements IOrderReturn {
     public CompletableFuture<List<OrderReturnDTO>> list(String user) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<OrderReturn> orderReturns;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 orderReturns = orderReturnRepository.findAllByClientIdAndStatusTrue(clientId);
@@ -238,21 +241,21 @@ public class OrderReturnImpl implements IOrderReturn {
     @Override
     public CompletableFuture<Page<OrderReturnDTO>> listPagination(
             String user,
-            List<Long> orders,
+            List<UUID> orders,
             List<String> warehouses,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderReturn> orderReturnPage;
-            List<Long> orderIds;
-            List<Long> warehouseIds;
-            Long clientId;
+            List<UUID> orderIds;
+            List<UUID> warehouseIds;
+            UUID clientId;
             if(orders != null && !orders.isEmpty()){
                 orderIds = orders;
             }else{
@@ -304,21 +307,21 @@ public class OrderReturnImpl implements IOrderReturn {
     @Override
     public CompletableFuture<Page<OrderReturnDTO>> listFalse(
             String user,
-            List<Long> orders,
+            List<UUID> orders,
             List<String> warehouses,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderReturn> orderReturnPage;
-            List<Long> orderIds;
-            List<Long> warehouseIds;
-            Long clientId;
+            List<UUID> orderIds;
+            List<UUID> warehouseIds;
+            UUID clientId;
             if(orders != null && !orders.isEmpty()){
                 orderIds = orders;
             }else{
@@ -371,7 +374,7 @@ public class OrderReturnImpl implements IOrderReturn {
     public CompletableFuture<List<OrderReturnDTO>> listFilter(String user) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<OrderReturn> orderReturns;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 orderReturns = orderReturnRepository.findAllByClientId(clientId);
@@ -392,7 +395,7 @@ public class OrderReturnImpl implements IOrderReturn {
     }
 
     @Override
-    public OrderReturn getOrderReturnItemByOrderIdAndClientId(Long orderId, Long clientId) {
+    public OrderReturn getOrderReturnItemByOrderIdAndClientId(UUID orderId, UUID clientId) {
         return orderReturnRepository.findByOrderIdAndClientId(orderId,clientId);
     }
 }

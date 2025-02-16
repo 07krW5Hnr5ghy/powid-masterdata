@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -28,8 +29,8 @@ public class StatsController {
 
     @GetMapping("card")
     ResponseEntity<StatsCardDTO> cardStatistics(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam(value = "orderState",required = false) String orderState,
             @RequestParam("user") String user
     ) throws InternalErrorExceptions, BadRequestExceptions, InterruptedException, ExecutionException, ParseException {
@@ -44,8 +45,8 @@ public class StatsController {
 
     @GetMapping("summary")
     ResponseEntity<List<DailySaleSummaryDTO>> dailySaleSummary(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<DailySaleSummaryDTO>> result = iStats.listDailySales(
@@ -58,8 +59,8 @@ public class StatsController {
 
     @GetMapping("summary-state")
     ResponseEntity<List<DailySaleSummaryDTO>> dailySaleSummaryByState(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("orderState") String state,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException, ParseException {
@@ -74,8 +75,8 @@ public class StatsController {
 
     @GetMapping("seller")
     ResponseEntity<List<SellerSalesDTO>> dailySaleSummaryByState(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException, ParseException {
         CompletableFuture<List<SellerSalesDTO>> result = iStats.listSellerSales(
@@ -88,8 +89,8 @@ public class StatsController {
 
     @GetMapping("brand")
     ResponseEntity<List<SalesBrandDTO>> dailySaleSummaryByBrand(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException{
         CompletableFuture<List<SalesBrandDTO>> result = iStats.listSalesBrand(
@@ -102,8 +103,8 @@ public class StatsController {
 
     @GetMapping("status")
     ResponseEntity<List<SalesStatusDTO>> saleSummaryStatus(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException{
         CompletableFuture<List<SalesStatusDTO>> result = iStats.listSalesStatus(
@@ -116,8 +117,8 @@ public class StatsController {
 
     @GetMapping("channel")
     ResponseEntity<List<SalesChannelDTO>> saleSummaryChannel(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException{
         CompletableFuture<List<SalesChannelDTO>> result = iStats.listSalesChannel(
@@ -130,8 +131,8 @@ public class StatsController {
 
     @GetMapping("category")
     ResponseEntity<Page<SalesCategoryDTO>> saleSummaryCategory(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size

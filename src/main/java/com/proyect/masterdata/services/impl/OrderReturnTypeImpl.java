@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -47,10 +48,11 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
             }
             try {
                 OrderReturnType newOrderReturnType = orderReturnTypeRepository.save(OrderReturnType.builder()
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .status(true)
-                                .tokenUser(user.getUsername())
+                                .user(user)
+                        .userId(user.getId())
                         .name(name.toUpperCase())
                         .build());
                 iAudit.save("ADD_ORDER_RETURN_TYPE","TIPO DE DEVOLUCION DE PEDIDO "+newOrderReturnType.getName()+" CREADO.",newOrderReturnType.getName(),user.getUsername());
@@ -119,8 +121,9 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
             }
             try {
                 orderReturnType.setStatus(false);
-                orderReturnType.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderReturnType.setTokenUser(user.getUsername());
+                orderReturnType.setUpdateDate(OffsetDateTime.now());
+                orderReturnType.setUser(user);
+                orderReturnType.setUserId(user.getId());
                 iAudit.save("DELETE_ORDER_RETURN_TYPE","TIPO DE DEVOLUCION DE PEDIDO "+orderReturnType.getName()+" DESACTIVADO.",orderReturnType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
@@ -153,8 +156,9 @@ public class OrderReturnTypeImpl implements IOrderReturnType {
             }
             try {
                 orderReturnType.setStatus(true);
-                orderReturnType.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderReturnType.setTokenUser(user.getUsername());
+                orderReturnType.setUpdateDate(OffsetDateTime.now());
+                orderReturnType.setUser(user);
+                orderReturnType.setUserId(user.getId());
                 iAudit.save("ACTIVATE_ORDER_RETURN_TYPE","TIPO DE DEVOLUCION DE PEDIDO "+orderReturnType.getName()+" ACTIVADO.",orderReturnType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)

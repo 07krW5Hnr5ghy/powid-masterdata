@@ -15,10 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -44,9 +42,9 @@ public class StockTransferItemImpl implements IStockTransferItem {
                             .quantity(requestStockTransferItem.getQuantity())
                             .supplierProduct(supplierProduct)
                             .supplierProductId(supplierProduct.getId())
-                            .tokenUser(user.getUsername())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
+                            .user(user)
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                     .build());
             iAudit.save("ADD_STOCK_TRANSFER_ITEM","PRODUCTO DE INVENTARIO "+newStockTransferItem.getSupplierProduct().getSerial()+" EN TRANSFERENCIA DE STOCK "+newStockTransferItem.getStockTransfer().getSerial()+" AGREGADO.",newStockTransferItem.getStockTransfer().getSerial(), user.getUsername());
             return newStockTransferItem;
@@ -68,9 +66,10 @@ public class StockTransferItemImpl implements IStockTransferItem {
                         .quantity(requestStockTransferItem.getQuantity())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
-                        .tokenUser(user.getUsername())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .user(user)
+                        .userId(user.getId())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .build());
                 iAudit.save("ADD_STOCK_TRANSFER_ITEM","PRODUCTO DE INVENTARIO "+newStockTransferItem.getSupplierProduct().getSerial()+" EN TRANSFERENCIA DE STOCK "+newStockTransferItem.getStockTransfer().getSerial()+" AGREGADO.",newStockTransferItem.getStockTransfer().getSerial(), user.getUsername());
                 return newStockTransferItem;
@@ -94,11 +93,11 @@ public class StockTransferItemImpl implements IStockTransferItem {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<StockTransferItem> pageStockTransferItem;
-            Long clientId;
-            List<Long> stockTransferIds;
-            List<Long> originWarehouseIds;
-            List<Long> destinationWarehouseIds;
-            List<Long> supplierProductIds;
+            UUID clientId;
+            List<UUID> stockTransferIds;
+            List<UUID> originWarehouseIds;
+            List<UUID> destinationWarehouseIds;
+            List<UUID> supplierProductIds;
 
             if(stockTransfers!=null&&!stockTransfers.isEmpty()){
                 stockTransferIds = stockTransferRepository.findBySerialIn(
@@ -168,10 +167,10 @@ public class StockTransferItemImpl implements IStockTransferItem {
     }
 
     @Override
-    public CompletableFuture<List<StockTransferItemDTO>> listStockTransferItem(String user,Long id) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<StockTransferItemDTO>> listStockTransferItem(String user,UUID id) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockTransferItem> stockTransferItems;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(id != null){

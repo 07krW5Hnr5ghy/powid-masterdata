@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Builder
@@ -14,7 +15,7 @@ import java.util.Date;
 public class MembershipDTO {
     private String membershipState;
     private String subscription;
-    private Date registrationDate;
-    private Date updateDate;
-    private Date expirationDate;
+    private OffsetDateTime registrationDate;
+    private OffsetDateTime updateDate;
+    private OffsetDateTime expirationDate;
 }

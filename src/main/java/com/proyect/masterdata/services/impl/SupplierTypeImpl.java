@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -48,8 +49,8 @@ public class SupplierTypeImpl implements ISupplierType {
             SupplierType newSupplierType = supplierTypeRepository.save(SupplierType.builder()
                             .name(name.toUpperCase())
                             .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                     .build());
             iAudit.save("ADD_SUPPLIER_TYPE","TIPO DE PROVEEDOR "+newSupplierType.getName()+" CREADO.",newSupplierType.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -84,8 +85,8 @@ public class SupplierTypeImpl implements ISupplierType {
                 SupplierType newSupplierType = supplierTypeRepository.save(SupplierType.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .build());
                 iAudit.save("ADD_SUPPLIER_TYPE","TIPO DE PROVEEDOR "+newSupplierType.getName()+" CREADO.",newSupplierType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -119,8 +120,9 @@ public class SupplierTypeImpl implements ISupplierType {
             }
             try {
                 supplierType.setStatus(false);
-                supplierType.setUpdateDate(new Date(System.currentTimeMillis()));
-                supplierType.setTokenUser(user.getUsername());
+                supplierType.setUpdateDate(OffsetDateTime.now());
+                supplierType.setUser(user);
+                supplierType.setUserId(user.getId());
                 iAudit.save("DELETE_SUPPLIER_TYPE","TIPO DE PROVEEDOR "+supplierType.getName()+" DESACTIVADO.",supplierType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
@@ -153,8 +155,9 @@ public class SupplierTypeImpl implements ISupplierType {
             }
             try {
                 supplierType.setStatus(true);
-                supplierType.setUpdateDate(new Date(System.currentTimeMillis()));
-                supplierType.setTokenUser(user.getUsername());
+                supplierType.setUpdateDate(OffsetDateTime.now());
+                supplierType.setUser(user);
+                supplierType.setUserId(user.getId());
                 iAudit.save("ACTIVATE_SUPPLIER_TYPE","TIPO DE PROVEEDOR "+supplierType.getName()+" ACTIVADO.",supplierType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)

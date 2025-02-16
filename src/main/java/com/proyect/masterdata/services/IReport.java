@@ -5,30 +5,29 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.stereotype.Repository;
 
 import java.io.ByteArrayInputStream;
-import java.util.Date;
-import java.util.UUID;
+import java.time.OffsetDateTime;
 import java.util.concurrent.CompletableFuture;
 
 @Repository
 public interface IReport {
     CompletableFuture<ByteArrayInputStream> generalStockReport(String username) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ByteArrayInputStream> warehouseStockReport(String username) throws BadRequestExceptions, InternalErrorExceptions;
-    CompletableFuture<ByteArrayInputStream> dailySalesSummary(UUID registrationStartDate,
-                                                              UUID registrationEndDate,
+    CompletableFuture<ByteArrayInputStream> dailySalesSummary(OffsetDateTime registrationStartDate,
+                                                              OffsetDateTime registrationEndDate,
                                                               String username) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ByteArrayInputStream> salesBySellerSummary(UUID registrationStartDate,
-                                                              UUID registrationEndDate,
+    CompletableFuture<ByteArrayInputStream> salesBySellerSummary(OffsetDateTime registrationStartDate,
+                                                              OffsetDateTime registrationEndDate,
                                                               String username) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ByteArrayInputStream> salesByBrandSummary(UUID registrationStartDate,
-                                                                UUID registrationEndDate,
+    CompletableFuture<ByteArrayInputStream> salesByBrandSummary(OffsetDateTime registrationStartDate,
+                                                                OffsetDateTime registrationEndDate,
                                                                 String username) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ByteArrayInputStream> dailySalesByBrandSummary(UUID registrationStartDate,
-                                                                UUID registrationEndDate,
+    CompletableFuture<ByteArrayInputStream> dailySalesByBrandSummary(OffsetDateTime registrationStartDate,
+                                                                OffsetDateTime registrationEndDate,
                                                                 String username) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ByteArrayInputStream> salesByStatusSummary(UUID registrationStartDate,
-                                                                     UUID registrationEndDate,
+    CompletableFuture<ByteArrayInputStream> salesByStatusSummary(OffsetDateTime registrationStartDate,
+                                                                     OffsetDateTime registrationEndDate,
                                                                      String username) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ByteArrayInputStream> salesByCategory(UUID registrationStartDate,
-                                                                 UUID registrationEndDate,
+    CompletableFuture<ByteArrayInputStream> salesByCategory(OffsetDateTime registrationStartDate,
+                                                                 OffsetDateTime registrationEndDate,
                                                                  String username) throws BadRequestExceptions,InternalErrorExceptions;
 }

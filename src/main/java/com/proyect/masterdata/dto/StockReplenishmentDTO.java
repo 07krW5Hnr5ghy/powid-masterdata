@@ -5,14 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class StockReplenishmentDTO {
-    private Long orderId;
-    private Date registrationDate;
-    private Date updateDate;
+    private UUID orderId;
+    private OffsetDateTime registrationDate;
+    private OffsetDateTime updateDate;
 }

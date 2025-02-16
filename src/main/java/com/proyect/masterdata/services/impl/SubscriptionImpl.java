@@ -27,6 +27,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -69,8 +70,8 @@ public class SubscriptionImpl implements ISubscription {
                     .name(name.toUpperCase())
                     .months(months)
                     .discountPercent(discountPercent)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(tokenUser.toUpperCase())
+                    .registrationDate(OffsetDateTime.now())
+                    .user(user).userId(user.getId())
                     .status(true)
                     .build());
             iAudit.save("ADD_SUBSCRIPTION","SUBSCRIPCION "+newSubscription.getName()+" CREADO.",newSubscription.getName(),user.getUsername());
@@ -112,8 +113,8 @@ public class SubscriptionImpl implements ISubscription {
                         .name(name.toUpperCase())
                         .months(months)
                         .discountPercent(discountPercent)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(tokenUser.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
+                        .user(user).userId(user.getId())
                         .status(true)
                         .build());
                 iAudit.save("ADD_SUBSCRIPTION","SUBSCRIPCION "+newSubscription.getName()+" CREADO.",newSubscription.getName(),user.getUsername());
@@ -148,8 +149,9 @@ public class SubscriptionImpl implements ISubscription {
             }
             try {
                 subscription.setStatus(false);
-                subscription.setUpdateDate(new Date(System.currentTimeMillis()));
-                subscription.setTokenUser(user.getUsername());
+                subscription.setUpdateDate(OffsetDateTime.now());
+                subscription.setUser(user);
+                subscription.setUserId(user.getId());
                 iAudit.save("DELETE_SUBSCRIPTION","SUBSCRIPCION "+subscription.getName()+" DESACTIVADO.",subscription.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
@@ -182,8 +184,9 @@ public class SubscriptionImpl implements ISubscription {
             }
             try {
                 subscription.setStatus(true);
-                subscription.setUpdateDate(new Date(System.currentTimeMillis()));
-                subscription.setTokenUser(user.getUsername());
+                subscription.setUpdateDate(OffsetDateTime.now());
+                subscription.setUser(user);
+                subscription.setUserId(user.getId());
                 iAudit.save("ACTIVATE_SUBSCRIPTION","SUBSCRIPCION "+subscription.getName()+" ACTIVADA.",subscription.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)

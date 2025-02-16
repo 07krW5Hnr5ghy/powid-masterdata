@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,11 +72,11 @@ public class SizeImpl implements ISize {
         try {
             Size newSize = sizeRepository.save(Size.builder()
                     .name(name.toUpperCase())
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .sizeType(sizeTypeData)
                     .sizeTypeId(sizeTypeData.getId())
                     .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
+                    .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_SIZE","TAMAÑO "+newSize.getName()+" CREADO.",newSize.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -119,11 +120,11 @@ public class SizeImpl implements ISize {
             try {
                 Size newSize = sizeRepository.save(Size.builder()
                         .name(name.toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .sizeType(sizeTypeData)
                         .sizeTypeId(sizeTypeData.getId())
                         .status(true)
-                        .tokenUser(tokenUser.toUpperCase())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_SIZE","TAMAÑO "+newSize.getName()+" CREADO.",newSize.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -161,8 +162,9 @@ public class SizeImpl implements ISize {
 
             try {
                 size.setStatus(false);
-                size.setUpdateDate(new Date(System.currentTimeMillis()));
-                size.setTokenUser(user.getUsername());
+                size.setUpdateDate(OffsetDateTime.now());
+                size.setUser(user);
+                size.setUserId(user.getId());
                 sizeRepository.save(size);
                 iAudit.save("DELETE_SIZE","TAMAÑO "+size.getName()+" DESACTIVADO.",size.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -199,7 +201,7 @@ public class SizeImpl implements ISize {
 
             try {
                 size.setStatus(true);
-                size.setUpdateDate(new Date(System.currentTimeMillis()));
+                size.setUpdateDate(OffsetDateTime.now());
                 sizeRepository.save(size);
                 iAudit.save("ACTIVATE_SIZE","TAMAÑO "+size.getName()+" ACTIVADO.",size.getName(),user.getUsername());
                 return ResponseSuccess.builder()

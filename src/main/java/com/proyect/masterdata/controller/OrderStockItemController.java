@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -29,7 +30,7 @@ public class OrderStockItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "orderId", required = false) Long orderId,
+            @RequestParam(value = "orderId", required = false) UUID orderId,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "productSku",required = false) String productSku,
             @RequestParam(value = "serial", required = false) String serial,
@@ -57,7 +58,7 @@ public class OrderStockItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<Page<OrderStockItemDTO>> listFalse(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "orderId", required = false) Long orderId,
+            @RequestParam(value = "orderId", required = false) UUID orderId,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "productSku",required = false) String productSku,
             @RequestParam(value = "serial", required = false) String serial,
@@ -85,7 +86,7 @@ public class OrderStockItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<List<OrderStockItemDTO>> listOrderStockItem(
             @RequestParam("user") String user,
-            @RequestParam(value = "id",required = false) Long id
+            @RequestParam(value = "id",required = false) UUID id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<OrderStockItemDTO>> result = iOrderStockItem.listOrderStockItem(user,id);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
@@ -95,7 +96,7 @@ public class OrderStockItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_STOCK_ITEM_GET')")
     public ResponseEntity<List<OrderStockItemDTO>> listOrderStockItemFalse(
             @RequestParam("user") String user,
-            @RequestParam(value = "id",required = false) Long id
+            @RequestParam(value = "id",required = false) UUID id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<OrderStockItemDTO>> result = iOrderStockItem.listOrderStockItem(user,id);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
@@ -103,7 +104,7 @@ public class OrderStockItemController {
 
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("tokenUser") String tokenUser,
             @RequestBody()RequestOrderStockItem requestOrderStockItem
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -113,7 +114,7 @@ public class OrderStockItemController {
 
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("supplierProduct") String supplierProduct,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -123,7 +124,7 @@ public class OrderStockItemController {
 
     @PutMapping()
     public ResponseEntity<ResponseSuccess> update(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("supplierProduct") String supplierProduct,
             @RequestParam("tokenUser") String tokenUser,
             @RequestParam("quantity") Integer quantity
@@ -134,7 +135,7 @@ public class OrderStockItemController {
 
     @PostMapping("activate")
     public ResponseEntity<ResponseSuccess> activate(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("supplierProduct") String supplierProduct,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {

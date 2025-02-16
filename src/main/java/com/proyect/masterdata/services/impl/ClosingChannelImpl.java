@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -63,9 +64,10 @@ public class ClosingChannelImpl implements IClosingChannel {
             ClosingChannel newClosingChannel = closingChannelRepository.save(ClosingChannel.builder()
                     .name(name.toUpperCase())
                     .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .updateDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(tokenUser.toUpperCase())
+                    .registrationDate(OffsetDateTime.now())
+                    .updateDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
                     .build());
             iAudit.save("ADD_CLOSING_CHANNEL","CANAL DE CIERRE "+newClosingChannel.getName()+" CREADO.",newClosingChannel.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -104,9 +106,10 @@ public class ClosingChannelImpl implements IClosingChannel {
                 ClosingChannel newClosingChannel = closingChannelRepository.save(ClosingChannel.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(tokenUser.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 iAudit.save("ADD_CLOSING_CHANNEL","CANAL DE CIERRE "+newClosingChannel.getName()+" CREADO.",newClosingChannel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -123,10 +126,10 @@ public class ClosingChannelImpl implements IClosingChannel {
     @Override
     public CompletableFuture<Page<ClosingChannelDTO>> listClosingChannel(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -154,14 +157,14 @@ public class ClosingChannelImpl implements IClosingChannel {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<ClosingChannelDTO> closingChannelDTOS = closingChannelMapper.listClosingChannelToListClosindChannelDTO(closingChannelPage.getContent());
+            List<ClosingChannelDTO> closingChannelDTOS = closingChannelMapper.listClosingChannelToListClosingChannelDTO(closingChannelPage.getContent());
             return new PageImpl<>(closingChannelDTOS,closingChannelPage.getPageable(),closingChannelPage.getTotalElements());
         });
 
     }
 
     @Override
-    public CompletableFuture<Page<ClosingChannelDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<ClosingChannelDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<ClosingChannel> closingChannelPage;
             try {
@@ -185,7 +188,7 @@ public class ClosingChannelImpl implements IClosingChannel {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<ClosingChannelDTO> closingChannelDTOS = closingChannelMapper.listClosingChannelToListClosindChannelDTO(closingChannelPage.getContent());
+            List<ClosingChannelDTO> closingChannelDTOS = closingChannelMapper.listClosingChannelToListClosingChannelDTO(closingChannelPage.getContent());
             return new PageImpl<>(closingChannelDTOS,closingChannelPage.getPageable(),closingChannelPage.getTotalElements());
         });
     }
@@ -205,7 +208,7 @@ public class ClosingChannelImpl implements IClosingChannel {
                 return Collections.emptyList();
             }
 
-            return closingChannelMapper.listClosingChannelToListClosindChannelDTO(closingChannelList);
+            return closingChannelMapper.listClosingChannelToListClosingChannelDTO(closingChannelList);
         });
     }
 
@@ -229,8 +232,9 @@ public class ClosingChannelImpl implements IClosingChannel {
             }
             try {
                 closingChannel.setStatus(false);
-                closingChannel.setUpdateDate(new Date(System.currentTimeMillis()));
-                closingChannel.setTokenUser(user.getUsername());
+                closingChannel.setUpdateDate(OffsetDateTime.now());
+                closingChannel.setUser(user);
+                closingChannel.setUserId(user.getId());
                 closingChannelRepository.save(closingChannel);
                 iAudit.save("DELETE_CLOSING_CHANNEL","CANAL DE CIERRE "+closingChannel.getName()+" DESACTIVADO.", closingChannel.getName(), user.getUsername());
                 return ResponseDelete.builder()
@@ -264,8 +268,9 @@ public class ClosingChannelImpl implements IClosingChannel {
             }
             try {
                 closingChannel.setStatus(true);
-                closingChannel.setUpdateDate(new Date(System.currentTimeMillis()));
-                closingChannel.setTokenUser(user.getUsername());
+                closingChannel.setUpdateDate(OffsetDateTime.now());
+                closingChannel.setUser(user);
+                closingChannel.setUserId(user.getId());
                 closingChannelRepository.save(closingChannel);
                 iAudit.save("ACTIVATE_CLOSING_CHANNEL","CANAL DE CIERRE "+closingChannel.getName()+" ACTIVADO.",closingChannel.getName(),user.getUsername());
                 return ResponseSuccess.builder()

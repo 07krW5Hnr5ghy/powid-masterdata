@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,18 +40,18 @@ public class ColorImpl implements IColor {
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             Color color;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 color = colorRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (color != null) {
@@ -60,11 +61,12 @@ public class ColorImpl implements IColor {
             try {
                 Color newColor = colorRepository.save(Color.builder()
                         .name(name.toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(tokenUser.toUpperCase())
+                                .user(user)
+                                .userId(user.getId())
                         .build());
-                iAudit.save("ADD_COLOR","COLOR "+newColor.getName()+" CREADO.",newColor.getName(),datauser.getUsername());
+                iAudit.save("ADD_COLOR","COLOR "+newColor.getName()+" CREADO.",newColor.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -78,20 +80,20 @@ public class ColorImpl implements IColor {
 
     @Override
     @Transactional
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             Color color;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 color = colorRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (color == null) {
@@ -100,10 +102,11 @@ public class ColorImpl implements IColor {
 
             try {
                 color.setStatus(false);
-                color.setUpdateDate(new Date(System.currentTimeMillis()));
-                color.setTokenUser(datauser.getUsername());
+                color.setUpdateDate(OffsetDateTime.now());
+                color.setUser(user);
+                color.setUserId(user.getId());
                 colorRepository.save(color);
-                iAudit.save("DELETE_COLOR","COLOR "+color.getName()+" DESACTIVADO.", color.getName(), datauser.getUsername());
+                iAudit.save("DELETE_COLOR","COLOR "+color.getName()+" DESACTIVADO.", color.getName(), user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -118,18 +121,18 @@ public class ColorImpl implements IColor {
     @Override
     public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             Color color;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 color = colorRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (color == null) {
@@ -138,10 +141,11 @@ public class ColorImpl implements IColor {
 
             try {
                 color.setStatus(true);
-                color.setUpdateDate(new Date(System.currentTimeMillis()));
-                color.setTokenUser(datauser.getUsername());
+                color.setUpdateDate(OffsetDateTime.now());
+                color.setUser(user);
+                color.setUserId(user.getId());
                 colorRepository.save(color);
-                iAudit.save("ACTIVATE_COLOR","COLOR "+color.getName()+" ACTIVADO.",color.getName(),datauser.getUsername());
+                iAudit.save("ACTIVATE_COLOR","COLOR "+color.getName()+" ACTIVADO.",color.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -173,10 +177,10 @@ public class ColorImpl implements IColor {
     @Override
     public CompletableFuture<Page<ColorDTO>> list(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -210,10 +214,10 @@ public class ColorImpl implements IColor {
     @Override
     public CompletableFuture<Page<ColorDTO>> listStatusFalse(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,

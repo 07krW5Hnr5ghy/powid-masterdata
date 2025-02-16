@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -51,7 +52,7 @@ public class StockTransferItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSFER_ITEM_GET')")
     public ResponseEntity<List<StockTransferItemDTO>> listStockTransferItem(
             @RequestParam("user") String user,
-            @RequestParam(value = "id",required = false) Long id
+            @RequestParam(value = "id",required = false) UUID id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<StockTransferItemDTO>> result = iStockTransferItem.listStockTransferItem(user,id);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);

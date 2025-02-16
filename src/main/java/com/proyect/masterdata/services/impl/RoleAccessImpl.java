@@ -21,9 +21,11 @@ import com.proyect.masterdata.services.IRoleAccess;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -76,9 +78,9 @@ public class RoleAccessImpl implements IRoleAccess {
                             .roleId(role.getId())
                             .role(role)
                             .access(access)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(tokenUser.toUpperCase())
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .user(user).userId(user.getId())
                             .status(true)
                     .build());
             iAudit.save("ADD_ROLE_ACCESS","ROL "+newRoleAccess.getRole().getName()+" AGREGA ACCESO "+newRoleAccess.getAccess().getName()+".",newRoleAccess.getRole().getName(),user.getUsername());
@@ -133,9 +135,9 @@ public class RoleAccessImpl implements IRoleAccess {
                         .roleId(role.getId())
                                 .role(role)
                                 .access(access)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(tokenUser.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user).userId(user.getId())
                         .status(true)
                         .build());
                 iAudit.save("ADD_ROLE_ACCESS","ROL "+newRoleAccess.getRole().getName()+" AGREGA ACCESO "+newRoleAccess.getAccess().getName()+".",newRoleAccess.getRole().getName(),user.getUsername());
@@ -186,8 +188,9 @@ public class RoleAccessImpl implements IRoleAccess {
 
             try {
                 roleAccess.setStatus(false);
-                roleAccess.setUpdateDate(new Date(System.currentTimeMillis()));
-                roleAccess.setTokenUser(user.getUsername());
+                roleAccess.setUpdateDate(OffsetDateTime.now());
+                roleAccess.setUser(user);
+                roleAccess.setUserId(user.getId());
                 roleAccessRepository.save(roleAccess);
                 iAudit.save("DELETE_ROLE_ACCESS","ROL "+roleAccess.getRole().getName()+" DESACTIVO ACCESO "+roleAccess.getAccess().getName()+".",roleAccess.getRole().getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -205,8 +208,8 @@ public class RoleAccessImpl implements IRoleAccess {
     public CompletableFuture<Page<RoleAccessDTO>> list(String roleName, String accessName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<RoleAccess> pageRoleAccess;
-            Long roleId;
-            Long accessId;
+            UUID roleId;
+            UUID accessId;
 
             try {
                 roleId = roleRepository.findByNameAndStatusTrue(roleName.toUpperCase()).getId();
@@ -238,8 +241,8 @@ public class RoleAccessImpl implements IRoleAccess {
     public CompletableFuture<Page<RoleAccessDTO>> listFalse(String roleName, String accessName, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<RoleAccess> pageRoleAccess;
-            Long roleId;
-            Long accessId;
+            UUID roleId;
+            UUID accessId;
 
             try {
                 roleId = roleRepository.findByNameAndStatusTrue(roleName.toUpperCase()).getId();
@@ -303,8 +306,9 @@ public class RoleAccessImpl implements IRoleAccess {
 
             try {
                 roleAccess.setStatus(true);
-                roleAccess.setUpdateDate(new Date(System.currentTimeMillis()));
-                roleAccess.setTokenUser(user.getUsername());
+                roleAccess.setUpdateDate(OffsetDateTime.now());
+                roleAccess.setUser(user);
+                roleAccess.setUserId(user.getId());
                 roleAccessRepository.save(roleAccess);
                 iAudit.save("ACTIVATE_ROLE_ACCESS","ROL "+roleAccess.getRole().getName()+" ACTIVO ACCESO "+roleAccess.getAccess().getName()+".",roleAccess.getRole().getName(),user.getUsername());
                 return ResponseSuccess.builder()

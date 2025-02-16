@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -87,9 +88,10 @@ public class OrderItemImpl implements IOrderItem {
                             .productId(product.getId())
                             .observations(requestOrderItem.getObservations().toUpperCase())
                             .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(user.getUsername())
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
                     .build());
             iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+newOrderItem.getProduct().getSku()+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES AGREGADO.",newOrderItem.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
@@ -148,9 +150,10 @@ public class OrderItemImpl implements IOrderItem {
                         .productId(product.getId())
                         .observations(requestOrderItem.getObservations().toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+newOrderItem.getProduct().getSku()+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES AGREGADO.",newOrderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -231,7 +234,7 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(Long orderId, String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID orderId, String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -266,8 +269,9 @@ public class OrderItemImpl implements IOrderItem {
 
             try{
                 orderItem.setStatus(false);
-                orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderItem.setTokenUser(user.getUsername());
+                orderItem.setUpdateDate(OffsetDateTime.now());
+                orderItem.setUser(user);
+                orderItem.setUserId(user.getId());
                 orderItemRepository.save(orderItem);
                 iAudit.save("DELETE_ORDER_ITEM","PRODUCTO "+orderItem.getProduct().getSku()+" DE PEDIDO "+orderItem.getOrderId()+" DESACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
@@ -282,7 +286,7 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> add(Long orderId,RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> add(UUID orderId,RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -335,9 +339,10 @@ public class OrderItemImpl implements IOrderItem {
                         .product(product)
                         .productId(product.getId())
                         .quantity(requestOrderItem.getQuantity())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                                .user(user)
+                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+newOrderItem.getProduct().getSku()+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES.",newOrderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -352,7 +357,7 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> update(Long orderId, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> update(UUID orderId, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -397,7 +402,7 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setDiscount(discount);
                 orderItem.setDiscountId(discount.getId());
                 orderItem.setDiscountAmount(requestOrderItem.getDiscountAmount());
-                orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
+                orderItem.setUpdateDate(OffsetDateTime.now());
                 orderItem.setObservations(requestOrderItem.getObservations().toUpperCase());
                 orderItemRepository.save(orderItem);
                 iAudit.save("UPDATE_ORDER_ITEM","PRODUCTO "+orderItem.getProduct().getSku()+" DE PEDIDO "+orderItem.getOrderId()+" ACTUALIZADO.",orderItem.getOrderId().toString(),user.getUsername());
@@ -415,7 +420,7 @@ public class OrderItemImpl implements IOrderItem {
     @Override
     public CompletableFuture<Page<OrderItemDTO>> listOrderItems(
             String user,
-            Long orderId,
+            UUID orderId,
             String productSku,
             List<String> colors,
             List<String> sizes,
@@ -427,10 +432,10 @@ public class OrderItemImpl implements IOrderItem {
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
-            List<Long> colorIds;
-            List<Long> sizeIds;
-            List<Long> categoryIds;
+            UUID clientId;
+            List<UUID> colorIds;
+            List<UUID> sizeIds;
+            List<UUID> categoryIds;
             Page<OrderItem> pageOrderItem;
             if(colors != null && !colors.isEmpty()){
                 colorIds = colorRepository.findByNameIn(
@@ -522,9 +527,9 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<List<OrderItemDTO>> listByOrder(String user, Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<OrderItemDTO>> listByOrder(String user, UUID orderId) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<OrderItem> orderItemList;
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -569,9 +574,9 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<List<OrderItemDTO>> listByOrderFalse(String user, Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<OrderItemDTO>> listByOrderFalse(String user, UUID orderId) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<OrderItem> orderItemList;
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -616,7 +621,7 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> activate(Long orderId, String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> activate(UUID orderId, String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -651,8 +656,9 @@ public class OrderItemImpl implements IOrderItem {
 
             try{
                 orderItem.setStatus(true);
-                orderItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderItem.setTokenUser(user.getUsername());
+                orderItem.setUpdateDate(OffsetDateTime.now());
+                orderItem.setUser(user);
+                orderItem.setUserId(user.getId());
                 orderItemRepository.save(orderItem);
                 iAudit.save("ACTIVATE_ORDER_ITEM","PRODUCTO "+orderItem.getProduct().getSku()+" DE PEDIDO "+orderItem.getOrderId()+" ACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()

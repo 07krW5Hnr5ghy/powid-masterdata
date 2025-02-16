@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -57,9 +58,10 @@ public class CountryImpl implements ICountry {
             try {
                 Country newCountry = countryRepository.save(Country.builder()
                         .name(name.toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_COUNTRY","PAIS "+newCountry.getName()+" CREADO.", newCountry.getName(), user.getUsername());
                 return ResponseSuccess.builder()

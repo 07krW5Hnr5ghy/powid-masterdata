@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -31,7 +32,7 @@ public class OrderStockController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:ORDER_STOCK_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("warehouse") String warehouse,
             @RequestBody() List<RequestOrderStockItem> requestOrderStockItemList,
             @RequestParam("tokenUser") String tokenUser
@@ -45,7 +46,7 @@ public class OrderStockController {
     public ResponseEntity<Page<OrderStockDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
-            @RequestParam(value = "orderId",required = false) Long orderId,
+            @RequestParam(value = "orderId",required = false) UUID orderId,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
@@ -83,7 +84,7 @@ public class OrderStockController {
     @GetMapping("detail")
     public ResponseEntity<OrderStockDTO> detail(
             @RequestParam("user") String user,
-            @RequestParam("orderStockId") Long orderStockId
+            @RequestParam("orderStockId") UUID orderStockId
     ) throws BadRequestExceptions,ExecutionException,InterruptedException {
         CompletableFuture<OrderStockDTO> result = iOrderStock.listOrderStock(orderStockId,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);

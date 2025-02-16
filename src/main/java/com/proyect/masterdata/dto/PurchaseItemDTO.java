@@ -1,5 +1,6 @@
 package com.proyect.masterdata.dto;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -19,5 +20,5 @@ public class PurchaseItemDTO {
     private String color;
     private String size;
     private String purchase;
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 }

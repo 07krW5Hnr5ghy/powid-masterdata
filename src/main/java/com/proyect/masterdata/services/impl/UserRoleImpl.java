@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
@@ -67,8 +68,8 @@ public class UserRoleImpl implements IUserRole {
                     .roleId(roleData.getId())
                             .role(roleData)
                             .user(userData)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(tokenUser.toUpperCase())
+                    .registrationDate(OffsetDateTime.now())
+                    .user(user).userId(user.getId())
                             .status(true)
                     .build());
             iAudit.save("ADD_USER_ROLE","ROL "+newUserRole.getRole().getName()+" PARA USUARIO "+newUserRole.getUser().getUsername()+" CREADO.",newUserRole.getUser().getUsername(),user.getUsername());
@@ -116,9 +117,9 @@ public class UserRoleImpl implements IUserRole {
                                 .user(userData)
                         .roleId(roleData.getId())
                                 .role(roleData)
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                                 .status(true)
-                        .tokenUser(tokenUser.toUpperCase())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_USER_ROLE","ROL "+newUserRole.getRole().getName()+" PARA USUARIO "+newUserRole.getUser().getUsername()+" CREADO.",newUserRole.getUser().getUsername(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -168,8 +169,9 @@ public class UserRoleImpl implements IUserRole {
 
             try {
                 userRole.setStatus(false);
-                userRole.setUpdateDate(new Date(System.currentTimeMillis()));
-                userRole.setTokenUser(user.getUsername());
+                userRole.setUpdateDate(OffsetDateTime.now());
+                userRole.setUser(user);
+                userRole.setUserId(user.getId());
                 iAudit.save("DELETE_USER_ROLE","ROL "+userRole.getRole().getName()+" PARA USUARIO "+userRole.getUser().getUsername()+" DESACTIVADO.",userRole.getUser().getUsername(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
@@ -218,8 +220,9 @@ public class UserRoleImpl implements IUserRole {
 
             try {
                 userRole.setStatus(true);
-                userRole.setUpdateDate(new Date(System.currentTimeMillis()));
-                userRole.setTokenUser(user.getUsername());
+                userRole.setUpdateDate(OffsetDateTime.now());
+                userRole.setUser(user);
+                userRole.setUserId(user.getId());
                 iAudit.save("ACTIVATE_USER_ROLE","ROL ACTIVADO "+userRole.getRole().getName()+" PARA USUARIO "+userRole.getUser().getUsername()+" ACTIVADO.",userRole.getUser().getUsername(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)

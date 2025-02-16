@@ -1,5 +1,6 @@
 package com.proyect.masterdata.dto;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -17,5 +18,5 @@ public class StockTransactionItemDTO {
     private String serial;
     private String transactionType;
     private String supplierProduct;
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 }

@@ -1,9 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.User;
@@ -84,10 +82,11 @@ public class ModelImpl implements IModel {
                     .brandId(brandData.getId())
                     .client(user.getClient())
                     .clientId(user.getClientId())
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .status(true)
                     .sku(requestModel.getSku().toUpperCase())
-                    .tokenUser(user.getUsername())
+                    .user(user)
+                            .userId(user.getId())
                     .build());
             iAudit.save("ADD_MODEL","MODELO "+newModel.getName()+" CREADO.",newModel.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -147,9 +146,10 @@ public class ModelImpl implements IModel {
                         .brandId(brandData.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_MODEL","MODELO "+newModel.getName()+" CREADO.",newModel.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -188,8 +188,9 @@ public class ModelImpl implements IModel {
 
             try {
                 modelData.setStatus(false);
-                modelData.setUpdateDate(new Date(System.currentTimeMillis()));
-                modelData.setTokenUser(user.getUsername());
+                modelData.setUpdateDate(OffsetDateTime.now());
+                modelData.setUser(user);
+                modelData.setUserId(user.getId());
                 modelRepository.save(modelData);
                 iAudit.save("DELETE_MODEL","MODELO "+modelData.getName()+" DESACTIVADO.",modelData.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -228,8 +229,9 @@ public class ModelImpl implements IModel {
 
             try {
                 modelData.setStatus(true);
-                modelData.setUpdateDate(new Date(System.currentTimeMillis()));
-                modelData.setTokenUser(user.getUsername());
+                modelData.setUpdateDate(OffsetDateTime.now());
+                modelData.setUser(user);
+                modelData.setUserId(user.getId());
                 modelRepository.save(modelData);
                 iAudit.save("ACTIVATE_MODEL","MODELO "+modelData.getName()+" ACTIVADO.",modelData.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -248,18 +250,18 @@ public class ModelImpl implements IModel {
             String user,
             String name,
             List<String> brands,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String columnSort,
             Integer pageNumber,
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<Model> pageModel;
-            List<Long> brandIds;
-            Long clientId;
+            List<UUID> brandIds;
+            UUID clientId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
@@ -297,7 +299,7 @@ public class ModelImpl implements IModel {
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .sku(model.getSku())
-                    .user(model.getTokenUser())
+                    .user(model.getUser().getUsername())
                     .registrationDate(model.getRegistrationDate())
                     .updateDate(model.getUpdateDate())
                     .build()).toList();
@@ -312,10 +314,10 @@ public class ModelImpl implements IModel {
             String user,
             String name,
             List<String> brands,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String columnSort,
             Integer pageNumber,
@@ -323,8 +325,8 @@ public class ModelImpl implements IModel {
         return CompletableFuture.supplyAsync(()->{
             Page<Model> pageModel;
             List<String> modelsUppercase;
-            List<Long> brandIds;
-            Long clientId;
+            List<UUID> brandIds;
+            UUID clientId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
@@ -362,7 +364,7 @@ public class ModelImpl implements IModel {
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .sku(model.getSku())
-                    .user(model.getTokenUser())
+                    .user(model.getUser().getUsername())
                     .registrationDate(model.getRegistrationDate())
                     .updateDate(model.getUpdateDate())
                     .build()).toList();
@@ -376,7 +378,7 @@ public class ModelImpl implements IModel {
     public CompletableFuture<List<ModelDTO>> listModels(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Model> models;
-            Long clientId;
+            UUID clientId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -394,7 +396,7 @@ public class ModelImpl implements IModel {
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .sku(model.getSku().toUpperCase())
-                    .user(model.getTokenUser())
+                    .user(model.getUser().getUsername())
                     .build()).toList();
         });
     }
@@ -403,7 +405,7 @@ public class ModelImpl implements IModel {
     public CompletableFuture<List<ModelDTO>> listModelsFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Model> models;
-            Long clientId;
+            UUID clientId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -421,7 +423,7 @@ public class ModelImpl implements IModel {
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .sku(model.getSku())
-                    .user(model.getTokenUser())
+                    .user(model.getUser().getUsername())
                     .build()).toList();
         });
     }
@@ -430,8 +432,8 @@ public class ModelImpl implements IModel {
     public CompletableFuture<List<ModelDTO>> listModelBrand(String user, String brand) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Model> models;
-            Long clientId;
-            Long brandId;
+            UUID clientId;
+            UUID brandId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -450,7 +452,7 @@ public class ModelImpl implements IModel {
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .sku(model.getSku())
-                    .user(model.getTokenUser())
+                    .user(model.getUser().getUsername())
                     .build()).toList();
         });
     }
@@ -459,7 +461,7 @@ public class ModelImpl implements IModel {
     public CompletableFuture<List<ModelDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Model> models;
-            Long clientId;
+            UUID clientId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -476,7 +478,7 @@ public class ModelImpl implements IModel {
             return models.stream().map(model -> ModelDTO.builder()
                     .name(model.getName())
                     .brand(model.getBrand().getName())
-                    .user(model.getTokenUser())
+                    .user(model.getUser().getUsername())
                     .sku(model.getSku())
                     .build()).toList();
         });

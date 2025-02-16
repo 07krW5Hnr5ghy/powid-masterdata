@@ -33,6 +33,10 @@ public class SaleChannel {
         @CreationTimestamp
         private OffsetDateTime registrationDate;
 
+        @Column(name = "update_date")
+        @CreationTimestamp
+        private OffsetDateTime updateDate;
+
         @Column(name = "user_id")
         private UUID userId;
 

@@ -148,6 +148,8 @@ public class Seeder implements CommandLineRunner {
                                         .email("jca@gmail.com")
                                         .address("cr 12 h 34")
                                         .gender("M")
+                                        .district(district)
+                                        .districtId(district.getId())
                                         .mobile("00000000")
                                         .password(passwordEncoder.encode("n>53F-8W5L7Dw+"))
                                         .status(true)
@@ -205,6 +207,8 @@ public class Seeder implements CommandLineRunner {
                                         .address("REGISTER")
                                         .gender("REGISTER")
                                         .mobile("00000000")
+                                        .district(district)
+                                        .districtId(district.getId())
                                         .password(passwordEncoder.encode("321abc+"))
                                         .status(true)
                                         .registrationDate(OffsetDateTime.now())
@@ -238,7 +242,7 @@ public class Seeder implements CommandLineRunner {
 
                         iDistrict.save("NO APLICA",adminUser.getUsername(),"NO APLICA");
 
-                        District districtB = districtRepository.findByNameAndProvinceIdAndStatusTrue("BREÑA",194L);
+                        District districtB = districtRepository.findByNameAndStatusTrue("BREÑA");
 
                         Client client1 = clientRepository.save(Client.builder()
                                         .name("JOEL")

@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,20 +41,20 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
     private final OrderPaymentStateRepositoryCustom orderPaymentStateRepositoryCustom;
     private final IAudit iAudit;
     @Override
-    public CompletableFuture<ResponseSuccess> save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> save(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             OrderPaymentState orderPaymentState;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (orderPaymentState != null) {
@@ -64,10 +65,11 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
                 OrderPaymentState newOrderPaymentState = orderPaymentStateRepository.save(OrderPaymentState.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
+                        .user(user)
+                                .userId(user.getId())
                         .build());
-                iAudit.save("ADD_ORDER_PAYMENT_STATE","ESTADO DE PAGO DE PEDIDO "+newOrderPaymentState.getName()+" CREADO.",newOrderPaymentState.getName(), datauser.getUsername());
+                iAudit.save("ADD_ORDER_PAYMENT_STATE","ESTADO DE PAGO DE PEDIDO "+newOrderPaymentState.getName()+" CREADO.",newOrderPaymentState.getName(), user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -81,20 +83,20 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
 
     @Override
     @Transactional
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             OrderPaymentState orderPaymentState;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (orderPaymentState == null) {
@@ -103,10 +105,11 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
 
             try {
                 orderPaymentState.setStatus(false);
-                orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderPaymentState.setTokenUser(datauser.getUsername());
+                orderPaymentState.setUpdateDate(OffsetDateTime.now());
+                orderPaymentState.setUser(user);
+                orderPaymentState.setUserId(user.getId());
                 orderPaymentStateRepository.save(orderPaymentState);
-                iAudit.save("DELETE_ORDER_PAYMENT_STATE","ESTADO DE PAGO DE PEDIDO "+orderPaymentState.getName()+" DESACTIVADO.",orderPaymentState.getName(), datauser.getUsername());
+                iAudit.save("DELETE_ORDER_PAYMENT_STATE","ESTADO DE PAGO DE PEDIDO "+orderPaymentState.getName()+" DESACTIVADO.",orderPaymentState.getName(), user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -119,20 +122,20 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             OrderPaymentState orderPaymentState;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderPaymentState = orderPaymentStateRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (orderPaymentState == null) {
@@ -141,10 +144,11 @@ public class OrderPaymentStateImpl implements IOrderPaymentState {
 
             try {
                 orderPaymentState.setStatus(true);
-                orderPaymentState.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderPaymentState.setTokenUser(datauser.getUsername());
+                orderPaymentState.setUpdateDate(OffsetDateTime.now());
+                orderPaymentState.setUser(user);
+                orderPaymentState.setUserId(user.getId());
                 orderPaymentStateRepository.save(orderPaymentState);
-                iAudit.save("ACTIVATE_ORDER_PAYMENT_STATE","ESTADO DE PAGO DE PEDIDO "+orderPaymentState.getName()+" ACTIVADO.",orderPaymentState.getName(), datauser.getUsername());
+                iAudit.save("ACTIVATE_ORDER_PAYMENT_STATE","ESTADO DE PAGO DE PEDIDO "+orderPaymentState.getName()+" ACTIVADO.",orderPaymentState.getName(), user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

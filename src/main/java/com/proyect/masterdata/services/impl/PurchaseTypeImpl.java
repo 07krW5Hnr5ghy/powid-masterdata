@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -54,8 +55,8 @@ public class PurchaseTypeImpl implements IPurchaseType {
             PurchaseType newPurchaseType = purchaseTypeRepository.save(PurchaseType.builder()
                             .name(name.toUpperCase())
                             .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(user.getUsername())
+                            .registrationDate(OffsetDateTime.now())
+                            .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_PURCHASE_TYPE","TIPO DE COMPRA "+ newPurchaseType.getName()+" CREADO.",newPurchaseType.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -94,8 +95,8 @@ public class PurchaseTypeImpl implements IPurchaseType {
                 PurchaseType newPurchaseType = purchaseTypeRepository.save(PurchaseType.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_PURCHASE_TYPE","TIPO DE COMPRA "+ newPurchaseType.getName()+" CREADO.",newPurchaseType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -133,8 +134,9 @@ public class PurchaseTypeImpl implements IPurchaseType {
 
             try{
                 purchaseType.setStatus(false);
-                purchaseType.setTokenUser(user.getUsername());
-                purchaseType.setUpdateDate(new Date(System.currentTimeMillis()));
+                purchaseType.setUser(user);
+                purchaseType.setUserId(user.getId());
+                purchaseType.setUpdateDate(OffsetDateTime.now());
                 purchaseTypeRepository.save(purchaseType);
                 iAudit.save("DELETE_PURCHASE_TYPE","TIPO DE COMPRA "+ purchaseType.getName()+" DESACTIVADO.",purchaseType.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -172,8 +174,9 @@ public class PurchaseTypeImpl implements IPurchaseType {
 
             try{
                 purchaseType.setStatus(true);
-                purchaseType.setTokenUser(user.getUsername());
-                purchaseType.setUpdateDate(new Date(System.currentTimeMillis()));
+                purchaseType.setUser(user);
+                purchaseType.setUserId(user.getId());
+                purchaseType.setUpdateDate(OffsetDateTime.now());
                 purchaseTypeRepository.save(purchaseType);
                 iAudit.save("ACTIVATE_PURCHASE_TYPE","TIPO DE COMPRA "+ purchaseType.getName()+" ACTIVADO.",purchaseType.getName(),user.getUsername());
                 return ResponseSuccess.builder()

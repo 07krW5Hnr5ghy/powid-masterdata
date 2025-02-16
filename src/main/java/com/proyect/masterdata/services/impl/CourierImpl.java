@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -61,12 +62,13 @@ public class CourierImpl implements ICourier {
                 Courier newCourier = courierRepository.save(Courier.builder()
                         .name(requestCourier.getCourier().toUpperCase())
                         .phoneNumber(requestCourier.getPhone())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .status(true)
-                        .tokenUser(user.getUsername())
+                                .user(user)
+                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_COURIER","COURIER "+newCourier.getName()+" CREADO.",newCourier.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -104,7 +106,7 @@ public class CourierImpl implements ICourier {
 
             try {
                 courier.setStatus(false);
-                courier.setUpdateDate(new Date(System.currentTimeMillis()));
+                courier.setUpdateDate(OffsetDateTime.now());
                 courierRepository.save(courier);
                 iAudit.save("DELETE_COURIER","COURIER "+courier.getName()+" DESACTIVADO.",courier.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -142,7 +144,7 @@ public class CourierImpl implements ICourier {
 
             try {
                 courier.setStatus(true);
-                courier.setUpdateDate(new Date(System.currentTimeMillis()));
+                courier.setUpdateDate(OffsetDateTime.now());
                 courierRepository.save(courier);
                 iAudit.save("ACTIVATE_COURIER","COURIER "+courier.getName()+" ACTIVADO.",courier.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -160,17 +162,17 @@ public class CourierImpl implements ICourier {
     public CompletableFuture<Page<CourierDTO>> list(
             String user,
             List<String> names,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Courier> pageCourier;
-            Long clientId;
+            UUID clientId;
             List<String> namesUppercase;
             if(names != null && !names.isEmpty()){
                 namesUppercase = names.stream().map(String::toUpperCase).toList();
@@ -215,17 +217,17 @@ public class CourierImpl implements ICourier {
     public CompletableFuture<Page<CourierDTO>> listFalse(
             String user,
             List<String> names,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Courier> pageCourier;
-            Long clientId;
+            UUID clientId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
@@ -262,7 +264,7 @@ public class CourierImpl implements ICourier {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> updateOrder(Long orderId, RequestCourierOrder requestCourierOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> updateOrder(UUID orderId, RequestCourierOrder requestCourierOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             User user;
             Ordering ordering;
@@ -303,7 +305,7 @@ public class CourierImpl implements ICourier {
                     ordering.setPaymentMethodId(orderPaymentMethod.getId());
                 }
 
-                ordering.setUpdateDate(new Date(System.currentTimeMillis()));
+                ordering.setUpdateDate(OffsetDateTime.now());
 
                 CompletableFuture<List<String>> deliveryPictures = iCourierPicture.uploadPicture(requestCourierOrder.getOrderPictures(),ordering.getId(),user.getUsername());
                 if(!ordering.getDeliveryFlag() && !deliveryPictures.get().isEmpty()){
@@ -326,7 +328,7 @@ public class CourierImpl implements ICourier {
     @Override
     public CompletableFuture<List<CourierDTO>> listCouriers(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<Courier> couriers;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
@@ -350,7 +352,7 @@ public class CourierImpl implements ICourier {
     @Override
     public CompletableFuture<List<CourierDTO>> listCouriersFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<Courier> couriers;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
@@ -374,7 +376,7 @@ public class CourierImpl implements ICourier {
     @Override
     public CompletableFuture<List<CourierDTO>> listFilters(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<Courier> couriers;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();

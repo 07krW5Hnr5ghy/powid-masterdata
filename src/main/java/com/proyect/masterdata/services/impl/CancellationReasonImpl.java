@@ -123,8 +123,16 @@ public class CancellationReasonImpl implements ICancellationReason {
     }
 
     @Override
-    public CompletableFuture<Page<CancellationReasonDTO>> listPagination(String name,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
-                                                               Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<CancellationReasonDTO>> listPagination(
+            String name,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate, 
+            OffsetDateTime updateStartDate, 
+            OffsetDateTime updateEndDate, 
+            String sort, 
+            String sortColumn, 
+            Integer pageNumber,
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<CancellationReason> cancellationReasonPage;
 
@@ -134,7 +142,7 @@ public class CancellationReasonImpl implements ICancellationReason {
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
-                        updateStartDate,
+                        updateEndDate,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -161,7 +169,7 @@ public class CancellationReasonImpl implements ICancellationReason {
     }
 
     @Override
-    public CompletableFuture<Page<CancellationReasonDTO>> listFalse(String name,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<CancellationReasonDTO>> listFalse(String name,OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber,
                                                      Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<CancellationReason> cancellationReasonPage;
@@ -233,8 +241,9 @@ public class CancellationReasonImpl implements ICancellationReason {
 
             try{
                 cancellationReason.setStatus(false);
-                cancellationReason.setUpdateDate(new Date(System.currentTimeMillis()));
-                cancellationReason.setTokenUser(tokenUser.toUpperCase());
+                cancellationReason.setUpdateDate(OffsetDateTime.now());
+                cancellationReason.setUser(user);
+                cancellationReason.setUserId(user.getId());
                 cancellationReasonRepository.save(cancellationReason);
                 iAudit.save("DELETE_CANCELLATION_REASON","RAZON DE CANCELACION "+cancellationReason.getName()+" DESACTIVADA.",cancellationReason.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -271,8 +280,9 @@ public class CancellationReasonImpl implements ICancellationReason {
 
             try{
                 cancellationReason.setStatus(true);
-                cancellationReason.setUpdateDate(new Date(System.currentTimeMillis()));
-                cancellationReason.setTokenUser(tokenUser.toUpperCase());
+                cancellationReason.setUpdateDate(OffsetDateTime.now());
+                cancellationReason.setUser(user);
+                cancellationReason.setUserId(user.getId());
                 cancellationReasonRepository.save(cancellationReason);
                 iAudit.save("ACTIVATE_CANCELLATION_REASON","RAZON DE CANCELACION "+cancellationReason.getName()+" ACTIVADA.",cancellationReason.getName(),user.getUsername());
                 return ResponseSuccess.builder()

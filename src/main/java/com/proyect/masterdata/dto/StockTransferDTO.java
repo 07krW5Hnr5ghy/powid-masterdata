@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Builder
@@ -15,5 +16,5 @@ public class StockTransferDTO {
     private String serial;
     private String origin;
     private String destination;
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 }

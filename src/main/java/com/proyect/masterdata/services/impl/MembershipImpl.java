@@ -17,10 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -69,9 +67,7 @@ public class MembershipImpl implements IMembership {
             }
 
             try {
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.MONTH, subscription.getMonths());
-                Date expirationDate = calendar.getTime();
+                OffsetDateTime expirationDate = OffsetDateTime.now().plusMonths(subscription.getMonths());
                 Membership newMembership =  membershipRepository.save(Membership.builder()
                         .clientId(user.getClientId())
                         .client(user.getClient())
@@ -79,10 +75,10 @@ public class MembershipImpl implements IMembership {
                         .expirationDate(expirationDate)
                         .membershipPayment(membershipPayment)
                         .membershipPaymentId(membershipPayment.getId())
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .updateDate(OffsetDateTime.now())
                         .subscription(subscription)
                         .subscriptionId(subscription.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .build());
                 newMembership.setExpirationDate(expirationDate);
                 Membership activeMembership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), activeState.getId());
@@ -106,8 +102,8 @@ public class MembershipImpl implements IMembership {
                             .membershipId(newMembership.getId())
                             .module(module)
                             .moduleId(module.getId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                             .status(true)
                             .build());
                 }
@@ -154,7 +150,7 @@ public class MembershipImpl implements IMembership {
                 MembershipState expiredState = membershipStateRepository.findByNameAndStatusTrue("EXPIRADA");
                 membership.setMembershipState(expiredState);
                 membership.setMembershipStateId(expiredState.getId());
-                membership.setUpdateDate(new Date(System.currentTimeMillis()));
+                membership.setUpdateDate(OffsetDateTime.now());
                 membershipRepository.save(membership);
                 iAudit.save("DELETE_MEMBERSHIP","MEMBRESIA CON SUBSCRIPCION "+membership.getSubscription().getName()+" DESACTIVADA.",membership.getClient().getRuc(),user.getUsername());
                 return ResponseDelete.builder()
@@ -173,19 +169,19 @@ public class MembershipImpl implements IMembership {
             String user,
             String membershipState,
             String subscription,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Membership> membershipPage;
-            Long clientId;
-            Long membershipStateId;
-            Long subscriptionId;
+            UUID clientId;
+            UUID membershipStateId;
+            UUID subscriptionId;
 
             if(membershipState != null){
                 membershipStateId = membershipStateRepository.findByNameAndStatusTrue(membershipState.toUpperCase()).getId();
@@ -235,19 +231,19 @@ public class MembershipImpl implements IMembership {
             String user,
             String membershipState,
             String subscription,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Membership> membershipPage;
-            Long clientId;
-            Long membershipStateId;
-            Long subscriptionId;
+            UUID clientId;
+            UUID membershipStateId;
+            UUID subscriptionId;
 
             if(membershipState != null){
                 membershipStateId = membershipStateRepository.findByNameAndStatusTrue(membershipState.toUpperCase()).getId();

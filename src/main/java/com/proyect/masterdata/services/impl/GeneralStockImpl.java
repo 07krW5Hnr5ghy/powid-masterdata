@@ -1,9 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.services.IAudit;
@@ -66,18 +64,19 @@ public class GeneralStockImpl implements IGeneralStock {
                         supplierProduct.getId());
                 if (generalStock != null) {
                     generalStock.setQuantity(generalStock.getQuantity() + quantity);
-                    generalStock.setUpdateDate(new Date(System.currentTimeMillis()));
-                    generalStock.setTokenUser(user.getUsername());
+                    generalStock.setUpdateDate(OffsetDateTime.now());
+                    generalStock.setUser(user);
                     generalStockRepository.save(generalStock);
                 } else {
                     generalStockRepository.save(GeneralStock.builder()
                             .quantity(quantity)
                             .client(user.getClient())
                             .clientId(user.getClientId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
                             .supplierProduct(supplierProduct)
                             .supplierProductId(supplierProduct.getId())
-                            .tokenUser(user.getUsername())
+                            .user(user)
+                                    .userId(user.getId())
                             .build());
                 }
                 iAudit.save("ADD_GENERAL_STOCK","INGRESO DE STOCK "+supplierProduct.getSerial()+" DE " + quantity +" UNIDADES.",supplierProduct.getSerial(),user.getUsername());
@@ -149,10 +148,10 @@ public class GeneralStockImpl implements IGeneralStock {
             String serial,
             String productSku,
             String model,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -160,7 +159,7 @@ public class GeneralStockImpl implements IGeneralStock {
             throws InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<GeneralStock> generalStockPage;
-            Long clientId;
+            UUID clientId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -209,7 +208,7 @@ public class GeneralStockImpl implements IGeneralStock {
     @Override
     public CompletableFuture<List<GeneralStockDTO>> listGeneralStock(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<GeneralStock> generalStocks;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
