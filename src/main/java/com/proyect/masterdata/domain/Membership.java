@@ -43,6 +43,9 @@ public class Membership {
         @Column(name = "client_id", nullable = false)
         private UUID clientId;
 
+        @Column(name = "user_id", nullable = false)
+        private UUID userId;
+
         @Column(name = "subscription_id", nullable = false)
         private UUID subscriptionId;
 
