@@ -100,6 +100,9 @@ public class Ordering {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "order_number")
+    private Long orderNumber;
+
     @ManyToOne
     @JoinColumn(name = "order_state_id", columnDefinition = "orderStateId", insertable = false, updatable = false)
     private OrderState orderState;
