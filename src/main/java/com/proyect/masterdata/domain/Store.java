@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -19,9 +20,9 @@ import java.util.Date;
 public class Store {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "store_id", unique = true)
-        private Long id;
+        private UUID id;
 
         @Column(name = "name", nullable = false)
         private String name;
@@ -34,20 +35,20 @@ public class Store {
 
         @Column(name = "registration_date")
         @CreationTimestamp
-        private Date registrationDate;
+        private OffsetDateTime registrationDate;
 
         @Column(name = "update_date")
         @CreationTimestamp
-        private Date updateDate;
+        private OffsetDateTime updateDate;
 
         @Column(name = "client_id", nullable = false)
-        private Long clientId;
+        private UUID clientId;
 
-        @Column(name = "token_user", nullable = false)
-        private String tokenUser;
+        @Column(name = "user_id")
+        private UUID userId;
 
         @Column(name = "store_type_id", nullable = false)
-        private Long storeTypeId;
+        private UUID storeTypeId;
 
         @OneToOne
         @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
@@ -56,4 +57,8 @@ public class Store {
         @ManyToOne
         @JoinColumn(name = "store_type_id", columnDefinition = "storeTypeId", insertable = false, updatable = false)
         private StoreType storeType;
+
+        @ManyToOne()
+        @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+        private User user;
 }

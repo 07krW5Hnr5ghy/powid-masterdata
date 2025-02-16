@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -18,41 +19,41 @@ import java.util.Date;
 @Table(name = Constants.tableOrderReturnItem, schema = Constants.schemaOrder)
 public class OrderReturnItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_return_item_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "order_return_id")
-    private Long orderReturnId;
+    private UUID orderReturnId;
 
     @Column(name = "product_id")
-    private Long productId;
+    private UUID productId;
 
     @Column(name = "order_return_type_id")
-    private Long orderReturnTypeId;
+    private UUID orderReturnTypeId;
 
     @Column(name = "supplier_product_id")
-    private Long supplierProductId;
+    private UUID supplierProductId;
 
     @Column(name = "quantity")
     private Integer quantity;
 
     @Column(name = "registration_date")
     @CreationTimestamp()
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp()
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @ManyToOne()
     @JoinColumn(name = "order_return_id",columnDefinition = "orderReturnId",insertable = false,updatable = false)
@@ -73,4 +74,8 @@ public class OrderReturnItem {
     @ManyToOne()
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Builder
@@ -20,7 +21,7 @@ public class StockReturnItemDTO {
     private String size;
     private Integer quantity;
     private String observations;
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
     private String supplier;
     private String warehouse;
 }

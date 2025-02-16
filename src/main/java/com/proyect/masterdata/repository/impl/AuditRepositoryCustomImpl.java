@@ -13,16 +13,29 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class AuditRepositoryCustomImpl implements AuditRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Audit> searchForAudit(Long userId, Long clientId, Long auditEventId, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<Audit> searchForAudit(
+            UUID userId,
+            UUID clientId,
+            UUID auditEventId,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Audit> criteriaQuery = criteriaBuilder.createQuery(Audit.class);
         Root<Audit> itemRoot = criteriaQuery.from(Audit.class);
@@ -58,13 +71,13 @@ public class AuditRepositoryCustomImpl implements AuditRepositoryCustom {
     }
 
     public List<Predicate> predicateConditions(
-            Long userId,
-            Long clientId,
-            Long auditEventId,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID userId,
+            UUID clientId,
+            UUID auditEventId,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             CriteriaBuilder criteriaBuilder,
             Root<Audit> itemRoot) {
 
@@ -192,7 +205,14 @@ public class AuditRepositoryCustomImpl implements AuditRepositoryCustom {
         return auditList;
     }
 
-    private long getOrderCount(Long userId,Long clientId, Long auditEventId,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate) {
+    private long getOrderCount(
+            UUID userId,
+            UUID clientId,
+            UUID auditEventId,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

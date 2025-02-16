@@ -1,6 +1,5 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Department;
 import com.proyect.masterdata.domain.Province;
 import com.proyect.masterdata.repository.ProvinceRepositoryCustom;
 import jakarta.persistence.EntityManager;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class ProvinceRepositoryCustomImpl implements ProvinceRepositoryCustom {
@@ -24,7 +24,16 @@ public class ProvinceRepositoryCustomImpl implements ProvinceRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Province> searchForProvince(String name, String user, Long idDepartment, String nameDepartment, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<Province> searchForProvince(
+            String name, 
+            String user, 
+            UUID idDepartment,
+            String nameDepartment, 
+            String sort, 
+            String sortColumn, 
+            Integer pageNumber, 
+            Integer pageSize, 
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Province> criteriaQuery = criteriaBuilder.createQuery(Province.class);
         Root<Province> itemRoot = criteriaQuery.from(Province.class);
@@ -53,7 +62,7 @@ public class ProvinceRepositoryCustomImpl implements ProvinceRepositoryCustom {
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable,count);
     }
 
-    private List<Predicate> predicateConditions(String name, String user, Long idDepartment, String nameDepartment, Boolean status, CriteriaBuilder criteriaBuilder, Root<Province> itemRoot) {
+    private List<Predicate> predicateConditions(String name, String user, UUID idDepartment, String nameDepartment, Boolean status, CriteriaBuilder criteriaBuilder, Root<Province> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
         if (name!=null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
@@ -115,7 +124,7 @@ public class ProvinceRepositoryCustomImpl implements ProvinceRepositoryCustom {
         return departmentsList;
     }
 
-    private long getOrderCount(String name, String user, Long idDepartment, String nameDepartment, Boolean status) {
+    private long getOrderCount(String name, String user, UUID idDepartment, String nameDepartment, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Province> itemRoot = criteriaQuery.from(Province.class);

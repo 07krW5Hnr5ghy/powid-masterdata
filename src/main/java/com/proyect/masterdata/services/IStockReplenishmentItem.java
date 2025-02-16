@@ -10,18 +10,19 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IStockReplenishmentItem {
     StockReplenishmentItem save(OrderItem orderItem, RequestStockReplenishmentItem requestStockReplenishmentItem, User user, StockReplenishment stockReplenishment) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<StockReplenishmentItem> saveAsync(OrderItem orderItem, RequestStockReplenishmentItem requestStockReplenishmentItem, User user, StockReplenishment stockReplenishment) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<ResponseSuccess> add(Long orderId,RequestStockReplenishmentItem requestStockReplenishmentItem,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseDelete> delete(Long orderId, String productSku, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> update(Long orderId, String productSku,Integer quantity, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> activate(Long orderId, String productSku, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> add(UUID orderId, RequestStockReplenishmentItem requestStockReplenishmentItem, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> delete(UUID orderId, String productSku, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> update(UUID orderId, String productSku,Integer quantity, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(UUID orderId, String productSku, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<StockReplenishmentItemDTO>> list(
             String user,
-            List<Long> orders,
+            List<UUID> orders,
             List<String> productSkus,
             String sort,
             String sortColumn,

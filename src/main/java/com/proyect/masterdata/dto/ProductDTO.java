@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +25,6 @@ public class ProductDTO {
     private String characteristics;
     private List<String> pictures;
     private Boolean pictureFlag;
-    private Date registrationDate;
-    private Date updateDate;
+    private OffsetDateTime registrationDate;
+    private OffsetDateTime updateDate;
 }

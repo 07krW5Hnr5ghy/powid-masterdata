@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,10 +26,10 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
     public Page<Category> searchForCategory(
             String name,
             String user,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -66,10 +67,10 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
     public List<Predicate> predicateConditions(
             String name,
             String user,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Category> itemRoot) {
@@ -190,7 +191,7 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
         return categoryList;
     }
 
-    private long getOrderCount(String name, String user,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, Boolean status) {
+    private long getOrderCount(String name, String user,OffsetDateTime registrationStartDate,OffsetDateTime registrationEndDate,OffsetDateTime updateStartDate,OffsetDateTime updateEndDate, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Category> itemRoot = criteriaQuery.from(Category.class);

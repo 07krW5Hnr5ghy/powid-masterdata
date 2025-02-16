@@ -5,17 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class OrderReturnItemDTO {
-    private Long orderId;
+    private UUID orderId;
     private String supplierProduct;
     private String product;
-    private Date registrationDate;
-    private Date updateDate;
+    private OffsetDateTime registrationDate;
+    private OffsetDateTime updateDate;
     private String returnType;
     private String warehouse;
     private Integer quantity;

@@ -1,9 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.*;
@@ -66,11 +64,11 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                             .stockTransactionId(stockTransaction.getId())
                             .supplierProduct(supplierProduct)
                             .supplierProductId(supplierProduct.getId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .quantity(requestStockTransactionItem.getQuantity())
-                            .tokenUser(user.getUsername())
+                            .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_STOCK_TRANSACTION_ITEM","PRODUCTO DE INVENTARIO "+newStockTransactionItem.getSupplierProduct().getSerial()+" PARA TRANSACCION DE STOCK "+newStockTransactionItem.getStockTransaction().getSerial()+" CREADO.",newStockTransactionItem.getStockTransaction().getSerial(),user.getUsername());
             return ResponseSuccess.builder()
@@ -111,11 +109,11 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                         .stockTransactionId(stockTransaction.getId())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .quantity(requestStockTransactionItem.getQuantity())
-                        .tokenUser(user.getUsername())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_STOCK_TRANSACTION_ITEM","PRODUCTO DE INVENTARIO "+newStockTransactionItem.getSupplierProduct().getSerial()+" PARA TRANSACCION DE STOCK "+newStockTransactionItem.getStockTransaction().getSerial()+" CREADO.",newStockTransactionItem.getStockTransaction().getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -141,11 +139,11 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
-            List<Long> stockTransactionIds;
-            List<Long> supplierProductIds;
-            List<Long> warehouseIds;
-            List<Long> stockTransactionTypeIds;
+            UUID clientId;
+            List<UUID> stockTransactionIds;
+            List<UUID> supplierProductIds;
+            List<UUID> warehouseIds;
+            List<UUID> stockTransactionTypeIds;
             Page<StockTransactionItem> stockTransactionItemPage;
 
             if (stockTransactions != null && !stockTransactions.isEmpty()) {
@@ -222,10 +220,10 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     }
 
     @Override
-    public CompletableFuture<List<StockTransactionItemDTO>> listStockTransactionItem(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<StockTransactionItemDTO>> listStockTransactionItem(String user,UUID id) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockTransactionItem> stockTransactionItems;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(id != null){

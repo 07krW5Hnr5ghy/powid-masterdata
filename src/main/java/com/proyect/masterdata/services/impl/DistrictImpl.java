@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -67,11 +68,10 @@ public class DistrictImpl implements IDistrict {
         try {
             District newDistrict = districtRepository.save(District.builder()
                     .name(name.toUpperCase())
-                    .tokenUser(user.getUsername())
                     .province(provinceData)
                     .provinceId(provinceData.getId())
                     .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .build());
             iAudit.save("ADD_DISTRICT","DISTRITO "+newDistrict.getName()+" CREADO.",newDistrict.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -115,11 +115,10 @@ public class DistrictImpl implements IDistrict {
             try {
                 District newDistrict = districtRepository.save(District.builder()
                         .name(name.toUpperCase())
-                        .tokenUser(user.getUsername())
                         .province(provinceData)
                         .provinceId(provinceData.getId())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .build());
                 iAudit.save("ADD_DISTRICT","DISTRITO "+newDistrict.getName()+" CREADO.",newDistrict.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -163,8 +162,7 @@ public class DistrictImpl implements IDistrict {
 
             try {
                 district.setStatus(false);
-                district.setUpdateDate(new Date(System.currentTimeMillis()));
-                district.setTokenUser(user.getUsername());
+                district.setUpdateDate(OffsetDateTime.now());
                 districtRepository.save(district);
                 iAudit.save("DELETE_DISTRICT","DISTRITO "+district.getName()+" DESACTIVADO.",district.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -207,8 +205,7 @@ public class DistrictImpl implements IDistrict {
 
             try {
                 district.setStatus(false);
-                district.setUpdateDate(new Date(System.currentTimeMillis()));
-                district.setTokenUser(user.getUsername());
+                district.setUpdateDate(OffsetDateTime.now());
                 districtRepository.save(district);
                 iAudit.save("ACTIVATE_DISTRICT","DISTRITO "+district.getName()+" ACTIVADO.",district.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -234,7 +231,7 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
-    public CompletableFuture<Page<DistrictDTO>> list(String name, String user, Long codeProvince, String nameProvince, String sort,
+    public CompletableFuture<Page<DistrictDTO>> list(String name, String user, UUID codeProvince, String nameProvince, String sort,
             String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<District> districtPage;
@@ -255,7 +252,7 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
-    public CompletableFuture<Page<DistrictDTO>> listStatusFalse(String name, String user, Long codeProvince, String nameProvince,
+    public CompletableFuture<Page<DistrictDTO>> listStatusFalse(String name, String user, UUID codeProvince, String nameProvince,
             String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<District> districtPage;

@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -64,20 +65,21 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
             if (warehouseStock != null) {
                 warehouseStock.setQuantity(warehouseStock.getQuantity() + quantity);
-                warehouseStock.setUpdateDate(new Date(System.currentTimeMillis()));
-                warehouseStock.setTokenUser(user.getUsername());
+                warehouseStock.setUpdateDate(OffsetDateTime.now());
+                warehouseStock.setUser(user);
+                warehouseStock.setUserId(user.getId());
                 warehouseStockRepository.save(warehouseStock);
             } else {
                 warehouseStockRepository.save(WarehouseStock.builder()
                         .quantity(quantity)
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
+                        .user(user).userId(user.getId())
                         .build());
             }
             iAudit.save("ADD_WAREHOUSE_STOCK","INGRESAN ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" EN ALMACEN "+warehouse.getName()+".",warehouse.getName(),user.getUsername());
@@ -151,8 +153,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
             Integer pageSize) throws InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<WarehouseStock> warehouseStockPage;
-            Long clientId;
-            List<Long> warehouseIds;
+            UUID clientId;
+            List<UUID> warehouseIds;
 
             if(warehouses!=null && !warehouses.isEmpty()){
                 warehouseIds = warehouseRepository
@@ -208,9 +210,9 @@ public class WarehouseStockImpl implements IWarehouseStock {
     public CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,String warehouse,String supplierProduct) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<WarehouseStock> warehouseStocks;
-            Long clientId;
-            Long warehouseId;
-            Long supplierProductId;
+            UUID clientId;
+            UUID warehouseId;
+            UUID supplierProductId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(warehouse != null){
@@ -260,9 +262,9 @@ public class WarehouseStockImpl implements IWarehouseStock {
     public CompletableFuture<List<WarehouseStockDTO>> listWarehouseAndSupplier(String user, String warehouse, String supplier) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<WarehouseStock> warehouseStocks;
-            Long clientId;
-            Long warehouseId;
-            Long supplierId;
+            UUID clientId;
+            UUID warehouseId;
+            UUID supplierId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(warehouse != null){

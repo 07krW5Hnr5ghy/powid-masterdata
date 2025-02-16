@@ -1,6 +1,5 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Client;
 import com.proyect.masterdata.domain.Store;
 import com.proyect.masterdata.domain.StoreType;
 import com.proyect.masterdata.domain.User;
@@ -12,11 +11,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.StoreMapper;
-import com.proyect.masterdata.repository.StoreRepository;
-import com.proyect.masterdata.repository.StoreRepositoryCustom;
-import com.proyect.masterdata.repository.StoreTypeRepository;
-import com.proyect.masterdata.repository.ClientRepository;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStore;
 import com.proyect.masterdata.utils.Constants;
@@ -26,11 +21,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -83,9 +78,9 @@ public class StoreImpl implements IStore {
                     .client(user.getClient())
                     .storeType(storeType)
                     .storeTypeId(storeType.getId())
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .status(true)
-                    .tokenUser(user.getUsername())
+                    .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_STORE","TIENDA "+newStore.getName()+" AGREGADA.",newStore.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -137,9 +132,9 @@ public class StoreImpl implements IStore {
                         .client(user.getClient())
                         .storeType(storeType)
                         .storeTypeId(storeType.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(user.getUsername())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_STORE","TIENDA "+newStore.getName()+" AGREGADA.",newStore.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -180,8 +175,9 @@ public class StoreImpl implements IStore {
             try {
 
                 store.setUrl(requestStore.getUrl());
-                store.setTokenUser(requestStore.getTokenUser().toUpperCase());
-                store.setUpdateDate(new Date(System.currentTimeMillis()));
+                store.setUser(user);
+                store.setUserId(user.getId());
+                store.setUpdateDate(OffsetDateTime.now());
                 iAudit.save("UPDATE_STORE","TIENDA "+store.getName()+" ACTUALIZADA.",store.getName(),user.getUsername());
                 return StoreDTO.builder()
                         .name(store.getName())
@@ -221,8 +217,9 @@ public class StoreImpl implements IStore {
 
             try {
                 store.setStatus(false);
-                store.setRegistrationDate(new Date(System.currentTimeMillis()));
-                store.setTokenUser(user.getUsername());
+                store.setRegistrationDate(OffsetDateTime.now());
+                store.setUser(user);
+                store.setUserId(user.getId());
                 storeRepository.save(store);
                 iAudit.save("DELETE_STORE","TIENDA "+store.getName()+" DESACTIVADA.",store.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -260,8 +257,9 @@ public class StoreImpl implements IStore {
 
             try {
                 store.setStatus(true);
-                store.setRegistrationDate(new Date(System.currentTimeMillis()));
-                store.setTokenUser(user.getUsername());
+                store.setRegistrationDate(OffsetDateTime.now());
+                store.setUser(user);
+                store.setUserId(user.getId());
                 storeRepository.save(store);
                 iAudit.save("ACTIVATE_STORE","TIENDA "+store.getName()+" ACTIVADA.",store.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -300,7 +298,7 @@ public class StoreImpl implements IStore {
                     .url(store.getUrl())
                     .client(store.getClient().getBusiness())
                     .storeType(store.getStoreType().getName())
-                    .user(store.getTokenUser())
+                    .user(store.getUser().getUsername())
                     .build()).toList();
 
             return new PageImpl<>(
@@ -332,7 +330,7 @@ public class StoreImpl implements IStore {
                     .url(store.getUrl())
                     .client(store.getClient().getBusiness())
                     .storeType(store.getStoreType().getName())
-                    .user(store.getTokenUser())
+                    .user(store.getUser().getUsername())
                     .build()).toList();
 
             return new PageImpl<>(
@@ -345,7 +343,7 @@ public class StoreImpl implements IStore {
     public CompletableFuture<List<StoreDTO>> listStore(String user) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Store> stores;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stores = storeRepository.findAllByClientId(clientId);
@@ -361,7 +359,7 @@ public class StoreImpl implements IStore {
                     .url(store.getUrl())
                     .client(store.getClient().getBusiness())
                     .storeType(store.getStoreType().getName())
-                    .user(store.getTokenUser())
+                    .user(store.getUser().getUsername())
                     .build()).toList();
         });
     }

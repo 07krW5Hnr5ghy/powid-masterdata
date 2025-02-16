@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -28,28 +29,28 @@ import lombok.NoArgsConstructor;
 public class StockTransactionItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "stock_transaction_item_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "quantity")
     private Integer quantity;
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "supplier_product_id")
-    private Long supplierProductId;
+    private UUID supplierProductId;
 
     @Column(name = "stock_transaction_id")
-    private Long stockTransactionId;
+    private UUID stockTransactionId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
@@ -62,5 +63,9 @@ public class StockTransactionItem {
     @ManyToOne
     @JoinColumn(name = "stock_transaction_id",columnDefinition = "stockTransactionId",insertable = false,updatable = false)
     private StockTransaction stockTransaction;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

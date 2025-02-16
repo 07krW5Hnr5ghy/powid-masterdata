@@ -115,7 +115,7 @@ public class MercadoPagoPaymentImpl implements IMercadoPagoPayment {
                 if(paymentId != null & Objects.equals(type, "payment")){
                     PaymentClient paymentClient = new PaymentClient();
                     Payment newPayment = paymentClient.get(paymentId);
-                    User user = userRepository.findById(Long.parseLong(newPayment.getMetadata().get("user_id").toString())).orElse(null);
+                    User user = userRepository.findById(UUID.fromString(newPayment.getMetadata().get("user_id").toString())).orElse(null);
                     if(user==null){
                         throw new BadRequestExceptions(Constants.ErrorUser);
                     }

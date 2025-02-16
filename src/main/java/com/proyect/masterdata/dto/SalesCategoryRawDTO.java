@@ -6,15 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class SalesCategoryRawDTO {
-    private Long orderId;
-    private Date registrationDate;
+    private UUID orderId;
+    private OffsetDateTime registrationDate;
     private Double orderDiscountAmount;
     private String orderDiscountName;
     private String saleChannelName;

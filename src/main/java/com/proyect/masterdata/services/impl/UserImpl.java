@@ -20,8 +20,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.UUID;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -106,23 +107,22 @@ public class UserImpl implements IUser {
                     .surname(requestUser.getSurname().toUpperCase())
                     .dni(requestUser.getDni())
                     .address(requestUser.getAddress().toUpperCase())
+                            .district(district)
+                            .districtId(district.getId())
                     .email(requestUser.getEmail())
                     .mobile(requestUser.getMobile())
                     .gender(requestUser.getGender().toUpperCase())
                     .password(passwordEncoder.encode(requestUser.getPassword()))
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .districtId(district.getId())
-                    .district(district)
+                    .registrationDate(OffsetDateTime.now())
                     .clientId(tokenUser.getClientId())
                     .client(tokenUser.getClient())
-                    .tokenUser(requestUser.getTokenUser())
                     .status(true)
                     .build());
             userRoleRepository.save(UserRole.builder()
-                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
                             .userId(newUser.getId())
                             .roleId(role.getId())
-                            .tokenUser(tokenUser.getUsername())
+                            .user(newUser)
                             .status(true)
                     .build());
             iAudit.save("ADD_USER","USUARIO "+newUser.getUsername()+" CREADO.",newUser.getUsername(),tokenUser.getUsername());
@@ -202,23 +202,22 @@ public class UserImpl implements IUser {
                         .surname(requestUser.getSurname().toUpperCase())
                         .dni(requestUser.getDni())
                         .address(requestUser.getAddress().toUpperCase())
+                        .district(district)
+                        .districtId(district.getId())
                         .email(requestUser.getEmail())
                         .mobile(requestUser.getMobile())
                         .gender(requestUser.getGender().toUpperCase())
                         .password(passwordEncoder.encode(requestUser.getPassword()))
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .districtId(district.getId())
-                        .district(district)
+                        .registrationDate(OffsetDateTime.now())
                         .clientId(tokenUser.getClientId())
                         .client(tokenUser.getClient())
-                        .tokenUser(requestUser.getTokenUser())
                         .status(true)
                         .build());
                 userRoleRepository.save(UserRole.builder()
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .userId(newUser.getId())
                         .roleId(role.getId())
-                        .tokenUser(tokenUser.getUsername())
+                                .user(newUser)
                         .build());
                 iAudit.save("ADD_USER","USUARIO "+newUser.getUsername()+" CREADO.",newUser.getUsername(),tokenUser.getUsername());
                 return ResponseSuccess.builder()
@@ -262,11 +261,10 @@ public class UserImpl implements IUser {
                 userData.setSurname(requestUserSave.getSurname().toUpperCase());
                 userData.setDni(requestUserSave.getDni());
                 userData.setAddress(requestUserSave.getAddress());
-                userData.setUpdateDate(new Date(System.currentTimeMillis()));
+                userData.setUpdateDate(OffsetDateTime.now());
                 userData.setEmail(requestUserSave.getEmail());
                 userData.setMobile(requestUserSave.getMobile());
                 userData.setPassword(requestUserSave.getPassword());
-                userData.setTokenUser(tokenUser.toUpperCase());
                 User updatedUser = userRepository.save(userData);
                 iAudit.save("UPDATE_USER","USUARIO "+updatedUser.getUsername()+" ACTUALIZADO.",updatedUser.getUsername(),user.getUsername());
                 return UserDTO.builder()
@@ -279,7 +277,6 @@ public class UserImpl implements IUser {
                         .address(updatedUser.getAddress().toUpperCase())
                         .mobile(updatedUser.getMobile())
                         .dni(updatedUser.getDni())
-                        .district(updatedUser.getDistrict().getName().toUpperCase())
                         .status(updatedUser.getStatus())
                         .build();
             } catch (RuntimeException e) {
@@ -312,9 +309,8 @@ public class UserImpl implements IUser {
             }
 
             try {
-                dataUser.setUpdateDate(new Date(System.currentTimeMillis()));
+                dataUser.setUpdateDate(OffsetDateTime.now());
                 dataUser.setStatus(false);
-                dataUser.setTokenUser(username.toUpperCase());
                 userRepository.save(dataUser);
                 iAudit.save("DELETE_USER","USUARIO "+dataUser.getUsername()+" DESACTIVADO.",dataUser.getUsername(),tokenUserData.getUsername());
                 return ResponseDelete.builder()
@@ -339,7 +335,7 @@ public class UserImpl implements IUser {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<User> userPage;
-            Long clientId;
+            UUID clientId;
             try {
                 List<String> namesUppercase;
                 List<String> usernamesUppercase;
@@ -375,8 +371,8 @@ public class UserImpl implements IUser {
                 List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(userData.getId());
                 return UserQueryDTO.builder()
                         .address(userData.getAddress())
-                        .district(userData.getDistrict().getName())
                         .dni(userData.getDni())
+                        .district(userData.getDistrict().getName())
                         .email(userData.getEmail())
                         .gender(userData.getGender())
                         .mobile(userData.getMobile())
@@ -405,7 +401,7 @@ public class UserImpl implements IUser {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<User> userPage;
-            Long clientId;
+            UUID clientId;
             try {
                 List<String> namesUppercase;
                 List<String> usernamesUppercase;
@@ -446,6 +442,7 @@ public class UserImpl implements IUser {
                         .district(userData.getDistrict().getName())
                         .dni(userData.getDni())
                         .email(userData.getEmail())
+                        .district(userData.getDistrict().getName())
                         .gender(userData.getGender())
                         .mobile(userData.getMobile())
                         .name(userData.getName())
@@ -484,9 +481,8 @@ public class UserImpl implements IUser {
             }
 
             try {
-                dataUser.setUpdateDate(new Date(System.currentTimeMillis()));
+                dataUser.setUpdateDate(OffsetDateTime.now());
                 dataUser.setStatus(true);
-                dataUser.setTokenUser(tokenUserData.getUsername());
                 userRepository.save(dataUser);
                 iAudit.save("ACTIVATE_USER","USUARIO "+dataUser.getUsername()+" DESACTIVADO.",dataUser.getUsername(),tokenUserData.getUsername());
                 return ResponseSuccess.builder()
@@ -503,7 +499,7 @@ public class UserImpl implements IUser {
     @Override
     public CompletableFuture<List<UserQueryDTO>> listFilter(String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<User> userList;
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(username.toUpperCase()).getClientId();

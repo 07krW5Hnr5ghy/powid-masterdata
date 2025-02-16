@@ -4,7 +4,9 @@ import com.proyect.masterdata.domain.MembershipPayment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
-public interface MembershipPaymentRepository extends JpaRepository<MembershipPayment, Long> {
+public interface MembershipPaymentRepository extends JpaRepository<MembershipPayment, UUID> {
 
 }

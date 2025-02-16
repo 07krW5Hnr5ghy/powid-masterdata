@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -24,10 +25,10 @@ public interface IModel {
                 String user,
                 String name,
                 List<String> brands,
-                Date registrationStartDate,
-                Date registrationEndDate,
-                Date updateStartDate,
-                Date updateEndDate,
+                OffsetDateTime registrationStartDate,
+                OffsetDateTime registrationEndDate,
+                OffsetDateTime updateStartDate,
+                OffsetDateTime updateEndDate,
                 String sort,
                 String columnSort,
                 Integer pageNumber,
@@ -36,10 +37,10 @@ public interface IModel {
                 String user,
                 String name,
                 List<String> brands,
-                Date registrationStartDate,
-                Date registrationEndDate,
-                Date updateStartDate,
-                Date updateEndDate,
+                OffsetDateTime registrationStartDate,
+                OffsetDateTime registrationEndDate,
+                OffsetDateTime updateStartDate,
+                OffsetDateTime updateEndDate,
                 String sort,
                 String columnSort,
                 Integer pageNumber,

@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -19,9 +20,9 @@ import java.util.Date;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -41,6 +42,9 @@ public class User {
     @Column(name = "address", nullable = false)
     private String address;
 
+    @Column(name = "district_id", nullable = false)
+    private UUID districtId;
+
     @Column(name = "gender", nullable = false)
     private String gender;
 
@@ -55,27 +59,20 @@ public class User {
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date updateDate;
-
-    @Column(name = "district_id", updatable = false, nullable = false)
-    private Long districtId;
+    private OffsetDateTime updateDate;
 
     @Column(name = "client_id", nullable = false)
-    private Long clientId;
-
-    @Column(name = "token_user", nullable = false)
-    private String tokenUser;
-
-    @ManyToOne
-    @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)
-    private District district;
+    private UUID clientId;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
+    @ManyToOne
+    @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)
+    private District district;
 }

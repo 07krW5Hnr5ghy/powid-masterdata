@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Builder
@@ -19,6 +20,6 @@ public class SupplierProductDTO {
     private String size;
     private String supplier;
     private Double price;
-    private Date registrationDate;
-    private Date updateDate;
+    private OffsetDateTime registrationDate;
+    private OffsetDateTime updateDate;
 }

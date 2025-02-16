@@ -8,7 +8,9 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.*;
+import com.proyect.masterdata.services.IAudit;
+import com.proyect.masterdata.services.ICancelledOrder;
+import com.proyect.masterdata.services.IStockTransaction;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,10 +18,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -105,11 +108,12 @@ public class CancelledOrderImpl implements ICancelledOrder {
                         .orderingId(ordering.getId())
                         .cancellationReason(cancellationReason)
                         .cancellationReasonId(cancellationReason.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
+                                .user(user)
+                                .userId(user.getId())
                         .build());
                 ordering.setOrderState(orderState);
                 ordering.setOrderStateId(orderState.getId());
@@ -128,14 +132,34 @@ public class CancelledOrderImpl implements ICancelledOrder {
     }
 
     @Override
-    public CompletableFuture<Page<CancelledOrderDTO>> list(Long orderId, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<CancelledOrderDTO>> list(
+            UUID orderId, 
+            String user,
+            OffsetDateTime registrationStartDate, 
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort, 
+            String sortColumn, 
+            Integer pageNumber, 
+            Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<CancelledOrder> pageCancelledOrder;
-            Long clientId;
+            UUID clientId;
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-                pageCancelledOrder = cancelledOrderRepositoryCustom.searchForCancelledOrder(orderId,clientId,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate,sort,sortColumn,pageNumber,pageSize);
+                pageCancelledOrder = cancelledOrderRepositoryCustom.searchForCancelledOrder(
+                        orderId,
+                        clientId,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

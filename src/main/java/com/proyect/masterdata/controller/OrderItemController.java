@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -40,7 +41,7 @@ public class OrderItemController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_POST')")
     public ResponseEntity<ResponseSuccess> addItem(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestBody()RequestOrderItem requestOrderItem,
             @RequestParam("tokenUser") String tokenUser
             ) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -51,7 +52,7 @@ public class OrderItemController {
     @DeleteMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_DELETE')")
     public ResponseEntity<ResponseDelete> deleteItem(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("productSku") String productSku,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -62,7 +63,7 @@ public class OrderItemController {
     @PostMapping("activate")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_DELETE')")
     public ResponseEntity<ResponseDelete> activateItem(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("productSku") String productSku,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -73,7 +74,7 @@ public class OrderItemController {
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_PUT')")
     public ResponseEntity<ResponseSuccess> updateItem(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestBody()RequestOrderItem requestOrderItem,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -85,7 +86,7 @@ public class OrderItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_ITEM_GET')")
     public ResponseEntity<Page<OrderItemDTO>> listOrderItems(
             @RequestParam("user") String user,
-            @RequestParam(value = "orderId",required = false) Long orderId,
+            @RequestParam(value = "orderId",required = false) UUID orderId,
             @RequestParam(value = "productSku",required = false) String productSku,
             @RequestParam(value = "colors",required = false) List<String> colors,
             @RequestParam(value = "sizes",required = false) List<String> sizes,
@@ -116,7 +117,7 @@ public class OrderItemController {
     @GetMapping("order")
     public ResponseEntity<List<OrderItemDTO>> listByOrder(
             @RequestParam("user") String user,
-            @RequestParam("orderId") Long orderId
+            @RequestParam("orderId") UUID orderId
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<OrderItemDTO>> result = iOrderItem.listByOrder(user,orderId);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
@@ -125,7 +126,7 @@ public class OrderItemController {
     @GetMapping("order-false")
     public ResponseEntity<List<OrderItemDTO>> listByOrderFalse(
             @RequestParam("user") String user,
-            @RequestParam("orderId") Long orderId
+            @RequestParam("orderId") UUID orderId
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<OrderItemDTO>> result = iOrderItem.listByOrderFalse(user,orderId);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);

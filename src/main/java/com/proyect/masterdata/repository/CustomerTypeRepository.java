@@ -5,9 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface CustomerTypeRepository extends JpaRepository<CustomerType,Long> {
+public interface CustomerTypeRepository extends JpaRepository<CustomerType, UUID> {
     CustomerType findByNameAndStatusTrue(String name);
     CustomerType findByNameAndStatusFalse(String name);
     List<CustomerType> findAllByStatusTrue();

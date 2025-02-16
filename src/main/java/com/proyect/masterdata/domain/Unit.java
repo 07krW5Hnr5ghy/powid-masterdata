@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import com.proyect.masterdata.utils.Constants;
 
@@ -19,9 +20,9 @@ import lombok.NoArgsConstructor;
 public class Unit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "unit_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -30,18 +31,22 @@ public class Unit {
     private Boolean status;
 
     @Column(name = "registration_date")
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(name = "unit_type_id")
-    private Long unitTypeId;
+    private UUID unitTypeId;
 
     @ManyToOne
     @JoinColumn(name = "unit_type_id",columnDefinition = "unitTypeId",insertable = false,updatable = false)
     private UnitType unitType;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

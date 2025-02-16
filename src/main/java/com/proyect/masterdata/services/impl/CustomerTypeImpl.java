@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -53,8 +54,8 @@ public class CustomerTypeImpl implements ICustomerType {
             try{
                 CustomerType newCustomerType = customerTypeRepository.save(CustomerType.builder()
                         .name(name.toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .status(true)
                         .build());
                 iAudit.save("ADD_CUSTOMER_TYPE","TIPO DE CLIENTE "+newCustomerType.getName()+" CREADO.",newCustomerType.getName(),user.getUsername());
@@ -89,8 +90,9 @@ public class CustomerTypeImpl implements ICustomerType {
             }
             try {
                 customerType.setStatus(false);
-                customerType.setUpdateDate(new Date(System.currentTimeMillis()));
-                customerType.setTokenUser(user.getUsername());
+                customerType.setUpdateDate(OffsetDateTime.now());
+                customerType.setUser(user);
+                customerType.setUserId(user.getId());
                 customerTypeRepository.save(customerType);
                 iAudit.save("DELETE_CUSTOMER_TYPE","TIPO DE CLIENTE "+customerType.getName()+" DESACTIVADO.",customerType.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -124,8 +126,9 @@ public class CustomerTypeImpl implements ICustomerType {
             }
             try {
                 customerType.setStatus(true);
-                customerType.setUpdateDate(new Date(System.currentTimeMillis()));
-                customerType.setTokenUser(user.getUsername());
+                customerType.setUpdateDate(OffsetDateTime.now());
+                customerType.setUser(user);
+                customerType.setUserId(user.getId());
                 customerTypeRepository.save(customerType);
                 iAudit.save("ACTIVATE_CUSTOMER_TYPE","TIPO DE CLIENTE "+customerType.getName()+" ACTIVADO.",customerType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -159,10 +162,10 @@ public class CustomerTypeImpl implements ICustomerType {
     @Override
     public CompletableFuture<Page<CustomerTypeDTO>> listPagination(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -198,7 +201,7 @@ public class CustomerTypeImpl implements ICustomerType {
     }
 
     @Override
-    public CompletableFuture<Page<CustomerTypeDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<CustomerTypeDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<CustomerType> customerTypePage;
             try {

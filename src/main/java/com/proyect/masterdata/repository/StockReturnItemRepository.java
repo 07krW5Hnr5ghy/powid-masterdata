@@ -6,11 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface StockReturnItemRepository extends JpaRepository<StockReturnItem,Long> {
-    List<StockReturnItem> findAllByClientIdAndStatusTrue(Long clientId);
-    List<StockReturnItem> findAllByClientIdAndStatusFalse(Long clientId);
-    List<StockReturnItem> findAllByClientIdAndStockReturnIdAndStatusTrue(Long clientId,Long stockReturnId);
-    List<StockReturnItem> findAllByClientIdAndStockReturnIdAndStatusFalse(Long clientId,Long stockReturnId);
+public interface StockReturnItemRepository extends JpaRepository<StockReturnItem, UUID> {
+    List<StockReturnItem> findAllByClientIdAndStatusTrue(UUID clientId);
+    List<StockReturnItem> findAllByClientIdAndStatusFalse(UUID clientId);
+    List<StockReturnItem> findAllByClientIdAndStockReturnIdAndStatusTrue(UUID clientId,UUID stockReturnId);
+    List<StockReturnItem> findAllByClientIdAndStockReturnIdAndStatusFalse(UUID clientId,UUID stockReturnId);
 }

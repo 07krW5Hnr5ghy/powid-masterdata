@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import com.proyect.masterdata.utils.Constants;
 
@@ -26,29 +27,33 @@ import lombok.NoArgsConstructor;
 public class ProductPrice {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "product_price_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "unit_sale_price")
     private Double unitSalePrice;
 
     @Column(name = "registration_date")
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "status")
     private Boolean status;
 
     @Column(name = "product_id")
-    private Long productId;
+    private UUID productId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false, updatable = false)
     private Product product;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

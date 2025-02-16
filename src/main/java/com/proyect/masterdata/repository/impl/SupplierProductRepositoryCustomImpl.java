@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class SupplierProductRepositoryCustomImpl implements SupplierProductRepositoryCustom {
@@ -26,11 +27,11 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
 
     @Override
     public Page<SupplierProduct> searchForSupplierProduct(
-            Long clientId,
+            UUID clientId,
             String serial,
             String productSku,
             String model,
-            List<Long> supplierIds,
+            List<UUID> supplierIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -90,11 +91,11 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
     }
 
     private List<Predicate> predicateConditions(
-            Long clientId,
+            UUID clientId,
             String serial,
             String productSku,
             String model,
-            List<Long> supplierIds,
+            List<UUID> supplierIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<SupplierProduct> itemRoot,
@@ -191,11 +192,11 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             String serial,
             String productSku,
             String model,
-            List<Long> supplierIds,
+            List<UUID> supplierIds,
             Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

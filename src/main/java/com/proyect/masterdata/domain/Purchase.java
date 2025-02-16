@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -19,41 +20,41 @@ import java.util.Date;
 public class Purchase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "purchase_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "serial")
     private String serial;
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "status")
     private Boolean status;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "warehouse_id")
-    private Long warehouseId;
+    private UUID warehouseId;
 
     @Column(name = "purchase_type_id")
-    private Long purchaseTypeId;
+    private UUID purchaseTypeId;
 
     @Column(name = "purchase_document_id")
-    private Long purchaseDocumentId;
+    private UUID purchaseDocumentId;
 
     @Column(name = "supplier_id")
-    private Long supplierId;
+    private UUID supplierId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
@@ -74,5 +75,9 @@ public class Purchase {
     @ManyToOne
     @JoinColumn(name = "purchase_type_id",columnDefinition = "purchaseTypeId",insertable = false,updatable = false)
     private PurchaseType purchaseType;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

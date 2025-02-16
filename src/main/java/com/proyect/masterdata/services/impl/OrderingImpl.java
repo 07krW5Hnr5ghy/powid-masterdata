@@ -29,6 +29,7 @@ import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -183,15 +184,16 @@ public class OrderingImpl implements IOrdering {
                     .paymentMethodId(orderPaymentMethod.getId())
                     .managementType(managementType)
                     .managementTypeId(managementType.getId())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .updateDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
+                    .updateDate(OffsetDateTime.now())
                     .store(store)
                     .storeId(store.getId())
                     .closingChannel(closingChannel)
                     .closingChannelId(closingChannel.getId())
                     .customer(customer)
                     .customerId(customer.getId())
-                    .tokenUser(user.getUsername())
+                    .user(user)
+                    .userId(user.getId())
                     .deliveryPoint(deliveryPoint)
                     .deliveryPointId(deliveryPoint.getId())
                     .receiptFlag(false)
@@ -329,13 +331,14 @@ public class OrderingImpl implements IOrdering {
                         .paymentMethodId(orderPaymentMethod.getId())
                         .managementType(managementType)
                         .managementTypeId(managementType.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .store(store)
                         .storeId(store.getId())
                         .closingChannel(closingChannel)
                         .closingChannelId(closingChannel.getId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                        .userId(user.getId())
                         .customer(customer)
                         .customerId(customer.getId())
                         .deliveryPoint(deliveryPoint)
@@ -396,7 +399,7 @@ public class OrderingImpl implements IOrdering {
 
     @Override
     public CompletableFuture<Page<OrderDTO>> list(
-            Long orderId,
+            UUID orderId,
             String user,
             String seller,
             String customer,
@@ -421,18 +424,18 @@ public class OrderingImpl implements IOrdering {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Ordering> pageOrdering;
-            Long clientId;
-            List<Long> departmentIds;
-            List<Long> provinceIds;
-            List<Long> districtIds;
-            List<Long> saleChannelIds;
-            List<Long> deliveryPointIds;
-            List<Long> orderStateIds;
-            List<Long> courierIds;
-            Long paymentStateId;
-            Long paymentMethodId;
-            Long managementTypeId;
-            Long storeId;
+            UUID clientId;
+            List<UUID> departmentIds;
+            List<UUID> provinceIds;
+            List<UUID> districtIds;
+            List<UUID> saleChannelIds;
+            List<UUID> deliveryPointIds;
+            List<UUID> orderStateIds;
+            List<UUID> courierIds;
+            UUID paymentStateId;
+            UUID paymentMethodId;
+            UUID managementTypeId;
+            UUID storeId;
 
             if(departments != null && !departments.isEmpty()){
                 departmentIds = departmentRepository.findByNameIn(
@@ -657,7 +660,7 @@ public class OrderingImpl implements IOrdering {
     @Override
     public CompletableFuture<List<OrderDTO>> listOrder(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<Ordering> orderingList;
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -779,7 +782,7 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
-    public ResponseSuccess update(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess update(UUID orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Ordering ordering;
         OrderState orderState;
@@ -834,9 +837,10 @@ public class OrderingImpl implements IOrdering {
                     .cancellationReason(cancellationReason)
                     .cancellationReasonId(cancellationReason.getId())
                     .ordering(ordering)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .updateDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(user.getUsername())
+                    .registrationDate(OffsetDateTime.now())
+                    .updateDate(OffsetDateTime.now())
+                    .user(user)
+                    .userId(user.getId())
                     .build());
         }
 
@@ -917,7 +921,7 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> updateAsync(Long orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> updateAsync(UUID orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         Path folderOrders = Paths.get("/home/powid-masterdata/src/main/resources/uploads/orders");
         Path folderCouriers = Paths.get("/home/powid-masterdata/src/main/resources/uploads/couriers");
         return CompletableFuture.supplyAsync(()->{
@@ -975,9 +979,10 @@ public class OrderingImpl implements IOrdering {
                         .cancellationReason(cancellationReason)
                         .cancellationReasonId(cancellationReason.getId())
                         .ordering(ordering)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
             }
 
@@ -1103,7 +1108,7 @@ public class OrderingImpl implements IOrdering {
     }
 
     @Override
-    public CompletableFuture<OrderDTO> selectOrder(Long orderId,String username) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<OrderDTO> selectOrder(UUID orderId,String username) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -1172,8 +1177,8 @@ public class OrderingImpl implements IOrdering {
                         .customerAddress(ordering.getCustomer().getAddress())
                         .deliveryAddress(ordering.getDeliveryAddress().toUpperCase())
                         .advancedPayment(BigDecimal.valueOf(ordering.getAdvancedPayment()))
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .deliveryAmount(BigDecimal.valueOf(ordering.getDeliveryAmount()))
                         .discountAmount(BigDecimal.valueOf(ordering.getDiscountAmount()))
                         .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))

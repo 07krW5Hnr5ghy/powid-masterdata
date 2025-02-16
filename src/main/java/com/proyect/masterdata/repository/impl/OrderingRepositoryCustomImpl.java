@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
@@ -25,25 +26,25 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
     private EntityManager entityManager;
     @Override
     public Page<Ordering> searchForOrdering(
-            Long orderId,
-            Long clientId,
+            UUID orderId,
+            UUID clientId,
             String seller,
             String customer,
             String customerPhone,
             String instagram,
-            List<Long> departmentIds,
-            List<Long> provinceIds,
-            List<Long> districtIds,
-            List<Long> saleChannelIds,
+            List<UUID> departmentIds,
+            List<UUID> provinceIds,
+            List<UUID> districtIds,
+            List<UUID> saleChannelIds,
             Boolean receiptFlag,
             Boolean deliveryFlag,
-            List<Long> deliveryPointIds,
-            List<Long> orderStateIds,
-            List<Long> courierIds,
-            Long paymentStateId,
-            Long paymentMethodId,
-            Long managementTypeId,
-            Long storeId,
+            List<UUID> deliveryPointIds,
+            List<UUID> orderStateIds,
+            List<UUID> courierIds,
+            UUID paymentStateId,
+            UUID paymentMethodId,
+            UUID managementTypeId,
+            UUID storeId,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -129,25 +130,25 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
     }
 
     List<Predicate> predicateConditions(
-            Long id,
-            Long clientId,
+            UUID id,
+            UUID clientId,
             String seller,
             String customer,
             String customerPhone,
             String instagram,
-            List<Long> departmentIds,
-            List<Long> provinceIds,
-            List<Long> districtIds,
-            List<Long> saleChannelIds,
+            List<UUID> departmentIds,
+            List<UUID> provinceIds,
+            List<UUID> districtIds,
+            List<UUID> saleChannelIds,
             Boolean receiptFlag,
             Boolean deliveryFlag,
-            List<Long> deliveryPointIds,
-            List<Long> orderStateIds,
-            List<Long> courierIds,
-            Long paymentStateId,
-            Long paymentMethodId,
-            Long managementTypeId,
-            Long storeId,
+            List<UUID> deliveryPointIds,
+            List<UUID> orderStateIds,
+            List<UUID> courierIds,
+            UUID paymentStateId,
+            UUID paymentMethodId,
+            UUID managementTypeId,
+            UUID storeId,
             CriteriaBuilder criteriaBuilder,
             Root<Ordering> itemRoot,
             Join<Ordering,Customer> orderingCustomerJoin,
@@ -347,25 +348,25 @@ public class OrderingRepositoryCustomImpl implements OrderingRepositoryCustom {
     }
 
     private Long getOrderCount(
-            Long id,
-            Long clientId,
+            UUID id,
+            UUID clientId,
             String seller,
             String customer,
             String customerPhone,
             String instagram,
-            List<Long> departmentIds,
-            List<Long> provinceIds,
-            List<Long> districtIds,
-            List<Long> saleChannelIds,
+            List<UUID> departmentIds,
+            List<UUID> provinceIds,
+            List<UUID> districtIds,
+            List<UUID> saleChannelIds,
             Boolean receiptFlag,
             Boolean deliveryFlag,
-            List<Long> deliveryPointIds,
-            List<Long> orderStateIds,
-            List<Long> courierIds,
-            Long paymentStateId,
-            Long paymentMethodId,
-            Long managementTypeId,
-            Long storeId){
+            List<UUID> deliveryPointIds,
+            List<UUID> orderStateIds,
+            List<UUID> courierIds,
+            UUID paymentStateId,
+            UUID paymentMethodId,
+            UUID managementTypeId,
+            UUID storeId){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Ordering> itemRoot = criteriaQuery.from(Ordering.class);

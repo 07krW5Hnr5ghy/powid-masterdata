@@ -5,9 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.proyect.masterdata.domain.PurchaseItem;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface PurchaseItemRepository extends JpaRepository<PurchaseItem, Long> {
-    PurchaseItem findByPurchaseIdAndSupplierProductId(Long purchaseId, Long supplierProductId);
-    List<PurchaseItem> findAllByClientId(Long clientId);
-    List<PurchaseItem> findAllByClientIdAndPurchaseId(Long clientId, Long purchaseId);
+public interface PurchaseItemRepository extends JpaRepository<PurchaseItem, UUID> {
+    PurchaseItem findByPurchaseIdAndSupplierProductId(UUID purchaseId, UUID supplierProductId);
+    List<PurchaseItem> findAllByClientId(UUID clientId);
+    List<PurchaseItem> findAllByClientIdAndPurchaseId(UUID clientId, UUID purchaseId);
 }

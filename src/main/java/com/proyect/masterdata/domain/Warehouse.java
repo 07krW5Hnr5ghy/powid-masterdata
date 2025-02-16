@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -28,9 +29,9 @@ import lombok.NoArgsConstructor;
 public class Warehouse {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "warehouse_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -49,24 +50,28 @@ public class Warehouse {
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "status")
     private Boolean status;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

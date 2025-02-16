@@ -7,7 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -20,36 +21,39 @@ import org.hibernate.annotations.CreationTimestamp;
 public class Membership {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "membership_id")
-        private Long id;
+        private UUID id;
 
         @Column(name = "registration_date", nullable = false)
         @CreationTimestamp
-        private Date registrationDate;
+        private OffsetDateTime registrationDate;
 
         @Column(name = "update_date")
         @CreationTimestamp
-        private Date updateDate;
+        private OffsetDateTime updateDate;
 
         @Column(name = "expiration_date")
         @CreationTimestamp
-        private Date expirationDate;
+        private OffsetDateTime expirationDate;
 
         @Column(name = "demo", nullable = false)
         private Boolean demo;
 
         @Column(name = "client_id", nullable = false)
-        private Long clientId;
+        private UUID clientId;
+
+        @Column(name = "user_id", nullable = false)
+        private UUID userId;
 
         @Column(name = "subscription_id", nullable = false)
-        private Long subscriptionId;
+        private UUID subscriptionId;
 
         @Column(name = "membership_payment_id",nullable = false)
-        private Long membershipPaymentId;
+        private UUID membershipPaymentId;
 
         @Column(name = "membership_state_id")
-        private Long membershipStateId;
+        private UUID membershipStateId;
 
         @ManyToOne()
         @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
@@ -66,5 +70,9 @@ public class Membership {
         @ManyToOne()
         @JoinColumn(name = "membership_state_id",columnDefinition = "membershipStateId",insertable = false,updatable = false)
         private MembershipState membershipState;
+
+        @ManyToOne()
+        @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+        private User user;
 
 }

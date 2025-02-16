@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -126,12 +127,13 @@ public class ProductImpl implements IProduct {
                     .unitId(unit.getId())
                     .client(user.getClient())
                     .clientId(user.getClientId())
-                    .tokenUser(tokenUser.toUpperCase())
+                    .user(user)
+                    .userId(user.getId())
                     .characteristics(product.getCharacteristics().toUpperCase())
                     .status(true)
                     .pictureFlag(false)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .updateDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
+                    .updateDate(OffsetDateTime.now())
                     .build());
             iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
             List<String> pictures = iProductPicture.uploadPicture(productPictures,productData.getId(),user.getUsername());
@@ -226,10 +228,11 @@ public class ProductImpl implements IProduct {
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .characteristics(product.getCharacteristics().toUpperCase())
-                        .tokenUser(tokenUser.toUpperCase())
+                        .user(user)
+                        .userId(user.getId())
                         .status(true)
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .updateDate(OffsetDateTime.now())
+                        .registrationDate(OffsetDateTime.now())
                         .pictureFlag(false)
                         .build());
                 iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
@@ -294,8 +297,9 @@ public class ProductImpl implements IProduct {
 
             try {
                 product.setStatus(false);
-                product.setUpdateDate(new Date(System.currentTimeMillis()));
-                product.setTokenUser(user.getUsername());
+                product.setUpdateDate(OffsetDateTime.now());
+                product.setUser(user);
+                product.setUserId(user.getId());
                 productRepository.save(product);
                 iAudit.save("DELETE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" DESACTIVADO.",product.getSku(),user.getUsername());
                 return ResponseDelete.builder()
@@ -333,8 +337,9 @@ public class ProductImpl implements IProduct {
 
             try {
                 product.setStatus(true);
-                product.setUpdateDate(new Date(System.currentTimeMillis()));
-                product.setTokenUser(user.getUsername());
+                product.setUpdateDate(OffsetDateTime.now());
+                product.setUser(user);
+                product.setUserId(user.getId());
                 productRepository.save(product);
                 iAudit.save("ACTIVATE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" ACTIVADO.",product.getSku(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -365,12 +370,12 @@ public class ProductImpl implements IProduct {
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<Product> productPage;
-            List<Long> brandIds;
-            List<Long> sizeIds;
-            List<Long> categoryProductIds;
-            List<Long> colorIds;
-            List<Long> unitIds;
-            Long clientId;
+            List<UUID> brandIds;
+            List<UUID> sizeIds;
+            List<UUID> categoryProductIds;
+            List<UUID> colorIds;
+            List<UUID> unitIds;
+            UUID clientId;
 
             if(sizes != null && !sizes.isEmpty()){
                 sizeIds = sizeRepository.findByNameIn(
@@ -480,12 +485,12 @@ public class ProductImpl implements IProduct {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Product> productPage;
-            List<Long> brandIds;
-            List<Long> sizeIds;
-            List<Long> categoryProductIds;
-            List<Long> colorIds;
-            List<Long> unitIds;
-            Long clientId;
+            List<UUID> brandIds;
+            List<UUID> sizeIds;
+            List<UUID> categoryProductIds;
+            List<UUID> colorIds;
+            List<UUID> unitIds;
+            UUID clientId;
 
             if(sizes != null && !sizes.isEmpty()){
                 sizeIds = sizeRepository.findByNameIn(
@@ -579,7 +584,7 @@ public class ProductImpl implements IProduct {
     public CompletableFuture<List<ProductDTO>> listProducts(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Product> products;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 products = productRepository.findAllByClientIdAndStatusTrue(clientId);
@@ -615,7 +620,7 @@ public class ProductImpl implements IProduct {
     public CompletableFuture<List<ProductDTO>> listProductsFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Product> products;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 products = productRepository.findAllByClientIdAndStatusFalse(clientId);
@@ -651,7 +656,7 @@ public class ProductImpl implements IProduct {
     public CompletableFuture<List<ProductDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Product> products;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 products = productRepository.findAllByClientId(clientId);
@@ -714,9 +719,10 @@ public class ProductImpl implements IProduct {
                                     .unitSalePrice(requestProductUpdate.getPrice())
                                     .product(product)
                                     .productId(product.getId())
-                                    .registrationDate(new Date(System.currentTimeMillis()))
-                                    .updateDate(new Date(System.currentTimeMillis()))
-                                    .tokenUser(user.getUsername())
+                                    .registrationDate(OffsetDateTime.now())
+                                    .updateDate(OffsetDateTime.now())
+                                    .user(user)
+                                    .userId(user.getId())
                                     .status(true)
                             .build());
                 }
@@ -764,7 +770,7 @@ public class ProductImpl implements IProduct {
     public CompletableFuture<List<ProductDTO>> listByColorAndSize(String color, String size,String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Product> products;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(username.toUpperCase()).getClientId();
                 products = productRepository.findByColorNameAndSizeNameAndClientIdAndStatusTrue(
@@ -803,7 +809,7 @@ public class ProductImpl implements IProduct {
     public CompletableFuture<List<ProductDTO>> listByModelAndSizeAndColor(String model, String size, String color,String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Product> products;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(username.toUpperCase()).getClientId();
                 products = productRepository.findByModelNameAndSizeNameAndColorNameAndClientIdAndStatusTrue(
@@ -844,7 +850,7 @@ public class ProductImpl implements IProduct {
     public CompletableFuture<List<ProductDTO>> listByModelAndColor(String model, String color,String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Product> products;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 products = productRepository.findByModelNameAndColorNameAndClientIdAndStatusTrue(
@@ -884,7 +890,7 @@ public class ProductImpl implements IProduct {
     public CompletableFuture<List<ProductDTO>> listByModel(String modelSku, String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Product> products;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 products = productRepository.findByModelSkuAndClientIdAndStatusTrue(

@@ -22,7 +22,6 @@ public interface SizeTypeMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "name", source = "requestSizeTypeSave.name")
-    @Mapping(target = "tokenUser", source = "requestSizeTypeSave.user")
     SizeType sizeTypeToName(RequestSizeTypeSave requestSizeTypeSave);
 
     List<SizeType> listSizeToListName(List<RequestSizeTypeSave> requestSizeTypeSaveList);

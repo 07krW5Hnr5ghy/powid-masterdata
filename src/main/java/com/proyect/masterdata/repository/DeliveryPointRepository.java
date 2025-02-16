@@ -5,9 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface DeliveryPointRepository extends JpaRepository<DeliveryPoint,Long> {
+public interface DeliveryPointRepository extends JpaRepository<DeliveryPoint, UUID> {
     DeliveryPoint findByName(String name);
     DeliveryPoint findByNameAndStatusTrue(String name);
     List<DeliveryPoint> findAllByStatusTrue();

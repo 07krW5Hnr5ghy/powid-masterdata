@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -48,9 +49,10 @@ public class DeliveryPointImpl implements IDeliveryPoint {
             DeliveryPoint newDeliveryPoint = deliveryPointRepository.save(DeliveryPoint.builder()
                             .name(name.toUpperCase())
                             .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(user.getUsername())
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
                     .build());
             iAudit.save("ADD_DELIVERY_POINT","PUNTO DE ENTREGA "+newDeliveryPoint.getName()+" CREADO.",newDeliveryPoint.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -85,9 +87,10 @@ public class DeliveryPointImpl implements IDeliveryPoint {
                 DeliveryPoint newDeliveryPoint = deliveryPointRepository.save(DeliveryPoint.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user)
+                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_DELIVERY_POINT","PUNTO DE ENTREGA "+newDeliveryPoint.getName()+" CREADO.",newDeliveryPoint.getName(),user.getUsername());
                 return ResponseSuccess.builder()

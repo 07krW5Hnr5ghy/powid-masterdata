@@ -4,16 +4,17 @@ import com.proyect.masterdata.domain.MembershipState;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Repository
 public interface MembershipStateRepositoryCustom {
     Page<MembershipState> searchForMembershipState(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,

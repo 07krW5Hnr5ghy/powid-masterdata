@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -27,22 +28,22 @@ import lombok.NoArgsConstructor;
 public class MembershipModuleRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "membership_module_role_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "membership_module_id", nullable = false)
-    private Long membershipModuleId;
+    private UUID membershipModuleId;
 
     @Column(name = "role_id", nullable = false)
-    private Long roleId;
+    private UUID roleId;
 
     @Column(name = "registration_date", nullable = false)
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "status", nullable = false)
     private Boolean status;
@@ -54,5 +55,12 @@ public class MembershipModuleRole {
     @ManyToOne
     @JoinColumn(name = "role_id", columnDefinition = "roleId", insertable = false, updatable = false)
     private Role role;
+
+    @Column(name = "user_id")
+    private UUID userId;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

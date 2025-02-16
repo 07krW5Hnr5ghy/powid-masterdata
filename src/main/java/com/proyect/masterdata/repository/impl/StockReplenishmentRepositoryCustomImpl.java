@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class StockReplenishmentRepositoryCustomImpl implements StockReplenishmentRepositoryCustom {
@@ -22,8 +23,8 @@ public class StockReplenishmentRepositoryCustomImpl implements StockReplenishmen
     private EntityManager entityManager;
     @Override
     public Page<StockReplenishment> searchForStockReplenishment(
-            Long clientId,
-            List<Long> orderIds,
+            UUID clientId,
+            List<UUID> orderIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -71,8 +72,8 @@ public class StockReplenishmentRepositoryCustomImpl implements StockReplenishmen
     }
 
     public List<Predicate> predicate(
-            Long clientId,
-            List<Long> orderIds,
+            UUID clientId,
+            List<UUID> orderIds,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<StockReplenishment> itemRoot) {
@@ -129,8 +130,8 @@ public class StockReplenishmentRepositoryCustomImpl implements StockReplenishmen
     }
 
     private Long getOrderCount(
-            Long clientId,
-            List<Long> orderIds,
+            UUID clientId,
+            List<UUID> orderIds,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

@@ -17,7 +17,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -28,9 +29,9 @@ import java.util.Date;
 public class Model {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "model_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -43,17 +44,17 @@ public class Model {
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "brand_id")
-    private Long brandId;
+    private UUID brandId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @ManyToOne
     @JoinColumn(name = "brand_id", columnDefinition = "brandId", insertable = false, updatable = false)
@@ -63,6 +64,10 @@ public class Model {
     @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

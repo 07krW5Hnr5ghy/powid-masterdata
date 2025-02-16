@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -46,7 +47,7 @@ public class OrderingController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK') and hasAuthority('ACCESS:ORDER_GET')")
     public ResponseEntity<Page<OrderDTO>> list(
-            @RequestParam(value = "orderId", required = false) Long orderId,
+            @RequestParam(value = "orderId", required = false) UUID orderId,
             @RequestParam(value = "user") String user,
             @RequestParam(value = "seller",required = false) String seller,
             @RequestParam(value = "customer",required = false) String customer,
@@ -100,7 +101,7 @@ public class OrderingController {
     @PutMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_PUT')")
     public ResponseEntity<ResponseSuccess> update(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestPart("requestOrder") RequestOrderUpdate requestOrderUpdate,
             @RequestPart("receipts") MultipartFile[] receipts,
             @RequestPart("courierPictures") MultipartFile[] courierPictures,
@@ -122,7 +123,7 @@ public class OrderingController {
     @GetMapping("detail")
     public ResponseEntity<OrderDTO> detail(
             @RequestParam("user") String user,
-            @RequestParam("id") Long id
+            @RequestParam("id") UUID id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<OrderDTO> result = iOrdering.selectOrder(id,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);

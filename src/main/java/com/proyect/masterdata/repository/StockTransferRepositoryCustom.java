@@ -5,14 +5,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface StockTransferRepositoryCustom {
     Page<StockTransfer> searchForStockTransfer(
-            Long clientId,
+            UUID clientId,
             List<String> serials,
-            List<Long> originWarehouseIds,
-            List<Long> destinationWarehouseIds,
+            List<UUID> originWarehouseIds,
+            List<UUID> destinationWarehouseIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

@@ -5,13 +5,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface OrderStockItemRepository extends JpaRepository<OrderStockItem,Long> {
-    List<OrderStockItem> findByOrderStockIdAndOrderItemId(Long orderId, Long itemId);
-    List<OrderStockItem> findAllByClientIdAndStatusTrue(Long clientId);
-    List<OrderStockItem> findAllByClientIdAndStatusFalse(Long clientId);
-    List<OrderStockItem> findAllByClientIdAndOrderIdAndStatusTrue(Long clientId,Long orderId);
-    List<OrderStockItem> findAllByClientIdAndOrderIdAndStatusFalse(Long clientId,Long orderId);
-    OrderStockItem findByOrderStockIdAndSupplierProductIdAndStatusTrue(Long orderStockId,Long supplierProductId);
+public interface OrderStockItemRepository extends JpaRepository<OrderStockItem, UUID> {
+    List<OrderStockItem> findByOrderStockIdAndOrderItemId(UUID orderId, UUID itemId);
+    List<OrderStockItem> findAllByClientIdAndStatusTrue(UUID clientId);
+    List<OrderStockItem> findAllByClientIdAndStatusFalse(UUID clientId);
+    List<OrderStockItem> findAllByClientIdAndOrderIdAndStatusTrue(UUID clientId,UUID orderId);
+    List<OrderStockItem> findAllByClientIdAndOrderIdAndStatusFalse(UUID clientId,UUID orderId);
+    OrderStockItem findByOrderStockIdAndSupplierProductIdAndStatusTrue(UUID orderStockId,UUID supplierProductId);
 }

@@ -15,9 +15,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCustom {
@@ -25,16 +27,16 @@ public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCusto
     private EntityManager entityManager;
     @Override
     public Page<OrderReturnItem> searchForOrderReturnItem(
-            Long clientId,
-            List<Long> orderIds,
-            List<Long> productIds,
-            List<Long> supplierProductIds,
-            List<Long> warehouseIds,
-            List<Long> orderReturnTypeIds,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID clientId,
+            List<UUID> orderIds,
+            List<UUID> productIds,
+            List<UUID> supplierProductIds,
+            List<UUID> warehouseIds,
+            List<UUID> orderReturnTypeIds,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -97,16 +99,16 @@ public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCusto
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
     List<Predicate> predicateConditions(
-            Long clientId,
-            List<Long> orderIds,
-            List<Long> productIds,
-            List<Long> supplierProductIds,
-            List<Long> warehouseIds,
-            List<Long> orderReturnTypeIds,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID clientId,
+            List<UUID> orderIds,
+            List<UUID> productIds,
+            List<UUID> supplierProductIds,
+            List<UUID> warehouseIds,
+            List<UUID> orderReturnTypeIds,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<OrderReturnItem> itemRoot,
@@ -265,16 +267,16 @@ public class OrderReturnItemCustomImpl implements OrderReturnItemRepositoryCusto
     }
 
     private long getOrderCount(
-            Long clientId,
-            List<Long> orderIds,
-            List<Long> productIds,
-            List<Long> supplierProductIds,
-            List<Long> warehouseIds,
-            List<Long> orderReturnTypeIds,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID clientId,
+            List<UUID> orderIds,
+            List<UUID> productIds,
+            List<UUID> supplierProductIds,
+            List<UUID> warehouseIds,
+            List<UUID> orderReturnTypeIds,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

@@ -11,6 +11,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IStockTransferItem {
@@ -26,5 +27,5 @@ public interface IStockTransferItem {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<List<StockTransferItemDTO>> listStockTransferItem(String user,Long id) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<StockTransferItemDTO>> listStockTransferItem(String user, UUID id) throws BadRequestExceptions,InternalErrorExceptions;
 }

@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
@@ -65,9 +66,10 @@ public class ProductPriceImpl implements IProductPrice {
                             .productId(product.getId())
                             .unitSalePrice(unitPrice)
                             .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(tokenUser.toUpperCase())
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
                     .build());
             iAudit.save("ADD_PRODUCT_PRICE","PRECIO "+newProductPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+newProductPrice.getProduct().getSku()+" AGREGADO.",newProductPrice.getProduct().getSku(),user.getUsername());
             return ResponseSuccess.builder()
@@ -116,9 +118,10 @@ public class ProductPriceImpl implements IProductPrice {
                         .productId(product.getId())
                         .unitSalePrice(unitPrice)
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(tokenUser.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 iAudit.save("ADD_PRODUCT_PRICE","PRECIO "+newProductPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+newProductPrice.getProduct().getSku()+" AGREGADO.",newProductPrice.getProduct().getSku(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -158,8 +161,8 @@ public class ProductPriceImpl implements IProductPrice {
             }
             try {
                 productPrice.setStatus(true);
-                productPrice.setUpdateDate(new Date(System.currentTimeMillis()));
-                productPrice.setTokenUser(user.getUsername());
+                productPrice.setUpdateDate(OffsetDateTime.now());
+                productPrice.setUser(user);
                 productPriceRepository.save(productPrice);
                 iAudit.save("DELETE_PRODUCT_PRICE","PRECIO "+productPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+productPrice.getProduct().getSku()+" DESACTIVADO.",productPrice.getProduct().getSku(),user.getUsername());
                 return ResponseDelete.builder()

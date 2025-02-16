@@ -4,19 +4,21 @@ import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.domain.GeneralStock;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public interface GeneralStockRepositoryCustom {
     Page<GeneralStock> searchForGeneralStock(
-            Long clientId,
+            UUID clientId,
             String serial,
             String productSku,
             String model,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,

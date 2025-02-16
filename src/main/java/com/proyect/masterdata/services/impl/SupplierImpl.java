@@ -1,8 +1,9 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+import java.util.UUID;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -104,13 +105,13 @@ public class SupplierImpl implements ISupplier {
                     .location(requestSupplier.getLocation().toUpperCase())
                     .phoneNumber(requestSupplier.getPhone())
                     .ruc(requestSupplier.getRuc())
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .status(true)
                     .supplierType(supplierType)
                     .supplierTypeId(supplierType.getId())
                     .district(district)
                     .districtId(district.getId())
-                    .tokenUser(user.getUsername().toUpperCase())
+                    .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_SUPPLIER","PROVEEDOR CON RUC "+newSupplier.getRuc()+" CREADO.",newSupplier.getRuc(),user.getUsername());
             return ResponseSuccess.builder()
@@ -188,13 +189,13 @@ public class SupplierImpl implements ISupplier {
                         .location(requestSupplier.getLocation().toUpperCase())
                         .phoneNumber(requestSupplier.getPhone())
                         .ruc(requestSupplier.getRuc())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
                         .supplierType(supplierType)
                         .supplierTypeId(supplierType.getId())
                         .district(district)
                         .districtId(district.getId())
-                        .tokenUser(user.getUsername().toUpperCase())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_SUPPLIER","PROVEEDOR CON RUC "+newSupplier.getRuc()+" CREADO.",newSupplier.getRuc(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -233,8 +234,9 @@ public class SupplierImpl implements ISupplier {
 
             try {
                 supplier.setStatus(false);
-                supplier.setUpdateDate(new Date(System.currentTimeMillis()));
-                supplier.setTokenUser(user.getUsername());
+                supplier.setUpdateDate(OffsetDateTime.now());
+                supplier.setUser(user);
+                supplier.setUserId(user.getId());
                 supplierRepository.save(supplier);
                 iAudit.save("DELETE_SUPPLIER","PROVEEDOR CON RUC "+supplier.getRuc()+" DESACTIVADO.",supplier.getRuc(),user.getUsername());
                 return ResponseDelete.builder()
@@ -273,8 +275,9 @@ public class SupplierImpl implements ISupplier {
 
             try {
                 supplier.setStatus(true);
-                supplier.setUpdateDate(new Date(System.currentTimeMillis()));
-                supplier.setTokenUser(user.getUsername());
+                supplier.setUpdateDate(OffsetDateTime.now());
+                supplier.setUser(user);
+                supplier.setUserId(user.getId());
                 supplierRepository.save(supplier);
                 iAudit.save("ACTIVATE_SUPPLIER","PROVEEDOR CON RUC "+supplier.getRuc()+" ACTIVADO.",supplier.getRuc(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -304,14 +307,14 @@ public class SupplierImpl implements ISupplier {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Supplier> supplierPage;
-            Long clientId;
+            UUID clientId;
             List<String> namesUppercase;
             List<String> rucsUppercase;
-            List<Long> countryIds;
-            List<Long> supplierTypeIds;
-            List<Long> departmentIds;
-            List<Long> provinceIds;
-            List<Long> districtIds;
+            List<UUID> countryIds;
+            List<UUID> supplierTypeIds;
+            List<UUID> departmentIds;
+            List<UUID> provinceIds;
+            List<UUID> districtIds;
 
             if(names != null && !names.isEmpty()){
                 namesUppercase = names.stream().map(String::toUpperCase).toList();
@@ -412,7 +415,7 @@ public class SupplierImpl implements ISupplier {
     @Override
     public CompletableFuture<List<SupplierDTO>> listSuppliers(String user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<Supplier> suppliers;
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -446,7 +449,7 @@ public class SupplierImpl implements ISupplier {
     @Override
     public CompletableFuture<List<SupplierDTO>> listSuppliersFalse(String user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<Supplier> suppliers;
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -480,7 +483,7 @@ public class SupplierImpl implements ISupplier {
     @Override
     public CompletableFuture<List<SupplierDTO>> listSuppliersFilter(String user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<Supplier> suppliers;
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();

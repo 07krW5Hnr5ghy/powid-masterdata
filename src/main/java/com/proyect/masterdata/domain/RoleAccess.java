@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import com.proyect.masterdata.utils.Constants;
 
@@ -20,26 +21,26 @@ import org.hibernate.annotations.CreationTimestamp;
 public class RoleAccess {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "role_access_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "role_id", nullable = false)
-    private Long roleId;
+    private UUID roleId;
 
     @Column(name = "access_id", nullable = false)
-    private Long accessId;
+    private UUID accessId;
 
-    @Column(name = "token_user", nullable = false)
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "status")
     private Boolean status;
@@ -51,4 +52,8 @@ public class RoleAccess {
     @ManyToOne
     @JoinColumn(name = "access_id", columnDefinition = "accessId", insertable = false, updatable = false)
     private Access access;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

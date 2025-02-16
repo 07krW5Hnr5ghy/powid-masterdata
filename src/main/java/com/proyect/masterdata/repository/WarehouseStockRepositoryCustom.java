@@ -6,12 +6,13 @@ import org.springframework.stereotype.Repository;
 import com.proyect.masterdata.domain.WarehouseStock;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface WarehouseStockRepositoryCustom {
     Page<WarehouseStock> searchForWarehouseStock(
-            Long clientId,
-            List<Long> warehouseIds,
+            UUID clientId,
+            List<UUID> warehouseIds,
             String serial,
             String productSku,
             String model,

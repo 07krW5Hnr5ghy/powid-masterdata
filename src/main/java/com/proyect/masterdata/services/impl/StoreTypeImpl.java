@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -60,9 +61,9 @@ public class StoreTypeImpl implements IStoreType {
             StoreType newStoreType = storeTypeRepository.save(StoreType.builder()
                     .name(name.toUpperCase())
                     .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .updateDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(tokenUser.toUpperCase())
+                    .registrationDate(OffsetDateTime.now())
+                    .updateDate(OffsetDateTime.now())
+                    .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_STORE_TYPE","TIPO DE TIENDA "+newStoreType.getName()+" CREADO.",newStoreType.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -105,9 +106,9 @@ public class StoreTypeImpl implements IStoreType {
                 StoreType newStoreType = storeTypeRepository.save(StoreType.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(tokenUser.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_STORE_TYPE","TIPO DE TIENDA "+newStoreType.getName()+" CREADO.",newStoreType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -143,8 +144,9 @@ public class StoreTypeImpl implements IStoreType {
             }
             try {
                 storeType.setStatus(false);
-                storeType.setUpdateDate(new Date(System.currentTimeMillis()));
-                storeType.setTokenUser(user.getUsername());
+                storeType.setUpdateDate(OffsetDateTime.now());
+                storeType.setUser(user);
+                storeType.setUserId(user.getId());
                 iAudit.save("DELETE_STORE_TYPE","TIPO DE TIENDA "+storeType.getName()+" DESACTIVADO.",storeType.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.ErrorStoreType)
@@ -177,8 +179,9 @@ public class StoreTypeImpl implements IStoreType {
             }
             try {
                 storeType.setStatus(true);
-                storeType.setUpdateDate(new Date(System.currentTimeMillis()));
-                storeType.setTokenUser(user.getUsername());
+                storeType.setUpdateDate(OffsetDateTime.now());
+                storeType.setUser(user);
+                storeType.setUserId(user.getId());
                 iAudit.save("ACTIVATE_STORE_TYPE","TIPO DE TIENDA "+storeType.getName()+" ACTIVADO.",storeType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.ErrorStoreType)

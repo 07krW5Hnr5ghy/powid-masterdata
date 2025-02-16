@@ -10,7 +10,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -21,9 +22,9 @@ import java.util.Date;
 public class Client {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "client_id")
-        private Long id;
+        private UUID id;
 
         @Column(name = "name", nullable = false)
         private String name;
@@ -53,15 +54,15 @@ public class Client {
         private Boolean status;
 
         @Column(name = "district_id", nullable = false)
-        private Long districtId;
+        private UUID districtId;
 
         @Column(name = "registration_date")
         @CreationTimestamp
-        private Date registrationDate;
+        private OffsetDateTime registrationDate;
 
         @Column(name = "update_date")
         @CreationTimestamp
-        private Date updateDate;
+        private OffsetDateTime updateDate;
 
         @ManyToOne
         @JoinColumn(name = "district_id", columnDefinition = "districtId", insertable = false, updatable = false)

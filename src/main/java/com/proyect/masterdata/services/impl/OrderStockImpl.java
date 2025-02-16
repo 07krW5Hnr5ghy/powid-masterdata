@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -37,7 +38,7 @@ public class OrderStockImpl implements IOrderStock {
     private final OrderStateRepository orderStateRepository;
     private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(Long orderId, String warehouseName, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(UUID orderId, String warehouseName, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
         Warehouse warehouse;
@@ -101,11 +102,12 @@ public class OrderStockImpl implements IOrderStock {
                     .status(true)
                     .warehouse(warehouse)
                     .warehouseId(warehouse.getId())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .updateDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
+                    .updateDate(OffsetDateTime.now())
                     .client(user.getClient())
                     .clientId(user.getClientId())
-                    .tokenUser(user.getUsername())
+                    .user(user)
+                            .userId(user.getId())
                     .build());
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
                 iOrderStockItem.save(newOrderStock.getOrderId(),requestOrderStockItem,user.getUsername());
@@ -126,7 +128,7 @@ public class OrderStockImpl implements IOrderStock {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(Long orderId, String warehouseName, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(UUID orderId, String warehouseName, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Warehouse warehouse;
@@ -190,11 +192,12 @@ public class OrderStockImpl implements IOrderStock {
                         .status(true)
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
                     iOrderStockItem.save(newOrderStock.getOrderId(),requestOrderStockItem,user.getUsername());
@@ -218,7 +221,7 @@ public class OrderStockImpl implements IOrderStock {
     @Override
     public CompletableFuture<Page<OrderStockDTO>> list(
             String user,
-            Long orderId,
+            UUID orderId,
             List<String> warehouses,
             String sort,
             String sortColumn,
@@ -226,8 +229,8 @@ public class OrderStockImpl implements IOrderStock {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStock> pageOrderStock;
-            List<Long> warehouseIds;
-            Long clientId;
+            List<UUID> warehouseIds;
+            UUID clientId;
 
             if(warehouses != null && !warehouses.isEmpty()){
                 warehouseIds = warehouseRepository.findByNameIn(
@@ -272,7 +275,7 @@ public class OrderStockImpl implements IOrderStock {
     public CompletableFuture<List<OrderStockDTO>> listOrderStock(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<OrderStock> orderStocks;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 orderStocks = orderStockRepository.findAllByClientId(clientId);
@@ -298,7 +301,7 @@ public class OrderStockImpl implements IOrderStock {
     public CompletableFuture<List<OrderStockDTO>> listOrderStockFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<OrderStock> orderStocks;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
                 orderStocks = orderStockRepository.findAllByClientId(clientId);
@@ -324,7 +327,7 @@ public class OrderStockImpl implements IOrderStock {
     public CompletableFuture<List<OrderStockDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<OrderStock> orderStocks;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 orderStocks = orderStockRepository.findAllByClientId(clientId);
@@ -347,10 +350,10 @@ public class OrderStockImpl implements IOrderStock {
     }
 
     @Override
-    public CompletableFuture<OrderStockDTO> listOrderStock(Long id,String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<OrderStockDTO> listOrderStock(UUID id,String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             OrderStock orderStock;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 orderStock = orderStockRepository.findByOrderIdAndClientId(id,clientId);

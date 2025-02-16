@@ -14,8 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -28,7 +30,7 @@ public class OrderReturnItemController {
     @GetMapping()
     private ResponseEntity<List<OrderReturnItemDTO>> list(
             @RequestParam("user") String user,
-            @RequestParam(value = "orderId",required = false) Long orderId
+            @RequestParam(value = "orderId",required = false) UUID orderId
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<OrderReturnItemDTO>> result = iOrderReturnItem.list(user,orderId);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
@@ -36,7 +38,7 @@ public class OrderReturnItemController {
     @PostMapping()
     private ResponseEntity<ResponseSuccess> save(
             @RequestParam("tokenUser") String tokenUser,
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestBody()RequestOrderReturnItem requestOrderReturnItem
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iOrderReturnItem.save(orderId,requestOrderReturnItem,tokenUser);
@@ -45,7 +47,7 @@ public class OrderReturnItemController {
     @DeleteMapping()
     private ResponseEntity<ResponseDelete> delete(
             @RequestParam("tokenUser") String tokenUser,
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("supplierProduct") String supplierProductSerial
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseDelete> result = iOrderReturnItem.delete(orderId,supplierProductSerial,tokenUser);
@@ -54,7 +56,7 @@ public class OrderReturnItemController {
     @PutMapping()
     private ResponseEntity<ResponseSuccess> update(
             @RequestParam("tokenUser") String tokenUser,
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("supplierProduct") String supplierProductSerial,
             @RequestParam("quantity") Integer quantity
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -64,7 +66,7 @@ public class OrderReturnItemController {
     @PostMapping("activate")
     private ResponseEntity<ResponseSuccess> activate(
             @RequestParam("tokenUser") String tokenUser,
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("supplierProduct") String supplierProductSerial
             ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iOrderReturnItem.activate(orderId,supplierProductSerial,tokenUser);
@@ -73,15 +75,15 @@ public class OrderReturnItemController {
     @GetMapping("pagination")
     private ResponseEntity<Page<OrderReturnItemDTO>> listPagination(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "orderIds",required = false) List<Long> orderIds,
+            @RequestParam(value = "orderIds",required = false) List<UUID> orderIds,
             @RequestParam(value = "products",required = false) List<String> products,
             @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "returnTypes",required = false) List<String> returnTypes,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
@@ -108,15 +110,15 @@ public class OrderReturnItemController {
     @GetMapping("false")
     private ResponseEntity<Page<OrderReturnItemDTO>> listFalse(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "orderIds",required = false) List<Long> orderIds,
+            @RequestParam(value = "orderIds",required = false) List<UUID> orderIds,
             @RequestParam(value = "products",required = false) List<String> products,
             @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "returnTypes",required = false) List<String> returnTypes,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,

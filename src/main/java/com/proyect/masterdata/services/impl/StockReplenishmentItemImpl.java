@@ -17,9 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+import java.util.UUID;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -43,14 +44,15 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                             .stockReplenishmentId(stockReplenishment.getId())
                             .ordering(orderItem.getOrdering())
                             .orderId(orderItem.getOrderId())
-                            .tokenUser(user.getUsername())
+                            .user(user)
+                            .userId(user.getId())
                             .product(orderItem.getProduct())
                             .productId(orderItem.getProductId())
                             .quantity(requestStockReplenishmentItem.getQuantity())
                             .client(user.getClient())
                             .clientId(user.getClientId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                             .status(true)
                     .build());
             iAudit.save("ADD_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+newStockReplenishmentItem.getProduct() + " EN PEDIDO "+newStockReplenishmentItem.getOrderId() + " CREADO EN RESTOCKAJE.",newStockReplenishmentItem.getOrderId().toString(),user.getUsername());
@@ -70,14 +72,15 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                         .stockReplenishmentId(stockReplenishment.getId())
                         .ordering(orderItem.getOrdering())
                         .orderId(orderItem.getOrderId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                                .userId(user.getId())
                         .product(orderItem.getProduct())
                         .productId(orderItem.getProductId())
                         .quantity(requestStockReplenishmentItem.getQuantity())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .status(true)
                         .build());
                 iAudit.save("ADD_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+newStockReplenishmentItem.getProduct() + " EN PEDIDO "+newStockReplenishmentItem.getOrderId() + " CREADO EN RESTOCKAJE.",newStockReplenishmentItem.getOrderId().toString(),user.getUsername());
@@ -90,7 +93,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> add(Long orderId, RequestStockReplenishmentItem requestStockReplenishmentItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> add(UUID orderId, RequestStockReplenishmentItem requestStockReplenishmentItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -134,7 +137,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                                 .orderId(orderItem.getOrderId())
                                 .stockReplenishmentId(stockReplenishment.getId())
                                 .stockReplenishment(stockReplenishment)
-                                .registrationDate(new Date(System.currentTimeMillis()))
+                                .registrationDate(OffsetDateTime.now())
                                 .client(user.getClient())
                                 .clientId(user.getClientId())
                                 .product(product)
@@ -153,7 +156,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(Long orderId, String productSku, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID orderId, String productSku, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -179,8 +182,9 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
             }
             try {
                 stockReplenishmentItem.setStatus(false);
-                stockReplenishmentItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                stockReplenishmentItem.setTokenUser(user.getUsername());
+                stockReplenishmentItem.setUpdateDate(OffsetDateTime.now());
+                stockReplenishmentItem.setUser(user);
+                stockReplenishmentItem.setUserId(user.getId());
                 stockReplenishmentItemRepository.save(stockReplenishmentItem);
                 iAudit.save("DELETE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+stockReplenishmentItem.getProduct().getSku()+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" DESACTIVADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
@@ -195,7 +199,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> update(Long orderId, String productSku, Integer quantity, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> update(UUID orderId, String productSku, Integer quantity, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -231,8 +235,9 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
             }
             try {
                 stockReplenishmentItem.setQuantity(quantity);
-                stockReplenishmentItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                stockReplenishmentItem.setTokenUser(user.getUsername());
+                stockReplenishmentItem.setUpdateDate(OffsetDateTime.now());
+                stockReplenishmentItem.setUser(user);
+                stockReplenishmentItem.setUserId(user.getId());
                 stockReplenishmentItemRepository.save(stockReplenishmentItem);
                 iAudit.save("UPDATE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+stockReplenishmentItem.getProduct().getSku()+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" ACTUALIZADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -247,7 +252,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(Long orderId, String productSku, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(UUID orderId, String productSku, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -272,8 +277,9 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
             }
             try {
                 stockReplenishmentItem.setStatus(true);
-                stockReplenishmentItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                stockReplenishmentItem.setTokenUser(user.getUsername());
+                stockReplenishmentItem.setUpdateDate(OffsetDateTime.now());
+                stockReplenishmentItem.setUser(user);
+                stockReplenishmentItem.setUserId(user.getId());
                 stockReplenishmentItemRepository.save(stockReplenishmentItem);
                 iAudit.save("ACTIVATE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+stockReplenishmentItem.getProduct().getSku()+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" ACTIVADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -290,7 +296,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     @Override
     public CompletableFuture<Page<StockReplenishmentItemDTO>> list(
             String user,
-            List<Long> orders,
+            List<UUID> orders,
             List<String> productSkus,
             String sort,
             String sortColumn,
@@ -298,9 +304,9 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
             Page<StockReplenishmentItem> pageStockReplenishmentItem;
-            Long clientId;
-            List<Long> orderIds;
-            List<Long> productIds;
+            UUID clientId;
+            List<UUID> orderIds;
+            List<UUID> productIds;
 
             if(orders != null && !orders.isEmpty()){
                 orderIds = orders;
@@ -352,7 +358,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     public CompletableFuture<List<StockReplenishmentItemDTO>> listStockReplenishmentItem(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockReplenishmentItem> stockReplenishmentItems;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stockReplenishmentItems = stockReplenishmentItemRepository.findAllByClientIdAndStatusTrue(clientId);
@@ -377,7 +383,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     public CompletableFuture<List<StockReplenishmentItemDTO>> listStockReplenishmentItemFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockReplenishmentItem> stockReplenishmentItems;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stockReplenishmentItems = stockReplenishmentItemRepository.findAllByClientIdAndStatusFalse(clientId);

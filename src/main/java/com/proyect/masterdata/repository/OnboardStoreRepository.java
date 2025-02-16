@@ -5,7 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.proyect.masterdata.domain.OnboardStore;
 
+import java.util.UUID;
+
 @Repository
-public interface OnboardStoreRepository extends JpaRepository<OnboardStore, Long> {
+public interface OnboardStoreRepository extends JpaRepository<OnboardStore, UUID> {
 
 }

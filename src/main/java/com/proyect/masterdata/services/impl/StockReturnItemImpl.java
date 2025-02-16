@@ -15,10 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -39,7 +37,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
         try{
             iAudit.save("ADD_STOCK_RETURN_ITEM","PRODUCTO DE INVENTARIO "+requestStockReturnItem.getSupplierProduct().toUpperCase()+" AGREGADO A DEVOLUCION DE STOCK "+stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
             return stockReturnItemRepository.save(StockReturnItem.builder()
-                            .tokenUser(user.getUsername())
+                            .user(user).userId(user.getId())
                             .quantity(requestStockReturnItem.getQuantity())
                             .supplierProduct(supplierProduct)
                             .supplierProductId(supplierProduct.getId())
@@ -48,7 +46,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                             .stockReturn(stockReturn)
                             .stockReturnId(stockReturn.getId())
                             .observations(requestStockReturnItem.getObservations().toUpperCase())
-                            .registrationDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
                             .status(true)
                     .build());
         }catch (RuntimeException e){
@@ -63,7 +61,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
             try{
                 iAudit.save("ADD_STOCK_RETURN_ITEM","PRODUCTO DE INVENTARIO "+requestStockReturnItem.getSupplierProduct().toUpperCase()+" AGREGADO A DEVOLUCION DE STOCK "+stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
                 return stockReturnItemRepository.save(StockReturnItem.builder()
-                        .tokenUser(user.getUsername())
+                        .user(user).userId(user.getId())
                         .quantity(requestStockReturnItem.getQuantity())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
@@ -72,7 +70,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                         .stockReturn(stockReturn)
                         .stockReturnId(stockReturn.getId())
                         .observations(requestStockReturnItem.getObservations().toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
                         .build());
             }catch (RuntimeException e){
@@ -98,8 +96,8 @@ public class StockReturnItemImpl implements IStockReturnItem {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<StockReturnItem> pageStockReturn;
-            Long clientId;
-            List<Long> supplierIds;
+            UUID clientId;
+            List<UUID> supplierIds;
 
             if(suppliers != null && !suppliers.isEmpty()){
                 supplierIds = supplierRepository.findByRucIn(
@@ -151,10 +149,10 @@ public class StockReturnItemImpl implements IStockReturnItem {
     }
 
     @Override
-    public CompletableFuture<List<StockReturnItemDTO>> listStockReturnItem(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<StockReturnItemDTO>> listStockReturnItem(String user,UUID id) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockReturnItem> stockReturnItems;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(id != null){
@@ -186,10 +184,10 @@ public class StockReturnItemImpl implements IStockReturnItem {
     }
 
     @Override
-    public CompletableFuture<List<StockReturnItemDTO>> listStockReturnItemFalse(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<StockReturnItemDTO>> listStockReturnItemFalse(String user,UUID id) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockReturnItem> stockReturnItems;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(id != null){

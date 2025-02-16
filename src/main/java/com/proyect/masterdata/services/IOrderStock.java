@@ -9,14 +9,15 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IOrderStock {
-    ResponseSuccess save(Long orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> saveAsync(Long orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    ResponseSuccess save(UUID orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(UUID orderId, String warehouse, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<Page<OrderStockDTO>> list(
             String user,
-            Long orderId,
+            UUID orderId,
             List<String> warehouses,
             String sort,
             String sortColumn,
@@ -25,6 +26,6 @@ public interface IOrderStock {
     CompletableFuture<List<OrderStockDTO>> listOrderStock(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderStockDTO>> listOrderStockFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderStockDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<OrderStockDTO> listOrderStock(Long id,String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<OrderStockDTO> listOrderStock(UUID id,String user) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

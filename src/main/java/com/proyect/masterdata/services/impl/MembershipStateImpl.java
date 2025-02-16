@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -57,9 +58,10 @@ public class MembershipStateImpl implements IMembershipState {
                 MembershipState newMembershipState = membershipStateRepository.save(MembershipState.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                                .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                                .user(user)
+                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_MEMBERSHIP_STATE","ESTADO DE MEMBRESIA "+newMembershipState.getName()+" CREADO.",newMembershipState.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -74,7 +76,7 @@ public class MembershipStateImpl implements IMembershipState {
     }
 
     @Override
-    public CompletableFuture<Page<MembershipStateDTO>> listFalse(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<MembershipStateDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<MembershipState> membershipStatePage;
             try{
@@ -108,10 +110,10 @@ public class MembershipStateImpl implements IMembershipState {
     @Override
     public CompletableFuture<Page<MembershipStateDTO>> listPagination(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -166,8 +168,9 @@ public class MembershipStateImpl implements IMembershipState {
             }
             try {
                 membershipState.setStatus(false);
-                membershipState.setRegistrationDate(new Date(System.currentTimeMillis()));
-                membershipState.setTokenUser(user.getUsername());
+                membershipState.setRegistrationDate(OffsetDateTime.now());
+                membershipState.setUser(user);
+                membershipState.setUserId(user.getId());
                 membershipStateRepository.save(membershipState);
                 iAudit.save("DELETE_MEMBERSHIP_STATE","ESTADO DE MEMBRESIA "+membershipState.getName()+" DESACTIVADO.",membershipState.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -201,8 +204,9 @@ public class MembershipStateImpl implements IMembershipState {
             }
             try {
                 membershipState.setStatus(true);
-                membershipState.setRegistrationDate(new Date(System.currentTimeMillis()));
-                membershipState.setTokenUser(user.getUsername());
+                membershipState.setUpdateDate(OffsetDateTime.now());
+                membershipState.setUser(user);
+                membershipState.setUserId(user.getId());
                 membershipStateRepository.save(membershipState);
                 iAudit.save("ACTIVATE_MEMBERSHIP_STATE","ESTADO DE MEMBRESIA "+membershipState.getName()+" ACTIVADO.",membershipState.getName(),user.getUsername());
                 return ResponseSuccess.builder()

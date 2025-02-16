@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -72,9 +73,10 @@ public class CategoryProductImpl implements ICategoryProduct {
             CategoryProduct newCategoryProduct = categoryProductRepository.save(CategoryProduct.builder()
                     .description(description.toUpperCase())
                     .name(name.toUpperCase())
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
+                            .user(user)
+                            .userId(user.getId())
                             .sizeType(sizeType)
                             .sizeTypeId(sizeType.getId())
                     .build());
@@ -121,9 +123,10 @@ public class CategoryProductImpl implements ICategoryProduct {
                 CategoryProduct newCategoryProduct = categoryProductRepository.save(CategoryProduct.builder()
                         .description(description.toUpperCase())
                         .name(name.toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(tokenUser.toUpperCase())
+                        .user(user)
+                        .userId(user.getId())
                                 .sizeType(sizeType)
                                 .sizeTypeId(sizeType.getId())
                         .build());
@@ -140,7 +143,7 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
-    public CompletableFuture<Page<CategoryProductDTO>> list(String name, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
+    public CompletableFuture<Page<CategoryProductDTO>> list(String name, String user,OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
 
@@ -173,7 +176,7 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
-    public CompletableFuture<Page<CategoryProductDTO>> listFalse(String name, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<CategoryProductDTO>> listFalse(String name, String user, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
 
             Page<CategoryProduct> categoryProductPage;
@@ -248,8 +251,9 @@ public class CategoryProductImpl implements ICategoryProduct {
             }
             try {
                 categoryProduct.setStatus(false);
-                categoryProduct.setUpdateDate(new Date(System.currentTimeMillis()));
-                categoryProduct.setTokenUser(user.getUsername());
+                categoryProduct.setUpdateDate(OffsetDateTime.now());
+                categoryProduct.setUser(user);
+                categoryProduct.setUserId(user.getId());
                 categoryProductRepository.save(categoryProduct);
                 iAudit.save("DELETE_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+categoryProduct.getName()+" ELIMINADA.", categoryProduct.getName(), user.getUsername());
                 return ResponseDelete.builder()
@@ -283,8 +287,9 @@ public class CategoryProductImpl implements ICategoryProduct {
             }
             try {
                 categoryProduct.setStatus(true);
-                categoryProduct.setUpdateDate(new Date(System.currentTimeMillis()));
-                categoryProduct.setTokenUser(user.getUsername());
+                categoryProduct.setUpdateDate(OffsetDateTime.now());
+                categoryProduct.setUser(user);
+                categoryProduct.setUserId(user.getId());
                 iAudit.save("ACTIVATE_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+categoryProduct.getName()+" ACTIVADA.", categoryProduct.getName(), user.getUsername());
                 categoryProductRepository.save(categoryProduct);
                 return ResponseSuccess.builder()
@@ -317,8 +322,9 @@ public class CategoryProductImpl implements ICategoryProduct {
             }
             try {
                 categoryProduct.setDescription(description.toUpperCase());
-                categoryProduct.setUpdateDate(new Date(System.currentTimeMillis()));
-                categoryProduct.setTokenUser(user.getUsername());
+                categoryProduct.setUpdateDate(OffsetDateTime.now());
+                categoryProduct.setUser(user);
+                categoryProduct.setUserId(user.getId());
                 categoryProductRepository.save(categoryProduct);
                 iAudit.save("UPDATE_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+categoryProduct.getName()+" EDITADA.",categoryProduct.getName(),user.getUsername());
                 return ResponseSuccess.builder()

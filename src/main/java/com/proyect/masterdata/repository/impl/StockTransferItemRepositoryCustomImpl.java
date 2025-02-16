@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class StockTransferItemRepositoryCustomImpl implements StockTransferItemRepositoryCustom {
@@ -23,11 +24,11 @@ public class StockTransferItemRepositoryCustomImpl implements StockTransferItemR
     private EntityManager entityManager;
     @Override
     public Page<StockTransferItem> searchForStockTransferItem(
-            Long clientId,
-            List<Long> stockTransferIds,
-            List<Long> originWarehouseIds,
-            List<Long> destinationWarehouseIds,
-            List<Long> supplierProductIds,
+            UUID clientId,
+            List<UUID> stockTransferIds,
+            List<UUID> originWarehouseIds,
+            List<UUID> destinationWarehouseIds,
+            List<UUID> supplierProductIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -81,11 +82,11 @@ public class StockTransferItemRepositoryCustomImpl implements StockTransferItemR
     }
 
     private List<Predicate> predicate(
-            Long clientId,
-            List<Long> stockTransferIds,
-            List<Long> originWarehouseIds,
-            List<Long> destinationWarehouseIds,
-            List<Long> supplierProductIds,
+            UUID clientId,
+            List<UUID> stockTransferIds,
+            List<UUID> originWarehouseIds,
+            List<UUID> destinationWarehouseIds,
+            List<UUID> supplierProductIds,
             CriteriaBuilder criteriaBuilder,
             Root<StockTransferItem> itemRoot,
             Join<StockTransferItem, StockTransfer> stockTransferItemStockTransferJoin) {
@@ -155,11 +156,11 @@ public class StockTransferItemRepositoryCustomImpl implements StockTransferItemR
     }
 
     private Long getOrderCount(
-            Long clientId,
-            List<Long> stockTransferIds,
-            List<Long> originWarehouseIds,
-            List<Long> destinationWarehouseIds,
-            List<Long> supplierProductIds) {
+            UUID clientId,
+            List<UUID> stockTransferIds,
+            List<UUID> originWarehouseIds,
+            List<UUID> destinationWarehouseIds,
+            List<UUID> supplierProductIds) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

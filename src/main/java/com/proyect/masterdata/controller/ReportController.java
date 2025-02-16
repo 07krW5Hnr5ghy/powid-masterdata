@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -50,8 +51,8 @@ public class ReportController {
 
     @GetMapping("daily-sale")
     private ResponseEntity<byte[]> dailySale(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ByteArrayInputStream> result = iReport.dailySalesSummary(
@@ -69,8 +70,8 @@ public class ReportController {
 
     @GetMapping("seller")
     private ResponseEntity<byte[]> salesSeller(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ByteArrayInputStream> result = iReport.salesBySellerSummary(
@@ -88,8 +89,8 @@ public class ReportController {
 
     @GetMapping("brand")
     private ResponseEntity<byte[]> salesBrand(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ByteArrayInputStream> result = iReport.salesByBrandSummary(
@@ -107,8 +108,8 @@ public class ReportController {
 
     @GetMapping("brand/daily")
     private ResponseEntity<byte[]> salesBrandDaily(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ByteArrayInputStream> result = iReport.dailySalesByBrandSummary(
@@ -126,8 +127,8 @@ public class ReportController {
 
     @GetMapping("status")
     private ResponseEntity<byte[]> salesStatus(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ByteArrayInputStream> result = iReport.salesByStatusSummary(
@@ -145,8 +146,8 @@ public class ReportController {
 
     @GetMapping("category")
     private ResponseEntity<byte[]> salesCategory(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) Date registrationDateEnd,
+            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
+            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ByteArrayInputStream> result = iReport.salesByCategory(

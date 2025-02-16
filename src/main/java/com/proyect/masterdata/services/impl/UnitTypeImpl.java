@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -54,9 +55,9 @@ public class UnitTypeImpl implements IUnitType {
             UnitType newUnitType = unitTypeRepository.save(UnitType.builder()
                             .name(name.toUpperCase())
                             .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(user.getUsername())
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_UNIT_TYPE","TIPO DE UNIDAD "+newUnitType.getName()+" CREADO.",newUnitType.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -95,9 +96,9 @@ public class UnitTypeImpl implements IUnitType {
                 UnitType newUnitType = unitTypeRepository.save(UnitType.builder()
                         .name(name.toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_UNIT_TYPE","TIPO DE UNIDAD "+newUnitType.getName()+" CREADO.",newUnitType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -135,8 +136,9 @@ public class UnitTypeImpl implements IUnitType {
 
             try {
                 unitType.setStatus(false);
-                unitType.setUpdateDate(new Date(System.currentTimeMillis()));
-                unitType.setTokenUser(user.getUsername());
+                unitType.setUpdateDate(OffsetDateTime.now());
+                unitType.setUser(user);
+                unitType.setUserId(user.getId());
                 unitTypeRepository.save(unitType);
                 iAudit.save("DELETE_UNIT_TYPE","TIPO DE UNIDAD "+unitType.getName()+" DESACTIVADO.",unitType.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -174,8 +176,9 @@ public class UnitTypeImpl implements IUnitType {
 
             try {
                 unitType.setStatus(true);
-                unitType.setUpdateDate(new Date(System.currentTimeMillis()));
-                unitType.setTokenUser(user.getUsername());
+                unitType.setUpdateDate(OffsetDateTime.now());
+                unitType.setUser(user);
+                unitType.setUserId(user.getId());
                 unitTypeRepository.save(unitType);
                 iAudit.save("ACTIVATE_UNIT_TYPE","TIPO DE UNIDAD "+unitType.getName()+" ACTIVADA.",unitType.getName(),user.getUsername());
                 return ResponseSuccess.builder()

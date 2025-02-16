@@ -1,6 +1,5 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Brand;
 import com.proyect.masterdata.domain.CancelledOrder;
 import com.proyect.masterdata.repository.CancelledOrderRepositoryCustom;
 import io.micrometer.common.util.StringUtils;
@@ -14,16 +13,28 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class CancelledOrderRepositoryCustomImpl implements CancelledOrderRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<CancelledOrder> searchForCancelledOrder(Long orderId, Long clientId, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<CancelledOrder> searchForCancelledOrder(
+            UUID orderId, 
+            UUID clientId, 
+            OffsetDateTime registrationStartDate, 
+            OffsetDateTime registrationEndDate, 
+            OffsetDateTime updateStartDate, 
+            OffsetDateTime updateEndDate, 
+            String sort,
+            String sortColumn, 
+            Integer pageNumber, 
+            Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<CancelledOrder> criteriaQuery = criteriaBuilder.createQuery(CancelledOrder.class);
         Root<CancelledOrder> itemRoot = criteriaQuery.from(CancelledOrder.class);
@@ -59,12 +70,12 @@ public class CancelledOrderRepositoryCustomImpl implements CancelledOrderReposit
     }
 
     public List<Predicate> predicateConditions(
-            Long orderId,
-            Long clientId,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID orderId,
+            UUID clientId,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             CriteriaBuilder criteriaBuilder,
             Root<CancelledOrder> itemRoot) {
 
@@ -181,7 +192,7 @@ public class CancelledOrderRepositoryCustomImpl implements CancelledOrderReposit
         return cancelledOrderList;
     }
 
-    private long getOrderCount(Long orderId, Long clientId,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate) {
+    private long getOrderCount(UUID orderId, UUID clientId, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

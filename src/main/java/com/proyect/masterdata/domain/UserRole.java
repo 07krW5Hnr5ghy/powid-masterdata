@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -19,29 +20,26 @@ import java.util.Date;
 public class UserRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_role_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private UUID userId;
 
     @Column(name = "role_id", nullable = false)
-    private Long roleId;
-
-    @Column(name = "token_user", nullable = false)
-    private String tokenUser;
+    private UUID roleId;
 
     @Column(name = "status")
     private Boolean status;
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @ManyToOne
     @JoinColumn(name = "role_id", columnDefinition = "roleId", insertable = false, updatable = false)

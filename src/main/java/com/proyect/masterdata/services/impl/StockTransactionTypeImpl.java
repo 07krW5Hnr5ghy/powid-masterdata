@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -57,9 +58,9 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
         try {
             StockTransactionType newStockTransactionType = stockTransactionTypeRepository.save(StockTransactionType.builder()
                     .name(name.toUpperCase())
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .status(true)
-                    .tokenUser(tokenUser.toUpperCase())
+                    .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_STOCK_TRANSACTION_TYPE","TIPO DE TRANSACCION "+newStockTransactionType.getName()+" CREADO.",newStockTransactionType.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -97,9 +98,9 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
             try {
                 StockTransactionType newStockTransactionType = stockTransactionTypeRepository.save(StockTransactionType.builder()
                         .name(name.toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(tokenUser.toUpperCase())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_STOCK_TRANSACTION_TYPE","TIPO DE TRANSACCION "+newStockTransactionType.getName()+" CREADO.",newStockTransactionType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -137,9 +138,10 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
             }
 
             try {
-                stockTransactionType.setUpdateDate(new Date(System.currentTimeMillis()));
+                stockTransactionType.setUpdateDate(OffsetDateTime.now());
                 stockTransactionType.setStatus(false);
-                stockTransactionType.setTokenUser(user.getUsername());
+                stockTransactionType.setUser(user);
+                stockTransactionType.setUserId(user.getId());
                 stockTransactionTypeRepository.save(stockTransactionType);
                 iAudit.save("DELETE_STOCK_TRANSACTION_TYPE","TIPO DE TRANSACCION "+stockTransactionType.getName()+" DESACTIVADO.",stockTransactionType.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -176,9 +178,10 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
             }
 
             try {
-                stockTransactionType.setUpdateDate(new Date(System.currentTimeMillis()));
+                stockTransactionType.setUpdateDate(OffsetDateTime.now());
                 stockTransactionType.setStatus(true);
-                stockTransactionType.setTokenUser(user.getUsername());
+                stockTransactionType.setUser(user);
+                stockTransactionType.setUserId(user.getId());
                 stockTransactionTypeRepository.save(stockTransactionType);
                 iAudit.save("ACTIVATE_STOCK_TRANSACTION_TYPE","TIPO DE TRANSACCION "+stockTransactionType.getName()+" ACTIVADO.",stockTransactionType.getName(),user.getUsername());
                 return ResponseSuccess.builder()

@@ -5,12 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface SaleChannelRepository extends JpaRepository<SaleChannel, Long> {
+public interface SaleChannelRepository extends JpaRepository<SaleChannel, UUID> {
     List<SaleChannel> findAllByStatusTrue();
     List<SaleChannel> findAllByStatusFalse();
-    SaleChannel findByIdAndStatusTrue(Long id);
+    SaleChannel findByIdAndStatusTrue(UUID id);
     SaleChannel findByNameAndStatusTrue(String name);
     SaleChannel findByNameAndStatusFalse(String name);
     List<SaleChannel> findByNameIn(List<String> names);

@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -18,9 +19,9 @@ import java.util.Date;
 @Table(name = Constants.tableCustomer,schema = Constants.schemaOrder)
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "customer_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -41,24 +42,24 @@ public class Customer {
     private String dni;
 
     @Column(name = "customer_type_id")
-    private Long customerTypeId;
+    private UUID customerTypeId;
 
     @Column(name = "district_id")
-    private Long districtId;
+    private UUID districtId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @ManyToOne
     @JoinColumn(name = "customer_type_id",columnDefinition = "customerTypeId",insertable = false,updatable = false)
@@ -71,4 +72,8 @@ public class Customer {
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false,updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

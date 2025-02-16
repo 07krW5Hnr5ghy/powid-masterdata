@@ -1,5 +1,6 @@
 package com.proyect.masterdata.dto;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -20,6 +21,6 @@ public class WarehouseStockDTO {
     public String size;
     public String supplier;
     public Integer quantity;
-    public Date registrationDate;
-    public Date updateDate;
+    public OffsetDateTime registrationDate;
+    public OffsetDateTime updateDate;
 }

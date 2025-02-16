@@ -8,19 +8,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
-    List<OrderItem> findAllByOrderId(Long orderId);
-    List<OrderItem> findAllByOrderIdAndStatusTrue(Long orderId);
-    OrderItem findByIdAndOrderId(Long itemId, Long orderId);
-    OrderItem findByProductIdAndOrderId(Long productId,Long orderId);
-    OrderItem findByOrderIdAndProductId(Long orderId,Long productId);
-    List<OrderItem> findAllByClientIdAndStatusTrue(Long clientId);
-    List<OrderItem> findAllByClientIdAndOrderIdAndStatusTrue(Long clientId,Long orderId);
-    List<OrderItem> findAllByClientIdAndOrderIdAndStatusFalse(Long clientId,Long orderId);
+public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
+    List<OrderItem> findAllByOrderId(UUID orderId);
+    List<OrderItem> findAllByOrderIdAndStatusTrue(UUID orderId);
+    OrderItem findByIdAndOrderId(UUID itemId, UUID orderId);
+    OrderItem findByProductIdAndOrderId(UUID productId,UUID orderId);
+    OrderItem findByOrderIdAndProductId(UUID orderId,UUID productId);
+    List<OrderItem> findAllByClientIdAndStatusTrue(UUID clientId);
+    List<OrderItem> findAllByClientIdAndOrderIdAndStatusTrue(UUID clientId,UUID orderId);
+    List<OrderItem> findAllByClientIdAndOrderIdAndStatusFalse(UUID clientId,UUID orderId);
     @Query(value = "SELECT " +
             "o.order_id AS orderId, " +
             "o.registration_date AS registrationDate, " +
@@ -46,9 +48,9 @@ public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
             "WHERE o.registration_date BETWEEN :startDate AND :endDate " +
             "AND o.client_id = :clientId", nativeQuery = true)
     List<Object[]> findOrderItemsByDateRangeAndClientId(
-            @Param("startDate") Date startDate,
-            @Param("endDate") Date endDate,
-            @Param("clientId") Long clientId
+            @Param("startDate") OffsetDateTime startDate,
+            @Param("endDate") OffsetDateTime endDate,
+            @Param("clientId") UUID clientId
     );
     @Query(value = "SELECT " +
             "o.order_id AS orderId, " +
@@ -78,9 +80,9 @@ public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
             "WHERE o.registration_date BETWEEN :startDate AND :endDate " +
             "AND o.client_id = :clientId", nativeQuery = true)
     List<Object[]> findOrderItemsWithBrandByDateRangeAndClientId(
-            @Param("startDate") Date startDate,
-            @Param("endDate") Date endDate,
-            @Param("clientId") Long clientId
+            @Param("startDate") OffsetDateTime startDate,
+            @Param("endDate") OffsetDateTime endDate,
+            @Param("clientId") UUID clientId
     );
 
     @Query(value = "SELECT " +
@@ -121,8 +123,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
             "WHERE o.registration_date BETWEEN :startDate AND :endDate " +
             "AND o.client_id = :clientId", nativeQuery = true)
     List<Object[]> findOrderItemsWithSellerByDateRangeAndClientId(
-            @Param("startDate") Date startDate,
-            @Param("endDate") Date endDate,
-            @Param("clientId") Long clientId
+            @Param("startDate") OffsetDateTime startDate,
+            @Param("endDate") OffsetDateTime endDate,
+            @Param("clientId") UUID clientId
     );
 }

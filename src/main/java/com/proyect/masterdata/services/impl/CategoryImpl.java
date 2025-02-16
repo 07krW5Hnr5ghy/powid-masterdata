@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,12 +45,12 @@ public class CategoryImpl implements ICategory {
     public ResponseSuccess save(String name, String description, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
 
-        User datauser;
+        User user;
         Category categoryName;
         Category categoryDescription;
 
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             categoryName = categoryRepository.findByName(name.toUpperCase());
             categoryDescription = categoryRepository.findByDescription(description.toUpperCase());
         } catch (RuntimeException e) {
@@ -57,7 +58,7 @@ public class CategoryImpl implements ICategory {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser == null) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if (categoryName != null) {
@@ -72,8 +73,11 @@ public class CategoryImpl implements ICategory {
                     .name(name.toUpperCase())
                     .description(description.toUpperCase())
                     .status(true)
-                    .tokenUser(datauser.getUsername().toUpperCase()).build());
-            iAudit.save("ADD_CATEGORY","CATEGORIA "+category.getName()+" CREADA.",category.getName(),datauser.getUsername());
+                    .user(user)
+                    .userId(user.getId())
+                    .build()
+            );
+            iAudit.save("ADD_CATEGORY","CATEGORIA "+category.getName()+" CREADA.",category.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -87,12 +91,12 @@ public class CategoryImpl implements ICategory {
     @Override
     public CompletableFuture<ResponseSuccess> saveAsync(String name, String description, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             Category categoryName;
             Category categoryDescription;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 categoryName = categoryRepository.findByName(name.toUpperCase());
                 categoryDescription = categoryRepository.findByDescription(description.toUpperCase());
             } catch (RuntimeException e) {
@@ -100,7 +104,7 @@ public class CategoryImpl implements ICategory {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (categoryName != null) {
@@ -115,8 +119,10 @@ public class CategoryImpl implements ICategory {
                         .name(name.toUpperCase())
                         .description(description.toUpperCase())
                         .status(true)
-                        .tokenUser(datauser.getUsername().toUpperCase()).build());
-                iAudit.save("ADD_CATEGORY","CATEGORIA "+category.getName()+" CREADA.",category.getName(),datauser.getUsername());
+                        .user(user)
+                                .userId(user.getId())
+                        .build());
+                iAudit.save("ADD_CATEGORY","CATEGORIA "+category.getName()+" CREADA.",category.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -133,18 +139,18 @@ public class CategoryImpl implements ICategory {
             throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
 
-            User datauser;
+            User user;
             Category category;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 category = categoryRepository.findByNameAndStatusTrue(requestCategory.getName().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (category == null) {
@@ -153,9 +159,10 @@ public class CategoryImpl implements ICategory {
 
             try {
                 category.setDescription(requestCategory.getDescription().toUpperCase());
-                category.setTokenUser(datauser.getUsername().toUpperCase());
-                category.setUpdateDate(new Date(System.currentTimeMillis()));
-                iAudit.save("UPDATE_CATEGORY","CATEGORIA "+category.getName()+" EDITADA.", category.getName(), datauser.getUsername());
+                category.setUser(user);
+                category.setUserId(user.getId());
+                category.setUpdateDate(OffsetDateTime.now());
+                iAudit.save("UPDATE_CATEGORY","CATEGORIA "+category.getName()+" EDITADA.", category.getName(), user.getUsername());
                 return categoryMapper.categoryToCategoryDTO(categoryRepository.save(category));
             } catch (RuntimeException e) {
                 log.error(e);
@@ -168,18 +175,18 @@ public class CategoryImpl implements ICategory {
     public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(() -> {
 
-            User datauser;
+            User user;
             Category category;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 category = categoryRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
 
@@ -189,9 +196,9 @@ public class CategoryImpl implements ICategory {
 
             try {
                 category.setStatus(false);
-                category.setRegistrationDate(new Date(System.currentTimeMillis()));
+                category.setRegistrationDate(OffsetDateTime.now());
                 categoryRepository.save(category);
-                iAudit.save("DELETE_CATEGORY","CATEGORIA "+category.getName()+" DESACTIVADA.", category.getName(), datauser.getUsername());
+                iAudit.save("DELETE_CATEGORY","CATEGORIA "+category.getName()+" DESACTIVADA.", category.getName(), user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -221,8 +228,8 @@ public class CategoryImpl implements ICategory {
         });
     }
     @Override
-    public CompletableFuture<Page<CategoryDTO>> list(String name, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<CategoryDTO>> list(String name, String user, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber,
+                                                     Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Category> categoryPage;
             try {
@@ -240,7 +247,7 @@ public class CategoryImpl implements ICategory {
         });
     }
     @Override
-    public CompletableFuture<Page<CategoryDTO>> listStatusFalse(String name, String user,Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn,
+    public CompletableFuture<Page<CategoryDTO>> listStatusFalse(String name, String user,OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn,
             Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Category> categoryPage;
@@ -283,8 +290,9 @@ public class CategoryImpl implements ICategory {
 
             try {
                 category.setStatus(false);
-                category.setUpdateDate(new Date(System.currentTimeMillis()));
-                category.setTokenUser(user.getUsername());
+                category.setUpdateDate(OffsetDateTime.now());
+                category.setUser(user);
+                category.setUserId(user.getId());
                 iAudit.save("ACTIVATE_CATEGORY","CATEGORIA "+category.getName()+" ACTIVADA.", category.getName(), user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)

@@ -5,12 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface StockReplenishmentRepositoryCustom {
     Page<StockReplenishment> searchForStockReplenishment(
-            Long clientId,
-            List<Long> orderIds,
+            UUID clientId,
+            List<UUID> orderIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

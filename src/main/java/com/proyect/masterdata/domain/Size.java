@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -19,9 +20,9 @@ import java.util.Date;
 public class Size {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "size_id")
-        private Long id;
+        private UUID id;
 
         @Column(name = "name", nullable = false)
         private String name;
@@ -31,19 +32,23 @@ public class Size {
 
         @Column(name = "registration_date")
         @CreationTimestamp
-        private Date registrationDate;
+        private OffsetDateTime registrationDate;
 
         @Column(name = "update_date")
         @CreationTimestamp
-        private Date updateDate;
+        private OffsetDateTime updateDate;
 
         @Column(name = "size_type_id", nullable = false)
-        private Long sizeTypeId;
+        private UUID sizeTypeId;
 
         @ManyToOne
         @JoinColumn(name = "size_type_id", columnDefinition = "sizeTypeId", insertable = false, updatable = false)
         private SizeType sizeType;
 
-        @Column(name = "token_user", nullable = false)
-        private String tokenUser;
+        @Column(name = "user_id")
+        private UUID userId;
+
+        @ManyToOne()
+        @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+        private User user;
 }

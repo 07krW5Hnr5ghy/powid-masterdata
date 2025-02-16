@@ -16,6 +16,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -25,9 +27,9 @@ import lombok.NoArgsConstructor;
 public class Onboard {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "onboard_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "ecommerce", nullable = false)
     private Boolean ecommerce;
@@ -48,13 +50,13 @@ public class Onboard {
     private Boolean demo;
 
     @Column(name = "client_id", nullable = false)
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "entry_channel_id", nullable = false)
-    private Long entryChannelId;
+    private UUID entryChannelId;
 
     @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    private UUID categoryId;
 
     @OneToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)

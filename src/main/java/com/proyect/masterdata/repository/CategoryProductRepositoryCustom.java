@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.proyect.masterdata.domain.CategoryProduct;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Repository
@@ -12,10 +13,10 @@ public interface CategoryProductRepositoryCustom {
     public Page<CategoryProduct> searchForCategoryProduct(
             String name,
             String user,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,

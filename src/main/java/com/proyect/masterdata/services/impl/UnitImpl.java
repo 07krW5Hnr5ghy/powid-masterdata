@@ -1,8 +1,10 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.UnitType;
@@ -70,9 +72,9 @@ public class UnitImpl implements IUnit {
                     .unitType(unitType)
                     .unitTypeId(unitType.getId())
                     .status(true)
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .updateDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(tokenUser.toUpperCase())
+                    .registrationDate(OffsetDateTime.now())
+                    .updateDate(OffsetDateTime.now())
+                    .user(user).userId(user.getId())
                     .build());
             iAudit.save("ADD_UNIT","UNIDAD "+newUnit.getName()+" CREADA.",newUnit.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -122,9 +124,9 @@ public class UnitImpl implements IUnit {
                         .unitType(unitType)
                         .unitTypeId(unitType.getId())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(tokenUser.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user).userId(user.getId())
                         .build());
                 iAudit.save("ADD_UNIT","UNIDAD "+newUnit.getName()+" CREADA.",newUnit.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -170,8 +172,9 @@ public class UnitImpl implements IUnit {
 
             try {
                 unit.setStatus(false);
-                unit.setUpdateDate(new Date(System.currentTimeMillis()));
-                unit.setTokenUser(user.getUsername());
+                unit.setUpdateDate(OffsetDateTime.now());
+                unit.setUser(user);
+                unit.setUserId(user.getId());
                 unitRepository.save(unit);
                 iAudit.save("DELETE_UNIT","UNIDAD "+unit.getName()+" DESACTIVADA.",unit.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -217,8 +220,9 @@ public class UnitImpl implements IUnit {
 
             try {
                 unit.setStatus(true);
-                unit.setUpdateDate(new Date(System.currentTimeMillis()));
-                unit.setTokenUser(user.getUsername());
+                unit.setUpdateDate(OffsetDateTime.now());
+                unit.setUser(user);
+                unit.setUserId(user.getId());
                 unitRepository.save(unit);
                 iAudit.save("ACTIVATE_UNIT","UNIDAD "+unit.getName()+" ACTIVADA.",unit.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -260,7 +264,7 @@ public class UnitImpl implements IUnit {
     public CompletableFuture<List<UnitDTO>> listUnitByType(String unitTypeName) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Unit> units;
-            Long unitTypeId;
+            UUID unitTypeId;
 
             try {
                 unitTypeId = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase()).getId();

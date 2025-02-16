@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -28,9 +29,9 @@ import lombok.NoArgsConstructor;
 public class Supplier {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "supplier_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "business_name")
     private String businessName;
@@ -49,26 +50,26 @@ public class Supplier {
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "supplier_type_id")
-    private Long supplierTypeId;
+    private UUID supplierTypeId;
 
     @Column(name = "district_id")
-    private Long districtId;
+    private UUID districtId;
 
     @Column(name = "country_id")
-    private Long countryId;
+    private UUID countryId;
 
     @Column(name = "status")
     private Boolean status;
@@ -88,5 +89,9 @@ public class Supplier {
     @ManyToOne()
     @JoinColumn(name = "country_id",columnDefinition = "countryId",insertable = false,updatable = false)
     private Country country;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

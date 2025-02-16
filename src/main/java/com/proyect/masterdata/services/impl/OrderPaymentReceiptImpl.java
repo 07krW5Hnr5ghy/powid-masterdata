@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -36,7 +37,7 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
     private final OrderPaymentReceiptRepository orderPaymentReceiptRepository;
     private final IAudit iAudit;
     @Override
-    public List<String> uploadReceipt(MultipartFile[] receipts, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public List<String> uploadReceipt(MultipartFile[] receipts, UUID orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         Ordering ordering;
         List<String> receiptUrlList = new ArrayList<>();
@@ -77,8 +78,9 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
                         .clientId(user.getClientId())
                         .ordering(ordering)
                         .orderId(ordering.getId())
-                        .registrationDate(currentDate)
-                        .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 receiptUrlList.add(url);
                 receiptNumber++;
@@ -93,7 +95,7 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
     }
 
     @Override
-    public CompletableFuture<List<String>> uploadReceiptAsync(List<File> fileList, Long orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<String>> uploadReceiptAsync(List<File> fileList, UUID orderId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -131,8 +133,9 @@ public class OrderPaymentReceiptImpl implements IOrderPaymentReceipt {
                             .clientId(user.getClientId())
                             .ordering(ordering)
                             .orderId(ordering.getId())
-                            .registrationDate(currentDate)
-                            .tokenUser(user.getUsername())
+                            .registrationDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
                             .build());
                     receiptUrlList.add(url);
                     receiptNumber++;

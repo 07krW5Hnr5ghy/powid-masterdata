@@ -12,5 +12,5 @@ import com.proyect.masterdata.dto.ClosingChannelDTO;
 public interface ClosingChannelMapper {
     ClosingChannelMapper INSTANCE = Mappers.getMapper(ClosingChannelMapper.class);
 
-    List<ClosingChannelDTO> listClosingChannelToListClosindChannelDTO(List<ClosingChannel> closingChannelList);
+    List<ClosingChannelDTO> listClosingChannelToListClosingChannelDTO(List<ClosingChannel> closingChannelList);
 }

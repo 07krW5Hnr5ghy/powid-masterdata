@@ -21,9 +21,8 @@ public interface RoleMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "registrationDate", ignore = true)
-    @Mapping(target = "name", source = "requestUserRoleSave.name")
-    @Mapping(target = "tokenUser", source = "requestUserRoleSave.tokenUser")
-    Role nameToRole(RequestRoleSave requestUserRoleSave);
+    @Mapping(target = "name", source = "requestRoleSave.name")
+    Role nameToRole(RequestRoleSave requestRoleSave);
 
     List<Role> listNameToListRole(List<RequestRoleSave> requestUserRoleSaveList);
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -198,8 +199,8 @@ public class ExcelImpl implements IExcel {
                 Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
                         .serial(requestPurchaseExcel.getSerial().toUpperCase())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .purchaseDocument(purchaseDocument)
                         .purchaseDocumentId(purchaseDocument.getId())
                         .supplier(supplier)
@@ -210,7 +211,8 @@ public class ExcelImpl implements IExcel {
                         .purchaseTypeId(purchaseType.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 int j = 0;
                 for(Row row: sheet){
@@ -253,7 +255,8 @@ public class ExcelImpl implements IExcel {
                         purchaseItem.setClient(user.getClient());
                         purchaseItem.setClientId(user.getClientId());
                         purchaseItem.setStatus(true);
-                        purchaseItem.setTokenUser(user.getUsername());
+                        purchaseItem.setUser(user);
+                        purchaseItem.setUserId(user.getId());
                         stockTransactionItemList.add(requestStockTransactionItem);
                         purchaseItemRepository.save(purchaseItem);
                         iWarehouseStock.in(warehouse, purchaseItem.getSupplierProduct(), purchaseItem.getQuantity(),user);
@@ -379,15 +382,16 @@ public class ExcelImpl implements IExcel {
                 }
                 StockTransfer newStockTransfer = stockTransferRepository.save(StockTransfer.builder()
                         .serial(requestStockTransferExcel.getSerial().toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .originWarehouse(originWarehouse)
                         .originWarehouseId(originWarehouse.getId())
                         .destinationWarehouse(destinationWarehouse)
                         .destinationWarehouseId(destinationWarehouse.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
 
                 List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
@@ -423,8 +427,9 @@ public class ExcelImpl implements IExcel {
                         stockTransferItem.setStockTransferId(newStockTransfer.getId());
                         stockTransferItem.setClient(user.getClient());
                         stockTransferItem.setClientId(user.getClientId());
-                        stockTransferItem.setRegistrationDate(new Date(System.currentTimeMillis()));
-                        stockTransferItem.setTokenUser(user.getUsername());
+                        stockTransferItem.setRegistrationDate(OffsetDateTime.now());
+                        stockTransferItem.setUser(user);
+                        stockTransferItem.setUserId(user.getId());
                         requestStockTransactionItemList.add(requestStockTransactionItem);
                         stockTransferItemRepository.save(stockTransferItem);
                         iWarehouseStock.out(newStockTransfer.getOriginWarehouse(),stockTransferItem.getSupplierProduct(),stockTransferItem.getQuantity(),user);
@@ -559,15 +564,16 @@ public class ExcelImpl implements IExcel {
                 }
                 StockReturn newStockReturn = stockReturnRepository.save(StockReturn.builder()
                         .serial(requestStockReturnExcel.getSerial().toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                                 .supplier(supplier)
                                 .supplierId(supplier.getId())
                                 .warehouse(warehouse)
                                 .warehouseId(warehouse.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                        .userId(user.getId())
                         .status(true)
                         .build());
                 List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
@@ -613,8 +619,9 @@ public class ExcelImpl implements IExcel {
                         stockReturnItem.setStatus(true);
                         stockReturnItem.setClient(user.getClient());
                         stockReturnItem.setClientId(user.getClientId());
-                        stockReturnItem.setTokenUser(user.getUsername());
-                        stockReturnItem.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        stockReturnItem.setUser(user);
+                        stockReturnItem.setUserId(user.getId());
+                        stockReturnItem.setRegistrationDate(OffsetDateTime.now());
                         stockReturnItemRepository.save(stockReturnItem);
                         iWarehouseStock.out(warehouse,stockReturnItem.getSupplierProduct(),stockReturnItem.getQuantity(),user);
                         iGeneralStock.out(stockReturnItem.getSupplierProduct().getSerial(),stockReturnItem.getQuantity(),user.getUsername());
@@ -645,7 +652,7 @@ public class ExcelImpl implements IExcel {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> stockReplenishment(Long orderId, MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> stockReplenishment(UUID orderId, MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             StockReplenishment stockReplenishment;
@@ -760,12 +767,13 @@ public class ExcelImpl implements IExcel {
                 StockReplenishment newStockReplenishment = stockReplenishmentRepository.save(StockReplenishment.builder()
                         .ordering(ordering)
                         .orderId(ordering.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .status(true)
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 int j = 0;
                 for(Row row:sheet){
@@ -797,9 +805,10 @@ public class ExcelImpl implements IExcel {
                                     stockReplenishmentItem.getQuantity() != null)){
                         stockReplenishmentItem.setClient(user.getClient());
                         stockReplenishmentItem.setClientId(user.getClientId());
-                        stockReplenishmentItem.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        stockReplenishmentItem.setRegistrationDate(OffsetDateTime.now());
                         stockReplenishmentItem.setStatus(true);
-                        stockReplenishmentItem.setTokenUser(user.getUsername());
+                        stockReplenishmentItem.setUser(user);
+                        stockReplenishmentItem.setUserId(user.getId());
                         stockReplenishmentItem.setStockReplenishment(newStockReplenishment);
                         stockReplenishmentItem.setStockReplenishmentId(newStockReplenishment.getId());
                         stockReplenishmentItemRepository.save(stockReplenishmentItem);
@@ -824,7 +833,7 @@ public class ExcelImpl implements IExcel {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> orderStock(Long orderId,String warehouseName, MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> orderStock(UUID orderId,String warehouseName, MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Warehouse warehouse;
@@ -962,11 +971,12 @@ public class ExcelImpl implements IExcel {
                         .status(true)
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 int j = 0;
                 for(Row row :sheet){
@@ -1005,10 +1015,11 @@ public class ExcelImpl implements IExcel {
                         orderStockItem.setOrdering(ordering);
                         orderStockItem.setOrderId(ordering.getId());
                         orderStockItem.setStatus(true);
-                        orderStockItem.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        orderStockItem.setRegistrationDate(OffsetDateTime.now());
                         orderStockItem.setClient(user.getClient());
                         orderStockItem.setClientId(user.getClientId());
-                        orderStockItem.setTokenUser(user.getUsername());
+                        orderStockItem.setUser(user);
+                        orderStockItem.setUserId(user.getId());
                         orderStockItem.setOrderStock(orderStock);
                         orderStockItem.setOrderStockId(orderStock.getId());
                         orderStockItemRepository.save(orderStockItem);
@@ -1036,7 +1047,7 @@ public class ExcelImpl implements IExcel {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> orderReturn(Long orderId, MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> orderReturn(UUID orderId, MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderReturn orderReturn;
@@ -1173,7 +1184,8 @@ public class ExcelImpl implements IExcel {
                         .orderId(orderStock.getOrderId())
                         .orderStock(orderStock)
                         .orderStockId(orderStock.getId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                                .userId(user.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .status(true)
@@ -1217,12 +1229,13 @@ public class ExcelImpl implements IExcel {
                                     orderReturnItem.getOrderReturnType() != null
                     )){
                         orderReturnItem.setStatus(true);
-                        orderReturnItem.setRegistrationDate(new Date(System.currentTimeMillis()));
+                        orderReturnItem.setRegistrationDate(OffsetDateTime.now());
                         orderReturnItem.setClient(user.getClient());
                         orderReturnItem.setClientId(user.getClientId());
                         orderReturnItem.setOrderReturn(newOrderReturn);
                         orderReturnItem.setOrderReturnId(newOrderReturn.getId());
-                        orderReturnItem.setTokenUser(user.getUsername());
+                        orderReturnItem.setUser(user);
+                        orderReturnItem.setUserId(user.getId());
                         orderReturnItemRepository.save(orderReturnItem);
                         iGeneralStock.in(orderReturnItem.getSupplierProduct().getSerial(),orderReturnItem.getQuantity(),user.getUsername());
                         iWarehouseStock.in(orderStock.getWarehouse(),orderReturnItem.getSupplierProduct(),orderReturnItem.getQuantity(),user);
@@ -1405,14 +1418,16 @@ public class ExcelImpl implements IExcel {
                                     newProduct.getColor() != null
                             )){
                         newProduct.setStatus(true);
-                        newProduct.setRegistrationDate(new Date(System.currentTimeMillis()));
-                        newProduct.setUpdateDate(new Date(System.currentTimeMillis()));
-                        newProduct.setTokenUser(user.getUsername());
+                        newProduct.setRegistrationDate(OffsetDateTime.now());
+                        newProduct.setUpdateDate(OffsetDateTime.now());
+                        newProduct.setUser(user);
+                        newProduct.setUserId(user.getId());
                         newProduct.setClient(user.getClient());
                         newProduct.setClientId(user.getClientId());
-                        productPrice.setTokenUser(user.getUsername());
-                        productPrice.setRegistrationDate(new Date(System.currentTimeMillis()));
-                        productPrice.setUpdateDate(new Date(System.currentTimeMillis()));
+                        productPrice.setUser(user);
+                        newProduct.setUserId(user.getId());
+                        productPrice.setRegistrationDate(OffsetDateTime.now());
+                        productPrice.setUpdateDate(OffsetDateTime.now());
                         productPrice.setStatus(true);
                         products.add(newProduct);
                         productPrices.add(productPrice);
@@ -1543,9 +1558,10 @@ public class ExcelImpl implements IExcel {
                                     newSupplierProduct.getPurchasePrice() != null
                             )){
                         newSupplierProduct.setStatus(true);
-                        newSupplierProduct.setTokenUser(user.getUsername());
-                        newSupplierProduct.setRegistrationDate(new Date(System.currentTimeMillis()));
-                        newSupplierProduct.setUpdateDate(new Date(System.currentTimeMillis()));
+                        newSupplierProduct.setUser(user);
+                        newSupplierProduct.setUserId(user.getId());
+                        newSupplierProduct.setRegistrationDate(OffsetDateTime.now());
+                        newSupplierProduct.setUpdateDate(OffsetDateTime.now());
                         newSupplierProduct.setClient(user.getClient());
                         newSupplierProduct.setClientId(user.getClientId());
                         supplierProducts.add(newSupplierProduct);
@@ -1664,9 +1680,10 @@ public class ExcelImpl implements IExcel {
                                     newModel.getSku() != null
                     )){
                         newModel.setStatus(true);
-                        newModel.setRegistrationDate(new Date(System.currentTimeMillis()));
-                        newModel.setUpdateDate(new Date(System.currentTimeMillis()));
-                        newModel.setTokenUser(user.getUsername());
+                        newModel.setRegistrationDate(OffsetDateTime.now());
+                        newModel.setUpdateDate(OffsetDateTime.now());
+                        newModel.setUser(user);
+                        newModel.setUserId(user.getId());
                         newModel.setClient(user.getClient());
                         newModel.setClientId(user.getClientId());
                         models.add(newModel);

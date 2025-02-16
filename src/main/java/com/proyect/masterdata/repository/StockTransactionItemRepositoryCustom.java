@@ -6,15 +6,16 @@ import org.springframework.stereotype.Repository;
 import com.proyect.masterdata.domain.StockTransactionItem;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface StockTransactionItemRepositoryCustom {
     Page<StockTransactionItem> searchForStockTransactionItem(
-            Long clientId,
-            List<Long> stockTransactionId,
-            List<Long> supplierProductsIds,
-            List<Long> warehouseIds,
-            List<Long> stockTransactionTypeIds,
+            UUID clientId,
+            List<UUID> stockTransactionId,
+            List<UUID> supplierProductsIds,
+            List<UUID> warehouseIds,
+            List<UUID> stockTransactionTypeIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

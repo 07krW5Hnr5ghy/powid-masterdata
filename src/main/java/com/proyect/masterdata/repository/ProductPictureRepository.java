@@ -5,9 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface ProductPictureRepository extends JpaRepository<ProductPicture,Long> {
-    List<ProductPicture> findAllByProductId(Long orderId);
-    List<ProductPicture> findAlByClientIdAndProductId(Long clientId,Long productId);
+public interface ProductPictureRepository extends JpaRepository<ProductPicture, UUID> {
+    List<ProductPicture> findAllByProductId(UUID orderId);
+    List<ProductPicture> findAlByClientIdAndProductId(UUID clientId,UUID productId);
 }

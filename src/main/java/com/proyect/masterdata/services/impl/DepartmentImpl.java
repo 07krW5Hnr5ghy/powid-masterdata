@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,18 +35,18 @@ public class DepartmentImpl implements IDepartment {
     private final UserRepository userRepository;
     private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
-        User datauser;
+    public ResponseSuccess save(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        User user;
         Department department;
         try {
-            datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             department = departmentRepository.findByNameAndStatusTrue(name.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
 
-        if (datauser == null) {
+        if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
         }
         if (department != null) {
@@ -55,11 +56,10 @@ public class DepartmentImpl implements IDepartment {
         try {
             Department newDepartment = departmentRepository.save(Department.builder()
                     .name(name.toUpperCase())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                    .tokenUser(user.toUpperCase())
+                    .registrationDate(OffsetDateTime.now())
                     .status(true)
                     .build());
-            iAudit.save("ADD_DEPARTMENT","DEPARTAMENTO "+newDepartment.getName()+" CREADO.",newDepartment.getName(),datauser.getUsername());
+            iAudit.save("ADD_DEPARTMENT","DEPARTAMENTO "+newDepartment.getName()+" CREADO.",newDepartment.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -71,19 +71,19 @@ public class DepartmentImpl implements IDepartment {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             Department department;
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 department = departmentRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (department != null) {
@@ -93,11 +93,10 @@ public class DepartmentImpl implements IDepartment {
             try {
                 Department newDepartment = departmentRepository.save(Department.builder()
                         .name(name.toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
                         .build());
-                iAudit.save("ADD_DEPARTMENT","DEPARTAMENTO "+newDepartment.getName()+" CREADO.",newDepartment.getName(),datauser.getUsername());
+                iAudit.save("ADD_DEPARTMENT","DEPARTAMENTO "+newDepartment.getName()+" CREADO.",newDepartment.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -110,19 +109,19 @@ public class DepartmentImpl implements IDepartment {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             Department department;
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 department = departmentRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (department == null) {
@@ -131,10 +130,9 @@ public class DepartmentImpl implements IDepartment {
 
             try {
                 department.setStatus(false);
-                department.setUpdateDate(new Date(System.currentTimeMillis()));
-                department.setTokenUser(datauser.getUsername());
+                department.setUpdateDate(OffsetDateTime.now());
                 departmentRepository.save(department);
-                iAudit.save("DELETE_DEPARTMENT","DEPARTAMENTO "+department.getName()+" DESACTIVADO.",department.getName(),datauser.getUsername());
+                iAudit.save("DELETE_DEPARTMENT","DEPARTAMENTO "+department.getName()+" DESACTIVADO.",department.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -147,19 +145,19 @@ public class DepartmentImpl implements IDepartment {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             Department department;
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 department = departmentRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (department == null) {
@@ -168,10 +166,9 @@ public class DepartmentImpl implements IDepartment {
 
             try {
                 department.setStatus(true);
-                department.setUpdateDate(new Date(System.currentTimeMillis()));
-                department.setTokenUser(datauser.getUsername());
+                department.setUpdateDate(OffsetDateTime.now());
                 departmentRepository.save(department);
-                iAudit.save("ACTIVATE_DEPARTMENT","DEPARTAMENTO "+department.getName()+" ACTIVADO.",department.getName(),datauser.getUsername());
+                iAudit.save("ACTIVATE_DEPARTMENT","DEPARTAMENTO "+department.getName()+" ACTIVADO.",department.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

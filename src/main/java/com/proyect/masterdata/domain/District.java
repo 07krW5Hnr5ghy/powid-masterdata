@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -18,9 +19,9 @@ import java.util.Date;
 @Table(name = Constants.tableDistrict, schema = Constants.schemaMaster)
 public class District {
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "district_id")
-        private Long id;
+        private UUID id;
 
         @Column(name = "name")
         private String name;
@@ -30,20 +31,17 @@ public class District {
 
         @Column(name = "registration_date")
         @CreationTimestamp
-        private Date registrationDate;
+        private OffsetDateTime registrationDate;
 
         @Column(name = "update_date")
         @CreationTimestamp
-        private Date updateDate;
+        private OffsetDateTime updateDate;
 
         @Column(name = "province_id")
-        private Long provinceId;
+        private UUID provinceId;
 
         @ManyToOne
         @JoinColumn(name = "province_id", columnDefinition = "provinceId", insertable = false, updatable = false)
         private Province province;
-
-        @Column(name = "token_user")
-        private String tokenUser;
 
 }

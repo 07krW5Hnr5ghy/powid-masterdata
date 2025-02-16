@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -47,7 +48,7 @@ public class PurchaseItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
     public ResponseEntity<List<PurchaseItemDTO>> listPurchase(
             @RequestParam("user") String user,
-            @RequestParam(value = "id", required = false) Long id
+            @RequestParam(value = "id", required = false) UUID id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<PurchaseItemDTO>> result = iPurchaseItem.listPurchaseItem(user,id);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);

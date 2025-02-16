@@ -5,14 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface PurchaseRepository extends JpaRepository<Purchase,Long> {
-    Purchase findByPurchaseTypeId(Long purchaseTypeId);
+public interface PurchaseRepository extends JpaRepository<Purchase, UUID> {
+    Purchase findByPurchaseTypeId(UUID purchaseTypeId);
     Purchase findBySerial(String serial);
-    Purchase findBySerialAndPurchaseTypeId(String serial, Long purchaseTypeId);
+    Purchase findBySerialAndPurchaseTypeId(String serial, UUID purchaseTypeId);
     List<Purchase> findBySerialIn(List<String> serials);
     Purchase findByPurchaseTypeName(String purchaseTypeName);
     Purchase findByPurchaseTypeNameAndSerial(String purchaseTypeName, String serial);
-    List<Purchase> findAllByClientId(Long clientId);
+    List<Purchase> findAllByClientId(UUID clientId);
 }

@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
@@ -49,11 +50,12 @@ public class PaymentGatewayImpl implements IPaymentGateway {
 
             try{
                 PaymentGateway newPaymentGateway = paymentGatewayRepository.save(PaymentGateway.builder()
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .status(true)
                         .name(name.toUpperCase())
-                                .tokenUser(user.getUsername())
+                                .user(user)
+                        .userId(user.getId())
                         .build());
                 iAudit.save("ADD_PAYMENT_GATEWAY","PASARELA DE PAGO "+newPaymentGateway.getName()+" CREADA.",newPaymentGateway.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -91,8 +93,9 @@ public class PaymentGatewayImpl implements IPaymentGateway {
 
             try{
                 paymentGateway.setStatus(false);
-                paymentGateway.setUpdateDate(new Date(System.currentTimeMillis()));
-                paymentGateway.setTokenUser(user.getUsername());
+                paymentGateway.setUpdateDate(OffsetDateTime.now());
+                paymentGateway.setUser(user);
+                paymentGateway.setUserId(user.getId());
                 iAudit.save("DELETE_PAYMENT_GATEWAY","PASARELA DE PAGO "+paymentGateway.getName()+" DESACTIVADA.",paymentGateway.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
@@ -129,8 +132,9 @@ public class PaymentGatewayImpl implements IPaymentGateway {
 
             try{
                 paymentGateway.setStatus(true);
-                paymentGateway.setUpdateDate(new Date(System.currentTimeMillis()));
-                paymentGateway.setTokenUser(user.getUsername());
+                paymentGateway.setUpdateDate(OffsetDateTime.now());
+                paymentGateway.setUser(user);
+                paymentGateway.setUserId(user.getId());
                 iAudit.save("ACTIVATE_PAYMENT_GATEWAY","PASARELA DE PAGO "+paymentGateway.getName()+" ACTIVADA.",paymentGateway.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)

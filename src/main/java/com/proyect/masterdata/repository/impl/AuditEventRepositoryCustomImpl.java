@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +23,7 @@ public class AuditEventRepositoryCustomImpl implements AuditEventRepositoryCusto
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<AuditEvent> searchForAuditEvent(String name, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<AuditEvent> searchForAuditEvent(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<AuditEvent> criteriaQuery = criteriaBuilder.createQuery(AuditEvent.class);
         Root<AuditEvent> itemRoot = criteriaQuery.from(AuditEvent.class);
@@ -58,10 +59,10 @@ public class AuditEventRepositoryCustomImpl implements AuditEventRepositoryCusto
 
     public List<Predicate> predicateConditions(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<AuditEvent> itemRoot) {
@@ -176,7 +177,7 @@ public class AuditEventRepositoryCustomImpl implements AuditEventRepositoryCusto
         return auditEventList;
     }
 
-    private long getOrderCount(String name, Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, Boolean status) {
+    private long getOrderCount(String name, OffsetDateTime registrationStartDate,OffsetDateTime registrationEndDate,OffsetDateTime updateStartDate,OffsetDateTime updateEndDate, Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

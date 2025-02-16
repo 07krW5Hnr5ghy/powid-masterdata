@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -56,7 +57,7 @@ public class StockReturnItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_ITEM_GET')")
     public ResponseEntity<List<StockReturnItemDTO>> listStockReturnItem(
             @RequestParam("user") String user,
-            @RequestParam(value = "id", required = false) Long id
+            @RequestParam(value = "id", required = false) UUID id
     ) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<StockReturnItemDTO>> result = iStockReturnItem.listStockReturnItem(user,id);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
@@ -65,7 +66,7 @@ public class StockReturnItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_RETURN_ITEM_GET')")
     public ResponseEntity<List<StockReturnItemDTO>> listStockReturnItemFalse(
             @RequestParam("user") String user,
-            @RequestParam(value = "id",required = false) Long id
+            @RequestParam(value = "id",required = false) UUID id
     ) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<StockReturnItemDTO>> result = iStockReturnItem.listStockReturnItemFalse(user,id);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -124,8 +125,8 @@ public class PurchaseImpl implements IPurchase {
                             .supplier(supplier)
                             .supplierId(supplier.getId())
                             .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                             .warehouse(warehouse)
                             .warehouseId(warehouse.getId())
                             .purchaseType(purchaseType)
@@ -134,7 +135,7 @@ public class PurchaseImpl implements IPurchase {
                             .purchaseDocument(purchaseDocument)
                             .purchaseDocumentId(purchaseDocument.getId())
                             .clientId(user.getClientId())
-                            .tokenUser(user.getUsername())
+                            .user(user).userId(user.getId())
                       .build());
             for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct());
@@ -235,8 +236,8 @@ public class PurchaseImpl implements IPurchase {
                         .status(true)
                         .supplier(supplier)
                         .supplierId(supplier.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
                         .purchaseType(purchaseType)
@@ -245,7 +246,7 @@ public class PurchaseImpl implements IPurchase {
                         .clientId(user.getClientId())
                                 .purchaseDocument(purchaseDocument)
                                 .purchaseDocumentId(purchaseDocument.getId())
-                        .tokenUser(user.getUsername())
+                        .user(user).userId(user.getId())
                         .build());
                 for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct());
@@ -279,9 +280,9 @@ public class PurchaseImpl implements IPurchase {
         return CompletableFuture.supplyAsync(()->{
             Page<Purchase> pagePurchase;
             List<String> serialsUppercase;
-            Long clientId;
-            List<Long> warehouseIds;
-            List<Long> purchaseTypeIds;
+            UUID clientId;
+            List<UUID> warehouseIds;
+            List<UUID> purchaseTypeIds;
 
             if(serials != null && !serials.isEmpty()){
                 serialsUppercase = serials.stream().map(String::toUpperCase).toList();
@@ -350,10 +351,10 @@ public class PurchaseImpl implements IPurchase {
             Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Purchase> pagePurchase;
-            Long clientId;
+            UUID clientId;
             List<String> serialsUppercase;
-            List<Long> warehouseIds;
-            List<Long> purchaseTypeIds;
+            List<UUID> warehouseIds;
+            List<UUID> purchaseTypeIds;
 
             if(serials != null && !serials.isEmpty()){
                 serialsUppercase = serials.stream().map(String::toUpperCase).toList();
@@ -414,7 +415,7 @@ public class PurchaseImpl implements IPurchase {
     public CompletableFuture<List<PurchaseDTO>> listPurchase(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Purchase> purchases;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 purchases = purchaseRepository.findAllByClientId(clientId);
@@ -441,7 +442,7 @@ public class PurchaseImpl implements IPurchase {
     public CompletableFuture<List<PurchaseDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Purchase> purchases;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 purchases = purchaseRepository.findAllByClientId(clientId);

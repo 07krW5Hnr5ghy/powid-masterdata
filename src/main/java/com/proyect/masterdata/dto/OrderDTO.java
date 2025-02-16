@@ -6,15 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class OrderDTO {
-    private Long id;
+    private UUID id;
     private String sellerName;
     private String customerName;
     private String customerType;
@@ -42,8 +44,8 @@ public class OrderDTO {
     private BigDecimal advancedPayment;
     private BigDecimal duePayment;
     private BigDecimal discountAmount;
-    private Date registrationDate;
-    private Date updateDate;
+    private OffsetDateTime registrationDate;
+    private OffsetDateTime updateDate;
     private String deliveryAddress;
     private String courier;
     private String orderStatus;

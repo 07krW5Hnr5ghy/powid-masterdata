@@ -13,9 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
@@ -25,12 +27,12 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
 
     @Override
     public Page<Brand> searchForBrand(
-            Long clientId,
+            UUID clientId,
             List<String> names,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -88,11 +90,11 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
 
     public List<Predicate> predicateConditions(
             List<String> names,
-            Long clientId,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID clientId,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<Brand> itemRoot) {
@@ -220,11 +222,11 @@ public class BrandRepositoryCustomImpl implements BrandRepositoryCustom {
 
     private long getOrderCount(
             List<String> names,
-            Long clientId,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            UUID clientId,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

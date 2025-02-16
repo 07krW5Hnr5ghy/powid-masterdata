@@ -7,13 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface OrderStockItemRepositoryCustom {
     Page<OrderStockItem> searchForOrderStockItem(
-            Long clientId,
-            Long orderId,
-            List<Long> warehouseIds,
+            UUID clientId,
+            UUID orderId,
+            List<UUID> warehouseIds,
             String productSku,
             String serial,
             String model,

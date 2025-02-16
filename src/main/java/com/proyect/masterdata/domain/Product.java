@@ -9,7 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -20,9 +21,9 @@ import java.util.Date;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "product_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "sku", nullable = false)
     private String sku;
@@ -32,11 +33,11 @@ public class Product {
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "status", nullable = false)
     private Boolean status;
@@ -45,25 +46,25 @@ public class Product {
     private Boolean pictureFlag;
 
     @Column(name = "model_id", nullable = false)
-    private Long modelId;
+    private UUID modelId;
 
     @Column(name = "color_id", nullable = false)
-    private Long colorId;
+    private UUID colorId;
 
     @Column(name = "category_product_id", nullable = false)
-    private Long categoryProductId;
+    private UUID categoryProductId;
 
     @Column(name = "size_id", nullable = false)
-    private Long sizeId;
+    private UUID sizeId;
 
     @Column(name = "unit_id")
-    private Long unitId;
+    private UUID unitId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
-    @Column(name = "token_user", nullable = false)
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "model_id", columnDefinition = "modelId", insertable = false, updatable = false)
@@ -88,4 +89,8 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

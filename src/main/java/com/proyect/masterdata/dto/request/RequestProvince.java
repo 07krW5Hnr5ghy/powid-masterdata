@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,5 +15,5 @@ public class RequestProvince {
     private String name;
     private boolean status;
     private String user;
-    private Long codeDepartment;
+    private UUID codeDepartment;
 }

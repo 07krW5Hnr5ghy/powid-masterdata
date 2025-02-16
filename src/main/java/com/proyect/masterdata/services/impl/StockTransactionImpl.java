@@ -20,10 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -73,8 +71,8 @@ public class StockTransactionImpl implements IStockTransaction {
                             .warehouseId(warehouse.getId())
                             .client(user.getClient())
                             .clientId(user.getClientId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(user.getUsername())
+                            .registrationDate(OffsetDateTime.now())
+                            .user(user).userId(user.getId())
                     .build());
 
             for(RequestStockTransactionItem requestStockTransactionItem : requestStockTransactionItemList){
@@ -124,8 +122,8 @@ public class StockTransactionImpl implements IStockTransaction {
                         .warehouseId(warehouse.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .user(user).userId(user.getId())
                         .build());
 
                 for(RequestStockTransactionItem requestStockTransactionItem : requestStockTransactionItemList){
@@ -152,10 +150,10 @@ public class StockTransactionImpl implements IStockTransaction {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<StockTransaction> pageStockTransaction;
-            Long clientId;
+            UUID clientId;
             List<String> serialsUppercase;
-            List<Long> warehouseIds;
-            List<Long> stockTransactionTypeIds;
+            List<UUID> warehouseIds;
+            List<UUID> stockTransactionTypeIds;
 
             if(serials != null && !serials.isEmpty()){
                 serialsUppercase = serials.stream().map(String::toUpperCase).toList();
@@ -214,7 +212,7 @@ public class StockTransactionImpl implements IStockTransaction {
     public CompletableFuture<List<StockTransactionDTO>> listStockTransaction(String user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockTransaction> stockTransactions;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stockTransactions = stockTransactionRepository.findAllByClientId(clientId);

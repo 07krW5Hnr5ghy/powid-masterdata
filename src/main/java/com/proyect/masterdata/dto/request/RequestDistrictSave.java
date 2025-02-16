@@ -7,13 +7,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class RequestDistrictSave {
     private String name;
-    private String user;
-    private Long codeProvince;
+    private UUID codeProvince;
     private Province province;
 }

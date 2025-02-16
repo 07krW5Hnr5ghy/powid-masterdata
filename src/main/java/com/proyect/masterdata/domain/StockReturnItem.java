@@ -7,7 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -18,9 +19,9 @@ import java.util.Date;
 public class StockReturnItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "stock_return_item_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -29,22 +30,22 @@ public class StockReturnItem {
     private String observations;
 
     @Column(name = "supplier_product_id")
-    private Long supplierProductId;
+    private UUID supplierProductId;
 
     @Column(name = "registration_date")
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "status")
     private Boolean status;
 
     @Column(name = "stock_return_id")
-    private Long stockReturnId;
+    private UUID stockReturnId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "supplier_product_id", columnDefinition = "supplierProduct", insertable = false, updatable = false)
@@ -57,4 +58,8 @@ public class StockReturnItem {
     @ManyToOne
     @JoinColumn(name = "stock_return_id", columnDefinition = "stockReturnId", insertable = false, updatable = false)
     private StockReturn stockReturn;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

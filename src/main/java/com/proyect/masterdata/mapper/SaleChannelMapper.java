@@ -19,11 +19,9 @@ public interface SaleChannelMapper {
 
     List<SaleChannelDTO> listSaleChannelToListSaleChannelDTO(List<SaleChannel> saleChannelList);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "true")
     @Mapping(target = "registrationDate", ignore = true)
     @Mapping(target = "name", source = "requestSaleChannelSave.name")
-    @Mapping(target = "tokenUser", source = "requestSaleChannelSave.user")
     SaleChannel saleChannelToName(RequestSaleChannelSave requestSaleChannelSave);
 
     List<SaleChannel> listSaleChannelToListName(List<RequestSaleChannelSave> requestSaleChannelSaveList);

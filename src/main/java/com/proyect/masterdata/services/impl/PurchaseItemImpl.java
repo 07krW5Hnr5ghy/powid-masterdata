@@ -1,9 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.*;
@@ -79,13 +77,14 @@ public class PurchaseItemImpl implements IPurchaseItem {
                             .supplierProduct(supplierProduct)
                             .supplierProductId(supplierProduct.getId())
                             .status(true)
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                             .observations(requestPurchaseItem.getObservations().toUpperCase())
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .quantity(requestPurchaseItem.getQuantity())
-                            .tokenUser(user.getUsername())
+                            .user(user)
+                            .userId(user.getId())
                     .build());
 
             iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, requestPurchaseItem.getQuantity(), user);
@@ -134,13 +133,14 @@ public class PurchaseItemImpl implements IPurchaseItem {
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
                         .status(true)
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .observations(requestPurchaseItem.getObservations().toUpperCase())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .quantity(requestPurchaseItem.getQuantity())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
 
                 iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, requestPurchaseItem.getQuantity(), user);
@@ -187,8 +187,9 @@ public class PurchaseItemImpl implements IPurchaseItem {
 
             try {
                 purchaseItem.setStatus(false);
-                purchaseItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                purchaseItem.setTokenUser(user.getUsername());
+                purchaseItem.setUpdateDate(OffsetDateTime.now());
+                purchaseItem.setUser(user);
+                purchaseItem.setUserId(user.getId());
                 iWarehouseStock.out(purchase.getWarehouse(),supplierProduct, purchaseItem.getQuantity(), user);
                 iGeneralStock.out(supplierProduct.getSerial(), purchaseItem.getQuantity(), user.getUsername());
                 iAudit.save("DELETE_PURCHASE_ITEM","PRODUCTO DE INVENTARIO "+ purchaseItem.getSupplierProduct().getSerial()+" DESACTIVADO EN COMPRA.",purchaseItem.getPurchase().getSerial(),user.getUsername());
@@ -236,8 +237,9 @@ public class PurchaseItemImpl implements IPurchaseItem {
 
             try {
                 purchaseItem.setStatus(true);
-                purchaseItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                purchaseItem.setTokenUser(user.getUsername());
+                purchaseItem.setUpdateDate(OffsetDateTime.now());
+                purchaseItem.setUser(user);
+                purchaseItem.setUserId(user.getId());
                 iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, purchaseItem.getQuantity(), user);
                 iGeneralStock.in(supplierProduct.getSerial(), purchaseItem.getQuantity(), user.getUsername());
                 iAudit.save("ACTIVATE_PURCHASE_ITEM","PRODUCTO DE INVENTARIO "+ purchaseItem.getSupplierProduct().getSerial()+" ACTIVADO EN COMPRA.",purchaseItem.getPurchase().getSerial(),user.getUsername());
@@ -265,10 +267,10 @@ public class PurchaseItemImpl implements IPurchaseItem {
             Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<PurchaseItem> pagePurchaseItem;
-            Long clientId;
-            List<Long> purchaseIds;
-            List<Long> warehouseIds;
-            List<Long> supplierProductIds;
+            UUID clientId;
+            List<UUID> purchaseIds;
+            List<UUID> warehouseIds;
+            List<UUID> supplierProductIds;
 
             if(purchases != null && !purchases.isEmpty()){
                 purchaseIds = purchaseRepository.findBySerialIn(
@@ -331,10 +333,10 @@ public class PurchaseItemImpl implements IPurchaseItem {
     }
 
     @Override
-    public CompletableFuture<List<PurchaseItemDTO>> listPurchaseItem(String user,Long id) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<PurchaseItemDTO>> listPurchaseItem(String user,UUID id) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<PurchaseItem> purchaseItems;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(id != null){

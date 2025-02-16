@@ -1,6 +1,7 @@
 package com.proyect.masterdata.repository;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.proyect.masterdata.domain.Access;
 
 @Repository
-public interface AccessRepository extends JpaRepository<Access, Long> {
+public interface AccessRepository extends JpaRepository<Access, UUID> {
     Access findByName(String name);
     Access findByNameAndStatusTrue(String name);
     Access findByNameAndStatusFalse(String name);

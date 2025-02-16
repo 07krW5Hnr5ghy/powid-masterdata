@@ -4,16 +4,16 @@ import com.proyect.masterdata.domain.CancellationReason;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 @Repository
 public interface CancellationReasonRepositoryCustom {
     Page<CancellationReason> searchForCancellationReason(
             String name,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,

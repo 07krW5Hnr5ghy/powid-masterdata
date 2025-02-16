@@ -4,11 +4,12 @@ import com.proyect.masterdata.domain.OrderReturnItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface OrderReturnItemRepository extends JpaRepository<OrderReturnItem,Long> {
-    OrderReturnItem findByClientIdAndOrderReturnIdAndSupplierProductIdAndStatusTrue(Long clientId,Long orderId,Long supplierProductId);
-    List<OrderReturnItem> findAllByClientIdAndOrderReturnIdAndStatusTrue(Long clientId,Long orderId);
-    List<OrderReturnItem> findAllByClientIdAndStatusTrue(Long clientId);
-    OrderReturnItem findBySupplierProductIdAndOrderReturnIdAndStatusTrue(Long supplierProductId,Long orderId);
-    OrderReturnItem findBySupplierProductIdAndOrderReturnIdAndStatusFalse(Long supplierProductId,Long orderId);
+public interface OrderReturnItemRepository extends JpaRepository<OrderReturnItem, UUID> {
+    OrderReturnItem findByClientIdAndOrderReturnIdAndSupplierProductIdAndStatusTrue(UUID clientId,UUID orderId,UUID supplierProductId);
+    List<OrderReturnItem> findAllByClientIdAndOrderReturnIdAndStatusTrue(UUID clientId,UUID orderId);
+    List<OrderReturnItem> findAllByClientIdAndStatusTrue(UUID clientId);
+    OrderReturnItem findBySupplierProductIdAndOrderReturnIdAndStatusTrue(UUID supplierProductId,UUID orderId);
+    OrderReturnItem findBySupplierProductIdAndOrderReturnIdAndStatusFalse(UUID supplierProductId,UUID orderId);
 }

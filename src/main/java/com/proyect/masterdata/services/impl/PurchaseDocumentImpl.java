@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -51,10 +52,10 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
             try {
                 PurchaseDocument newPurchaseDocument = purchaseDocumentRepository.save(PurchaseDocument.builder()
                         .name(name.toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(user.getUsername())
+                        .user(user)
                         .build());
                 iAudit.save("ADD_PURCHASE_DOCUMENT","DOCUMENTO DE COMPRA "+ newPurchaseDocument.getName()+" CREADO.",newPurchaseDocument.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -92,8 +93,9 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
 
             try {
                 purchaseDocument.setStatus(false);
-                purchaseDocument.setUpdateDate(new Date(System.currentTimeMillis()));
-                purchaseDocument.setTokenUser(user.getUsername());
+                purchaseDocument.setUpdateDate(OffsetDateTime.now());
+                purchaseDocument.setUser(user);
+                purchaseDocument.setUserId(user.getId());
                 purchaseDocumentRepository.save(purchaseDocument);
                 iAudit.save("DELETE_PURCHASE_DOCUMENT","DOCUMENTO DE COMPRA "+ purchaseDocument.getName()+" DESACTIVADO.",purchaseDocument.getName(),user.getUsername());
                 return ResponseDelete.builder()
@@ -131,8 +133,9 @@ public class PurchaseDocumentImpl implements IPurchaseDocument {
 
             try {
                 purchaseDocument.setStatus(true);
-                purchaseDocument.setUpdateDate(new Date(System.currentTimeMillis()));
-                purchaseDocument.setTokenUser(user.getUsername());
+                purchaseDocument.setUpdateDate(OffsetDateTime.now());
+                purchaseDocument.setUser(user);
+                purchaseDocument.setUserId(user.getId());
                 purchaseDocumentRepository.save(purchaseDocument);
                 iAudit.save("ACTIVATE_PURCHASE_DOCUMENT","DOCUMENTO DE COMPRA "+ purchaseDocument.getName()+" ACTIVADO.",purchaseDocument.getName(),user.getUsername());
                 return ResponseSuccess.builder()

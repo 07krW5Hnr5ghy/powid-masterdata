@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -128,7 +129,7 @@ public class SupplierProductController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<List<SupplierProductDTO>> listSupplierProductFalse(
             @RequestParam("user") String user,
-            @RequestParam(value = "id",required = false) Long id
+            @RequestParam(value = "id",required = false) UUID id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<SupplierProductDTO>> result = iSupplierProduct.listSupplierProductFalse(user,id);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);

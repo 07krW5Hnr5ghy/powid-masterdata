@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -68,9 +69,8 @@ public class ProvinceImpl implements IProvince {
                     .name(name.toUpperCase())
                     .department(departmentData)
                     .departmentId(departmentData.getId())
-                    .registrationDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
                     .status(true)
-                    .tokenUser(user.getUsername())
                     .build());
             iAudit.save("ADD_PROVINCE","PROVINCIA "+newProvince.getName()+" CREADA.",newProvince.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -115,9 +115,9 @@ public class ProvinceImpl implements IProvince {
                         .name(name.toUpperCase())
                         .department(departmentData)
                         .departmentId(departmentData.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .tokenUser(user.getUsername())
+                        
                         .build());
                 iAudit.save("ADD_PROVINCE","PROVINCIA "+newProvince.getName()+" CREADA.",newProvince.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -153,9 +153,9 @@ public class ProvinceImpl implements IProvince {
             }
 
             try {
-                province.setRegistrationDate(new Date(System.currentTimeMillis()));
+                province.setRegistrationDate(OffsetDateTime.now());
                 province.setStatus(false);
-                province.setTokenUser(user.getUsername());
+                
                 provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
                 iAudit.save("DELETE_PROVINCE","PROVINCIA "+province.getName()+" DESACTIVADA.", province.getName(), user.getUsername());
                 return ResponseDelete.builder()
@@ -190,9 +190,9 @@ public class ProvinceImpl implements IProvince {
             }
 
             try {
-                province.setRegistrationDate(new Date(System.currentTimeMillis()));
+                province.setRegistrationDate(OffsetDateTime.now());
                 province.setStatus(true);
-                province.setTokenUser(user.getUsername());
+                
                 provinceMapper.provinceToProvinceDTO(provinceRepository.save(province));
                 iAudit.save("ACTIVATE_PROVINCE","PROVINCIA "+province.getName()+" ACTIVADA.",province.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -218,7 +218,7 @@ public class ProvinceImpl implements IProvince {
     }
 
     @Override
-    public CompletableFuture<Page<ProvinceDTO>> list(String name, String user, Long codeDepartment, String nameDepartment, String sort,
+    public CompletableFuture<Page<ProvinceDTO>> list(String name, String user, UUID codeDepartment, String nameDepartment, String sort,
             String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Province> provincePage;
@@ -239,7 +239,7 @@ public class ProvinceImpl implements IProvince {
     }
 
     @Override
-    public CompletableFuture<Page<ProvinceDTO>> listStatusFalse(String name, String user, Long codeDepartment, String nameDepartment,
+    public CompletableFuture<Page<ProvinceDTO>> listStatusFalse(String name, String user, UUID codeDepartment, String nameDepartment,
             String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Province> provincePage;

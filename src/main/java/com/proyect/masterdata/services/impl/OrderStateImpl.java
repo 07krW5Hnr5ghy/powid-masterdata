@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -35,20 +36,20 @@ public class OrderStateImpl implements IOrderState {
     private final OrderStateRepositoryCustom orderStateRepositoryCustom;
     private final IAudit iAudit;
     @Override
-    public CompletableFuture<ResponseSuccess> save(String name,String hexColor, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> save(String name,String hexColor, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             OrderState orderState;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (orderState != null) {
@@ -60,11 +61,12 @@ public class OrderStateImpl implements IOrderState {
                                 .name(name.toUpperCase())
                                 .hexColor(hexColor)
                                 .status(true)
-                                .registrationDate(new Date(System.currentTimeMillis()))
-                                .updateDate(new Date(System.currentTimeMillis()))
-                                .tokenUser(user.toUpperCase())
+                                .registrationDate(OffsetDateTime.now())
+                                .updateDate(OffsetDateTime.now())
+                                .user(user)
+                                .userId(user.getId())
                         .build());
-                iAudit.save("ADD_ORDER_STATE","ESTADO DE PEDIDO "+newOrderState.getName()+" CREADO.",newOrderState.getName(),datauser.getUsername());
+                iAudit.save("ADD_ORDER_STATE","ESTADO DE PEDIDO "+newOrderState.getName()+" CREADO.",newOrderState.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -78,20 +80,20 @@ public class OrderStateImpl implements IOrderState {
 
     @Override
     @Transactional
-    public CompletableFuture<ResponseDelete> delete(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             OrderState orderState;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (orderState == null) {
@@ -100,10 +102,11 @@ public class OrderStateImpl implements IOrderState {
 
             try {
                 orderState.setStatus(false);
-                orderState.setRegistrationDate(new Date(System.currentTimeMillis()));
-                orderState.setTokenUser(datauser.getUsername());
+                orderState.setRegistrationDate(OffsetDateTime.now());
+                orderState.setUser(user);
+                orderState.setUserId(user.getId());
                 orderStateRepository.save(orderState);
-                iAudit.save("DELETE_ORDER_STATE","ESTADO DE PEDIDO "+orderState.getName()+" DESACTIVADO.",orderState.getName(),datauser.getUsername());
+                iAudit.save("DELETE_ORDER_STATE","ESTADO DE PEDIDO "+orderState.getName()+" DESACTIVADO.",orderState.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -116,20 +119,20 @@ public class OrderStateImpl implements IOrderState {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String name, String user) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            User datauser;
+            User user;
             OrderState orderState;
 
             try {
-                datauser = userRepository.findByUsernameAndStatusTrue(user.toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
 
-            if (datauser == null) {
+            if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }
             if (orderState == null) {
@@ -138,10 +141,11 @@ public class OrderStateImpl implements IOrderState {
 
             try {
                 orderState.setStatus(true);
-                orderState.setRegistrationDate(new Date(System.currentTimeMillis()));
-                orderState.setTokenUser(datauser.getUsername());
+                orderState.setRegistrationDate(OffsetDateTime.now());
+                orderState.setUser(user);
+                orderState.setUserId(user.getId());
                 orderStateRepository.save(orderState);
-                iAudit.save("ACTIVATE_ORDER_STATE","ESTADO DE PEDIDO "+orderState.getName()+" ACTIVADO.",orderState.getName(),datauser.getUsername());
+                iAudit.save("ACTIVATE_ORDER_STATE","ESTADO DE PEDIDO "+orderState.getName()+" ACTIVADO.",orderState.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

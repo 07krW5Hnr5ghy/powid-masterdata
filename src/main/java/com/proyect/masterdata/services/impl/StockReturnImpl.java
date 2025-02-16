@@ -17,10 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -94,11 +92,11 @@ public class StockReturnImpl implements IStockReturn {
                             .supplierId(supplier.getId())
                             .warehouse(warehouse)
                             .warehouseId(warehouse.getId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                             .client(user.getClient())
                             .clientId(user.getClientId())
-                            .tokenUser(user.getUsername())
+                            .user(user).userId(user.getId())
                             .status(true)
                     .build());
             List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
@@ -182,11 +180,11 @@ public class StockReturnImpl implements IStockReturn {
                         .supplierId(supplier.getId())
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
+                        .user(user).userId(user.getId())
                         .status(true)
                         .build());
                 List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
@@ -226,8 +224,8 @@ public class StockReturnImpl implements IStockReturn {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<StockReturn> pageStockReturn;
-            Long clientId;
-            List<Long> supplierIds;
+            UUID clientId;
+            List<UUID> supplierIds;
 
             if(suppliers != null && !suppliers.isEmpty()){
                 supplierIds = supplierRepository.findByRucIn(
@@ -272,7 +270,7 @@ public class StockReturnImpl implements IStockReturn {
     public CompletableFuture<List<StockReturnDTO>> listStockReturn(String user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockReturn> stockReturns;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stockReturns = stockReturnRepository.findAllByClientIdAndStatusTrue(clientId);
@@ -299,7 +297,7 @@ public class StockReturnImpl implements IStockReturn {
     public CompletableFuture<List<StockReturnDTO>> listStockReturnFalse(String user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockReturn> stockReturns;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stockReturns = stockReturnRepository.findAllByClientIdAndStatusFalse(clientId);
@@ -326,7 +324,7 @@ public class StockReturnImpl implements IStockReturn {
     public CompletableFuture<List<StockReturnDTO>> listFilter(String user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockReturn> stockReturns;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stockReturns = stockReturnRepository.findAllByClientId(clientId);

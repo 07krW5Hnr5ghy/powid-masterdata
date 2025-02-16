@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -19,25 +20,22 @@ import java.util.Date;
 public class Audit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "audit_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "user_id")
-    private Long userId;
+    private UUID userId;
 
     @Column(name = "audit_event_id")
-    private Long auditEventId;
+    private UUID auditEventId;
 
     @Column(name = "client_id")
-    private Long clientId;
-
-    @Column(name = "token_user")
-    private String tokenUser;
+    private UUID clientId;
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "reference")
     private String reference;

@@ -4,18 +4,19 @@ import com.proyect.masterdata.domain.Courier;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface CourierRepositoryCustom {
     Page<Courier> searchForCourier(
-            Long clientId,
+            UUID clientId,
             List<String> names,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,

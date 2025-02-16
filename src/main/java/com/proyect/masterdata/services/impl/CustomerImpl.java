@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -69,12 +70,13 @@ public class CustomerImpl implements ICustomer {
                     .address(requestCustomer.getAddress())
                     .instagram(requestCustomer.getInstagram())
                     .reference(requestCustomer.getReference())
-                    .registrationDate(new Date(System.currentTimeMillis()))
-                    .updateDate(new Date(System.currentTimeMillis()))
+                    .registrationDate(OffsetDateTime.now())
+                    .updateDate(OffsetDateTime.now())
                     .district(district)
                     .districtId(district.getId())
                     .clientId(user.getClientId())
-                    .tokenUser(user.getUsername())
+                    .user(user)
+                            .userId(user.getId())
                     .customerTypeId(customerType.getId())
                     .customerType(customerType)
                     .dni(requestCustomer.getDni())
@@ -128,14 +130,15 @@ public class CustomerImpl implements ICustomer {
                         .address(requestCustomer.getAddress())
                         .instagram(requestCustomer.getInstagram())
                         .reference(requestCustomer.getReference())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .district(district)
                         .districtId(district.getId())
                         .clientId(user.getClientId())
                                 .customerType(customerType)
                                 .customerTypeId(customerType.getId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_CUSTOMER","COMPRADOR "+newCustomer.getName()+"/"+newCustomer.getPhone()+" CREADO.",newCustomer.getPhone(),user.getUsername());
                 return ResponseSuccess.builder()

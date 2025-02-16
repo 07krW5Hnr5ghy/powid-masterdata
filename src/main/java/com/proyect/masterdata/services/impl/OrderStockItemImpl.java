@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -36,7 +37,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     private final OrderStockRepository orderStockRepository;
     private final IAudit iAudit;
     @Override
-    public CompletableFuture<ResponseSuccess> save(Long orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> save(UUID orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -96,15 +97,16 @@ public class OrderStockItemImpl implements IOrderStockItem {
                         .orderId(ordering.getId())
                         .ordering(ordering)
                         .orderItemId(orderItem.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
                         .status(true)
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .updateDate(OffsetDateTime.now())
                         .quantity(requestOrderStockItem.getQuantity())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 iAudit.save("ADD_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+newOrderStockItem.getSupplierProduct().getSerial()+" CON "+newOrderStockItem.getQuantity()+" UNIDADES CREADO.",newOrderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -122,7 +124,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     @Override
     public CompletableFuture<Page<OrderStockItemDTO>> list(
             String user,
-            Long orderId,
+            UUID orderId,
             List<String> warehouses,
             String productSku,
             String serial,
@@ -133,8 +135,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStockItem> pageOrderStock;
-            Long clientId;
-            List<Long> warehouseIds;
+            UUID clientId;
+            List<UUID> warehouseIds;
 
             if(warehouses != null && !warehouses.isEmpty()){
                 warehouseIds = warehouseRepository.findByNameIn(
@@ -187,7 +189,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     @Override
     public CompletableFuture<Page<OrderStockItemDTO>> listFalse(
             String user,
-            Long orderId,
+            UUID orderId,
             List<String> warehouses,
             String productSku,
             String serial,
@@ -198,8 +200,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderStockItem> pageOrderStock;
-            Long clientId;
-            List<Long> warehouseIds;
+            UUID clientId;
+            List<UUID> warehouseIds;
 
             if(warehouses != null && !warehouses.isEmpty()){
                 warehouseIds = warehouseRepository.findByNameIn(
@@ -250,7 +252,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public CompletableFuture<Boolean> checkWarehouseItemStock(Long orderId,Warehouse warehouse,RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<Boolean> checkWarehouseItemStock(UUID orderId,Warehouse warehouse,RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             SupplierProduct supplierProduct;
             OrderItem orderItem;
@@ -288,9 +290,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public CompletableFuture<List<OrderStockItemDTO>> listOrderStockItem(String user,Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<OrderStockItemDTO>> listOrderStockItem(String user,UUID orderId) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<OrderStockItem> orderStockItems;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -321,9 +323,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public CompletableFuture<List<OrderStockItemDTO>> listOrderStockItemFalse(String user,Long orderId) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<OrderStockItemDTO>> listOrderStockItemFalse(String user,UUID orderId) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             List<OrderStockItem> orderStockItems;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -355,10 +357,10 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(Long orderId, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID orderId, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Long clientId;
+            UUID clientId;
             SupplierProduct supplierProduct;
             OrderStock orderStock;
             OrderStockItem orderStockItem;
@@ -392,8 +394,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
             }
             try{
                 orderStockItem.setStatus(false);
-                orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderStockItem.setTokenUser(user.getUsername());
+                orderStockItem.setUpdateDate(OffsetDateTime.now());
+                orderStockItem.setUser(user);
+                orderStockItem.setUserId(user.getId());
                 orderStockItemRepository.save(orderStockItem);
                 iAudit.save("DELETE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES DESACTIVADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
@@ -408,9 +411,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(Long orderId, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(UUID orderId, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             User user;
             SupplierProduct supplierProduct;
             OrderStock orderStock;
@@ -447,8 +450,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
             }
             try{
                 orderStockItem.setStatus(true);
-                orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderStockItem.setTokenUser(user.getUsername());
+                orderStockItem.setUpdateDate(OffsetDateTime.now());
+                orderStockItem.setUserId(user.getId());
+                orderStockItem.setUser(user);
                 orderStockItemRepository.save(orderStockItem);
                 iAudit.save("ACTIVATE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES ACTIVADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -463,9 +467,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> update(Long orderId, String supplierProductSerial, String tokenUser, Integer quantity) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> update(UUID orderId, String supplierProductSerial, String tokenUser, Integer quantity) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Long clientId;
+            UUID clientId;
             User user;
             SupplierProduct supplierProduct;
             OrderStock orderStock;
@@ -509,8 +513,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
 
             try {
                 orderStockItem.setQuantity(quantity);
-                orderStockItem.setUpdateDate(new Date(System.currentTimeMillis()));
-                orderStockItem.setTokenUser(user.getUsername());
+                orderStockItem.setUpdateDate(OffsetDateTime.now());
+                orderStockItem.setUser(user);
+                orderStockItem.setUserId(user.getId());
                 orderStockItemRepository.save(orderStockItem);
                 iAudit.save("UPDATE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES ACTUALIZADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()

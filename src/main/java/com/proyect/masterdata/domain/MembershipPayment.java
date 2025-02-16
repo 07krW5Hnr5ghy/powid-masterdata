@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -19,9 +20,9 @@ import java.util.Date;
 public class MembershipPayment {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "membership_payment_id", nullable = false)
-        private Long id;
+        private UUID id;
 
         @Column(name = "net_amount", nullable = false)
         private Double netAmount;
@@ -37,20 +38,20 @@ public class MembershipPayment {
 
         @Column(name = "registration_date", nullable = false)
         @CreationTimestamp
-        private Date registrationDate;
+        private OffsetDateTime registrationDate;
 
         @Column(name = "update_date")
         @CreationTimestamp
-        private Date updateDate;
+        private OffsetDateTime updateDate;
 
         @Column(name = "payment_gateway_id")
-        private Long paymentGatewayId;
+        private UUID paymentGatewayId;
 
         @Column(name = "client_id")
-        private Long clientId;
+        private UUID clientId;
 
-        @Column(name="token_user")
-        private String tokenUser;
+        @Column(name = "user_id")
+        private UUID userId;
 
         @ManyToOne()
         @JoinColumn(name = "payment_gateway_id",columnDefinition = "paymentGatewayId",insertable = false,updatable = false)
@@ -59,5 +60,9 @@ public class MembershipPayment {
         @ManyToOne
         @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
         private Client client;
+
+        @ManyToOne()
+        @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+        private User user;
 
 }

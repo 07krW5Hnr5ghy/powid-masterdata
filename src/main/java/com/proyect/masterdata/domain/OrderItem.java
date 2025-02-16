@@ -9,7 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -20,9 +21,9 @@ import java.util.Date;
 public class OrderItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_item_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -34,29 +35,29 @@ public class OrderItem {
     private String observations;
 
     @Column(name = "product_id")
-    private Long productId;
+    private UUID productId;
 
     @Column(name = "order_id")
-    private Long orderId;
+    private UUID orderId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "discount_id")
-    private Long discountId;
+    private UUID discountId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(name = "status")
     private Boolean status;
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @ManyToOne
     @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false,updatable = false)
@@ -73,5 +74,9 @@ public class OrderItem {
     @ManyToOne
     @JoinColumn(name = "discount_id",columnDefinition = "discountId",insertable = false,updatable = false)
     private Discount discount;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

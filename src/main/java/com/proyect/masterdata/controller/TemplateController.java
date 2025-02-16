@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -67,7 +68,7 @@ public class TemplateController {
 
     @GetMapping("stock-replenishment")
     private ResponseEntity<byte[]> stockReplenishment(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ByteArrayInputStream> result = iTemplate.stockReplenishment(orderId,user);
@@ -81,7 +82,7 @@ public class TemplateController {
 
     @GetMapping("order-stock")
     private ResponseEntity<byte[]> orderStock(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ByteArrayInputStream> result = iTemplate.orderStock(orderId,user);
@@ -95,7 +96,7 @@ public class TemplateController {
 
     @GetMapping("order-return")
     private ResponseEntity<byte[]> orderReturn(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ByteArrayInputStream> result = iTemplate.orderReturn(orderId,user);

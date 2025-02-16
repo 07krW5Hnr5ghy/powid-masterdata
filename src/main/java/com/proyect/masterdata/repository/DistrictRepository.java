@@ -8,16 +8,18 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface DistrictRepository extends JpaRepository<District, Long> {
-    District findByNameAndProvinceId(String name,Long provinceId);
+public interface DistrictRepository extends JpaRepository<District, UUID> {
+    District findByNameAndProvinceId(String name,UUID provinceId);
     List<District> findByNameIn(List<String> name);
     List<District> findAllByStatusTrue();
-    District findByNameAndProvinceIdAndStatusTrue(String name,Long provinceId);
-    District findByNameAndProvinceIdAndStatusFalse(String name,Long provinceId);
-    List<District> findAllByProvinceIdAndStatusTrue(Long provinceId);
-    List<District> findAllByProvinceId(Long provinceId);
+    District findByNameAndStatusTrue(String name);
+    District findByNameAndProvinceIdAndStatusTrue(String name,UUID provinceId);
+    District findByNameAndProvinceIdAndStatusFalse(String name,UUID provinceId);
+    List<District> findAllByProvinceIdAndStatusTrue(UUID provinceId);
+    List<District> findAllByProvinceId(UUID provinceId);
 
     @Query(value = "SELECT " +
             "de.name AS department, " +

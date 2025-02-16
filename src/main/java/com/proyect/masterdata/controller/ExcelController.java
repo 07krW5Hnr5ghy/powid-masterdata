@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -50,7 +51,7 @@ public class ExcelController {
 
     @PostMapping("replenishment")
     public ResponseEntity<ResponseSuccess> stockReplenishment(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestPart("multipartFile") MultipartFile multipartFile,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -60,7 +61,7 @@ public class ExcelController {
 
     @PostMapping("order-stock")
     public ResponseEntity<ResponseSuccess> orderStock(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestParam("warehouse") String warehouse,
             @RequestPart("multipartFile") MultipartFile multipartFile,
             @RequestParam("tokenUser") String tokenUser
@@ -71,7 +72,7 @@ public class ExcelController {
 
     @PostMapping("order-return")
     public ResponseEntity<ResponseSuccess> orderReturn(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestPart("multipartFile") MultipartFile multipartFile,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {

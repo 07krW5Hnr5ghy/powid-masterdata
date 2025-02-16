@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -46,9 +47,10 @@ public class DiscountImpl implements IDiscount {
         try{
             Discount newDiscount = discountRepository.save(Discount.builder()
                             .name(name.toUpperCase())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
-                            .tokenUser(user.getUsername())
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
                             .status(true)
                     .build());
             iAudit.save("ADD_DISCOUNT","DESCUENTO "+newDiscount.getName()+" CREADO.",newDiscount.getName(),user.getUsername());
@@ -83,9 +85,10 @@ public class DiscountImpl implements IDiscount {
             try{
                 Discount newDiscount = discountRepository.save(Discount.builder()
                         .name(name.toUpperCase())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
-                        .tokenUser(user.getUsername())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user)
+                        .userId(user.getId())
                         .status(true)
                         .build());
                 iAudit.save("ADD_DISCOUNT","DESCUENTO "+newDiscount.getName()+" CREADO.",newDiscount.getName(),user.getUsername());

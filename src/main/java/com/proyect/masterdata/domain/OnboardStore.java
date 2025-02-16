@@ -15,6 +15,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -24,15 +26,15 @@ import lombok.NoArgsConstructor;
 public class OnboardStore {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "onboard_store_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "onboard_id", nullable = false)
-    private Long onboardId;
+    private UUID onboardId;
 
     @Column(name = "store_id", nullable = false)
-    private Long storeId;
+    private UUID storeId;
 
     @OneToOne
     @JoinColumn(name = "store_id", columnDefinition = "storeId", insertable = false, updatable = false)

@@ -5,15 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class SalesCategoryReportRawDTO {
-    private Long orderId;
-    private Date registrationDate;
+    private UUID orderId;
+    private OffsetDateTime registrationDate;
     private Double orderDiscountAmount;
     private String orderDiscountName;
     private String closingChannelName;

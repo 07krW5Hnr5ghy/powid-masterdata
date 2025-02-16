@@ -18,7 +18,6 @@ public interface ColorMapper {
     List<ColorDTO> listColorToListColorDTO(List<Color> colorList);
 
     @Mapping(target = "name", source = "requestColorSave.name")
-    @Mapping(target = "tokenUser", source = "requestColorSave.user")
     Color colorToName(RequestColorSave requestColorSave);
 
     List<Color> listColorToListName(List<RequestColorSave> requestColorSaveList);

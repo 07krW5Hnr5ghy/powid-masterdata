@@ -1,6 +1,7 @@
 package com.proyect.masterdata.domain;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,9 +22,9 @@ import lombok.NoArgsConstructor;
 public class Ordering {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "cancellation")
     private Boolean cancellation;
@@ -54,50 +55,50 @@ public class Ordering {
 
     @Column(name = "registration_date")
     @CreationTimestamp
-    private Date registrationDate;
+    private OffsetDateTime registrationDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
-    private Date updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "order_state_id")
-    private Long orderStateId;
+    private UUID orderStateId;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "courier_id")
-    private Long courierId;
+    private UUID courierId;
 
     @Column(name = "delivery_point_id")
-    private Long deliveryPointId;
+    private UUID deliveryPointId;
 
     @Column(name = "payment_state_id")
-    private Long paymentStateId;
+    private UUID paymentStateId;
 
     @Column(name = "payment_method_id")
-    private Long paymentMethodId;
+    private UUID paymentMethodId;
 
     @Column(name = "sale_channel_id")
-    private Long saleChannelId;
+    private UUID saleChannelId;
 
     @Column(name = "management_type_id")
-    private Long managementTypeId;
+    private UUID managementTypeId;
 
     @Column(name = "store_id")
-    private Long storeId;
+    private UUID storeId;
 
     @Column(name = "closing_channel_id")
-    private Long closingChannelId;
+    private UUID closingChannelId;
 
     @Column(name = "customer_id")
-    private Long customerId;
+    private UUID customerId;
 
     @Column(name = "discount_id")
-    private Long discountId;
+    private UUID discountId;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "order_state_id", columnDefinition = "orderStateId", insertable = false, updatable = false)
@@ -146,5 +147,9 @@ public class Ordering {
     @ManyToOne
     @JoinColumn(name = "discount_id",columnDefinition = "discountId",insertable = false,updatable = false)
     private Discount discount;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 
 }

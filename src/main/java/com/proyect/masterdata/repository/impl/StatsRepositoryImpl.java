@@ -13,8 +13,10 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class StatsRepositoryImpl implements StatsRepository {
@@ -39,7 +41,10 @@ public class StatsRepositoryImpl implements StatsRepository {
     }
 
     @Override
-    public List<Ordering> findOrdersByClientAndRegistrationDate(Long clientId, Date startDate, Date endDate) {
+    public List<Ordering> findOrdersByClientAndRegistrationDate(
+            UUID clientId,
+            OffsetDateTime startDate, 
+            OffsetDateTime endDate) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Ordering> cq = cb.createQuery(Ordering.class);
         Root<Ordering> root = cq.from(Ordering.class);
@@ -50,7 +55,7 @@ public class StatsRepositoryImpl implements StatsRepository {
     }
 
     @Override
-    public List<OrderItem> findOrderItemsByClientAndOrder(Long clientId, Long orderId) {
+    public List<OrderItem> findOrderItemsByClientAndOrder(UUID clientId, UUID orderId) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderItem> cq = cb.createQuery(OrderItem.class);
         Root<OrderItem> root = cq.from(OrderItem.class);

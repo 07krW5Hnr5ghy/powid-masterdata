@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -220,19 +221,17 @@ public class ReportImpl implements IReport {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> dailySalesSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ByteArrayInputStream> dailySalesSummary(OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()-> {
             User user;
             List<Ordering> orderingListByDate;
             List<Ordering> orderingListByDateAndStatus;
             OrderState orderState;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderState = orderStateRepository.findByNameAndStatusTrue("ENTREGADO");
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -247,8 +246,8 @@ public class ReportImpl implements IReport {
             }else{
                 orderingListByDateAndStatus = orderingRepository.findByClientIdAndRegistrationDateBetweenAndOrderStateId(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd,
+                        registrationStartDate,
+                        registrationEndDate,
                         orderState.getId()
                 );
             }
@@ -301,8 +300,8 @@ public class ReportImpl implements IReport {
                 List<DailySaleSummaryDTO> dailySaleSummaryDTOS = new ArrayList<>();
                 List<DailySaleSummaryDTO> orderDates = orderingRepository.findAllOrdersByDate(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd).stream().map(result -> DailySaleSummaryDTO.builder()
+                        registrationStartDate,
+                        registrationEndDate).stream().map(result -> DailySaleSummaryDTO.builder()
                         .date((Date) result[0])
                         .orderState("TODOS")
                         .totalOrders(((Long) result[1]).intValue())
@@ -446,16 +445,16 @@ public class ReportImpl implements IReport {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> salesBySellerSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ByteArrayInputStream> salesBySellerSummary(OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             List<SalesBySellerDTO> salesBySellerDTOS;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -466,14 +465,14 @@ public class ReportImpl implements IReport {
             try{
                 List<SalesSellerReportRawDTO> salesSellerReportRawDTOS = new ArrayList<>();
                 orderItemRepository.findOrderItemsWithSellerByDateRangeAndClientId(
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd,
+                        registrationStartDate,
+                        registrationEndDate,
                         user.getClientId()
                 ).forEach(item->{
                     salesSellerReportRawDTOS.add(
                             SalesSellerReportRawDTO.builder()
-                                    .orderId((Long) item[0])
-                                    .registrationDate((Date) item[1])
+                                    .orderId(UUID.fromString(item[0].toString()))
+                                    .registrationDate((OffsetDateTime) item[1])
                                     .orderDiscountAmount((Double) item[3])
                                     .orderDiscountName((String) item[4])
                                     .quantity((Integer) item[6])
@@ -687,16 +686,16 @@ public class ReportImpl implements IReport {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> salesByBrandSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ByteArrayInputStream> salesByBrandSummary(OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             List<Ordering> orderingList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -708,8 +707,8 @@ public class ReportImpl implements IReport {
                 List<SalesByBrandDTO> salesByBrandDTOS = new ArrayList<>();
                 orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd);
+                        registrationStartDate,
+                        registrationEndDate);
                 List<User> userList = userRepository.findAllByClientId(user.getClientId());
                 List<Brand> brandList = brandRepository.findAllByClientId(user.getClientId());
                 for(User userData:userList){
@@ -837,16 +836,16 @@ public class ReportImpl implements IReport {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> dailySalesByBrandSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ByteArrayInputStream> dailySalesByBrandSummary(OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             List<Ordering> orderingList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -858,8 +857,8 @@ public class ReportImpl implements IReport {
                 List<SalesByBrandDailyDTO> salesByBrandDailyDTOS = new ArrayList<>();
                 List<DailySaleSummaryDTO> orderDates = orderingRepository.findAllOrdersByDate(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd).stream().map(result -> DailySaleSummaryDTO.builder()
+                        registrationStartDate,
+                        registrationEndDate).stream().map(result -> DailySaleSummaryDTO.builder()
                         .date((Date) result[0])
                         .orderState("TODOS")
                         .totalOrders(((Long) result[1]).intValue())
@@ -867,8 +866,8 @@ public class ReportImpl implements IReport {
                 ).toList();
                 orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd);
+                        registrationStartDate,
+                        registrationEndDate);
                 List<User> userList = userRepository.findAllByClientId(user.getClientId());
                 List<Brand> brandList = brandRepository.findAllByClientId(user.getClientId());
                 for(User userData:userList){
@@ -1012,16 +1011,16 @@ public class ReportImpl implements IReport {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> salesByStatusSummary(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ByteArrayInputStream> salesByStatusSummary(OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             List<Ordering> orderingList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -1033,8 +1032,8 @@ public class ReportImpl implements IReport {
                 List<SalesByStatusDTO> salesByStatusDTOS = new ArrayList<>();
                 orderingList = orderingRepository.findByClientIdAndRegistrationDateBetween(
                         user.getClientId(),
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd);
+                        registrationStartDate,
+                        registrationEndDate);
                 List<OrderState> orderStateList = orderStateRepository.findAll();
                 List<Customer> customerList = customerRepository.findAllByClientId(user.getClientId());
                 List<Brand> brandList = brandRepository.findAllByClientId(user.getClientId());
@@ -1179,17 +1178,17 @@ public class ReportImpl implements IReport {
     }
 
     @Override
-    public CompletableFuture<ByteArrayInputStream> salesByCategory(Date registrationStartDate, Date registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ByteArrayInputStream> salesByCategory(OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Date utcRegistrationDateStart;
-            Date utcRegistrationDateEnd;
+            
+            
             List<Ordering> orderingList;
             List<SalesCategoryReportRawDTO> salesCategoryReportRawDTOS = new ArrayList<>();
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                utcRegistrationDateStart = iUtil.setToUTCStartOfDay(registrationStartDate);
-                utcRegistrationDateEnd = iUtil.setToUTCEndOfDay(registrationEndDate);
+                
+                
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -1200,14 +1199,14 @@ public class ReportImpl implements IReport {
             try {
                 List<SalesByCategoryDTO> salesByCategoryDTOS = new ArrayList<>();
                 orderItemRepository.findOrderItemsWithBrandByDateRangeAndClientId(
-                        utcRegistrationDateStart,
-                        utcRegistrationDateEnd,
+                        registrationStartDate,
+                        registrationEndDate,
                         user.getClientId()
                 ).forEach(item->{
                     salesCategoryReportRawDTOS.add(
                             SalesCategoryReportRawDTO.builder()
-                                    .orderId((Long) item[0])
-                                    .registrationDate((Date) item[1])
+                                    .orderId((UUID) item[0])
+                                    .registrationDate((OffsetDateTime) item[1])
                                     .orderDiscountAmount((Double) item[3])
                                     .orderDiscountName((String) item[4])
                                     .quantity((Integer) item[6])

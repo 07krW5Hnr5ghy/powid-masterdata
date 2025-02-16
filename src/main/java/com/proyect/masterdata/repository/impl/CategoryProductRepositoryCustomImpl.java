@@ -1,5 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,8 +29,18 @@ public class CategoryProductRepositoryCustomImpl implements CategoryProductRepos
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<CategoryProduct> searchForCategoryProduct(String name, String user, Date registrationStartDate, Date registrationEndDate, Date updateStartDate, Date updateEndDate, String sort, String sortColumn,
-                                                          Integer pageNumber, Integer pageSize, Boolean status) {
+    public Page<CategoryProduct> searchForCategoryProduct(
+            String name, 
+            String user, 
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate, 
+            OffsetDateTime updateStartDate, 
+            OffsetDateTime updateEndDate, 
+            String sort, 
+            String sortColumn,
+            Integer pageNumber, 
+            Integer pageSize, 
+            Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<CategoryProduct> criteriaQuery = criteriaBuilder.createQuery(CategoryProduct.class);
@@ -69,10 +80,10 @@ public class CategoryProductRepositoryCustomImpl implements CategoryProductRepos
     private List<Predicate> predicateConditions(
             String name,
             String user,
-            Date registrationStartDate,
-            Date registrationEndDate,
-            Date updateStartDate,
-            Date updateEndDate,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
             Root<CategoryProduct> itemRoot) {
@@ -205,7 +216,7 @@ public class CategoryProductRepositoryCustomImpl implements CategoryProductRepos
         return categoryProductList;
     }
 
-    private Long getOrderCount(String name, String user,Date registrationStartDate,Date registrationEndDate,Date updateStartDate,Date updateEndDate, Boolean status) {
+    private Long getOrderCount(String name, String user,OffsetDateTime registrationStartDate,OffsetDateTime registrationEndDate,OffsetDateTime updateStartDate,OffsetDateTime updateEndDate, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<CategoryProduct> itemRoot = criteriaQuery.from(CategoryProduct.class);

@@ -17,10 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -36,7 +34,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
     private final StockReplenishmentRepositoryCustom stockReplenishmentRepositoryCustom;
     private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(Long orderId, List<RequestStockReplenishmentItem> requestStockReplenishmentItems, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(UUID orderId, List<RequestStockReplenishmentItem> requestStockReplenishmentItems, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         StockReplenishment stockReplenishment;
         Ordering ordering;
@@ -82,12 +80,13 @@ public class StockReplenishmentImpl implements IStockReplenishment {
             StockReplenishment newStockReplenishment = stockReplenishmentRepository.save(StockReplenishment.builder()
                             .ordering(ordering)
                             .orderId(ordering.getId())
-                            .registrationDate(new Date(System.currentTimeMillis()))
-                            .updateDate(new Date(System.currentTimeMillis()))
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                             .status(true)
                             .client(user.getClient())
                             .clientId(user.getClientId())
-                            .tokenUser(user.getUsername())
+                            .user(user)
+                            .userId(user.getId())
                     .build());
             for (RequestStockReplenishmentItem requestStockReplenishmentItem : requestStockReplenishmentItems){
                 Product product = productRepository.findBySku(requestStockReplenishmentItem.getProductSku().toUpperCase());
@@ -105,7 +104,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(Long orderId, List<RequestStockReplenishmentItem> requestStockReplenishmentItems, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(UUID orderId, List<RequestStockReplenishmentItem> requestStockReplenishmentItems, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             StockReplenishment stockReplenishment;
@@ -152,12 +151,13 @@ public class StockReplenishmentImpl implements IStockReplenishment {
                 StockReplenishment newStockReplenishment = stockReplenishmentRepository.save(StockReplenishment.builder()
                         .ordering(ordering)
                         .orderId(ordering.getId())
-                        .registrationDate(new Date(System.currentTimeMillis()))
-                        .updateDate(new Date(System.currentTimeMillis()))
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .status(true)
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .tokenUser(user.getUsername())
+                        .user(user)
+                                .userId(user.getId())
                         .build());
                 for (RequestStockReplenishmentItem requestStockReplenishmentItem : requestStockReplenishmentItems){
                     Product product = productRepository.findBySku(requestStockReplenishmentItem.getProductSku().toUpperCase());
@@ -178,15 +178,15 @@ public class StockReplenishmentImpl implements IStockReplenishment {
     @Override
     public CompletableFuture<Page<StockReplenishmentDTO>> list(
             String user,
-            List<Long> orders,
+            List<UUID> orders,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<StockReplenishment> pageStockReplenishment;
-            Long clientId;
-            List<Long> orderIds;
+            UUID clientId;
+            List<UUID> orderIds;
 
             if(orders != null && !orders.isEmpty()){
                 orderIds = orders;
@@ -227,7 +227,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
     public CompletableFuture<List<StockReplenishmentDTO>> listStockReplenishment(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockReplenishment> stockReplenishments;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stockReplenishments = stockReplenishmentRepository.findAllByClientIdAndStatusTrue(clientId);
@@ -251,7 +251,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
     public CompletableFuture<List<StockReplenishmentDTO>> listStockReplenishmentFalse(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<StockReplenishment> stockReplenishments;
-            Long clientId;
+            UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusFalse(user.toUpperCase()).getClientId();
                 stockReplenishments = stockReplenishmentRepository.findAllByClientIdAndStatusFalse(clientId);

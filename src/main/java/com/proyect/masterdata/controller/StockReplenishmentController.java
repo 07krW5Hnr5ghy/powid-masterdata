@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -26,7 +27,7 @@ public class StockReplenishmentController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("orderId") Long orderId,
+            @RequestParam("orderId") UUID orderId,
             @RequestBody() List<RequestStockReplenishmentItem> requestStockReplenishmentItems,
             @RequestParam("tokenUser") String tokenUser
             ) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -37,7 +38,7 @@ public class StockReplenishmentController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_GET')")
     public ResponseEntity<Page<StockReplenishmentDTO>> list(
             @RequestParam("user") String user,
-            @RequestParam(value = "orderIds",required = false) List<Long> orderIds,
+            @RequestParam(value = "orderIds",required = false) List<UUID> orderIds,
             @RequestParam(value = "sort",required = false) String sort,
             @RequestParam(value = "sortColumn",required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
