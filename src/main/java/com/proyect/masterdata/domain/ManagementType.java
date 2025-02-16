@@ -44,7 +44,7 @@ public class ManagementType {
     private UUID userId;
 
     @ManyToOne()
-    @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
 
 }

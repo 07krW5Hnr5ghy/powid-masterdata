@@ -59,6 +59,6 @@ public class Store {
         private StoreType storeType;
 
         @ManyToOne()
-        @Column(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+        @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
         private User user;
 }
