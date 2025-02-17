@@ -50,7 +50,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProduct().toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(requestOrderStockItem.getProductId());
                 ordering = orderingRepository.findById(orderId).orElse(null);
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProduct().toUpperCase());
 
@@ -261,7 +261,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             Product product;
             try{
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProduct().toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProduct().toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(requestOrderStockItem.getProductId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

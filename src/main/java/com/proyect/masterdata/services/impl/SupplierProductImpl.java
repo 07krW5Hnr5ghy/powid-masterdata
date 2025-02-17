@@ -56,7 +56,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProduct());
+            product = productRepository.findByIdAndStatusTrue(requestSupplierProduct.getProductId());
             supplierProduct = supplierProductRepository.findBySerial(requestSupplierProduct.getSerial());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -118,7 +118,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestSupplierProduct.getProduct());
+                product = productRepository.findByIdAndStatusTrue(requestSupplierProduct.getProductId());
                 supplierProduct = supplierProductRepository.findBySerial(requestSupplierProduct.getSerial());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -252,7 +252,6 @@ public class SupplierProductImpl implements ISupplierProduct {
     public CompletableFuture<Page<SupplierProductDTO>> list(
             String user,
             String serial,
-            String productSku,
             String model,
             List<String> suppliers,
             String sort,
@@ -277,7 +276,6 @@ public class SupplierProductImpl implements ISupplierProduct {
                 supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(
                         clientId,
                         serial,
-                        productSku,
                         model,
                         supplierIds,
                         sort,
@@ -317,7 +315,6 @@ public class SupplierProductImpl implements ISupplierProduct {
     public CompletableFuture<Page<SupplierProductDTO>> listFalse(
             String user,
             String serial,
-            String productSku,
             String model,
             List<String> suppliers,
             String sort,
@@ -343,7 +340,6 @@ public class SupplierProductImpl implements ISupplierProduct {
                 supplierProductPage = supplierProductRepositoryCustom.searchForSupplierProduct(
                         clientId,
                         serial,
-                        productSku,
                         model,
                         supplierIds,
                         sort,
@@ -494,14 +490,12 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user, String productSku) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user, UUID productId) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<SupplierProduct> supplierProducts;
             UUID clientId;
-            UUID productId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                productId = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase()).getId();
                 supplierProducts = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(clientId,productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());

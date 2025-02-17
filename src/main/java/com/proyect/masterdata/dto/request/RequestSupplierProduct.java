@@ -5,13 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class RequestSupplierProduct {
     private String serial;
-    private String product;
+    private UUID productId;
     private String supplier;
     private Double purchasePrice;
 }

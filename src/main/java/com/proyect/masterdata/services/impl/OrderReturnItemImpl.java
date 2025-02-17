@@ -58,7 +58,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderReturnItem.getSupplierProductSerial().toUpperCase());
                 orderReturnType = orderReturnTypeRepository.findByNameAndStatusTrue(requestOrderReturnItem.getOrderReturnType().toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderReturnItem.getProductSku().toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(requestOrderReturnItem.getProductId());
                 orderReturn = orderReturnRepository.findByOrderId(orderId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -338,8 +338,8 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     @Override
     public CompletableFuture<Page<OrderReturnItemDTO>> listPagination(
             String user,
-            List<UUID> orders,
-            List<String> products,
+            List<UUID> orderIds,
+            List<UUID> productIds,
             List<String> supplierProducts,
             List<String> warehouses,
             List<String> orderReturnTypes,
@@ -354,23 +354,9 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderReturnItem> orderReturnItemPage;
             UUID clientId;
-            List<UUID> orderIds;
-            List<UUID> productIds;
             List<UUID> supplierProductIds;
             List<UUID> warehouseIds;
             List<UUID> orderReturnTypeIds;
-            if(orders != null && !orders.isEmpty()){
-                orderIds = orders;
-            }else{
-                orderIds = new ArrayList<>();
-            }
-            if(products != null && !products.isEmpty()){
-                productIds = productRepository.findBySkuIn(
-                        products.stream().map(String::toUpperCase).toList()
-                ).stream().map(Product::getId).toList();
-            }else {
-                productIds = new ArrayList<>();
-            }
             if(supplierProducts != null && !supplierProducts.isEmpty()){
                 supplierProductIds = supplierProductRepository.findBySerialIn(
                         supplierProducts.stream().map(String::toUpperCase).toList()
@@ -436,8 +422,8 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     @Override
     public CompletableFuture<Page<OrderReturnItemDTO>> listFalse(
             String user,
-            List<UUID> orders,
-            List<String> products,
+            List<UUID> orderIds,
+            List<UUID> productIds,
             List<String> supplierProducts,
             List<String> warehouses,
             List<String> orderReturnTypes,
@@ -452,23 +438,9 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderReturnItem> orderReturnItemPage;
             UUID clientId;
-            List<UUID> orderIds;
-            List<UUID> productIds;
             List<UUID> supplierProductIds;
             List<UUID> warehouseIds;
             List<UUID> orderReturnTypeIds;
-            if(orders != null && !orders.isEmpty()){
-                orderIds = orders;
-            }else{
-                orderIds = new ArrayList<>();
-            }
-            if(products != null && !products.isEmpty()){
-                productIds = productRepository.findBySkuIn(
-                        products.stream().map(String::toUpperCase).toList()
-                ).stream().map(Product::getId).toList();
-            }else {
-                productIds = new ArrayList<>();
-            }
             if(supplierProducts != null && !supplierProducts.isEmpty()){
                 supplierProductIds = supplierProductRepository.findBySerialIn(
                         supplierProducts.stream().map(String::toUpperCase).toList()

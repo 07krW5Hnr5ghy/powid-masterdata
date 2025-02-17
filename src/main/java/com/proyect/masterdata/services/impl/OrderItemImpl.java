@@ -53,7 +53,7 @@ public class OrderItemImpl implements IOrderItem {
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct());
+            product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
             discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -115,7 +115,7 @@ public class OrderItemImpl implements IOrderItem {
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct());
+                product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
                 discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -170,7 +170,7 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<ResponseCheckStockItem> checkStock(String productSku, Integer quantity, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseCheckStockItem> checkStock(UUID productId, Integer quantity, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -179,7 +179,7 @@ public class OrderItemImpl implements IOrderItem {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -236,7 +236,7 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(UUID orderId, String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID orderId, UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -245,7 +245,7 @@ public class OrderItemImpl implements IOrderItem {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                product = productRepository.findBySku(productSku.toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -298,7 +298,7 @@ public class OrderItemImpl implements IOrderItem {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
                 discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -370,7 +370,7 @@ public class OrderItemImpl implements IOrderItem {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
                 discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -626,7 +626,7 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> activate(UUID orderId, String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> activate(UUID orderId, UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -635,7 +635,7 @@ public class OrderItemImpl implements IOrderItem {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                product = productRepository.findBySku(productSku.toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

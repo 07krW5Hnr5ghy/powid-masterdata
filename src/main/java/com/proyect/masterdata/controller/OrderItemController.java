@@ -30,11 +30,11 @@ public class OrderItemController {
     @GetMapping("check-stock")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_ITEM_GET')")
     public ResponseEntity<ResponseCheckStockItem> checkStockItem(
-            @RequestParam("productSku") String productSku,
+            @RequestParam("productId") UUID productId,
             @RequestParam("quantity") Integer quantity,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseCheckStockItem> result = iOrderItem.checkStock(productSku, quantity, user);
+        CompletableFuture<ResponseCheckStockItem> result = iOrderItem.checkStock(productId, quantity, user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -53,10 +53,10 @@ public class OrderItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_DELETE')")
     public ResponseEntity<ResponseDelete> deleteItem(
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("productSku") String productSku,
+            @RequestParam("productId") UUID productId,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iOrderItem.delete(orderId,productSku,tokenUser);
+        CompletableFuture<ResponseDelete> result = iOrderItem.delete(orderId,productId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
@@ -64,10 +64,10 @@ public class OrderItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_DELETE')")
     public ResponseEntity<ResponseDelete> activateItem(
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("productSku") String productSku,
+            @RequestParam("productId") UUID productId,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iOrderItem.activate(orderId,productSku,tokenUser);
+        CompletableFuture<ResponseDelete> result = iOrderItem.activate(orderId,productId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

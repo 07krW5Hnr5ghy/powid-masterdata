@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.Model;
@@ -20,8 +21,8 @@ public interface IProduct {
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product, MultipartFile[] productPictures, String tokenUser)
                 throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<ResponseDelete> delete(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<ResponseSuccess> activate(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseDelete> delete(UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> activate(UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<ProductDTO>> list(
                 String tokenUser,
                 String sku,

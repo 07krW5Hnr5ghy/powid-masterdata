@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -24,19 +25,19 @@ public class ProductPriceController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_PRICE_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("productSku") String productSku,
+            @RequestParam("productId") UUID productId,
             @RequestParam("unitPrice") Double unitPrice,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iProductPrice.saveAsync(productSku,unitPrice,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iProductPrice.saveAsync(productId,unitPrice,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("productSku") String productSku,
+            @RequestParam("productId") UUID productId,
             @RequestParam("tokenUSer") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iProductPrice.delete(productSku,tokenUser);
+        CompletableFuture<ResponseDelete> result = iProductPrice.delete(productId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

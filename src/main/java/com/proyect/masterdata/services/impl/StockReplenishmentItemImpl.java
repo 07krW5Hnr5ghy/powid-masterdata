@@ -104,7 +104,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
             StockReplenishmentItem stockReplenishmentItem;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestStockReplenishmentItem.getProductSku().toUpperCase());
+                product = productRepository.findById(requestStockReplenishmentItem.getProductId()).orElse(null);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -158,7 +158,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(UUID orderId, String productSku, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID orderId, UUID productId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -166,7 +166,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
             StockReplenishmentItem stockReplenishmentItem;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+                product = productRepository.findById(productId).orElse(null);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -201,7 +201,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> update(UUID orderId, String productSku, Integer quantity, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> update(UUID orderId, UUID productId, Integer quantity, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -209,7 +209,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
             StockReplenishmentItem stockReplenishmentItem;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+                product = productRepository.findById(productId).orElse(null);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -254,14 +254,14 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(UUID orderId, String productSku, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(UUID orderId, UUID productId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
             StockReplenishmentItem stockReplenishmentItem;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+                product = productRepository.findById(productId).orElse(null);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -298,8 +298,8 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     @Override
     public CompletableFuture<Page<StockReplenishmentItemDTO>> list(
             String user,
-            List<UUID> orders,
-            List<String> productSkus,
+            List<UUID> orderIds,
+            List<UUID> productIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -307,22 +307,6 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
         return CompletableFuture.supplyAsync(()->{
             Page<StockReplenishmentItem> pageStockReplenishmentItem;
             UUID clientId;
-            List<UUID> orderIds;
-            List<UUID> productIds;
-
-            if(orders != null && !orders.isEmpty()){
-                orderIds = orders;
-            }else{
-                orderIds = new ArrayList<>();
-            }
-
-            if(productSkus != null && !productSkus.isEmpty()){
-                productIds = productRepository.findBySkuIn(
-                        productSkus.stream().map(String::toUpperCase).toList()
-                ).stream().map(Product::getId).toList();
-            }else{
-                productIds = new ArrayList<>();
-            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();

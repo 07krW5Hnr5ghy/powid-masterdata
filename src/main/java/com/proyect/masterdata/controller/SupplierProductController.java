@@ -69,7 +69,6 @@ public class SupplierProductController {
     public ResponseEntity<Page<SupplierProductDTO>> list(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "serial", required = false) String serial,
-            @RequestParam(value = "productSku", required = false) String productSku,
             @RequestParam(value = "model", required = false) String model,
             @RequestParam(value = "suppliers", required = false) List<String> suppliers,
             @RequestParam(value = "sort", required = false) String sort,
@@ -80,7 +79,6 @@ public class SupplierProductController {
         CompletableFuture<Page<SupplierProductDTO>> result = iSupplierProduct.list(
                 user,
                 serial,
-                productSku,
                 model,
                 suppliers,
                 sort,
@@ -95,7 +93,6 @@ public class SupplierProductController {
     public ResponseEntity<Page<SupplierProductDTO>> listFalse(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "serial", required = false) String serial,
-            @RequestParam(value = "productSku", required = false) String productSku,
             @RequestParam(value = "model", required = false) String model,
             @RequestParam(value = "suppliers", required = false) List<String> suppliers,
             @RequestParam(value = "sort", required = false) String sort,
@@ -105,7 +102,6 @@ public class SupplierProductController {
         CompletableFuture<Page<SupplierProductDTO>> result = iSupplierProduct.listFalse(
                 user,
                 serial,
-                productSku,
                 model,
                 suppliers,
                 sort,
@@ -139,9 +135,9 @@ public class SupplierProductController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_GET')")
     public ResponseEntity<List<SupplierProductDTO>> listSupplierProductProduct(
             @RequestParam("user") String user,
-            @RequestParam(value = "productSku") String productSku
+            @RequestParam(value = "productId") UUID productId
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SupplierProductDTO>> result = iSupplierProduct.listSupplierProductByProduct(user,productSku);
+        CompletableFuture<List<SupplierProductDTO>> result = iSupplierProduct.listSupplierProductByProduct(user,productId);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

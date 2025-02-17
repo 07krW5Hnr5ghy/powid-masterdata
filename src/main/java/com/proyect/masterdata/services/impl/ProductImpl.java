@@ -55,22 +55,20 @@ public class ProductImpl implements IProduct {
     private final IUtil iUtil;
     @Override
     @Transactional
-    public ResponseSuccess save(RequestProductSave product,List<MultipartFile> productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(RequestProductSave requestProductSave,List<MultipartFile> productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
-        boolean existsProduct;
-        Model modelData;
-        Size sizeData;
+        Product product;
+        Model model;
+        Size size;
         SubCategoryProduct subCategoryProduct;
-        Color colorData;
+        Color color;
         Unit unit;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            existsProduct = productRepository.existsBySkuAndStatusTrue(product.getSku().toUpperCase());
-            sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
-            subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(product.getSubCategoryProduct().toUpperCase());
-            colorData = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
-            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(product.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getSizeTypeId());
+            subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase());
+            color = colorRepository.findByNameAndStatusTrue(requestProductSave.getColor().toUpperCase());
+            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getSizeTypeId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -79,47 +77,51 @@ public class ProductImpl implements IProduct {
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
-            modelData = modelRepository.findBySkuAndClientIdAndStatusTrue(product.getModel().toUpperCase(),user.getClientId());
+            model = modelRepository.findBySkuAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
+        }
+
+        if (model == null) {
+            throw new BadRequestExceptions(Constants.ErrorModel);
+        }else{
+            size = sizeRepository.findByNameAndStatusTrue(requestProductSave.getSize().toUpperCase());
+        }
+
+        if (size == null) {
+            throw new BadRequestExceptions(Constants.ErrorSize);
+        }
+
+        if (color == null) {
+            throw new BadRequestExceptions(Constants.ErrorColor);
         }
 
         if (subCategoryProduct == null) {
             throw new BadRequestExceptions(Constants.ErrorSubCategory);
         }
 
-        if (existsProduct) {
-            throw new BadRequestExceptions(Constants.ErrorProductExists);
-        }
-
-        if (modelData == null) {
-            throw new BadRequestExceptions(Constants.ErrorModel);
-        }
-
-        if (sizeData == null) {
-            throw new BadRequestExceptions(Constants.ErrorSize);
-        }
-
-        if(!Objects.equals(sizeData.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
+        if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
             throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
-        }
-
-        if (colorData == null) {
-            throw new BadRequestExceptions(Constants.ErrorColor);
         }
 
         if(unit == null){
             throw new BadRequestExceptions(Constants.ErrorUnit);
+        }else{
+            product = productRepository.findByModelIdAndSizeIdAndColorIdAndClientIdAndStatusTrue(model.getId(),size.getId(),color.getId(),user.getClientId());
+        }
+
+        if (product==null) {
+            throw new BadRequestExceptions(Constants.ErrorProductExists);
         }
 
         try {
             Product productData = productRepository.save(Product.builder()
-                    .model(modelData)
-                    .modelId(modelData.getId())
-                    .size(sizeData)
-                    .sizeId(sizeData.getId())
-                            .subCategoryProduct(subCategoryProduct)
-                            .subCategoryProductId(subCategoryProduct.getId())
-                    .color(colorData)
-                    .colorId(colorData.getId())
+                    .model(model)
+                    .modelId(model.getId())
+                    .size(size)
+                    .sizeId(size.getId())
+                    .subCategoryProduct(subCategoryProduct)
+                    .subCategoryProductId(subCategoryProduct.getId())
+                    .color(color)
+                    .colorId(color.getId())
                     .unit(unit)
                     .unitId(unit.getId())
                     .client(user.getClient())
@@ -131,14 +133,13 @@ public class ProductImpl implements IProduct {
                     .registrationDate(OffsetDateTime.now())
                     .updateDate(OffsetDateTime.now())
                     .build());
-            String finalSku = iUtil.buildProductSku(productData);
-            iProductPrice.save(finalSku, product.getPrice(),tokenUser.toUpperCase());
+            iProductPrice.save(productData.getId(), requestProductSave.getPrice(),tokenUser.toUpperCase());
             List<String> pictures = iProductPicture.uploadPicture(productPictures,productData.getId(),user.getUsername());
             if(!pictures.isEmpty()){
                 productData.setPictureFlag(true);
                 productRepository.save(productData);
             }
-            iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+finalSku+" CREADO.",finalSku,user.getUsername());
+            iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getId()+" CREADO.",productData.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -151,24 +152,22 @@ public class ProductImpl implements IProduct {
 
     @Override
     @Transactional
-    public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product,MultipartFile[] productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave requestProductSave,MultipartFile[] productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         Path folder = Paths.get("/home/powid-masterdata/src/main/resources/uploads/products");
         return CompletableFuture.supplyAsync(()->{
             User user;
-            boolean existsProduct;
-            Model modelData;
-            Size sizeData;
+            Product product;
+            Model model;
+            Size size;
             SubCategoryProduct subCategoryProduct;
-            Color colorData;
+            Color color;
             Unit unit;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                existsProduct = productRepository.existsBySkuAndStatusTrue(product.getSku().toUpperCase());
-                sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
-                subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(product.getSubCategoryProduct().toUpperCase());
-                colorData = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
-                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(product.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getSizeTypeId());
+                subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase());
+                color = colorRepository.findByNameAndStatusTrue(requestProductSave.getColor().toUpperCase());
+                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getSizeTypeId());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -177,47 +176,51 @@ public class ProductImpl implements IProduct {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                modelData = modelRepository.findBySkuAndClientIdAndStatusTrue(product.getModel().toUpperCase(),user.getClientId());
+                model = modelRepository.findBySkuAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
             }
 
-            if (existsProduct) {
-                throw new BadRequestExceptions(Constants.ErrorProductExists);
-            }
-
-            if (modelData == null) {
+            if (model == null) {
                 throw new BadRequestExceptions(Constants.ErrorModel);
+            }else{
+                size = sizeRepository.findByNameAndStatusTrue(requestProductSave.getSize().toUpperCase());
             }
 
-            if (sizeData == null) {
+            if (size == null) {
                 throw new BadRequestExceptions(Constants.ErrorSize);
+            }
+
+            if (color == null) {
+                throw new BadRequestExceptions(Constants.ErrorColor);
             }
 
             if (subCategoryProduct == null) {
                 throw new BadRequestExceptions(Constants.ErrorSubCategory);
             }
 
-            if(!Objects.equals(sizeData.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
+            if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
                 throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
-            }
-
-            if (colorData == null) {
-                throw new BadRequestExceptions(Constants.ErrorColor);
             }
 
             if(unit == null){
                 throw new BadRequestExceptions(Constants.ErrorUnit);
+            }else{
+                product = productRepository.findByModelIdAndSizeIdAndColorIdAndClientIdAndStatusTrue(model.getId(),size.getId(),color.getId(),user.getClientId());
+            }
+
+            if (product==null) {
+                throw new BadRequestExceptions(Constants.ErrorProductExists);
             }
 
             try {
                 Product productData = productRepository.save(Product.builder()
-                        .model(modelData)
-                        .modelId(modelData.getId())
-                        .size(sizeData)
-                        .sizeId(sizeData.getId())
-                                .subCategoryProduct(subCategoryProduct)
-                                .subCategoryProductId(subCategoryProduct.getId())
-                        .color(colorData)
-                        .colorId(colorData.getId())
+                        .model(model)
+                        .modelId(model.getId())
+                        .size(size)
+                        .sizeId(size.getId())
+                        .subCategoryProduct(subCategoryProduct)
+                        .subCategoryProductId(subCategoryProduct.getId())
+                        .color(color)
+                        .colorId(color.getId())
                         .unit(unit)
                         .unitId(unit.getId())
                         .client(user.getClient())
@@ -229,8 +232,7 @@ public class ProductImpl implements IProduct {
                         .registrationDate(OffsetDateTime.now())
                         .pictureFlag(false)
                         .build());
-                String finalSku = iUtil.buildProductSku(productData);
-                iProductPrice.save(finalSku, product.getPrice(),tokenUser.toUpperCase());
+                iProductPrice.save(productData.getId(), requestProductSave.getPrice(),tokenUser.toUpperCase());
                 List<File> fileList = new ArrayList<>();
                 for(MultipartFile multipartFile : productPictures){
                     if(multipartFile.isEmpty()){
@@ -256,7 +258,7 @@ public class ProductImpl implements IProduct {
                     productData.setPictureFlag(true);
                     productRepository.save(productData);
                 }
-                iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+finalSku+" CREADO.",finalSku,user.getUsername());
+                iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getId()+" CREADO.",productData.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -269,14 +271,14 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String sku, String username) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID productId, String username) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(sku.toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(productId);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -310,14 +312,14 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> activate(UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusFalse(sku.toUpperCase());
+                product = productRepository.findByIdAndStatusFalse(productId);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -694,7 +696,7 @@ public class ProductImpl implements IProduct {
             Product product;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(requestProductUpdate.getTokenUser().toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestProductUpdate.getSku().toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(requestProductUpdate.getProductId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

@@ -68,7 +68,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
                 if(requestStockReplenishmentItem.getQuantity() < 1){
                     throw new BadRequestExceptions(Constants.ErrorStockReplenishmentItemZero);
                 }
-                Product product = productRepository.findBySku(requestStockReplenishmentItem.getProductSku().toUpperCase());
+                Product product = productRepository.findByIdAndStatusTrue(requestStockReplenishmentItem.getProductId());
                 if(product == null){
                     throw new BadRequestExceptions(Constants.ErrorProduct);
                 }
@@ -89,7 +89,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
                             .userId(user.getId())
                     .build());
             for (RequestStockReplenishmentItem requestStockReplenishmentItem : requestStockReplenishmentItems){
-                Product product = productRepository.findBySku(requestStockReplenishmentItem.getProductSku().toUpperCase());
+                Product product = productRepository.findByIdAndStatusTrue(requestStockReplenishmentItem.getProductId());
                 OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
                 iStockReplenishmentItem.save(orderItem,requestStockReplenishmentItem,user,newStockReplenishment);
             }
@@ -139,7 +139,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
                     if(requestStockReplenishmentItem.getQuantity() < 1){
                         throw new BadRequestExceptions(Constants.ErrorStockReplenishmentItemZero);
                     }
-                    Product product = productRepository.findBySku(requestStockReplenishmentItem.getProductSku().toUpperCase());
+                    Product product = productRepository.findByIdAndStatusTrue(requestStockReplenishmentItem.getProductId());
                     if(product == null){
                         throw new BadRequestExceptions(Constants.ErrorProduct);
                     }
@@ -160,7 +160,7 @@ public class StockReplenishmentImpl implements IStockReplenishment {
                                 .userId(user.getId())
                         .build());
                 for (RequestStockReplenishmentItem requestStockReplenishmentItem : requestStockReplenishmentItems){
-                    Product product = productRepository.findBySku(requestStockReplenishmentItem.getProductSku().toUpperCase());
+                    Product product = productRepository.findByIdAndStatusTrue(requestStockReplenishmentItem.getProductId());
                     OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
                     iStockReplenishmentItem.save(orderItem,requestStockReplenishmentItem,user,newStockReplenishment);
                 }

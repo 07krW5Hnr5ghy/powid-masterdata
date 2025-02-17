@@ -23,7 +23,7 @@ public interface IOrderReturnItem {
     CompletableFuture<Page<OrderReturnItemDTO>> listPagination(
             String user,
             List<UUID> orderIds,
-            List<String> products,
+            List<UUID> productIds,
             List<String> supplierProducts,
             List<String> warehouses,
             List<String> orderReturnTypes,
@@ -39,7 +39,7 @@ public interface IOrderReturnItem {
     CompletableFuture<Page<OrderReturnItemDTO>> listFalse(
             String user,
             List<UUID> orderIds,
-            List<String> products,
+            List<UUID> productIds,
             List<String> supplierProducts,
             List<String> warehouses,
             List<String> orderReturnTypes,

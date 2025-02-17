@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -34,7 +35,7 @@ public class ProductPriceImpl implements IProductPrice {
     private final IUtil iUtil;
     @Override
     @Transactional
-    public ResponseSuccess save(String productSku,Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(UUID productId, Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         Product product;
@@ -42,7 +43,7 @@ public class ProductPriceImpl implements IProductPrice {
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+            product = productRepository.findByIdAndStatusTrue(productId);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -86,7 +87,7 @@ public class ProductPriceImpl implements IProductPrice {
 
     @Override
     @Transactional
-    public CompletableFuture<ResponseSuccess> saveAsync(String productSku, Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(UUID productId, Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -94,7 +95,7 @@ public class ProductPriceImpl implements IProductPrice {
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -138,14 +139,14 @@ public class ProductPriceImpl implements IProductPrice {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
             ProductPrice productPrice;
             try {
                 user=userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product=productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+                product=productRepository.findByIdAndStatusTrue(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

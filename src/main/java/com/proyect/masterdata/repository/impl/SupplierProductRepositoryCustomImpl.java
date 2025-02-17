@@ -29,7 +29,6 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
     public Page<SupplierProduct> searchForSupplierProduct(
             UUID clientId,
             String serial,
-            String productSku,
             String model,
             List<UUID> supplierIds,
             String sort,
@@ -49,7 +48,6 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
         List<Predicate> conditions = predicateConditions(
                 clientId,
                 serial,
-                productSku,
                 model,
                 supplierIds,
                 status,
@@ -83,7 +81,6 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
         Long count = getOrderCount(
                 clientId,
                 serial,
-                productSku,
                 model,
                 supplierIds,
                 status);
@@ -93,7 +90,6 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
     private List<Predicate> predicateConditions(
             UUID clientId,
             String serial,
-            String productSku,
             String model,
             List<UUID> supplierIds,
             Boolean status,
@@ -111,10 +107,6 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
         if (clientId != null) {
             conditions.add(criteriaBuilder
                     .and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
-        }
-
-        if (productSku != null) {
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplierProductProductJoin.get("sku")),"%"+productSku.toUpperCase()+"%"));
         }
 
         if (!supplierIds.isEmpty()) {
@@ -194,7 +186,6 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
     private Long getOrderCount(
             UUID clientId,
             String serial,
-            String productSku,
             String model,
             List<UUID> supplierIds,
             Boolean status) {
@@ -209,7 +200,6 @@ public class SupplierProductRepositoryCustomImpl implements SupplierProductRepos
         List<Predicate> conditions = predicateConditions(
                 clientId,
                 serial,
-                productSku,
                 model,
                 supplierIds,
                 status,

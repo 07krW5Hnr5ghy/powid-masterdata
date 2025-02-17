@@ -65,7 +65,7 @@ public class OrderReturnImpl implements IOrderReturn {
         }
         try {
             requestOrderReturnItemList.forEach(requestOrderReturnItem -> {
-                Product product = productRepository.findBySkuAndStatusTrue(requestOrderReturnItem.getProductSku().toUpperCase());
+                Product product = productRepository.findByIdAndStatusTrue(requestOrderReturnItem.getProductId());
                 if(product == null){
                     throw new BadRequestExceptions(Constants.ErrorProduct);
                 }
@@ -152,7 +152,7 @@ public class OrderReturnImpl implements IOrderReturn {
             }
             try {
                 requestOrderReturnItemList.forEach(requestOrderReturnItem -> {
-                    Product product = productRepository.findBySkuAndStatusTrue(requestOrderReturnItem.getProductSku().toUpperCase());
+                    Product product = productRepository.findByIdAndStatusTrue(requestOrderReturnItem.getProductId());
                     if(product == null){
                         throw new BadRequestExceptions(Constants.ErrorProduct);
                     }

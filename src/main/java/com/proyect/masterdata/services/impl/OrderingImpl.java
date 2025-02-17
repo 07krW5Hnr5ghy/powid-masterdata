@@ -150,7 +150,7 @@ public class OrderingImpl implements IOrdering {
 
         try{
             requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
-                Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
+                Product product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
 
                 if(product == null){
                     throw new BadRequestExceptions(Constants.ErrorProduct);
@@ -301,7 +301,7 @@ public class OrderingImpl implements IOrdering {
 
             try{
                 requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
-                    Product product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
+                    Product product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
 
                     if(product == null){
                         throw new BadRequestExceptions(Constants.ErrorProduct);

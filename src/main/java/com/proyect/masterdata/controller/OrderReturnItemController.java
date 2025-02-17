@@ -76,7 +76,7 @@ public class OrderReturnItemController {
     private ResponseEntity<Page<OrderReturnItemDTO>> listPagination(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "orderIds",required = false) List<UUID> orderIds,
-            @RequestParam(value = "products",required = false) List<String> products,
+            @RequestParam(value = "productIds",required = false) List<UUID> productIds,
             @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "returnTypes",required = false) List<String> returnTypes,
@@ -92,7 +92,7 @@ public class OrderReturnItemController {
         CompletableFuture<Page<OrderReturnItemDTO>> result = iOrderReturnItem.listPagination(
                 user,
                 orderIds,
-                products,
+                productIds,
                 supplierProducts,
                 warehouses,
                 returnTypes,
@@ -111,7 +111,7 @@ public class OrderReturnItemController {
     private ResponseEntity<Page<OrderReturnItemDTO>> listFalse(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "orderIds",required = false) List<UUID> orderIds,
-            @RequestParam(value = "products",required = false) List<String> products,
+            @RequestParam(value = "productIds",required = false) List<UUID> productIds,
             @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "returnTypes",required = false) List<String> returnTypes,
@@ -127,7 +127,7 @@ public class OrderReturnItemController {
         CompletableFuture<Page<OrderReturnItemDTO>> result = iOrderReturnItem.listPagination(
                 user,
                 orderIds,
-                products,
+                productIds,
                 supplierProducts,
                 warehouses,
                 returnTypes,
