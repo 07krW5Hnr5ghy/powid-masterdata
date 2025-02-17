@@ -10,6 +10,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderStockItem;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -36,6 +37,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     private final ProductRepository productRepository;
     private final OrderStockRepository orderStockRepository;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     public CompletableFuture<ResponseSuccess> save(UUID orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -81,7 +83,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
             }
 
-            if(!Objects.equals(supplierProduct.getProduct().getSku(), orderItem.getProduct().getSku())){
+            if(!Objects.equals(iUtil.buildProductSku(supplierProduct.getProduct()), iUtil.buildProductSku(orderItem.getProduct()))){
                 throw new BadRequestExceptions(Constants.ErrorOrderStockProduct);
             }
 
@@ -173,7 +175,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
                     .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
-                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .product(iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct()))
                     .color(orderStockItem.getSupplierProduct().getProduct().getColor().getName())
                     .model(orderStockItem.getSupplierProduct().getProduct().getModel().getName())
                     .size(orderStockItem.getSupplierProduct().getProduct().getSize().getName())
@@ -237,7 +239,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .product(iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct()))
                     .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
                     .color(orderStockItem.getSupplierProduct().getProduct().getColor().getName())
                     .model(orderStockItem.getSupplierProduct().getProduct().getModel().getName())
@@ -313,7 +315,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .product(iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct()))
                     .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
@@ -346,12 +348,12 @@ public class OrderStockItemImpl implements IOrderStockItem {
             return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .product(iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct()))
                     .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
-                    .product(orderStockItem.getOrderItem().getProduct().getSku())
+                    .product(iUtil.buildProductSku(orderStockItem.getOrderItem().getProduct()))
                     .build()).toList();
         });
     }

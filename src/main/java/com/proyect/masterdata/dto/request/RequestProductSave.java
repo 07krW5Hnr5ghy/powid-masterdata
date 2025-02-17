@@ -16,7 +16,7 @@ public class RequestProductSave {
     private String sku;
     private String model;
     private String color;
-    private String category;
+    private String subCategoryProduct;
     private String size;
     private String unit;
     private Double price;

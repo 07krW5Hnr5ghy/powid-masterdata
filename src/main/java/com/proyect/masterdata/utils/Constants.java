@@ -101,6 +101,7 @@ public class Constants {
     public static final String tableAudit = "audit";
     public static final String tableAuditEvent = "audit_event";
     public static final String tableDeliveryPoint = "delivery_point";
+    public static final String tableSubCategoryProduct = "sub_category_product";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -122,7 +123,9 @@ public class Constants {
     public static final String ErrorProvince = "La provincia no esta registrada";
     public static final String ErrorProvinceExist = "La provincia ya fue registrada";
     public static final String ErrorCategory = "La categoria no esta registrada";
+    public static final String ErrorSubCategory = "La sub categoria no esta registrada";
     public static final String ErrorCategoryExists = "La categoria ya fue registrada";
+    public static final String ErrorSubCategoryExists = "La sub categoria ya fue registrada";
     public static final String ErrorCategoryDescriptionExists = "La descripcion de la categoria ya fue registrada";
     public static final String ErrorColor = "El color no esta registrado";
     public static final String ErrorColorExists = "El color ya fue registrado";

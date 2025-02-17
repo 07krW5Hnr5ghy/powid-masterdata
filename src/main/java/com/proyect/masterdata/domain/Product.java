@@ -25,12 +25,6 @@ public class Product {
     @Column(name = "product_id")
     private UUID id;
 
-    @Column(name = "sku", nullable = false)
-    private String sku;
-
-    @Column(name = "characteristics", nullable = false, columnDefinition = "text")
-    private String characteristics;
-
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;
@@ -51,8 +45,8 @@ public class Product {
     @Column(name = "color_id", nullable = false)
     private UUID colorId;
 
-    @Column(name = "category_product_id", nullable = false)
-    private UUID categoryProductId;
+    @Column(name = "sub_category_product_id", nullable = false)
+    private UUID subCategoryProductId;
 
     @Column(name = "size_id", nullable = false)
     private UUID sizeId;
@@ -75,8 +69,8 @@ public class Product {
     private Color color;
 
     @ManyToOne
-    @JoinColumn(name = "category_product_id", columnDefinition = "categoryId", insertable = false, updatable = false)
-    private CategoryProduct categoryProduct;
+    @JoinColumn(name = "sub_category_product_id", columnDefinition = "subCategoryProductId", insertable = false, updatable = false)
+    private SubCategoryProduct subCategoryProduct;
 
     @ManyToOne
     @JoinColumn(name = "size_id", columnDefinition = "sizeId", insertable = false, updatable = false)

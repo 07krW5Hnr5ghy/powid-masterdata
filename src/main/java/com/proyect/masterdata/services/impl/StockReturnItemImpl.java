@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStockReturnItem;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,6 +32,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
     private final SupplierRepository supplierRepository;
     private final PurchaseRepository purchaseRepository;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     public StockReturnItem save(StockReturn stockReturn, SupplierProduct supplierProduct, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -135,7 +137,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
                     .serial(stockReturnItem.getStockReturn().getSerial())
                     .supplier(stockReturnItem.getStockReturn().getSupplier().getBusinessName())
                     .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
-                    .productSku(stockReturnItem.getSupplierProduct().getProduct().getSku())
+                    .productSku(iUtil.buildProductSku(stockReturnItem.getSupplierProduct().getProduct()))
                     .model(stockReturnItem.getSupplierProduct().getProduct().getModel().getName())
                     .color(stockReturnItem.getSupplierProduct().getProduct().getColor().getName())
                     .size(stockReturnItem.getSupplierProduct().getProduct().getSize().getName())
@@ -169,7 +171,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
             }
             return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
                     .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
-                    .productSku(stockReturnItem.getSupplierProduct().getProduct().getSku())
+                    .productSku(iUtil.buildProductSku(stockReturnItem.getSupplierProduct().getProduct()))
                     .model(stockReturnItem.getSupplierProduct().getProduct().getModel().getName())
                     .color(stockReturnItem.getSupplierProduct().getProduct().getColor().getName())
                     .size(stockReturnItem.getSupplierProduct().getProduct().getSize().getName())
@@ -204,7 +206,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
             }
             return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
                     .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
-                    .productSku(stockReturnItem.getSupplierProduct().getProduct().getSku())
+                    .productSku(iUtil.buildProductSku(stockReturnItem.getSupplierProduct().getProduct()))
                     .model(stockReturnItem.getSupplierProduct().getProduct().getModel().getName())
                     .color(stockReturnItem.getSupplierProduct().getProduct().getColor().getName())
                     .size(stockReturnItem.getSupplierProduct().getProduct().getSize().getName())

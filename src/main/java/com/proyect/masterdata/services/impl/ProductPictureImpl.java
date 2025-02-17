@@ -11,6 +11,7 @@ import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IFile;
 import com.proyect.masterdata.services.IProductPicture;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,6 +36,7 @@ public class ProductPictureImpl implements IProductPicture {
     private final ProductPictureRepository productPictureRepository;
     private final ProductRepository productRepository;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     public List<String> uploadPicture(List<MultipartFile> pictures, UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -63,7 +65,7 @@ public class ProductPictureImpl implements IProductPicture {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
             String dateString = dateFormat.format(currentDate);
             String formattedString = dateString.replace(" ", "_");
-            String filename = "PRODUCTO_" + product.getSku() + "_" + user.getUsername() + "_" + formattedString;
+            String filename = "PRODUCTO_" + iUtil.buildProductSku(product) + "_" + user.getUsername() + "_" + formattedString;
             String folderPath = folder + "/" + filename;
             int pictureNumber = 1;
             if(pictures.isEmpty()){
@@ -89,7 +91,7 @@ public class ProductPictureImpl implements IProductPicture {
                 pictureUrlList.add(url);
                 pictureNumber++;
             }
-            iAudit.save("ADD_PRODUCT_PICTURE","FOTOS ("+pictures.size()+") DE PRODUCTO DE MARKETING AGREGADAS.",product.getSku(),user.getUsername());
+            iAudit.save("ADD_PRODUCT_PICTURE","FOTOS ("+pictures.size()+") DE PRODUCTO DE MARKETING AGREGADAS.",iUtil.buildProductSku(product),user.getUsername());
             return pictureUrlList;
         }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
             e.printStackTrace();
@@ -127,7 +129,7 @@ public class ProductPictureImpl implements IProductPicture {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
                 String dateString = dateFormat.format(currentDate);
                 String formattedString = dateString.replace(" ", "_");
-                String filename = "PRODUCTO_" + product.getSku() + "_" + user.getUsername() + "_" + formattedString;
+                String filename = "PRODUCTO_" + iUtil.buildProductSku(product) + "_" + user.getUsername() + "_" + formattedString;
                 String folderPath = folder + "/" + filename;
                 int pictureNumber = 1;
                 for (File file : pictures){
@@ -145,7 +147,7 @@ public class ProductPictureImpl implements IProductPicture {
                     pictureUrlList.add(url);
                     pictureNumber++;
                 }
-                iAudit.save("ADD_PRODUCT_PICTURE","FOTOS ("+pictures.size()+") DE PRODUCTO DE MARKETING AGREGADAS.",product.getSku(),user.getUsername());
+                iAudit.save("ADD_PRODUCT_PICTURE","FOTOS ("+pictures.size()+") DE PRODUCTO DE MARKETING AGREGADAS.",iUtil.buildProductSku(product),user.getUsername());
                 return pictureUrlList;
             }catch (RuntimeException | IOException | ExecutionException | InterruptedException e){
                 e.printStackTrace();

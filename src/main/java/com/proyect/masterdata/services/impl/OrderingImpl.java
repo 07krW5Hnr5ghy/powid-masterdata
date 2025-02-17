@@ -74,6 +74,7 @@ public class OrderingImpl implements IOrdering {
     private final ProductPictureRepository productPictureRepository;
     private final CancelledOrderRepository cancelledOrderRepository;
     private final CancellationReasonRepository cancellationReasonRepository;
+    private final IUtil iUtil;
     @Override
     @Transactional
     public ResponseSuccess save(
@@ -636,11 +637,12 @@ public class OrderingImpl implements IOrdering {
                             if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
                                 totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                             }
+                            String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .orderId(orderItem.getOrderId())
                                     .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
-                                    .sku(orderItem.getProduct().getSku())
+                                    .sku(finalSku)
                                     .unit(orderItem.getProduct().getUnit().getName())
                                     .observations(orderItem.getObservations())
                                     .quantity(orderItem.getQuantity())
@@ -650,7 +652,8 @@ public class OrderingImpl implements IOrdering {
                                     .unitPrice(productPrice.getUnitSalePrice())
                                     .totalPrice(totalPrice)
                                     .color(orderItem.getProduct().getColor().getName())
-                                    .category(orderItem.getProduct().getCategoryProduct().getName())
+                                    .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
+                                    .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
                                     .registrationDate(orderItem.getRegistrationDate())
                                     .updateDate(orderItem.getUpdateDate())
                                     .build();
@@ -756,10 +759,11 @@ public class OrderingImpl implements IOrdering {
                             if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
                                 totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                             }
+                            String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .orderId(orderItem.getOrderId())
                                     .discountAmount(orderItem.getDiscountAmount())
-                                    .sku(orderItem.getProduct().getSku())
+                                    .sku(finalSku)
                                     .unit(orderItem.getProduct().getUnit().getName())
                                     .observations(orderItem.getObservations())
                                     .quantity(orderItem.getQuantity())
@@ -769,10 +773,11 @@ public class OrderingImpl implements IOrdering {
                                     .unitPrice(productPrice.getUnitSalePrice())
                                     .totalPrice(totalPrice)
                                     .color(orderItem.getProduct().getColor().getName())
-                                    .category(orderItem.getProduct().getCategoryProduct().getName())
+                                    .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
                                     .registrationDate(orderItem.getRegistrationDate())
                                     .updateDate(orderItem.getUpdateDate())
                                     .model(orderItem.getProduct().getModel().getName())
+                                    .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
                                     .build();
                         }).toList())
                         .build();
@@ -1210,11 +1215,12 @@ public class OrderingImpl implements IOrdering {
                             if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
                                 totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                             }
+                            String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .orderId(orderItem.getOrderId())
                                     .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
-                                    .sku(orderItem.getProduct().getSku())
+                                    .sku(finalSku)
                                     .unit(orderItem.getProduct().getUnit().getName())
                                     .observations(orderItem.getObservations())
                                     .quantity(orderItem.getQuantity())
@@ -1224,7 +1230,8 @@ public class OrderingImpl implements IOrdering {
                                     .unitPrice(productPrice.getUnitSalePrice())
                                     .totalPrice(totalPrice)
                                     .color(orderItem.getProduct().getColor().getName())
-                                    .category(orderItem.getProduct().getCategoryProduct().getName())
+                                    .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
+                                    .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
                                     .registrationDate(orderItem.getRegistrationDate())
                                     .updateDate(orderItem.getUpdateDate())
                                     .build();

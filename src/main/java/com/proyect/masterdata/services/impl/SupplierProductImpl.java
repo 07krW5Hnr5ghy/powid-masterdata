@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.services.IAudit;
+import com.proyect.masterdata.services.IUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -42,6 +43,7 @@ public class SupplierProductImpl implements ISupplierProduct {
     private final SupplierProductRepository supplierProductRepository;
     private final SupplierProductRepositoryCustom supplierProductRepositoryCustom;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     @Transactional
     public ResponseSuccess save(RequestSupplierProduct requestSupplierProduct, String tokenUser)
@@ -294,7 +296,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
             List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
-                            .productSku(supplierProduct.getProduct().getSku())
+                            .productSku(iUtil.buildProductSku(supplierProduct.getProduct()))
                             .model(supplierProduct.getProduct().getModel().getName())
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
@@ -360,7 +362,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
             List<SupplierProductDTO> supplierProductDTOs = supplierProductPage.getContent().stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
-                            .productSku(supplierProduct.getProduct().getSku())
+                            .productSku(iUtil.buildProductSku(supplierProduct.getProduct()))
                             .model(supplierProduct.getProduct().getModel().getName())
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
@@ -407,7 +409,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
-                            .productSku(supplierProduct.getProduct().getSku())
+                            .productSku(iUtil.buildProductSku(supplierProduct.getProduct()))
                             .model(supplierProduct.getProduct().getModel().getName())
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
@@ -440,7 +442,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
-                            .productSku(supplierProduct.getProduct().getSku())
+                            .productSku(iUtil.buildProductSku(supplierProduct.getProduct()))
                             .model(supplierProduct.getProduct().getModel().getName())
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
@@ -477,7 +479,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
-                            .productSku(supplierProduct.getProduct().getSku())
+                            .productSku(iUtil.buildProductSku(supplierProduct.getProduct()))
                             .model(supplierProduct.getProduct().getModel().getName())
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
@@ -512,7 +514,7 @@ public class SupplierProductImpl implements ISupplierProduct {
 
             return supplierProducts.stream()
                     .map(supplierProduct -> SupplierProductDTO.builder()
-                            .productSku(supplierProduct.getProduct().getSku())
+                            .productSku(iUtil.buildProductSku(supplierProduct.getProduct()))
                             .model(supplierProduct.getProduct().getModel().getName())
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())

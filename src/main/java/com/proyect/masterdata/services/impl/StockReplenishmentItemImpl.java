@@ -10,6 +10,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStockReplenishmentItem;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -36,6 +37,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
     private final OrderItemRepository orderItemRepository;
     private final StockReplenishmentRepository stockReplenishmentRepository;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     public StockReplenishmentItem save(OrderItem orderItem, RequestStockReplenishmentItem requestStockReplenishmentItem, User user, StockReplenishment stockReplenishment) throws InternalErrorExceptions, BadRequestExceptions {
         try{
@@ -186,7 +188,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 stockReplenishmentItem.setUser(user);
                 stockReplenishmentItem.setUserId(user.getId());
                 stockReplenishmentItemRepository.save(stockReplenishmentItem);
-                iAudit.save("DELETE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+stockReplenishmentItem.getProduct().getSku()+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" DESACTIVADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
+                iAudit.save("DELETE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+iUtil.buildProductSku(stockReplenishmentItem.getProduct())+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" DESACTIVADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -239,7 +241,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 stockReplenishmentItem.setUser(user);
                 stockReplenishmentItem.setUserId(user.getId());
                 stockReplenishmentItemRepository.save(stockReplenishmentItem);
-                iAudit.save("UPDATE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+stockReplenishmentItem.getProduct().getSku()+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" ACTUALIZADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
+                iAudit.save("UPDATE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+iUtil.buildProductSku(stockReplenishmentItem.getProduct())+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" ACTUALIZADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -281,7 +283,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 stockReplenishmentItem.setUser(user);
                 stockReplenishmentItem.setUserId(user.getId());
                 stockReplenishmentItemRepository.save(stockReplenishmentItem);
-                iAudit.save("ACTIVATE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+stockReplenishmentItem.getProduct().getSku()+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" ACTIVADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
+                iAudit.save("ACTIVATE_STOCK_REPLENISHMENT_ITEM","PRODUCTO "+iUtil.buildProductSku(stockReplenishmentItem.getProduct())+" EN PEDIDO "+stockReplenishmentItem.getOrderId()+" ACTIVADO EN RESTOCKAJE.",stockReplenishmentItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -343,7 +345,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
             }
 
             List<StockReplenishmentItemDTO> stockReplenishmentItemDTOS = pageStockReplenishmentItem.getContent().stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
-                    .product(stockReplenishmentItem.getProduct().getSku())
+                    .product(iUtil.buildProductSku(stockReplenishmentItem.getProduct()))
                     .orderId(stockReplenishmentItem.getOrderId())
                     .quantity(stockReplenishmentItem.getQuantity())
                     .registrationDate(stockReplenishmentItem.getRegistrationDate())
@@ -370,7 +372,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 return Collections.emptyList();
             }
             return stockReplenishmentItems.stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
-                    .product(stockReplenishmentItem.getProduct().getSku())
+                    .product(iUtil.buildProductSku(stockReplenishmentItem.getProduct()))
                     .orderId(stockReplenishmentItem.getOrderId())
                     .quantity(stockReplenishmentItem.getQuantity())
                     .registrationDate(stockReplenishmentItem.getRegistrationDate())
@@ -395,7 +397,7 @@ public class StockReplenishmentItemImpl implements IStockReplenishmentItem {
                 return Collections.emptyList();
             }
             return stockReplenishmentItems.stream().map(stockReplenishmentItem -> StockReplenishmentItemDTO.builder()
-                    .product(stockReplenishmentItem.getProduct().getSku())
+                    .product(iUtil.buildProductSku(stockReplenishmentItem.getProduct()))
                     .orderId(stockReplenishmentItem.getOrderId())
                     .quantity(stockReplenishmentItem.getQuantity())
                     .registrationDate(stockReplenishmentItem.getRegistrationDate())

@@ -95,6 +95,7 @@ public class Seeder implements CommandLineRunner {
         private final ICustomer iCustomer;
         private final IDiscount iDiscount;
         private final IDeliveryPoint iDeliveryPoint;
+        private final SubCategoryProductRepository subCategoryProductRepository;
         @Override
         public void run(String... args) throws Exception {
 
@@ -933,6 +934,11 @@ public class Seeder implements CommandLineRunner {
                         iSizeType.save("ACCESORIOS", adminUser.getUsername());
 
                         // mock category products
+                        iCategoryProduct.save("ROPA","RP001","ROPA",adminUser.getUsername());
+                        iCategoryProduct.save("CALZADO","CA001","CALZADO",adminUser.getUsername());
+                        iCategoryProduct.save("COMPLEMENTOS","CO001","COMPLEMENTOS",adminUser.getUsername());
+                        iCategoryProduct.save("ACCESORIOS","AC001","ACCESORIOS",adminUser.getUsername());
+
                         iCategoryProduct.save("BLUSA", "BLUSA","ROPA", adminUser.getUsername());
                         iCategoryProduct.save("CAMISA", "CAMISA","ROPA", adminUser.getUsername());
                         iCategoryProduct.save("VESTIDO", "VESTIDO","ROPA", adminUser.getUsername());

@@ -30,6 +30,9 @@ public class Color {
         @Column(name = "status")
         private boolean status;
 
+        @Column(name = "sku")
+        private String sku;
+
         @Column(name = "registration_date")
         @CreationTimestamp
         private OffsetDateTime registrationDate;

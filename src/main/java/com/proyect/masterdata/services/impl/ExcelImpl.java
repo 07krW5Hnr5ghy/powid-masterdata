@@ -65,6 +65,7 @@ public class ExcelImpl implements IExcel {
     private final ProductPriceRepository productPriceRepository;
     private final UnitTypeRepository unitTypeRepository;
     private final BrandRepository brandRepository;
+    private final IUtil iUtil;
     @Override
     public CompletableFuture<ResponseSuccess> purchase(RequestPurchaseExcel requestPurchaseExcel, MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -700,7 +701,7 @@ public class ExcelImpl implements IExcel {
                             if(product == null){
                                 throw new BadRequestExceptions(Constants.ErrorProduct);
                             }
-                            requestStockReplenishmentItem.setProductSku(product.getSku());
+                            requestStockReplenishmentItem.setProductSku(iUtil.buildProductSku(product));
                             orderItem = orderItemRepository.findByOrderIdAndProductId(orderId,product.getId());
                             if(orderItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
@@ -711,7 +712,7 @@ public class ExcelImpl implements IExcel {
                             if(product == null){
                                 throw new BadRequestExceptions(Constants.ErrorProduct);
                             }
-                            requestStockReplenishmentItem.setProductSku(product.getSku());
+                            requestStockReplenishmentItem.setProductSku(iUtil.buildProductSku(product));
                             orderItem = orderItemRepository.findByOrderIdAndProductId(orderId,product.getId());
                             if(orderItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
@@ -722,7 +723,7 @@ public class ExcelImpl implements IExcel {
                             if(product == null){
                                 throw new BadRequestExceptions(Constants.ErrorProduct);
                             }
-                            requestStockReplenishmentItem.setProductSku(product.getSku());
+                            requestStockReplenishmentItem.setProductSku(iUtil.buildProductSku(product));
                             orderItem = orderItemRepository.findByOrderIdAndProductId(orderId,product.getId());
                             if(orderItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
@@ -883,7 +884,7 @@ public class ExcelImpl implements IExcel {
                             if(orderItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
                             }
-                            requestOrderStockItem.setProduct(product.getSku());
+                            requestOrderStockItem.setProduct(iUtil.buildProductSku(product));
                         }
                         if(i>=1 && (cell.getCellType() == NUMERIC) && ii==0){
                             product = productRepository.findBySkuAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
@@ -894,7 +895,7 @@ public class ExcelImpl implements IExcel {
                             if(orderItem == null){
                                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
                             }
-                            requestOrderStockItem.setProduct(product.getSku());
+                            requestOrderStockItem.setProduct(iUtil.buildProductSku(product));
                         }
                         if(i>=1 && (cell.getCellType() == STRING) && ii==1){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
@@ -1088,14 +1089,14 @@ public class ExcelImpl implements IExcel {
                             if(product==null){
                                 throw new BadRequestExceptions(Constants.ErrorProduct);
                             }
-                            requestOrderReturnItem.setProductSku(product.getSku());
+                            requestOrderReturnItem.setProductSku(iUtil.buildProductSku(product));
                         }
                         if((i>=1) && (cell.getCellType() == NUMERIC) && (ii==0)){
                             product = productRepository.findBySkuAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
                             if(product==null){
                                 throw new BadRequestExceptions(Constants.ErrorProduct);
                             }
-                            requestOrderReturnItem.setProductSku(product.getSku());
+                            requestOrderReturnItem.setProductSku(iUtil.buildProductSku(product));
                         }
                         if(i>=1 && (cell.getCellType() == STRING) && (ii==1)){
                             supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
@@ -1322,7 +1323,7 @@ public class ExcelImpl implements IExcel {
                             if(product != null){
                                 throw new BadRequestExceptions(Constants.ErrorProductExists);
                             }
-                            newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
+                            //newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1) && (row.getCell(0).getCellType() == NUMERIC) && (ii==0)){
                             System.out.println(row.getCell(0).getRichStringCellValue());
@@ -1330,7 +1331,7 @@ public class ExcelImpl implements IExcel {
                             if(product != null){
                                 throw new BadRequestExceptions(Constants.ErrorProductExists);
                             }
-                            newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
+                            //newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1)&&(row.getCell(2).getCellType() == STRING) && (ii==2)){
                             System.out.println(row.getCell(2).getRichStringCellValue());
@@ -1354,8 +1355,8 @@ public class ExcelImpl implements IExcel {
                             if(categoryProduct==null){
                                 throw new BadRequestExceptions(Constants.ErrorCategory);
                             }
-                            newProduct.setCategoryProduct(categoryProduct);
-                            newProduct.setCategoryProductId(categoryProduct.getId());
+                            //newProduct.setCategoryProduct(categoryProduct);
+                            //newProduct.setCategoryProductId(categoryProduct.getId());
                         }
                         if((i>=1)&&(row.getCell(5).getCellType()==STRING)&&(ii==5)&&(categoryProduct!=null)){
                             size = sizeRepository.findByNameAndStatusTrue(row.getCell(5).getRichStringCellValue().getString().toUpperCase());
@@ -1396,11 +1397,11 @@ public class ExcelImpl implements IExcel {
                             newProduct.setUnitId(unit.getId());
                         }
                         if((i>=1)&&(row.getCell(8)!=null)&&(row.getCell(8).getCellType()==STRING)&&(ii==8)){
-                            newProduct.setCharacteristics(row.getCell(8).getRichStringCellValue().getString().toUpperCase());
+                            //newProduct.setCharacteristics(row.getCell(8).getRichStringCellValue().getString().toUpperCase());
                         }
-                        if(newProduct.getCharacteristics()==null){
-                            newProduct.setCharacteristics("NO APLICA");
-                        }
+//                        if(newProduct.getCharacteristics()==null){
+//                            newProduct.setCharacteristics("NO APLICA");
+//                        }
                         if((i>=1)&&(row.getCell(9).getCellType()==NUMERIC)&&(ii==9)){
                             if(row.getCell(9).getNumericCellValue() < 0.01){
                                 throw new BadRequestExceptions(Constants.ErrorProductPriceZero);
@@ -1408,41 +1409,41 @@ public class ExcelImpl implements IExcel {
                             productPrice.setUnitSalePrice(row.getCell(9).getNumericCellValue());
                         }
                     }
-                    if(i>=1 && (
-                            newProduct.getSku() != null &&
-                                    newProduct.getSize() != null &&
-                                    newProduct.getUnit() != null &&
-                                    newProduct.getCategoryProduct() != null &&
-                                    newProduct.getModel() != null &&
-                                    productPrice.getUnitSalePrice() != null &&
-                                    newProduct.getColor() != null
-                            )){
-                        newProduct.setStatus(true);
-                        newProduct.setRegistrationDate(OffsetDateTime.now());
-                        newProduct.setUpdateDate(OffsetDateTime.now());
-                        newProduct.setUser(user);
-                        newProduct.setUserId(user.getId());
-                        newProduct.setClient(user.getClient());
-                        newProduct.setClientId(user.getClientId());
-                        productPrice.setUser(user);
-                        newProduct.setUserId(user.getId());
-                        productPrice.setRegistrationDate(OffsetDateTime.now());
-                        productPrice.setUpdateDate(OffsetDateTime.now());
-                        productPrice.setStatus(true);
-                        products.add(newProduct);
-                        productPrices.add(productPrice);
-                    }
-                    if(i>=1 && (
-                            newProduct.getSku() == null ||
-                                    newProduct.getSize() == null ||
-                                    newProduct.getUnit() == null ||
-                                    productPrice.getUnitSalePrice() == null ||
-                                    newProduct.getModel() == null ||
-                                    newProduct.getCategoryProduct() == null ||
-                                    newProduct.getColor() == null
-                    )){
-                        break;
-                    }
+//                    if(i>=1 && (
+//                            newProduct.getSku() != null &&
+//                                    newProduct.getSize() != null &&
+//                                    newProduct.getUnit() != null &&
+//                                    newProduct.getCategoryProduct() != null &&
+//                                    newProduct.getModel() != null &&
+//                                    productPrice.getUnitSalePrice() != null &&
+//                                    newProduct.getColor() != null
+//                            )){
+//                        newProduct.setStatus(true);
+//                        newProduct.setRegistrationDate(OffsetDateTime.now());
+//                        newProduct.setUpdateDate(OffsetDateTime.now());
+//                        newProduct.setUser(user);
+//                        newProduct.setUserId(user.getId());
+//                        newProduct.setClient(user.getClient());
+//                        newProduct.setClientId(user.getClientId());
+//                        productPrice.setUser(user);
+//                        newProduct.setUserId(user.getId());
+//                        productPrice.setRegistrationDate(OffsetDateTime.now());
+//                        productPrice.setUpdateDate(OffsetDateTime.now());
+//                        productPrice.setStatus(true);
+//                        products.add(newProduct);
+//                        productPrices.add(productPrice);
+//                    }
+//                    if(i>=1 && (
+//                            newProduct.getSku() == null ||
+//                                    newProduct.getSize() == null ||
+//                                    newProduct.getUnit() == null ||
+//                                    productPrice.getUnitSalePrice() == null ||
+//                                    newProduct.getModel() == null ||
+//                                    newProduct.getCategoryProduct() == null ||
+//                                    newProduct.getColor() == null
+//                    )){
+//                        break;
+//                    }
                     i++;
                 }
 
@@ -1456,9 +1457,9 @@ public class ExcelImpl implements IExcel {
                     }
                     Product product = products.get(j);
                     ProductPrice productPrice = productPrices.get(j);
-                    if(!skus.add(product.getSku())){
-                        hasDuplicate = true;
-                    }
+//                    if(!skus.add(product.getSku())){
+//                        hasDuplicate = true;
+//                    }
                     if(hasDuplicate){
                         throw new BadRequestExceptions(Constants.ErrorProductExists);
                     }else {
@@ -1466,7 +1467,7 @@ public class ExcelImpl implements IExcel {
                         productPrice.setProductId(storedProduct.getId());
                         productPrice.setProduct(storedProduct);
                         productPriceRepository.save(productPrice);
-                        iAudit.save("ADD_PRODUCT_EXCEL","PRODUCTO DE MARKETING "+product.getSku()+" CREADO POR EXCEL.",product.getSku(),user.getUsername());
+                        //iAudit.save("ADD_PRODUCT_EXCEL","PRODUCTO DE MARKETING "+product.getSku()+" CREADO POR EXCEL.",product.getSku(),user.getUsername());
                     }
                 }
                 return ResponseSuccess.builder()

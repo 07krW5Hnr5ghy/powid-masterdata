@@ -7,6 +7,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IExcel;
 import com.proyect.masterdata.services.ITemplate;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -46,6 +47,7 @@ public class TemplateImpl implements ITemplate {
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
     private final IExcel iExcel;
+    private final IUtil iUtil;
     @Override
     public CompletableFuture<ByteArrayInputStream> purchase(String supplierRuc, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -138,9 +140,10 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellStyle(headerStyle);
                 int currentRow = 2;
                 for(SupplierProduct supplierProduct:supplierProductList){
-                    Row row = sheet.createRow(currentRow);;
+                    String finalSku = iUtil.buildProductSku(supplierProduct.getProduct());
+                    Row row = sheet.createRow(currentRow);
                     row.createCell(0).setCellValue(supplierProduct.getProduct().getModel().getName());
-                    row.createCell(1).setCellValue(supplierProduct.getProduct().getSku());
+                    row.createCell(1).setCellValue(finalSku);
                     row.createCell(2).setCellValue(supplierProduct.getProduct().getColor().getName());
                     row.createCell(3).setCellValue(supplierProduct.getProduct().getSize().getSizeType().getName());
                     row.createCell(4).setCellValue(supplierProduct.getProduct().getSize().getName());
@@ -345,9 +348,10 @@ public class TemplateImpl implements ITemplate {
 
                 int currentRow = 2;
                 for(WarehouseStock warehouseStock:filteredWarehouseStockList){
+                    String finalSku = iUtil.buildProductSku(warehouseStock.getSupplierProduct().getProduct());
                     Row row = sheet.createRow(currentRow);
                     row.createCell(0).setCellValue(warehouseStock.getSupplierProduct().getSerial());
-                    row.createCell(1).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSku());
+                    row.createCell(1).setCellValue(finalSku);
                     row.createCell(2).setCellValue(warehouseStock.getSupplierProduct().getProduct().getModel().getName());
                     row.createCell(3).setCellValue(warehouseStock.getSupplierProduct().getProduct().getColor().getName());
                     row.createCell(4).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSize().getName());
@@ -479,7 +483,8 @@ public class TemplateImpl implements ITemplate {
                 for(OrderItem orderItem:orderItemList){
                     List<SupplierProduct> supplierProductList = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(user.getClientId(), orderItem.getProductId());
                     records += supplierProductList.size();
-                    orderStockMap.put(orderItem.getProduct().getSku(),supplierProductList.stream().map(SupplierProduct::getSerial).toList());
+                    String finalSku = iUtil.buildProductSku(orderItem.getProduct());
+                    orderStockMap.put(finalSku,supplierProductList.stream().map(SupplierProduct::getSerial).toList());
                 }
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 XSSFSheet sheet = workbook.createSheet("preparacion_pedido");
@@ -610,7 +615,8 @@ public class TemplateImpl implements ITemplate {
                 for(OrderStockItem orderStockItem : orderStockItemList){
                     List<SupplierProduct> supplierProductList = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(user.getClientId(), orderStockItem.getOrderItem().getProductId());
                     records +=  supplierProductList.size();
-                    orderStockMap.put(orderStockItem.getOrderItem().getProduct().getSku(),supplierProductList.stream().map(SupplierProduct::getSerial).toList());
+                    String finalSku = iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct());
+                    orderStockMap.put(finalSku,supplierProductList.stream().map(SupplierProduct::getSerial).toList());
                 }
                 List<OrderReturnType> orderReturnTypeList = orderReturnTypeRepository.findAllByStatusTrue();
 
@@ -1114,7 +1120,7 @@ public class TemplateImpl implements ITemplate {
                 workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet1), true);
 
                 // products
-                String[] productList = products.stream().map(Product::getSku).toList().toArray(new String[0]);
+                String[] productList = products.stream().map(iUtil::buildProductSku).toList().toArray(new String[0]);
                 int rownum1 = 0;
                 Row row1;
                 Cell hiddenCell1;

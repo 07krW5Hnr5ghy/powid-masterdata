@@ -8,10 +8,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.IAudit;
-import com.proyect.masterdata.services.IGeneralStock;
-import com.proyect.masterdata.services.IOrderReturnItem;
-import com.proyect.masterdata.services.IWarehouseStock;
+import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -44,6 +41,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
     private final IAudit iAudit;
     private final OrderReturnItemRepositoryCustom orderReturnItemRepositoryCustom;
     private final WarehouseRepository warehouseRepository;
+    private final IUtil iUtil;
     @Override
     public CompletableFuture<ResponseSuccess> save(UUID orderId, RequestOrderReturnItem requestOrderReturnItem, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -326,7 +324,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             }
             return orderReturnItemList.stream().map(orderReturnItem -> OrderReturnItemDTO.builder()
                     .orderId(orderReturnItem.getOrderReturn().getOrderId())
-                    .product(orderReturnItem.getProduct().getSku())
+                    .product(iUtil.buildProductSku(orderReturnItem.getProduct()))
                     .supplierProduct(orderReturnItem.getSupplierProduct().getSerial())
                     .returnType(orderReturnItem.getOrderReturnType().getName())
                     .registrationDate(OffsetDateTime.now())
@@ -423,7 +421,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             }
             List<OrderReturnItemDTO> orderReturnItemDTOS = orderReturnItemPage.getContent().stream().map(orderReturnItem -> OrderReturnItemDTO.builder()
                     .orderId(orderReturnItem.getOrderReturn().getOrderId())
-                    .product(orderReturnItem.getProduct().getSku())
+                    .product(iUtil.buildProductSku(orderReturnItem.getProduct()))
                     .supplierProduct(orderReturnItem.getSupplierProduct().getSerial())
                     .warehouse(orderReturnItem.getOrderReturn().getOrderStock().getWarehouse().getName())
                     .returnType(orderReturnItem.getOrderReturnType().getName())
@@ -520,7 +518,7 @@ public class OrderReturnItemImpl implements IOrderReturnItem {
             }
             List<OrderReturnItemDTO> orderReturnItemDTOS = orderReturnItemPage.getContent().stream().map(orderReturnItem -> OrderReturnItemDTO.builder()
                     .orderId(orderReturnItem.getOrderReturn().getOrderId())
-                    .product(orderReturnItem.getProduct().getSku())
+                    .product(iUtil.buildProductSku(orderReturnItem.getProduct()))
                     .supplierProduct(orderReturnItem.getSupplierProduct().getSerial())
                     .warehouse(orderReturnItem.getOrderReturn().getOrderStock().getWarehouse().getName())
                     .returnType(orderReturnItem.getOrderReturnType().getName())
