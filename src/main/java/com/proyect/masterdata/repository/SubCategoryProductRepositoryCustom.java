@@ -1,18 +1,20 @@
 package com.proyect.masterdata.repository;
 
+import com.proyect.masterdata.domain.CategoryProduct;
+import com.proyect.masterdata.domain.SubCategoryProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
-import com.proyect.masterdata.domain.CategoryProduct;
-
 import java.time.OffsetDateTime;
-import java.util.Date;
+import java.util.List;
 
 @Repository
-public interface CategoryProductRepositoryCustom {
-    Page<CategoryProduct> searchForCategoryProduct(
+public interface SubCategoryProductRepositoryCustom {
+    Page<SubCategoryProduct> searchForSubCategoryProduct(
             String name,
+            String sku,
             String user,
+            List<CategoryProduct> categoryProductIds,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -21,5 +23,6 @@ public interface CategoryProductRepositoryCustom {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize,
-            Boolean status);
+            Boolean status
+    );
 }

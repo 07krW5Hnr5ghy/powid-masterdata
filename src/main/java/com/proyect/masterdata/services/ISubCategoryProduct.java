@@ -13,4 +13,5 @@ public interface ISubCategoryProduct {
     CompletableFuture<ResponseSuccess> saveAsync(RequestSubCategoryProduct requestSubCategoryProduct) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String sku,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String sku,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+
 }
