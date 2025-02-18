@@ -6,15 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CategoryProductDTO {
+public class SubCategoryProductDTO {
     private String name;
+    private String sku;
     private String sizeType;
+    private String categoryProduct;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
 }

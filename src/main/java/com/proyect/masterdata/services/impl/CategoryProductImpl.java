@@ -168,6 +168,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .name(categoryProduct.getName())
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
+                            .sizeType(categoryProduct.getSizeType().getName())
                             .build())
                     .toList();
 
@@ -199,6 +200,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .name(categoryProduct.getName())
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
+                            .sizeType(categoryProduct.getSizeType().getName())
                             .build())
                     .toList();
 
