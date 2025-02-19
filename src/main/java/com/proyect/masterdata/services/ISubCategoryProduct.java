@@ -1,7 +1,5 @@
 package com.proyect.masterdata.services;
 
-import com.proyect.masterdata.dto.CategoryDTO;
-import com.proyect.masterdata.dto.CategoryProductDTO;
 import com.proyect.masterdata.dto.SubCategoryProductDTO;
 import com.proyect.masterdata.dto.request.RequestSubCategoryProduct;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -32,7 +30,6 @@ public interface ISubCategoryProduct {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
-
     CompletableFuture<Page<SubCategoryProductDTO>> listFalse(
             String name,
             String user,
@@ -46,5 +43,5 @@ public interface ISubCategoryProduct {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions;
-
+    CompletableFuture<List<SubCategoryProductDTO>> listByCategoryProduct(String user,String name) throws BadRequestExceptions,InternalErrorExceptions;
 }

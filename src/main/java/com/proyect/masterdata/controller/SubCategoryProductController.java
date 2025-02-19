@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.CategoryProductDTO;
+import com.proyect.masterdata.dto.ModelDTO;
 import com.proyect.masterdata.dto.SubCategoryProductDTO;
 import com.proyect.masterdata.dto.request.RequestSubCategoryProduct;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -87,5 +88,15 @@ public class SubCategoryProductController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<SubCategoryProductDTO>> result = iSubCategoryProduct.listFalse(name, user,sku,categoryProducts,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, sort, sortColumn, pageNumber, pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("category-product")
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
+    public ResponseEntity<List<SubCategoryProductDTO>> listModelsBrand(
+            @RequestParam("user") String user,
+            @RequestParam("brand") String categoryProduct
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SubCategoryProductDTO>> result = iSubCategoryProduct.listByCategoryProduct(user,categoryProduct);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

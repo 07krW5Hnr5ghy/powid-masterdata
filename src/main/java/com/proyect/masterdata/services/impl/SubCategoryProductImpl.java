@@ -309,4 +309,35 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                     subCategoryProductPage.getTotalElements());
         });
     }
+
+    @Override
+    public CompletableFuture<List<SubCategoryProductDTO>> listByCategoryProduct(String username,String name) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            List<SubCategoryProduct> subCategoryProducts;
+            User user;
+            UUID categoryProductId;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                categoryProductId = categoryProductRepository.findByNameAndStatusTrue(name.toUpperCase()).getId();
+                subCategoryProducts = subCategoryProductRepository.findAllByCategoryProductIdAndStatusTrue(categoryProductId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(subCategoryProducts.isEmpty()){
+                return Collections.emptyList();
+            }
+            return subCategoryProducts.stream().map(subCategoryProduct -> SubCategoryProductDTO.builder()
+                    .name(subCategoryProduct.getName())
+                    .sku(subCategoryProduct.getSku())
+                    .categoryProduct(subCategoryProduct.getCategoryProduct().getName())
+                    .registrationDate(OffsetDateTime.now())
+                    .updateDate(OffsetDateTime.now())
+                    .sizeType(subCategoryProduct.getCategoryProduct().getSizeType().getName())
+                    .build()).toList();
+        });
+    }
 }
