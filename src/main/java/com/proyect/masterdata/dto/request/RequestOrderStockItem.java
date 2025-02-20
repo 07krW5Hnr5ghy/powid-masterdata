@@ -13,6 +13,6 @@ import java.util.UUID;
 @Data
 public class RequestOrderStockItem {
     private Integer quantity;
-    private String supplierProduct;
+    private UUID supplierProductId;
     private UUID productId;
 }

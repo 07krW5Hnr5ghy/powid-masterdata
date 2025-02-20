@@ -57,7 +57,6 @@ public class SupplierProductImpl implements ISupplierProduct {
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             product = productRepository.findByIdAndStatusTrue(requestSupplierProduct.getProductId());
-            supplierProduct = supplierProductRepository.findBySerial(requestSupplierProduct.getSerial());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -71,6 +70,8 @@ public class SupplierProductImpl implements ISupplierProduct {
 
         if (supplier == null) {
             throw new BadRequestExceptions(Constants.ErrorSupplier);
+        }else{
+            supplierProduct = supplierProductRepository.findBySupplierIdAndProductId(supplier.getId(),product.getId());
         }
 
         if (product == null) {
@@ -89,13 +90,17 @@ public class SupplierProductImpl implements ISupplierProduct {
                     .productId(product.getId())
                     .purchasePrice(requestSupplierProduct.getPurchasePrice())
                     .registrationDate(OffsetDateTime.now())
-                    .serial(requestSupplierProduct.getSerial())
                     .status(true)
                     .supplier(supplier)
                     .supplierId(supplier.getId())
                     .user(user).userId(user.getId())
                     .build());
-            iAudit.save("ADD_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+newSupplierProduct.getSerial()+" CREADO.",newSupplierProduct.getSerial(),user.getUsername());
+            String finalSku = iUtil.buildInventorySku(newSupplierProduct);
+            iAudit.save(
+                    "ADD_SUPPLIER_PRODUCT",
+                    "PRODUCTO DE INVENTARIO "+
+                            finalSku+" CREADO.",
+                    finalSku,user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -119,7 +124,6 @@ public class SupplierProductImpl implements ISupplierProduct {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 product = productRepository.findByIdAndStatusTrue(requestSupplierProduct.getProductId());
-                supplierProduct = supplierProductRepository.findBySerial(requestSupplierProduct.getSerial());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -131,12 +135,14 @@ public class SupplierProductImpl implements ISupplierProduct {
                 supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplierProduct.getSupplier(), user.getClientId());
             }
 
-            if (supplier == null) {
-                throw new BadRequestExceptions(Constants.ErrorSupplier);
-            }
-
             if (product == null) {
                 throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+
+            if (supplier == null) {
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }else{
+                supplierProduct = supplierProductRepository.findBySupplierIdAndProductId(supplier.getId(),product.getId());
             }
 
             if (supplierProduct != null) {
@@ -151,13 +157,17 @@ public class SupplierProductImpl implements ISupplierProduct {
                         .productId(product.getId())
                         .purchasePrice(requestSupplierProduct.getPurchasePrice())
                         .registrationDate(OffsetDateTime.now())
-                        .serial(requestSupplierProduct.getSerial())
                         .status(true)
                         .supplier(supplier)
                         .supplierId(supplier.getId())
                         .user(user).userId(user.getId())
                         .build());
-                iAudit.save("ADD_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+newSupplierProduct.getSerial()+" CREADO.",newSupplierProduct.getSerial(),user.getUsername());
+                String finalSku = iUtil.buildInventorySku(newSupplierProduct);
+                iAudit.save(
+                        "ADD_SUPPLIER_PRODUCT",
+                        "PRODUCTO DE INVENTARIO "+
+                                finalSku+" CREADO.",
+                        finalSku,user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -170,14 +180,14 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID supplierProductId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             SupplierProduct supplierProduct;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(serial);
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(supplierProductId);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -198,7 +208,13 @@ public class SupplierProductImpl implements ISupplierProduct {
                 supplierProduct.setUser(user);
                 supplierProduct.setUserId(user.getId());
                 supplierProductRepository.save(supplierProduct);
-                iAudit.save("DELETE_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" DESACTIVADO.",supplierProduct.getSerial(),user.getUsername());
+                String finalSku = iUtil.buildInventorySku(supplierProduct);
+                iAudit.save(
+                        "DELETE_SUPPLIER_PRODUCT",
+                        "PRODUCTO DE INVENTARIO "+
+                                finalSku+
+                                " DESACTIVADO.",
+                        finalSku,user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -210,14 +226,14 @@ public class SupplierProductImpl implements ISupplierProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> activate(UUID supplierProductId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             SupplierProduct supplierProduct;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusFalse(serial);
+                supplierProduct = supplierProductRepository.findByIdAndStatusFalse(supplierProductId);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -237,7 +253,12 @@ public class SupplierProductImpl implements ISupplierProduct {
                 supplierProduct.setUser(user);
                 supplierProduct.setUserId(user.getId());
                 supplierProductRepository.save(supplierProduct);
-                iAudit.save("ACTIVATE_SUPPLIER_PRODUCT","PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" ACTIVADO.",supplierProduct.getSerial(),user.getUsername());
+                String finalSku = iUtil.buildInventorySku(supplierProduct);
+                iAudit.save(
+                        "ACTIVATE_SUPPLIER_PRODUCT",
+                        "PRODUCTO DE INVENTARIO "+
+                                finalSku+" ACTIVADO.",
+                        finalSku,user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -299,7 +320,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
-                            .serial(supplierProduct.getSerial())
+                            .serial(iUtil.buildInventorySku(supplierProduct))
                             .supplier(supplierProduct.getSupplier().getBusinessName())
                             .registrationDate(supplierProduct.getRegistrationDate())
                             .updateDate(supplierProduct.getUpdateDate())
@@ -363,7 +384,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
-                            .serial(supplierProduct.getSerial())
+                            .serial(iUtil.buildInventorySku(supplierProduct))
                             .supplier(supplierProduct.getSupplier().getBusinessName())
                             .registrationDate(supplierProduct.getRegistrationDate())
                             .updateDate(supplierProduct.getUpdateDate())
@@ -410,7 +431,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
-                            .serial(supplierProduct.getSerial())
+                            .serial(iUtil.buildInventorySku(supplierProduct))
                             .supplier(supplierProduct.getSupplier().getBusinessName())
                             .registrationDate(supplierProduct.getRegistrationDate())
                             .updateDate(supplierProduct.getUpdateDate())
@@ -443,7 +464,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
-                            .serial(supplierProduct.getSerial())
+                            .serial(iUtil.buildInventorySku(supplierProduct))
                             .supplier(supplierProduct.getSupplier().getBusinessName())
                             .registrationDate(supplierProduct.getRegistrationDate())
                             .updateDate(supplierProduct.getUpdateDate())
@@ -480,7 +501,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
-                            .serial(supplierProduct.getSerial())
+                            .serial(iUtil.buildInventorySku(supplierProduct))
                             .supplier(supplierProduct.getSupplier().getBusinessName())
                             .registrationDate(supplierProduct.getRegistrationDate())
                             .updateDate(supplierProduct.getUpdateDate())
@@ -513,7 +534,7 @@ public class SupplierProductImpl implements ISupplierProduct {
                             .color(supplierProduct.getProduct().getColor().getName())
                             .size(supplierProduct.getProduct().getSize().getName())
                             .price(supplierProduct.getPurchasePrice())
-                            .serial(supplierProduct.getSerial())
+                            .serial(iUtil.buildInventorySku(supplierProduct))
                             .supplier(supplierProduct.getSupplier().getBusinessName())
                             .registrationDate(supplierProduct.getRegistrationDate())
                             .updateDate(supplierProduct.getUpdateDate())

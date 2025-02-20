@@ -109,7 +109,7 @@ public class ReportImpl implements IReport {
                 int currentRow = 1;
                 for(GeneralStock generalStock:generalStockList){
                     Row row = sheet.createRow(currentRow);
-                    row.createCell(0).setCellValue(generalStock.getSupplierProduct().getSerial());
+                    //row.createCell(0).setCellValue(generalStock.getSupplierProduct().getSerial());
                     //row.createCell(1).setCellValue(generalStock.getSupplierProduct().getProduct().getSku());
                     row.createCell(2).setCellValue(generalStock.getSupplierProduct().getProduct().getModel().getName());
                     //row.createCell(3).setCellValue(generalStock.getSupplierProduct().getProduct().getCategoryProduct().getName());
@@ -198,7 +198,7 @@ public class ReportImpl implements IReport {
                 int currentRow = 1;
                 for(WarehouseStock warehouseStock:warehouseStockList){
                     Row row = sheet.createRow(currentRow);
-                    row.createCell(0).setCellValue(warehouseStock.getSupplierProduct().getSerial());
+                    //row.createCell(0).setCellValue(warehouseStock.getSupplierProduct().getSerial());
                     //row.createCell(1).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSku());
                     row.createCell(2).setCellValue(warehouseStock.getWarehouse().getName());
                     row.createCell(3).setCellValue(warehouseStock.getSupplierProduct().getProduct().getModel().getName());

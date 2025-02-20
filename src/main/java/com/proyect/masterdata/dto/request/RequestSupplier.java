@@ -19,4 +19,5 @@ public class RequestSupplier {
     private String supplierType;
     private String province;
     private String district;
+    private String sku;
 }

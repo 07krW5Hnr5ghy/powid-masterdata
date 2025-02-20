@@ -873,7 +873,6 @@ public class OrderingImpl implements IOrdering {
             {
                 ordering.setObservations(requestOrderUpdate.getObservations().toUpperCase());
             }
-
             if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
                 List<OrderItem> orderOrderItems = orderItemRepository.findAllByOrderId(ordering.getId());
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
@@ -881,11 +880,11 @@ public class OrderingImpl implements IOrdering {
                     List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndOrderItemId(orderStock.getId(), orderItem.getId());
                     for(OrderStockItem orderStockItem : orderStockItemList){
                         stockTransactionList.add(RequestStockTransactionItem.builder()
-                                .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                                        .supplierProductId(orderStockItem.getSupplierProduct().getId())
                                 .quantity(orderStockItem.getQuantity())
                                 .build());
                         iWarehouseStock.out(orderStockItem.getOrderStock().getWarehouse(), orderStockItem.getSupplierProduct(), orderStockItem.getQuantity(),user);
-                        iGeneralStock.out(orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
+                        iGeneralStock.out(orderStockItem.getSupplierProduct(), orderStockItem.getQuantity(),user.getUsername());
                     }
                 }
                 iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"PEDIDO",user);
@@ -1023,11 +1022,11 @@ public class OrderingImpl implements IOrdering {
                         List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndOrderItemId(orderStock.getId(), orderItem.getId());
                         for(OrderStockItem orderStockItem : orderStockItemList){
                             stockTransactionList.add(RequestStockTransactionItem.builder()
-                                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                                    .supplierProductId(orderStockItem.getSupplierProduct().getId())
                                     .quantity(orderStockItem.getQuantity())
                                     .build());
                             iWarehouseStock.out(orderStockItem.getOrderStock().getWarehouse(), orderStockItem.getSupplierProduct(), orderStockItem.getQuantity(),user);
-                            iGeneralStock.out(orderStockItem.getSupplierProduct().getSerial(), orderStockItem.getQuantity(),user.getUsername());
+                            iGeneralStock.out(orderStockItem.getSupplierProduct(), orderStockItem.getQuantity(),user.getUsername());
                         }
                     }
                     iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"PEDIDO",user);

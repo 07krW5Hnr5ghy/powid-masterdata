@@ -17,6 +17,7 @@ import com.proyect.masterdata.services.IWarehouseStock;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -58,9 +59,9 @@ public class WarehouseStockController {
     public ResponseEntity<List<WarehouseStockDTO>> listWarehouseStock(
             @RequestParam("user") String user,
             @RequestParam(value = "warehouse",required = false) String warehouse,
-            @RequestParam(value = "supplierProduct",required = false) String supplierProduct
+            @RequestParam(value = "supplierProductId",required = false) UUID supplierProductId
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<WarehouseStockDTO>> result = iWarehouseStock.listWarehouse(user,warehouse,supplierProduct);
+        CompletableFuture<List<WarehouseStockDTO>> result = iWarehouseStock.listWarehouse(user,warehouse,supplierProductId);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

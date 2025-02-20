@@ -11,6 +11,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IWarehouseStock {
@@ -28,7 +29,7 @@ public interface IWarehouseStock {
                 String sortColumn,
                 Integer pageNumber,
                 Integer pageSize) throws InternalErrorExceptions;
-        CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,String warehouse,String supplierProduct) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user, String warehouse, UUID supplierProductId) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<WarehouseStockDTO>> listWarehouseAndSupplier(String user,String warehouse,String supplier) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

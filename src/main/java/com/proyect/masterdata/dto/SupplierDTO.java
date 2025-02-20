@@ -15,6 +15,7 @@ import java.util.Date;
 public class SupplierDTO {
     private String name;
     private String ruc;
+    private String sku;
     private String country;
     private String location;
     private String phone;

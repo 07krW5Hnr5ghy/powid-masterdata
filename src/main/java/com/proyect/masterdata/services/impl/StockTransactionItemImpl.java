@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
+import com.proyect.masterdata.services.IUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     private final IAudit iAudit;
     private final WarehouseRepository warehouseRepository;
     private final StockTransactionTypeRepository stockTransactionTypeRepository;
+    private final IUtil iUtil;
     @Override
     public ResponseSuccess save(StockTransaction stockTransaction,RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -44,7 +46,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransactionItem.getSupplierProductSerial().toUpperCase());
+            supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestStockTransactionItem.getSupplierProductId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -70,7 +72,15 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                             .quantity(requestStockTransactionItem.getQuantity())
                             .user(user).userId(user.getId())
                     .build());
-            iAudit.save("ADD_STOCK_TRANSACTION_ITEM","PRODUCTO DE INVENTARIO "+newStockTransactionItem.getSupplierProduct().getSerial()+" PARA TRANSACCION DE STOCK "+newStockTransactionItem.getStockTransaction().getSerial()+" CREADO.",newStockTransactionItem.getStockTransaction().getSerial(),user.getUsername());
+            iAudit.save(
+                    "ADD_STOCK_TRANSACTION_ITEM",
+                    "PRODUCTO DE INVENTARIO "+
+                            iUtil.buildInventorySku(newStockTransactionItem.getSupplierProduct())+
+                            " PARA TRANSACCION DE STOCK "+
+                            newStockTransactionItem.getStockTransaction().getSerial()+
+                            " CREADO.",
+                    newStockTransactionItem.getStockTransaction().getSerial(),
+                    user.getUsername());
             return ResponseSuccess.builder()
                     .message(Constants.register)
                     .code(200)
@@ -89,7 +99,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransactionItem.getSupplierProductSerial().toUpperCase());
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestStockTransactionItem.getSupplierProductId());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -115,7 +125,14 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                         .quantity(requestStockTransactionItem.getQuantity())
                         .user(user).userId(user.getId())
                         .build());
-                iAudit.save("ADD_STOCK_TRANSACTION_ITEM","PRODUCTO DE INVENTARIO "+newStockTransactionItem.getSupplierProduct().getSerial()+" PARA TRANSACCION DE STOCK "+newStockTransactionItem.getStockTransaction().getSerial()+" CREADO.",newStockTransactionItem.getStockTransaction().getSerial(),user.getUsername());
+                iAudit.save(
+                        "ADD_STOCK_TRANSACTION_ITEM",
+                        "PRODUCTO DE INVENTARIO "+
+                                iUtil.buildInventorySku(newStockTransactionItem.getSupplierProduct())+
+                                " PARA TRANSACCION DE STOCK "+
+                                newStockTransactionItem.getStockTransaction().getSerial()+
+                                " CREADO.",
+                        newStockTransactionItem.getStockTransaction().getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -131,7 +148,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     public CompletableFuture<Page<StockTransactionItemDTO>> list(
             String user,
             List<String> stockTransactions,
-            List<String> supplierProducts,
+            List<UUID> supplierProductIds,
             List<String> warehouses,
             List<String> stockTransactionTypes,
             String sort,
@@ -141,7 +158,6 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
         return CompletableFuture.supplyAsync(()->{
             UUID clientId;
             List<UUID> stockTransactionIds;
-            List<UUID> supplierProductIds;
             List<UUID> warehouseIds;
             List<UUID> stockTransactionTypeIds;
             Page<StockTransactionItem> stockTransactionItemPage;
@@ -152,14 +168,6 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                 ).stream().map(StockTransaction::getId).toList();
             } else {
                 stockTransactionIds = new ArrayList<>();
-            }
-
-            if(supplierProducts != null && !supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else{
-                supplierProductIds = new ArrayList<>();
             }
 
             if(warehouses!=null && !warehouses.isEmpty()){
@@ -205,7 +213,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                     .map(stockTransactionItem -> StockTransactionItemDTO.builder()
                             .quantity(stockTransactionItem.getQuantity())
                             .warehouse(stockTransactionItem.getStockTransaction().getWarehouse().getName())
-                            .supplierProduct(stockTransactionItem.getSupplierProduct().getSerial())
+                            .supplierProduct(iUtil.buildInventorySku(stockTransactionItem.getSupplierProduct()))
                             .serial(stockTransactionItem.getStockTransaction().getSerial())
                             .transactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
                             .registrationDate(stockTransactionItem.getRegistrationDate())
@@ -242,7 +250,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                     .map(stockTransactionItem -> StockTransactionItemDTO.builder()
                             .quantity(stockTransactionItem.getQuantity())
                             .warehouse(stockTransactionItem.getStockTransaction().getWarehouse().getName())
-                            .supplierProduct(stockTransactionItem.getSupplierProduct().getSerial())
+                            .supplierProduct(iUtil.buildInventorySku(stockTransactionItem.getSupplierProduct()))
                             .serial(stockTransactionItem.getStockTransaction().getSerial())
                             .transactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
                             .registrationDate(stockTransactionItem.getRegistrationDate())

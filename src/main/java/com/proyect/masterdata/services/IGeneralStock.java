@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services;
 
+import com.proyect.masterdata.domain.SupplierProduct;
 import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.dto.GeneralStockDTO;
@@ -13,9 +14,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface IGeneralStock {
-        CompletableFuture<ResponseSuccess> in(String supplierProductSerial, Integer quantity, String tokenUser)
+        CompletableFuture<ResponseSuccess> in(SupplierProduct supplierProduct, Integer quantity, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<ResponseSuccess> out(String supplierProductSerial, Integer quantity, String tokenUser)
+        CompletableFuture<ResponseSuccess> out(SupplierProduct supplierProduct, Integer quantity, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<GeneralStockDTO>> list(
                 String user,

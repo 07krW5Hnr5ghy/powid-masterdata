@@ -22,7 +22,7 @@ public interface IStockTransferItem {
             List<String> stockTransfers,
             List<String> originWarehouses,
             List<String> destinationWarehouses,
-            List<String> supplierProducts,
+            List<UUID> supplierProductIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

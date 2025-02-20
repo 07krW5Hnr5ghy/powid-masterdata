@@ -11,6 +11,8 @@ import com.proyect.masterdata.domain.Supplier;
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, UUID> {
     Supplier findByRucAndStatusTrue(String ruc);
+    Supplier findBySkuAndClientId(String sku,UUID clientId);
+    Supplier findBySkuOrRucAndClientId(String sku,String ruc,UUID clientId);
     Supplier findByRucAndClientId(String ruc,UUID clientId);
     Supplier findByBusinessNameAndClientId(String businessName,UUID clientId);
     Supplier findByRucAndClientIdAndStatusTrue(String ruc,UUID clientId);

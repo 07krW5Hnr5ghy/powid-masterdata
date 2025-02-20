@@ -115,31 +115,31 @@ public class OrderStockItemController {
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("supplierProduct") String supplierProduct,
+            @RequestParam("supplierProductId") UUID supplierProductId,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iOrderStockItem.delete(orderId,supplierProduct,tokenUser);
+        CompletableFuture<ResponseDelete> result = iOrderStockItem.delete(orderId,supplierProductId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @PutMapping()
     public ResponseEntity<ResponseSuccess> update(
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("supplierProduct") String supplierProduct,
+            @RequestParam("supplierProductId") UUID supplierProductId,
             @RequestParam("tokenUser") String tokenUser,
             @RequestParam("quantity") Integer quantity
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrderStockItem.update(orderId,supplierProduct,tokenUser,quantity);
+        CompletableFuture<ResponseSuccess> result = iOrderStockItem.update(orderId,supplierProductId,tokenUser,quantity);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @PostMapping("activate")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("supplierProduct") String supplierProduct,
+            @RequestParam("supplierProductId") UUID supplierProductId,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrderStockItem.activate(orderId,supplierProduct,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iOrderStockItem.activate(orderId,supplierProductId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

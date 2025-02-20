@@ -49,18 +49,18 @@ public class SupplierProductController {
     @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("serial") String serial,
+            @RequestParam("supplierProductId") UUID supplierProductId,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iSupplierProduct.delete(serial, tokenUser);
+        CompletableFuture<ResponseDelete> result = iSupplierProduct.delete(supplierProductId, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_DELETE')")
     public ResponseEntity<ResponseSuccess> activate(
-            @RequestParam("serial") String serial,
+            @RequestParam("supplierProductId") UUID supplierProductId,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iSupplierProduct.activate(serial, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iSupplierProduct.activate(supplierProductId, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

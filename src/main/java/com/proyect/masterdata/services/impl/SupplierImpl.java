@@ -44,12 +44,11 @@ public class SupplierImpl implements ISupplier {
             throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
-        Supplier supplierRuc;
-        Supplier supplierName;
         SupplierType supplierType;
         District district;
         Province province;
         Country country;
+        Supplier supplier;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -64,16 +63,11 @@ public class SupplierImpl implements ISupplier {
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
-            supplierRuc = supplierRepository.findByRucAndClientId(requestSupplier.getRuc(), user.getClientId());
-            supplierName = supplierRepository.findByBusinessNameAndClientId(requestSupplier.getBusinessName().toUpperCase(), user.getClientId());
+            supplier = supplierRepository.findBySkuOrRucAndClientId(requestSupplier.getSku().toUpperCase(), requestSupplier.getRuc().toUpperCase(), user.getClientId());
         }
 
-        if (supplierRuc != null) {
-            throw new BadRequestExceptions(Constants.ErrorSupplierRucExists);
-        }
-
-        if(supplierName != null){
-            throw new BadRequestExceptions(Constants.ErrorSupplierNameExists);
+        if(supplier!=null){
+            throw new BadRequestExceptions(Constants.ErrorSupplierExists);
         }
 
         if(supplierType == null){
@@ -96,6 +90,7 @@ public class SupplierImpl implements ISupplier {
 
         try {
             Supplier newSupplier = supplierRepository.save(Supplier.builder()
+                    .sku(requestSupplier.getSku().toUpperCase())
                     .businessName(requestSupplier.getBusinessName().toUpperCase())
                     .client(user.getClient())
                     .clientId(user.getClientId())
@@ -128,12 +123,11 @@ public class SupplierImpl implements ISupplier {
     public CompletableFuture<ResponseSuccess> saveAsync(RequestSupplier requestSupplier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Supplier supplierRuc;
-            Supplier supplierName;
             SupplierType supplierType;
             Province province;
             District district;
             Country country;
+            Supplier supplier;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -148,16 +142,11 @@ public class SupplierImpl implements ISupplier {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                supplierRuc = supplierRepository.findByRucAndClientId(requestSupplier.getRuc(), user.getClientId());
-                supplierName = supplierRepository.findByBusinessNameAndClientId(requestSupplier.getBusinessName().toUpperCase(), user.getClientId());
+                supplier = supplierRepository.findBySkuOrRucAndClientId(requestSupplier.getSku().toUpperCase(), requestSupplier.getRuc().toUpperCase(), user.getClientId());
             }
 
-            if (supplierRuc != null) {
-                throw new BadRequestExceptions(Constants.ErrorSupplierRucExists);
-            }
-
-            if(supplierName != null){
-                throw new BadRequestExceptions(Constants.ErrorSupplierNameExists);
+            if(supplier!=null){
+                throw new BadRequestExceptions(Constants.ErrorSupplierExists);
             }
 
             if(supplierType == null){
@@ -396,6 +385,7 @@ public class SupplierImpl implements ISupplier {
             List<SupplierDTO> supplierDTOs = supplierPage.getContent().stream().map(supplier -> SupplierDTO.builder()
                     .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
+                    .sku(supplier.getSku())
                     .email(supplier.getEmail())
                     .location(supplier.getLocation())
                     .phone(supplier.getPhoneNumber())
@@ -431,6 +421,7 @@ public class SupplierImpl implements ISupplier {
 
             return suppliers.stream().map(supplier -> SupplierDTO.builder()
                     .name(supplier.getBusinessName())
+                    .sku(supplier.getSku())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
                     .location(supplier.getLocation())
@@ -467,6 +458,7 @@ public class SupplierImpl implements ISupplier {
                     .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
+                    .sku(supplier.getSku())
                     .location(supplier.getLocation())
                     .phone(supplier.getPhoneNumber())
                     .ruc(supplier.getRuc())
@@ -501,6 +493,7 @@ public class SupplierImpl implements ISupplier {
                     .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
+                    .sku(supplier.getSku())
                     .location(supplier.getLocation())
                     .phone(supplier.getPhoneNumber())
                     .ruc(supplier.getRuc())

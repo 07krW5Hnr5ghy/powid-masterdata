@@ -48,28 +48,28 @@ public class OrderReturnItemController {
     private ResponseEntity<ResponseDelete> delete(
             @RequestParam("tokenUser") String tokenUser,
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("supplierProduct") String supplierProductSerial
+            @RequestParam("supplierProductId") UUID supplierProductId
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iOrderReturnItem.delete(orderId,supplierProductSerial,tokenUser);
+        CompletableFuture<ResponseDelete> result = iOrderReturnItem.delete(orderId,supplierProductId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @PutMapping()
     private ResponseEntity<ResponseSuccess> update(
             @RequestParam("tokenUser") String tokenUser,
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("supplierProduct") String supplierProductSerial,
+            @RequestParam("supplierProductId") UUID supplierProductId,
             @RequestParam("quantity") Integer quantity
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrderReturnItem.update(orderId,supplierProductSerial,quantity,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iOrderReturnItem.update(orderId,supplierProductId,quantity,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @PostMapping("activate")
     private ResponseEntity<ResponseSuccess> activate(
             @RequestParam("tokenUser") String tokenUser,
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("supplierProduct") String supplierProductSerial
+            @RequestParam("supplierProductId") UUID supplierProductId
             ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrderReturnItem.activate(orderId,supplierProductSerial,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iOrderReturnItem.activate(orderId,supplierProductId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping("pagination")
@@ -77,7 +77,7 @@ public class OrderReturnItemController {
             @RequestParam(value = "user") String user,
             @RequestParam(value = "orderIds",required = false) List<UUID> orderIds,
             @RequestParam(value = "productIds",required = false) List<UUID> productIds,
-            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
+            @RequestParam(value = "supplierProductIds",required = false) List<UUID> supplierProductIds,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "returnTypes",required = false) List<String> returnTypes,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
@@ -93,7 +93,7 @@ public class OrderReturnItemController {
                 user,
                 orderIds,
                 productIds,
-                supplierProducts,
+                supplierProductIds,
                 warehouses,
                 returnTypes,
                 registrationStartDate,
@@ -112,7 +112,7 @@ public class OrderReturnItemController {
             @RequestParam(value = "user") String user,
             @RequestParam(value = "orderIds",required = false) List<UUID> orderIds,
             @RequestParam(value = "productIds",required = false) List<UUID> productIds,
-            @RequestParam(value = "supplierProducts",required = false) List<String> supplierProducts,
+            @RequestParam(value = "supplierProductIds",required = false) List<UUID> supplierProductIds,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "returnTypes",required = false) List<String> returnTypes,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
@@ -128,7 +128,7 @@ public class OrderReturnItemController {
                 user,
                 orderIds,
                 productIds,
-                supplierProducts,
+                supplierProductIds,
                 warehouses,
                 returnTypes,
                 registrationStartDate,

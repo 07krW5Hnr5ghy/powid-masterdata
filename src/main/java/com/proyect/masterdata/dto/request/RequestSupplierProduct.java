@@ -12,7 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class RequestSupplierProduct {
-    private String serial;
     private UUID productId;
     private String supplier;
     private Double purchasePrice;
