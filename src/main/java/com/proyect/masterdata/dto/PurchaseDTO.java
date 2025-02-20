@@ -18,4 +18,5 @@ public class PurchaseDTO {
     private String warehouse;
     private String purchaseType;
     private OffsetDateTime registrationDate;
+    private String purchasePaymentType;
 }
