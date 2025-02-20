@@ -56,6 +56,9 @@ public class Purchase {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "purchase_payment_type_id")
+    private UUID purchasePaymentTypeId;
+
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
@@ -79,5 +82,9 @@ public class Purchase {
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
+
+    @ManyToOne()
+    @JoinColumn(name="purchase_payment_type_id",columnDefinition = "purchasePaymentId",insertable = false,updatable = false)
+    private PurchasePaymentType purchasePaymentType;
 
 }

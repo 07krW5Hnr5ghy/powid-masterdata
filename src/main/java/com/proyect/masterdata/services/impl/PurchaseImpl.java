@@ -45,6 +45,7 @@ public class PurchaseImpl implements IPurchase {
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final IUtil iUtil;
+    private final PurchasePaymentTypeRepository purchasePaymentTypeRepository;
     @Override
     @Transactional
     public ResponseSuccess save(RequestPurchase requestPurchase, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -56,12 +57,14 @@ public class PurchaseImpl implements IPurchase {
         StockReturn stockReturn;
         PurchaseDocument purchaseDocument;
         Supplier supplier;
+        PurchasePaymentType purchasePaymentType;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             warehouse = warehouseRepository.findByNameAndStatusTrue(requestPurchase.getWarehouse().toUpperCase());
             purchaseType = purchaseTypeRepository.findByNameAndStatusTrue(requestPurchase.getPurchaseType().toUpperCase());
             purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestPurchase.getPurchaseDocument());
+            purchasePaymentType = purchasePaymentTypeRepository.findByNameAndStatusTrue(requestPurchase.getPurchasePaymentType().toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -99,6 +102,10 @@ public class PurchaseImpl implements IPurchase {
             throw new BadRequestExceptions(Constants.ErrorSupplier);
         }
 
+        if(purchasePaymentType==null){
+            throw new BadRequestExceptions(Constants.ErrorPurchasePaymentType);
+        }
+
         try{
             if(Objects.equals(purchaseType.getName(), "DEVOLUCION")){
                 stockReturn = stockReturnRepository.findBySerial(requestPurchase.getSerial());
@@ -121,7 +128,7 @@ public class PurchaseImpl implements IPurchase {
                     .supplierProductId(purchaseItem.getSupplierProductId())
                     .build()).toList();
             StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
-            Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
+            Purchase newPurchase = purchaseRepository.save(Purchase.builder()
                             .serial(requestPurchase.getSerial().toUpperCase())
                             .supplier(supplier)
                             .supplierId(supplier.getId())
@@ -133,16 +140,18 @@ public class PurchaseImpl implements IPurchase {
                             .purchaseType(purchaseType)
                             .purchaseTypeId(purchaseType.getId())
                             .client(user.getClient())
+                            .purchasePaymentType(purchasePaymentType)
+                            .purchasePaymentTypeId(purchasePaymentType.getId())
                             .purchaseDocument(purchaseDocument)
                             .purchaseDocumentId(purchaseDocument.getId())
                             .clientId(user.getClientId())
                             .user(user).userId(user.getId())
                       .build());
             for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
-                  iPurchaseItem.save(newPurchase,warehouse.getName(), requestPurchaseItem,user.getUsername());
-                  iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
-                  iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(),user.getUsername());
+                SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
+                iPurchaseItem.save(newPurchase,warehouse.getName(), requestPurchaseItem,user.getUsername());
+                iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
+                iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(),user.getUsername());
             }
             iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getSerial() +" CREADA.",newPurchase.getSerial(),user.getUsername());
             return ResponseSuccess.builder()
@@ -167,12 +176,14 @@ public class PurchaseImpl implements IPurchase {
             StockReturn stockReturn;
             PurchaseDocument purchaseDocument;
             Supplier supplier;
+            PurchasePaymentType purchasePaymentType;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestPurchase.getWarehouse().toUpperCase());
                 purchaseType = purchaseTypeRepository.findByNameAndStatusTrue(requestPurchase.getPurchaseType().toUpperCase());
                 purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestPurchase.getPurchaseDocument());
+                purchasePaymentType = purchasePaymentTypeRepository.findByNameAndStatusTrue(requestPurchase.getPurchasePaymentType().toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -208,6 +219,10 @@ public class PurchaseImpl implements IPurchase {
 
             if(supplier == null){
                 throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }
+
+            if(purchasePaymentType==null){
+                throw new BadRequestExceptions(Constants.ErrorPurchasePaymentType);
             }
 
             try{
@@ -247,6 +262,8 @@ public class PurchaseImpl implements IPurchase {
                         .clientId(user.getClientId())
                                 .purchaseDocument(purchaseDocument)
                                 .purchaseDocumentId(purchaseDocument.getId())
+                        .purchasePaymentType(purchasePaymentType)
+                        .purchasePaymentTypeId(purchasePaymentType.getId())
                         .user(user).userId(user.getId())
                         .build());
                 for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
@@ -334,6 +351,7 @@ public class PurchaseImpl implements IPurchase {
                     .warehouse(purchase.getWarehouse().getName())
                     .purchaseType(purchase.getPurchaseType().getName())
                     .registrationDate(purchase.getRegistrationDate())
+                    .purchasePaymentType(purchase.getPurchasePaymentType().getName())
                     .build()).toList();
 
             return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
@@ -406,6 +424,7 @@ public class PurchaseImpl implements IPurchase {
                     .warehouse(purchase.getWarehouse().getName())
                     .purchaseType(purchase.getPurchaseType().getName())
                     .registrationDate(purchase.getRegistrationDate())
+                    .purchasePaymentType(purchase.getPurchasePaymentType().getName())
                     .build()).toList();
 
             return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
@@ -462,6 +481,7 @@ public class PurchaseImpl implements IPurchase {
                     .warehouse(purchase.getWarehouse().getName())
                     .purchaseType(purchase.getPurchaseType().getName())
                     .registrationDate(purchase.getRegistrationDate())
+                    .purchasePaymentType(purchase.getPurchasePaymentType().getName())
                     .build()).toList();
         });
     }

@@ -96,6 +96,7 @@ public class Seeder implements CommandLineRunner {
         private final IDiscount iDiscount;
         private final IDeliveryPoint iDeliveryPoint;
         private final ISubCategoryProduct iSubCategoryProduct;
+        private final IPurchasePaymentType iPurchasePaymentType;
         @Override
         public void run(String... args) throws Exception {
 
@@ -305,6 +306,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_ROLE_ACCESS",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_SALE_CHANNEL",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_PURCHASE_TYPE",adminUser.getUsername());
+                        iAuditEvent.save("ACTIVATE_PURCHASE_PAYMENT_TYPE",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_SIZE",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_SIZE_TYPE",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_STOCK_REPLENISHMENT_ITEM",adminUser.getUsername());
@@ -370,6 +372,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_PURCHASE_DOCUMENT",adminUser.getUsername());
                         iAuditEvent.save("ADD_PURCHASE_EXCEL",adminUser.getUsername());
                         iAuditEvent.save("ADD_PURCHASE_ITEM",adminUser.getUsername());
+                        iAuditEvent.save("ADD_PURCHASE_PAYMENT_TYPE",adminUser.getUsername());
                         iAuditEvent.save("ADD_ROLE",adminUser.getUsername());
                         iAuditEvent.save("ADD_ROLE_ACCESS",adminUser.getUsername());
                         iAuditEvent.save("ADD_SALE_CHANNEL",adminUser.getUsername());
@@ -438,6 +441,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_ROLE_ACCESS",adminUser.getUsername());
                         iAuditEvent.save("DELETE_SALE_CHANNEL",adminUser.getUsername());
                         iAuditEvent.save("DELETE_PURCHASE_TYPE",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_PURCHASE_PAYMENT_TYPE",adminUser.getUsername());
                         iAuditEvent.save("DELETE_SIZE",adminUser.getUsername());
                         iAuditEvent.save("DELETE_SIZE_TYPE",adminUser.getUsername());
                         iAuditEvent.save("DELETE_STOCK_REPLENISHMENT_ITEM",adminUser.getUsername());
@@ -570,6 +574,9 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("SALE_CHANNEL_DELETE",adminUser.getUsername());
                         iAccess.save("PURCHASE_TYPE_POST",adminUser.getUsername());
                         iAccess.save("PURCHASE_TYPE_GET",adminUser.getUsername());
+                        iAccess.save("PURCHASE_PAYMENT_TYPE_GET",adminUser.getUsername());
+                        iAccess.save("PURCHASE_PAYMENT_TYPE_POST",adminUser.getUsername());
+                        iAccess.save("PURCHASE_PAYMENT_TYPE_PUT",adminUser.getUsername());
                         iAccess.save("SIZE_GET",adminUser.getUsername());
                         iAccess.save("SIZE_POST",adminUser.getUsername());
                         iAccess.save("SIZE_DELETE",adminUser.getUsername());
@@ -829,6 +836,9 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("ADMINISTRACION","SALE_CHANNEL_POST",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","PURCHASE_TYPE_GET",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","PURCHASE_TYPE_POST",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","PURCHASE_PAYMENT_TYPE_GET",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","PURCHASE_PAYMENT_TYPE_POST",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","PURCHASE_PAYMENT_TYPE_PUT",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","SIZE_GET",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","SIZE_POST",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","SIZE_DELETE",adminUser.getUsername());
@@ -1364,6 +1374,10 @@ public class Seeder implements CommandLineRunner {
                         iStockTransactionType.save("transferencia-salida", adminUser.getUsername());
                         iStockTransactionType.save("devolucion-comprador",adminUser.getUsername());
                         iStockTransactionType.save("devolucion-proveedor",adminUser.getUsername());
+
+                        iPurchasePaymentType.save("credito",adminUser.getUsername());
+                        iPurchasePaymentType.save("efectivo",adminUser.getUsername());
+                        iPurchasePaymentType.save("transferencia",adminUser.getUsername());
 
                         User business1 = userRepository.save(User.builder()
                                 .username("JCOILA")
