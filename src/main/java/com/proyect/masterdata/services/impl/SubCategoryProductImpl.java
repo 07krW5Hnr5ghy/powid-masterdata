@@ -14,6 +14,7 @@ import com.proyect.masterdata.repository.CategoryProductRepository;
 import com.proyect.masterdata.repository.SubCategoryProductRepository;
 import com.proyect.masterdata.repository.SubCategoryProductRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ISubCategoryProduct;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
     private final CategoryProductRepository categoryProductRepository;
     private final SubCategoryProductRepository subCategoryProductRepository;
     private final SubCategoryProductRepositoryCustom subCategoryProductRepositoryCustom;
+    private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestSubCategoryProduct requestSubCategoryProduct) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -75,6 +77,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                             .user(user)
                             .userId(user.getId())
                     .build());
+            iAudit.save("ADD_SUB_CATEGORY_PRODUCT","SUB CATEGORIA DE PRODUCTO "+requestSubCategoryProduct.getName().toUpperCase()+" CREADA.",requestSubCategoryProduct.getName().toUpperCase(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -125,6 +128,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                         .user(user)
                         .userId(user.getId())
                         .build());
+                iAudit.save("ADD_SUB_CATEGORY_PRODUCT","SUB CATEGORIA DE PRODUCTO "+requestSubCategoryProduct.getName().toUpperCase()+" CREADA.",requestSubCategoryProduct.getName().toUpperCase(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -159,6 +163,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                 subCategoryProduct.setUpdateDate(OffsetDateTime.now());
                 subCategoryProduct.setUser(user);
                 subCategoryProduct.setUserId(user.getId());
+                iAudit.save("DELETE_SUB_CATEGORY_PRODUCT","SUB CATEGORIA DE PRODUCTO "+subCategoryProduct.getName()+" ELIMINADA.",subCategoryProduct.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -193,6 +198,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                 subCategoryProduct.setUpdateDate(OffsetDateTime.now());
                 subCategoryProduct.setUser(user);
                 subCategoryProduct.setUserId(user.getId());
+                iAudit.save("ACTIVATE_SUB_CATEGORY_PRODUCT","SUB CATEGORIA DE PRODUCTO "+subCategoryProduct.getName()+" ACTIVADA.",subCategoryProduct.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)

@@ -95,7 +95,7 @@ public class Seeder implements CommandLineRunner {
         private final ICustomer iCustomer;
         private final IDiscount iDiscount;
         private final IDeliveryPoint iDeliveryPoint;
-        private final SubCategoryProductRepository subCategoryProductRepository;
+        private final ISubCategoryProduct iSubCategoryProduct;
         @Override
         public void run(String... args) throws Exception {
 
@@ -312,6 +312,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_STORE",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_STORE_TYPE",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_SUBSCRIPTION",adminUser.getUsername());
+                        iAuditEvent.save("ACTIVATE_SUB_CATEGORY_PRODUCT",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_SUPPLIER",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_SUPPLIER_PRODUCT",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_SUPPLIER_TYPE",adminUser.getUsername());
@@ -390,6 +391,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_STORE",adminUser.getUsername());
                         iAuditEvent.save("ADD_STORE_TYPE",adminUser.getUsername());
                         iAuditEvent.save("ADD_SUBSCRIPTION",adminUser.getUsername());
+                        iAuditEvent.save("ADD_SUB_CATEGORY_PRODUCT",adminUser.getUsername());
                         iAuditEvent.save("ADD_SUPPLIER",adminUser.getUsername());
                         iAuditEvent.save("ADD_SUPPLIER_PRODUCT",adminUser.getUsername());
                         iAuditEvent.save("ADD_SUPPLIER_PRODUCT_EXCEL",adminUser.getUsername());
@@ -443,6 +445,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_STORE",adminUser.getUsername());
                         iAuditEvent.save("DELETE_STORE_TYPE",adminUser.getUsername());
                         iAuditEvent.save("DELETE_SUBSCRIPTION",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_SUB_CATEGORY_PRODUCT",adminUser.getUsername());
                         iAuditEvent.save("DELETE_SUPPLIER",adminUser.getUsername());
                         iAuditEvent.save("DELETE_SUPPLIER_PRODUCT",adminUser.getUsername());
                         iAuditEvent.save("DELETE_SUPPLIER_TYPE",adminUser.getUsername());
@@ -592,6 +595,10 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("STORE_PUT",adminUser.getUsername());
                         iAccess.save("STORE_DELETE",adminUser.getUsername());
                         iAccess.save("STORE_TYPE_POST",adminUser.getUsername());
+                        iAccess.save("SUB_CATEGORY_PRODUCT_GET",adminUser.getUsername());
+                        iAccess.save("SUB_CATEGORY_PRODUCT_POST",adminUser.getUsername());
+                        iAccess.save("SUB_CATEGORY_PRODUCT_DELETE",adminUser.getUsername());
+                        iAccess.save("SUB_CATEGORY_PRODUCT_PUT",adminUser.getUsername());
                         iAccess.save("SUBSCRIPTION_GET",adminUser.getUsername());
                         iAccess.save("SUBSCRIPTION_POST",adminUser.getUsername());
                         iAccess.save("SUBSCRIPTION_PAYMENT_POST",adminUser.getUsername());
@@ -839,6 +846,10 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("ADMINISTRACION","STOCK_TRANSFER_GET",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","STOCK_TRANSFER_ITEM_GET",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","STORE_GET",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","SUB_CATEGORY_PRODUCT_GET",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","SUB_CATEGORY_PRODUCT_POST",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","SUB_CATEGORY_PRODUCT_DELETE",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","SUB_CATEGORY_PRODUCT_PUT",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","SUBSCRIPTION_GET",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","SUBSCRIPTION_POST",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","SUPPLIER_GET",adminUser.getUsername());
@@ -939,44 +950,252 @@ public class Seeder implements CommandLineRunner {
                         iCategoryProduct.save("COMPLEMENTOS","CO001","COMPLEMENTOS",adminUser.getUsername());
                         iCategoryProduct.save("ACCESORIOS","AC001","ACCESORIOS",adminUser.getUsername());
 
-                        iCategoryProduct.save("BLUSA", "BLUSA","ROPA", adminUser.getUsername());
-                        iCategoryProduct.save("CAMISA", "CAMISA","ROPA", adminUser.getUsername());
-                        iCategoryProduct.save("VESTIDO", "VESTIDO","ROPA", adminUser.getUsername());
-                        iCategoryProduct.save("SACO", "SACO","ROPA", adminUser.getUsername());
-                        iCategoryProduct.save("SHORT", "SHORT", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("PANTALON_SASTRE", "PATALON SASTRE", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("BLAZER", "BLAZER", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("CHALECO", "CHALECO", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("POLO", "POLO", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("VESTIDO_SHORT", "VESTIDO SHORT", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("FALDA", "FALDA", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("HOODIES", "HOODIES", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("CHOMPAS", "CHOMPAS", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("PANTALON_DENIM", "PANTALON DENIM", "ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("BOLSOS", "BOLSOS", "COMPLEMENTOS",adminUser.getUsername());
-                        iCategoryProduct.save("CARTERAS", "CARTERAS", "COMPLEMENTOS",adminUser.getUsername());
-                        iCategoryProduct.save("GORRAS", "GORRAS", "COMPLEMENTOS",adminUser.getUsername());
-                        iCategoryProduct.save("MOCHILAS", "MOCHILAS", "COMPLEMENTOS",adminUser.getUsername());
-                        iCategoryProduct.save("BILLETERA", "BILLETERA", "COMPLEMENTOS",adminUser.getUsername());
-                        iCategoryProduct.save("BOTIN_ALTO", "BOTIN ALTO", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("BOTIN_BAJO", "BOTIN BAJO", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("ZAPATILLAS", "ZAPATILLAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("OXFORD", "OXFORD", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("BALERINAS", "BALERINAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("SANDALIAS_PLANAS", "SANDALIAS PLANAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("PLATAFORMAS", "PLATAFORMAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("SANDALIAS", "SANDALIAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("SANDALIAS_CON_TACO", "SANDALIAS CON TACO", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("CHUNKIS", "CHUNKIS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("ALPARGATAS", "ALPARGATAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("MULES", "MULES", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("BABUCHA", "BABUCHA", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("BOTAS", "BOTAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("STILETTO", "STILETTO", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("SUECOS", "SUECOS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("MOCASIN", "MOCASIN", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("ZAPATILLAS_URBANAS", "ZAPATILLAS URBANAS", "CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("ACCESORIOS_", "ACCESORIOS", "ACCESORIOS",adminUser.getUsername());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                        .categoryName("ROPA")
+                                        .sku("BLS")
+                                        .name("BLUSA")
+                                        .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("CS")
+                                .name("CAMISA")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("VT")
+                                .name("VESTIDO")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("SC")
+                                .name("SACO")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("SH")
+                                .name("SHORT")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("PST")
+                                .name("PANTALON_SASTRE")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("BLZ")
+                                .name("BLAZER")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("CHA")
+                                .name("CHALECO")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("POL")
+                                .name("POLO")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("VTS")
+                                .name("VESTIDO_SHORT")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("FAL")
+                                .name("FALDA")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("HOO")
+                                .name("HOODIES")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("CHO")
+                                .name("CHOMPAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("PTD")
+                                .name("PANTALON_DENIM")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("PA")
+                                .name("PANTALONES")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("TO")
+                                .name("TOPS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ROPA")
+                                .sku("EN")
+                                .name("ENTERIZOS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("COMPLEMENTOS")
+                                .sku("BOL")
+                                .name("BOLSOS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("COMPLEMENTOS")
+                                .sku("CAR")
+                                .name("CARTERAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("COMPLEMENTOS")
+                                .sku("GOR")
+                                .name("GORRAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("COMPLEMENTOS")
+                                .sku("MOCH")
+                                .name("MOCHILAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("COMPLEMENTOS")
+                                .sku("BIL")
+                                .name("BILLETERAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("BOA")
+                                .name("BOTIN_ALTO")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("BOB")
+                                .name("BOTIN_BAJO")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("ZA")
+                                .name("ZAPATILLAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("OXF")
+                                .name("OXFORD")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("BAL")
+                                .name("BALERINAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("SAP")
+                                .name("SANDALIAS_PLANAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("PLA")
+                                .name("PLATAFORMAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("SA")
+                                .name("SANDALIAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("SAT")
+                                .name("SANDALIAS_CON_TACO")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("CHU")
+                                .name("CHUNKIS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("ALP")
+                                .name("ALPAGARTAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("MUL")
+                                .name("MULES")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("BAB")
+                                .name("BABUCHA")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("BOT")
+                                .name("BOTAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("STI")
+                                .name("STILETTO")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("SUE")
+                                .name("SUECOS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("MOC")
+                                .name("MOCASIN")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("CALZADO")
+                                .sku("ZAU")
+                                .name("ZAPATILLAS_URBANAS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
+                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+                                .categoryName("ACCESORIOS")
+                                .sku("ACC")
+                                .name("ACCESORIOS")
+                                .tokenUser(adminUser.getUsername())
+                                .build());
 
 
                         // mock size
@@ -1184,7 +1403,6 @@ public class Seeder implements CommandLineRunner {
                         iCourier.save(requestCourier,adminUser.getUsername());
                         iSize.save("STD","ROPA","JROMERO");
                         iSize.save("PSZ","ROPA","JROMERO");
-                        iCategoryProduct.save("PANTALON","PANTALON","ROPA","JROMERO");
                         RequestStoreSave requestStore1 = RequestStoreSave.builder()
                                 .name("aranni")
                                 .url("https://www.aranni.com.pe")
@@ -1215,9 +1433,7 @@ public class Seeder implements CommandLineRunner {
                         iColor.save("DORADO","JROMERO");
                         iColor.save("ROSADO","JROMERO");
                         iColor.save("PLATA QUEMADA","JROMERO");
-                        iCategoryProduct.save("PANTALONES","PANTALONES","ROPA","JROMERO");
                         iColor.save("LACRE","JROMERO");
-                        iCategoryProduct.save("TOPS","TOPS","ROPA","JROMERO");
                         iAuditEvent.save("ACTIVATE_ORDER_ITEM","JROMERO");
                         iColor.save("CELESTE","JROMERO");
                         iColor.save("LILA","JROMERO");
@@ -1226,7 +1442,6 @@ public class Seeder implements CommandLineRunner {
                         iColor.save("MELON","JROMERO");
                         iColor.save("CHOCOLATE","JROMERO");
                         iColor.save("MOSTAZA","JROMERO");
-                        iCategoryProduct.save("ENTERIZO","ENTERIZO","ROPA","JROMERO");
                         iDistrict.save("SALAMANCA","JROMERO","LIMA");
                         iColor.save("VERDE LORO","JROMERO");
                         iColor.save("VERDE PERA","JROMERO");
