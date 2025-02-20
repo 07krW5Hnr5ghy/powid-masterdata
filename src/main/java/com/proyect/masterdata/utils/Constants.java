@@ -102,6 +102,7 @@ public class Constants {
     public static final String tableAuditEvent = "audit_event";
     public static final String tableDeliveryPoint = "delivery_point";
     public static final String tableSubCategoryProduct = "sub_category_product";
+    public static final String tablePurchasePaymentType = "purchase_payment_type";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -296,4 +297,6 @@ public class Constants {
     public static final String ErrorStockReturn = "Devolucion de stock no esta registrado";
     public static final String ErrorOrderCancelledDeliveredStatus = "El pedido no se puede cancelar despues de entregado";
     public static final String ErrorOrderStockExists = "Ya existe preparacion para el pedido";
+    public static final String ErrorPurchasePaymentType = "Tipo de pago para compra no existe";
+    public static final String ErrorPurchasePaymentTypeExists = "Tipo de pago para compra ya existe";
 }
