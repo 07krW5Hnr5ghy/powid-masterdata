@@ -29,7 +29,7 @@ public class StockReplenishmentItemController {
     public ResponseEntity<Page<StockReplenishmentItemDTO>> list(
             @RequestParam("user") String user,
             @RequestParam(value = "orderIds", required = false) List<UUID> orderIds,
-            @RequestParam(value = "products", required = false) List<String> products,
+            @RequestParam(value = "products", required = false) List<UUID> products,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
@@ -57,29 +57,29 @@ public class StockReplenishmentItemController {
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("productSku") String productSku,
+            @RequestParam("productId") UUID productId,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iStockReplenishmentItem.delete(orderId,productSku,tokenUser);
+        CompletableFuture<ResponseDelete> result = iStockReplenishmentItem.delete(orderId,productId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @PutMapping()
     public ResponseEntity<ResponseSuccess> update(
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("productSku") String productSku,
+            @RequestParam("productId") UUID productId,
             @RequestParam("quantity") Integer quantity,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iStockReplenishmentItem.update(orderId,productSku,quantity,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iStockReplenishmentItem.update(orderId,productId,quantity,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @PostMapping("activate")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("productSku") String productSku,
+            @RequestParam("productId") UUID productId,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iStockReplenishmentItem.activate(orderId,productSku,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iStockReplenishmentItem.activate(orderId,productId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping()

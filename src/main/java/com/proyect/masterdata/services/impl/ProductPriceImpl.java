@@ -12,6 +12,7 @@ import com.proyect.masterdata.repository.ProductRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IProductPrice;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -30,9 +32,10 @@ public class ProductPriceImpl implements IProductPrice {
     private final ProductRepository productRepository;
     private final ProductPriceRepository productPriceRepository;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     @Transactional
-    public ResponseSuccess save(String productSku,Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(UUID productId, Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         Product product;
@@ -40,7 +43,7 @@ public class ProductPriceImpl implements IProductPrice {
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+            product = productRepository.findByIdAndStatusTrue(productId);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -71,7 +74,7 @@ public class ProductPriceImpl implements IProductPrice {
                             .user(user)
                             .userId(user.getId())
                     .build());
-            iAudit.save("ADD_PRODUCT_PRICE","PRECIO "+newProductPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+newProductPrice.getProduct().getSku()+" AGREGADO.",newProductPrice.getProduct().getSku(),user.getUsername());
+            iAudit.save("ADD_PRODUCT_PRICE","PRECIO "+newProductPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+iUtil.buildProductSku(newProductPrice.getProduct())+" AGREGADO.",iUtil.buildProductSku(newProductPrice.getProduct()),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -84,7 +87,7 @@ public class ProductPriceImpl implements IProductPrice {
 
     @Override
     @Transactional
-    public CompletableFuture<ResponseSuccess> saveAsync(String productSku, Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(UUID productId, Double unitPrice, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -92,7 +95,7 @@ public class ProductPriceImpl implements IProductPrice {
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -123,7 +126,7 @@ public class ProductPriceImpl implements IProductPrice {
                         .user(user)
                         .userId(user.getId())
                         .build());
-                iAudit.save("ADD_PRODUCT_PRICE","PRECIO "+newProductPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+newProductPrice.getProduct().getSku()+" AGREGADO.",newProductPrice.getProduct().getSku(),user.getUsername());
+                iAudit.save("ADD_PRODUCT_PRICE","PRECIO "+newProductPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+iUtil.buildProductSku(newProductPrice.getProduct())+" AGREGADO.",iUtil.buildProductSku(newProductPrice.getProduct()),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -136,14 +139,14 @@ public class ProductPriceImpl implements IProductPrice {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
             ProductPrice productPrice;
             try {
                 user=userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product=productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+                product=productRepository.findByIdAndStatusTrue(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -164,7 +167,7 @@ public class ProductPriceImpl implements IProductPrice {
                 productPrice.setUpdateDate(OffsetDateTime.now());
                 productPrice.setUser(user);
                 productPriceRepository.save(productPrice);
-                iAudit.save("DELETE_PRODUCT_PRICE","PRECIO "+productPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+productPrice.getProduct().getSku()+" DESACTIVADO.",productPrice.getProduct().getSku(),user.getUsername());
+                iAudit.save("DELETE_PRODUCT_PRICE","PRECIO "+productPrice.getUnitSalePrice()+" DE PRODUCTO DE MARKETING "+iUtil.buildProductSku(productPrice.getProduct())+" DESACTIVADO.",iUtil.buildProductSku(productPrice.getProduct()),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)

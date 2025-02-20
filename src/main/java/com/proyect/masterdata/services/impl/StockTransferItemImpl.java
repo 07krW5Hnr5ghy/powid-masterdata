@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStockTransferItem;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,6 +31,7 @@ public class StockTransferItemImpl implements IStockTransferItem {
     private final IAudit iAudit;
     private final StockTransferRepository stockTransferRepository;
     private final WarehouseRepository warehouseRepository;
+    private final IUtil iUtil;
     @Override
     public StockTransferItem save(RequestStockTransferItem requestStockTransferItem, StockTransfer stockTransfer, SupplierProduct supplierProduct, User user) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -46,7 +48,13 @@ public class StockTransferItemImpl implements IStockTransferItem {
                             .registrationDate(OffsetDateTime.now())
                             .updateDate(OffsetDateTime.now())
                     .build());
-            iAudit.save("ADD_STOCK_TRANSFER_ITEM","PRODUCTO DE INVENTARIO "+newStockTransferItem.getSupplierProduct().getSerial()+" EN TRANSFERENCIA DE STOCK "+newStockTransferItem.getStockTransfer().getSerial()+" AGREGADO.",newStockTransferItem.getStockTransfer().getSerial(), user.getUsername());
+            iAudit.save(
+                    "ADD_STOCK_TRANSFER_ITEM",
+                    "PRODUCTO DE INVENTARIO "+
+                            iUtil.buildInventorySku(newStockTransferItem.getSupplierProduct())+
+                            " EN TRANSFERENCIA DE STOCK "+
+                            newStockTransferItem.getStockTransfer().getSerial()+" AGREGADO.",
+                    newStockTransferItem.getStockTransfer().getSerial(), user.getUsername());
             return newStockTransferItem;
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -71,7 +79,13 @@ public class StockTransferItemImpl implements IStockTransferItem {
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
                         .build());
-                iAudit.save("ADD_STOCK_TRANSFER_ITEM","PRODUCTO DE INVENTARIO "+newStockTransferItem.getSupplierProduct().getSerial()+" EN TRANSFERENCIA DE STOCK "+newStockTransferItem.getStockTransfer().getSerial()+" AGREGADO.",newStockTransferItem.getStockTransfer().getSerial(), user.getUsername());
+                iAudit.save(
+                        "ADD_STOCK_TRANSFER_ITEM",
+                        "PRODUCTO DE INVENTARIO "+
+                                iUtil.buildInventorySku(newStockTransferItem.getSupplierProduct())+
+                                " EN TRANSFERENCIA DE STOCK "+
+                                newStockTransferItem.getStockTransfer().getSerial()+" AGREGADO.",
+                        newStockTransferItem.getStockTransfer().getSerial(), user.getUsername());
                 return newStockTransferItem;
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -86,7 +100,7 @@ public class StockTransferItemImpl implements IStockTransferItem {
             List<String> stockTransfers,
             List<String> originWarehouses,
             List<String> destinationWarehouses,
-            List<String> supplierProducts,
+            List<UUID> supplierProductIds,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -97,7 +111,6 @@ public class StockTransferItemImpl implements IStockTransferItem {
             List<UUID> stockTransferIds;
             List<UUID> originWarehouseIds;
             List<UUID> destinationWarehouseIds;
-            List<UUID> supplierProductIds;
 
             if(stockTransfers!=null&&!stockTransfers.isEmpty()){
                 stockTransferIds = stockTransferRepository.findBySerialIn(
@@ -121,14 +134,6 @@ public class StockTransferItemImpl implements IStockTransferItem {
                 ).stream().map(Warehouse::getId).toList();
             }else{
                 destinationWarehouseIds = new ArrayList<>();
-            }
-
-            if(supplierProducts!=null&&!supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else{
-                supplierProductIds = new ArrayList<>();
             }
 
             try{
@@ -156,7 +161,7 @@ public class StockTransferItemImpl implements IStockTransferItem {
                     .serial(stockTransferItem.getStockTransfer().getSerial())
                     .origin(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
                     .destination(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())
-                    .supplierProduct(stockTransferItem.getSupplierProduct().getSerial())
+                    .supplierProduct(iUtil.buildInventorySku(stockTransferItem.getSupplierProduct()))
                     .quantity(stockTransferItem.getQuantity())
                     .registrationDate(stockTransferItem.getRegistrationDate())
                     .build()
@@ -187,7 +192,7 @@ public class StockTransferItemImpl implements IStockTransferItem {
             }
             return stockTransferItems.stream().map(stockTransferItem -> StockTransferItemDTO.builder()
                     .serial(stockTransferItem.getStockTransfer().getSerial())
-                    .supplierProduct(stockTransferItem.getSupplierProduct().getSerial())
+                    .supplierProduct(iUtil.buildInventorySku(stockTransferItem.getSupplierProduct()))
                     .quantity(stockTransferItem.getQuantity())
                     .origin(stockTransferItem.getStockTransfer().getOriginWarehouse().getName())
                     .destination(stockTransferItem.getStockTransfer().getDestinationWarehouse().getName())

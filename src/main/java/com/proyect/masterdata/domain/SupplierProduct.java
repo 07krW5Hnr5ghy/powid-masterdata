@@ -33,9 +33,6 @@ public class SupplierProduct {
     @Column(name = "supplier_product_id")
     private UUID id;
 
-    @Column(name = "serial")
-    private String serial;
-
     @Column(name = "purchase_price")
     private Double purchasePrice;
 

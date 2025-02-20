@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
+import com.proyect.masterdata.services.IUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
     private final WarehouseStockRepositoryCustom warehouseStockRepositoryCustom;
     private final SupplierRepository supplierRepository;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     public ResponseSuccess in(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
             throws InternalErrorExceptions, BadRequestExceptions {
@@ -82,7 +84,13 @@ public class WarehouseStockImpl implements IWarehouseStock {
                         .user(user).userId(user.getId())
                         .build());
             }
-            iAudit.save("ADD_WAREHOUSE_STOCK","INGRESAN ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" EN ALMACEN "+warehouse.getName()+".",warehouse.getName(),user.getUsername());
+            iAudit.save(
+
+                    "ADD_WAREHOUSE_STOCK",
+                    "INGRESAN ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+
+                            iUtil.buildInventorySku(supplierProduct)+
+                            " EN ALMACEN "+warehouse.getName()+".",
+                    warehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -129,7 +137,12 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
             warehouseStock.setQuantity(warehouseStock.getQuantity() - quantity);
             warehouseStockRepository.save(warehouseStock);
-            iAudit.save("DELETE_WAREHOUSE_STOCK","SALIDA DE ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+supplierProduct.getSerial()+" PARA ALMACEN "+warehouse.getName()+".",warehouse.getName(),user.getUsername());
+            iAudit.save(
+                    "DELETE_WAREHOUSE_STOCK",
+                    "SALIDA DE ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+
+                            iUtil.buildInventorySku(supplierProduct)+
+                            " PARA ALMACEN "+warehouse.getName()+".",
+                    warehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -187,19 +200,21 @@ public class WarehouseStockImpl implements IWarehouseStock {
             }
 
             List<WarehouseStockDTO> warehouseStockDTOs = warehouseStockPage.getContent().stream()
-                    .map(warehouseStock -> WarehouseStockDTO.builder()
-                            .quantity(warehouseStock.getQuantity())
-                            .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
-                            .product(warehouseStock.getSupplierProduct().getProduct().getSku())
-                            .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
-                            .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
-                            .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
-                            .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
-                            .warehouse(warehouseStock.getWarehouse().getName())
-                            .registrationDate(warehouseStock.getRegistrationDate())
-                            .updateDate(warehouseStock.getUpdateDate())
-                            .build())
-                    .toList();
+                    .map(warehouseStock -> {
+                        String finalSku = iUtil.buildProductSku(warehouseStock.getSupplierProduct().getProduct());
+                        return WarehouseStockDTO.builder()
+                                .quantity(warehouseStock.getQuantity())
+                                .supplierProduct(iUtil.buildInventorySku(warehouseStock.getSupplierProduct()))
+                                .product(finalSku)
+                                .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
+                                .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
+                                .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
+                                .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
+                                .warehouse(warehouseStock.getWarehouse().getName())
+                                .registrationDate(warehouseStock.getRegistrationDate())
+                                .updateDate(warehouseStock.getUpdateDate())
+                                .build();
+                    }).toList();
 
             return new PageImpl<>(warehouseStockDTOs, warehouseStockPage.getPageable(),
                     warehouseStockPage.getTotalElements());
@@ -207,23 +222,17 @@ public class WarehouseStockImpl implements IWarehouseStock {
     }
 
     @Override
-    public CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,String warehouse,String supplierProduct) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<WarehouseStockDTO>> listWarehouse(String user,String warehouse,UUID supplierProductId) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<WarehouseStock> warehouseStocks;
             UUID clientId;
             UUID warehouseId;
-            UUID supplierProductId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(warehouse != null){
                     warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
                 }else{
                     warehouseId = null;
-                }
-                if(supplierProduct != null){
-                    supplierProductId = supplierProductRepository.findBySerialAndStatusTrue(supplierProduct.toUpperCase()).getId();
-                }else{
-                    supplierProductId = null;
                 }
                 if(warehouseId != null && supplierProductId != null){
                     warehouseStocks = warehouseStockRepository.findAllByWarehouseIdAndSupplierProductId(warehouseId,supplierProductId);
@@ -242,19 +251,21 @@ public class WarehouseStockImpl implements IWarehouseStock {
             }
 
             return warehouseStocks.stream()
-                    .map(warehouseStock -> WarehouseStockDTO.builder()
-                            .quantity(warehouseStock.getQuantity())
-                            .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
-                            .product(warehouseStock.getSupplierProduct().getProduct().getSku())
-                            .warehouse(warehouseStock.getWarehouse().getName())
-                            .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
-                            .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
-                            .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
-                            .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
-                            .registrationDate(warehouseStock.getRegistrationDate())
-                            .updateDate(warehouseStock.getUpdateDate())
-                            .build())
-                    .toList();
+                    .map(warehouseStock -> {
+                        String finalSku = iUtil.buildProductSku(warehouseStock.getSupplierProduct().getProduct());
+                        return WarehouseStockDTO.builder()
+                                .quantity(warehouseStock.getQuantity())
+                                .supplierProduct(iUtil.buildInventorySku(warehouseStock.getSupplierProduct()))
+                                .product(finalSku)
+                                .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
+                                .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
+                                .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
+                                .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
+                                .warehouse(warehouseStock.getWarehouse().getName())
+                                .registrationDate(warehouseStock.getRegistrationDate())
+                                .updateDate(warehouseStock.getUpdateDate())
+                                .build();
+                    }).toList();
         });
     }
 
@@ -295,19 +306,21 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
             return warehouseStocks.stream()
                     .filter(data -> data.getQuantity() > 0)
-                    .map(warehouseStock -> WarehouseStockDTO.builder()
-                            .quantity(warehouseStock.getQuantity())
-                            .supplierProduct(warehouseStock.getSupplierProduct().getSerial())
-                            .product(warehouseStock.getSupplierProduct().getProduct().getSku())
-                            .warehouse(warehouseStock.getWarehouse().getName())
-                            .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
-                            .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
-                            .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
-                            .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
-                            .registrationDate(warehouseStock.getRegistrationDate())
-                            .updateDate(warehouseStock.getUpdateDate())
-                            .build())
-                    .toList();
+                    .map(warehouseStock -> {
+                        String finalSku = iUtil.buildProductSku(warehouseStock.getSupplierProduct().getProduct());
+                        return WarehouseStockDTO.builder()
+                                .quantity(warehouseStock.getQuantity())
+                                .supplierProduct(iUtil.buildInventorySku(warehouseStock.getSupplierProduct()))
+                                .product(finalSku)
+                                .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
+                                .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
+                                .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
+                                .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
+                                .warehouse(warehouseStock.getWarehouse().getName())
+                                .registrationDate(warehouseStock.getRegistrationDate())
+                                .updateDate(warehouseStock.getUpdateDate())
+                                .build();
+                    }).toList();
         });
     }
 

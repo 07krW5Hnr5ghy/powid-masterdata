@@ -13,7 +13,6 @@ public interface SupplierProductRepositoryCustom {
     Page<SupplierProduct> searchForSupplierProduct(
             UUID clientId,
             String serial,
-            String productSku,
             String model,
             List<UUID> supplierIds,
             String sort,

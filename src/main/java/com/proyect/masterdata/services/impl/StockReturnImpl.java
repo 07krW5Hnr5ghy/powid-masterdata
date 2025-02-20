@@ -38,6 +38,7 @@ public class StockReturnImpl implements IStockReturn {
     private final IAudit iAudit;
     private final SupplierRepository supplierRepository;
     private final IStockReturnItem iStockReturnItem;
+    private final IUtil iUtil;
     @Override
     public ResponseSuccess save(RequestStockReturn requestStockReturn) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
@@ -74,7 +75,7 @@ public class StockReturnImpl implements IStockReturn {
 
         try {
             for(RequestStockReturnItem requestStockReturnItem : requestStockReturn.getRequestStockReturnItemList()){
-                SupplierProduct supplierProduct = supplierProductRepository.findBySerial(requestStockReturnItem.getSupplierProduct());
+                SupplierProduct supplierProduct = supplierProductRepository.findBySupplierIdAndProductId(supplier.getId(),requestStockReturnItem.getProductId());
                 if(supplierProduct == null){
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                 }
@@ -102,12 +103,12 @@ public class StockReturnImpl implements IStockReturn {
             List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
 
             for(RequestStockReturnItem requestStockReturnItem : requestStockReturn.getRequestStockReturnItemList()){
-                SupplierProduct supplierProduct = supplierProductRepository.findBySerial(requestStockReturnItem.getSupplierProduct());
+                SupplierProduct supplierProduct = supplierProductRepository.findBySupplierIdAndProductId(supplier.getId(),requestStockReturnItem.getProductId());
                 iWarehouseStock.out(warehouse,supplierProduct,requestStockReturnItem.getQuantity(),user);
-                iGeneralStock.out(supplierProduct.getSerial(),requestStockReturnItem.getQuantity(),user.getUsername());
+                iGeneralStock.out(supplierProduct,requestStockReturnItem.getQuantity(),user.getUsername());
                 iStockReturnItem.save(newStockReturn,supplierProduct,requestStockReturnItem,user);
                 requestStockTransactionItemList.add(RequestStockTransactionItem.builder()
-                                .supplierProductSerial(supplierProduct.getSerial())
+                                .supplierProductId(supplierProduct.getId())
                                 .quantity(requestStockReturnItem.getQuantity())
                         .build());
             }
@@ -161,7 +162,7 @@ public class StockReturnImpl implements IStockReturn {
 
             try {
                 for(RequestStockReturnItem requestStockReturnItem : requestStockReturn.getRequestStockReturnItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findBySerial(requestStockReturnItem.getSupplierProduct());
+                    SupplierProduct supplierProduct = supplierProductRepository.findBySupplierIdAndProductId(supplier.getId(),requestStockReturnItem.getProductId());
                     if(supplierProduct == null){
                         throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                     }
@@ -190,12 +191,12 @@ public class StockReturnImpl implements IStockReturn {
                 List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
 
                 for(RequestStockReturnItem requestStockReturnItem : requestStockReturn.getRequestStockReturnItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findBySerial(requestStockReturnItem.getSupplierProduct());
+                    SupplierProduct supplierProduct = supplierProductRepository.findBySupplierIdAndProductId(supplier.getId(),requestStockReturnItem.getProductId());
                     iWarehouseStock.out(warehouse,supplierProduct,requestStockReturnItem.getQuantity(),user);
-                    iGeneralStock.out(supplierProduct.getSerial(),requestStockReturnItem.getQuantity(),user.getUsername());
+                    iGeneralStock.out(supplierProduct,requestStockReturnItem.getQuantity(),user.getUsername());
                     iStockReturnItem.save(newStockReturn,supplierProduct,requestStockReturnItem,user);
                     requestStockTransactionItemList.add(RequestStockTransactionItem.builder()
-                            .supplierProductSerial(supplierProduct.getSerial())
+                                    .supplierProductId(supplierProduct.getId())
                             .quantity(requestStockReturnItem.getQuantity())
                             .build());
                 }

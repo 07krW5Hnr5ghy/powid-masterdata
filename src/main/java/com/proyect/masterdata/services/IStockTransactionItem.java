@@ -21,7 +21,7 @@ public interface IStockTransactionItem {
         CompletableFuture<Page<StockTransactionItemDTO>> list(
                 String user,
                 List<String> stockTransactions,
-                List<String> supplierProducts,
+                List<UUID> supplierProductIds,
                 List<String> warehouses,
                 List<String> stockTransactionTypes,
                 String sort,

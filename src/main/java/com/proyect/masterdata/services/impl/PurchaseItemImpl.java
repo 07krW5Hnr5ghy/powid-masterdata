@@ -8,7 +8,7 @@ import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.IAudit;
+import com.proyect.masterdata.services.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -17,9 +17,6 @@ import com.proyect.masterdata.dto.PurchaseItemDTO;
 import com.proyect.masterdata.dto.request.RequestPurchaseItem;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.services.IGeneralStock;
-import com.proyect.masterdata.services.IPurchaseItem;
-import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -39,6 +36,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     public PurchaseItem save(Purchase purchase, String warehouse, RequestPurchaseItem requestPurchaseItem,
                              String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -49,7 +47,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct().toUpperCase());
+            supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -86,10 +84,16 @@ public class PurchaseItemImpl implements IPurchaseItem {
                             .user(user)
                             .userId(user.getId())
                     .build());
-
+            String finalSku = iUtil.buildInventorySku(supplierProduct);
             iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, requestPurchaseItem.getQuantity(), user);
-            iGeneralStock.in(supplierProduct.getSerial(), requestPurchaseItem.getQuantity(), user.getUsername());
-            iAudit.save("ADD_PURCHASE_ITEM","PRODUCTO DE INVENTARIO "+ newPurchaseItem.getSupplierProduct().getSerial()+" CREADO EN COMPRA.",newPurchaseItem.getPurchase().getSerial(),user.getUsername());
+            iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(), user.getUsername());
+            iAudit.save(
+                    "ADD_PURCHASE_ITEM",
+                    "PRODUCTO DE INVENTARIO "+
+                            finalSku+
+                            " CREADO EN COMPRA.",
+                    newPurchaseItem.getPurchase().getSerial(),
+                    user.getUsername());
             return newPurchaseItem;
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -106,7 +110,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct().toUpperCase());
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
                 purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -142,10 +146,14 @@ public class PurchaseItemImpl implements IPurchaseItem {
                         .user(user)
                         .userId(user.getId())
                         .build());
-
+                String finalSku = iUtil.buildInventorySku(supplierProduct);
                 iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, requestPurchaseItem.getQuantity(), user);
-                iGeneralStock.in(supplierProduct.getSerial(), requestPurchaseItem.getQuantity(), user.getUsername());
-                iAudit.save("ADD_PURCHASE_ITEM","PRODUCTO DE INVENTARIO "+ newPurchaseItem.getSupplierProduct().getSerial()+" CREADO EN COMPRA.",newPurchaseItem.getPurchase().getSerial(),user.getUsername());
+                iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(), user.getUsername());
+                iAudit.save(
+                        "ADD_PURCHASE_ITEM",
+                        "PRODUCTO DE INVENTARIO "+
+                                finalSku+" CREADO EN COMPRA.",
+                        newPurchaseItem.getPurchase().getSerial(),user.getUsername());
                 return newPurchaseItem;
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -155,7 +163,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String serial,String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(String serial,UUID supplierProductId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             SupplierProduct supplierProduct;
@@ -165,7 +173,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 purchase = purchaseRepository.findBySerial(serial.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(supplierProductId);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -190,9 +198,15 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 purchaseItem.setUpdateDate(OffsetDateTime.now());
                 purchaseItem.setUser(user);
                 purchaseItem.setUserId(user.getId());
+                String finalSku = iUtil.buildInventorySku(supplierProduct);
                 iWarehouseStock.out(purchase.getWarehouse(),supplierProduct, purchaseItem.getQuantity(), user);
-                iGeneralStock.out(supplierProduct.getSerial(), purchaseItem.getQuantity(), user.getUsername());
-                iAudit.save("DELETE_PURCHASE_ITEM","PRODUCTO DE INVENTARIO "+ purchaseItem.getSupplierProduct().getSerial()+" DESACTIVADO EN COMPRA.",purchaseItem.getPurchase().getSerial(),user.getUsername());
+                iGeneralStock.out(supplierProduct, purchaseItem.getQuantity(), user.getUsername());
+                iAudit.save(
+                        "DELETE_PURCHASE_ITEM",
+                        "PRODUCTO DE INVENTARIO "+
+                                finalSku+
+                                " DESACTIVADO EN COMPRA.",
+                        purchaseItem.getPurchase().getSerial(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -205,7 +219,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String purchaseSerial, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String purchaseSerial, UUID supplierProductId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             SupplierProduct supplierProduct;
@@ -215,7 +229,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 purchase = purchaseRepository.findBySerial(purchaseSerial.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(supplierProductId);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -240,9 +254,15 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 purchaseItem.setUpdateDate(OffsetDateTime.now());
                 purchaseItem.setUser(user);
                 purchaseItem.setUserId(user.getId());
+                String finalSku = iUtil.buildInventorySku(supplierProduct);
                 iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, purchaseItem.getQuantity(), user);
-                iGeneralStock.in(supplierProduct.getSerial(), purchaseItem.getQuantity(), user.getUsername());
-                iAudit.save("ACTIVATE_PURCHASE_ITEM","PRODUCTO DE INVENTARIO "+ purchaseItem.getSupplierProduct().getSerial()+" ACTIVADO EN COMPRA.",purchaseItem.getPurchase().getSerial(),user.getUsername());
+                iGeneralStock.in(supplierProduct, purchaseItem.getQuantity(), user.getUsername());
+                iAudit.save(
+                        "ACTIVATE_PURCHASE_ITEM",
+                        "PRODUCTO DE INVENTARIO "+
+                                finalSku+
+                                " ACTIVADO EN COMPRA.",
+                        purchaseItem.getPurchase().getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)
@@ -259,7 +279,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
             String user,
             List<String> purchases,
             List<String> warehouses,
-            List<String> supplierProducts,
+            List<UUID> supplierProductIds,
             String model,
             String sort,
             String sortColumn,
@@ -270,7 +290,6 @@ public class PurchaseItemImpl implements IPurchaseItem {
             UUID clientId;
             List<UUID> purchaseIds;
             List<UUID> warehouseIds;
-            List<UUID> supplierProductIds;
 
             if(purchases != null && !purchases.isEmpty()){
                 purchaseIds = purchaseRepository.findBySerialIn(
@@ -286,14 +305,6 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 ).stream().map(Warehouse::getId).toList();
             }else{
                 warehouseIds = new ArrayList<>();
-            }
-
-            if(supplierProducts != null && !supplierProducts.isEmpty()){
-                supplierProductIds = supplierProductRepository.findBySerialIn(
-                        supplierProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(SupplierProduct::getId).toList();
-            }else{
-                supplierProductIds = new ArrayList<>();
             }
 
             try {
@@ -320,7 +331,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
             List<PurchaseItemDTO> purchaseItemDTOS = pagePurchaseItem.getContent().stream().map(purchaseItem -> PurchaseItemDTO.builder()
                     .purchase(purchaseItem.getPurchase().getSerial())
                     .quantity(purchaseItem.getQuantity())
-                    .supplierProduct(purchaseItem.getSupplierProduct().getSerial())
+                    .supplierProduct(iUtil.buildInventorySku(purchaseItem.getSupplierProduct()))
                     .warehouse(purchaseItem.getPurchase().getWarehouse().getName())
                     .model(purchaseItem.getSupplierProduct().getProduct().getModel().getName())
                     .color(purchaseItem.getSupplierProduct().getProduct().getColor().getName())
@@ -356,7 +367,7 @@ public class PurchaseItemImpl implements IPurchaseItem {
             return purchaseItems.stream().map(purchaseItem -> PurchaseItemDTO.builder()
                     .purchase(purchaseItem.getPurchase().getSerial())
                     .quantity(purchaseItem.getQuantity())
-                    .supplierProduct(purchaseItem.getSupplierProduct().getSerial())
+                    .supplierProduct(iUtil.buildInventorySku(purchaseItem.getSupplierProduct()))
                     .warehouse(purchaseItem.getPurchase().getWarehouse().getName())
                     .model(purchaseItem.getSupplierProduct().getProduct().getModel().getName())
                     .color(purchaseItem.getSupplierProduct().getProduct().getColor().getName())

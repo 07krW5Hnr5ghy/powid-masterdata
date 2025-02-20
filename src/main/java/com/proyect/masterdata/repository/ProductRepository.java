@@ -10,13 +10,11 @@ import com.proyect.masterdata.domain.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
-    boolean existsBySkuAndStatusTrue(String sku);
-    List<Product> findBySkuIn(List<String> skuList);
-    Product findBySkuAndStatusTrue(String sku);
-    Product findBySkuAndStatusFalse(String sku);
-    Product findBySku(String sku);
     List<Product> findAllByClientIdAndStatusTrue(UUID clientId);
     List<Product> findAllByClientId(UUID clientId);
+    Product findByIdAndStatusTrue(UUID productId);
+    Product findByIdAndStatusFalse(UUID productId);
+    Product findByModelIdAndSizeIdAndColorIdAndClientIdAndStatusTrue(UUID modelId,UUID sizeId,UUID colorId,UUID clientId);
     List<Product> findAllByClientIdAndStatusFalse(UUID clientId);
     List<Product> findByColorNameAndSizeNameAndClientIdAndStatusTrue(String color,String size,UUID clientId);
     List<Product> findByModelNameAndColorNameAndClientIdAndStatusTrue(String model,String color,UUID clientId);

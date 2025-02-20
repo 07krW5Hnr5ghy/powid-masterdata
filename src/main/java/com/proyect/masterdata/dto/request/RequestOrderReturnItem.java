@@ -5,13 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class RequestOrderReturnItem {
-    private String productSku;
-    private String supplierProductSerial;
+    private UUID productId;
+    private UUID supplierId;
     private Integer quantity;
     private String orderReturnType;
 }

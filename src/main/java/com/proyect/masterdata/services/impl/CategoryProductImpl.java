@@ -41,7 +41,7 @@ public class CategoryProductImpl implements ICategoryProduct {
     private final SizeTypeRepository sizeTypeRepository;
     private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(String name, String description,String sizeTypeName, String tokenUser)
+    public ResponseSuccess save(String name,String sku,String sizeTypeName, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
@@ -71,9 +71,10 @@ public class CategoryProductImpl implements ICategoryProduct {
 
         try {
             CategoryProduct newCategoryProduct = categoryProductRepository.save(CategoryProduct.builder()
-                    .description(description.toUpperCase())
                     .name(name.toUpperCase())
+                            .sku(sku.toUpperCase())
                     .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                     .status(true)
                             .user(user)
                             .userId(user.getId())
@@ -92,7 +93,7 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String description,String sizeTypeName, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name,String sku,String sizeTypeName, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             CategoryProduct categoryProduct;
@@ -121,9 +122,10 @@ public class CategoryProductImpl implements ICategoryProduct {
 
             try {
                 CategoryProduct newCategoryProduct = categoryProductRepository.save(CategoryProduct.builder()
-                        .description(description.toUpperCase())
                         .name(name.toUpperCase())
+                        .sku(sku.toUpperCase())
                         .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .status(true)
                         .user(user)
                         .userId(user.getId())
@@ -163,10 +165,10 @@ public class CategoryProductImpl implements ICategoryProduct {
 
             List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
-                            .description(categoryProduct.getDescription())
                             .name(categoryProduct.getName())
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
+                            .sizeType(categoryProduct.getSizeType().getName())
                             .build())
                     .toList();
 
@@ -195,10 +197,10 @@ public class CategoryProductImpl implements ICategoryProduct {
 
             List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
-                            .description(categoryProduct.getDescription())
                             .name(categoryProduct.getName())
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
+                            .sizeType(categoryProduct.getSizeType().getName())
                             .build())
                     .toList();
 
@@ -222,7 +224,6 @@ public class CategoryProductImpl implements ICategoryProduct {
             }
             return categoryProducts.stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
-                            .description(categoryProduct.getDescription())
                             .name(categoryProduct.getName())
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
@@ -321,7 +322,6 @@ public class CategoryProductImpl implements ICategoryProduct {
                 throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
             }
             try {
-                categoryProduct.setDescription(description.toUpperCase());
                 categoryProduct.setUpdateDate(OffsetDateTime.now());
                 categoryProduct.setUser(user);
                 categoryProduct.setUserId(user.getId());
@@ -353,7 +353,6 @@ public class CategoryProductImpl implements ICategoryProduct {
             }
             return categoryProducts.stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
-                            .description(categoryProduct.getDescription())
                             .name(categoryProduct.getName())
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())

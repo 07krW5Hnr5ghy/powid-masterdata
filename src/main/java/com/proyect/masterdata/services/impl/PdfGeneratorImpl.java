@@ -108,7 +108,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 for(OrderItem orderItem:orderItems){
                     table.addCell(new Paragraph(index+".").addStyle(normalStyle).setMargin(0).setPadding(0));
                     table.addCell(new Paragraph(
-                            orderItem.getProduct().getCategoryProduct().getName() + " - "
+                            orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName() + " - "
                                     + orderItem.getProduct().getModel().getBrand().getName() + " - "
                                     + orderItem.getProduct().getModel().getName() + " - "
                                     + orderItem.getProduct().getColor().getName() + " - "

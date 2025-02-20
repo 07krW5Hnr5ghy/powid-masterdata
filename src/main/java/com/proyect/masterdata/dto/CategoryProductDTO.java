@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 public class CategoryProductDTO {
     private String name;
-    private String description;
+    private String sizeType;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
 }

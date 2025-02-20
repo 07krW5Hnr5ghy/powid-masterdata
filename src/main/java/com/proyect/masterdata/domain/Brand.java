@@ -27,6 +27,9 @@ public class Brand {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "sku")
+    private String sku;
+
     @Column(name = "status")
     private boolean status;
 

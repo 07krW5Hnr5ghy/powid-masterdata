@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.services.IAudit;
+import com.proyect.masterdata.services.IUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -36,16 +37,15 @@ public class GeneralStockImpl implements IGeneralStock {
     private final GeneralStockRepository generalStockRepository;
     private final GeneralStockRepositoryCustom generalStockRepositoryCustom;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
-    public CompletableFuture<ResponseSuccess> in(String supplierProductSerial, Integer quantity, String tokenUser)
+    public CompletableFuture<ResponseSuccess> in(SupplierProduct supplierProduct, Integer quantity, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            SupplierProduct supplierProduct;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -79,7 +79,13 @@ public class GeneralStockImpl implements IGeneralStock {
                                     .userId(user.getId())
                             .build());
                 }
-                iAudit.save("ADD_GENERAL_STOCK","INGRESO DE STOCK "+supplierProduct.getSerial()+" DE " + quantity +" UNIDADES.",supplierProduct.getSerial(),user.getUsername());
+                String finalSku = iUtil.buildInventorySku(supplierProduct);
+                iAudit.save(
+                        "ADD_GENERAL_STOCK",
+                        "INGRESO DE STOCK "+
+                                finalSku+" DE " +
+                                quantity +" UNIDADES.",
+                        finalSku,user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -93,15 +99,13 @@ public class GeneralStockImpl implements IGeneralStock {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> out(String supplierProductSerial, Integer quantity, String tokenUser)
+    public CompletableFuture<ResponseSuccess> out(SupplierProduct supplierProduct, Integer quantity, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            SupplierProduct supplierProduct;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -129,7 +133,13 @@ public class GeneralStockImpl implements IGeneralStock {
 
                 generalStock.setQuantity(generalStock.getQuantity() - quantity);
                 generalStockRepository.save(generalStock);
-                iAudit.save("DELETE_GENERAL_STOCK","SALIDA DE STOCK "+supplierProduct.getSerial()+" DE " + quantity +" UNIDADES.",supplierProduct.getSerial(),user.getUsername());
+                String finalSku = iUtil.buildInventorySku(supplierProduct);
+                iAudit.save(
+                        "DELETE_GENERAL_STOCK",
+                        "SALIDA DE STOCK "+
+                                finalSku+
+                                " DE " + quantity +" UNIDADES.",
+                        finalSku,user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -189,8 +199,8 @@ public class GeneralStockImpl implements IGeneralStock {
             List<GeneralStockDTO> generalStockDTOs = generalStockPage.getContent().stream()
                     .map(generalStock -> GeneralStockDTO.builder()
                             .quantity(generalStock.getQuantity())
-                            .supplierProduct(generalStock.getSupplierProduct().getSerial())
-                            .productSku(generalStock.getSupplierProduct().getProduct().getSku())
+                            .supplierProduct(iUtil.buildInventorySku(generalStock.getSupplierProduct()))
+                            .productSku(iUtil.buildProductSku(generalStock.getSupplierProduct().getProduct()))
                             .model(generalStock.getSupplierProduct().getProduct().getModel().getName())
                             .color(generalStock.getSupplierProduct().getProduct().getColor().getName())
                             .supplier(generalStock.getSupplierProduct().getSupplier().getBusinessName())
@@ -225,8 +235,8 @@ public class GeneralStockImpl implements IGeneralStock {
             return generalStocks.stream()
                     .map(generalStock -> GeneralStockDTO.builder()
                             .quantity(generalStock.getQuantity())
-                            .supplierProduct(generalStock.getSupplierProduct().getSerial())
-                            .productSku(generalStock.getSupplierProduct().getProduct().getSku())
+                            .supplierProduct(iUtil.buildInventorySku(generalStock.getSupplierProduct()))
+                            .productSku(iUtil.buildProductSku(generalStock.getSupplierProduct().getProduct()))
                             .model(generalStock.getSupplierProduct().getProduct().getModel().getName())
                             .color(generalStock.getSupplierProduct().getProduct().getColor().getName())
                             .supplier(generalStock.getSupplierProduct().getSupplier().getBusinessName())
