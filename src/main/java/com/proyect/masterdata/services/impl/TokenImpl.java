@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IToken;
+import com.proyect.masterdata.utils.CompressionString;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
@@ -25,21 +26,19 @@ public class TokenImpl implements IToken {
     private final JwtDecoder jwtDecoder;
 
     public String generateJwt(Authentication auth) {
-
         Instant now = Instant.now();
         Instant expiration = now.plus(Duration.ofMinutes(1440));
-
-        System.out.println(auth.getAuthorities());
-        System.out.println(auth.getDetails());
-        System.out.println(auth.getPrincipal());
-
-        String scope = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+        String scope = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
-
-        System.out.println(scope);
-
-        JwtClaimsSet claims = JwtClaimsSet.builder().issuer("self").issuedAt(now).subject(auth.getName())
-                .claim("authorities", scope).expiresAt(expiration).build();
+        String compressMyScope = CompressionString.compressStringToBase64(scope);
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("self")
+                .issuedAt(now)
+                .subject(auth.getName())
+                .claim("authorities", compressMyScope)
+                .expiresAt(expiration)
+                .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 }

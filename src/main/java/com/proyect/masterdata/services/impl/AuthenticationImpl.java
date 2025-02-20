@@ -93,11 +93,11 @@ public class AuthenticationImpl implements IAuthentication {
 
                 Authentication auth = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(username.toUpperCase(), password));
-
                 String token = iToken.generateJwt(auth);
                 iAudit.save("LOG_IN","USUARIO " + user.getUsername() + " INICIO SESION.",user.getUsername(),user.getUsername());
                 User userData = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(userData.getId());
+
                 return LoginDTO.builder()
                         .username(userData.getUsername())
                         .jwt(token)
@@ -105,7 +105,6 @@ public class AuthenticationImpl implements IAuthentication {
                         .code(200)
                         .message("Inicio de sesion exitoso")
                         .build();
-
             } catch (AuthenticationException e) {
                 log.error(e.getStackTrace());
                 throw new BadRequestExceptions(Constants.ErrorAuthentication);
