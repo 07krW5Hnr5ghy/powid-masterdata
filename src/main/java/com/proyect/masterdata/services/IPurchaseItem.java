@@ -20,13 +20,13 @@ public interface IPurchaseItem {
             throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<PurchaseItem> saveAsync(Purchase purchase, String warehouse, RequestPurchaseItem requestPurchaseItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<ResponseDelete> delete(String serial,String supplierProduct, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> activate(String serial,String supplierProduct, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> delete(String serial,UUID supplierProductId, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(String serial,UUID supplierProductId, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<PurchaseItemDTO>> list(
             String user,
             List<String> purchases,
             List<String> warehouses,
-            List<String> supplierProducts,
+            List<UUID> supplierProductIds,
             String model,
             String sort,
             String sortColumn,

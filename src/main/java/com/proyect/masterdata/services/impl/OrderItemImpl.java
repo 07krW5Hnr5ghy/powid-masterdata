@@ -12,6 +12,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderItem;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -42,6 +43,7 @@ public class OrderItemImpl implements IOrderItem {
     private final ColorRepository colorRepository;
     private final SizeRepository sizeRepository;
     private final CategoryProductRepository categoryProductRepository;
+    private final IUtil iUtil;
     @Override
     public ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
@@ -51,7 +53,7 @@ public class OrderItemImpl implements IOrderItem {
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct());
+            product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
             discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
@@ -93,7 +95,7 @@ public class OrderItemImpl implements IOrderItem {
                             .user(user)
                             .userId(user.getId())
                     .build());
-            iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+newOrderItem.getProduct().getSku()+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES AGREGADO.",newOrderItem.getOrderId().toString(),user.getUsername());
+            iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(newOrderItem.getProduct())+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES AGREGADO.",newOrderItem.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -113,7 +115,7 @@ public class OrderItemImpl implements IOrderItem {
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct());
+                product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
                 discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -155,7 +157,7 @@ public class OrderItemImpl implements IOrderItem {
                         .user(user)
                         .userId(user.getId())
                         .build());
-                iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+newOrderItem.getProduct().getSku()+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES AGREGADO.",newOrderItem.getOrderId().toString(),user.getUsername());
+                iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(newOrderItem.getProduct())+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES AGREGADO.",newOrderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -168,7 +170,7 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<ResponseCheckStockItem> checkStock(String productSku, Integer quantity, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseCheckStockItem> checkStock(UUID productId, Integer quantity, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -177,7 +179,7 @@ public class OrderItemImpl implements IOrderItem {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(productSku.toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -234,7 +236,7 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(UUID orderId, String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID orderId, UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -243,7 +245,7 @@ public class OrderItemImpl implements IOrderItem {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                product = productRepository.findBySku(productSku.toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -273,7 +275,7 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setUser(user);
                 orderItem.setUserId(user.getId());
                 orderItemRepository.save(orderItem);
-                iAudit.save("DELETE_ORDER_ITEM","PRODUCTO "+orderItem.getProduct().getSku()+" DE PEDIDO "+orderItem.getOrderId()+" DESACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
+                iAudit.save("DELETE_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(orderItem.getProduct())+" DE PEDIDO "+orderItem.getOrderId()+" DESACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)
@@ -296,7 +298,7 @@ public class OrderItemImpl implements IOrderItem {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
                 discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -344,7 +346,7 @@ public class OrderItemImpl implements IOrderItem {
                                 .user(user)
                                 .userId(user.getId())
                         .build());
-                iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+newOrderItem.getProduct().getSku()+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES.",newOrderItem.getOrderId().toString(),user.getUsername());
+                iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(newOrderItem.getProduct())+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES.",newOrderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -368,7 +370,7 @@ public class OrderItemImpl implements IOrderItem {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                product = productRepository.findBySkuAndStatusTrue(requestOrderItem.getProduct().toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
                 discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -405,7 +407,7 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setUpdateDate(OffsetDateTime.now());
                 orderItem.setObservations(requestOrderItem.getObservations().toUpperCase());
                 orderItemRepository.save(orderItem);
-                iAudit.save("UPDATE_ORDER_ITEM","PRODUCTO "+orderItem.getProduct().getSku()+" DE PEDIDO "+orderItem.getOrderId()+" ACTUALIZADO.",orderItem.getOrderId().toString(),user.getUsername());
+                iAudit.save("UPDATE_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(orderItem.getProduct())+" DE PEDIDO "+orderItem.getOrderId()+" ACTUALIZADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -508,8 +510,9 @@ public class OrderItemImpl implements IOrderItem {
                         .color(orderItem.getProduct().getColor().getName())
                         .size(orderItem.getProduct().getSize().getName())
                         .pictures(productPictures)
-                        .category(orderItem.getProduct().getCategoryProduct().getName())
-                        .sku(orderItem.getProduct().getSku())
+                        .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
+                        .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
+                        .sku(iUtil.buildProductSku(orderItem.getProduct()))
                         .unitPrice(productPrice.getUnitSalePrice())
                         .discount(orderItem.getDiscount().getName())
                         .discountAmount(orderItem.getDiscountAmount())
@@ -560,9 +563,10 @@ public class OrderItemImpl implements IOrderItem {
                     .orderId(orderItem.getOrderId())
                     .color(orderItem.getProduct().getColor().getName())
                     .size(orderItem.getProduct().getSize().getName())
-                    .sku(orderItem.getProduct().getSku())
+                    .sku(iUtil.buildProductSku(orderItem.getProduct()))
                         .model(orderItem.getProduct().getModel().getName())
-                    .category(orderItem.getProduct().getCategoryProduct().getName())
+                    .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
                         .quantity(orderItem.getQuantity())
                     .unitPrice(productPrice.getUnitSalePrice())
                         .discountAmount(orderItem.getDiscountAmount())
@@ -607,9 +611,10 @@ public class OrderItemImpl implements IOrderItem {
                         .orderId(orderItem.getOrderId())
                         .color(orderItem.getProduct().getColor().getName())
                         .size(orderItem.getProduct().getSize().getName())
-                        .sku(orderItem.getProduct().getSku())
+                        .sku(iUtil.buildProductSku(orderItem.getProduct()))
                         .model(orderItem.getProduct().getModel().getName())
-                        .category(orderItem.getProduct().getCategoryProduct().getName())
+                        .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
                         .quantity(orderItem.getQuantity())
                         .unitPrice(productPrice.getUnitSalePrice())
                         .discountAmount(orderItem.getDiscountAmount())
@@ -621,7 +626,7 @@ public class OrderItemImpl implements IOrderItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> activate(UUID orderId, String productSku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> activate(UUID orderId, UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -630,7 +635,7 @@ public class OrderItemImpl implements IOrderItem {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                product = productRepository.findBySku(productSku.toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -660,7 +665,7 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setUser(user);
                 orderItem.setUserId(user.getId());
                 orderItemRepository.save(orderItem);
-                iAudit.save("ACTIVATE_ORDER_ITEM","PRODUCTO "+orderItem.getProduct().getSku()+" DE PEDIDO "+orderItem.getOrderId()+" ACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
+                iAudit.save("ACTIVATE_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(orderItem.getProduct())+" DE PEDIDO "+orderItem.getOrderId()+" ACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
                         .code(200)

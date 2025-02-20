@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,5 +14,5 @@ import lombok.NoArgsConstructor;
 public class RequestPurchaseItem {
     private Integer quantity;
     private String observations;
-    private String supplierProduct;
+    private UUID supplierProductId;
 }

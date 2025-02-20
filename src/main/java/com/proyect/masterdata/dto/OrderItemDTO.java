@@ -21,6 +21,7 @@ public class OrderItemDTO {
     private String color;
     private String size;
     private String category;
+    private String subCategory;
     private String unit;
     private Integer quantity;
     private Double unitPrice;

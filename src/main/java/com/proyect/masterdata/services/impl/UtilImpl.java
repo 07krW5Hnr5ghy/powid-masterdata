@@ -1,7 +1,9 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.OrderItem;
+import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.ProductPrice;
+import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.repository.ProductPriceRepository;
 import com.proyect.masterdata.services.IUtil;
 import lombok.RequiredArgsConstructor;
@@ -10,10 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
-import java.util.TimeZone;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -58,5 +57,26 @@ public class UtilImpl implements IUtil {
         }
 
         return totalPrice;
+    }
+
+    @Override
+    public String buildProductSku(Product product) {
+        return product.getModel().getBrand().getSku()
+                + product.getSubCategoryProduct().getCategoryProduct().getSku()
+                + product.getSubCategoryProduct().getSku()
+                + product.getModel().getSku()
+                + product.getColor().getSku()
+                + product.getSize().getName();
+    }
+
+    @Override
+    public String buildInventorySku(SupplierProduct supplierProduct) {
+        return supplierProduct.getProduct().getModel().getBrand().getSku()
+                + supplierProduct.getProduct().getSubCategoryProduct().getCategoryProduct().getSku()
+                + supplierProduct.getProduct().getSubCategoryProduct().getSku()
+                + supplierProduct.getProduct().getModel().getSku()
+                + supplierProduct.getProduct().getColor().getSku()
+                + supplierProduct.getProduct().getSize().getName()
+                + supplierProduct.getSupplier().getSku();
     }
 }

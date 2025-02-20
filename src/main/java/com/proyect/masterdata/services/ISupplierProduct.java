@@ -18,12 +18,11 @@ public interface ISupplierProduct {
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> saveAsync(RequestSupplierProduct requestSupplierProduct, String tokenUser)
                 throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<ResponseDelete> delete(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<ResponseSuccess> activate(String serial, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseDelete> delete(UUID supplierProductId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> activate(UUID supplierProductId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<SupplierProductDTO>> list(
                 String user,
                 String serial,
-                String productSku,
                 String model,
                 List<String> suppliers,
                 String sort,
@@ -33,7 +32,6 @@ public interface ISupplierProduct {
         CompletableFuture<Page<SupplierProductDTO>> listFalse(
                 String user,
                 String serial,
-                String productSku,
                 String model,
                 List<String> suppliers,
                 String sort,
@@ -42,7 +40,7 @@ public interface ISupplierProduct {
                 Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<List<SupplierProductDTO>> listSupplierProduct(String user, String supplier) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<SupplierProductDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
-        CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user, UUID id) throws BadRequestExceptions,InternalErrorExceptions;
-        CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user,String productSku) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<SupplierProductDTO>> listSupplierProductFalse(String user, UUID productId) throws BadRequestExceptions,InternalErrorExceptions;
+        CompletableFuture<List<SupplierProductDTO>> listSupplierProductByProduct(String user,UUID productId) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

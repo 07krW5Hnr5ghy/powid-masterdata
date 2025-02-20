@@ -216,7 +216,14 @@ public class CategoryProductRepositoryCustomImpl implements CategoryProductRepos
         return categoryProductList;
     }
 
-    private Long getOrderCount(String name, String user,OffsetDateTime registrationStartDate,OffsetDateTime registrationEndDate,OffsetDateTime updateStartDate,OffsetDateTime updateEndDate, Boolean status) {
+    private Long getOrderCount(
+            String name,
+            String user,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<CategoryProduct> itemRoot = criteriaQuery.from(CategoryProduct.class);

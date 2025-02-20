@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IStockReturnItem;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,24 +32,31 @@ public class StockReturnItemImpl implements IStockReturnItem {
     private final SupplierRepository supplierRepository;
     private final PurchaseRepository purchaseRepository;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     public StockReturnItem save(StockReturn stockReturn, SupplierProduct supplierProduct, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
 
         try{
-            iAudit.save("ADD_STOCK_RETURN_ITEM","PRODUCTO DE INVENTARIO "+requestStockReturnItem.getSupplierProduct().toUpperCase()+" AGREGADO A DEVOLUCION DE STOCK "+stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
-            return stockReturnItemRepository.save(StockReturnItem.builder()
-                            .user(user).userId(user.getId())
-                            .quantity(requestStockReturnItem.getQuantity())
-                            .supplierProduct(supplierProduct)
-                            .supplierProductId(supplierProduct.getId())
-                            .client(user.getClient())
-                            .clientId(user.getClientId())
-                            .stockReturn(stockReturn)
-                            .stockReturnId(stockReturn.getId())
-                            .observations(requestStockReturnItem.getObservations().toUpperCase())
-                            .registrationDate(OffsetDateTime.now())
-                            .status(true)
+            StockReturnItem newStockReturnItem = stockReturnItemRepository.save(StockReturnItem.builder()
+                    .user(user).userId(user.getId())
+                    .quantity(requestStockReturnItem.getQuantity())
+                    .supplierProduct(supplierProduct)
+                    .supplierProductId(supplierProduct.getId())
+                    .client(user.getClient())
+                    .clientId(user.getClientId())
+                    .stockReturn(stockReturn)
+                    .stockReturnId(stockReturn.getId())
+                    .observations(requestStockReturnItem.getObservations().toUpperCase())
+                    .registrationDate(OffsetDateTime.now())
+                    .status(true)
                     .build());
+            iAudit.save(
+                    "ADD_STOCK_RETURN_ITEM",
+                    "PRODUCTO DE INVENTARIO "+
+                            iUtil.buildInventorySku(newStockReturnItem.getSupplierProduct())+
+                            " AGREGADO A DEVOLUCION DE STOCK "+
+                            stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
+            return newStockReturnItem;
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -59,8 +67,7 @@ public class StockReturnItemImpl implements IStockReturnItem {
     public CompletableFuture<StockReturnItem> saveAsync(StockReturn stockReturn,SupplierProduct supplierProduct, RequestStockReturnItem requestStockReturnItem, User user) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             try{
-                iAudit.save("ADD_STOCK_RETURN_ITEM","PRODUCTO DE INVENTARIO "+requestStockReturnItem.getSupplierProduct().toUpperCase()+" AGREGADO A DEVOLUCION DE STOCK "+stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
-                return stockReturnItemRepository.save(StockReturnItem.builder()
+                StockReturnItem newStockReturnItem = stockReturnItemRepository.save(StockReturnItem.builder()
                         .user(user).userId(user.getId())
                         .quantity(requestStockReturnItem.getQuantity())
                         .supplierProduct(supplierProduct)
@@ -73,6 +80,13 @@ public class StockReturnItemImpl implements IStockReturnItem {
                         .registrationDate(OffsetDateTime.now())
                         .status(true)
                         .build());
+                iAudit.save(
+                        "ADD_STOCK_RETURN_ITEM",
+                        "PRODUCTO DE INVENTARIO "+
+                                iUtil.buildInventorySku(newStockReturnItem.getSupplierProduct())+
+                                " AGREGADO A DEVOLUCION DE STOCK "+
+                                stockReturn.getSerial(),stockReturn.getSerial(),user.getUsername());
+                return newStockReturnItem;
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -134,8 +148,8 @@ public class StockReturnItemImpl implements IStockReturnItem {
             List<StockReturnItemDTO> stockReturnDTOS = pageStockReturn.getContent().stream().map(stockReturnItem -> StockReturnItemDTO.builder()
                     .serial(stockReturnItem.getStockReturn().getSerial())
                     .supplier(stockReturnItem.getStockReturn().getSupplier().getBusinessName())
-                    .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
-                    .productSku(stockReturnItem.getSupplierProduct().getProduct().getSku())
+                    .supplierProduct(iUtil.buildInventorySku(stockReturnItem.getSupplierProduct()))
+                    .productSku(iUtil.buildProductSku(stockReturnItem.getSupplierProduct().getProduct()))
                     .model(stockReturnItem.getSupplierProduct().getProduct().getModel().getName())
                     .color(stockReturnItem.getSupplierProduct().getProduct().getColor().getName())
                     .size(stockReturnItem.getSupplierProduct().getProduct().getSize().getName())
@@ -168,8 +182,8 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 return Collections.emptyList();
             }
             return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
-                    .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
-                    .productSku(stockReturnItem.getSupplierProduct().getProduct().getSku())
+                    .supplierProduct(iUtil.buildInventorySku(stockReturnItem.getSupplierProduct()))
+                    .productSku(iUtil.buildProductSku(stockReturnItem.getSupplierProduct().getProduct()))
                     .model(stockReturnItem.getSupplierProduct().getProduct().getModel().getName())
                     .color(stockReturnItem.getSupplierProduct().getProduct().getColor().getName())
                     .size(stockReturnItem.getSupplierProduct().getProduct().getSize().getName())
@@ -203,8 +217,8 @@ public class StockReturnItemImpl implements IStockReturnItem {
                 return Collections.emptyList();
             }
             return stockReturnItems.stream().map(stockReturnItem -> StockReturnItemDTO.builder()
-                    .supplierProduct(stockReturnItem.getSupplierProduct().getSerial())
-                    .productSku(stockReturnItem.getSupplierProduct().getProduct().getSku())
+                    .supplierProduct(iUtil.buildInventorySku(stockReturnItem.getSupplierProduct()))
+                    .productSku(iUtil.buildProductSku(stockReturnItem.getSupplierProduct().getProduct()))
                     .model(stockReturnItem.getSupplierProduct().getProduct().getModel().getName())
                     .color(stockReturnItem.getSupplierProduct().getProduct().getColor().getName())
                     .size(stockReturnItem.getSupplierProduct().getProduct().getSize().getName())

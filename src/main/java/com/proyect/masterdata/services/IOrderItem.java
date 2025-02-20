@@ -17,8 +17,8 @@ import java.util.concurrent.CompletableFuture;
 public interface IOrderItem {
     ResponseSuccess save(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(Ordering ordering, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<ResponseCheckStockItem> checkStock(String productSku,Integer quantity,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
-    CompletableFuture<ResponseDelete> delete(UUID orderId, String productSku, String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseCheckStockItem> checkStock(UUID productId,Integer quantity,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(UUID orderId, UUID productId, String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseSuccess> add(UUID orderId,RequestOrderItem requestOrderItem,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseSuccess> update(UUID orderId,RequestOrderItem requestOrderItem,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<Page<OrderItemDTO>> listOrderItems(
@@ -36,5 +36,5 @@ public interface IOrderItem {
             Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderItemDTO>> listByOrder(String user,UUID orderId) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderItemDTO>> listByOrderFalse(String user,UUID orderId) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseDelete> activate(UUID orderId,String productSku,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseDelete> activate(UUID orderId,UUID productId,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
 }

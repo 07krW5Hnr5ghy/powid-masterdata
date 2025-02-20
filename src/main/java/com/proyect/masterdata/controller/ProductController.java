@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -44,18 +45,18 @@ public class ProductController {
     @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("sku") String sku,
+            @RequestParam("productId") UUID productId,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iProduct.delete(sku, tokenUser);
+        CompletableFuture<ResponseDelete> result = iProduct.delete(productId, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @PostMapping("activate")
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_DELETE')")
     public ResponseEntity<ResponseSuccess> activate(
-            @RequestParam("sku") String sku,
+            @RequestParam("productId") UUID productId,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iProduct.activate(sku, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iProduct.activate(productId, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

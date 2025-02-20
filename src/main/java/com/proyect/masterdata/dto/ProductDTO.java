@@ -19,10 +19,10 @@ public class ProductDTO {
     private String model;
     private String size;
     private String category;
+    private String subCategory;
     private String color;
     private String unit;
     private Double price;
-    private String characteristics;
     private List<String> pictures;
     private Boolean pictureFlag;
     private OffsetDateTime registrationDate;

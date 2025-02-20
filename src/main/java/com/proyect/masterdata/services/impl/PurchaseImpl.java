@@ -44,6 +44,7 @@ public class PurchaseImpl implements IPurchase {
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
+    private final IUtil iUtil;
     @Override
     @Transactional
     public ResponseSuccess save(RequestPurchase requestPurchase, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -107,7 +108,7 @@ public class PurchaseImpl implements IPurchase {
             }
 
             for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
-                SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct());
+                SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
                 if(supplierProduct == null){
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                 }
@@ -117,7 +118,7 @@ public class PurchaseImpl implements IPurchase {
             }
             List<RequestStockTransactionItem> requestStockTransactionItemList = requestPurchase.getRequestPurchaseItemList().stream().map(purchaseItem -> RequestStockTransactionItem.builder()
                     .quantity(purchaseItem.getQuantity())
-                    .supplierProductSerial(purchaseItem.getSupplierProduct().toUpperCase())
+                    .supplierProductId(purchaseItem.getSupplierProductId())
                     .build()).toList();
             StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
             Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
@@ -138,10 +139,10 @@ public class PurchaseImpl implements IPurchase {
                             .user(user).userId(user.getId())
                       .build());
             for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct());
+                    SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
                   iPurchaseItem.save(newPurchase,warehouse.getName(), requestPurchaseItem,user.getUsername());
                   iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
-                  iGeneralStock.in(requestPurchaseItem.getSupplierProduct(), requestPurchaseItem.getQuantity(),user.getUsername());
+                  iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(),user.getUsername());
             }
             iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getSerial() +" CREADA.",newPurchase.getSerial(),user.getUsername());
             return ResponseSuccess.builder()
@@ -218,7 +219,7 @@ public class PurchaseImpl implements IPurchase {
                 }
 
                 for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct());
+                    SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
                     if(supplierProduct == null){
                         throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                     }
@@ -228,7 +229,7 @@ public class PurchaseImpl implements IPurchase {
                 }
                 List<RequestStockTransactionItem> requestStockTransactionItemList = requestPurchase.getRequestPurchaseItemList().stream().map(purchaseItem -> RequestStockTransactionItem.builder()
                         .quantity(purchaseItem.getQuantity())
-                        .supplierProductSerial(purchaseItem.getSupplierProduct().toUpperCase())
+                        .supplierProductId(purchaseItem.getSupplierProductId())
                         .build()).toList();
                 StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
                 Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
@@ -249,10 +250,10 @@ public class PurchaseImpl implements IPurchase {
                         .user(user).userId(user.getId())
                         .build());
                 for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestPurchaseItem.getSupplierProduct());
+                    SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
                     iPurchaseItem.save(newPurchase,warehouse.getName(), requestPurchaseItem,user.getUsername());
                     iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
-                    iGeneralStock.in(requestPurchaseItem.getSupplierProduct(), requestPurchaseItem.getQuantity(),user.getUsername());
+                    iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(),user.getUsername());
                 }
                 iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getSerial() +" CREADA.",newPurchase.getSerial(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -466,14 +467,14 @@ public class PurchaseImpl implements IPurchase {
     }
 
     @Override
-    public CompletableFuture<List<CheckStockDTO>> checkStock(String serial, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<List<CheckStockDTO>> checkStock(UUID supplierProductId, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<WarehouseStock> warehouseStocks;
             SupplierProduct supplierProduct;
             User user;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(serial.toUpperCase());
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(supplierProductId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

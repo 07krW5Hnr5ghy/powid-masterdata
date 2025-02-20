@@ -17,13 +17,13 @@ public interface IStockReplenishmentItem {
     StockReplenishmentItem save(OrderItem orderItem, RequestStockReplenishmentItem requestStockReplenishmentItem, User user, StockReplenishment stockReplenishment) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<StockReplenishmentItem> saveAsync(OrderItem orderItem, RequestStockReplenishmentItem requestStockReplenishmentItem, User user, StockReplenishment stockReplenishment) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> add(UUID orderId, RequestStockReplenishmentItem requestStockReplenishmentItem, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseDelete> delete(UUID orderId, String productSku, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> update(UUID orderId, String productSku,Integer quantity, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> activate(UUID orderId, String productSku, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> delete(UUID orderId, UUID productId, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> update(UUID orderId, UUID productId,Integer quantity, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(UUID orderId, UUID productId, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<StockReplenishmentItemDTO>> list(
             String user,
-            List<UUID> orders,
-            List<String> productSkus,
+            List<UUID> orderIds,
+            List<UUID> productIds,
             String sort,
             String sortColumn,
             Integer pageNumber,

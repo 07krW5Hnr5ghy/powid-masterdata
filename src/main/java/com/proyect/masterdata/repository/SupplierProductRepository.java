@@ -10,10 +10,10 @@ import com.proyect.masterdata.domain.SupplierProduct;
 
 @Repository
 public interface SupplierProductRepository extends JpaRepository<SupplierProduct, UUID> {
-    SupplierProduct findBySerial(String serial);
-    SupplierProduct findBySerialAndStatusTrue(String serial);
-    SupplierProduct findBySerialAndStatusFalse(String serial);
-    List<SupplierProduct> findBySerialIn(List<String> serials);
+    SupplierProduct findBySupplierIdAndProductId(UUID supplierId,UUID productId);
+    SupplierProduct findBySupplierIdAndProductIdAndStatusTrue(UUID supplierId,UUID productId);
+    SupplierProduct findByIdAndStatusTrue(UUID supplierProductId);
+    SupplierProduct findByIdAndStatusFalse(UUID supplierProductId);
     List<SupplierProduct> findAllByClientId(UUID id);
     List<SupplierProduct> findAllByProductIdAndStatusTrue(UUID id);
     List<SupplierProduct> findAllByClientIdAndStatusTrue(UUID clientId);

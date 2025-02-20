@@ -1,29 +1,26 @@
 package com.proyect.masterdata.domain;
 
-import java.time.OffsetDateTime;
-import java.util.UUID;
-
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-
 import com.proyect.masterdata.utils.Constants;
-
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableCategoryProduct, schema = Constants.schemaMaster)
-public class CategoryProduct {
-
+@Table(name = Constants.tableSubCategoryProduct, schema = Constants.schemaMaster)
+public class SubCategoryProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "category_product_id", unique = true)
+    @Column(name = "sub_category_product_id", unique = true)
     private UUID id;
 
     @Column(name = "name")
@@ -43,17 +40,17 @@ public class CategoryProduct {
     @CreationTimestamp
     private OffsetDateTime updateDate;
 
-    @Column(name = "size_type_id")
-    private UUID sizeTypeId;
-
     @Column(name = "user_id")
     private UUID userId;
 
-    @ManyToOne
-    @JoinColumn(name = "size_type_id", columnDefinition = "sizeTypeId", insertable = false, updatable = false)
-    private SizeType sizeType;
+    @Column(name = "category_product_id")
+    private UUID categoryProductId;
 
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name="category_product_id",columnDefinition = "categoryProductId",insertable = false,updatable = false)
+    private CategoryProduct categoryProduct;
 }

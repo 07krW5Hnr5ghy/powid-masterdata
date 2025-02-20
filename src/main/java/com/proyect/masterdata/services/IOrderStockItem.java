@@ -40,8 +40,8 @@ public interface IOrderStockItem {
     CompletableFuture<Boolean> checkWarehouseItemStock(UUID orderId, Warehouse warehouse, RequestOrderStockItem requestOrderStockItem) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<OrderStockItemDTO>> listOrderStockItem(String user,UUID orderId) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderStockItemDTO>> listOrderStockItemFalse(String user,UUID orderId) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseDelete> delete(UUID orderId,String supplierProductSerial,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> activate(UUID orderId,String supplierProductSerial,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> update(UUID orderId,String supplierProductSerial,String tokenUser,Integer quantity) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> delete(UUID orderId,UUID supplierProductId,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(UUID orderId,UUID supplierProductId,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> update(UUID orderId,UUID supplierProductId,String tokenUser,Integer quantity) throws BadRequestExceptions,InternalErrorExceptions;
 
 }

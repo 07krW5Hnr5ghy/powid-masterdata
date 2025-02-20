@@ -10,6 +10,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderStockItem;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -36,6 +37,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     private final ProductRepository productRepository;
     private final OrderStockRepository orderStockRepository;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     public CompletableFuture<ResponseSuccess> save(UUID orderId, RequestOrderStockItem requestOrderStockItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -48,9 +50,9 @@ public class OrderStockItemImpl implements IOrderStockItem {
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProduct().toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(requestOrderStockItem.getProductId());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProduct().toUpperCase());
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestOrderStockItem.getSupplierProductId());
 
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -81,7 +83,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
             }
 
-            if(!Objects.equals(supplierProduct.getProduct().getSku(), orderItem.getProduct().getSku())){
+            if(!Objects.equals(iUtil.buildProductSku(supplierProduct.getProduct()), iUtil.buildProductSku(orderItem.getProduct()))){
                 throw new BadRequestExceptions(Constants.ErrorOrderStockProduct);
             }
 
@@ -108,7 +110,12 @@ public class OrderStockItemImpl implements IOrderStockItem {
                         .user(user)
                         .userId(user.getId())
                         .build());
-                iAudit.save("ADD_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+newOrderStockItem.getSupplierProduct().getSerial()+" CON "+newOrderStockItem.getQuantity()+" UNIDADES CREADO.",newOrderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
+                iAudit.save(
+                        "ADD_ORDER_STOCK_ITEM",
+                        "PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+
+                                iUtil.buildInventorySku(newOrderStockItem.getSupplierProduct())+
+                                " CON "+newOrderStockItem.getQuantity()+" UNIDADES CREADO.",
+                        newOrderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -172,8 +179,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
-                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
+                    .supplierProduct(iUtil.buildInventorySku(orderStockItem.getSupplierProduct()))
+                    .product(iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct()))
                     .color(orderStockItem.getSupplierProduct().getProduct().getColor().getName())
                     .model(orderStockItem.getSupplierProduct().getProduct().getModel().getName())
                     .size(orderStockItem.getSupplierProduct().getProduct().getSize().getName())
@@ -237,8 +244,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             List<OrderStockItemDTO> orderStockItemDTOList = pageOrderStock.getContent().stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
-                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
+                    .product(iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct()))
+                    .supplierProduct(iUtil.buildInventorySku(orderStockItem.getSupplierProduct()))
                     .color(orderStockItem.getSupplierProduct().getProduct().getColor().getName())
                     .model(orderStockItem.getSupplierProduct().getProduct().getModel().getName())
                     .size(orderStockItem.getSupplierProduct().getProduct().getSize().getName())
@@ -258,8 +265,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             OrderItem orderItem;
             Product product;
             try{
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestOrderStockItem.getSupplierProduct().toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestOrderStockItem.getProduct().toUpperCase());
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestOrderStockItem.getSupplierProductId());
+                product = productRepository.findByIdAndStatusTrue(requestOrderStockItem.getProductId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -313,8 +320,8 @@ public class OrderStockItemImpl implements IOrderStockItem {
             return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
-                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
+                    .product(iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct()))
+                    .supplierProduct(iUtil.buildInventorySku(orderStockItem.getSupplierProduct()))
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
@@ -346,18 +353,18 @@ public class OrderStockItemImpl implements IOrderStockItem {
             return orderStockItems.stream().map(orderStockItem -> OrderStockItemDTO.builder()
                     .orderId(orderStockItem.getOrderStock().getOrderId())
                     .warehouse(orderStockItem.getOrderStock().getWarehouse().getName())
-                    .product(orderStockItem.getSupplierProduct().getProduct().getSku())
-                    .supplierProduct(orderStockItem.getSupplierProduct().getSerial())
+                    .product(iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct()))
+                    .supplierProduct(iUtil.buildInventorySku(orderStockItem.getSupplierProduct()))
                     .quantity(orderStockItem.getQuantity())
                     .registrationDate(orderStockItem.getRegistrationDate())
                     .updateDate(orderStockItem.getUpdateDate())
-                    .product(orderStockItem.getOrderItem().getProduct().getSku())
+                    .product(iUtil.buildProductSku(orderStockItem.getOrderItem().getProduct()))
                     .build()).toList();
         });
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(UUID orderId, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID orderId, UUID supplierProductId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             UUID clientId;
@@ -366,7 +373,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             OrderStockItem orderStockItem;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(supplierProductId);
 
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -398,7 +405,12 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderStockItem.setUser(user);
                 orderStockItem.setUserId(user.getId());
                 orderStockItemRepository.save(orderStockItem);
-                iAudit.save("DELETE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES DESACTIVADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
+                iAudit.save(
+                        "DELETE_ORDER_STOCK_ITEM",
+                        "PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+
+                                iUtil.buildInventorySku(orderStockItem.getSupplierProduct())+" CON "+
+                                orderStockItem.getQuantity()+" UNIDADES DESACTIVADO.",
+                        orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -411,7 +423,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(UUID orderId, String supplierProductSerial, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(UUID orderId, UUID supplierProductId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             UUID clientId;
             User user;
@@ -420,7 +432,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             OrderStockItem orderStockItem;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(supplierProductId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
@@ -454,7 +466,12 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderStockItem.setUserId(user.getId());
                 orderStockItem.setUser(user);
                 orderStockItemRepository.save(orderStockItem);
-                iAudit.save("ACTIVATE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES ACTIVADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
+                iAudit.save(
+                        "ACTIVATE_ORDER_STOCK_ITEM",
+                        "PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+
+                                iUtil.buildInventorySku(orderStockItem.getSupplierProduct())+
+                                " CON "+orderStockItem.getQuantity()+" UNIDADES ACTIVADO.",
+                        orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -467,7 +484,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> update(UUID orderId, String supplierProductSerial, String tokenUser, Integer quantity) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> update(UUID orderId, UUID supplierProductId, String tokenUser, Integer quantity) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             UUID clientId;
             User user;
@@ -477,7 +494,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             WarehouseStock warehouseStock;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(supplierProductSerial.toUpperCase());
+                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(supplierProductId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -517,7 +534,12 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderStockItem.setUser(user);
                 orderStockItem.setUserId(user.getId());
                 orderStockItemRepository.save(orderStockItem);
-                iAudit.save("UPDATE_ORDER_STOCK_ITEM","PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+orderStockItem.getSupplierProduct().getSerial()+" CON "+orderStockItem.getQuantity()+" UNIDADES ACTUALIZADO.",orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
+                iAudit.save(
+                        "UPDATE_ORDER_STOCK_ITEM",
+                        "PRODUCTO DE PREPARACION DE PEDIDO CON PRODUCTO DE INVENTARIO "+
+                                iUtil.buildInventorySku(orderStockItem.getSupplierProduct())+" CON "+
+                                orderStockItem.getQuantity()+" UNIDADES ACTUALIZADO.",
+                        orderStockItem.getOrderStock().getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

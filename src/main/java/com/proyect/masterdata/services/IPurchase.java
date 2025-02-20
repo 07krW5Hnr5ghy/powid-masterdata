@@ -9,6 +9,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IPurchase {
@@ -34,5 +35,5 @@ public interface IPurchase {
             Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<PurchaseDTO>> listPurchase(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<PurchaseDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<List<CheckStockDTO>> checkStock(String serial, String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<CheckStockDTO>> checkStock(UUID supplierProductId, String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

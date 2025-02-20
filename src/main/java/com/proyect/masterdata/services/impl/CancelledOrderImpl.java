@@ -11,6 +11,7 @@ import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICancelledOrder;
 import com.proyect.masterdata.services.IStockTransaction;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -41,6 +42,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
     private final WarehouseRepository warehouseRepository;
     private final OrderStockRepository orderStockRepository;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestCancelledOrder requestCancelledOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -96,7 +98,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
                         List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndOrderItemId(orderStock.getId(), orderItem.getId());
                         for(OrderStockItem orderStockItem : orderStockItemList){
                             stockTransactionList.add(RequestStockTransactionItem.builder()
-                                    .supplierProductSerial(orderStockItem.getSupplierProduct().getSerial())
+                                    .supplierProductId(orderStockItem.getSupplierProduct().getId())
                                     .quantity(orderStockItem.getQuantity())
                                     .build());
                         }

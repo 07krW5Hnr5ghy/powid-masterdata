@@ -35,6 +35,7 @@ public class StockTransferImpl implements IStockTransfer {
     private final IWarehouseStock iWarehouseStock;
     private final StockTransferRepositoryCustom stockTransferRepositoryCustom;
     private final IAudit iAudit;
+    private final IUtil iUtil;
     @Override
     public ResponseSuccess save(RequestStockTransfer requestStockTransfer,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -71,7 +72,7 @@ public class StockTransferImpl implements IStockTransfer {
 
         try{
             for(RequestStockTransferItem requestStockTransferItem : requestStockTransfer.getRequestStockTransferItemList()){
-                SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransferItem.getSupplierProductSerial());
+                SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestStockTransferItem.getSupplierProductId());
                 if(supplierProduct == null){
                     throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                 }
@@ -100,10 +101,10 @@ public class StockTransferImpl implements IStockTransfer {
             List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
 
             for(RequestStockTransferItem requestStockTransferItem : requestStockTransfer.getRequestStockTransferItemList()){
-                SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransferItem.getSupplierProductSerial());
+                SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestStockTransferItem.getSupplierProductId());
                 requestStockTransactionItemList.add(RequestStockTransactionItem.builder()
                                 .quantity(requestStockTransferItem.getQuantity())
-                                .supplierProductSerial(requestStockTransferItem.getSupplierProductSerial())
+                                .supplierProductId(supplierProduct.getId())
                         .build());
                 iStockTransferItem.save(requestStockTransferItem,newStockTransfer,supplierProduct,user);
                 iWarehouseStock.out(originWarehouse,supplierProduct,requestStockTransferItem.getQuantity(),user);
@@ -160,7 +161,7 @@ public class StockTransferImpl implements IStockTransfer {
 
             try{
                 for(RequestStockTransferItem requestStockTransferItem : requestStockTransfer.getRequestStockTransferItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransferItem.getSupplierProductSerial());
+                    SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestStockTransferItem.getSupplierProductId());
                     if(supplierProduct == null){
                         throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
                     }
@@ -189,10 +190,10 @@ public class StockTransferImpl implements IStockTransfer {
                 List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
 
                 for(RequestStockTransferItem requestStockTransferItem : requestStockTransfer.getRequestStockTransferItemList()){
-                    SupplierProduct supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(requestStockTransferItem.getSupplierProductSerial());
+                    SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestStockTransferItem.getSupplierProductId());
                     requestStockTransactionItemList.add(RequestStockTransactionItem.builder()
                             .quantity(requestStockTransferItem.getQuantity())
-                            .supplierProductSerial(requestStockTransferItem.getSupplierProductSerial())
+                                    .supplierProductId(supplierProduct.getId())
                             .build());
                     iStockTransferItem.save(requestStockTransferItem,newStockTransfer,supplierProduct,user);
                     iWarehouseStock.out(originWarehouse,supplierProduct,requestStockTransferItem.getQuantity(),user);

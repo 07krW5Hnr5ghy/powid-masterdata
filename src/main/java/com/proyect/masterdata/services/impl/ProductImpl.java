@@ -13,9 +13,7 @@ import java.util.stream.Stream;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.request.RequestProductUpdate;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.IAudit;
-import com.proyect.masterdata.services.IProductPicture;
-import com.proyect.masterdata.services.IProductPrice;
+import com.proyect.masterdata.services.*;
 import jakarta.transaction.Transactional;
 import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
@@ -28,7 +26,6 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.services.IProduct;
 import com.proyect.masterdata.utils.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -54,25 +51,24 @@ public class ProductImpl implements IProduct {
     private final ProductPictureRepository productPictureRepository;
     private final IAudit iAudit;
     private final BrandRepository brandRepository;
+    private final SubCategoryProductRepository subCategoryProductRepository;
+    private final IUtil iUtil;
     @Override
     @Transactional
-    public ResponseSuccess save(RequestProductSave product,List<MultipartFile> productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(RequestProductSave requestProductSave,List<MultipartFile> productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
-        boolean existsProduct;
-        Model modelData;
-        Size sizeData;
-        CategoryProduct categoryProductData;
-        Color colorData;
+        Product product;
+        Model model;
+        Size size;
+        SubCategoryProduct subCategoryProduct;
+        Color color;
         Unit unit;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            existsProduct = productRepository.existsBySkuAndStatusTrue(product.getSku().toUpperCase());
-            sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
-            categoryProductData = categoryProductRepository
-                    .findByNameAndStatusTrue(product.getCategory().toUpperCase());
-            colorData = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
-            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(product.getUnit().toUpperCase(),categoryProductData.getSizeTypeId());
+            subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase());
+            color = colorRepository.findByNameAndStatusTrue(requestProductSave.getColor().toUpperCase());
+            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getSizeTypeId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -81,67 +77,69 @@ public class ProductImpl implements IProduct {
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
-            modelData = modelRepository.findBySkuAndClientIdAndStatusTrue(product.getModel().toUpperCase(),user.getClientId());
+            model = modelRepository.findBySkuAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
         }
 
-        if (existsProduct) {
-            throw new BadRequestExceptions(Constants.ErrorProductExists);
-        }
-
-        if (modelData == null) {
+        if (model == null) {
             throw new BadRequestExceptions(Constants.ErrorModel);
+        }else{
+            size = sizeRepository.findByNameAndStatusTrue(requestProductSave.getSize().toUpperCase());
         }
 
-        if (sizeData == null) {
+        if (size == null) {
             throw new BadRequestExceptions(Constants.ErrorSize);
         }
 
-        if (categoryProductData == null) {
-            throw new BadRequestExceptions(Constants.ErrorCategory);
-        }
-
-        if(!Objects.equals(sizeData.getSizeTypeId(), categoryProductData.getSizeTypeId())){
-            throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
-        }
-
-        if (colorData == null) {
+        if (color == null) {
             throw new BadRequestExceptions(Constants.ErrorColor);
+        }
+
+        if (subCategoryProduct == null) {
+            throw new BadRequestExceptions(Constants.ErrorSubCategory);
+        }
+
+        if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
+            throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
         }
 
         if(unit == null){
             throw new BadRequestExceptions(Constants.ErrorUnit);
+        }else{
+            product = productRepository.findByModelIdAndSizeIdAndColorIdAndClientIdAndStatusTrue(model.getId(),size.getId(),color.getId(),user.getClientId());
+        }
+
+        if (product==null) {
+            throw new BadRequestExceptions(Constants.ErrorProductExists);
         }
 
         try {
             Product productData = productRepository.save(Product.builder()
-                    .sku(product.getSku().toUpperCase())
-                    .model(modelData)
-                    .modelId(modelData.getId())
-                    .size(sizeData)
-                    .sizeId(sizeData.getId())
-                    .categoryProduct(categoryProductData)
-                    .categoryProductId(categoryProductData.getId())
-                    .color(colorData)
-                    .colorId(colorData.getId())
+                    .model(model)
+                    .modelId(model.getId())
+                    .size(size)
+                    .sizeId(size.getId())
+                    .subCategoryProduct(subCategoryProduct)
+                    .subCategoryProductId(subCategoryProduct.getId())
+                    .color(color)
+                    .colorId(color.getId())
                     .unit(unit)
                     .unitId(unit.getId())
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .user(user)
                     .userId(user.getId())
-                    .characteristics(product.getCharacteristics().toUpperCase())
                     .status(true)
                     .pictureFlag(false)
                     .registrationDate(OffsetDateTime.now())
                     .updateDate(OffsetDateTime.now())
                     .build());
-            iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
+            iProductPrice.save(productData.getId(), requestProductSave.getPrice(),tokenUser.toUpperCase());
             List<String> pictures = iProductPicture.uploadPicture(productPictures,productData.getId(),user.getUsername());
             if(!pictures.isEmpty()){
                 productData.setPictureFlag(true);
                 productRepository.save(productData);
             }
-            iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getSku()+" CREADO.",productData.getSku(),user.getUsername());
+            iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getId()+" CREADO.",productData.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -154,25 +152,22 @@ public class ProductImpl implements IProduct {
 
     @Override
     @Transactional
-    public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave product,MultipartFile[] productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave requestProductSave,MultipartFile[] productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         Path folder = Paths.get("/home/powid-masterdata/src/main/resources/uploads/products");
         return CompletableFuture.supplyAsync(()->{
             User user;
-            boolean existsProduct;
-            Model modelData;
-            Size sizeData;
-            CategoryProduct categoryProductData;
-            Color colorData;
+            Product product;
+            Model model;
+            Size size;
+            SubCategoryProduct subCategoryProduct;
+            Color color;
             Unit unit;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                existsProduct = productRepository.existsBySkuAndStatusTrue(product.getSku().toUpperCase());
-                sizeData = sizeRepository.findByNameAndStatusTrue(product.getSize().toUpperCase());
-                categoryProductData = categoryProductRepository
-                        .findByNameAndStatusTrue(product.getCategory().toUpperCase());
-                colorData = colorRepository.findByNameAndStatusTrue(product.getColor().toUpperCase());
-                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(product.getUnit().toUpperCase(),categoryProductData.getSizeTypeId());
+                subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase());
+                color = colorRepository.findByNameAndStatusTrue(requestProductSave.getColor().toUpperCase());
+                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getSizeTypeId());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -181,53 +176,55 @@ public class ProductImpl implements IProduct {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                modelData = modelRepository.findBySkuAndClientIdAndStatusTrue(product.getModel().toUpperCase(),user.getClientId());
+                model = modelRepository.findBySkuAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
             }
 
-            if (existsProduct) {
-                throw new BadRequestExceptions(Constants.ErrorProductExists);
-            }
-
-            if (modelData == null) {
+            if (model == null) {
                 throw new BadRequestExceptions(Constants.ErrorModel);
+            }else{
+                size = sizeRepository.findByNameAndStatusTrue(requestProductSave.getSize().toUpperCase());
             }
 
-            if (sizeData == null) {
+            if (size == null) {
                 throw new BadRequestExceptions(Constants.ErrorSize);
             }
 
-            if (categoryProductData == null) {
-                throw new BadRequestExceptions(Constants.ErrorCategory);
-            }
-
-            if(!Objects.equals(sizeData.getSizeTypeId(), categoryProductData.getSizeTypeId())){
-                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
-            }
-
-            if (colorData == null) {
+            if (color == null) {
                 throw new BadRequestExceptions(Constants.ErrorColor);
+            }
+
+            if (subCategoryProduct == null) {
+                throw new BadRequestExceptions(Constants.ErrorSubCategory);
+            }
+
+            if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
+                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
             }
 
             if(unit == null){
                 throw new BadRequestExceptions(Constants.ErrorUnit);
+            }else{
+                product = productRepository.findByModelIdAndSizeIdAndColorIdAndClientIdAndStatusTrue(model.getId(),size.getId(),color.getId(),user.getClientId());
+            }
+
+            if (product==null) {
+                throw new BadRequestExceptions(Constants.ErrorProductExists);
             }
 
             try {
                 Product productData = productRepository.save(Product.builder()
-                        .sku(product.getSku().toUpperCase())
-                        .model(modelData)
-                        .modelId(modelData.getId())
-                        .size(sizeData)
-                        .sizeId(sizeData.getId())
-                        .categoryProduct(categoryProductData)
-                        .categoryProductId(categoryProductData.getId())
-                        .color(colorData)
-                        .colorId(colorData.getId())
+                        .model(model)
+                        .modelId(model.getId())
+                        .size(size)
+                        .sizeId(size.getId())
+                        .subCategoryProduct(subCategoryProduct)
+                        .subCategoryProductId(subCategoryProduct.getId())
+                        .color(color)
+                        .colorId(color.getId())
                         .unit(unit)
                         .unitId(unit.getId())
                         .client(user.getClient())
                         .clientId(user.getClientId())
-                        .characteristics(product.getCharacteristics().toUpperCase())
                         .user(user)
                         .userId(user.getId())
                         .status(true)
@@ -235,7 +232,7 @@ public class ProductImpl implements IProduct {
                         .registrationDate(OffsetDateTime.now())
                         .pictureFlag(false)
                         .build());
-                iProductPrice.save(productData.getSku(), product.getPrice(),tokenUser.toUpperCase());
+                iProductPrice.save(productData.getId(), requestProductSave.getPrice(),tokenUser.toUpperCase());
                 List<File> fileList = new ArrayList<>();
                 for(MultipartFile multipartFile : productPictures){
                     if(multipartFile.isEmpty()){
@@ -261,7 +258,7 @@ public class ProductImpl implements IProduct {
                     productData.setPictureFlag(true);
                     productRepository.save(productData);
                 }
-                iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getSku()+" CREADO.",productData.getSku(),user.getUsername());
+                iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getId()+" CREADO.",productData.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -274,14 +271,14 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String sku, String username) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID productId, String username) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(sku.toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(productId);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -301,7 +298,8 @@ public class ProductImpl implements IProduct {
                 product.setUser(user);
                 product.setUserId(user.getId());
                 productRepository.save(product);
-                iAudit.save("DELETE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" DESACTIVADO.",product.getSku(),user.getUsername());
+                String finalSku = iUtil.buildProductSku(product);
+                iAudit.save("DELETE_PRODUCT","PRODUCTO DE MARKETING "+finalSku+" DESACTIVADO.",finalSku,user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -314,14 +312,14 @@ public class ProductImpl implements IProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String sku, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> activate(UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                product = productRepository.findBySkuAndStatusFalse(sku.toUpperCase());
+                product = productRepository.findByIdAndStatusFalse(productId);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -341,7 +339,8 @@ public class ProductImpl implements IProduct {
                 product.setUser(user);
                 product.setUserId(user.getId());
                 productRepository.save(product);
-                iAudit.save("ACTIVATE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" ACTIVADO.",product.getSku(),user.getUsername());
+                String finalSku = iUtil.buildProductSku(product);
+                iAudit.save("ACTIVATE_PRODUCT","PRODUCTO DE MARKETING "+finalSku+" ACTIVADO.",finalSku,user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -447,11 +446,13 @@ public class ProductImpl implements IProduct {
             List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 List<String> productImages = productPictureRepository.findAllByProductId(product.getId()).stream().map(ProductPicture::getProductPictureUrl).toList();
+
                 return ProductDTO.builder()
-                        .sku(product.getSku())
+                        .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
-                        .category(product.getCategoryProduct().getName())
+                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(product.getSubCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
@@ -460,7 +461,6 @@ public class ProductImpl implements IProduct {
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .pictureFlag(product.getPictureFlag())
-                        .characteristics(product.getCharacteristics())
                         .build();
             }).toList();
 
@@ -561,16 +561,16 @@ public class ProductImpl implements IProduct {
             List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
-                        .sku(product.getSku())
+                        .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
-                        .category(product.getCategoryProduct().getName())
+                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(product.getSubCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
                         .pictureFlag(product.getPictureFlag())
-                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -600,15 +600,15 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
-                        .sku(product.getSku())
+                        .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
-                        .category(product.getCategoryProduct().getName())
+                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(product.getSubCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
-                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -636,15 +636,15 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
-                        .sku(product.getSku())
+                        .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
-                        .category(product.getCategoryProduct().getName())
+                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(product.getSubCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
-                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -672,15 +672,15 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
-                        .sku(product.getSku())
+                        .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
-                        .category(product.getCategoryProduct().getName())
+                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(product.getSubCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
-                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -696,7 +696,7 @@ public class ProductImpl implements IProduct {
             Product product;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(requestProductUpdate.getTokenUser().toUpperCase());
-                product = productRepository.findBySkuAndStatusTrue(requestProductUpdate.getSku().toUpperCase());
+                product = productRepository.findByIdAndStatusTrue(requestProductUpdate.getProductId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -753,7 +753,8 @@ public class ProductImpl implements IProduct {
                         productRepository.save(product);
                     }
                 }
-                iAudit.save("UPDATE_PRODUCT","PRODUCTO DE MARKETING "+product.getSku()+" ACTUALIZADO.",product.getSku(),user.getUsername());
+                String finalSku = iUtil.buildProductSku(product);
+                iAudit.save("UPDATE_PRODUCT","PRODUCTO DE MARKETING "+finalSku+" ACTUALIZADO.",finalSku,user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -789,15 +790,15 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
-                        .sku(product.getSku())
+                        .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
-                        .category(product.getCategoryProduct().getName())
+                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(product.getSubCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
-                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -830,15 +831,15 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
-                        .sku(product.getSku())
+                        .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
-                        .category(product.getCategoryProduct().getName())
+                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(product.getSubCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
-                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -870,15 +871,15 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
-                        .sku(product.getSku())
+                        .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
-                        .category(product.getCategoryProduct().getName())
+                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(product.getSubCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
-                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();
@@ -909,15 +910,15 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
-                        .sku(product.getSku())
+                        .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
-                        .category(product.getCategoryProduct().getName())
+                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(product.getSubCategoryProduct().getName())
                         .color(product.getColor().getName())
                         .size(product.getSize().getName())
                         .unit(product.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
-                        .characteristics(product.getCharacteristics())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
                         .build();

@@ -39,6 +39,9 @@ public class Supplier {
     @Column(name = "ruc")
     private String ruc;
 
+    @Column(name = "sku")
+    private String sku;
+
     @Column(name = "location")
     private String location;
 

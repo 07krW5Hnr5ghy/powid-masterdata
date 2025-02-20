@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -74,9 +75,9 @@ public class PurchaseController {
     @GetMapping("check-stock")
     public ResponseEntity<List<CheckStockDTO>> checkStock(
             @RequestParam("user") String user,
-            @RequestParam("serial") String serial
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<CheckStockDTO>> result = iPurchase.checkStock(serial,user);
+            @RequestParam("supplierProductId") UUID supplierProductId
+            ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CheckStockDTO>> result = iPurchase.checkStock(supplierProductId,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
