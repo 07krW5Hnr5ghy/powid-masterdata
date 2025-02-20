@@ -17,5 +17,6 @@ public class RequestPurchase {
     private String purchaseType;
     private String purchaseDocument;
     private String supplier;
+    private String purchasePaymentType;
     private List<RequestPurchaseItem> requestPurchaseItemList;
 }

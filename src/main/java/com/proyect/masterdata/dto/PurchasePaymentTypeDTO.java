@@ -6,17 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PurchaseDTO {
-    private String serial;
-    private String purchaseDocument;
-    private String warehouse;
-    private String purchaseType;
+public class PurchasePaymentTypeDTO {
+    private String name;
     private OffsetDateTime registrationDate;
-    private String purchasePaymentType;
+    private OffsetDateTime updateDate;
+    private Boolean status;
 }
