@@ -300,6 +300,8 @@ public class Constants {
     public static final String ErrorStockReturn = "Devolucion de stock no esta registrado";
     public static final String ErrorOrderCancelledDeliveredStatus = "El pedido no se puede cancelar despues de entregado";
     public static final String ErrorOrderStockExists = "Ya existe preparacion para el pedido";
-    public static final String ErrorPurchasePaymentType = "Tipo de pago para compra no existe";
-    public static final String ErrorPurchasePaymentTypeExists = "Tipo de pago para compra ya existe";
+    public static final String ErrorPurchasePaymentType = "Tipo de pago para compra no esta registrado";
+    public static final String ErrorPurchasePaymentTypeExists = "Tipo de pago para compra ya esta registrado";
+    public static final String ErrorDeliveryStatus = "Estado de entrega no esta registrado";
+    public static final String ErrorDeliveryStatusExists = "Estado de entrega ya esta registrado";
 }

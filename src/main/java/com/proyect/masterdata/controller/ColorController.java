@@ -35,7 +35,7 @@ public class ColorController {
         CompletableFuture<ResponseSuccess> result = iColor.save(name, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,

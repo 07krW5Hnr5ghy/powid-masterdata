@@ -97,6 +97,7 @@ public class Seeder implements CommandLineRunner {
         private final IDeliveryPoint iDeliveryPoint;
         private final ISubCategoryProduct iSubCategoryProduct;
         private final IPurchasePaymentType iPurchasePaymentType;
+        private final IDeliveryStatus iDeliveryStatus;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1378,6 +1379,10 @@ public class Seeder implements CommandLineRunner {
                         iPurchasePaymentType.save("credito",adminUser.getUsername());
                         iPurchasePaymentType.save("efectivo",adminUser.getUsername());
                         iPurchasePaymentType.save("transferencia",adminUser.getUsername());
+
+                        iDeliveryStatus.save("PENDIENTE",adminUser.getUsername());
+                        iDeliveryStatus.save("EN TRANSITO",adminUser.getUsername());
+                        iDeliveryStatus.save("COMPLETO",adminUser.getUsername());
 
                         User business1 = userRepository.save(User.builder()
                                 .username("JCOILA")
