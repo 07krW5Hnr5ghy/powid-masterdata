@@ -103,6 +103,9 @@ public class Constants {
     public static final String tableDeliveryPoint = "delivery_point";
     public static final String tableSubCategoryProduct = "sub_category_product";
     public static final String tablePurchasePaymentType = "purchase_payment_type";
+    public static final String tableDeliveryManifest = "delivery_manifest";
+    public static final String tableDeliveryManifestItems = "delivery_manifest_items";
+    public static final String tableDeliveryStatus = "delivery_status";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
