@@ -3,10 +3,11 @@ package com.proyect.masterdata;
 import com.proyect.masterdata.seeder.Seeder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = { MetricsAutoConfiguration.class })
 @Configuration
 @RequiredArgsConstructor
 public class MasterdataApplication {
