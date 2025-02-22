@@ -96,6 +96,7 @@ public class PurchasePaymentTypeImpl implements IPurchasePaymentType {
                 purchasePaymentType.setUser(user);
                 purchasePaymentType.setUserId(user.getId());
                 purchasePaymentType.setUpdateDate(OffsetDateTime.now());
+                purchasePaymentTypeRepository.save(purchasePaymentType);
                 iAudit.save(
                         "DELETE_PURCHASE_PAYMENT_TYPE",
                         "TIPO DE PAGO PARA COMPRA "+
@@ -136,6 +137,7 @@ public class PurchasePaymentTypeImpl implements IPurchasePaymentType {
                 purchasePaymentType.setUser(user);
                 purchasePaymentType.setUserId(user.getId());
                 purchasePaymentType.setUpdateDate(OffsetDateTime.now());
+                purchasePaymentTypeRepository.save(purchasePaymentType);
                 iAudit.save(
                         "ACTIVATE_PURCHASE_PAYMENT_TYPE",
                         "TIPO DE PAGO PARA COMPRA "+

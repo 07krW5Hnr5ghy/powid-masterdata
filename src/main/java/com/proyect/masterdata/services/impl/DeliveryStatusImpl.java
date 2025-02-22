@@ -88,6 +88,7 @@ public class DeliveryStatusImpl implements IDeliveryStatus {
                 deliveryStatus.setUpdateDate(OffsetDateTime.now());
                 deliveryStatus.setUser(user);
                 deliveryStatus.setUserId(user.getId());
+                deliveryStatusRepository.save(deliveryStatus);
                 iAudit.save("DELETE_DELIVERY_STATUS","ESTADO DE ENTREGA "+deliveryStatus.getName()+" ELIMINADO.",deliveryStatus.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
@@ -123,6 +124,7 @@ public class DeliveryStatusImpl implements IDeliveryStatus {
                 deliveryStatus.setUpdateDate(OffsetDateTime.now());
                 deliveryStatus.setUser(user);
                 deliveryStatus.setUserId(user.getId());
+                deliveryStatusRepository.save(deliveryStatus);
                 iAudit.save("ACTIVATE_DELIVERY_STATUS","ESTADO DE ENTREGA "+deliveryStatus.getName()+" ACTIVADO.",deliveryStatus.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
