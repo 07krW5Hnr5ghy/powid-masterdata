@@ -44,7 +44,7 @@ public class DeliveryStatusImpl implements IDeliveryStatus {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
             if(deliveryStatus==null){
-                throw new BadRequestExceptions(Constants.ErrorDeliveryStatus);
+                throw new BadRequestExceptions(Constants.ErrorDeliveryStatusExists);
             }
             try{
                 DeliveryStatus newDeliveryStatus = deliveryStatusRepository.save(DeliveryStatus.builder()

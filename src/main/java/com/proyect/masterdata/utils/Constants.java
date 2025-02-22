@@ -304,4 +304,6 @@ public class Constants {
     public static final String ErrorPurchasePaymentTypeExists = "Tipo de pago para compra ya esta registrado";
     public static final String ErrorDeliveryStatus = "Estado de entrega no esta registrado";
     public static final String ErrorDeliveryStatusExists = "Estado de entrega ya esta registrado";
+    public static final String ErrorDeliveryManifest = "Guia no esta registrado";
+    public static final String ErrorDeliveryManifestExist = "Guia ya esta registrada";
 }

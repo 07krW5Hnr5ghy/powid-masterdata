@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.DeliveryManifestDTO;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifest;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -25,5 +27,13 @@ public class DeliveryManifestController {
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iDeliveryManifest.save(requestDeliveryManifest);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @GetMapping()
+    public ResponseEntity<DeliveryManifestDTO> getManifestById(
+            @RequestParam("id") UUID deliveryManifestId,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<DeliveryManifestDTO> result = iDeliveryManifest.getById(deliveryManifestId,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
