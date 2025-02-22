@@ -14,4 +14,7 @@ public class DeliveryManifestItemDTO {
     private String skuProduct;
     private String skuInventory;
     private Long orderNumber;
+    private String district;
+    private String customer;
+    private String phone;
 }
