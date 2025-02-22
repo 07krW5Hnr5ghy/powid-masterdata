@@ -28,7 +28,7 @@ public class DeliveryManifestController {
         CompletableFuture<ResponseSuccess> result = iDeliveryManifest.save(requestDeliveryManifest);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @GetMapping()
+    @GetMapping("/{deliveryManifestId}")
     public ResponseEntity<DeliveryManifestDTO> getManifestById(
             @RequestParam("id") UUID deliveryManifestId,
             @RequestParam("user") String user
