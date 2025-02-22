@@ -103,9 +103,12 @@ public class Constants {
     public static final String tableDeliveryPoint = "delivery_point";
     public static final String tableSubCategoryProduct = "sub_category_product";
     public static final String tablePurchasePaymentType = "purchase_payment_type";
+<<<<<<< HEAD
     public static final String tableDeliveryManifest = "delivery_manifest";
     public static final String tableDeliveryManifestItems = "delivery_manifest_items";
     public static final String tableDeliveryStatus = "delivery_status";
+=======
+>>>>>>> fe8a312fc98d41c06f276e2bca94e8d375627bd2
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -300,8 +303,13 @@ public class Constants {
     public static final String ErrorStockReturn = "Devolucion de stock no esta registrado";
     public static final String ErrorOrderCancelledDeliveredStatus = "El pedido no se puede cancelar despues de entregado";
     public static final String ErrorOrderStockExists = "Ya existe preparacion para el pedido";
+<<<<<<< HEAD
     public static final String ErrorPurchasePaymentType = "Tipo de pago para compra no esta registrado";
     public static final String ErrorPurchasePaymentTypeExists = "Tipo de pago para compra ya esta registrado";
     public static final String ErrorDeliveryStatus = "Estado de entrega no esta registrado";
     public static final String ErrorDeliveryStatusExists = "Estado de entrega ya esta registrado";
+=======
+    public static final String ErrorPurchasePaymentType = "Tipo de pago para compra no existe";
+    public static final String ErrorPurchasePaymentTypeExists = "Tipo de pago para compra ya existe";
+>>>>>>> fe8a312fc98d41c06f276e2bca94e8d375627bd2
 }
