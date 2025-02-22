@@ -26,11 +26,17 @@ public class Courier {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @Column(name = "phone")
+    private String phone;
 
     @Column(name = "status")
     private Boolean status;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "plate")
+    private String plate;
 
     @Column(name = "registration_date")
     private OffsetDateTime registrationDate;

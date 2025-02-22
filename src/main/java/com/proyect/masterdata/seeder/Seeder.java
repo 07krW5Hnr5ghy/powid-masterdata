@@ -1427,6 +1427,8 @@ public class Seeder implements CommandLineRunner {
 
                         RequestCourier requestCourier = RequestCourier.builder()
                                 .courier("SIN COURIER")
+                                .address("calle 0")
+                                .plate("000-000")
                                 .phone("000000000")
                                 .build();
 

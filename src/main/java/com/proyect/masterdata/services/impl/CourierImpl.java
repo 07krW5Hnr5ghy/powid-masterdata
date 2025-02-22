@@ -61,7 +61,9 @@ public class CourierImpl implements ICourier {
             try {
                 Courier newCourier = courierRepository.save(Courier.builder()
                         .name(requestCourier.getCourier().toUpperCase())
-                        .phoneNumber(requestCourier.getPhone())
+                        .phone(requestCourier.getPhone())
+                        .address(requestCourier.getAddress())
+                        .plate(requestCourier.getPlate())
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
                         .client(user.getClient())
@@ -204,7 +206,9 @@ public class CourierImpl implements ICourier {
 
             List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
                     .name(courier.getName())
-                    .phone(courier.getPhoneNumber())
+                    .phone(courier.getPhone())
+                    .address(courier.getAddress())
+                    .plate(courier.getPlate())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .build()).toList();
@@ -254,7 +258,9 @@ public class CourierImpl implements ICourier {
 
             List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
                     .name(courier.getName())
-                    .phone(courier.getPhoneNumber())
+                    .phone(courier.getPhone())
+                    .address(courier.getAddress())
+                    .plate(courier.getPlate())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .build()).toList();
@@ -342,7 +348,9 @@ public class CourierImpl implements ICourier {
             }
             return couriers.stream().map(courier -> CourierDTO.builder()
                     .name(courier.getName())
-                    .phone(courier.getPhoneNumber())
+                    .phone(courier.getPhone())
+                    .address(courier.getAddress())
+                    .plate(courier.getPlate())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .build()).toList();
@@ -366,7 +374,9 @@ public class CourierImpl implements ICourier {
             }
             return couriers.stream().map(courier -> CourierDTO.builder()
                     .name(courier.getName())
-                    .phone(courier.getPhoneNumber())
+                    .phone(courier.getPhone())
+                    .address(courier.getAddress())
+                    .plate(courier.getPlate())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .build()).toList();
@@ -390,14 +400,18 @@ public class CourierImpl implements ICourier {
             }
             List<CourierDTO> courierDTOS = new ArrayList<>(couriers.stream().map(courier -> CourierDTO.builder()
                     .name(courier.getName())
-                    .phone(courier.getPhoneNumber())
+                    .phone(courier.getPhone())
+                    .address(courier.getAddress())
+                    .plate(courier.getPlate())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .build()).toList());
             Courier defaultNoCourier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
             CourierDTO dtoNoCourier = CourierDTO.builder()
                     .name(defaultNoCourier.getName())
-                    .phone(defaultNoCourier.getPhoneNumber())
+                    .phone(defaultNoCourier.getPhone())
+                    .address(defaultNoCourier.getAddress())
+                    .plate(defaultNoCourier.getPlate())
                     .registrationDate(defaultNoCourier.getRegistrationDate())
                     .updateDate(defaultNoCourier.getUpdateDate())
                     .build();

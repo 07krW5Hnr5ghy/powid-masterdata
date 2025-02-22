@@ -15,6 +15,8 @@ import java.util.Date;
 public class CourierDTO {
     private String name;
     private String phone;
+    private String address;
+    private String plate;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
 }

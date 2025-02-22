@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class RequestCourier {
     private String courier;
     private String phone;
+    private String address;
+    private String plate;
 }
