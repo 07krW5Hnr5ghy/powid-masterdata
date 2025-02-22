@@ -21,14 +21,17 @@ public class DeliveryManifestItem {
     @Column(name = "delivery_manifest_item_id")
     private UUID id;
 
-    @Column(name = "delivered_quantity")
-    private Integer deliveredQuantity;
+    @Column(name = "quantity")
+    private Integer quantity;
 
     @Column(name = "delivery_manifest_id")
     private UUID deliveryManifestId;
 
     @Column(name = "order_item_id")
     private UUID orderItemId;
+
+    @Column(name = "supplier_product_id")
+    private UUID supplierProductId;
 
     @Column(name = "user_id")
     private UUID userId;
@@ -40,6 +43,10 @@ public class DeliveryManifestItem {
     @ManyToOne()
     @JoinColumn(name = "order_item_id",columnDefinition = "orderItemId",insertable = false,updatable = false)
     private OrderItem orderItem;
+
+    @ManyToOne()
+    @JoinColumn(name = "supplier_product_id",columnDefinition = "supplierProductId",insertable = false,updatable = false)
+    private SupplierProduct supplierProduct;
 
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)

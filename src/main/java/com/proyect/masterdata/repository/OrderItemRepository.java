@@ -127,4 +127,5 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
             @Param("endDate") OffsetDateTime endDate,
             @Param("clientId") UUID clientId
     );
+    OrderItem findByIdAndStatusTrue(UUID orderItemId);
 }

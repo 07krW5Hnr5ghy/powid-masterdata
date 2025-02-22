@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface DeliveryManifestRepository extends JpaRepository<DeliveryManifest, UUID> {
+    Long countByClientId(UUID clientId);
 }
