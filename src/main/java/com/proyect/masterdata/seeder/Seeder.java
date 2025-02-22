@@ -284,6 +284,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_COLOR",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_COURIER",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_CUSTOMER_TYPE",adminUser.getUsername());
+                        iAuditEvent.save("ACTIVATE_DELIVERY_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DEPARTMENT",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DISTRICT",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DEMO_ACCOUNT",adminUser.getUsername());
@@ -338,6 +339,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_CUSTOMER",adminUser.getUsername());
                         iAuditEvent.save("ADD_CUSTOMER_TYPE",adminUser.getUsername());
                         iAuditEvent.save("ADD_DELIVERY_POINT",adminUser.getUsername());
+                        iAuditEvent.save("ADD_DELIVERY_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ADD_DEPARTMENT",adminUser.getUsername());
                         iAuditEvent.save("ADD_DISCOUNT",adminUser.getUsername());
                         iAuditEvent.save("ADD_DISTRICT",adminUser.getUsername());
@@ -416,6 +418,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_COLOR",adminUser.getUsername());
                         iAuditEvent.save("DELETE_COURIER",adminUser.getUsername());
                         iAuditEvent.save("DELETE_CUSTOMER_TYPE",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_DELIVERY_STATUS",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DEPARTMENT",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DISTRICT",adminUser.getUsername());
                         iAuditEvent.save("DELETE_ENTRY_CHANNEL",adminUser.getUsername());
@@ -513,6 +516,10 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("COURIER_POST",adminUser.getUsername());
                         iAccess.save("COURIER_PUT",adminUser.getUsername());
                         iAccess.save("COURIER_GET",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_GET",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_POST",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_DELETE",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_PUT",adminUser.getUsername());
                         iAccess.save("DEPARTMENT_GET",adminUser.getUsername());
                         iAccess.save("DEPARTMENT_POST",adminUser.getUsername());
                         iAccess.save("DEPARTMENT_DELETE",adminUser.getUsername());
@@ -788,6 +795,10 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("ADMINISTRACION","COLOR_DELETE",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","COURIER_GET",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","COURIER_POST",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_STATUS_GET",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_STATUS_DELETE",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_STATUS_POST",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_STATUS_PUT",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","DEPARTMENT_GET",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","DEPARTMENT_POST",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","DEPARTMENT_DELETE",adminUser.getUsername());

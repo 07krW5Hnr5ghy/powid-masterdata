@@ -9,6 +9,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.DeliveryStatusRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IDeliveryStatus;
 import com.proyect.masterdata.utils.Constants;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 public class DeliveryStatusImpl implements IDeliveryStatus {
     private final UserRepository userRepository;
     private final DeliveryStatusRepository deliveryStatusRepository;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -45,12 +47,13 @@ public class DeliveryStatusImpl implements IDeliveryStatus {
                 throw new BadRequestExceptions(Constants.ErrorDeliveryStatus);
             }
             try{
-                deliveryStatusRepository.save(DeliveryStatus.builder()
+                DeliveryStatus newDeliveryStatus = deliveryStatusRepository.save(DeliveryStatus.builder()
                         .name(name.toUpperCase())
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
                         .status(true)
                         .build());
+                iAudit.save("ADD_DELIVERY_STATUS","ESTADO DE ENTREGA "+newDeliveryStatus.getName()+" CREADO.",newDeliveryStatus.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -83,6 +86,9 @@ public class DeliveryStatusImpl implements IDeliveryStatus {
             try{
                 deliveryStatus.setStatus(false);
                 deliveryStatus.setUpdateDate(OffsetDateTime.now());
+                deliveryStatus.setUser(user);
+                deliveryStatus.setUserId(user.getId());
+                iAudit.save("DELETE_DELIVERY_STATUS","ESTADO DE ENTREGA "+deliveryStatus.getName()+" ELIMINADO.",deliveryStatus.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -115,6 +121,9 @@ public class DeliveryStatusImpl implements IDeliveryStatus {
             try{
                 deliveryStatus.setStatus(true);
                 deliveryStatus.setUpdateDate(OffsetDateTime.now());
+                deliveryStatus.setUser(user);
+                deliveryStatus.setUserId(user.getId());
+                iAudit.save("ACTIVATE_DELIVERY_STATUS","ESTADO DE ENTREGA "+deliveryStatus.getName()+" ACTIVADO.",deliveryStatus.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
