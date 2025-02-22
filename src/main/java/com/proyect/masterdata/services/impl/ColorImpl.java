@@ -38,14 +38,14 @@ public class ColorImpl implements IColor {
     private final ColorRepositoryCustom colorRepositoryCustom;
     private final IAudit iAudit;
     @Override
-    public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> save(String name,String sku, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Color color;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                color = colorRepository.findByNameAndStatusTrue(name.toUpperCase());
+                color = colorRepository.findByNameOrSku(name.toUpperCase(),sku.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -61,6 +61,7 @@ public class ColorImpl implements IColor {
             try {
                 Color newColor = colorRepository.save(Color.builder()
                         .name(name.toUpperCase())
+                        .sku(sku.toUpperCase())
                         .registrationDate(OffsetDateTime.now())
                         .status(true)
                                 .user(user)

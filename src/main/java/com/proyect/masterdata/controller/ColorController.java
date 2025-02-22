@@ -31,8 +31,9 @@ public class ColorController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
+            @RequestParam("sku") String sku,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iColor.save(name, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iColor.save(name,sku, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @DeleteMapping()
