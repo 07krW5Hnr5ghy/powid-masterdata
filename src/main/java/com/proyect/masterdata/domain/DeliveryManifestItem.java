@@ -24,6 +24,9 @@ public class DeliveryManifestItem {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "collected")
+    private Boolean collected;
+
     @Column(name = "delivery_manifest_id")
     private UUID deliveryManifestId;
 
