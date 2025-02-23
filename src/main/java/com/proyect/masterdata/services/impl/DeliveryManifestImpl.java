@@ -34,19 +34,19 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
     private final WarehouseRepository warehouseRepository;
     private final DeliveryManifestItemRepository deliveryManifestItemRepository;
     private final IUtil iUtil;
-    private final DeliveryStatusRepository deliveryStatusRepository;
+    private final DeliveryManifestStatusRepository deliveryManifestStatusRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestDeliveryManifest requestDeliveryManifest) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Courier courier;
             Warehouse warehouse;
-            DeliveryStatus deliveryStatus;
+            DeliveryManifestStatus deliveryManifestStatus;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(requestDeliveryManifest.getUsername().toUpperCase());
                 courier = courierRepository.findByNameAndStatusTrue(requestDeliveryManifest.getCourier().toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestDeliveryManifest.getWarehouse().toUpperCase());
-                deliveryStatus = deliveryStatusRepository.findByName("PENDIENTE");
+                deliveryManifestStatus = deliveryManifestStatusRepository.findByName("ABIERTA");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -67,8 +67,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .courier(courier)
                                 .registrationDate(OffsetDateTime.now())
                                 .updateDate(OffsetDateTime.now())
+                                .deliveryManifestStatus(deliveryManifestStatus)
+                                .deliveryManifestStatusId(deliveryManifestStatus.getId())
                                 .user(user)
-                                .deliveryStatus(deliveryStatus)
                                 .userId(user.getId())
                                 .client(user.getClient())
                                 .clientId(user.getClientId())
@@ -122,7 +123,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .registrationDate(deliveryManifest.getRegistrationDate())
                         .updateDate(deliveryManifest.getUpdateDate())
                         .courier(deliveryManifest.getCourier().getName())
-                        .deliveryStatus(deliveryManifest.getDeliveryStatus().getName())
+                        .deliveryManifestStatus(deliveryManifest.getDeliveryManifestStatus().getName())
                         .deliveryManifestItemDTOS(deliveryManifestItemList)
                         .build();
             }catch (RuntimeException e){

@@ -306,4 +306,6 @@ public class Constants {
     public static final String ErrorDeliveryStatusExists = "Estado de entrega ya esta registrado";
     public static final String ErrorDeliveryManifest = "Guia no esta registrado";
     public static final String ErrorDeliveryManifestExist = "Guia ya esta registrada";
+    public static final String ErrorDeliveryManifestStatus = "Estado de guia no esta registrado";
+    public static final String ErrorDeliveryManifestStatusExists = "Estado de guia ya esta registrado";
 }

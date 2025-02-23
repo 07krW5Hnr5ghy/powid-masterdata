@@ -36,6 +36,9 @@ public class DeliveryManifestItem {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "delivery_status_id")
+    private UUID deliveryStatusId;
+
     @ManyToOne()
     @JoinColumn(name = "delivery_manifest_id",columnDefinition = "deliveryManifestId",updatable = false,insertable = false)
     private DeliveryManifest deliveryManifest;
@@ -51,5 +54,9 @@ public class DeliveryManifestItem {
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
+
+    @ManyToOne()
+    @JoinColumn(name="delivery_status_id",columnDefinition = "deliveryStatusId",insertable = false,updatable = false)
+    private DeliveryStatus deliveryStatus;
 
 }

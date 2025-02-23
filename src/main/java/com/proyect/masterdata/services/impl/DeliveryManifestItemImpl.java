@@ -21,6 +21,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
     private final SupplierProductRepository supplierProductRepository;
     private final OrderItemRepository orderItemRepository;
     private final WarehouseStockRepository warehouseStockRepository;
+    private final DeliveryStatusRepository deliveryStatusRepository;
     @Override
     public CompletableFuture<DeliveryManifestItem> save(
             RequestDeliveryManifestItem requestDeliveryManifestItem,
@@ -31,9 +32,11 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             SupplierProduct supplierProduct;
             OrderItem orderItem;
             WarehouseStock warehouseStock;
+            DeliveryStatus deliveryStatus;
             try{
                 supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestDeliveryManifestItem.getSupplierProductId());
                 orderItem = orderItemRepository.findByIdAndStatusTrue(requestDeliveryManifestItem.getOrderItemId());
+                deliveryStatus = deliveryStatusRepository.findByName("PENDIENTE");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -58,6 +61,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .orderItemId(orderItem.getId())
                         .supplierProduct(supplierProduct)
                         .supplierProductId(supplierProduct.getId())
+                        .deliveryStatus(deliveryStatus)
+                        .deliveryStatusId(deliveryStatus.getId())
                         .build());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
