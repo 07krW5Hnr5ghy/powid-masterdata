@@ -30,10 +30,18 @@ public class DeliveryManifestController {
     }
     @GetMapping("/{deliveryManifestId}")
     public ResponseEntity<DeliveryManifestDTO> getManifestById(
-            @RequestParam("id") UUID deliveryManifestId,
+            @PathVariable UUID deliveryManifestId,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
         CompletableFuture<DeliveryManifestDTO> result = iDeliveryManifest.getById(deliveryManifestId,user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @PutMapping("/{deliveryManifestId}")
+    public ResponseEntity<ResponseSuccess> closeManifest(
+            @PathVariable UUID deliveryManifestId,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifest.closeDeliveryManifest(deliveryManifestId,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

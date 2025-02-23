@@ -12,4 +12,5 @@ import java.util.concurrent.CompletableFuture;
 public interface IDeliveryManifest {
     CompletableFuture<ResponseSuccess> save(RequestDeliveryManifest requestDeliveryManifest) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<DeliveryManifestDTO> getById(UUID deliveryManifestId,String user) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> closeDeliveryManifest(UUID deliveryManifestId,String user) throws InternalErrorExceptions,BadRequestExceptions;
 }

@@ -9,6 +9,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IDeliveryManifest;
 import com.proyect.masterdata.services.IDeliveryManifestItem;
 import com.proyect.masterdata.services.IUtil;
@@ -35,6 +36,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
     private final DeliveryManifestItemRepository deliveryManifestItemRepository;
     private final IUtil iUtil;
     private final DeliveryManifestStatusRepository deliveryManifestStatusRepository;
+    private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestDeliveryManifest requestDeliveryManifest) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -77,6 +79,12 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 for(RequestDeliveryManifestItem requestDeliveryManifestItem:requestDeliveryManifest.getRequestDeliveryManifestItems()){
                     iDeliveryManifestItem.save(requestDeliveryManifestItem,deliveryManifest,warehouse,user);
                 }
+                iAudit.save(
+                        "ADD_DELIVERY_MANIFEST",
+                        "GUIA "+
+                                deliveryManifest.getManifestNumber()+
+                                " CREADO.",
+                        deliveryManifest.getManifestNumber().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)
@@ -125,6 +133,49 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .courier(deliveryManifest.getCourier().getName())
                         .deliveryManifestStatus(deliveryManifest.getDeliveryManifestStatus().getName())
                         .deliveryManifestItemDTOS(deliveryManifestItemList)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> closeDeliveryManifest(UUID deliveryManifestId, String username) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            DeliveryManifest deliveryManifest;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                deliveryManifest = deliveryManifestRepository.findById(deliveryManifestId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(deliveryManifest==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryManifest);
+            }
+            try{
+                DeliveryManifestStatus deliveryManifestStatus = deliveryManifestStatusRepository.findByName("CERRADA");
+                deliveryManifest.setDeliveryManifestStatus(deliveryManifestStatus);
+                deliveryManifest.setDeliveryManifestStatusId(deliveryManifest.getDeliveryManifestStatusId());
+                deliveryManifest.setUpdateDate(OffsetDateTime.now());
+                deliveryManifest.setUser(user);
+                deliveryManifest.setUserId(user.getId());
+                deliveryManifestRepository.save(deliveryManifest);
+                iAudit.save(
+                        "DELETE_DELIVERY_MANIFEST",
+                        "GUIA "+
+                                deliveryManifest.getManifestNumber()+
+                                " ELIMINADA.",
+                        deliveryManifest.getManifestNumber().toString(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());

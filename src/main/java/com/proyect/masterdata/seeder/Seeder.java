@@ -340,6 +340,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_CUSTOMER",adminUser.getUsername());
                         iAuditEvent.save("ADD_CUSTOMER_TYPE",adminUser.getUsername());
                         iAuditEvent.save("ADD_DELIVERY_POINT",adminUser.getUsername());
+                        iAuditEvent.save("ADD_DELIVERY_MANIFEST",adminUser.getUsername());
                         iAuditEvent.save("ADD_DELIVERY_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ADD_DELIVERY_MANIFEST_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ADD_DEPARTMENT",adminUser.getUsername());
@@ -420,6 +421,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_COLOR",adminUser.getUsername());
                         iAuditEvent.save("DELETE_COURIER",adminUser.getUsername());
                         iAuditEvent.save("DELETE_CUSTOMER_TYPE",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_DELIVERY_MANIFEST",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DELIVERY_STATUS",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DELIVERY_MANIFEST_STATUS",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DEPARTMENT",adminUser.getUsername());
