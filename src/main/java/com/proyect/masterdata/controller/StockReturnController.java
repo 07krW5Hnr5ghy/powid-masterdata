@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 public class StockReturnController {
     private final IStockReturn iStockReturn;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_RETURN_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestStockReturn requestStockReturn

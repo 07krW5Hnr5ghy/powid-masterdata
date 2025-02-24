@@ -29,7 +29,7 @@ public class OrderStockController {
 
     private final IOrderStock iOrderStock;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:ORDER_STOCK_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("orderId") UUID orderId,

@@ -30,7 +30,7 @@ public class SubscriptionController {
 
     private final ISubscription iSubscription;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SUBSCRIPTION_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

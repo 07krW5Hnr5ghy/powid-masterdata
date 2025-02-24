@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class UserController {
     private IUser iUser;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:USER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestUser requestUser) throws BadRequestExceptions, ExecutionException, InterruptedException {

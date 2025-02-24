@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class PurchaseController {
     private final IPurchase iPurchase;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:PURCHASE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestPurchase requestPurchase,

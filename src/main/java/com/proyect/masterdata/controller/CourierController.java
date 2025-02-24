@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class CourierController {
     private final ICourier iCourier;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COURIER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody()RequestCourier requestCourier,
@@ -38,7 +38,7 @@ public class CourierController {
         CompletableFuture<ResponseSuccess> result = iCourier.save(requestCourier,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @PutMapping(value = "order",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "order",)
     //@PreAuthorize("hasAuthority('ROLE:COURIER') and hasAuthority('ACCESS:COURIER_PUT')")
     public ResponseEntity<ResponseSuccess> updateOrder(
             @RequestParam("orderId") UUID orderId,

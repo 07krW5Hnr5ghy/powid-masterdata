@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class ProductPriceController {
 
     private final IProductPrice iProductPrice;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:PRODUCT_PRICE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("productId") UUID productId,

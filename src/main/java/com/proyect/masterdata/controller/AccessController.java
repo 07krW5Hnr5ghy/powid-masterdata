@@ -28,7 +28,7 @@ public class AccessController {
 
     private final IAccess iAccess;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam(value = "name") String name,
@@ -37,7 +37,7 @@ public class AccessController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam(value = "name") String name,
@@ -88,7 +88,7 @@ public class AccessController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ACCESS_PUT')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam(value = "name") String name,

@@ -41,7 +41,7 @@ public class MercadoPagoController {
 
     private final IMercadoPagoPayment iMercadoPagoPayment;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     public String mercadoPagoTest(){
         MercadoPagoConfig.setAccessToken(mercadoPagoToken);
         MercadoPagoConfig.setLoggingLevel(Level.FINEST);
@@ -81,7 +81,7 @@ public class MercadoPagoController {
         }
     }
 
-    @PostMapping(value = "check-status",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "check-status",)
     public ResponseEntity<ResponseSuccess> checkPaymentStatus(
             @RequestParam(value = "id",required = false) String id,
             @RequestParam(value = "topic",required = false) String topic,

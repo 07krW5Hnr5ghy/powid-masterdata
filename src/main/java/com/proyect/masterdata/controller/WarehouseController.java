@@ -29,7 +29,7 @@ public class WarehouseController {
 
     private final IWarehouse iWarehouse;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestWarehouse requestWarehouse,

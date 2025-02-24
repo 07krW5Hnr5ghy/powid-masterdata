@@ -38,7 +38,7 @@ public class OrderItemController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_POST')")
     public ResponseEntity<ResponseSuccess> addItem(
             @RequestParam("orderId") UUID orderId,
@@ -71,7 +71,7 @@ public class OrderItemController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_ITEM_PUT')")
     public ResponseEntity<ResponseSuccess> updateItem(
             @RequestParam("orderId") UUID orderId,

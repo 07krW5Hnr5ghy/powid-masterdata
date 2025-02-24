@@ -31,7 +31,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class StockTransactionTypeController {
     private final IStockTransactionType iStockTransactionType;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:TRANSACTION_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

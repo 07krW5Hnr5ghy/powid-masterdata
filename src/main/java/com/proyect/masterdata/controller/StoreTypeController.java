@@ -26,7 +26,7 @@ public class StoreTypeController {
 
     private final IStoreType iStoreType;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:STORE_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

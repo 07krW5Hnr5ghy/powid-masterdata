@@ -35,7 +35,7 @@ public class UnitController {
 
     private final IUnit iUnit;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestUnit requestUnit,
@@ -44,7 +44,7 @@ public class UnitController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:UNIT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,

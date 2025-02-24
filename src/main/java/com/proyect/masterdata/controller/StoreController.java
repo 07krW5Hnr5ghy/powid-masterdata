@@ -27,7 +27,7 @@ public class StoreController {
 
     private IStore iStore;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestStoreSave requestClientChannelSave,
@@ -36,7 +36,7 @@ public class StoreController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:STORE_PUT')")
     public ResponseEntity<StoreDTO> update(
             @RequestBody() RequestStore requestClientChannel) throws BadRequestExceptions, ExecutionException, InterruptedException {

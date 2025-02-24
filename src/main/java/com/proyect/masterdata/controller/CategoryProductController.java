@@ -32,7 +32,7 @@ public class CategoryProductController {
 
     private final ICategoryProduct iCategoryProduct;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

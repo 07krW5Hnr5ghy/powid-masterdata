@@ -22,7 +22,7 @@ public class SubscriptionPaymentController {
 
     private final ISubscriptionPayment iSubscriptionPayment;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:BUSINESS') and hasAuthority('ACCESS:SUBSCRIPTION_PAYMENT_POST')")
     public ResponseEntity<String> sendPayment(
             @RequestBody()RequestSubscriptionPayment requestSubscriptionPayment,

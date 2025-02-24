@@ -35,7 +35,7 @@ public class BrandController {
 
     private final IBrand iBrand;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
@@ -44,7 +44,7 @@ public class BrandController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
@@ -87,7 +87,7 @@ public class BrandController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_PUT')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,

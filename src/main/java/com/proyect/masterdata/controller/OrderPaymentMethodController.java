@@ -26,7 +26,7 @@ public class OrderPaymentMethodController {
 
     private final IOrderPaymentMethod iOrderPaymentMethod;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_PAYMENT_METHOD_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
@@ -35,7 +35,7 @@ public class OrderPaymentMethodController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_PAYMENT_METHOD_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
