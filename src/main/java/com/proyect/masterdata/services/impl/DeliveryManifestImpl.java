@@ -75,6 +75,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .userId(user.getId())
                                 .client(user.getClient())
                                 .clientId(user.getClientId())
+                                .warehouse(warehouse)
+                                .warehouseId(warehouse.getId())
                         .build());
                 for(RequestDeliveryManifestItem requestDeliveryManifestItem:requestDeliveryManifest.getRequestDeliveryManifestItems()){
                     iDeliveryManifestItem.save(requestDeliveryManifestItem,deliveryManifest,warehouse,user);

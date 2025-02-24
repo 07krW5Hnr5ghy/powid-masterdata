@@ -308,4 +308,6 @@ public class Constants {
     public static final String ErrorDeliveryManifestExist = "Guia ya esta registrada";
     public static final String ErrorDeliveryManifestStatus = "Estado de guia no esta registrado";
     public static final String ErrorDeliveryManifestStatusExists = "Estado de guia ya esta registrado";
+    public static final String ErrorDeliveryManifestItem = "Item de guia no esta registrado";
+    public static final String ErrorDeliveryManifestItemExists = "Item de guia ya esta registrado";
 }

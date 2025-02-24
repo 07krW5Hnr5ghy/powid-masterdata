@@ -47,6 +47,9 @@ public class DeliveryManifest {
     @Column(name = "delivery_manifest_status_id")
     private UUID deliveryManifestStatusId;
 
+    @Column(name = "warehouse_id")
+    private UUID warehouseId;
+
     @ManyToOne()
     @JoinColumn(name = "courier_id",columnDefinition = "courierId",insertable = false,updatable = false)
     private Courier courier;
@@ -62,4 +65,8 @@ public class DeliveryManifest {
     @ManyToOne()
     @JoinColumn(name="delivery_manifest_status_id",columnDefinition = "deliveryManifestStatusId",insertable = false,updatable = false)
     private DeliveryManifestStatus deliveryManifestStatus;
+
+    @ManyToOne()
+    @JoinColumn(name="warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)
+    private Warehouse warehouse;
 }
