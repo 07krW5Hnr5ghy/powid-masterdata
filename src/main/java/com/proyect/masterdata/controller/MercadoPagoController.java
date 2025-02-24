@@ -81,7 +81,7 @@ public class MercadoPagoController {
         }
     }
 
-    @PostMapping(value = "check-status",)
+    @PostMapping(value = "check-status")
     public ResponseEntity<ResponseSuccess> checkPaymentStatus(
             @RequestParam(value = "id",required = false) String id,
             @RequestParam(value = "topic",required = false) String topic,

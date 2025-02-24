@@ -38,7 +38,7 @@ public class CourierController {
         CompletableFuture<ResponseSuccess> result = iCourier.save(requestCourier,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @PutMapping(value = "order",)
+    @PutMapping(value = "order")
     //@PreAuthorize("hasAuthority('ROLE:COURIER') and hasAuthority('ACCESS:COURIER_PUT')")
     public ResponseEntity<ResponseSuccess> updateOrder(
             @RequestParam("orderId") UUID orderId,
