@@ -44,7 +44,7 @@ public class OrderPaymentStateController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PutMapping()
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser

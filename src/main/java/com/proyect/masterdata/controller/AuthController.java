@@ -30,14 +30,14 @@ public class AuthController {
 
     private final IAuthentication iAuthentication;
 
-    @PostMapping(value = "register", )
+    @PostMapping(value = "register")
     public ResponseEntity<ResponseSuccess> register(
             @RequestBody() RequestOnboarding requestOnboarding) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iAuthentication.registerNewClient(requestOnboarding);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping(value = "login", )
+    @PostMapping(value = "login" )
     public ResponseEntity<LoginDTO> login(
             @RequestBody() RequestLogin requestLogin) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<LoginDTO> result = iAuthentication.loginUser(requestLogin.getUsername(), requestLogin.getPassword());
