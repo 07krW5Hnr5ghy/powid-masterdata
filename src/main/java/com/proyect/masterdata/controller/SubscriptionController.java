@@ -50,7 +50,7 @@ public class SubscriptionController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @PostMapping("activate")
+    @PutMapping("activate")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
