@@ -135,6 +135,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .courier(deliveryManifest.getCourier().getName())
                         .deliveryManifestStatus(deliveryManifest.getDeliveryManifestStatus().getName())
                         .deliveryManifestItemDTOS(deliveryManifestItemList)
+                        .warehouse(deliveryManifest.getWarehouse().getName())
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
