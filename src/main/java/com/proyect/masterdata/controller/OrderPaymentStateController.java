@@ -26,7 +26,7 @@ public class OrderPaymentStateController {
 
     private final IOrderPaymentState iOrderPaymentState;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ORDER_PAYMENT_STATE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

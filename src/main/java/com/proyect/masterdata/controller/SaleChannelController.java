@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class SaleChannelController {
     private final ISaleChannel iSaleChannel;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SALE_CHANNEL_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

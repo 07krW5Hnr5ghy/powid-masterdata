@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class OrderReturnController {
     private final IOrderReturn iOrderReturn;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("orderId") UUID orderId,
             @RequestBody() List<RequestOrderReturnItem> requestOrderReturnItemList,

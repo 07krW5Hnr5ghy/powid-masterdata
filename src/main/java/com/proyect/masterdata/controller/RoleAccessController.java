@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class RoleAccessController {
     private final IRoleAccess iRoleAccess;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_ACCESS_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("roleName") String roleName,
@@ -58,7 +58,7 @@ public class RoleAccessController {
         CompletableFuture<Page<RoleAccessDTO>> result = iRoleAccess.listFalse(roleName,accessName,sort,sortColumn,pageNumber,pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_ACCESS_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("roleName") String roleName,
@@ -68,7 +68,7 @@ public class RoleAccessController {
         CompletableFuture<ResponseDelete> result = iRoleAccess.delete(roleName,accessName,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:ROLE_ACCESS_PUT')")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("roleName") String roleName,

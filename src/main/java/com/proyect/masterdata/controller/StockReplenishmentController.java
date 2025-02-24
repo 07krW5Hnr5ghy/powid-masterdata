@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class StockReplenishmentController {
     private final IStockReplenishment iStockReplenishment;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:STOCK_REPLENISHMENT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("orderId") UUID orderId,

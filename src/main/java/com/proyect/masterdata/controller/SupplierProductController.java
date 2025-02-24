@@ -37,7 +37,7 @@ public class SupplierProductController {
 
     private final ISupplierProduct iSupplierProduct;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:SUPPLIER_PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestSupplierProduct requestSupplierProduct,

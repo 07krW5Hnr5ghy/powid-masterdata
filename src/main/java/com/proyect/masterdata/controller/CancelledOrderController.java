@@ -28,7 +28,7 @@ public class CancelledOrderController {
 
     private final ICancelledOrder iCancelledOrder;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLES:CUSTOMER_SERVICE') and hasAuthority('ACCESS:CANCELLED_ORDER_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestCancelledOrder requestCancelledOrder,

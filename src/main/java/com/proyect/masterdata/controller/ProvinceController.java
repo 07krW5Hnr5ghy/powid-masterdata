@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 public class ProvinceController {
     private IProvince iProvince;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:PROVINCE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

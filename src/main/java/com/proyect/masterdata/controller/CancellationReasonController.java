@@ -27,7 +27,7 @@ public class CancellationReasonController {
 
     private final ICancellationReason iCancellationReason;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CANCELLATION_REASON_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

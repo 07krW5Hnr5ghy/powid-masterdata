@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class ColorController {
     private final IColor iColor;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class DeliveryManifestStatusController {
     private final IDeliveryManifestStatus iDeliveryManifestStatus;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

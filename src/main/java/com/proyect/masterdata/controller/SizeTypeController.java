@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 public class SizeTypeController {
     private final ISizeType iSizeType;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:SIZE_TYPE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,

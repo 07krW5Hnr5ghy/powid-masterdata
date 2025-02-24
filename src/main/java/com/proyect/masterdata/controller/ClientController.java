@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class ClientController {
     private IClient iClient;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestClientSave requestClientSave) throws BadRequestExceptions, ExecutionException, InterruptedException {
@@ -36,7 +36,7 @@ public class ClientController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_PUT')")
     public ResponseEntity<ClientDTO> update(
             @RequestBody() RequestClient requestClient,
@@ -45,7 +45,7 @@ public class ClientController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CLIENT_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("ruc") String ruc,

@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 public class ModuleController {
     private IModule iModule;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODULE_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
@@ -35,7 +35,7 @@ public class ModuleController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     public ResponseEntity<ModuleDTO> update(
             @RequestBody() RequestModule requestModule,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {

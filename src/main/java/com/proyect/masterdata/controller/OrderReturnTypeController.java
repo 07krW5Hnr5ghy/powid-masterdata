@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class OrderReturnTypeController {
     private final IOrderReturnType iOrderReturnType;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     public ResponseEntity<ResponseSuccess> save (
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser

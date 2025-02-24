@@ -37,7 +37,7 @@ public class ModelController {
 
     private final IModel iModel;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:MODEL_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody() RequestModel requestModel
