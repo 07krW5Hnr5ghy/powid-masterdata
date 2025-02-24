@@ -6,17 +6,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CourierDTO {
-    private String name;
-    private String phone;
-    private String address;
-    private String plate;
+public class DeliveryManifestDTO {
+    private UUID id;
+    private Long manifestNumber;
+    private List<DeliveryManifestItemDTO> deliveryManifestItemDTOS;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
+    private String courier;
+    private String deliveryManifestStatus;
+    private String warehouse;
 }

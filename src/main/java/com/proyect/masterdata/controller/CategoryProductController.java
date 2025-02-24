@@ -36,10 +36,10 @@ public class CategoryProductController {
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_PRODUCT_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
-            @RequestParam("description") String description,
+            @RequestParam("sku") String sku,
             @RequestParam("sizeType") String sizeType,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iCategoryProduct.saveAsync(name, description,sizeType, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iCategoryProduct.saveAsync(name, sku,sizeType, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

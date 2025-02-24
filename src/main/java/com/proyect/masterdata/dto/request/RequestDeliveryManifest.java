@@ -5,13 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestCourier {
+public class RequestDeliveryManifest {
     private String courier;
-    private String phone;
-    private String address;
-    private String plate;
+    private String username;
+    private String warehouse;
+    private List<RequestDeliveryManifestItem> requestDeliveryManifestItems;
 }

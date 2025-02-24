@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface IColor {
-        CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+        CompletableFuture<ResponseSuccess> save(String name,String sku, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<List<ColorDTO>> listColor() throws BadRequestExceptions;

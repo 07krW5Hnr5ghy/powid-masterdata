@@ -6,17 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CourierDTO {
+public class DeliveryManifestStatusDTO {
     private String name;
-    private String phone;
-    private String address;
-    private String plate;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
 }

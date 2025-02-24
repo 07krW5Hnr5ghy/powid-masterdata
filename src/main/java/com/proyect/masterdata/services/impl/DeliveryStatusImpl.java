@@ -1,19 +1,18 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Color;
-import com.proyect.masterdata.domain.PurchasePaymentType;
+import com.proyect.masterdata.domain.DeliveryStatus;
 import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.dto.PurchasePaymentTypeDTO;
+import com.proyect.masterdata.dto.DeliveryStatusDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.PurchasePaymentTypeRepository;
+import com.proyect.masterdata.repository.DeliveryStatusRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAudit;
-import com.proyect.masterdata.services.IPurchasePaymentType;
+import com.proyect.masterdata.services.IDeliveryStatus;
 import com.proyect.masterdata.utils.Constants;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -23,20 +22,20 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Log4j2
-public class PurchasePaymentTypeImpl implements IPurchasePaymentType {
-    private final PurchasePaymentTypeRepository purchasePaymentTypeRepository;
+public class DeliveryStatusImpl implements IDeliveryStatus {
     private final UserRepository userRepository;
+    private final DeliveryStatusRepository deliveryStatusRepository;
     private final IAudit iAudit;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
-            PurchasePaymentType purchasePaymentType;
             User user;
+            DeliveryStatus deliveryStatus;
             try{
-                purchasePaymentType = purchasePaymentTypeRepository.findByName(name);
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                deliveryStatus = deliveryStatusRepository.findByName(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -44,24 +43,17 @@ public class PurchasePaymentTypeImpl implements IPurchasePaymentType {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
-            if(purchasePaymentType!=null){
-                throw new BadRequestExceptions(Constants.ErrorPurchasePaymentTypeExists);
+            if(deliveryStatus==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryStatusExists);
             }
             try{
-                PurchasePaymentType newPurchasePaymentType = purchasePaymentTypeRepository.save(PurchasePaymentType.builder()
-                                .name(name.toUpperCase())
-                                .registrationDate(OffsetDateTime.now())
-                                .updateDate(OffsetDateTime.now())
-                                .status(true)
-                                .user(user)
-                                .userId(user.getId())
+                DeliveryStatus newDeliveryStatus = deliveryStatusRepository.save(DeliveryStatus.builder()
+                        .name(name.toUpperCase())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .status(true)
                         .build());
-                iAudit.save(
-                        "ADD_PURCHASE_PAYMENT_TYPE",
-                        "TIPO DE PAGO PARA COMPRA "+
-                                newPurchasePaymentType.getName()+" CREADO.",
-                        newPurchasePaymentType.getName(),
-                        user.getUsername());
+                iAudit.save("ADD_DELIVERY_STATUS","ESTADO DE ENTREGA "+newDeliveryStatus.getName()+" CREADO.",newDeliveryStatus.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -77,10 +69,10 @@ public class PurchasePaymentTypeImpl implements IPurchasePaymentType {
     public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            PurchasePaymentType purchasePaymentType;
+            DeliveryStatus deliveryStatus;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                purchasePaymentType = purchasePaymentTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+                deliveryStatus = deliveryStatusRepository.findByName(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -88,21 +80,16 @@ public class PurchasePaymentTypeImpl implements IPurchasePaymentType {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
-            if(purchasePaymentType==null){
-                throw new BadRequestExceptions(Constants.ErrorPurchasePaymentType);
+            if(deliveryStatus==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryStatus);
             }
             try{
-                purchasePaymentType.setStatus(false);
-                purchasePaymentType.setUser(user);
-                purchasePaymentType.setUserId(user.getId());
-                purchasePaymentType.setUpdateDate(OffsetDateTime.now());
-                purchasePaymentTypeRepository.save(purchasePaymentType);
-                iAudit.save(
-                        "DELETE_PURCHASE_PAYMENT_TYPE",
-                        "TIPO DE PAGO PARA COMPRA "+
-                                purchasePaymentType.getName()+" ELIMINADO.",
-                        purchasePaymentType.getName(),
-                        user.getUsername());
+                deliveryStatus.setStatus(false);
+                deliveryStatus.setUpdateDate(OffsetDateTime.now());
+                deliveryStatus.setUser(user);
+                deliveryStatus.setUserId(user.getId());
+                deliveryStatusRepository.save(deliveryStatus);
+                iAudit.save("DELETE_DELIVERY_STATUS","ESTADO DE ENTREGA "+deliveryStatus.getName()+" ELIMINADO.",deliveryStatus.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -118,10 +105,10 @@ public class PurchasePaymentTypeImpl implements IPurchasePaymentType {
     public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            PurchasePaymentType purchasePaymentType;
+            DeliveryStatus deliveryStatus;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                purchasePaymentType = purchasePaymentTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+                deliveryStatus = deliveryStatusRepository.findByName(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -129,21 +116,16 @@ public class PurchasePaymentTypeImpl implements IPurchasePaymentType {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
-            if(purchasePaymentType==null){
-                throw new BadRequestExceptions(Constants.ErrorPurchasePaymentType);
+            if(deliveryStatus==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryStatus);
             }
             try{
-                purchasePaymentType.setStatus(true);
-                purchasePaymentType.setUser(user);
-                purchasePaymentType.setUserId(user.getId());
-                purchasePaymentType.setUpdateDate(OffsetDateTime.now());
-                purchasePaymentTypeRepository.save(purchasePaymentType);
-                iAudit.save(
-                        "ACTIVATE_PURCHASE_PAYMENT_TYPE",
-                        "TIPO DE PAGO PARA COMPRA "+
-                                purchasePaymentType.getName()+" ACTIVADO.",
-                        purchasePaymentType.getName(),
-                        user.getUsername());
+                deliveryStatus.setStatus(true);
+                deliveryStatus.setUpdateDate(OffsetDateTime.now());
+                deliveryStatus.setUser(user);
+                deliveryStatus.setUserId(user.getId());
+                deliveryStatusRepository.save(deliveryStatus);
+                iAudit.save("ACTIVATE_DELIVERY_STATUS","ESTADO DE ENTREGA "+deliveryStatus.getName()+" ACTIVADO.",deliveryStatus.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -156,23 +138,22 @@ public class PurchasePaymentTypeImpl implements IPurchasePaymentType {
     }
 
     @Override
-    public CompletableFuture<List<PurchasePaymentTypeDTO>> listPurchasePaymentType() throws BadRequestExceptions {
+    public CompletableFuture<List<DeliveryStatusDTO>> listDeliveryStatus() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<PurchasePaymentType> purchasePaymentTypes;
+            List<DeliveryStatus> deliveryStatuses;
             try {
-                purchasePaymentTypes = purchasePaymentTypeRepository.findAllByStatusTrue();
+                deliveryStatuses = deliveryStatusRepository.findAllByStatusTrue();
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
-            if (purchasePaymentTypes.isEmpty()) {
+            if (deliveryStatuses.isEmpty()) {
                 return Collections.emptyList();
             }
-            return purchasePaymentTypes.stream().map(purchasePaymentType -> PurchasePaymentTypeDTO.builder()
-                    .name(purchasePaymentType.getName())
-                    .registrationDate(purchasePaymentType.getRegistrationDate())
-                    .updateDate(purchasePaymentType.getUpdateDate())
-                    .status(purchasePaymentType.getStatus())
+            return deliveryStatuses.stream().map(deliveryStatus -> DeliveryStatusDTO.builder()
+                    .name(deliveryStatus.getName())
+                    .registrationDate(deliveryStatus.getRegistrationDate())
+                    .updateDate(deliveryStatus.getUpdateDate())
                     .build()).toList();
         });
     }

@@ -14,5 +14,6 @@ public interface ColorRepository extends JpaRepository<Color, UUID> {
     Color findByIdAndStatusTrue(UUID id);
     Color findByNameAndStatusTrue(String name);
     Color findByNameAndStatusFalse(String name);
+    Color findByNameOrSku(String name,String sku);
     List<Color> findByNameIn(List<String> names);
 }

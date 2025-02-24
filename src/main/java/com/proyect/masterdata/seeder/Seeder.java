@@ -97,12 +97,13 @@ public class Seeder implements CommandLineRunner {
         private final IDeliveryPoint iDeliveryPoint;
         private final ISubCategoryProduct iSubCategoryProduct;
         private final IPurchasePaymentType iPurchasePaymentType;
+        private final IDeliveryStatus iDeliveryStatus;
+        private final IDeliveryManifestStatus iDeliveryManifestStatus;
         @Override
         public void run(String... args) throws Exception {
 
                 try{
                         // department, province and district to create system user
-
                         Department department = departmentRepository.save(Department.builder()
                                         .name("SISTEMA")
                                         .status(true)
@@ -283,6 +284,8 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_COLOR",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_COURIER",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_CUSTOMER_TYPE",adminUser.getUsername());
+                        iAuditEvent.save("ACTIVATE_DELIVERY_STATUS",adminUser.getUsername());
+                        iAuditEvent.save("ACTIVATE_DELIVERY_MANIFEST_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DEPARTMENT",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DISTRICT",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DEMO_ACCOUNT",adminUser.getUsername());
@@ -337,6 +340,10 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_CUSTOMER",adminUser.getUsername());
                         iAuditEvent.save("ADD_CUSTOMER_TYPE",adminUser.getUsername());
                         iAuditEvent.save("ADD_DELIVERY_POINT",adminUser.getUsername());
+                        iAuditEvent.save("ADD_DELIVERY_MANIFEST",adminUser.getUsername());
+                        iAuditEvent.save("ADD_DELIVERY_MANIFEST_ITEM",adminUser.getUsername());
+                        iAuditEvent.save("ADD_DELIVERY_STATUS",adminUser.getUsername());
+                        iAuditEvent.save("ADD_DELIVERY_MANIFEST_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ADD_DEPARTMENT",adminUser.getUsername());
                         iAuditEvent.save("ADD_DISCOUNT",adminUser.getUsername());
                         iAuditEvent.save("ADD_DISTRICT",adminUser.getUsername());
@@ -415,6 +422,9 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_COLOR",adminUser.getUsername());
                         iAuditEvent.save("DELETE_COURIER",adminUser.getUsername());
                         iAuditEvent.save("DELETE_CUSTOMER_TYPE",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_DELIVERY_MANIFEST",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_DELIVERY_STATUS",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_DELIVERY_MANIFEST_STATUS",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DEPARTMENT",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DISTRICT",adminUser.getUsername());
                         iAuditEvent.save("DELETE_ENTRY_CHANNEL",adminUser.getUsername());
@@ -468,6 +478,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("UPDATE_CATEGORY_PRODUCT",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_CLIENT",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_COURIER_ORDER",adminUser.getUsername());
+                        iAuditEvent.save("UPDATE_DELIVERY_MANIFEST_ITEM",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_MODULE",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_ORDER",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_ORDER_ITEM",adminUser.getUsername());
@@ -512,6 +523,16 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("COURIER_POST",adminUser.getUsername());
                         iAccess.save("COURIER_PUT",adminUser.getUsername());
                         iAccess.save("COURIER_GET",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_GET",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_POST",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_DELETE",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_PUT",adminUser.getUsername());
+                        iAccess.save("DELIVERY_MANIFEST_STATUS_GET",adminUser.getUsername());
+                        iAccess.save("DELIVERY_MANIFEST_STATUS_POST",adminUser.getUsername());
+                        iAccess.save("DELIVERY_MANIFEST_STATUS_DELETE",adminUser.getUsername());
+                        iAccess.save("DELIVERY_MANIFEST_STATUS_PUT",adminUser.getUsername());
+                        iAccess.save("DELIVERY_MANIFEST_ITEM_GET",adminUser.getUsername());
+                        iAccess.save("DELIVERY_MANIFEST_ITEM_PUT",adminUser.getUsername());
                         iAccess.save("DEPARTMENT_GET",adminUser.getUsername());
                         iAccess.save("DEPARTMENT_POST",adminUser.getUsername());
                         iAccess.save("DEPARTMENT_DELETE",adminUser.getUsername());
@@ -787,6 +808,16 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("ADMINISTRACION","COLOR_DELETE",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","COURIER_GET",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","COURIER_POST",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_STATUS_GET",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_STATUS_DELETE",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_STATUS_POST",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_STATUS_PUT",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_MANIFEST_STATUS_GET",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_MANIFEST_STATUS_DELETE",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_MANIFEST_STATUS_POST",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_MANIFEST_STATUS_PUT",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_MANIFEST_ITEM_GET",adminUser.getUsername());
+                        iRoleAccess.save("ADMINISTRACION","DELIVERY_MANIFEST_ITEM_PUT",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","DEPARTMENT_GET",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","DEPARTMENT_POST",adminUser.getUsername());
                         iRoleAccess.save("ADMINISTRACION","DEPARTMENT_DELETE",adminUser.getUsername());
@@ -929,24 +960,24 @@ public class Seeder implements CommandLineRunner {
                         iStoreType.save("prestashop", adminUser.getUsername());
 
                         // mock color
-                        iColor.save("BLANCO", adminUser.getUsername());
-                        iColor.save("NEGRO", adminUser.getUsername());
-                        iColor.save("HUESO", adminUser.getUsername());
-                        iColor.save("PERLA", adminUser.getUsername());
-                        iColor.save("BEIGE", adminUser.getUsername());
-                        iColor.save("CAMEL", adminUser.getUsername());
-                        iColor.save("VERDE", adminUser.getUsername());
-                        iColor.save("VINO", adminUser.getUsername());
-                        iColor.save("ROJO", adminUser.getUsername());
-                        iColor.save("NUDE", adminUser.getUsername());
-                        iColor.save("GRIS", adminUser.getUsername());
-                        iColor.save("MORADO", adminUser.getUsername());
-                        iColor.save("AZUL", adminUser.getUsername());
-                        iColor.save("AMARILLO", adminUser.getUsername());
-                        iColor.save("NARANJA", adminUser.getUsername());
-                        iColor.save("ACERO", adminUser.getUsername());
-                        iColor.save("JADE", adminUser.getUsername());
-                        iColor.save("COMBINADO", adminUser.getUsername());
+                        iColor.save("BLANCO","BLA", adminUser.getUsername());
+                        iColor.save("NEGRO","NEG", adminUser.getUsername());
+                        iColor.save("HUESO","HUE", adminUser.getUsername());
+                        iColor.save("PERLA","PER", adminUser.getUsername());
+                        iColor.save("BEIGE","BEI", adminUser.getUsername());
+                        iColor.save("CAMEL","CAM", adminUser.getUsername());
+                        iColor.save("VERDE","VER", adminUser.getUsername());
+                        iColor.save("VINO","VIN", adminUser.getUsername());
+                        iColor.save("ROJO","ROJ", adminUser.getUsername());
+                        iColor.save("NUDE", "NUD",adminUser.getUsername());
+                        iColor.save("GRIS","GRI", adminUser.getUsername());
+                        iColor.save("MORADO","MOR", adminUser.getUsername());
+                        iColor.save("AZUL", "AZU",adminUser.getUsername());
+                        iColor.save("AMARILLO","AMA", adminUser.getUsername());
+                        iColor.save("NARANJA","NAR", adminUser.getUsername());
+                        iColor.save("ACERO", "ACE",adminUser.getUsername());
+                        iColor.save("JADE", "JAD",adminUser.getUsername());
+                        iColor.save("COMBINADO", "COM",adminUser.getUsername());
 
                         // mock size type
                         iSizeType.save("ROPA", adminUser.getUsername());
@@ -1379,6 +1410,12 @@ public class Seeder implements CommandLineRunner {
                         iPurchasePaymentType.save("efectivo",adminUser.getUsername());
                         iPurchasePaymentType.save("transferencia",adminUser.getUsername());
 
+                        iDeliveryStatus.save("PENDIENTE",adminUser.getUsername());
+                        iDeliveryStatus.save("COMPLETO",adminUser.getUsername());
+
+                        iDeliveryManifestStatus.save("ABIERTA",adminUser.getUsername());
+                        iDeliveryManifestStatus.save("CERRADA",adminUser.getUsername());
+
                         User business1 = userRepository.save(User.builder()
                                 .username("JCOILA")
                                 .name("JUAN")
@@ -1411,6 +1448,8 @@ public class Seeder implements CommandLineRunner {
 
                         RequestCourier requestCourier = RequestCourier.builder()
                                 .courier("SIN COURIER")
+                                .address("calle 0")
+                                .plate("000-000")
                                 .phone("000000000")
                                 .build();
 
@@ -1442,24 +1481,24 @@ public class Seeder implements CommandLineRunner {
                         iDistrict.save("SAN LUIS","JROMERO","LIMA");
                         iDistrict.save("SAN MIGUEL","JROMERO","LIMA");
                         iDistrict.save("SANTA ROSA","JROMERO","LIMA");
-                        iColor.save("FUCSIA","JROMERO");
-                        iColor.save("MARRON","JROMERO");
-                        iColor.save("DORADO","JROMERO");
-                        iColor.save("ROSADO","JROMERO");
-                        iColor.save("PLATA QUEMADA","JROMERO");
-                        iColor.save("LACRE","JROMERO");
+                        iColor.save("FUCSIA","FUC","JROMERO");
+                        iColor.save("MARRON","MAR","JROMERO");
+                        iColor.save("DORADO","DOR","JROMERO");
+                        iColor.save("ROSADO","ROS","JROMERO");
+                        iColor.save("PLATA QUEMADA","PLAQ","JROMERO");
+                        iColor.save("LACRE","LAC","JROMERO");
                         iAuditEvent.save("ACTIVATE_ORDER_ITEM","JROMERO");
-                        iColor.save("CELESTE","JROMERO");
-                        iColor.save("LILA","JROMERO");
-                        iColor.save("PLATA","JROMERO");
-                        iColor.save("PRINT","JROMERO");
-                        iColor.save("MELON","JROMERO");
-                        iColor.save("CHOCOLATE","JROMERO");
-                        iColor.save("MOSTAZA","JROMERO");
+                        iColor.save("CELESTE","CEL","JROMERO");
+                        iColor.save("LILA","LIL","JROMERO");
+                        iColor.save("PLATA","PLA","JROMERO");
+                        iColor.save("PRINT","PRI","JROMERO");
+                        iColor.save("MELON","MEL","JROMERO");
+                        iColor.save("CHOCOLATE","CHO","JROMERO");
+                        iColor.save("MOSTAZA","MOS","JROMERO");
                         iDistrict.save("SALAMANCA","JROMERO","LIMA");
-                        iColor.save("VERDE LORO","JROMERO");
-                        iColor.save("VERDE PERA","JROMERO");
-                        iColor.save("AZUL ELECTRICO","JROMERO");
+                        iColor.save("VERDE LORO","VERL","JROMERO");
+                        iColor.save("VERDE PERA","VERP","JROMERO");
+                        iColor.save("AZUL ELECTRICO","AZUE","JROMERO");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());
