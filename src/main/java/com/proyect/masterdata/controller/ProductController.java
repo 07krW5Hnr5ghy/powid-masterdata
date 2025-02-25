@@ -38,6 +38,8 @@ public class ProductController {
             @RequestPart("requestProduct") RequestProductSave product,
             @RequestPart("productPictures") MultipartFile[] productPictures,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        System.out.println(product);
+        System.out.println(productPictures);
         CompletableFuture<ResponseSuccess> result = iProduct.saveAsync(product,productPictures, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
