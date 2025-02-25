@@ -37,8 +37,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize,
-            Boolean status) {
+            Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DeliveryManifest> criteriaQuery = criteriaBuilder.createQuery(DeliveryManifest.class);
         Root<DeliveryManifest> itemRoot = criteriaQuery.from(DeliveryManifest.class);
@@ -165,57 +164,57 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
 
     private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<DeliveryManifest> itemRoot) {
 
-        List<Order> generalStockList = new ArrayList<>();
+        List<Order> deliveryManifestList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            generalStockList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
+            deliveryManifestList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
-            generalStockList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+            deliveryManifestList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
-            generalStockList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+            deliveryManifestList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateStartDate")) {
-            generalStockList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+            deliveryManifestList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateEndDate")) {
-            generalStockList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+            deliveryManifestList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
         }
 
-        return generalStockList;
+        return deliveryManifestList;
 
     }
 
     private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<DeliveryManifest> itemRoot) {
 
-        List<Order> generalStockList = new ArrayList<>();
+        List<Order> deliveryManifestList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            generalStockList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
+            deliveryManifestList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
-            generalStockList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+            deliveryManifestList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
-            generalStockList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+            deliveryManifestList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateStartDate")) {
-            generalStockList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+            deliveryManifestList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateEndDate")) {
-            generalStockList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+            deliveryManifestList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
 
-        return generalStockList;
+        return deliveryManifestList;
 
     }
 
