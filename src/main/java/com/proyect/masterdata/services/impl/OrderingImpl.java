@@ -873,23 +873,7 @@ public class OrderingImpl implements IOrdering {
             {
                 ordering.setObservations(requestOrderUpdate.getObservations().toUpperCase());
             }
-            if(Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")){
-                List<OrderItem> orderOrderItems = orderItemRepository.findAllByOrderId(ordering.getId());
-                List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
-                for(OrderItem orderItem : orderOrderItems){
-                    List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndOrderItemId(orderStock.getId(), orderItem.getId());
-                    for(OrderStockItem orderStockItem : orderStockItemList){
-                        stockTransactionList.add(RequestStockTransactionItem.builder()
-                                        .supplierProductId(orderStockItem.getSupplierProduct().getId())
-                                .quantity(orderStockItem.getQuantity())
-                                .build());
-                        iWarehouseStock.out(orderStockItem.getOrderStock().getWarehouse(), orderStockItem.getSupplierProduct(), orderStockItem.getQuantity(),user);
-                        iGeneralStock.out(orderStockItem.getSupplierProduct(), orderStockItem.getQuantity(),user.getUsername());
-                    }
-                }
-                iStockTransaction.save("O"+ordering.getId(),orderStock.getWarehouse(),stockTransactionList,"PEDIDO",user);
-            }
-
+            
             if(!Objects.equals(orderPaymentMethod.getId(), ordering.getOrderPaymentMethod().getId())){
                 ordering.setOrderPaymentMethod(orderPaymentMethod);
                 ordering.setPaymentMethodId(orderPaymentMethod.getId());
