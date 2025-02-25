@@ -94,7 +94,7 @@ public class SubCategoryProductController {
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<List<SubCategoryProductDTO>> listModelsBrand(
             @RequestParam("user") String user,
-            @RequestParam("brand") String categoryProduct
+            @RequestParam("categoryProduct") String categoryProduct
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<SubCategoryProductDTO>> result = iSubCategoryProduct.listByCategoryProduct(user,categoryProduct);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);

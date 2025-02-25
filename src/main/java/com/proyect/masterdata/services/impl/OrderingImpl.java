@@ -873,7 +873,7 @@ public class OrderingImpl implements IOrdering {
             {
                 ordering.setObservations(requestOrderUpdate.getObservations().toUpperCase());
             }
-            
+
             if(!Objects.equals(orderPaymentMethod.getId(), ordering.getOrderPaymentMethod().getId())){
                 ordering.setOrderPaymentMethod(orderPaymentMethod);
                 ordering.setPaymentMethodId(orderPaymentMethod.getId());
