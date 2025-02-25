@@ -16,10 +16,13 @@ import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -37,6 +40,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
     private final IUtil iUtil;
     private final DeliveryManifestStatusRepository deliveryManifestStatusRepository;
     private final IAudit iAudit;
+    private final DeliveryManifestRepositoryCustom deliveryManifestRepositoryCustom;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestDeliveryManifest requestDeliveryManifest) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -184,6 +188,76 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<DeliveryManifestDTO>> list(
+            String user,
+            Long manifestNumber,
+            String warehouse,
+            String courier,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<DeliveryManifest> deliveryManifestPage;
+            UUID clientId;
+            try{
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                deliveryManifestPage = deliveryManifestRepositoryCustom.searchForDeliveryManifest(
+                        clientId,
+                        manifestNumber,
+                        warehouse,
+                        courier,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize
+                );
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(deliveryManifestPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<DeliveryManifestDTO> deliveryManifestDTOS = deliveryManifestPage.getContent().stream().map(deliveryManifest -> {
+                List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllById(deliveryManifest.getId())
+                        .stream().map(deliveryManifestItem -> DeliveryManifestItemDTO.builder()
+                                .id(deliveryManifestItem.getId())
+                                .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
+                                .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
+                                .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
+                                .district(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDistrict().getName())
+                                .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
+                                .quantity(deliveryManifestItem.getQuantity())
+                                .skuInventory(iUtil.buildInventorySku(deliveryManifestItem.getSupplierProduct()))
+                                .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getSupplierProduct().getProduct()))
+                                .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
+                                .build()).toList();
+                return DeliveryManifestDTO.builder()
+                        .manifestNumber(deliveryManifest.getManifestNumber())
+                        .id(deliveryManifest.getId())
+                        .deliveryManifestStatus(deliveryManifest.getDeliveryManifestStatus().getName())
+                        .courier(deliveryManifest.getCourier().getName())
+                        .warehouse(deliveryManifest.getWarehouse().getName())
+                        .registrationDate(deliveryManifest.getRegistrationDate())
+                        .updateDate(deliveryManifest.getUpdateDate())
+                        .deliveryManifestItemDTOS(deliveryManifestItemDTOS)
+                        .build();
+            }).toList();
+            return new PageImpl<>(deliveryManifestDTOS,deliveryManifestPage.getPageable(),deliveryManifestPage.getTotalElements());
         });
     }
 }
