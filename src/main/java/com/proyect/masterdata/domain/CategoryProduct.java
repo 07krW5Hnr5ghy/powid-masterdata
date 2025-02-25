@@ -49,6 +49,13 @@ public class CategoryProduct {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "unit_type_id")
+    private UUID unitTypeId;
+
+    @ManyToOne
+    @JoinColumn(name = "unit_type_id", columnDefinition = "unitTypeId", insertable = false, updatable = false)
+    private UnitType unitType;
+
     @ManyToOne
     @JoinColumn(name = "size_type_id", columnDefinition = "sizeTypeId", insertable = false, updatable = false)
     private SizeType sizeType;

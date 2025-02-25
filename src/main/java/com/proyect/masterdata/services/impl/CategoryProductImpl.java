@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.SizeType;
+import com.proyect.masterdata.domain.UnitType;
 import com.proyect.masterdata.dto.response.ResponseDelete;
-import com.proyect.masterdata.repository.SizeTypeRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,9 +22,6 @@ import com.proyect.masterdata.dto.request.RequestCategoryProduct;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.CategoryProductRepository;
-import com.proyect.masterdata.repository.CategoryProductRepositoryCustom;
-import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.ICategoryProduct;
 import com.proyect.masterdata.utils.Constants;
 
@@ -39,19 +37,22 @@ public class CategoryProductImpl implements ICategoryProduct {
     private final CategoryProductRepository categoryProductRepository;
     private final CategoryProductRepositoryCustom categoryProductRepositoryCustom;
     private final SizeTypeRepository sizeTypeRepository;
+    private final UnitTypeRepository unitTypeRepository;
     private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(String name,String sku,String sizeTypeName, String tokenUser)
+    public ResponseSuccess save(String name,String sku,String sizeTypeName, String unitTypeName , String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
         CategoryProduct categoryProduct;
         SizeType sizeType;
+        UnitType unitType;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             categoryProduct = categoryProductRepository.findByName(name.toUpperCase());
             sizeType = sizeTypeRepository.findByNameAndStatusTrue(sizeTypeName.toUpperCase());
+            unitType = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -69,6 +70,10 @@ public class CategoryProductImpl implements ICategoryProduct {
             throw new BadRequestExceptions(Constants.ErrorSizeType);
         }
 
+        if(unitType == null){
+            throw new BadRequestExceptions(Constants.ErrorUnitType);
+        }
+
         try {
             CategoryProduct newCategoryProduct = categoryProductRepository.save(CategoryProduct.builder()
                     .name(name.toUpperCase())
@@ -80,6 +85,8 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .userId(user.getId())
                             .sizeType(sizeType)
                             .sizeTypeId(sizeType.getId())
+                            .unitType(unitType)
+                            .unitTypeId(unitType.getId())
                     .build());
             iAudit.save("ADD_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+newCategoryProduct.getName()+" CREADA.",newCategoryProduct.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -93,16 +100,19 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name,String sku,String sizeTypeName, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name,String sku,String sizeTypeName,String unitTypeName , String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             CategoryProduct categoryProduct;
             SizeType sizeType;
+            UnitType unitType;
+
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 categoryProduct = categoryProductRepository.findByName(name.toUpperCase());
                 sizeType = sizeTypeRepository.findByNameAndStatusTrue(sizeTypeName.toUpperCase());
+                unitType = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -120,6 +130,10 @@ public class CategoryProductImpl implements ICategoryProduct {
                 throw new BadRequestExceptions(Constants.ErrorSizeType);
             }
 
+            if(unitType == null){
+                throw new BadRequestExceptions(Constants.ErrorUnitType);
+            }
+
             try {
                 CategoryProduct newCategoryProduct = categoryProductRepository.save(CategoryProduct.builder()
                         .name(name.toUpperCase())
@@ -131,6 +145,8 @@ public class CategoryProductImpl implements ICategoryProduct {
                         .userId(user.getId())
                                 .sizeType(sizeType)
                                 .sizeTypeId(sizeType.getId())
+                                .unitTypeId(unitType.getId())
+                                .unitType(unitType)
                         .build());
                 iAudit.save("ADD_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+newCategoryProduct.getName()+" CREADA.",newCategoryProduct.getName(),user.getUsername());
                 return ResponseSuccess.builder()

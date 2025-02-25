@@ -16,6 +16,7 @@ import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
 import jakarta.transaction.Transactional;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,8 @@ public class ProductImpl implements IProduct {
     private final BrandRepository brandRepository;
     private final SubCategoryProductRepository subCategoryProductRepository;
     private final IUtil iUtil;
+    @Value("${storage.path.server}")
+    private String urlPathServer ;
     @Override
     @Transactional
     public ResponseSuccess save(RequestProductSave requestProductSave,List<MultipartFile> productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -68,7 +71,7 @@ public class ProductImpl implements IProduct {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase());
             color = colorRepository.findByNameAndStatusTrue(requestProductSave.getColor().toUpperCase());
-            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getSizeTypeId());
+            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -77,7 +80,7 @@ public class ProductImpl implements IProduct {
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
-            model = modelRepository.findBySkuAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
+            model = modelRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
         }
 
         if (model == null) {
@@ -108,7 +111,7 @@ public class ProductImpl implements IProduct {
             product = productRepository.findByModelIdAndSizeIdAndColorIdAndClientIdAndStatusTrue(model.getId(),size.getId(),color.getId(),user.getClientId());
         }
 
-        if (product==null) {
+        if (product != null) {
             throw new BadRequestExceptions(Constants.ErrorProductExists);
         }
 
@@ -153,7 +156,7 @@ public class ProductImpl implements IProduct {
     @Override
     @Transactional
     public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave requestProductSave,MultipartFile[] productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folder = Paths.get("/home/powid-masterdata/src/main/resources/uploads/products");
+        Path folder = Paths.get(urlPathServer);
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -167,7 +170,9 @@ public class ProductImpl implements IProduct {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase());
                 color = colorRepository.findByNameAndStatusTrue(requestProductSave.getColor().toUpperCase());
-                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getSizeTypeId());
+                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId());
+                //subCategoryProduct.getCategoryProduct().getSizeTypeId()
+                System.out.println(unitRepository.findAll());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -176,8 +181,13 @@ public class ProductImpl implements IProduct {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                model = modelRepository.findBySkuAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
+                model = modelRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
+                //modelRepository.findBySkuAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
+            //modelRepository.findByNameAndClientId(requestProductSave.getModel().toUpperCase(),user.getClientId());
+                        //
+                //System.out.println(modelRepository.findByNameAndClientId(requestProductSave.getModel().toUpperCase(),user.getClientId()));
             }
+            //System.out.println(model);
 
             if (model == null) {
                 throw new BadRequestExceptions(Constants.ErrorModel);
@@ -207,7 +217,7 @@ public class ProductImpl implements IProduct {
                 product = productRepository.findByModelIdAndSizeIdAndColorIdAndClientIdAndStatusTrue(model.getId(),size.getId(),color.getId(),user.getClientId());
             }
 
-            if (product==null) {
+            if (product != null) {
                 throw new BadRequestExceptions(Constants.ErrorProductExists);
             }
 
@@ -238,7 +248,9 @@ public class ProductImpl implements IProduct {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/products/"+multipartFile.getOriginalFilename());
+                    // /home/powid-masterdata/src/main/resources/uploads/products/
+
+                    File convFile = new File(urlPathServer+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
@@ -690,7 +702,8 @@ public class ProductImpl implements IProduct {
 
     @Override
     public CompletableFuture<ResponseSuccess> update(RequestProductUpdate requestProductUpdate, List<MultipartFile> pictures) throws BadRequestExceptions, InternalErrorExceptions {
-        Path folder = Paths.get("/home/powid-masterdata/src/main/resources/uploads/products");
+        Path folder = Paths.get(urlPathServer);
+
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -731,7 +744,7 @@ public class ProductImpl implements IProduct {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/products/"+multipartFile.getOriginalFilename());
+                    File convFile = new File(urlPathServer+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
