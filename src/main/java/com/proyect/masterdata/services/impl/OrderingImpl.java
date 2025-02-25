@@ -75,6 +75,7 @@ public class OrderingImpl implements IOrdering {
     private final CancelledOrderRepository cancelledOrderRepository;
     private final CancellationReasonRepository cancellationReasonRepository;
     private final IUtil iUtil;
+    private final IOrderLog iOrderLog;
     @Override
     @Transactional
     public ResponseSuccess save(
@@ -658,6 +659,7 @@ public class OrderingImpl implements IOrdering {
                                     .updateDate(orderItem.getUpdateDate())
                                     .build();
                         }).toList())
+                        .orderLogs(iOrderLog.listLogByOrder(order.getId()))
                         .build();
             }).toList();
 
@@ -780,6 +782,7 @@ public class OrderingImpl implements IOrdering {
                                     .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
                                     .build();
                         }).toList())
+                        .orderLogs(iOrderLog.listLogByOrder(order.getId()))
                         .build();
                     if(cancelledOrder != null){
                         newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());
@@ -889,19 +892,22 @@ public class OrderingImpl implements IOrdering {
                 ordering.setCourierId(courier.getId());
             }
 
-            orderingRepository.save(ordering);
+            Ordering updatedOrder;
+
+            updatedOrder = orderingRepository.save(ordering);
 
             List<String> paymentReceipts = iOrderPaymentReceipt.uploadReceipt(receipts,ordering.getId(),user.getUsername());
             if((!ordering.getReceiptFlag()) && (!paymentReceipts.isEmpty())){
                 ordering.setReceiptFlag(true);
-                orderingRepository.save(ordering);
+                updatedOrder = orderingRepository.save(ordering);
             }
 
             CompletableFuture<List<String>> deliveryPictures = iCourierPicture.uploadPicture(courierPictures,ordering.getId(),user.getUsername());
             if((!ordering.getDeliveryFlag())&&(!deliveryPictures.get().isEmpty())){
                 ordering.setDeliveryFlag(true);
-                orderingRepository.save(ordering);
+                updatedOrder = orderingRepository.save(ordering);
             }
+            iOrderLog.save(updatedOrder.getUser(),updatedOrder);
             iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -1013,8 +1019,9 @@ public class OrderingImpl implements IOrdering {
                     ordering.setCourier(courier);
                     ordering.setCourierId(courier.getId());
                 }
+                Ordering updatedOrder;
 
-                orderingRepository.save(ordering);
+                updatedOrder = orderingRepository.save(ordering);
                 List<File> receiptList = new ArrayList<>();
                 for(MultipartFile multipartFile : receipts){
                     if(multipartFile.isEmpty()){
@@ -1045,7 +1052,7 @@ public class OrderingImpl implements IOrdering {
                 if(!paymentReceipts.get().isEmpty()){
                     if(!ordering.getReceiptFlag()){
                         ordering.setReceiptFlag(true);
-                        orderingRepository.save(ordering);
+                        updatedOrder = orderingRepository.save(ordering);
                     }
                     Stream<Path> paths = Files.list(folderOrders);
                     paths.filter(Files::isRegularFile).forEach(path -> {
@@ -1059,7 +1066,7 @@ public class OrderingImpl implements IOrdering {
                 if(!courierPhotos.get().isEmpty()){
                     if(!ordering.getDeliveryFlag()){
                         ordering.setDeliveryFlag(true);
-                        orderingRepository.save(ordering);
+                        updatedOrder = orderingRepository.save(ordering);
                     }
                     Stream<Path> paths = Files.list(folderCouriers);
                     paths.filter(Files::isRegularFile).forEach(path -> {
@@ -1070,7 +1077,7 @@ public class OrderingImpl implements IOrdering {
                         }
                     });
                 }
-
+                iOrderLog.save(updatedOrder.getUser(),updatedOrder);
                 iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -1203,6 +1210,7 @@ public class OrderingImpl implements IOrdering {
                                     .build();
                         }).toList())
                         .id(ordering.getId())
+                        .orderLogs(iOrderLog.listLogByOrder(ordering.getId()))
                         .build();
                 if(cancelledOrder != null){
                     newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());

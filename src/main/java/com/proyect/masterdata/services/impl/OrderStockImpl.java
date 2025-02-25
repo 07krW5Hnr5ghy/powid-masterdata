@@ -8,6 +8,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
+import com.proyect.masterdata.services.IOrderLog;
 import com.proyect.masterdata.services.IOrderStock;
 import com.proyect.masterdata.services.IOrderStockItem;
 import com.proyect.masterdata.utils.Constants;
@@ -37,6 +38,7 @@ public class OrderStockImpl implements IOrderStock {
     private final OrderItemRepository orderItemRepository;
     private final OrderStateRepository orderStateRepository;
     private final IAudit iAudit;
+    private final IOrderLog iOrderLog;
     @Override
     public ResponseSuccess save(UUID orderId, String warehouseName, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -114,7 +116,9 @@ public class OrderStockImpl implements IOrderStock {
             }
             ordering.setOrderState(orderState);
             ordering.setOrderStateId(orderState.getId());
-            orderingRepository.save(ordering);
+            Ordering updatedOrder;
+            updatedOrder = orderingRepository.save(ordering);
+            iOrderLog.save(updatedOrder.getUser(),updatedOrder);
             iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+newOrderStock.getOrderId()+" CREADA.",newOrderStock.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .message(Constants.register)
@@ -204,7 +208,9 @@ public class OrderStockImpl implements IOrderStock {
                 }
                 ordering.setOrderState(orderState);
                 ordering.setOrderStateId(orderState.getId());
-                orderingRepository.save(ordering);
+                Ordering updatedOrder;
+                updatedOrder = orderingRepository.save(ordering);
+                iOrderLog.save(updatedOrder.getUser(),updatedOrder);
                 iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+newOrderStock.getOrderId()+" CREADA.",newOrderStock.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)

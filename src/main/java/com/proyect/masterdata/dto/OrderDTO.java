@@ -55,4 +55,5 @@ public class OrderDTO {
     private String store;
     private String orderStateColor;
     private String cancellationReason;
+    private List<OrderLogDTO> orderLogs;
 }

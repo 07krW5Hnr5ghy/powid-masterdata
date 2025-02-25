@@ -12,6 +12,7 @@ import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.ICourier;
 import com.proyect.masterdata.services.ICourierPicture;
+import com.proyect.masterdata.services.IOrderLog;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -36,6 +37,7 @@ public class CourierImpl implements ICourier {
     private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     private final ICourierPicture iCourierPicture;
     private final IAudit iAudit;
+    private final IOrderLog iOrderLog;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -312,13 +314,14 @@ public class CourierImpl implements ICourier {
                 }
 
                 ordering.setUpdateDate(OffsetDateTime.now());
-
+                Ordering updatedOrder;
                 CompletableFuture<List<String>> deliveryPictures = iCourierPicture.uploadPicture(requestCourierOrder.getOrderPictures(),ordering.getId(),user.getUsername());
                 if(!ordering.getDeliveryFlag() && !deliveryPictures.get().isEmpty()){
                     ordering.setDeliveryFlag(true);
-                    orderingRepository.save(ordering);
+                    updatedOrder = orderingRepository.save(ordering);
                 }
-                orderingRepository.save(ordering);
+                updatedOrder = orderingRepository.save(ordering);
+                iOrderLog.save(updatedOrder.getUser(),updatedOrder);
                 iAudit.save("UPDATE_COURIER_ORDER","PEDIDO "+ordering.getId()+" EDITADO POR COURIER.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
