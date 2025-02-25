@@ -96,6 +96,7 @@ public class SubCategoryProductController {
             @RequestParam("user") String user,
             @RequestParam("categoryProduct") String categoryProduct
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+
         CompletableFuture<List<SubCategoryProductDTO>> result = iSubCategoryProduct.listByCategoryProduct(user,categoryProduct);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }

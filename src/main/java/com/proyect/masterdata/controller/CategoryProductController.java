@@ -38,8 +38,9 @@ public class CategoryProductController {
             @RequestParam("name") String name,
             @RequestParam("sku") String sku,
             @RequestParam("sizeType") String sizeType,
+            @RequestParam("unit_type") String unitType,
             @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iCategoryProduct.saveAsync(name, sku,sizeType, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iCategoryProduct.saveAsync(name, sku,sizeType, unitType ,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

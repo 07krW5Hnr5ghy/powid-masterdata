@@ -6,8 +6,10 @@ import com.proyect.masterdata.dto.LocationDTO;
 import com.proyect.masterdata.dto.request.*;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
+import com.proyect.masterdata.utils.DirectoryManager;
 import lombok.RequiredArgsConstructor;
 import org.bouncycastle.cert.ocsp.Req;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -99,11 +101,17 @@ public class Seeder implements CommandLineRunner {
         private final IPurchasePaymentType iPurchasePaymentType;
         private final IDeliveryStatus iDeliveryStatus;
         private final IDeliveryManifestStatus iDeliveryManifestStatus;
+
+
+
         @Override
         public void run(String... args) throws Exception {
 
                 try{
+                        //DirectoryManager.createDirectoryIfNotExists();
                         // department, province and district to create system user
+
+
                         Department department = departmentRepository.save(Department.builder()
                                         .name("SISTEMA")
                                         .status(true)
@@ -985,11 +993,48 @@ public class Seeder implements CommandLineRunner {
                         iSizeType.save("COMPLEMENTOS", adminUser.getUsername());
                         iSizeType.save("ACCESORIOS", adminUser.getUsername());
 
+                        //unit type
+                        iUnitType.save("ropa",adminUser.getUsername());
+                        iUnitType.save("calzado",adminUser.getUsername());
+                        iUnitType.save("ACCESORIOS",adminUser.getUsername());
+                        iUnitType.save("COMPLEMENTOS",adminUser.getUsername());
+
+                        // unit
+                        RequestUnit requestUnit1 = RequestUnit.builder()
+                                .name("UND")
+                                .unitType("ROPA")
+                                .build();
+
+                        iUnit.save(requestUnit1,adminUser.getUsername());
+
+                        RequestUnit requestUnit2 = RequestUnit.builder()
+                                .name("PAR")
+                                .unitType("CALZADO")
+                                .build();
+
+                        iUnit.save(requestUnit2,adminUser.getUsername());
+
+                        RequestUnit requestUnit3 = RequestUnit.builder()
+                                .name("UND")
+                                .unitType("ACCESORIOS")
+                                .build();
+
+                        iUnit.save(requestUnit3,adminUser.getUsername());
+
+                        RequestUnit requestUnit4 = RequestUnit.builder()
+                                .name("UND")
+                                .unitType("COMPLEMENTOS")
+                                .build();
+
+                        iUnit.save(requestUnit4,adminUser.getUsername());
+
+
+
                         // mock category products
-                        iCategoryProduct.save("ROPA","RP001","ROPA",adminUser.getUsername());
-                        iCategoryProduct.save("CALZADO","CA001","CALZADO",adminUser.getUsername());
-                        iCategoryProduct.save("COMPLEMENTOS","CO001","COMPLEMENTOS",adminUser.getUsername());
-                        iCategoryProduct.save("ACCESORIOS","AC001","ACCESORIOS",adminUser.getUsername());
+                        iCategoryProduct.save("ROPA","RP001","ROPA","ROPA",adminUser.getUsername());
+                        iCategoryProduct.save("CALZADO","CA001","CALZADO","CALZADO",adminUser.getUsername());
+                        iCategoryProduct.save("COMPLEMENTOS","CO001","COMPLEMENTOS","COMPLEMENTOS",adminUser.getUsername());
+                        iCategoryProduct.save("ACCESORIOS","AC001","ACCESORIOS","ACCESORIOS",adminUser.getUsername());
 
                         iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
                                         .categoryName("ROPA")
@@ -1238,6 +1283,7 @@ public class Seeder implements CommandLineRunner {
                                 .tokenUser(adminUser.getUsername())
                                 .build());
 
+                        //iBrand.save("ADIDAS","JROMERO");
 
                         // mock size
                         iSize.save("XS", "ropa", adminUser.getUsername());
@@ -1317,40 +1363,6 @@ public class Seeder implements CommandLineRunner {
                         iOrderPaymentMethod.save("interbank",adminUser.getUsername());
                         iOrderPaymentMethod.save("banco de la nacion",adminUser.getUsername());
 
-                        //unit type
-                        iUnitType.save("ropa",adminUser.getUsername());
-                        iUnitType.save("calzado",adminUser.getUsername());
-                        iUnitType.save("ACCESORIOS",adminUser.getUsername());
-                        iUnitType.save("COMPLEMENTOS",adminUser.getUsername());
-
-                        // unit
-                        RequestUnit requestUnit1 = RequestUnit.builder()
-                                .name("UND")
-                                .unitType("ROPA")
-                                .build();
-
-                        iUnit.save(requestUnit1,adminUser.getUsername());
-
-                        RequestUnit requestUnit2 = RequestUnit.builder()
-                                .name("PAR")
-                                .unitType("CALZADO")
-                                .build();
-
-                        iUnit.save(requestUnit2,adminUser.getUsername());
-
-                        RequestUnit requestUnit3 = RequestUnit.builder()
-                                .name("UND")
-                                        .unitType("ACCESORIOS")
-                                                .build();
-
-                        iUnit.save(requestUnit3,adminUser.getUsername());
-
-                        RequestUnit requestUnit4 = RequestUnit.builder()
-                                .name("UND")
-                                .unitType("COMPLEMENTOS")
-                                .build();
-
-                        iUnit.save(requestUnit4,adminUser.getUsername());
 
                         // purchase type
                         iPurchaseType.save("compra",adminUser.getUsername());
