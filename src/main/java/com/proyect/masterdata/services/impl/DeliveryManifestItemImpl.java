@@ -237,6 +237,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                     .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
                     .skuInventory(iUtil.buildInventorySku(deliveryManifestItem.getSupplierProduct()))
                     .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getSupplierProduct().getProduct()))
+                    .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
                     .build()).toList();
             return new PageImpl<>(deliveryManifestItemDTOS,deliveryManifestItemPage.getPageable(),deliveryManifestItemPage.getTotalElements());
         });

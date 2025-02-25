@@ -244,6 +244,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .quantity(deliveryManifestItem.getQuantity())
                                 .skuInventory(iUtil.buildInventorySku(deliveryManifestItem.getSupplierProduct()))
                                 .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getSupplierProduct().getProduct()))
+                                .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
                                 .build()).toList();
                 return DeliveryManifestDTO.builder()
                         .manifestNumber(deliveryManifest.getManifestNumber())
