@@ -1038,11 +1038,6 @@ public class Seeder implements CommandLineRunner {
 
                         iUnit.save(requestUnit4,adminUser.getUsername());
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 68241cb6 (fix : product is save succefull)
                         // mock category products
                         iCategoryProduct.save("ROPA","RP001","ROPA","ROPA",adminUser.getUsername());
                         iCategoryProduct.save("CALZADO","CA001","CALZADO","CALZADO",adminUser.getUsername());
@@ -1376,10 +1371,6 @@ public class Seeder implements CommandLineRunner {
                         iOrderPaymentMethod.save("interbank",adminUser.getUsername());
                         iOrderPaymentMethod.save("banco de la nacion",adminUser.getUsername());
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 68241cb6 (fix : product is save succefull)
                         // purchase type
                         iPurchaseType.save("compra",adminUser.getUsername());
                         iPurchaseType.save("devolucion",adminUser.getUsername());
