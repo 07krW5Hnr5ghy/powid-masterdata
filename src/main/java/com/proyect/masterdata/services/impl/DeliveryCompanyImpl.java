@@ -8,17 +8,21 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.DeliveryCompanyRepository;
+import com.proyect.masterdata.repository.DeliveryCompanyRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IDeliveryCompany;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -28,6 +32,7 @@ public class DeliveryCompanyImpl implements IDeliveryCompany {
     private final UserRepository userRepository;
     private final DeliveryCompanyRepository deliveryCompanyRepository;
     private final IAudit iAudit;
+    private final DeliveryCompanyRepositoryCustom deliveryCompanyRepositoryCustom;
     @Override
     public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -156,6 +161,76 @@ public class DeliveryCompanyImpl implements IDeliveryCompany {
                     .registrationDate(deliveryCompany.getRegistrationDate())
                     .updateDate(deliveryCompany.getUpdateDate())
                     .build()).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<DeliveryCompanyDTO>> list(String user, String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<DeliveryCompany> deliveryCompanyPage;
+            UUID clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                deliveryCompanyPage = deliveryCompanyRepositoryCustom.searchForDeliveryCompany(
+                        clientId,
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        true);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(deliveryCompanyPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<DeliveryCompanyDTO> deliveryCompanyDTOS = deliveryCompanyPage.stream().map(deliveryCompany -> DeliveryCompanyDTO.builder()
+                    .name(deliveryCompany.getName())
+                    .registrationDate(deliveryCompany.getRegistrationDate())
+                    .updateDate(deliveryCompany.getUpdateDate())
+                    .build()).toList();
+            return new PageImpl<>(deliveryCompanyDTOS,deliveryCompanyPage.getPageable(),deliveryCompanyPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<DeliveryCompanyDTO>> listFalse(String user, String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<DeliveryCompany> deliveryCompanyPage;
+            UUID clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                deliveryCompanyPage = deliveryCompanyRepositoryCustom.searchForDeliveryCompany(
+                        clientId,
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        false);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(deliveryCompanyPage.isEmpty()){
+                return new PageImpl<>(Collections.emptyList());
+            }
+            List<DeliveryCompanyDTO> deliveryCompanyDTOS = deliveryCompanyPage.stream().map(deliveryCompany -> DeliveryCompanyDTO.builder()
+                    .name(deliveryCompany.getName())
+                    .registrationDate(deliveryCompany.getRegistrationDate())
+                    .updateDate(deliveryCompany.getUpdateDate())
+                    .build()).toList();
+            return new PageImpl<>(deliveryCompanyDTOS,deliveryCompanyPage.getPageable(),deliveryCompanyPage.getTotalElements());
         });
     }
 }
