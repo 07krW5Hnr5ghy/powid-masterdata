@@ -66,6 +66,9 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             }else{
                 warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(),supplierProduct.getId());
             }
+            if(supplierProduct.getProduct().getId()!=orderItem.getProductId()){
+                throw new BadRequestExceptions(Constants.ErrorProductSupplierProductMismatch);
+            }
             if(warehouseStock.getQuantity()<requestDeliveryManifestItem.getQuantity()){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
             }

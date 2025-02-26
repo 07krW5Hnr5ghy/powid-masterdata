@@ -21,7 +21,8 @@ public interface ICourier {
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<Page<CourierDTO>> list(
             String user,
-            List<String> names,
+            String name,
+            String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -32,7 +33,8 @@ public interface ICourier {
             Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<Page<CourierDTO>> listFalse(
             String user,
-            List<String> names,
+            String name,
+            String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,

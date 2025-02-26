@@ -106,6 +106,8 @@ public class Constants {
     public static final String tableDeliveryManifest = "delivery_manifest";
     public static final String tableDeliveryManifestItems = "delivery_manifest_items";
     public static final String tableDeliveryStatus = "delivery_status";
+    public static final String tableOrderLog = "order_log";
+    public static final String tableDeliveryCompany = "delivery_company";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -310,4 +312,7 @@ public class Constants {
     public static final String ErrorDeliveryManifestStatusExists = "Estado de guia ya esta registrado";
     public static final String ErrorDeliveryManifestItem = "Item de guia no esta registrado";
     public static final String ErrorDeliveryManifestItemExists = "Item de guia ya esta registrado";
+    public static final String ErrorProductSupplierProductMismatch = "Inventario no pertenece al producto";
+    public static final String ErrorDeliveryCompany = "Empresa de courier no esta registrada";
+    public static final String ErrorDeliveryCompanyExists = "Empresa de courier ya esta registrada";
 }

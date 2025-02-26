@@ -1,68 +1,65 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.CourierDTO;
-import com.proyect.masterdata.dto.request.RequestCourier;
-import com.proyect.masterdata.dto.request.RequestCourierOrder;
+import com.proyect.masterdata.dto.DeliveryCompanyDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.services.ICourier;
+import com.proyect.masterdata.services.IDeliveryCompany;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@CrossOrigin({"*"})
-@RequestMapping("courier")
+@CrossOrigin({ "*" })
+@RequestMapping("delivery-company")
 @AllArgsConstructor
-public class CourierController {
-    private final ICourier iCourier;
+public class DeliveryCompanyController {
+    private final IDeliveryCompany iDeliveryCompany;
     @PostMapping()
-    //@PreAuthorize("hasAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COURIER_POST')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_POST')")
     public ResponseEntity<ResponseSuccess> save(
-            @RequestBody()RequestCourier requestCourier,
-            @RequestParam("tokenUser") String tokenUser
-            ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iCourier.save(requestCourier,tokenUser);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-    @PutMapping(value = "order")
-    //@PreAuthorize("hasAuthority('ROLE:COURIER') and hasAuthority('ACCESS:COURIER_PUT')")
-    public ResponseEntity<ResponseSuccess> updateOrder(
-            @RequestParam("orderId") UUID orderId,
-            @RequestBody() RequestCourierOrder requestCourierOrder,
-            @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iCourier.updateOrder(orderId,requestCourierOrder,tokenUser);
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDeliveryCompany.save(name,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @DeleteMapping()
-    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COURIER_DELETE')")
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iDeliveryCompany.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @GetMapping()
+    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:COLOR_GET')")
+    public ResponseEntity<List<DeliveryCompanyDTO>> listDeliveryCompany() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<DeliveryCompanyDTO>> result = iDeliveryCompany.listDeliveryCompany();
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PostMapping("activate")
+    public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iCourier.delete(name,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iDeliveryCompany.activate(name,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
-    public ResponseEntity<Page<CourierDTO>> list(
+    public ResponseEntity<Page<DeliveryCompanyDTO>> list(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "company", required = false) String company,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
@@ -72,10 +69,9 @@ public class CourierController {
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<CourierDTO>> result = iCourier.list(
+        CompletableFuture<Page<DeliveryCompanyDTO>> result = iDeliveryCompany.list(
                 user,
                 name,
-                company,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -88,10 +84,9 @@ public class CourierController {
     }
     @GetMapping("pagination/status-false")
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
-    public ResponseEntity<Page<CourierDTO>> listFalse(
+    public ResponseEntity<Page<DeliveryCompanyDTO>> listFalse(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "company", required = false) String company,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
@@ -101,10 +96,9 @@ public class CourierController {
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<CourierDTO>> result = iCourier.listFalse(
+        CompletableFuture<Page<DeliveryCompanyDTO>> result = iDeliveryCompany.listFalse(
                 user,
                 name,
-                company,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -115,41 +109,4 @@ public class CourierController {
                 pageSize);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
-
-    @GetMapping()
-    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
-    public ResponseEntity<List<CourierDTO>> listCourier(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<CourierDTO>> result = iCourier.listCouriers(user);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
-    }
-
-    @GetMapping("status-false")
-    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
-    public ResponseEntity<List<CourierDTO>> listCourierFalse(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<CourierDTO>> result = iCourier.listCouriersFalse(user);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
-    }
-
-    @PostMapping("activate")
-    public ResponseEntity<ResponseSuccess> activate(
-            @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iCourier.activate(name, tokenUser);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
-    }
-
-    @GetMapping("filter")
-    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
-    public ResponseEntity<List<CourierDTO>> listFilter(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<CourierDTO>> result = iCourier.listFilters(user);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
-    }
-
 }

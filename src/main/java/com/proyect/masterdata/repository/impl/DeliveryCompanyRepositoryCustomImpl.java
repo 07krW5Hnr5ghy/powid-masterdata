@@ -2,7 +2,7 @@ package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.Courier;
 import com.proyect.masterdata.domain.DeliveryCompany;
-import com.proyect.masterdata.repository.CourierRepositoryCustom;
+import com.proyect.masterdata.repository.DeliveryCompanyRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -16,72 +16,66 @@ import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 @Repository
-public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
+public class DeliveryCompanyRepositoryCustomImpl implements DeliveryCompanyRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<Courier> searchForCourier(
-            UUID clientId,
-            String name,
-            String company,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize,
+    public Page<DeliveryCompany> searchForDeliveryCompany(
+            UUID clientId, 
+            String name, 
+            OffsetDateTime registrationStartDate, 
+            OffsetDateTime registrationEndDate, 
+            OffsetDateTime updateStartDate, 
+            OffsetDateTime updateEndDate, 
+            String sort, 
+            String sortColumn, 
+            Integer pageNumber, 
+            Integer pageSize, 
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Courier> criteriaQuery = criteriaBuilder.createQuery(Courier.class);
-        Root<Courier> itemRoot = criteriaQuery.from(Courier.class);
-        Join<Courier, DeliveryCompany> courierDeliveryCompanyJoin = itemRoot.join("deliveryCompany");
-
+        CriteriaQuery<DeliveryCompany> criteriaQuery = criteriaBuilder.createQuery(DeliveryCompany.class);
+        Root<DeliveryCompany> itemRoot = criteriaQuery.from(DeliveryCompany.class);
         criteriaQuery.select(itemRoot);
-        List<Predicate> conditions = predicateConditions(
+        List<Predicate> conditions = predicate(
                 clientId,
                 name,
-                company,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 status,
                 criteriaBuilder,
-                itemRoot,
-                courierDeliveryCompanyJoin);
+                itemRoot
+        );
         if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
 
-            List<Order> courierList = new ArrayList<>();
+            List<Order> deliveryCompanyList = new ArrayList<>();
 
             if (sort.equalsIgnoreCase("ASC")) {
-                courierList = listASC(sortColumn, criteriaBuilder, itemRoot);
+                deliveryCompanyList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
 
             if (sort.equalsIgnoreCase("DESC")) {
-                courierList = listDESC(sortColumn, criteriaBuilder, itemRoot);
+                deliveryCompanyList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
 
-            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(courierList);
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(deliveryCompanyList);
         }else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<Courier> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<DeliveryCompany> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(
+        Long count = getDeliveryCompanyCount(
                 clientId,
                 name,
-                company,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -89,28 +83,22 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
-
-    public List<Predicate> predicateConditions(
+    public List<Predicate> predicate(
             UUID clientId,
             String name,
-            String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
             OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<Courier> itemRoot,
-            Join<Courier, DeliveryCompany> courierDeliveryCompanyJoin){
-
+            Root<DeliveryCompany> itemRoot
+    ){
+        
         List<Predicate> conditions = new ArrayList<>();
-
+        
         if(name!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("name")),"%"+name.toUpperCase()+"%"));
-        }
-
-        if(company!=null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(courierDeliveryCompanyJoin.get("name")),"%"+company.toUpperCase()+"%"));
         }
 
         if (clientId != null) {
@@ -159,96 +147,92 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
 
         return conditions;
     }
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<DeliveryCompany> itemRoot) {
 
-    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Courier> itemRoot) {
-
-        List<Order> courierList = new ArrayList<>();
+        List<Order> deliveryCompanyList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("name")) {
-            courierList.add(criteriaBuilder.asc(itemRoot.get("name")));
+            deliveryCompanyList.add(criteriaBuilder.asc(itemRoot.get("name")));
         }
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            courierList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
+            deliveryCompanyList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
-            courierList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+            deliveryCompanyList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
-            courierList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+            deliveryCompanyList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateStartDate")) {
-            courierList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+            deliveryCompanyList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateEndDate")) {
-            courierList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+            deliveryCompanyList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
         }
 
-        return courierList;
+        return deliveryCompanyList;
     }
 
-    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Courier> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<DeliveryCompany> itemRoot) {
 
-        List<Order> courierList = new ArrayList<>();
+        List<Order> deliveryCompanyList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("name")) {
-            courierList.add(criteriaBuilder.desc(itemRoot.get("name")));
+            deliveryCompanyList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            courierList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
+            deliveryCompanyList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
-            courierList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+            deliveryCompanyList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
-            courierList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+            deliveryCompanyList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateStartDate")) {
-            courierList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+            deliveryCompanyList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateEndDate")) {
-            courierList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+            deliveryCompanyList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
 
-        return courierList;
+        return deliveryCompanyList;
     }
 
-    private Long getOrderCount(
+    private Long getDeliveryCompanyCount(
             UUID clientId,
             String name,
-            String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
             OffsetDateTime updateEndDate,
-            Boolean status){
+            Boolean status
+    ){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Courier> itemRoot = criteriaQuery.from(Courier.class);
-        Join<Courier, DeliveryCompany> courierDeliveryCompanyJoin = itemRoot.join("deliveryCompany");
-
+        Root<DeliveryCompany> itemRoot = criteriaQuery.from(DeliveryCompany.class);
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicateConditions(
+        List<Predicate> conditions = predicate(
                 clientId,
                 name,
-                company,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 status,
                 criteriaBuilder,
-                itemRoot,
-                courierDeliveryCompanyJoin);
+                itemRoot
+        );
         criteriaQuery.where(conditions.toArray(new Predicate[]{}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
