@@ -50,6 +50,9 @@ public class Courier {
     @Column(name = "client_id")
     private UUID clientId;
 
+    @Column(name="delivery_company_id")
+    private UUID deliveryCompanyId;
+
     @ManyToOne
     @JoinColumn(name = "client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
@@ -57,5 +60,9 @@ public class Courier {
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
+
+    @ManyToOne()
+    @JoinColumn(name="delivery_company_id",columnDefinition = "deliveryCompanyId",insertable = false,updatable = false)
+    private DeliveryCompany deliveryCompany;
 
 }

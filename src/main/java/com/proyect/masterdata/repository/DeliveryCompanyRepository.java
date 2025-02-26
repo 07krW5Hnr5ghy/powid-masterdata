@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface DeliveryCompanyRepository extends JpaRepository<DeliveryCompany, UUID> {
     DeliveryCompany findByName(String name);
+    DeliveryCompany findByNameAndStatusTrue(String name);
     List<DeliveryCompany> findAllByStatusTrue();
 }

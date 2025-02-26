@@ -38,15 +38,17 @@ public class CourierImpl implements ICourier {
     private final ICourierPicture iCourierPicture;
     private final IAudit iAudit;
     private final IOrderLog iOrderLog;
+    private final DeliveryCompanyRepository deliveryCompanyRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Courier courier;
-
+            DeliveryCompany deliveryCompany;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 courier = courierRepository.findByName(requestCourier.getCourier().toUpperCase());
+                deliveryCompany = deliveryCompanyRepository.findByName(requestCourier.getCompany().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -54,6 +56,10 @@ public class CourierImpl implements ICourier {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(deliveryCompany==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryCompany);
             }
 
             if(courier != null){
@@ -73,6 +79,8 @@ public class CourierImpl implements ICourier {
                         .status(true)
                                 .user(user)
                                 .userId(user.getId())
+                                .deliveryCompany(deliveryCompany)
+                                .deliveryCompanyId(deliveryCompany.getId())
                         .build());
                 iAudit.save("ADD_COURIER","COURIER "+newCourier.getName()+" CREADO.",newCourier.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -213,6 +221,7 @@ public class CourierImpl implements ICourier {
                     .plate(courier.getPlate())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
+                    .company(courier.getDeliveryCompany().getName())
                     .build()).toList();
 
             return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
@@ -265,6 +274,7 @@ public class CourierImpl implements ICourier {
                     .plate(courier.getPlate())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
+                    .company(courier.getDeliveryCompany().getName())
                     .build()).toList();
 
             return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
@@ -356,6 +366,7 @@ public class CourierImpl implements ICourier {
                     .plate(courier.getPlate())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
+                    .company(courier.getDeliveryCompany().getName())
                     .build()).toList();
         });
     }
@@ -382,6 +393,7 @@ public class CourierImpl implements ICourier {
                     .plate(courier.getPlate())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
+                    .company(courier.getDeliveryCompany().getName())
                     .build()).toList();
         });
     }
@@ -408,6 +420,7 @@ public class CourierImpl implements ICourier {
                     .plate(courier.getPlate())
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
+                    .company(courier.getDeliveryCompany().getName())
                     .build()).toList());
             Courier defaultNoCourier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
             CourierDTO dtoNoCourier = CourierDTO.builder()
@@ -417,6 +430,7 @@ public class CourierImpl implements ICourier {
                     .plate(defaultNoCourier.getPlate())
                     .registrationDate(defaultNoCourier.getRegistrationDate())
                     .updateDate(defaultNoCourier.getUpdateDate())
+                    .company(defaultNoCourier.getDeliveryCompany().getName())
                     .build();
             courierDTOS.add(dtoNoCourier);
             return courierDTOS;

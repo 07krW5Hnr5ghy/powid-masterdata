@@ -101,9 +101,8 @@ public class Seeder implements CommandLineRunner {
         private final IPurchasePaymentType iPurchasePaymentType;
         private final IDeliveryStatus iDeliveryStatus;
         private final IDeliveryManifestStatus iDeliveryManifestStatus;
-
-
-
+        private final IDeliveryCompany iDeliveryCompany;
+        private final DeliveryCompanyRepository deliveryCompanyRepository;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1468,11 +1467,14 @@ public class Seeder implements CommandLineRunner {
 
                         iStore.save(requestStoreSave1,business1.getUsername());
 
+                        iDeliveryCompany.save("SIN EMPRESA",adminUser.getUsername());
+
                         RequestCourier requestCourier = RequestCourier.builder()
                                 .courier("SIN COURIER")
                                 .address("calle 0")
                                 .plate("000-000")
                                 .phone("000000000")
+                                .company("SIN EMPRESA")
                                 .build();
 
                         iCourier.save(requestCourier,adminUser.getUsername());
@@ -1520,7 +1522,7 @@ public class Seeder implements CommandLineRunner {
                         iDistrict.save("SALAMANCA","JROMERO","LIMA");
                         iColor.save("VERDE LORO","VERL","JROMERO");
                         iColor.save("VERDE PERA","VERP","JROMERO");
-                        iColor.save("AZUL ELECTRICO","AZUE","JROMERO");
+                        iColor.save("AZUL ELECTRICO","AZUL","JROMERO");
                 }catch (RuntimeException e){
                         e.printStackTrace();
                         throw new RuntimeException(e.getMessage());

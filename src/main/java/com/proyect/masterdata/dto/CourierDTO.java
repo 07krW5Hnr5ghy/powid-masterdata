@@ -17,6 +17,7 @@ public class CourierDTO {
     private String phone;
     private String address;
     private String plate;
+    private String company;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
 }
