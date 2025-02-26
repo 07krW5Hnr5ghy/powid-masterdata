@@ -43,7 +43,7 @@ public class DeliveryStatusController {
         CompletableFuture<List<DeliveryStatusDTO>> result = iDeliveryStatus.listDeliveryStatus();
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @PostMapping("activate")
+    @PutMapping()
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser

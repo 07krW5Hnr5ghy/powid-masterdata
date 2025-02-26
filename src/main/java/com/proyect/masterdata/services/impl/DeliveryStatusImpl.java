@@ -72,7 +72,7 @@ public class DeliveryStatusImpl implements IDeliveryStatus {
             DeliveryStatus deliveryStatus;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                deliveryStatus = deliveryStatusRepository.findByName(name.toUpperCase());
+                deliveryStatus = deliveryStatusRepository.findByNameAndStatusTrue(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -108,7 +108,7 @@ public class DeliveryStatusImpl implements IDeliveryStatus {
             DeliveryStatus deliveryStatus;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                deliveryStatus = deliveryStatusRepository.findByName(name.toUpperCase());
+                deliveryStatus = deliveryStatusRepository.findByNameAndStatusFalse(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

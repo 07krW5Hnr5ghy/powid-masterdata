@@ -292,6 +292,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_COURIER",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_CUSTOMER_TYPE",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DELIVERY_COMPANY",adminUser.getUsername());
+                        iAuditEvent.save("ACTIVATE_DELIVERY_POINT",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DELIVERY_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DELIVERY_MANIFEST_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DEPARTMENT",adminUser.getUsername());
@@ -433,6 +434,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_CUSTOMER_TYPE",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DELIVERY_COMPANY",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DELIVERY_MANIFEST",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_DELIVERY_POINT",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DELIVERY_STATUS",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DELIVERY_MANIFEST_STATUS",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DEPARTMENT",adminUser.getUsername());
@@ -533,10 +535,6 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("COURIER_POST",adminUser.getUsername());
                         iAccess.save("COURIER_PUT",adminUser.getUsername());
                         iAccess.save("COURIER_GET",adminUser.getUsername());
-                        iAccess.save("DELIVERY_STATUS_GET",adminUser.getUsername());
-                        iAccess.save("DELIVERY_STATUS_POST",adminUser.getUsername());
-                        iAccess.save("DELIVERY_STATUS_DELETE",adminUser.getUsername());
-                        iAccess.save("DELIVERY_STATUS_PUT",adminUser.getUsername());
                         iAccess.save("DELIVERY_COMPANY_GET",adminUser.getUsername());
                         iAccess.save("DELIVERY_COMPANY_POST",adminUser.getUsername());
                         iAccess.save("DELIVERY_COMPANY_DELETE",adminUser.getUsername());
@@ -547,6 +545,14 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("DELIVERY_MANIFEST_STATUS_PUT",adminUser.getUsername());
                         iAccess.save("DELIVERY_MANIFEST_ITEM_GET",adminUser.getUsername());
                         iAccess.save("DELIVERY_MANIFEST_ITEM_PUT",adminUser.getUsername());
+                        iAccess.save("DELIVERY_POINT_GET",adminUser.getUsername());
+                        iAccess.save("DELIVERY_POINT_POST",adminUser.getUsername());
+                        iAccess.save("DELIVERY_POINT_DELETE",adminUser.getUsername());
+                        iAccess.save("DELIVERY_POINT_PUT",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_GET",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_POST",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_DELETE",adminUser.getUsername());
+                        iAccess.save("DELIVERY_STATUS_PUT",adminUser.getUsername());
                         iAccess.save("DEPARTMENT_GET",adminUser.getUsername());
                         iAccess.save("DEPARTMENT_POST",adminUser.getUsername());
                         iAccess.save("DEPARTMENT_DELETE",adminUser.getUsername());

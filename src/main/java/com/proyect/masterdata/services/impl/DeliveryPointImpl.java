@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.CancellationReason;
 import com.proyect.masterdata.domain.DeliveryPoint;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -100,6 +101,78 @@ public class DeliveryPointImpl implements IDeliveryPoint {
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            DeliveryPoint deliveryPoint;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                deliveryPoint = deliveryPointRepository.findByNameAndStatusTrue(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(deliveryPoint==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryPoint);
+            }
+            try{
+                deliveryPoint.setStatus(false);
+                deliveryPoint.setUser(user);
+                deliveryPoint.setUserId(user.getId());
+                deliveryPoint.setUpdateDate(OffsetDateTime.now());
+                deliveryPointRepository.save(deliveryPoint);
+                iAudit.save("DELETE_DELIVERY_POINT","PUNTO DE ENTREGA "+deliveryPoint.getName()+" ELIMINADO.",deliveryPoint.getName(),user.getUsername());
+                return ResponseDelete.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.ErrorDeliveryPoint);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            DeliveryPoint deliveryPoint;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                deliveryPoint = deliveryPointRepository.findByNameAndStatusFalse(tokenUser.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(deliveryPoint==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryPoint);
+            }
+            try{
+                deliveryPoint.setStatus(true);
+                deliveryPoint.setUser(user);
+                deliveryPoint.setUserId(user.getId());
+                deliveryPoint.setUpdateDate(OffsetDateTime.now());
+                deliveryPointRepository.save(deliveryPoint);
+                iAudit.save("ACTIVATE_DELIVERY_POINT","PUNTO DE ENTREGA "+deliveryPoint.getName()+" ACTIVADO.",deliveryPoint.getName(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.register)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.ErrorDeliveryPoint);
             }
         });
     }

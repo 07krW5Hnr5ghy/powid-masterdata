@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -25,6 +26,23 @@ public class DeliveryPointController {
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iDeliveryPoint.saveAsync(name,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_DELETE')")
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iDeliveryPoint.delete(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PutMapping()
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_DELETE')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDeliveryPoint.activate(name, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
