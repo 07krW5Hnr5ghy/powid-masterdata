@@ -107,6 +107,7 @@ public class Constants {
     public static final String tableDeliveryManifestItems = "delivery_manifest_items";
     public static final String tableDeliveryStatus = "delivery_status";
     public static final String tableOrderLog = "order_log";
+    public static final String tableDeliveryCompany = "delivery_company";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
