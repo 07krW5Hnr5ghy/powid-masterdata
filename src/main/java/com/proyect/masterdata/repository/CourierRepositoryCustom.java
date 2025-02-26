@@ -12,7 +12,8 @@ import java.util.UUID;
 public interface CourierRepositoryCustom {
     Page<Courier> searchForCourier(
             UUID clientId,
-            List<String> names,
+            String name,
+            String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,

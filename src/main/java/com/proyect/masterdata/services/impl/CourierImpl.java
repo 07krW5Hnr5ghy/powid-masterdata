@@ -173,7 +173,8 @@ public class CourierImpl implements ICourier {
     @Override
     public CompletableFuture<Page<CourierDTO>> list(
             String user,
-            List<String> names,
+            String name,
+            String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -185,17 +186,12 @@ public class CourierImpl implements ICourier {
         return CompletableFuture.supplyAsync(()->{
             Page<Courier> pageCourier;
             UUID clientId;
-            List<String> namesUppercase;
-            if(names != null && !names.isEmpty()){
-                namesUppercase = names.stream().map(String::toUpperCase).toList();
-            }else{
-                namesUppercase = new ArrayList<>();
-            }
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
                 pageCourier = courierRepositoryCustom.searchForCourier(
                         clientId,
-                        namesUppercase,
+                        name,
+                        company,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
@@ -231,7 +227,8 @@ public class CourierImpl implements ICourier {
     @Override
     public CompletableFuture<Page<CourierDTO>> listFalse(
             String user,
-            List<String> names,
+            String name,
+            String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -248,7 +245,8 @@ public class CourierImpl implements ICourier {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
                 pageCourier = courierRepositoryCustom.searchForCourier(
                         clientId,
-                        names,
+                        name,
+                        company,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,

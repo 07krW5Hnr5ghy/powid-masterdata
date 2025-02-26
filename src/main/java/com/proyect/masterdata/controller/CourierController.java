@@ -61,7 +61,8 @@ public class CourierController {
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
     public ResponseEntity<Page<CourierDTO>> list(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "company", required = false) String company,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
@@ -73,7 +74,8 @@ public class CourierController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<CourierDTO>> result = iCourier.list(
                 user,
-                names,
+                name,
+                company,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -88,7 +90,8 @@ public class CourierController {
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
     public ResponseEntity<Page<CourierDTO>> listFalse(
             @RequestParam(value = "user") String user,
-            @RequestParam(value = "names", required = false) List<String> names,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "company", required = false) String company,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
@@ -100,7 +103,8 @@ public class CourierController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<CourierDTO>> result = iCourier.listFalse(
                 user,
-                names,
+                name,
+                company,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,

@@ -1038,8 +1038,6 @@ public class Seeder implements CommandLineRunner {
 
                         iUnit.save(requestUnit4,adminUser.getUsername());
 
-
-
                         // mock category products
                         iCategoryProduct.save("ROPA","RP001","ROPA","ROPA",adminUser.getUsername());
                         iCategoryProduct.save("CALZADO","CA001","CALZADO","CALZADO",adminUser.getUsername());

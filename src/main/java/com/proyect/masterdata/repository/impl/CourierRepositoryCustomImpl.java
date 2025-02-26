@@ -1,6 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.Courier;
+import com.proyect.masterdata.domain.DeliveryCompany;
 import com.proyect.masterdata.repository.CourierRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -26,7 +27,8 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
     @Override
     public Page<Courier> searchForCourier(
             UUID clientId,
-            List<String> names,
+            String name,
+            String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -39,18 +41,21 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Courier> criteriaQuery = criteriaBuilder.createQuery(Courier.class);
         Root<Courier> itemRoot = criteriaQuery.from(Courier.class);
+        Join<Courier, DeliveryCompany> courierDeliveryCompanyJoin = itemRoot.join("deliveryCompany");
 
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                names,
+                name,
+                company,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 status,
                 criteriaBuilder,
-                itemRoot);
+                itemRoot,
+                courierDeliveryCompanyJoin);
         if(!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)){
 
             List<Order> courierList = new ArrayList<>();
@@ -75,7 +80,8 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                names,
+                name,
+                company,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -86,21 +92,25 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
 
     public List<Predicate> predicateConditions(
             UUID clientId,
-            List<String> names,
+            String name,
+            String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
             OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<Courier> itemRoot){
+            Root<Courier> itemRoot,
+            Join<Courier, DeliveryCompany> courierDeliveryCompanyJoin){
 
         List<Predicate> conditions = new ArrayList<>();
 
-        if(!names.isEmpty()){
-            conditions.add(
-                    criteriaBuilder.and(
-                            itemRoot.get("name").in(names)));
+        if(name!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("name")),"%"+name.toUpperCase()+"%"));
+        }
+
+        if(company!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(courierDeliveryCompanyJoin.get("name")),"%"+company.toUpperCase()+"%"));
         }
 
         if (clientId != null) {
@@ -214,7 +224,8 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
 
     private Long getOrderCount(
             UUID clientId,
-            List<String> names,
+            String name,
+            String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -223,18 +234,21 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Courier> itemRoot = criteriaQuery.from(Courier.class);
+        Join<Courier, DeliveryCompany> courierDeliveryCompanyJoin = itemRoot.join("deliveryCompany");
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
                 clientId,
-                names,
+                name,
+                company,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 status,
                 criteriaBuilder,
-                itemRoot);
+                itemRoot,
+                courierDeliveryCompanyJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[]{}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
