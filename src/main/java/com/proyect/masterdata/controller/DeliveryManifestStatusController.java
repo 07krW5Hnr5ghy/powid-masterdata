@@ -37,6 +37,14 @@ public class DeliveryManifestStatusController {
         CompletableFuture<ResponseDelete> result = iDeliveryManifestStatus.delete(name, tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
+    @PutMapping()
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_DELETE')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("name") String name,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifestStatus.activate(name, tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:COLOR_GET')")
     public ResponseEntity<List<DeliveryManifestStatusDTO>> listDeliveryManifestStatus() throws BadRequestExceptions, ExecutionException, InterruptedException {

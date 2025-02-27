@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface DeliveryStatusRepository extends JpaRepository<DeliveryStatus, UUID> {
     DeliveryStatus findByName(String name);
     List<DeliveryStatus> findAllByStatusTrue();
+    DeliveryStatus findByNameAndStatusTrue(String name);
+    DeliveryStatus findByNameAndStatusFalse(String name);
 }

@@ -75,7 +75,7 @@ public class DeliveryManifestStatusImpl implements IDeliveryManifestStatus {
             DeliveryManifestStatus deliveryManifestStatus;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                deliveryManifestStatus = deliveryManifestStatusRepository.findByName(name.toUpperCase());
+                deliveryManifestStatus = deliveryManifestStatusRepository.findByNameAndStatusTrue(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -111,7 +111,7 @@ public class DeliveryManifestStatusImpl implements IDeliveryManifestStatus {
             DeliveryManifestStatus deliveryManifestStatus;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                deliveryManifestStatus = deliveryManifestStatusRepository.findByName(name.toUpperCase());
+                deliveryManifestStatus = deliveryManifestStatusRepository.findByNameAndStatusFalse(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

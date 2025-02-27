@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface DeliveryManifestStatusRepository extends JpaRepository<DeliveryManifestStatus, UUID> {
     DeliveryManifestStatus findByName(String name);
     List<DeliveryManifestStatus> findAllByStatusTrue();
+    DeliveryManifestStatus findByNameAndStatusTrue(String name);
+    DeliveryManifestStatus findByNameAndStatusFalse(String name);
 }
