@@ -20,4 +20,5 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     List<Product> findByModelNameAndColorNameAndClientIdAndStatusTrue(String model,String color,UUID clientId);
     List<Product> findByModelNameAndSizeNameAndColorNameAndClientIdAndStatusTrue(String model,String size,String color,UUID clientId);
     List<Product> findByModelSkuAndClientIdAndStatusTrue(String modelSku,UUID clientId);
+    Product findByNameAndClientId(String name,UUID clientId);
 }
