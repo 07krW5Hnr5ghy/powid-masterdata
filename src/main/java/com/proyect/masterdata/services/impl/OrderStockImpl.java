@@ -102,7 +102,6 @@ public class OrderStockImpl implements IOrderStock {
             OrderStock newOrderStock = orderStockRepository.save(OrderStock.builder()
                     .ordering(ordering)
                     .orderId(ordering.getId())
-                    .status(true)
                     .warehouse(warehouse)
                     .warehouseId(warehouse.getId())
                     .registrationDate(OffsetDateTime.now())
@@ -112,6 +111,7 @@ public class OrderStockImpl implements IOrderStock {
                     .user(user)
                             .userId(user.getId())
                     .build());
+
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
                 iOrderStockItem.save(newOrderStock.getOrderId(),requestOrderStockItem,user.getUsername());
             }
@@ -119,6 +119,7 @@ public class OrderStockImpl implements IOrderStock {
             ordering.setOrderStateId(orderState.getId());
             Ordering updatedOrder;
             updatedOrder = orderingRepository.save(ordering);
+            newOrderStock.setComplete(markOrderStock(newOrderStock));
             iOrderLog.save(updatedOrder.getUser(),updatedOrder);
             iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+newOrderStock.getOrderId()+" CREADA.",newOrderStock.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
@@ -194,7 +195,6 @@ public class OrderStockImpl implements IOrderStock {
                 OrderStock newOrderStock = orderStockRepository.save(OrderStock.builder()
                         .ordering(ordering)
                         .orderId(ordering.getId())
-                        .status(true)
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
                         .registrationDate(OffsetDateTime.now())
@@ -211,6 +211,7 @@ public class OrderStockImpl implements IOrderStock {
                 ordering.setOrderStateId(orderState.getId());
                 Ordering updatedOrder;
                 updatedOrder = orderingRepository.save(ordering);
+                newOrderStock.setComplete(markOrderStock(newOrderStock));
                 iOrderLog.save(updatedOrder.getUser(),updatedOrder);
                 iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+newOrderStock.getOrderId()+" CREADA.",newOrderStock.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()

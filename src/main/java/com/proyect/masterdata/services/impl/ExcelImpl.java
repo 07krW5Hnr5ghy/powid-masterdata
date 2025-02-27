@@ -970,7 +970,7 @@ public class ExcelImpl implements IExcel {
                 OrderStock orderStock = orderStockRepository.save(OrderStock.builder()
                         .ordering(ordering)
                         .orderId(ordering.getId())
-                        .status(true)
+                        //.status(true)
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
                         .registrationDate(OffsetDateTime.now())

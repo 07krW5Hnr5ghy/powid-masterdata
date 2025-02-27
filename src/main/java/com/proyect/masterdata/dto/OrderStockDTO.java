@@ -16,4 +16,5 @@ public class OrderStockDTO {
     private UUID orderId;
     private String warehouse;
     private OffsetDateTime registrationDate;
+    private Boolean complete;
 }
