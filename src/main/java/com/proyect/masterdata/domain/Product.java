@@ -25,6 +25,9 @@ public class Product {
     @Column(name = "product_id")
     private UUID id;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;

@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class ProductDTO {
+    private String name;
     private String sku;
     private String brand;
     private String model;

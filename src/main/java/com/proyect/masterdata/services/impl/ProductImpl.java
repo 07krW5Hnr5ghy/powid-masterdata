@@ -66,6 +66,7 @@ public class ProductImpl implements IProduct {
         SubCategoryProduct subCategoryProduct;
         Color color;
         Unit unit;
+        Product productName;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -113,10 +114,17 @@ public class ProductImpl implements IProduct {
 
         if (product != null) {
             throw new BadRequestExceptions(Constants.ErrorProductExists);
+        }else{
+            productName = productRepository.findByNameAndClientId(requestProductSave.getName().toUpperCase(),user.getClientId());
+        }
+
+        if(productName != null){
+            throw new BadRequestExceptions(Constants.ErrorProductExists);
         }
 
         try {
             Product productData = productRepository.save(Product.builder()
+                    .name(requestProductSave.getName().toUpperCase())
                     .model(model)
                     .modelId(model.getId())
                     .size(size)
@@ -165,6 +173,7 @@ public class ProductImpl implements IProduct {
             SubCategoryProduct subCategoryProduct;
             Color color;
             Unit unit;
+            Product productName;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -219,10 +228,17 @@ public class ProductImpl implements IProduct {
 
             if (product != null) {
                 throw new BadRequestExceptions(Constants.ErrorProductExists);
+            }else{
+                productName = productRepository.findByNameAndClientId(requestProductSave.getName().toUpperCase(),user.getClientId());
+            }
+
+            if(productName!=null){
+                throw new BadRequestExceptions(Constants.ErrorProductExists);
             }
 
             try {
                 Product productData = productRepository.save(Product.builder()
+                        .name(requestProductSave.getName().toUpperCase())
                         .model(model)
                         .modelId(model.getId())
                         .size(size)
@@ -460,6 +476,7 @@ public class ProductImpl implements IProduct {
                 List<String> productImages = productPictureRepository.findAllByProductId(product.getId()).stream().map(ProductPicture::getProductPictureUrl).toList();
 
                 return ProductDTO.builder()
+                        .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
@@ -573,6 +590,7 @@ public class ProductImpl implements IProduct {
             List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
@@ -612,6 +630,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
@@ -648,6 +667,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
@@ -684,6 +704,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
@@ -803,6 +824,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
@@ -844,6 +866,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
@@ -884,6 +907,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())
@@ -923,6 +947,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
                         .model(product.getModel().getName())

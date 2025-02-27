@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class RequestProductSave {
+    private String name;
     private String sku;
     private String model;
     private String color;
