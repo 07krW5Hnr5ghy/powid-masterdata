@@ -11,8 +11,10 @@ import java.util.UUID;
 public interface OrderStockItemRepository extends JpaRepository<OrderStockItem, UUID> {
     List<OrderStockItem> findByOrderStockIdAndOrderItemId(UUID orderId, UUID itemId);
     List<OrderStockItem> findAllByClientIdAndStatusTrue(UUID clientId);
+    List<OrderStockItem> findAllByOrderStockId(UUID orderStockId);
     List<OrderStockItem> findAllByClientIdAndStatusFalse(UUID clientId);
     List<OrderStockItem> findAllByClientIdAndOrderIdAndStatusTrue(UUID clientId,UUID orderId);
     List<OrderStockItem> findAllByClientIdAndOrderIdAndStatusFalse(UUID clientId,UUID orderId);
     OrderStockItem findByOrderStockIdAndSupplierProductIdAndStatusTrue(UUID orderStockId,UUID supplierProductId);
+    List<OrderStockItem> findAllByOrderItemId(UUID orderItemId);
 }

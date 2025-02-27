@@ -39,6 +39,7 @@ public class OrderStockImpl implements IOrderStock {
     private final OrderStateRepository orderStateRepository;
     private final IAudit iAudit;
     private final IOrderLog iOrderLog;
+    private final OrderStockItemRepository orderStockItemRepository;
     @Override
     public ResponseSuccess save(UUID orderId, String warehouseName, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -374,5 +375,33 @@ public class OrderStockImpl implements IOrderStock {
                     .registrationDate(orderStock.getRegistrationDate())
                     .build();
         });
+    }
+
+    @Override
+    public Boolean markOrderStock(OrderStock orderStock) throws BadRequestExceptions, InternalErrorExceptions {
+        List<OrderItem> orderItems;
+        try{
+            orderItems = orderItemRepository.findAllByOrderId(orderStock.getOrderId());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        try{
+            int orderStockFull = 0;
+            for(OrderItem orderItem:orderItems){
+                List<OrderStockItem> orderStockItemList = orderStockItemRepository.findAllByOrderItemId(orderItem.getId());
+                Integer stock = 0;
+                for(OrderStockItem orderStockItem:orderStockItemList){
+                    stock += orderStockItem.getQuantity();
+                }
+                if(stock.equals(orderItem.getQuantity())){
+                    orderStockFull += 1;
+                }
+            }
+            return orderItems.size() == orderStockFull;
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 }
