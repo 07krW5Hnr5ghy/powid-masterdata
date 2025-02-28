@@ -476,6 +476,7 @@ public class ProductImpl implements IProduct {
                 List<String> productImages = productPictureRepository.findAllByProductId(product.getId()).stream().map(ProductPicture::getProductPictureUrl).toList();
 
                 return ProductDTO.builder()
+                        .id(product.getId())
                         .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
@@ -590,6 +591,7 @@ public class ProductImpl implements IProduct {
             List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .id(product.getId())
                         .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
@@ -630,6 +632,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .id(product.getId())
                         .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
@@ -667,6 +670,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .id(product.getId())
                         .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
@@ -704,6 +708,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .id(product.getId())
                         .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())

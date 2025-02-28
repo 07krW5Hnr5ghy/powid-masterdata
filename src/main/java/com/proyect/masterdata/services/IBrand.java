@@ -14,8 +14,8 @@ import java.util.concurrent.CompletableFuture;
 import org.springframework.data.domain.Page;
 
 public interface IBrand {
-        ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+        ResponseSuccess save(String name, String tokenUser, String sku) throws InternalErrorExceptions, BadRequestExceptions;
+        CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser, String sku) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<BrandDTO>> listPagination(
                 String tokenUser,

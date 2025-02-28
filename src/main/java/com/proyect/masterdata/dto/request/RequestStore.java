@@ -13,4 +13,5 @@ public class RequestStore {
     private String name;
     private String url;
     private String tokenUser;
+    private String existingStore;
 }
