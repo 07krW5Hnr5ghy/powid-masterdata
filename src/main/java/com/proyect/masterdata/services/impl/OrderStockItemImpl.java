@@ -47,13 +47,13 @@ public class OrderStockItemImpl implements IOrderStockItem {
             SupplierProduct supplierProduct;
             OrderStock orderStock;
             Product product;
+            OrderStockItem orderStockItem;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 product = productRepository.findByIdAndStatusTrue(requestOrderStockItem.getProductId());
                 ordering = orderingRepository.findById(orderId).orElse(null);
                 supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestOrderStockItem.getSupplierProductId());
-
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -75,12 +75,14 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderItem = orderItemRepository.findByProductIdAndOrderId(product.getId(), orderId);
             }
 
-            if(orderItem == null){
-                throw new BadRequestExceptions(Constants.ErrorOrderItem);
-            }
-
             if(supplierProduct == null){
                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
+
+            if(orderItem == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderItem);
+            }else{
+                orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
             }
 
             if(!Objects.equals(iUtil.buildProductSku(supplierProduct.getProduct()), iUtil.buildProductSku(orderItem.getProduct()))){
@@ -89,6 +91,10 @@ public class OrderStockItemImpl implements IOrderStockItem {
 
             if(requestOrderStockItem.getQuantity() > orderItem.getQuantity()){
                 throw new BadRequestExceptions(Constants.ErrorOrderStockItemQuantity);
+            }
+
+            if(orderStockItem!=null){
+                throw new BadRequestExceptions(Constants.ErrorOrderStockItemExists);
             }
 
             try{
@@ -492,6 +498,7 @@ public class OrderStockItemImpl implements IOrderStockItem {
             OrderStock orderStock;
             OrderStockItem orderStockItem;
             WarehouseStock warehouseStock;
+            Integer newQuantity;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 supplierProduct = supplierProductRepository.findByIdAndStatusTrue(supplierProductId);
@@ -520,16 +527,17 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 throw new BadRequestExceptions(Constants.ErrorOrderStockItem);
             }else {
                 warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(orderStock.getWarehouseId(),supplierProduct.getId());
+                newQuantity = orderStockItem.getQuantity() + quantity;
             }
-            if(orderStockItem.getOrderItem().getQuantity() < quantity){
+            if(orderStockItem.getOrderItem().getQuantity() < newQuantity){
                 throw new BadRequestExceptions(Constants.ErrorOrderStockItemUpdateOrderQuantity);
             }
-            if(warehouseStock.getQuantity() < quantity){
+            if(warehouseStock.getQuantity() < newQuantity){
                 throw new BadRequestExceptions(Constants.ErrorOrderStockItemUpdateStockQuantity);
             }
 
             try {
-                orderStockItem.setQuantity(quantity);
+                orderStockItem.setQuantity(newQuantity);
                 orderStockItem.setUpdateDate(OffsetDateTime.now());
                 orderStockItem.setUser(user);
                 orderStockItem.setUserId(user.getId());

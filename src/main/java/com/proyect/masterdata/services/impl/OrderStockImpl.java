@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderStockDTO;
 import com.proyect.masterdata.dto.request.RequestOrderStockItem;
+import com.proyect.masterdata.dto.request.RequestOrderStockUpdate;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -39,6 +40,7 @@ public class OrderStockImpl implements IOrderStock {
     private final OrderStateRepository orderStateRepository;
     private final IAudit iAudit;
     private final IOrderLog iOrderLog;
+    private final OrderStockItemRepository orderStockItemRepository;
     @Override
     public ResponseSuccess save(UUID orderId, String warehouseName, List<RequestOrderStockItem> requestOrderStockItemList, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
@@ -101,7 +103,6 @@ public class OrderStockImpl implements IOrderStock {
             OrderStock newOrderStock = orderStockRepository.save(OrderStock.builder()
                     .ordering(ordering)
                     .orderId(ordering.getId())
-                    .status(true)
                     .warehouse(warehouse)
                     .warehouseId(warehouse.getId())
                     .registrationDate(OffsetDateTime.now())
@@ -111,6 +112,7 @@ public class OrderStockImpl implements IOrderStock {
                     .user(user)
                             .userId(user.getId())
                     .build());
+
             for(RequestOrderStockItem requestOrderStockItem : requestOrderStockItemList){
                 iOrderStockItem.save(newOrderStock.getOrderId(),requestOrderStockItem,user.getUsername());
             }
@@ -118,6 +120,7 @@ public class OrderStockImpl implements IOrderStock {
             ordering.setOrderStateId(orderState.getId());
             Ordering updatedOrder;
             updatedOrder = orderingRepository.save(ordering);
+            newOrderStock.setComplete(markOrderStock(newOrderStock));
             iOrderLog.save(updatedOrder.getUser(),updatedOrder);
             iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+newOrderStock.getOrderId()+" CREADA.",newOrderStock.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
@@ -193,7 +196,6 @@ public class OrderStockImpl implements IOrderStock {
                 OrderStock newOrderStock = orderStockRepository.save(OrderStock.builder()
                         .ordering(ordering)
                         .orderId(ordering.getId())
-                        .status(true)
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
                         .registrationDate(OffsetDateTime.now())
@@ -210,6 +212,7 @@ public class OrderStockImpl implements IOrderStock {
                 ordering.setOrderStateId(orderState.getId());
                 Ordering updatedOrder;
                 updatedOrder = orderingRepository.save(ordering);
+                newOrderStock.setComplete(markOrderStock(newOrderStock));
                 iOrderLog.save(updatedOrder.getUser(),updatedOrder);
                 iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+newOrderStock.getOrderId()+" CREADA.",newOrderStock.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -373,6 +376,67 @@ public class OrderStockImpl implements IOrderStock {
                     .warehouse(orderStock.getWarehouse().getName())
                     .registrationDate(orderStock.getRegistrationDate())
                     .build();
+        });
+    }
+
+    @Override
+    public Boolean markOrderStock(OrderStock orderStock) throws BadRequestExceptions, InternalErrorExceptions {
+        List<OrderItem> orderItems;
+        try{
+            orderItems = orderItemRepository.findAllByOrderId(orderStock.getOrderId());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        try{
+            int orderStockFull = 0;
+            for(OrderItem orderItem:orderItems){
+                List<OrderStockItem> orderStockItemList = orderStockItemRepository.findAllByOrderItemId(orderItem.getId());
+                Integer stock = 0;
+                for(OrderStockItem orderStockItem:orderStockItemList){
+                    stock += orderStockItem.getQuantity();
+                }
+                if(stock.equals(orderItem.getQuantity())){
+                    orderStockFull += 1;
+                }
+            }
+            return orderItems.size() == orderStockFull;
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> orderStockUpdate(RequestOrderStockUpdate requestOrderStockUpdate) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            OrderStock orderStock;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(requestOrderStockUpdate.getUser().toUpperCase());
+                orderStock = orderStockRepository.findById(requestOrderStockUpdate.getOrderStockId()).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(orderStock==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderStock);
+            }
+            try{
+                for(RequestOrderStockItem requestOrderStockItem: requestOrderStockUpdate.getRequestOrderStockItemList()){
+                    iOrderStockItem.save(orderStock.getOrderId(),requestOrderStockItem,user.getUsername());
+                }
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 }

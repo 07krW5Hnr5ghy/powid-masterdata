@@ -29,8 +29,8 @@ public class OrderStock {
     @Column(name = "warehouse_id")
     private UUID warehouseId;
 
-    @Column(name = "status")
-    private Boolean status;
+    @Column(name = "complete")
+    private Boolean complete;
 
     @Column(name = "registration_date")
     private OffsetDateTime registrationDate;
