@@ -47,13 +47,13 @@ public class OrderStockItemImpl implements IOrderStockItem {
             SupplierProduct supplierProduct;
             OrderStock orderStock;
             Product product;
+            OrderStockItem orderStockItem;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 product = productRepository.findByIdAndStatusTrue(requestOrderStockItem.getProductId());
                 ordering = orderingRepository.findById(orderId).orElse(null);
                 supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestOrderStockItem.getSupplierProductId());
-
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -75,12 +75,14 @@ public class OrderStockItemImpl implements IOrderStockItem {
                 orderItem = orderItemRepository.findByProductIdAndOrderId(product.getId(), orderId);
             }
 
-            if(orderItem == null){
-                throw new BadRequestExceptions(Constants.ErrorOrderItem);
-            }
-
             if(supplierProduct == null){
                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            }
+
+            if(orderItem == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderItem);
+            }else{
+                orderStockItem = orderStockItemRepository.findByOrderStockIdAndSupplierProductIdAndStatusTrue(orderStock.getId(),supplierProduct.getId());
             }
 
             if(!Objects.equals(iUtil.buildProductSku(supplierProduct.getProduct()), iUtil.buildProductSku(orderItem.getProduct()))){
@@ -89,6 +91,10 @@ public class OrderStockItemImpl implements IOrderStockItem {
 
             if(requestOrderStockItem.getQuantity() > orderItem.getQuantity()){
                 throw new BadRequestExceptions(Constants.ErrorOrderStockItemQuantity);
+            }
+
+            if(orderStockItem!=null){
+                throw new BadRequestExceptions(Constants.ErrorOrderStockItemExists);
             }
 
             try{

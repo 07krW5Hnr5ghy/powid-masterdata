@@ -315,4 +315,5 @@ public class Constants {
     public static final String ErrorProductSupplierProductMismatch = "Inventario no pertenece al producto";
     public static final String ErrorDeliveryCompany = "Empresa de courier no esta registrada";
     public static final String ErrorDeliveryCompanyExists = "Empresa de courier ya esta registrada";
+    public static final String ErrorOrderStockItemExists = "Item de stock para pedido ya fue registrado";
 }
