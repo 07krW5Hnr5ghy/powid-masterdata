@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderStockDTO;
 import com.proyect.masterdata.dto.request.RequestOrderStockItem;
+import com.proyect.masterdata.dto.request.RequestOrderStockUpdate;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -404,5 +405,38 @@ public class OrderStockImpl implements IOrderStock {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> orderStockUpdate(RequestOrderStockUpdate requestOrderStockUpdate) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            OrderStock orderStock;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(requestOrderStockUpdate.getUser().toUpperCase());
+                orderStock = orderStockRepository.findById(requestOrderStockUpdate.getOrderStockId()).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(orderStock==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderStock);
+            }
+            try{
+                for(RequestOrderStockItem requestOrderStockItem: requestOrderStockUpdate.getRequestOrderStockItemList()){
+                    iOrderStockItem.save(orderStock.getOrderId(),requestOrderStockItem,user.getUsername());
+                }
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }

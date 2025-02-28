@@ -5,6 +5,7 @@ import com.proyect.masterdata.domain.Ordering;
 import com.proyect.masterdata.dto.OrderStockDTO;
 import com.proyect.masterdata.dto.OrderStockItemDTO;
 import com.proyect.masterdata.dto.request.RequestOrderStockItem;
+import com.proyect.masterdata.dto.request.RequestOrderStockUpdate;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -30,4 +31,5 @@ public interface IOrderStock {
     CompletableFuture<List<OrderStockDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<OrderStockDTO> listOrderStock(UUID id,String user) throws BadRequestExceptions,InternalErrorExceptions;
     Boolean markOrderStock(OrderStock orderStock) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> orderStockUpdate(RequestOrderStockUpdate requestOrderStockUpdate) throws BadRequestExceptions,InternalErrorExceptions;
 }
