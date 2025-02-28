@@ -39,8 +39,9 @@ public class BrandController {
     //@PreAuthorize("hasAuthority('ROLE:MARKETING') and hasAuthority('ACCESS:BRAND_POST')")
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
-            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iBrand.saveAsync(name, tokenUser);
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestParam("sku") String sku) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iBrand.saveAsync(name, tokenUser, sku);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
