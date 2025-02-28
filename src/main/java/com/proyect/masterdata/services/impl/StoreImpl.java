@@ -158,7 +158,9 @@ public class StoreImpl implements IStore {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(requestStore.getTokenUser().toUpperCase());
-                store = storeRepository.findByNameAndStatusTrue(requestStore.getName().toUpperCase());
+                System.out.println("USER LOGIN: "+user);
+                store = storeRepository.findByNameAndStatusTrue(requestStore.getExistingStore().toUpperCase());
+                System.out.println("STORE LOGIN: "+store);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -173,17 +175,21 @@ public class StoreImpl implements IStore {
             }
 
             try {
-
                 store.setUrl(requestStore.getUrl());
                 store.setUser(user);
                 store.setUserId(user.getId());
+                store.setName(requestStore.getName());
                 store.setUpdateDate(OffsetDateTime.now());
+                store = storeRepository.save(store);
+                //Store storeUpdate = storeRepository.save(store);
                 iAudit.save("UPDATE_STORE","TIENDA "+store.getName()+" ACTUALIZADA.",store.getName(),user.getUsername());
+
                 return StoreDTO.builder()
                         .name(store.getName())
                         .url(store.getUrl())
                         .client(store.getClient().getBusiness())
                         .storeType(store.getStoreType().getName())
+                        .user(store.getUser().getUsername())
                         .build();
 
             } catch (RuntimeException e) {
