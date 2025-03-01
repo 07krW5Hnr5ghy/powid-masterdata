@@ -367,6 +367,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_MODEL",adminUser.getUsername());
                         iAuditEvent.save("ADD_MODULE",adminUser.getUsername());
                         iAuditEvent.save("ADD_ORDER",adminUser.getUsername());
+                        iAuditEvent.save("ADD_ORDER_CONTACTED",adminUser.getUsername());
                         iAuditEvent.save("ADD_ORDER_ITEM",adminUser.getUsername());
                         iAuditEvent.save("ADD_ORDER_PAYMENT_METHOD",adminUser.getUsername());
                         iAuditEvent.save("ADD_ORDER_PAYMENT_RECEIPT",adminUser.getUsername());
@@ -493,6 +494,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("UPDATE_DELIVERY_MANIFEST_ITEM",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_MODULE",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_ORDER",adminUser.getUsername());
+                        iAuditEvent.save("UPDATE_ORDER_CONTACTED",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_ORDER_ITEM",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_ORDER_RETURN_ITEM",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_ORDER_STOCK_ITEM",adminUser.getUsername());
@@ -573,6 +575,8 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("ORDER_GET",adminUser.getUsername());
                         iAccess.save("ORDER_POST",adminUser.getUsername());
                         iAccess.save("ORDER_PUT",adminUser.getUsername());
+                        iAccess.save("ORDER_CONTACTED_GET",adminUser.getUsername());
+                        iAccess.save("ORDER_CONTACTED_PUT",adminUser.getUsername());
                         iAccess.save("ORDER_ITEM_GET",adminUser.getUsername());
                         iAccess.save("ORDER_ITEM_POST",adminUser.getUsername());
                         iAccess.save("ORDER_ITEM_DELETE",adminUser.getUsername());
@@ -686,6 +690,8 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("VENTAS","ORDER_GET",adminUser.getUsername());
                         iRoleAccess.save("VENTAS","ORDER_POST",adminUser.getUsername());
                         iRoleAccess.save("VENTAS","ORDER_PUT",adminUser.getUsername());
+                        iRoleAccess.save("VENTAS","ORDER_CONTACTED_GET",adminUser.getUsername());
+                        iRoleAccess.save("VENTAS","ORDER_CONTACTED_PUT",adminUser.getUsername());
                         iRoleAccess.save("VENTAS","ORDER_ITEM_GET",adminUser.getUsername());
                         iRoleAccess.save("VENTAS","ORDER_ITEM_POST",adminUser.getUsername());
                         iRoleAccess.save("VENTAS","ORDER_ITEM_PUT",adminUser.getUsername());
@@ -703,6 +709,8 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("SERVICIO_CLIENTE","COURIER_GET",adminUser.getUsername());
                         iRoleAccess.save("SERVICIO_CLIENTE","ORDER_GET",adminUser.getUsername());
                         iRoleAccess.save("SERVICIO_CLIENTE","ORDER_PUT",adminUser.getUsername());
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_CONTACTED_GET",adminUser.getUsername());
+                        iRoleAccess.save("SERVICIO_CLIENTE","ORDER_CONTACTED_PUT",adminUser.getUsername());
                         iRoleAccess.save("SERVICIO_CLIENTE","ORDER_ITEM_GET",adminUser.getUsername());
                         iRoleAccess.save("SERVICIO_CLIENTE","ORDER_ITEM_POST",adminUser.getUsername());
                         iRoleAccess.save("SERVICIO_CLIENTE","ORDER_ITEM_PUT",adminUser.getUsername());

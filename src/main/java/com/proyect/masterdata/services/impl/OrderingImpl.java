@@ -76,7 +76,7 @@ public class OrderingImpl implements IOrdering {
     private final CancellationReasonRepository cancellationReasonRepository;
     private final IUtil iUtil;
     private final IOrderLog iOrderLog;
-    @Override
+    private final IOrderContacted iOrderContacted;
     @Transactional
     public ResponseSuccess save(
             RequestOrderSave requestOrderSave,
@@ -908,6 +908,9 @@ public class OrderingImpl implements IOrdering {
                 updatedOrder = orderingRepository.save(ordering);
             }
             iOrderLog.save(updatedOrder.getUser(),updatedOrder);
+            if(Objects.equals(ordering.getOrderState().getName(), "PREPARADO")){
+                iOrderContacted.markContacted(ordering.getId(),user.getUsername());
+            }
             iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -1078,6 +1081,9 @@ public class OrderingImpl implements IOrdering {
                     });
                 }
                 iOrderLog.save(updatedOrder.getUser(),updatedOrder);
+                if(Objects.equals(ordering.getOrderState().getName(), "PREPARADO")){
+                    iOrderContacted.markContacted(ordering.getId(),user.getUsername());
+                }
                 iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
