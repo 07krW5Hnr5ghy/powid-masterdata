@@ -98,7 +98,7 @@ public class ColorController {
                 pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @PostMapping("activate")
+    @PutMapping()
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser

@@ -76,7 +76,7 @@ public class OrderingImpl implements IOrdering {
     private final CancellationReasonRepository cancellationReasonRepository;
     private final IUtil iUtil;
     private final IOrderLog iOrderLog;
-    @Override
+    private final IOrderContacted iOrderContacted;
     @Transactional
     public ResponseSuccess save(
             RequestOrderSave requestOrderSave,
@@ -588,6 +588,7 @@ public class OrderingImpl implements IOrdering {
                 }
                 return OrderDTO.builder()
                         .id(order.getId())
+                        .orderNumber(order.getOrderNumber())
                         .customerName(order.getCustomer().getName())
                         .customerPhone(order.getCustomer().getPhone())
                         .customerType(order.getCustomer().getCustomerType().getName())
@@ -712,6 +713,7 @@ public class OrderingImpl implements IOrdering {
                 CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(order.getId());
                 OrderDTO newOrderDTO = OrderDTO.builder()
                         .id(order.getId())
+                        .orderNumber(order.getOrderNumber())
                         .customerName(order.getCustomer().getName())
                         .customerPhone(order.getCustomer().getPhone())
                         .customerAddress(order.getCustomer().getAddress())
@@ -908,6 +910,9 @@ public class OrderingImpl implements IOrdering {
                 updatedOrder = orderingRepository.save(ordering);
             }
             iOrderLog.save(updatedOrder.getUser(),updatedOrder);
+            if(Objects.equals(ordering.getOrderState().getName(), "PREPARADO")){
+                iOrderContacted.markContacted(ordering.getId(),user.getUsername());
+            }
             iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -1078,6 +1083,9 @@ public class OrderingImpl implements IOrdering {
                     });
                 }
                 iOrderLog.save(updatedOrder.getUser(),updatedOrder);
+                if(Objects.equals(ordering.getOrderState().getName(), "PREPARADO")){
+                    iOrderContacted.markContacted(ordering.getId(),user.getUsername());
+                }
                 iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -1135,6 +1143,7 @@ public class OrderingImpl implements IOrdering {
                 List<OrderPaymentReceipt> orderPaymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(ordering.getId());
                 CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(ordering.getId());
                 OrderDTO newOrderDTO = OrderDTO.builder()
+                        .orderNumber(ordering.getOrderNumber())
                         .sellerName(ordering.getSeller())
                         .discount(ordering.getDiscount().getName())
                         .deliveryPoint(ordering.getDeliveryPoint().getName())

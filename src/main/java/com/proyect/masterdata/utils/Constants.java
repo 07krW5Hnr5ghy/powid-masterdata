@@ -108,6 +108,7 @@ public class Constants {
     public static final String tableDeliveryStatus = "delivery_status";
     public static final String tableOrderLog = "order_log";
     public static final String tableDeliveryCompany = "delivery_company";
+    public static final String tableOrderContacted = "order_contacted";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -316,4 +317,6 @@ public class Constants {
     public static final String ErrorDeliveryCompany = "Empresa de courier no esta registrada";
     public static final String ErrorDeliveryCompanyExists = "Empresa de courier ya esta registrada";
     public static final String ErrorOrderStockItemExists = "Item de stock para pedido ya fue registrado";
+    public static final String ErrorOrderContacted = "Registro de pedido contactado no ha sido registrado";
+    public static final String ErrorOrderContactedExists = "Registro de pedido contactado ya fue registrado";
 }
