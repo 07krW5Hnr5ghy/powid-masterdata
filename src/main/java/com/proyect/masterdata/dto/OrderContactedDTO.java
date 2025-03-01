@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,9 +14,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class OrderDTO {
-    private UUID id;
+public class OrderContactedDTO {
+    private UUID orderContactId;
+    private UUID orderId;
     private Long orderNumber;
+    private Boolean contacted;
+    private OffsetDateTime registrationDate;
+    private OffsetDateTime updateDate;
     private String sellerName;
     private String customerName;
     private String customerType;
@@ -45,8 +48,6 @@ public class OrderDTO {
     private BigDecimal advancedPayment;
     private BigDecimal duePayment;
     private BigDecimal discountAmount;
-    private OffsetDateTime registrationDate;
-    private OffsetDateTime updateDate;
     private String deliveryAddress;
     private String courier;
     private String orderStatus;

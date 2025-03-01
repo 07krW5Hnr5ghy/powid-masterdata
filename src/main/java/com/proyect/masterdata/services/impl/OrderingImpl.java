@@ -588,6 +588,7 @@ public class OrderingImpl implements IOrdering {
                 }
                 return OrderDTO.builder()
                         .id(order.getId())
+                        .orderNumber(order.getOrderNumber())
                         .customerName(order.getCustomer().getName())
                         .customerPhone(order.getCustomer().getPhone())
                         .customerType(order.getCustomer().getCustomerType().getName())
@@ -712,6 +713,7 @@ public class OrderingImpl implements IOrdering {
                 CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(order.getId());
                 OrderDTO newOrderDTO = OrderDTO.builder()
                         .id(order.getId())
+                        .orderNumber(order.getOrderNumber())
                         .customerName(order.getCustomer().getName())
                         .customerPhone(order.getCustomer().getPhone())
                         .customerAddress(order.getCustomer().getAddress())
@@ -1141,6 +1143,7 @@ public class OrderingImpl implements IOrdering {
                 List<OrderPaymentReceipt> orderPaymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(ordering.getId());
                 CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(ordering.getId());
                 OrderDTO newOrderDTO = OrderDTO.builder()
+                        .orderNumber(ordering.getOrderNumber())
                         .sellerName(ordering.getSeller())
                         .discount(ordering.getDiscount().getName())
                         .deliveryPoint(ordering.getDeliveryPoint().getName())
