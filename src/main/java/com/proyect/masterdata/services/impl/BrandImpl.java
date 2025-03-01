@@ -38,7 +38,7 @@ public class BrandImpl implements IBrand {
     private final MembershipStateRepository membershipStateRepository;
     private final IAudit iAudit;
     @Override
-    public ResponseSuccess save(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public ResponseSuccess save(String name, String tokenUser, String sku) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
         boolean existsBrand;
         Membership membership;
@@ -70,6 +70,7 @@ public class BrandImpl implements IBrand {
         try {
             Brand newBrand = brandRepository.save(Brand.builder()
                     .name(name.toUpperCase())
+                    .sku(sku.toUpperCase())
                     .status(true)
                     .registrationDate(OffsetDateTime.now())
                             .updateDate(OffsetDateTime.now())
@@ -90,7 +91,7 @@ public class BrandImpl implements IBrand {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser, String sku) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             User user;
             boolean existsBrand;
@@ -124,6 +125,7 @@ public class BrandImpl implements IBrand {
                 Brand newBrand = brandRepository.save(Brand.builder()
                         .name(name.toUpperCase())
                         .status(true)
+                        .sku(sku.toUpperCase())
                         .registrationDate(OffsetDateTime.now())
                                 .updateDate(OffsetDateTime.now())
                                 .user(user)
