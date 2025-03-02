@@ -29,4 +29,10 @@ public interface DistrictRepository extends JpaRepository<District, UUID> {
             "JOIN master.province p ON p.department_id = de.department_id " +
             "JOIN master.district di ON di.province_id = p.province_id " , nativeQuery = true)
     List<Object[]> findDepartmentsProvincesDistricts();
+
+    @Query(value = "SELECT di.name AS name, p.name AS nameProvince " +
+            "FROM master.province p " +
+            "JOIN master.district di ON di.province_id = p.province_id " +
+            "WHERE di.status = true", nativeQuery = true)
+    List<Object[]> findDistrictsAndProvincesNative();
 }
