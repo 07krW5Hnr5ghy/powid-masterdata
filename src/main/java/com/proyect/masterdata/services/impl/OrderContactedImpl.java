@@ -82,7 +82,9 @@ public class OrderContactedImpl implements IOrderContacted {
                                 .client(user.getClient())
                                 .clientId(user.getClientId())
                         .build());
+
                 newOrderContacted.setObservations(Objects.requireNonNullElse(observations, "sin observaciones"));
+
                 iOrderLog.save(
                         user,
                         newOrderContacted.getOrdering(),
@@ -148,10 +150,12 @@ public class OrderContactedImpl implements IOrderContacted {
                 orderContacted.setUserId(user.getId());
                 orderContacted.setClient(user.getClient());
                 orderContacted.setClientId(user.getClientId());
+
                 if(observations != null){
                     orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
                 }
                 orderContactedRepository.save(orderContacted);
+
                 iOrderLog.save(
                         user,
                         orderContacted.getOrdering(),
