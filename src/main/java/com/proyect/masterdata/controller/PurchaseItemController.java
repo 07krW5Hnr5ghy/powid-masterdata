@@ -1,6 +1,8 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.PurchaseItemDTO;
+import com.proyect.masterdata.dto.request.RequestPurchaseItem;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IPurchaseItem;
 import lombok.AllArgsConstructor;
@@ -20,6 +22,15 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class PurchaseItemController {
     private final IPurchaseItem iPurchaseItem;
+    @PostMapping()
+    public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("purchaseId") UUID purchaseId,
+            @RequestBody() RequestPurchaseItem requestPurchaseItem,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, InterruptedException, ExecutionException {
+        CompletableFuture<ResponseSuccess> result = iPurchaseItem.saveAsync(purchaseId,requestPurchaseItem,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
     public ResponseEntity<Page<PurchaseItemDTO>> list(
