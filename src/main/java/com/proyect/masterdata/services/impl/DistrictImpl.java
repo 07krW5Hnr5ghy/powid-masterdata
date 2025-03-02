@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -304,12 +305,15 @@ public class DistrictImpl implements IDistrict {
     public CompletableFuture<List<DistrictDTO>> listFilter() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             try {
-                List<DistrictDTO> districtDTOS = new ArrayList<>(districtRepository.findAll().stream().map(district -> DistrictDTO.builder()
-                        .name(district.getName())
-                        .nameProvince(district.getProvince().getName())
-                        .build()).toList());
-                districtDTOS.sort(Comparator.comparing(DistrictDTO::getName,String::compareToIgnoreCase));
-                return districtDTOS;
+                List<DistrictDTO> districtDTOList = districtRepository.findDistrictsAndProvincesNative()
+                        .stream()
+                        .map(result -> DistrictDTO.builder()
+                                .name((String) result[0])
+                                .nameProvince((String) result[1])
+                                .build())
+                        .sorted(Comparator.comparing(DistrictDTO::getName,String::compareToIgnoreCase))
+                        .collect(Collectors.toList());
+                return districtDTOList;
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
