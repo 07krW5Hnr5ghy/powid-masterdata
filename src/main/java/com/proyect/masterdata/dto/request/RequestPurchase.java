@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Builder
@@ -18,5 +19,6 @@ public class RequestPurchase {
     private String purchaseDocument;
     private String supplier;
     private String purchasePaymentType;
+    private OffsetDateTime deliveryDate;
     private List<RequestPurchaseItem> requestPurchaseItemList;
 }
