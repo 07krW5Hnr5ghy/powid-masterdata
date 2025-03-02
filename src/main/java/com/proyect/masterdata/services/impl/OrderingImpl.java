@@ -218,7 +218,11 @@ public class OrderingImpl implements IOrdering {
                 customer.setDni(requestOrderSave.getDni());
                 customerRepository.save(customer);
             }
-
+            iOrderLog.save(user,ordering,
+                    OffsetDateTime.now()+
+                            " - "+
+                            user.getUsername()+
+                            " "+ordering.getOrderState().getName());
             iAudit.save("ADD_ORDER","PEDIDO "+ordering.getId()+" CREADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -389,7 +393,11 @@ public class OrderingImpl implements IOrdering {
                     ordering.setReceiptFlag(true);
                     orderingRepository.save(ordering);
                 }
-
+                iOrderLog.save(user,ordering,
+                        OffsetDateTime.now()+
+                                " - "+
+                                user.getUsername()+
+                                " "+ordering.getOrderState().getName());
                 iAudit.save("ADD_ORDER","PEDIDO "+ordering.getId()+" CREADO.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -909,7 +917,11 @@ public class OrderingImpl implements IOrdering {
                 ordering.setDeliveryFlag(true);
                 updatedOrder = orderingRepository.save(ordering);
             }
-            iOrderLog.save(updatedOrder.getUser(),updatedOrder);
+            iOrderLog.save(user,updatedOrder,
+                    OffsetDateTime.now()+
+                            " - "+
+                            user.getUsername()+
+                            " "+updatedOrder.getOrderState().getName());
             if(Objects.equals(ordering.getOrderState().getName(), "PREPARADO")){
                 iOrderContacted.markContacted(ordering.getId(),user.getUsername());
             }
@@ -1082,7 +1094,11 @@ public class OrderingImpl implements IOrdering {
                         }
                     });
                 }
-                iOrderLog.save(updatedOrder.getUser(),updatedOrder);
+                iOrderLog.save(user,updatedOrder,
+                        OffsetDateTime.now()+
+                                " - "+
+                                user.getUsername()+
+                                " "+updatedOrder.getOrderState().getName());
                 if(Objects.equals(ordering.getOrderState().getName(), "PREPARADO")){
                     iOrderContacted.markContacted(ordering.getId(),user.getUsername());
                 }

@@ -121,7 +121,14 @@ public class OrderStockImpl implements IOrderStock {
             Ordering updatedOrder;
             updatedOrder = orderingRepository.save(ordering);
             newOrderStock.setComplete(markOrderStock(newOrderStock));
-            iOrderLog.save(updatedOrder.getUser(),updatedOrder);
+            iOrderLog.save(
+                    updatedOrder.getUser(),
+                    updatedOrder,
+                    OffsetDateTime.now()+
+                            " - "+
+                            updatedOrder.getUser().getName()+
+                            " "+updatedOrder.getOrderState().getName()
+            );
             iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+newOrderStock.getOrderId()+" CREADA.",newOrderStock.getOrderId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .message(Constants.register)
@@ -213,7 +220,14 @@ public class OrderStockImpl implements IOrderStock {
                 Ordering updatedOrder;
                 updatedOrder = orderingRepository.save(ordering);
                 newOrderStock.setComplete(markOrderStock(newOrderStock));
-                iOrderLog.save(updatedOrder.getUser(),updatedOrder);
+                iOrderLog.save(
+                        user,
+                        updatedOrder,
+                        OffsetDateTime.now()+
+                                " - "+
+                                user.getUsername()+
+                                " "+updatedOrder.getOrderState().getName()
+                );
                 iAudit.save("ADD_ORDER_STOCK","PREPARACION DE PEDIDO "+newOrderStock.getOrderId()+" CREADA.",newOrderStock.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
