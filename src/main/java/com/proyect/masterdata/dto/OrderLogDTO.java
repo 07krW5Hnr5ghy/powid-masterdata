@@ -15,4 +15,5 @@ public class OrderLogDTO {
     private OffsetDateTime registrationDate;
     private String orderState;
     private String userFullName;
+    private String detail;
 }

@@ -23,13 +23,14 @@ import java.util.UUID;
 public class OrderLogImpl implements IOrderLog {
     private OrderLogRepository orderLogRepository;
     @Override
-    public OrderLog save(User user, Ordering order) throws InternalErrorExceptions, BadRequestExceptions {
+    public OrderLog save(User user, Ordering order,String detail) throws InternalErrorExceptions, BadRequestExceptions {
         try{
             return orderLogRepository.save(OrderLog.builder()
                             .ordering(order)
                             .orderId(order.getId())
                             .orderState(order.getOrderState())
                             .orderStateId(order.getOrderStateId())
+                            .detail(detail)
                             .user(user)
                             .userId(user.getId())
                             .client(user.getClient())
@@ -58,6 +59,7 @@ public class OrderLogImpl implements IOrderLog {
                     .userFullName(orderLog.getUser().getName()+" "+orderLog.getUser().getSurname())
                     .orderState(orderLog.getOrderState().getName())
                     .registrationDate(orderLog.getRegistrationDate())
+                    .detail(orderLog.getDetail())
                     .build()).toList();
         }catch (RuntimeException e){
             log.error(e.getMessage());

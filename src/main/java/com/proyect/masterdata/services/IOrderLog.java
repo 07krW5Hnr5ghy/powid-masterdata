@@ -11,6 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IOrderLog {
-    OrderLog save(User user, Ordering order) throws InternalErrorExceptions, BadRequestExceptions;
+    OrderLog save(User user, Ordering order, String detail) throws InternalErrorExceptions, BadRequestExceptions;
     List<OrderLogDTO> listLogByOrder(UUID orderId) throws InternalErrorExceptions,BadRequestExceptions;
 }

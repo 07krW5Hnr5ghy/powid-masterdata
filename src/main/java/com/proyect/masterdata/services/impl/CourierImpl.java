@@ -329,7 +329,14 @@ public class CourierImpl implements ICourier {
                     updatedOrder = orderingRepository.save(ordering);
                 }
                 updatedOrder = orderingRepository.save(ordering);
-                iOrderLog.save(updatedOrder.getUser(),updatedOrder);
+                iOrderLog.save(
+                        updatedOrder.getUser(),
+                        updatedOrder,
+                        OffsetDateTime.now()+
+                                " - "+
+                                user.getUsername()+
+                                " "+updatedOrder.getOrderState().getName()
+                        );
                 iAudit.save("UPDATE_COURIER_ORDER","PEDIDO "+ordering.getId()+" EDITADO POR COURIER.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)

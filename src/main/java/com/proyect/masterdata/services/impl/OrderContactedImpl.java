@@ -79,6 +79,14 @@ public class OrderContactedImpl implements IOrderContacted {
                                 .client(user.getClient())
                                 .clientId(user.getClientId())
                         .build());
+                iOrderLog.save(
+                        user,
+                        newOrderContacted.getOrdering(),
+                        OffsetDateTime.now()+
+                                " - "+
+                                user.getUsername()+
+                                " "+"Estado contactado : No Contactado"
+                );
                 iAudit.save(
                         "ADD_ORDER_CONTACTED",
                         "PEDIDO "+
@@ -119,6 +127,14 @@ public class OrderContactedImpl implements IOrderContacted {
                 orderContacted.setUserId(user.getId());
                 orderContacted.setClient(user.getClient());
                 orderContacted.setClientId(user.getClientId());
+                iOrderLog.save(
+                        user,
+                        orderContacted.getOrdering(),
+                        OffsetDateTime.now()+
+                                " - "+
+                                user.getUsername()+
+                                " "+"Estado contactado : Contactado"
+                );
                 iAudit.save(
                         "ADD_ORDER_CONTACTED",
                         "PEDIDO "+
