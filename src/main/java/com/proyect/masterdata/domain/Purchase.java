@@ -34,6 +34,10 @@ public class Purchase {
     @CreationTimestamp
     private OffsetDateTime registrationDate;
 
+    @Column(name = "delivery_date")
+    @CreationTimestamp
+    private OffsetDateTime deliveryDate;
+
     @Column(name = "update_date")
     @CreationTimestamp
     private OffsetDateTime updateDate;
