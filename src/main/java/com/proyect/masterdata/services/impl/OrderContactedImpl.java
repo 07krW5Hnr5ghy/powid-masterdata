@@ -44,8 +44,9 @@ public class OrderContactedImpl implements IOrderContacted {
     private final ProductPictureRepository productPictureRepository;
     private final IUtil iUtil;
     private final IOrderLog iOrderLog;
+    private final OrderStateRepository orderStateRepository;
     @Override
-    public CompletableFuture<OrderContacted> save(UUID orderId, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> save(UUID orderId, String username,String observations) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -72,6 +73,8 @@ public class OrderContactedImpl implements IOrderContacted {
                                 .orderId(ordering.getId())
                                 .ordering(ordering)
                                 .contacted(false)
+                                .agent(user)
+                                .agentId(user.getId())
                                 .registrationDate(OffsetDateTime.now())
                                 .updateDate(OffsetDateTime.now())
                                 .user(user)
@@ -79,6 +82,7 @@ public class OrderContactedImpl implements IOrderContacted {
                                 .client(user.getClient())
                                 .clientId(user.getClientId())
                         .build());
+                newOrderContacted.setObservations(Objects.requireNonNullElse(observations, "sin observaciones"));
                 iOrderLog.save(
                         user,
                         newOrderContacted.getOrdering(),
@@ -94,7 +98,10 @@ public class OrderContactedImpl implements IOrderContacted {
                                 " AGREGADO A CONTACT CENTER.",
                         newOrderContacted.getOrdering().getOrderNumber().toString(),
                         user.getUsername());
-                return newOrderContacted;
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -103,13 +110,16 @@ public class OrderContactedImpl implements IOrderContacted {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> markContacted(UUID orderId, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> markContacted(UUID orderId, String username,String observations) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderContacted orderContacted;
+            OrderState orderState;
+            Ordering ordering;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderContacted = orderContactedRepository.findByOrderId(orderId);
+                orderState = orderStateRepository.findByNameAndStatusTrue("EN RUTA");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -119,14 +129,29 @@ public class OrderContactedImpl implements IOrderContacted {
             }
             if(orderContacted==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderContacted);
+            }else{
+                ordering = orderingRepository.findById(orderContacted.getOrderId()).orElse(null);
+            }
+            if(ordering==null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
+            if(orderState==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderState);
             }
             try{
+                ordering.setOrderState(orderState);
+                ordering.setOrderStateId(orderState.getId());
+                orderingRepository.save(ordering);
                 orderContacted.setContacted(true);
                 orderContacted.setUpdateDate(OffsetDateTime.now());
                 orderContacted.setUser(user);
                 orderContacted.setUserId(user.getId());
                 orderContacted.setClient(user.getClient());
                 orderContacted.setClientId(user.getClientId());
+                if(observations != null){
+                    orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
+                }
+                orderContactedRepository.save(orderContacted);
                 iOrderLog.save(
                         user,
                         orderContacted.getOrdering(),
@@ -298,5 +323,70 @@ public class OrderContactedImpl implements IOrderContacted {
             return new PageImpl<>(orderContactedDTOS,
                     orderContactedPage.getPageable(), orderContactedPage.getTotalElements());
             });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> selectAgent(UUID orderId, String username, String agentUsername, String observations) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            User agent;
+            OrderContacted orderContacted;
+            OrderState orderState;
+            Ordering ordering;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                orderContacted = orderContactedRepository.findByOrderId(orderId);
+                agent = userRepository.findByUsernameAndStatusTrue(agentUsername.toUpperCase());
+                orderState = orderStateRepository.findByNameAndStatusTrue("LLAMADO");
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(orderContacted==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderContacted);
+            }else{
+                ordering = orderingRepository.findById(orderContacted.getOrderId()).orElse(null);
+            }
+            if(ordering==null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
+            if(agent==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(orderState==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderState);
+            }
+            try{
+                ordering.setOrderState(orderState);
+                ordering.setOrderStateId(orderState.getId());
+                orderingRepository.save(ordering);
+                orderContacted.setUpdateDate(OffsetDateTime.now());
+                orderContacted.setUser(user);
+                orderContacted.setUserId(user.getId());
+                orderContacted.setAgent(agent);
+                orderContacted.setAgentId(agent.getId());
+                if(observations != null){
+                    orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
+                }
+                orderContactedRepository.save(orderContacted);
+                iAudit.save(
+                        "ADD_ORDER_CONTACTED",
+                        "PEDIDO "+
+                                orderContacted.getOrdering().getOrderNumber()+
+                                " AGREGADO A CONTACT CENTER.",
+                        orderContacted.getOrdering().getOrderNumber().toString(),
+                        user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }

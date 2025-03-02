@@ -22,12 +22,32 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class OrderContactedController {
     private final IOrderContacted iOrderContacted;
-    @PutMapping()
+    @PostMapping()
+    public ResponseEntity<ResponseSuccess> save(
+            @RequestParam("orderId") UUID orderId,
+            @RequestParam("username") String username,
+            @RequestParam("observations") String observations
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderContacted.save(orderId,username,observations);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PutMapping("mark-contacted")
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("orderId") UUID orderId,
-            @RequestParam("tokenUser") String tokenUser
+            @RequestParam("username") String username,
+            @RequestParam("observations") String observations
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrderContacted.markContacted(orderId,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iOrderContacted.markContacted(orderId,username,observations);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PutMapping("agent")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("orderId") UUID orderId,
+            @RequestParam("username") String username,
+            @RequestParam("agentUsername") String agentUsername,
+            @RequestParam("observations") String observations
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderContacted.selectAgent(orderId,username,agentUsername,observations);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping(value = "list")
