@@ -922,9 +922,6 @@ public class OrderingImpl implements IOrdering {
                             " - "+
                             user.getUsername()+
                             " "+updatedOrder.getOrderState().getName());
-            if(Objects.equals(ordering.getOrderState().getName(), "PREPARADO")){
-                iOrderContacted.markContacted(ordering.getId(),user.getUsername());
-            }
             iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -1099,9 +1096,6 @@ public class OrderingImpl implements IOrdering {
                                 " - "+
                                 user.getUsername()+
                                 " "+updatedOrder.getOrderState().getName());
-                if(Objects.equals(ordering.getOrderState().getName(), "PREPARADO")){
-                    iOrderContacted.markContacted(ordering.getId(),user.getUsername());
-                }
                 iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)

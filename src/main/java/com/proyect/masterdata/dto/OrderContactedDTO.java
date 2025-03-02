@@ -52,6 +52,7 @@ public class OrderContactedDTO {
     private String courier;
     private String orderStatus;
     private String observations;
+    private String contactedObservations;
     private String closingChannel;
     private List<OrderItemDTO> orderItemDTOS;
     private String store;

@@ -29,6 +29,9 @@ public class OrderContacted {
     @Column(name = "contacted")
     private Boolean contacted;
 
+    @Column(name = "observations",columnDefinition = "text")
+    private String observations;
+
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;
@@ -43,6 +46,9 @@ public class OrderContacted {
     @Column(name = "client_id")
     private UUID clientId;
 
+    @Column(name = "agent_id")
+    private UUID agentId;
+
     @OneToOne
     @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
     private Ordering ordering;
@@ -54,4 +60,8 @@ public class OrderContacted {
     @ManyToOne()
     @JoinColumn(name="client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
+
+    @ManyToOne()
+    @JoinColumn(name="agent_id",columnDefinition = "agentId",insertable = false,updatable = false)
+    private User agent;
 }

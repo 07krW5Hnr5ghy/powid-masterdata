@@ -12,8 +12,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IOrderContacted {
-    CompletableFuture<OrderContacted> save(UUID orderId, String username) throws BadRequestExceptions, InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> markContacted(UUID orderId, String username) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> save(UUID orderId, String username,String observations) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> markContacted(UUID orderId, String username,String observations) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<OrderContactedDTO>> list(
             String username,
             Long orderNumber,
@@ -27,4 +27,5 @@ public interface IOrderContacted {
             Integer pageNumber,
             Integer pageSize
     );
+    CompletableFuture<ResponseSuccess> selectAgent(UUID orderId, String username, String agentUsername,String observations) throws BadRequestExceptions,InternalErrorExceptions;
 }
