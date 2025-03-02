@@ -16,4 +16,5 @@ public interface PurchaseRepository extends JpaRepository<Purchase, UUID> {
     Purchase findByPurchaseTypeName(String purchaseTypeName);
     Purchase findByPurchaseTypeNameAndRef(String purchaseTypeName, String serial);
     List<Purchase> findAllByClientId(UUID clientId);
+    Long countByClientId(UUID clientId);
 }

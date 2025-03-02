@@ -35,20 +35,20 @@ public class PurchaseController {
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_GET')")
     public ResponseEntity<Page<PurchaseDTO>> list(
-            @RequestParam(value = "serials", required = false) List<String> serials,
+            @RequestParam(value = "ref", required = false) String ref,
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "warehouses", required = false) List<String> warehouses,
-            @RequestParam(value = "purchaseTypes", required = false) List<String> purchaseTypes,
+            @RequestParam(value = "warehouse", required = false) String warehouse,
+            @RequestParam(value = "purchaseType", required = false) String purchaseType,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<PurchaseDTO>> result = iPurchase.list(
-                serials,
+                ref,
                 user,
-                warehouses,
-                purchaseTypes,
+                warehouse,
+                purchaseType,
                 sort,
                 sortColumn,
                 pageNumber,

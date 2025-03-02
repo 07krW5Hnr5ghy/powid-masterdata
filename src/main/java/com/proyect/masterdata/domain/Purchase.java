@@ -27,6 +27,9 @@ public class Purchase {
     @Column(name = "ref")
     private String ref;
 
+    @Column(name = "purchaseNumber")
+    private Long purchaseNumber;
+
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;
