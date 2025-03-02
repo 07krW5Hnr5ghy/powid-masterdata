@@ -267,6 +267,7 @@ public class OrderContactedImpl implements IOrderContacted {
                         .deliveryAddress(orderContacted.getOrdering().getDeliveryAddress())
                         .courier(orderContacted.getOrdering().getCourier().getName())
                         .paymentReceipts(paymentReceipts)
+                        .contactedObservations(orderContacted.getObservations())
                         .courierPictures(courierPictures)
                         .observations(orderContacted.getOrdering().getObservations())
                         .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
