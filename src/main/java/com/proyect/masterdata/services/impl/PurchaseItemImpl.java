@@ -102,16 +102,17 @@ public class PurchaseItemImpl implements IPurchaseItem {
     }
 
     @Override
-    public CompletableFuture<PurchaseItem> saveAsync(Purchase purchase, String warehouse, RequestPurchaseItem requestPurchaseItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(UUID purchaseId, RequestPurchaseItem requestPurchaseItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             SupplierProduct supplierProduct;
             PurchaseItem purchaseItem;
+            Purchase purchase;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
-                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
+                purchase = purchaseRepository.findById(purchaseId).orElse(null);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -119,6 +120,12 @@ public class PurchaseItemImpl implements IPurchaseItem {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(purchase==null){
+                throw new BadRequestExceptions(Constants.ErrorPurchase);
+            }else{
+                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
             }
 
             if(supplierProduct == null){
@@ -154,7 +161,10 @@ public class PurchaseItemImpl implements IPurchaseItem {
                         "PRODUCTO DE INVENTARIO "+
                                 finalSku+" CREADO EN COMPRA.",
                         newPurchaseItem.getPurchase().getRef(),user.getUsername());
-                return newPurchaseItem;
+                return ResponseSuccess.builder()
+                        .message(Constants.register)
+                        .code(200)
+                        .build();
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
