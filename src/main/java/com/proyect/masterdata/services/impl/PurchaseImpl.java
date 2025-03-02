@@ -148,6 +148,7 @@ public class PurchaseImpl implements IPurchase {
                             .purchaseDocumentId(purchaseDocument.getId())
                             .clientId(user.getClientId())
                             .user(user).userId(user.getId())
+                            .deliveryDate(requestPurchase.getDeliveryDate())
                       .build());
             for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
                 SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
@@ -269,6 +270,7 @@ public class PurchaseImpl implements IPurchase {
                         .purchasePaymentType(purchasePaymentType)
                         .purchasePaymentTypeId(purchasePaymentType.getId())
                         .user(user).userId(user.getId())
+                        .deliveryDate(OffsetDateTime.now())
                         .build());
                 for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
@@ -332,6 +334,7 @@ public class PurchaseImpl implements IPurchase {
                     .registrationDate(purchase.getRegistrationDate())
                     .purchasePaymentType(purchase.getPurchasePaymentType().getName())
                     .purchaseNumber(purchase.getPurchaseNumber())
+                    .deliveryDate(purchase.getDeliveryDate())
                     .build()).toList();
 
             return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
@@ -381,6 +384,7 @@ public class PurchaseImpl implements IPurchase {
                     .registrationDate(purchase.getRegistrationDate())
                     .purchaseNumber(purchase.getPurchaseNumber())
                     .purchasePaymentType(purchase.getPurchasePaymentType().getName())
+                    .deliveryDate(purchase.getDeliveryDate())
                     .build()).toList();
 
             return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
@@ -411,6 +415,7 @@ public class PurchaseImpl implements IPurchase {
                     .purchaseNumber(purchase.getPurchaseNumber())
                     .purchaseType(purchase.getPurchaseType().getName())
                     .registrationDate(purchase.getRegistrationDate())
+                    .deliveryDate(purchase.getDeliveryDate())
                     .build()).toList();
         });
     }
@@ -440,6 +445,7 @@ public class PurchaseImpl implements IPurchase {
                     .purchaseType(purchase.getPurchaseType().getName())
                     .registrationDate(purchase.getRegistrationDate())
                     .purchasePaymentType(purchase.getPurchasePaymentType().getName())
+                    .deliveryDate(purchase.getDeliveryDate())
                     .build()).toList();
         });
     }
