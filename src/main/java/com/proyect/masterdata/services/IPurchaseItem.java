@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public interface IPurchaseItem {
     PurchaseItem save(Purchase purchase, String warehouse, RequestPurchaseItem requestPurchaseItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<PurchaseItem> saveAsync(Purchase purchase, String warehouse, RequestPurchaseItem requestPurchaseItem, String tokenUser)
+    CompletableFuture<ResponseSuccess> saveAsync(UUID purchaseId, RequestPurchaseItem requestPurchaseItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String serial,UUID supplierProductId, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String serial,UUID supplierProductId, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
