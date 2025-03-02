@@ -27,6 +27,9 @@ public class OrderLog {
     @CreationTimestamp
     private OffsetDateTime registrationDate;
 
+    @Column(name = "detail",columnDefinition = "text")
+    private String detail;
+
     @Column(name = "user_id")
     private UUID userId;
 
