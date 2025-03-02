@@ -102,7 +102,7 @@ public class ExcelImpl implements IExcel {
             if(purchaseType == null){
                 throw new BadRequestExceptions(Constants.ErrorPurchaseType);
             }else{
-                purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestPurchaseExcel.getSerial(), purchaseType.getId());
+                purchase = purchaseRepository.findByRefAndPurchaseTypeId(requestPurchaseExcel.getSerial(), purchaseType.getId());
             }
 
             if(purchase != null){
@@ -198,7 +198,7 @@ public class ExcelImpl implements IExcel {
                     }
                 }
                 Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
-                        .serial(requestPurchaseExcel.getSerial().toUpperCase())
+                        .ref(requestPurchaseExcel.getSerial().toUpperCase())
                         .status(true)
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
@@ -272,7 +272,7 @@ public class ExcelImpl implements IExcel {
                     j++;
                 }
                 iStockTransaction.save("S"+ requestPurchaseExcel.getSerial().toUpperCase(), warehouse,stockTransactionItemList,"COMPRA",user);
-                iAudit.save("ADD_PURCHASE_EXCEL","COMPRA "+ newPurchase.getSerial()+" CREADA POR EXCEL.",newPurchase.getSerial(),user.getUsername());
+                iAudit.save("ADD_PURCHASE_EXCEL","COMPRA "+ newPurchase.getRef()+" CREADA POR EXCEL.",newPurchase.getRef(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)

@@ -87,7 +87,7 @@ public class PurchaseImpl implements IPurchase {
         if(purchaseType == null){
             throw new BadRequestExceptions(Constants.ErrorPurchaseType);
         }else{
-            purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestPurchase.getSerial(), purchaseType.getId());
+            purchase = purchaseRepository.findByRefAndPurchaseTypeId(requestPurchase.getSerial(), purchaseType.getId());
         }
 
         if (purchase != null) {
@@ -129,7 +129,7 @@ public class PurchaseImpl implements IPurchase {
                     .build()).toList();
             StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
             Purchase newPurchase = purchaseRepository.save(Purchase.builder()
-                            .serial(requestPurchase.getSerial().toUpperCase())
+                            .ref(requestPurchase.getSerial().toUpperCase())
                             .supplier(supplier)
                             .supplierId(supplier.getId())
                             .status(true)
@@ -153,7 +153,7 @@ public class PurchaseImpl implements IPurchase {
                 iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
                 iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(),user.getUsername());
             }
-            iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getSerial() +" CREADA.",newPurchase.getSerial(),user.getUsername());
+            iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getRef() +" CREADA.",newPurchase.getRef(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -206,7 +206,7 @@ public class PurchaseImpl implements IPurchase {
             if(purchaseType == null){
                 throw new BadRequestExceptions(Constants.ErrorPurchaseType);
             }else{
-                purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestPurchase.getSerial(), purchaseType.getId());
+                purchase = purchaseRepository.findByRefAndPurchaseTypeId(requestPurchase.getSerial(), purchaseType.getId());
             }
 
             if (purchase != null) {
@@ -248,7 +248,7 @@ public class PurchaseImpl implements IPurchase {
                         .build()).toList();
                 StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
                 Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
-                        .serial(requestPurchase.getSerial().toUpperCase())
+                        .ref(requestPurchase.getSerial().toUpperCase())
                         .status(true)
                         .supplier(supplier)
                         .supplierId(supplier.getId())
@@ -272,7 +272,7 @@ public class PurchaseImpl implements IPurchase {
                     iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
                     iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(),user.getUsername());
                 }
-                iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getSerial() +" CREADA.",newPurchase.getSerial(),user.getUsername());
+                iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getRef() +" CREADA.",newPurchase.getRef(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -346,7 +346,7 @@ public class PurchaseImpl implements IPurchase {
             }
 
             List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> PurchaseDTO.builder()
-                    .serial(purchase.getSerial())
+                    .serial(purchase.getRef())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
                     .warehouse(purchase.getWarehouse().getName())
                     .purchaseType(purchase.getPurchaseType().getName())
@@ -419,7 +419,7 @@ public class PurchaseImpl implements IPurchase {
             }
 
             List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> PurchaseDTO.builder()
-                    .serial(purchase.getSerial())
+                    .serial(purchase.getRef())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
                     .warehouse(purchase.getWarehouse().getName())
                     .purchaseType(purchase.getPurchaseType().getName())
@@ -449,7 +449,7 @@ public class PurchaseImpl implements IPurchase {
             }
 
             return purchases.stream().map(purchase -> PurchaseDTO.builder()
-                    .serial(purchase.getSerial())
+                    .serial(purchase.getRef())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
                     .warehouse(purchase.getWarehouse().getName())
                     .purchaseType(purchase.getPurchaseType().getName())
@@ -476,7 +476,7 @@ public class PurchaseImpl implements IPurchase {
             }
 
             return purchases.stream().map(purchase -> PurchaseDTO.builder()
-                    .serial(purchase.getSerial())
+                    .serial(purchase.getRef())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
                     .warehouse(purchase.getWarehouse().getName())
                     .purchaseType(purchase.getPurchaseType().getName())

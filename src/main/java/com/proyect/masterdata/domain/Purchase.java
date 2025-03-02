@@ -24,8 +24,8 @@ public class Purchase {
     @Column(name = "purchase_id")
     private UUID id;
 
-    @Column(name = "serial")
-    private String serial;
+    @Column(name = "ref")
+    private String ref;
 
     @Column(name = "registration_date")
     @CreationTimestamp
