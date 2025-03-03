@@ -1,6 +1,8 @@
 package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.Purchase;
+import com.proyect.masterdata.domain.PurchaseType;
+import com.proyect.masterdata.domain.Warehouse;
 import com.proyect.masterdata.repository.PurchaseRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -26,9 +28,9 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
     @Override
     public Page<Purchase> searchForPurchase(
             UUID clientId,
-            List<String> serials,
-            List<UUID> warehouseIds,
-            List<UUID> purchaseTypeIds,
+            String ref,
+            String warehouse,
+            String purchaseType,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -39,17 +41,21 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
         CriteriaQuery<Purchase> criteriaQuery = criteriaBuilder.createQuery(Purchase.class);
 
         Root<Purchase> itemRoot = criteriaQuery.from(Purchase.class);
+        Join<Purchase, Warehouse> purchaseWarehouseJoin = itemRoot.join("warehouse");
+        Join<Purchase, PurchaseType> purchasePurchaseTypeJoin = itemRoot.join("purchaseType");
 
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
                 clientId,
-                serials,
-                warehouseIds,
-                purchaseTypeIds,
+                ref,
+                warehouse,
+                purchaseType,
                 status,
                 criteriaBuilder,
-                itemRoot);
+                itemRoot,
+                purchaseWarehouseJoin,
+                purchasePurchaseTypeJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -75,21 +81,23 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                serials,
-                warehouseIds,
-                purchaseTypeIds,
+                ref,
+                warehouse,
+                purchaseType,
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     private List<Predicate> predicate(
             UUID clientId,
-            List<String> serials,
-            List<UUID> warehouseIds,
-            List<UUID> purchaseTypeIds,
+            String ref,
+            String warehouse,
+            String purchaseType,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<Purchase> itemRoot) {
+            Root<Purchase> itemRoot,
+            Join<Purchase, Warehouse> purchaseWarehouseJoin,
+            Join<Purchase, PurchaseType> purchasePurchaseTypeJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -97,16 +105,16 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if(!serials.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("serial").in(serials)));
+        if(ref != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("ref")),"%"+ref.toUpperCase()+"%"));
         }
 
-        if(!warehouseIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("warehouseId").in(warehouseIds)));
+        if(warehouse != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(purchaseWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
         }
 
-        if(!purchaseTypeIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("purchaseTypeId").in(purchaseTypeIds)));
+        if(purchaseType!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(purchaseWarehouseJoin.get("name")),"%"+purchaseType.toUpperCase()+"%"));
         }
 
         if (status) {
@@ -168,22 +176,26 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
 
     private Long getOrderCount(
             UUID clientId,
-            List<String> serials,
-            List<UUID> warehouseIds,
-            List<UUID> purchaseTypeIds,
+            String ref,
+            String warehouse,
+            String purchaseType,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Purchase> itemRoot = criteriaQuery.from(Purchase.class);
+        Join<Purchase, Warehouse> purchaseWarehouseJoin = itemRoot.join("warehouse");
+        Join<Purchase, PurchaseType> purchasePurchaseTypeJoin = itemRoot.join("purchaseType");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
-                serials,
-                warehouseIds,
-                purchaseTypeIds,
+                ref,
+                warehouse,
+                purchaseType,
                 status,
                 criteriaBuilder,
-                itemRoot);
+                itemRoot,
+                purchaseWarehouseJoin,
+                purchasePurchaseTypeJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

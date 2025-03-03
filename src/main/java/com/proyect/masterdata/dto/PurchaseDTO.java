@@ -13,10 +13,12 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class PurchaseDTO {
-    private String serial;
+    private String ref;
+    private Long purchaseNumber;
     private String purchaseDocument;
     private String warehouse;
     private String purchaseType;
     private OffsetDateTime registrationDate;
+    private OffsetDateTime deliveryDate;
     private String purchasePaymentType;
 }
