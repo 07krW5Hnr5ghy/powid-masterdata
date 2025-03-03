@@ -112,6 +112,7 @@ public class Seeder implements CommandLineRunner {
                         District district = districtRepository.save(District.builder()
                                         .name("SISTEMA")
                                         .status(true)
+                                        .province(province)
                                         .registrationDate(OffsetDateTime.now())
                                         .updateDate(OffsetDateTime.now())
                                 .build());
@@ -1464,7 +1465,8 @@ public class Seeder implements CommandLineRunner {
                                 .company("SIN EMPRESA")
                                 .build();
 
-                        iCourier.save(requestCourier,adminUser.getUsername());
+                        iCourier.save(requestCourier,"JROMERO");
+
                         iSize.save("STD","ROPA","JROMERO");
                         iSize.save("PSZ","ROPA","JROMERO");
                         RequestStoreSave requestStore1 = RequestStoreSave.builder()
@@ -1524,6 +1526,7 @@ public class Seeder implements CommandLineRunner {
                         //iModel.save(new RequestModel("Air Force 1","ADIDAS","AR001Z",adminUser.getUsername()));
                         //iModel.save(new RequestModel("Air Force 1","ADIDAS","AR001Z",adminUser.getUsername()));
                         //iModel.save(new RequestModel("Air Force 1","ADIDAS","AR001Z",adminUser.getUsername()));
+
 
 
                 }catch (RuntimeException e){

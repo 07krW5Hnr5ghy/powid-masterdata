@@ -16,6 +16,7 @@ import com.proyect.masterdata.utils.Constants;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,10 @@ public class OrderingImpl implements IOrdering {
     private final IUtil iUtil;
     private final IOrderLog iOrderLog;
     private final IOrderContacted iOrderContacted;
+
+    @Value("${storage.path.server}")
+    private String urlPathServer ;
+
     @Transactional
     public ResponseSuccess save(
             RequestOrderSave requestOrderSave,
@@ -94,17 +99,29 @@ public class OrderingImpl implements IOrdering {
         Discount discount;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            System.out.println(user);
             orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
+            System.out.println(orderState);
             courier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
+            System.out.println(courier);
             orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
+            System.out.println(orderPaymentState);
             saleChannel = saleChannelRepository.findByNameAndStatusTrue(requestOrderSave.getSaleChannel().toUpperCase());
+            System.out.println(saleChannel);
             managementType = managementTypeRepository.findByNameAndStatusTrue(requestOrderSave.getManagementType().toUpperCase());
+            System.out.println(managementType);
             orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
+            System.out.println(orderPaymentMethod);
             store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
+            System.out.println(store);
             closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
+            System.out.println(closingChannel);
             customer = customerRepository.findByPhone(requestOrderSave.getPhone().toUpperCase());
+            System.out.println(customer);
             deliveryPoint = deliveryPointRepository.findByNameAndStatusTrue(requestOrderSave.getDeliveryPoint().toUpperCase());
+            System.out.println(deliveryPoint);
             discount = discountRepository.findByNameAndStatusTrue(requestOrderSave.getDiscount().toUpperCase());
+            System.out.println(discount);
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -237,7 +254,7 @@ public class OrderingImpl implements IOrdering {
     @Override
     @Transactional
     public CompletableFuture<ResponseSuccess> saveAsync(RequestOrderSave requestOrderSave,MultipartFile[] receipts, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folder = Paths.get("/home/powid-masterdata/src/main/resources/uploads/orders");
+        Path folder = Paths.get(urlPathServer + "/uploads/orders");
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderState orderState;
@@ -360,7 +377,7 @@ public class OrderingImpl implements IOrdering {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/orders/"+multipartFile.getOriginalFilename());
+                    File convFile = new File(urlPathServer+"/uploads/orders/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
@@ -391,6 +408,9 @@ public class OrderingImpl implements IOrdering {
                     ordering.setReceiptFlag(true);
                     orderingRepository.save(ordering);
                 }
+                System.out.println(user);
+                System.out.println(ordering);
+                System.out.println(OffsetDateTime.now() + "+ " + user.getUsername() + " + " + ordering.getOrderState().getName());
                 iOrderLog.save(user,ordering,
                         OffsetDateTime.now()+
                                 " - "+
@@ -932,8 +952,8 @@ public class OrderingImpl implements IOrdering {
 
     @Override
     public CompletableFuture<ResponseSuccess> updateAsync(UUID orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folderOrders = Paths.get("/home/powid-masterdata/src/main/resources/uploads/orders");
-        Path folderCouriers = Paths.get("/home/powid-masterdata/src/main/resources/uploads/couriers");
+        Path folderOrders = Paths.get(urlPathServer+"/home/orders");
+        Path folderCouriers = Paths.get(urlPathServer+"/uploads/couriers/");
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
@@ -1038,7 +1058,7 @@ public class OrderingImpl implements IOrdering {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/orders/"+multipartFile.getOriginalFilename());
+                    File convFile = new File(urlPathServer+"/uploads/orders/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
@@ -1050,7 +1070,7 @@ public class OrderingImpl implements IOrdering {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File("/home/powid-masterdata/src/main/resources/uploads/couriers/"+multipartFile.getOriginalFilename());
+                    File convFile = new File(urlPathServer+"/uploads/couriers/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
