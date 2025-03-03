@@ -10,10 +10,11 @@ import java.util.UUID;
 @Repository
 public interface PurchaseRepository extends JpaRepository<Purchase, UUID> {
     Purchase findByPurchaseTypeId(UUID purchaseTypeId);
-    Purchase findBySerial(String serial);
-    Purchase findBySerialAndPurchaseTypeId(String serial, UUID purchaseTypeId);
-    List<Purchase> findBySerialIn(List<String> serials);
+    Purchase findByRef(String serial);
+    Purchase findByRefAndPurchaseTypeId(String serial, UUID purchaseTypeId);
+    List<Purchase> findByRefIn(List<String> serials);
     Purchase findByPurchaseTypeName(String purchaseTypeName);
-    Purchase findByPurchaseTypeNameAndSerial(String purchaseTypeName, String serial);
+    Purchase findByPurchaseTypeNameAndRef(String purchaseTypeName, String serial);
     List<Purchase> findAllByClientId(UUID clientId);
+    Long countByClientId(UUID clientId);
 }

@@ -16,19 +16,19 @@ public interface IPurchase {
     ResponseSuccess save(RequestPurchase requestPurchase, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> saveAsync(RequestPurchase requestPurchase, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<Page<PurchaseDTO>> list(
-            List<String> serials,
+            String ref,
             String user,
-            List<String> warehouses,
-            List<String> purchaseTypes,
+            String warehouse,
+            String purchaseType,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<PurchaseDTO>> listFalse(
-            List<String> serials,
+            String ref,
             String user,
-            List<String> warehouses,
-            List<String> purchaseTypes,
+            String warehouse,
+            String purchaseType,
             String sort,
             String sortColumn,
             Integer pageNumber,

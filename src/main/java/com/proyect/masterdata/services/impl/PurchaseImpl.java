@@ -87,7 +87,7 @@ public class PurchaseImpl implements IPurchase {
         if(purchaseType == null){
             throw new BadRequestExceptions(Constants.ErrorPurchaseType);
         }else{
-            purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestPurchase.getSerial(), purchaseType.getId());
+            purchase = purchaseRepository.findByRefAndPurchaseTypeId(requestPurchase.getRef(), purchaseType.getId());
         }
 
         if (purchase != null) {
@@ -108,7 +108,7 @@ public class PurchaseImpl implements IPurchase {
 
         try{
             if(Objects.equals(purchaseType.getName(), "DEVOLUCION")){
-                stockReturn = stockReturnRepository.findBySerial(requestPurchase.getSerial());
+                stockReturn = stockReturnRepository.findBySerial(requestPurchase.getRef());
                 if(stockReturn == null){
                     throw new BadRequestExceptions(Constants.ErrorPurchaseReturn);
                 }
@@ -127,9 +127,11 @@ public class PurchaseImpl implements IPurchase {
                     .quantity(purchaseItem.getQuantity())
                     .supplierProductId(purchaseItem.getSupplierProductId())
                     .build()).toList();
-            StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
+            StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
+            Long purchaseNumber = purchaseRepository.countByClientId(user.getClientId())+1L;
             Purchase newPurchase = purchaseRepository.save(Purchase.builder()
-                            .serial(requestPurchase.getSerial().toUpperCase())
+                            .ref(requestPurchase.getRef().toUpperCase())
+                            .purchaseNumber(purchaseNumber)
                             .supplier(supplier)
                             .supplierId(supplier.getId())
                             .status(true)
@@ -146,6 +148,7 @@ public class PurchaseImpl implements IPurchase {
                             .purchaseDocumentId(purchaseDocument.getId())
                             .clientId(user.getClientId())
                             .user(user).userId(user.getId())
+                            .deliveryDate(requestPurchase.getDeliveryDate())
                       .build());
             for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
                 SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
@@ -153,7 +156,7 @@ public class PurchaseImpl implements IPurchase {
                 iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
                 iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(),user.getUsername());
             }
-            iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getSerial() +" CREADA.",newPurchase.getSerial(),user.getUsername());
+            iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getRef() +" CREADA.",newPurchase.getRef(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -206,7 +209,7 @@ public class PurchaseImpl implements IPurchase {
             if(purchaseType == null){
                 throw new BadRequestExceptions(Constants.ErrorPurchaseType);
             }else{
-                purchase = purchaseRepository.findBySerialAndPurchaseTypeId(requestPurchase.getSerial(), purchaseType.getId());
+                purchase = purchaseRepository.findByRefAndPurchaseTypeId(requestPurchase.getRef(), purchaseType.getId());
             }
 
             if (purchase != null) {
@@ -227,7 +230,7 @@ public class PurchaseImpl implements IPurchase {
 
             try{
                 if(Objects.equals(purchaseType.getName(), "DEVOLUCION")){
-                    stockReturn = stockReturnRepository.findBySerial(requestPurchase.getSerial());
+                    stockReturn = stockReturnRepository.findBySerial(requestPurchase.getRef());
                     if(stockReturn == null){
                         throw new BadRequestExceptions(Constants.ErrorPurchaseReturn);
                     }
@@ -246,10 +249,12 @@ public class PurchaseImpl implements IPurchase {
                         .quantity(purchaseItem.getQuantity())
                         .supplierProductId(purchaseItem.getSupplierProductId())
                         .build()).toList();
-                StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getSerial().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
+                StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestPurchase.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
+                Long purchaseNumber = purchaseRepository.countByClientId(user.getClientId())+1L;
                 Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
-                        .serial(requestPurchase.getSerial().toUpperCase())
+                        .ref(requestPurchase.getRef().toUpperCase())
                         .status(true)
+                        .purchaseNumber(purchaseNumber)
                         .supplier(supplier)
                         .supplierId(supplier.getId())
                         .registrationDate(OffsetDateTime.now())
@@ -265,6 +270,7 @@ public class PurchaseImpl implements IPurchase {
                         .purchasePaymentType(purchasePaymentType)
                         .purchasePaymentTypeId(purchasePaymentType.getId())
                         .user(user).userId(user.getId())
+                        .deliveryDate(OffsetDateTime.now())
                         .build());
                 for(RequestPurchaseItem requestPurchaseItem : requestPurchase.getRequestPurchaseItemList()){
                     SupplierProduct supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
@@ -272,7 +278,7 @@ public class PurchaseImpl implements IPurchase {
                     iWarehouseStock.in(warehouse,supplierProduct, requestPurchaseItem.getQuantity(),user);
                     iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(),user.getUsername());
                 }
-                iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getSerial() +" CREADA.",newPurchase.getSerial(),user.getUsername());
+                iAudit.save("ADD_PURCHASE","COMPRA " + newPurchase.getRef() +" CREADA.",newPurchase.getRef(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -287,50 +293,25 @@ public class PurchaseImpl implements IPurchase {
 
     @Override
     public CompletableFuture<Page<PurchaseDTO>> list(
-            List<String> serials,
+            String ref,
             String user,
-            List<String> warehouses,
-            List<String> purchaseTypes,
+            String warehouse,
+            String purchaseType,
             String sort,
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Purchase> pagePurchase;
-            List<String> serialsUppercase;
             UUID clientId;
-            List<UUID> warehouseIds;
-            List<UUID> purchaseTypeIds;
-
-            if(serials != null && !serials.isEmpty()){
-                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
-            }else{
-                serialsUppercase = new ArrayList<>();
-            }
-
-            if(warehouses != null && !warehouses.isEmpty()){
-                warehouseIds = warehouseRepository.findByNameIn(
-                        warehouses.stream().map(String::toUpperCase).toList()
-                ).stream().map(Warehouse::getId).toList();
-            }else{
-                warehouseIds = new ArrayList<>();
-            }
-
-            if (purchaseTypes != null && !purchaseTypes.isEmpty()){
-                purchaseTypeIds = purchaseTypeRepository.findByNameIn(
-                        purchaseTypes.stream().map(String::toUpperCase).toList()
-                ).stream().map(PurchaseType::getId).toList();
-            }else {
-                purchaseTypeIds = new ArrayList<>();
-            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pagePurchase = purchaseRepositoryCustom.searchForPurchase(
                         clientId,
-                        serialsUppercase,
-                        warehouseIds,
-                        purchaseTypeIds,
+                        ref,
+                        warehouse,
+                        purchaseType,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -346,12 +327,14 @@ public class PurchaseImpl implements IPurchase {
             }
 
             List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> PurchaseDTO.builder()
-                    .serial(purchase.getSerial())
+                    .ref(purchase.getRef())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
                     .warehouse(purchase.getWarehouse().getName())
                     .purchaseType(purchase.getPurchaseType().getName())
                     .registrationDate(purchase.getRegistrationDate())
                     .purchasePaymentType(purchase.getPurchasePaymentType().getName())
+                    .purchaseNumber(purchase.getPurchaseNumber())
+                    .deliveryDate(purchase.getDeliveryDate())
                     .build()).toList();
 
             return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
@@ -360,10 +343,10 @@ public class PurchaseImpl implements IPurchase {
 
     @Override
     public CompletableFuture<Page<PurchaseDTO>> listFalse(
-            List<String> serials,
+            String ref,
             String user,
-            List<String> warehouses,
-            List<String> purchaseTypes,
+            String warehouse,
+            String purchaseType,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -371,39 +354,14 @@ public class PurchaseImpl implements IPurchase {
         return CompletableFuture.supplyAsync(()->{
             Page<Purchase> pagePurchase;
             UUID clientId;
-            List<String> serialsUppercase;
-            List<UUID> warehouseIds;
-            List<UUID> purchaseTypeIds;
-
-            if(serials != null && !serials.isEmpty()){
-                serialsUppercase = serials.stream().map(String::toUpperCase).toList();
-            }else{
-                serialsUppercase = new ArrayList<>();
-            }
-
-            if(warehouses != null && !warehouses.isEmpty()){
-                warehouseIds = warehouseRepository.findByNameIn(
-                        warehouses.stream().map(String::toUpperCase).toList()
-                ).stream().map(Warehouse::getId).toList();
-            }else{
-                warehouseIds = new ArrayList<>();
-            }
-
-            if (purchaseTypes != null && !purchaseTypes.isEmpty()){
-                purchaseTypeIds = purchaseTypeRepository.findByNameIn(
-                        purchaseTypes.stream().map(String::toUpperCase).toList()
-                ).stream().map(PurchaseType::getId).toList();
-            }else {
-                purchaseTypeIds = new ArrayList<>();
-            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pagePurchase = purchaseRepositoryCustom.searchForPurchase(
                         clientId,
-                        serialsUppercase,
-                        warehouseIds,
-                        purchaseTypeIds,
+                        ref,
+                        warehouse,
+                        purchaseType,
                         sort,
                         sortColumn,
                         pageNumber,
@@ -419,12 +377,14 @@ public class PurchaseImpl implements IPurchase {
             }
 
             List<PurchaseDTO> purchaseDTOS = pagePurchase.getContent().stream().map(purchase -> PurchaseDTO.builder()
-                    .serial(purchase.getSerial())
+                    .ref(purchase.getRef())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
                     .warehouse(purchase.getWarehouse().getName())
                     .purchaseType(purchase.getPurchaseType().getName())
                     .registrationDate(purchase.getRegistrationDate())
+                    .purchaseNumber(purchase.getPurchaseNumber())
                     .purchasePaymentType(purchase.getPurchasePaymentType().getName())
+                    .deliveryDate(purchase.getDeliveryDate())
                     .build()).toList();
 
             return new PageImpl<>(purchaseDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
@@ -449,11 +409,13 @@ public class PurchaseImpl implements IPurchase {
             }
 
             return purchases.stream().map(purchase -> PurchaseDTO.builder()
-                    .serial(purchase.getSerial())
+                    .ref(purchase.getRef())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
                     .warehouse(purchase.getWarehouse().getName())
+                    .purchaseNumber(purchase.getPurchaseNumber())
                     .purchaseType(purchase.getPurchaseType().getName())
                     .registrationDate(purchase.getRegistrationDate())
+                    .deliveryDate(purchase.getDeliveryDate())
                     .build()).toList();
         });
     }
@@ -476,12 +438,14 @@ public class PurchaseImpl implements IPurchase {
             }
 
             return purchases.stream().map(purchase -> PurchaseDTO.builder()
-                    .serial(purchase.getSerial())
+                    .ref(purchase.getRef())
+                    .purchaseNumber(purchase.getPurchaseNumber())
                     .purchaseDocument(purchase.getPurchaseDocument().getName())
                     .warehouse(purchase.getWarehouse().getName())
                     .purchaseType(purchase.getPurchaseType().getName())
                     .registrationDate(purchase.getRegistrationDate())
                     .purchasePaymentType(purchase.getPurchasePaymentType().getName())
+                    .deliveryDate(purchase.getDeliveryDate())
                     .build()).toList();
         });
     }

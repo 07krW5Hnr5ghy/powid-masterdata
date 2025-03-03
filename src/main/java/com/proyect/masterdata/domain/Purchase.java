@@ -24,12 +24,19 @@ public class Purchase {
     @Column(name = "purchase_id")
     private UUID id;
 
-    @Column(name = "serial")
-    private String serial;
+    @Column(name = "ref")
+    private String ref;
+
+    @Column(name = "purchaseNumber")
+    private Long purchaseNumber;
 
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;
+
+    @Column(name = "delivery_date")
+    @CreationTimestamp
+    private OffsetDateTime deliveryDate;
 
     @Column(name = "update_date")
     @CreationTimestamp

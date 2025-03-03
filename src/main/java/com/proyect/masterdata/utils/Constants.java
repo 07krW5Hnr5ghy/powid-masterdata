@@ -319,4 +319,5 @@ public class Constants {
     public static final String ErrorOrderStockItemExists = "Item de stock para pedido ya fue registrado";
     public static final String ErrorOrderContacted = "Registro de pedido contactado no ha sido registrado";
     public static final String ErrorOrderContactedExists = "Registro de pedido contactado ya fue registrado";
+    public static final String ErrorPurchaseDeliveryDate = "Fecha de entrega invalida";
 }
