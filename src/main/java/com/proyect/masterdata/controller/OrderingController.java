@@ -40,6 +40,8 @@ public class OrderingController {
             @RequestPart("receipts") MultipartFile[] receipts,
             @RequestParam("tokenUser") String tokenUser
     ) throws InternalErrorExceptions, BadRequestExceptions, ExecutionException, InterruptedException, IOException {
+        System.out.println(requestOrderSave);
+        System.out.println(receipts);
         CompletableFuture<ResponseSuccess> result = iOrdering.saveAsync(requestOrderSave,receipts,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
