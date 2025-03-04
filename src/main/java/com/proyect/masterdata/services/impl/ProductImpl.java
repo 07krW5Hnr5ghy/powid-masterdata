@@ -829,6 +829,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .id(product.getId())
                         .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
@@ -871,6 +872,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .id(product.getId())
                         .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
@@ -912,6 +914,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .id(product.getId())
                         .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
@@ -936,7 +939,7 @@ public class ProductImpl implements IProduct {
             UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                products = productRepository.findByModelSkuAndClientIdAndStatusTrue(
+                products = productRepository.findByModelNameAndClientIdAndStatusTrue(
                         modelSku.toUpperCase(),
                         clientId
                 );
@@ -952,6 +955,7 @@ public class ProductImpl implements IProduct {
             return products.stream().map(product -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
                 return ProductDTO.builder()
+                        .id(product.getId())
                         .name(product.getName().toUpperCase())
                         .sku(iUtil.buildProductSku(product))
                         .brand(product.getModel().getBrand().getName())
