@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("supplyOrder")
+@RequestMapping("supply-order")
 @AllArgsConstructor
 public class SupplyOrderController {
     private final ISupplyOrder iSupplyOrder;

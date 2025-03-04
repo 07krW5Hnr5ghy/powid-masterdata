@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("supplyOrder-item")
+@RequestMapping("supply-order-item")
 @AllArgsConstructor
 public class SupplyOrderItemController {
     private final ISupplyOrderItem iSupplyOrderItem;
