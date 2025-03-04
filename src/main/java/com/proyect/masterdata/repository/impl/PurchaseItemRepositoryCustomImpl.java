@@ -28,9 +28,8 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
     @Override
     public Page<PurchaseItem> searchForPurchaseItem(
             UUID clientId,
-            List<UUID> purchaseIds,
-            List<UUID> warehouseIds,
-            List<UUID> supplierProductIds,
+            Long purchaseNumber,
+            String warehouse,
             String model,
             String sort,
             String sortColumn,
@@ -42,22 +41,22 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
 
         Root<PurchaseItem> itemRoot = criteriaQuery.from(PurchaseItem.class);
         Join<PurchaseItem, Purchase> purchasePurchaseItemJoin = itemRoot.join("purchase");
-        Join<Purchase, SupplierProduct> purchaseSupplierProductJoin = itemRoot.join("supplierProduct");
-        Join<SupplierProduct, Product> supplierProductProductJoin = purchaseSupplierProductJoin.join("product");
-        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
+        Join<PurchaseItem, Product> purchaseItemProductJoin = purchasePurchaseItemJoin.join("product");
+        Join<Purchase, Warehouse> purchaseWarehouseJoin = purchasePurchaseItemJoin.join("warehouse");
+        Join<Product, Model> productModelJoin = purchaseItemProductJoin.join("model");
 
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
                 clientId,
-                purchaseIds,
-                warehouseIds,
-                supplierProductIds,
+                purchaseNumber,
+                warehouse,
                 model,
                 criteriaBuilder,
                 itemRoot,
                 purchasePurchaseItemJoin,
-                productModelJoin);
+                productModelJoin,
+                purchaseWarehouseJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -83,23 +82,22 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                purchaseIds,
-                warehouseIds,
-                supplierProductIds,
+                purchaseNumber,
+                warehouse,
                 model);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     private List<Predicate> predicate(
             UUID clientId,
-            List<UUID> purchaseIds,
-            List<UUID> warehouseIds,
-            List<UUID> supplierProductIds,
+            Long purchaseNumber,
+            String warehouse,
             String model,
             CriteriaBuilder criteriaBuilder,
             Root<PurchaseItem> itemRoot,
             Join<PurchaseItem, Purchase> purchaseItemPurchaseJoin,
-            Join<Product,Model> productModelJoin) {
+            Join<Product,Model> productModelJoin,
+            Join<Purchase,Warehouse> purchaseWarehouseJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -107,18 +105,13 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if (!purchaseIds.isEmpty()) {
-            conditions.add(criteriaBuilder.and(itemRoot.get("purchaseId").in(purchaseIds)));
+        if(purchaseNumber==null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(purchaseItemPurchaseJoin.get("purchaseNumber"), clientId)));
         }
 
-        if (!warehouseIds.isEmpty()) {
-            conditions.add(criteriaBuilder.and(purchaseItemPurchaseJoin.get("warehouseId").in(warehouseIds)));
+        if (warehouse!=null) {
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(purchaseWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
         }
-
-        if(!supplierProductIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("supplierProductId").in(supplierProductIds)));
-        }
-
 
         if (model != null) {
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
@@ -167,28 +160,27 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
 
     private Long getOrderCount(
             UUID clientId,
-            List<UUID> purchaseIds,
-            List<UUID> warehouseIds,
-            List<UUID> supplierProductIds,
+            Long purchaseNumber,
+            String warehouse,
             String model) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<PurchaseItem> itemRoot = criteriaQuery.from(PurchaseItem.class);
         Join<PurchaseItem, Purchase> purchasePurchaseItemJoin = itemRoot.join("purchase");
-        Join<Purchase, SupplierProduct> purchaseSupplierProductJoin = itemRoot.join("supplierProduct");
-        Join<SupplierProduct, Product> supplierProductProductJoin = purchaseSupplierProductJoin.join("product");
-        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
+        Join<PurchaseItem, Product> purchaseItemProductJoin = purchasePurchaseItemJoin.join("product");
+        Join<Purchase, Warehouse> purchaseWarehouseJoin = purchasePurchaseItemJoin.join("warehouse");
+        Join<Product, Model> productModelJoin = purchaseItemProductJoin.join("model");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
-                purchaseIds,
-                warehouseIds,
-                supplierProductIds,
+                purchaseNumber,
+                warehouse,
                 model,
                 criteriaBuilder,
                 itemRoot,
                 purchasePurchaseItemJoin,
-                productModelJoin);
+                productModelJoin,
+                purchaseWarehouseJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

@@ -30,24 +30,24 @@ public class PurchaseItemImpl implements IPurchaseItem {
     private final UserRepository userRepository;
     private final PurchaseItemRepository purchaseItemRepository;
     private final WarehouseRepository warehouseRepository;
-    private final SupplierProductRepository supplierProductRepository;
     private final PurchaseItemRepositoryCustom purchaseItemRepositoryCustom;
     private final PurchaseRepository purchaseRepository;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
     private final IAudit iAudit;
     private final IUtil iUtil;
+    private final ProductRepository productRepository;
     @Override
     public PurchaseItem save(Purchase purchase, String warehouse, RequestPurchaseItem requestPurchaseItem,
                              String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
-        SupplierProduct supplierProduct;
+        Product product;
         PurchaseItem purchaseItem;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
+            product = productRepository.findByIdAndStatusTrue(requestPurchaseItem.getProductId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -57,10 +57,10 @@ public class PurchaseItemImpl implements IPurchaseItem {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if(supplierProduct == null){
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        if(product == null){
+            throw new BadRequestExceptions(Constants.ErrorProduct);
         }else{
-            purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
+            purchaseItem = purchaseItemRepository.findByPurchaseIdAndProductId(purchase.getId(),product.getId());
         }
 
         if (purchaseItem != null) {
@@ -72,8 +72,8 @@ public class PurchaseItemImpl implements IPurchaseItem {
             PurchaseItem newPurchaseItem = purchaseItemRepository.save(PurchaseItem.builder()
                             .purchase(purchase)
                             .purchaseId(purchase.getId())
-                            .supplierProduct(supplierProduct)
-                            .supplierProductId(supplierProduct.getId())
+                            .product(product)
+                            .productId(product.getId())
                             .status(true)
                             .registrationDate(OffsetDateTime.now())
                             .updateDate(OffsetDateTime.now())
@@ -84,9 +84,9 @@ public class PurchaseItemImpl implements IPurchaseItem {
                             .user(user)
                             .userId(user.getId())
                     .build());
-            String finalSku = iUtil.buildInventorySku(supplierProduct);
-            iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, requestPurchaseItem.getQuantity(), user);
-            iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(), user.getUsername());
+            String finalSku = iUtil.buildProductSku(product);
+            iWarehouseStock.in(purchase.getWarehouse(),product, requestPurchaseItem.getQuantity(), user);
+            iGeneralStock.in(product, requestPurchaseItem.getQuantity(), user.getUsername());
             iAudit.save(
                     "ADD_PURCHASE_ITEM",
                     "PRODUCTO DE INVENTARIO "+
@@ -105,13 +105,13 @@ public class PurchaseItemImpl implements IPurchaseItem {
     public CompletableFuture<ResponseSuccess> saveAsync(UUID purchaseId, RequestPurchaseItem requestPurchaseItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            SupplierProduct supplierProduct;
+            Product product;
             PurchaseItem purchaseItem;
             Purchase purchase;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestPurchaseItem.getSupplierProductId());
+                product = productRepository.findByIdAndStatusTrue(requestPurchaseItem.getProductId());
                 purchase = purchaseRepository.findById(purchaseId).orElse(null);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -122,14 +122,14 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(supplierProduct == null){
-                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            if(product == null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
             }
 
             if(purchase==null){
                 throw new BadRequestExceptions(Constants.ErrorPurchase);
             }else{
-                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
+                purchaseItem = purchaseItemRepository.findByPurchaseIdAndProductId(purchase.getId(),product.getId());
             }
             
             if (purchaseItem != null) {
@@ -141,8 +141,8 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 PurchaseItem newPurchaseItem = purchaseItemRepository.save(PurchaseItem.builder()
                         .purchase(purchase)
                         .purchaseId(purchase.getId())
-                        .supplierProduct(supplierProduct)
-                        .supplierProductId(supplierProduct.getId())
+                        .product(product)
+                        .productId(product.getId())
                         .status(true)
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
@@ -153,9 +153,9 @@ public class PurchaseItemImpl implements IPurchaseItem {
                         .user(user)
                         .userId(user.getId())
                         .build());
-                String finalSku = iUtil.buildInventorySku(supplierProduct);
-                iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, requestPurchaseItem.getQuantity(), user);
-                iGeneralStock.in(supplierProduct, requestPurchaseItem.getQuantity(), user.getUsername());
+                String finalSku = iUtil.buildProductSku(product);
+                iWarehouseStock.in(purchase.getWarehouse(),product, requestPurchaseItem.getQuantity(), user);
+                iGeneralStock.in(product, requestPurchaseItem.getQuantity(), user.getUsername());
                 iAudit.save(
                         "ADD_PURCHASE_ITEM",
                         "PRODUCTO DE INVENTARIO "+
@@ -173,17 +173,17 @@ public class PurchaseItemImpl implements IPurchaseItem {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String serial,UUID supplierProductId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseDelete> delete(UUID purchaseId,UUID productId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            SupplierProduct supplierProduct;
+            Product product;
             Purchase purchase;
             PurchaseItem purchaseItem;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                purchase = purchaseRepository.findByRef(serial.toUpperCase());
-                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(supplierProductId);
+                purchase = purchaseRepository.findById(productId).orElse(null);
+                product = productRepository.findByIdAndStatusTrue(productId);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -193,10 +193,14 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(supplierProduct == null){
-                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            if(purchase==null){
+                throw new BadRequestExceptions(Constants.ErrorPurchase);
+            }
+
+            if(product == null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
             }else {
-                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
+                purchaseItem = purchaseItemRepository.findByPurchaseIdAndProductId(purchase.getId(),product.getId());
             }
 
             if (purchaseItem == null) {
@@ -208,9 +212,9 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 purchaseItem.setUpdateDate(OffsetDateTime.now());
                 purchaseItem.setUser(user);
                 purchaseItem.setUserId(user.getId());
-                String finalSku = iUtil.buildInventorySku(supplierProduct);
-                iWarehouseStock.out(purchase.getWarehouse(),supplierProduct, purchaseItem.getQuantity(), user);
-                iGeneralStock.out(supplierProduct, purchaseItem.getQuantity(), user.getUsername());
+                String finalSku = iUtil.buildProductSku(product);
+                iWarehouseStock.out(purchase.getWarehouse(),product, purchaseItem.getQuantity(), user);
+                iGeneralStock.out(product, purchaseItem.getQuantity(), user.getUsername());
                 iAudit.save(
                         "DELETE_PURCHASE_ITEM",
                         "PRODUCTO DE INVENTARIO "+
@@ -229,17 +233,17 @@ public class PurchaseItemImpl implements IPurchaseItem {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String purchaseSerial, UUID supplierProductId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> activate(UUID purchaseId, UUID supplierProductId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            SupplierProduct supplierProduct;
+            Product product;
             Purchase purchase;
             PurchaseItem purchaseItem;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                purchase = purchaseRepository.findByRef(purchaseSerial.toUpperCase());
-                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(supplierProductId);
+                purchase = purchaseRepository.findById(purchaseId).orElse(null);
+                product = productRepository.findByIdAndStatusTrue(supplierProductId);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -249,10 +253,14 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(supplierProduct == null){
-                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+            if(purchase==null){
+                throw new BadRequestExceptions(Constants.ErrorPurchase);
+            }
+
+            if(product == null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
             }else {
-                purchaseItem = purchaseItemRepository.findByPurchaseIdAndSupplierProductId(purchase.getId(),supplierProduct.getId());
+                purchaseItem = purchaseItemRepository.findByPurchaseIdAndProductId(purchase.getId(),product.getId());
             }
 
             if (purchaseItem == null) {
@@ -264,9 +272,9 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 purchaseItem.setUpdateDate(OffsetDateTime.now());
                 purchaseItem.setUser(user);
                 purchaseItem.setUserId(user.getId());
-                String finalSku = iUtil.buildInventorySku(supplierProduct);
-                iWarehouseStock.in(purchase.getWarehouse(),supplierProduct, purchaseItem.getQuantity(), user);
-                iGeneralStock.in(supplierProduct, purchaseItem.getQuantity(), user.getUsername());
+                String finalSku = iUtil.buildProductSku(product);
+                iWarehouseStock.in(purchase.getWarehouse(),product, purchaseItem.getQuantity(), user);
+                iGeneralStock.in(product, purchaseItem.getQuantity(), user.getUsername());
                 iAudit.save(
                         "ACTIVATE_PURCHASE_ITEM",
                         "PRODUCTO DE INVENTARIO "+
@@ -287,9 +295,8 @@ public class PurchaseItemImpl implements IPurchaseItem {
     @Override
     public CompletableFuture<Page<PurchaseItemDTO>> list(
             String user,
-            List<String> purchases,
-            List<String> warehouses,
-            List<UUID> supplierProductIds,
+            Long purchaseNumber,
+            String warehouse,
             String model,
             String sort,
             String sortColumn,
@@ -298,32 +305,13 @@ public class PurchaseItemImpl implements IPurchaseItem {
         return CompletableFuture.supplyAsync(()->{
             Page<PurchaseItem> pagePurchaseItem;
             UUID clientId;
-            List<UUID> purchaseIds;
-            List<UUID> warehouseIds;
-
-            if(purchases != null && !purchases.isEmpty()){
-                purchaseIds = purchaseRepository.findByRefIn(
-                        purchases.stream().map(String::toUpperCase).toList()
-                ).stream().map(com.proyect.masterdata.domain.Purchase::getId).toList();
-            }else{
-                purchaseIds = new ArrayList<>();
-            }
-
-            if(warehouses != null && !warehouses.isEmpty()){
-                warehouseIds = warehouseRepository.findByNameIn(
-                        warehouses.stream().map(String::toUpperCase).toList()
-                ).stream().map(Warehouse::getId).toList();
-            }else{
-                warehouseIds = new ArrayList<>();
-            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pagePurchaseItem = purchaseItemRepositoryCustom.searchForPurchaseItem(
                         clientId,
-                        purchaseIds,
-                        warehouseIds,
-                        supplierProductIds,
+                        purchaseNumber,
+                        warehouse,
                         model,
                         sort,
                         sortColumn,
@@ -339,13 +327,12 @@ public class PurchaseItemImpl implements IPurchaseItem {
             }
 
             List<PurchaseItemDTO> purchaseItemDTOS = pagePurchaseItem.getContent().stream().map(purchaseItem -> PurchaseItemDTO.builder()
-                    .purchase(purchaseItem.getPurchase().getRef())
+                    .purchase(purchaseItem.getPurchase().getPurchaseNumber())
                     .quantity(purchaseItem.getQuantity())
-                    .supplierProduct(iUtil.buildInventorySku(purchaseItem.getSupplierProduct()))
                     .warehouse(purchaseItem.getPurchase().getWarehouse().getName())
-                    .model(purchaseItem.getSupplierProduct().getProduct().getModel().getName())
-                    .color(purchaseItem.getSupplierProduct().getProduct().getColor().getName())
-                    .size(purchaseItem.getSupplierProduct().getProduct().getSize().getName())
+                    .model(purchaseItem.getProduct().getModel().getName())
+                    .color(purchaseItem.getProduct().getColor().getName())
+                    .size(purchaseItem.getProduct().getSize().getName())
                     .registrationDate(purchaseItem.getRegistrationDate())
                     .build()).toList();
 
@@ -375,13 +362,12 @@ public class PurchaseItemImpl implements IPurchaseItem {
             }
 
             return purchaseItems.stream().map(purchaseItem -> PurchaseItemDTO.builder()
-                    .purchase(purchaseItem.getPurchase().getRef())
+                    .purchase(purchaseItem.getPurchase().getPurchaseNumber())
                     .quantity(purchaseItem.getQuantity())
-                    .supplierProduct(iUtil.buildInventorySku(purchaseItem.getSupplierProduct()))
                     .warehouse(purchaseItem.getPurchase().getWarehouse().getName())
-                    .model(purchaseItem.getSupplierProduct().getProduct().getModel().getName())
-                    .color(purchaseItem.getSupplierProduct().getProduct().getColor().getName())
-                    .size(purchaseItem.getSupplierProduct().getProduct().getSize().getName())
+                    .model(purchaseItem.getProduct().getModel().getName())
+                    .color(purchaseItem.getProduct().getColor().getName())
+                    .size(purchaseItem.getProduct().getSize().getName())
                     .registrationDate(purchaseItem.getRegistrationDate())
                     .build()).toList();
         });

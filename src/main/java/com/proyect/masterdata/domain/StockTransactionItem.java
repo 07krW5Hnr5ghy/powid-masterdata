@@ -43,8 +43,8 @@ public class StockTransactionItem {
     @Column(name = "client_id")
     private UUID clientId;
 
-    @Column(name = "supplier_product_id")
-    private UUID supplierProductId;
+    @Column(name = "product_id")
+    private UUID productId;
 
     @Column(name = "stock_transaction_id")
     private UUID stockTransactionId;
@@ -57,8 +57,8 @@ public class StockTransactionItem {
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "supplier_product_id", columnDefinition = "supplierProductId", insertable = false, updatable = false)
-    private SupplierProduct supplierProduct;
+    @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false, updatable = false)
+    private Product product;
 
     @ManyToOne
     @JoinColumn(name = "stock_transaction_id",columnDefinition = "stockTransactionId",insertable = false,updatable = false)

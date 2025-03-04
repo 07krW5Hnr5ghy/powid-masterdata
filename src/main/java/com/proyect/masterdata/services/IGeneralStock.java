@@ -1,6 +1,6 @@
 package com.proyect.masterdata.services;
 
-import com.proyect.masterdata.domain.SupplierProduct;
+import com.proyect.masterdata.domain.Product;
 import org.springframework.data.domain.Page;
 
 import com.proyect.masterdata.dto.GeneralStockDTO;
@@ -9,19 +9,16 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface IGeneralStock {
-        CompletableFuture<ResponseSuccess> in(SupplierProduct supplierProduct, Integer quantity, String tokenUser)
+        CompletableFuture<ResponseSuccess> in(Product product, Integer quantity, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<ResponseSuccess> out(SupplierProduct supplierProduct, Integer quantity, String tokenUser)
+        CompletableFuture<ResponseSuccess> out(Product product, Integer quantity, String tokenUser)
                         throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<GeneralStockDTO>> list(
                 String user,
-                String serial,
-                String productSku,
                 String model,
                 OffsetDateTime registrationStartDate,
                 OffsetDateTime registrationEndDate,

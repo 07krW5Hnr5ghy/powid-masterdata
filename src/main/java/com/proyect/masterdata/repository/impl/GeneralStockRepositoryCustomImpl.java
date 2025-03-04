@@ -3,7 +3,6 @@ package com.proyect.masterdata.repository.impl;
 import com.proyect.masterdata.domain.GeneralStock;
 import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.Product;
-import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.repository.GeneralStockRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -30,8 +29,6 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
     @Override
     public Page<GeneralStock> searchForGeneralStock(
             UUID clientId,
-            String serial,
-            String productSku,
             String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -45,15 +42,12 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GeneralStock> criteriaQuery = criteriaBuilder.createQuery(GeneralStock.class);
         Root<GeneralStock> itemRoot = criteriaQuery.from(GeneralStock.class);
-        Join<GeneralStock, SupplierProduct> generalStockSupplierProductJoin = itemRoot.join("supplierProduct");
-        Join<SupplierProduct, Product> supplierProductProductJoin = generalStockSupplierProductJoin.join("product");
-        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
+        Join<GeneralStock,Product> generalStockProductJoin = itemRoot.join("product");
+        Join<Product, Model> productModelJoin = generalStockProductJoin.join("model");
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
                 clientId,
-                serial,
-                productSku,
                 model,
                 registrationStartDate,
                 registrationEndDate,
@@ -61,8 +55,6 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
                 updateEndDate,
                 criteriaBuilder,
                 itemRoot,
-                generalStockSupplierProductJoin,
-                supplierProductProductJoin,
                 productModelJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
@@ -89,8 +81,6 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                serial,
-                productSku,
                 model,
                 registrationStartDate,
                 registrationEndDate,
@@ -104,8 +94,6 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
 
     private List<Predicate> predicate(
             UUID clientId,
-            String serial,
-            String productSku,
             String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -113,22 +101,12 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
             OffsetDateTime updateEndDate,
             CriteriaBuilder criteriaBuilder,
             Root<GeneralStock> itemRoot,
-            Join<GeneralStock,SupplierProduct> generalStockSupplierProductJoin,
-            Join<SupplierProduct,Product> supplierProductProductJoin,
             Join<Product,Model> productModelJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
-        }
-
-        if(serial != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(generalStockSupplierProductJoin.get("serial")),"%"+serial.toUpperCase()+"%"));
-        }
-
-        if(productSku != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplierProductProductJoin.get("sku")),"%"+productSku.toUpperCase()+"%"));
         }
 
         if(model != null){
@@ -236,8 +214,6 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
 
     private Long getOrderCount(
             UUID clientId,
-            String serial,
-            String productSku,
             String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -247,14 +223,11 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<GeneralStock> itemRoot = criteriaQuery.from(GeneralStock.class);
-        Join<GeneralStock, SupplierProduct> generalStockSupplierProductJoin = itemRoot.join("supplierProduct");
-        Join<SupplierProduct, Product> supplierProductProductJoin = generalStockSupplierProductJoin.join("product");
-        Join<Product, Model> productModelJoin = supplierProductProductJoin.join("model");
+        Join<GeneralStock,Product> generalStockProductJoin = itemRoot.join("product");
+        Join<Product, Model> productModelJoin = generalStockProductJoin.join("model");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
-                serial,
-                productSku,
                 model,
                 registrationStartDate,
                 registrationEndDate,
@@ -262,8 +235,6 @@ public class GeneralStockRepositoryCustomImpl implements GeneralStockRepositoryC
                 updateEndDate,
                 criteriaBuilder,
                 itemRoot,
-                generalStockSupplierProductJoin,
-                supplierProductProductJoin,
                 productModelJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();

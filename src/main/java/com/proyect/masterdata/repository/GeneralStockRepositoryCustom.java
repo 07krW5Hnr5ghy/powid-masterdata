@@ -12,8 +12,6 @@ import java.util.UUID;
 public interface GeneralStockRepositoryCustom {
     Page<GeneralStock> searchForGeneralStock(
             UUID clientId,
-            String serial,
-            String productSku,
             String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,

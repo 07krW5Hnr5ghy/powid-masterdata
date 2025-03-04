@@ -18,7 +18,6 @@ public interface DeliveryManifestItemRepositoryCustom {
             String color,
             String size,
             String model,
-            String supplier,
             String brand,
             String deliveryStatus,
             String courier,

@@ -12,9 +12,7 @@ import java.util.UUID;
 public interface WarehouseStockRepositoryCustom {
     Page<WarehouseStock> searchForWarehouseStock(
             UUID clientId,
-            List<UUID> warehouseIds,
-            String serial,
-            String productSku,
+            String warehouse,
             String model,
             String sort,
             String sortColumn,

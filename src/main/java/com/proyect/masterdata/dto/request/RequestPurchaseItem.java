@@ -14,5 +14,5 @@ import java.util.UUID;
 public class RequestPurchaseItem {
     private Integer quantity;
     private String observations;
-    private UUID supplierProductId;
+    private UUID productId;
 }
