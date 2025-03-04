@@ -19,8 +19,6 @@ import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
 import static org.apache.poi.ss.usermodel.CellType.STRING;
@@ -30,11 +28,9 @@ import static org.apache.poi.ss.usermodel.CellType.STRING;
 @Log4j2
 public class ExcelImpl implements IExcel {
     private final UserRepository userRepository;
-    private final PurchaseDocumentRepository purchaseDocumentRepository;
-    private final PurchaseRepository purchaseRepository;
-    private final PurchaseTypeRepository purchaseTypeRepository;
+    private final SupplyOrderRepository supplyOrderRepository;
     private final WarehouseRepository warehouseRepository;
-    private final PurchaseItemRepository purchaseItemRepository;
+    private final SupplyOrderItemRepository supplyOrderItemRepository;
     private final IStockTransaction iStockTransaction;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
@@ -53,18 +49,14 @@ public class ExcelImpl implements IExcel {
     private final BrandRepository brandRepository;
     private final IUtil iUtil;
     @Override
-    public CompletableFuture<ResponseSuccess> purchase(RequestPurchaseExcel requestPurchaseExcel, MultipartFile multipartFile) throws BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> purchase(RequestSupplyOrderExcel requestSupplyOrderExcel, MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Warehouse warehouse;
-            Purchase purchase;
-            PurchaseType purchaseType = null;
-            PurchaseDocument purchaseDocument;
+            SupplyOrder supplyOrder;
             try {
-                user = userRepository.findByUsernameAndStatusTrue(requestPurchaseExcel.getTokenUser().toUpperCase());
-                warehouse = warehouseRepository.findByNameAndStatusTrue(requestPurchaseExcel.getWarehouse().toUpperCase());
-                purchaseType = purchaseTypeRepository.findByNameAndStatusTrue(requestPurchaseExcel.getPurchaseType().toUpperCase());
-                purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestPurchaseExcel.getPurchaseDocument().toUpperCase());
+                user = userRepository.findByUsernameAndStatusTrue(requestSupplyOrderExcel.getTokenUser().toUpperCase());
+                warehouse = warehouseRepository.findByNameAndStatusTrue(requestSupplyOrderExcel.getWarehouse().toUpperCase());
             } catch (RuntimeException e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -83,19 +75,6 @@ public class ExcelImpl implements IExcel {
                 throw new BadRequestExceptions(Constants.ErrorWarehouse);
             }
 
-            if(purchaseType == null){
-                throw new BadRequestExceptions(Constants.ErrorPurchaseType);
-            }else{
-                purchase = purchaseRepository.findByRefAndPurchaseTypeId(requestPurchaseExcel.getSerial(), purchaseType.getId());
-            }
-
-            if(purchase != null){
-                throw new BadRequestExceptions(Constants.ErrorPurchase);
-            }
-
-            if(purchaseDocument == null){
-                throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
-            }
 
             try {
 
@@ -106,9 +85,9 @@ public class ExcelImpl implements IExcel {
                 Cell supplierCell = supplierRow.getCell(3);
                 int i = 0;
                 List<RequestStockTransactionItem> stockTransactionItemList = new ArrayList<>();
-                List<RequestPurchaseItem> requestPurchaseItemList = new ArrayList<>();
+                List<RequestSupplyOrderItem> requestSupplyOrderItemList = new ArrayList<>();
                 for(Row row:sheet){
-                    RequestPurchaseItem requestPurchaseItem = RequestPurchaseItem.builder().build();
+                    RequestSupplyOrderItem requestSupplyOrderItem = RequestSupplyOrderItem.builder().build();
                     int ii = 0;
                     for(Cell cell:row){
                         if(i>=2 && (cell.getCellType() == STRING) && (ii == 4)){
@@ -116,110 +95,110 @@ public class ExcelImpl implements IExcel {
 //                            if(supplierProduct == null){
 //                                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
 //                            }
-                            //requestPurchaseItem.setSupplierProduct(supplierProduct.getSerial());
+                            //requestSupplyOrderItem.setSupplierProduct(supplierProduct.getSerial());
                         }
                         if(i>=2 && (cell.getCellType() == NUMERIC) && (ii == 4)){
 //                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int)(cell.getNumericCellValue())));
 //                            if(supplierProduct == null){
 //                                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
 //                            }
-//                            requestPurchaseItem.setSupplierProduct(String.valueOf((int)(cell.getNumericCellValue())));
+//                            requestSupplyOrderItem.setSupplierProduct(String.valueOf((int)(cell.getNumericCellValue())));
                         }
                         if(i>=2 && (cell.getCellType() == NUMERIC) && (ii==5)){
                             if(((int) cell.getNumericCellValue()) > 0){
-                                requestPurchaseItem.setQuantity((int) cell.getNumericCellValue());
+                                requestSupplyOrderItem.setQuantity((int) cell.getNumericCellValue());
                             }
                         }
                         if(i>=2 && (cell.getCellType()==STRING) && (ii==6)){
-                            requestPurchaseItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
+                            requestSupplyOrderItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
                         }
-                        if(requestPurchaseItem.getObservations()==null){
-                            requestPurchaseItem.setObservations("NO APLICA");
+                        if(requestSupplyOrderItem.getObservations()==null){
+                            requestSupplyOrderItem.setObservations("NO APLICA");
                         }
                         ii++;
                     }
                     if(i>=2){
-//                        System.out.println(requestPurchaseItem.getQuantity());
-//                        System.out.println(requestPurchaseItem.getSupplierProduct());
+//                        System.out.println(requestSupplyOrderItem.getQuantity());
+//                        System.out.println(requestSupplyOrderItem.getSupplierProduct());
                     }
 //                    if(i>=2 && (
-//                            requestPurchaseItem.getQuantity() != null &&
-//                            requestPurchaseItem.getQuantity() > 0 &&
-//                                    requestPurchaseItem.getSupplierProduct() != null)){
-//                        requestPurchaseItemList.add(requestPurchaseItem);
+//                            requestSupplyOrderItem.getQuantity() != null &&
+//                            requestSupplyOrderItem.getQuantity() > 0 &&
+//                                    requestSupplyOrderItem.getSupplierProduct() != null)){
+//                        requestSupplyOrderItemList.add(requestSupplyOrderItem);
 //                    }
 //                    if(i>=2 && (
-//                            requestPurchaseItem.getQuantity() == null ||
-//                            requestPurchaseItem.getQuantity() < 1 ||
-//                                    requestPurchaseItem.getSupplierProduct() == null)){
+//                            requestSupplyOrderItem.getQuantity() == null ||
+//                            requestSupplyOrderItem.getQuantity() < 1 ||
+//                                    requestSupplyOrderItem.getSupplierProduct() == null)){
 //                        continue;
 //                    }
                     i++;
                 }
-                if(requestPurchaseItemList.isEmpty()){
+                if(requestSupplyOrderItemList.isEmpty()){
                     throw new BadRequestExceptions(Constants.ErrorPurchaseItemZero);
                 }
                 Set<String> serials = new HashSet<>();
                 boolean hasDuplicate = false;
-                for(RequestPurchaseItem requestPurchaseItem : requestPurchaseItemList){
-//                    if(!serials.add(requestPurchaseItem.getSupplierProduct())){
+                for(RequestSupplyOrderItem requestSupplyOrderItem : requestSupplyOrderItemList){
+//                    if(!serials.add(requestSupplyOrderItem.getSupplierProduct())){
 //                        hasDuplicate = true;
 //                    }
                     if(hasDuplicate){
                         throw new BadRequestExceptions(Constants.ErrorPurchaseDuplicateItem);
                     }
                 }
-                Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
-                        .ref(requestPurchaseExcel.getSerial().toUpperCase())
-                        .status(true)
-                        .registrationDate(OffsetDateTime.now())
-                        .updateDate(OffsetDateTime.now())
-                        .purchaseDocument(purchaseDocument)
-                        .purchaseDocumentId(purchaseDocument.getId())
-                        .warehouse(warehouse)
-                        .warehouseId(warehouse.getId())
-                        .purchaseType(purchaseType)
-                        .purchaseTypeId(purchaseType.getId())
-                        .client(user.getClient())
-                        .clientId(user.getClientId())
-                        .user(user)
-                        .userId(user.getId())
-                        .build());
+//                SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
+//                        .ref(requestSupplyOrderExcel.getSerial().toUpperCase())
+//                        .status(true)
+//                        .registrationDate(OffsetDateTime.now())
+//                        .updateDate(OffsetDateTime.now())
+//                        .supplyOrderDocument(supplyOrderDocument)
+//                        .purchaseDocumentId(supplyOrderDocument.getId())
+//                        .warehouse(warehouse)
+//                        .warehouseId(warehouse.getId())
+//                        .supplyOrderType(supplyOrderType)
+//                        .purchaseTypeId(supplyOrderType.getId())
+//                        .client(user.getClient())
+//                        .clientId(user.getClientId())
+//                        .user(user)
+//                        .userId(user.getId())
+//                        .build());
                 int j = 0;
                 for(Row row: sheet){
-                    PurchaseItem purchaseItem = PurchaseItem.builder().build();
+                    SupplyOrderItem supplyOrderItem = SupplyOrderItem.builder().build();
                     RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder().build();
                     int ji = 0;
                     for(Cell cell:row){
                         if(j>=2 && (cell.getCellType() == STRING) && (ji == 4)){
 //                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(cell.getRichStringCellValue().getString().toUpperCase());
                             //requestStockTransactionItem.setSupplierProductSerial(cell.getRichStringCellValue().getString().toUpperCase());
-//                            purchaseItem.setSupplierProduct(supplierProduct);
-//                            purchaseItem.setSupplierProductId(supplierProduct.getId());
+//                            supplyOrderItem.setSupplierProduct(supplierProduct);
+//                            supplyOrderItem.setSupplierProductId(supplierProduct.getId());
                         }
                         if(j>=2 && (cell.getCellType() == NUMERIC) && (ji == 4)){
 //                            supplierProduct = supplierProductRepository.findBySerialAndStatusTrue(String.valueOf((int) (cell.getNumericCellValue())));
                             //requestStockTransactionItem.setSupplierProductSerial(cell.getRichStringCellValue().getString().toUpperCase());
-//                            purchaseItem.setSupplierProduct(supplierProduct);
-//                            purchaseItem.setSupplierProductId(supplierProduct.getId());
+//                            supplyOrderItem.setSupplierProduct(supplierProduct);
+//                            supplyOrderItem.setSupplierProductId(supplierProduct.getId());
                         }
                         if(j>=2 && (cell.getCellType()==NUMERIC)&&(ji == 5)){
                             if(cell.getNumericCellValue() > 0){
-                                purchaseItem.setQuantity((int) cell.getNumericCellValue());
+                                supplyOrderItem.setQuantity((int) cell.getNumericCellValue());
                                 requestStockTransactionItem.setQuantity((int) cell.getNumericCellValue());
                             }
 
                         }
                         if(j>=2 && (cell.getCellType() == STRING) && (ji == 6)){
-                            purchaseItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
+                            supplyOrderItem.setObservations(cell.getRichStringCellValue().getString().toUpperCase());
                         }
 
                         ji++;
                     }
                     j++;
                 }
-                iStockTransaction.save("S"+ requestPurchaseExcel.getSerial().toUpperCase(), warehouse,stockTransactionItemList,"COMPRA",user);
-                iAudit.save("ADD_PURCHASE_EXCEL","COMPRA "+ newPurchase.getRef()+" CREADA POR EXCEL.",newPurchase.getRef(),user.getUsername());
+//                iStockTransaction.save("S"+ requestSupplyOrderExcel.getSerial().toUpperCase(), warehouse,stockTransactionItemList,"COMPRA",user);
+//                iAudit.save("ADD_PURCHASE_EXCEL","COMPRA "+ newSupplyOrder.getRef()+" CREADA POR EXCEL.", newSupplyOrder.getRef(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.register)
                         .code(200)

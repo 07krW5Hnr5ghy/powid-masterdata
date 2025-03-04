@@ -49,7 +49,7 @@ public class Seeder implements CommandLineRunner {
         private final IWarehouse iWarehouse;
         private final IModule iModule;
         private final ISubscription iSubscription;
-        private final IPurchase iPurchase;
+        private final ISupplyOrder iSupplyOrder;
         private final IOrderState iOrderState;
         private final IOrderPaymentState iOrderPaymentState;
         private final ISaleChannel iSaleChannel;
@@ -61,7 +61,6 @@ public class Seeder implements CommandLineRunner {
         private final ICourier iCourier;
         private final ICancellationReason iCancellationReason;
         private final ICancelledOrder iCancelledOrder;
-        private final IPurchaseType iPurchaseType;
         private final IOrderItem iOrderItem;
         private final IPaymentGateway iPaymentGateway;
         private final IMembershipState iMembershipState;
@@ -71,7 +70,6 @@ public class Seeder implements CommandLineRunner {
         private final IUserRole iUserRole;
         private final IUser iUser;
         private final IStore iStore;
-        private final IPurchaseDocument iPurchaseDocument;
         private final ICountry iCountry;
         private final ICustomerType iCustomerType;
         private final ResourceLoader resourceLoader;
@@ -80,7 +78,6 @@ public class Seeder implements CommandLineRunner {
         private final IDiscount iDiscount;
         private final IDeliveryPoint iDeliveryPoint;
         private final ISubCategoryProduct iSubCategoryProduct;
-        private final IPurchasePaymentType iPurchasePaymentType;
         private final IDeliveryStatus iDeliveryStatus;
         private final IDeliveryManifestStatus iDeliveryManifestStatus;
         private final IDeliveryCompany iDeliveryCompany;
@@ -1365,11 +1362,6 @@ public class Seeder implements CommandLineRunner {
                         iOrderPaymentMethod.save("interbank",adminUser.getUsername());
                         iOrderPaymentMethod.save("banco de la nacion",adminUser.getUsername());
 
-                        // purchase type
-                        iPurchaseType.save("compra",adminUser.getUsername());
-                        iPurchaseType.save("devolucion",adminUser.getUsername());
-                        iPurchaseType.save("restockaje",adminUser.getUsername());
-
                         // cancellation reason
                         iCancellationReason.save("No hay stock",adminUser.getUsername());
                         iCancellationReason.save("Demora en entrega",adminUser.getUsername());
@@ -1381,20 +1373,13 @@ public class Seeder implements CommandLineRunner {
                         iCancellationReason.save("Cliente no confiable para contraentrega",adminUser.getUsername());
                         iCancellationReason.save("Robo por motorizado",adminUser.getUsername());
                         iCancellationReason.save("No le gusto producto",adminUser.getUsername());
-
                         // payment gateway
                         iPaymentGateway.save("mercado pago",adminUser.getUsername());
                         iPaymentGateway.save("demo",adminUser.getUsername());
-
                         // membership states
                         iMembershipState.save("activa",adminUser.getUsername());
                         iMembershipState.save("pagada",adminUser.getUsername());
                         iMembershipState.save("expirada",adminUser.getUsername());
-                        // purchase documents
-                        iPurchaseDocument.save("factura",adminUser.getUsername());
-                        iPurchaseDocument.save("boleta",adminUser.getUsername());
-                        iPurchaseDocument.save("recibo",adminUser.getUsername());
-                        iPurchaseDocument.save("sin comprobante",adminUser.getUsername());
                         // customer types
                         iCustomerType.save("tradicional",adminUser.getUsername());
                         iCustomerType.save("mayorista",adminUser.getUsername());
@@ -1414,10 +1399,6 @@ public class Seeder implements CommandLineRunner {
                         iStockTransactionType.save("transferencia-salida", adminUser.getUsername());
                         iStockTransactionType.save("devolucion-comprador",adminUser.getUsername());
                         iStockTransactionType.save("devolucion-proveedor",adminUser.getUsername());
-
-                        iPurchasePaymentType.save("credito",adminUser.getUsername());
-                        iPurchasePaymentType.save("efectivo",adminUser.getUsername());
-                        iPurchasePaymentType.save("transferencia",adminUser.getUsername());
 
                         iDeliveryStatus.save("PENDIENTE",adminUser.getUsername());
                         iDeliveryStatus.save("COMPLETO",adminUser.getUsername());

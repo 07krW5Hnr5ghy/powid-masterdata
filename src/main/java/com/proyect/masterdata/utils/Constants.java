@@ -59,7 +59,7 @@ public class Constants {
     public static final String tableStockTransactionType = "stock_transaction_type";
     public static final String tableWarehouse = "warehouse";
     public static final String tableSupplierProduct = "supplier_product";
-    public static final String tablePurchase = "purchase";
+    public static final String tablePurchase = "supplyOrder";
     public static final String tablePurchaseItem = "purchase_item";
     public static final String tableWarehouseStock = "warehouse_stock";
     public static final String tableGeneralStock = "general_stock";
@@ -109,6 +109,8 @@ public class Constants {
     public static final String tableOrderLog = "order_log";
     public static final String tableDeliveryCompany = "delivery_company";
     public static final String tableOrderContacted = "order_contacted";
+    public static final String tableSupplyOrder = "supply_order";
+    public static final String tableSupplyOrderItem = "supply_order_item";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";

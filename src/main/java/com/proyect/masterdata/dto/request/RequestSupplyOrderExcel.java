@@ -5,14 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestPurchaseItem {
-    private Integer quantity;
-    private String observations;
-    private UUID productId;
+public class RequestSupplyOrderExcel {
+    private String warehouse;
+    private String tokenUser;
 }

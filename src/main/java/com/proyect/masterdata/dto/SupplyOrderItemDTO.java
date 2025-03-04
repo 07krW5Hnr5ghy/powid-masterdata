@@ -1,25 +1,22 @@
 package com.proyect.masterdata.dto;
 
+import java.time.OffsetDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.OffsetDateTime;
-import java.util.Date;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SupplierProductDTO {
-    private String serial;
-    private String productSku;
+public class SupplyOrderItemDTO {
+    private String warehouse;
+    private Integer quantity;
     private String model;
     private String color;
     private String size;
-    private String supplier;
-    private Double price;
+    private Long purchase;
     private OffsetDateTime registrationDate;
-    private OffsetDateTime updateDate;
 }

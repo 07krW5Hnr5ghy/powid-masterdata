@@ -11,8 +11,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestSupplierProduct {
+public class RequestSupplyOrderItem {
+    private Integer quantity;
+    private String observations;
     private UUID productId;
-    private String supplier;
-    private Double purchasePrice;
 }

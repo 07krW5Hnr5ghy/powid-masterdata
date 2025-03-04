@@ -1,6 +1,6 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.request.RequestPurchaseExcel;
+import com.proyect.masterdata.dto.request.RequestSupplyOrderExcel;
 import com.proyect.masterdata.dto.request.RequestStockReturnExcel;
 import com.proyect.masterdata.dto.request.RequestStockTransferExcel;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -22,12 +22,12 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class ExcelController {
     private final IExcel iExcel;
-    @PostMapping("purchase")
+    @PostMapping("supplyOrder")
     public ResponseEntity<ResponseSuccess> purchase(
-            @RequestPart("requestPurchaseExcel") RequestPurchaseExcel requestPurchaseExcel,
+            @RequestPart("requestSupplyOrderExcel") RequestSupplyOrderExcel requestSupplyOrderExcel,
             @RequestPart("multipartFile") MultipartFile multipartFile
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iExcel.purchase(requestPurchaseExcel,multipartFile);
+        CompletableFuture<ResponseSuccess> result = iExcel.purchase(requestSupplyOrderExcel,multipartFile);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

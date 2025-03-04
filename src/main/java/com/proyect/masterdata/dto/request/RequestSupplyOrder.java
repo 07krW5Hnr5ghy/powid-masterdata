@@ -12,13 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestPurchase {
+public class RequestSupplyOrder {
     private String ref;
     private String warehouse;
-    private String purchaseType;
-    private String purchaseDocument;
-    private String supplier;
-    private String purchasePaymentType;
     private OffsetDateTime deliveryDate;
-    private List<RequestPurchaseItem> requestPurchaseItemList;
+    private List<RequestSupplyOrderItem> requestSupplyOrderItemList;
 }

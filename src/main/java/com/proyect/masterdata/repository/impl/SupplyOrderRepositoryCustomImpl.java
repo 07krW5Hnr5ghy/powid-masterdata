@@ -1,9 +1,8 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Purchase;
-import com.proyect.masterdata.domain.PurchaseType;
+import com.proyect.masterdata.domain.SupplyOrder;
 import com.proyect.masterdata.domain.Warehouse;
-import com.proyect.masterdata.repository.PurchaseRepositoryCustom;
+import com.proyect.masterdata.repository.SupplyOrderRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -20,17 +19,16 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
+public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCustom {
 
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<Purchase> searchForPurchase(
+    public Page<SupplyOrder> searchForSupplyOrder(
             UUID clientId,
             String ref,
             String warehouse,
-            String purchaseType,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -38,11 +36,10 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Purchase> criteriaQuery = criteriaBuilder.createQuery(Purchase.class);
+        CriteriaQuery<SupplyOrder> criteriaQuery = criteriaBuilder.createQuery(SupplyOrder.class);
 
-        Root<Purchase> itemRoot = criteriaQuery.from(Purchase.class);
-        Join<Purchase, Warehouse> purchaseWarehouseJoin = itemRoot.join("warehouse");
-        Join<Purchase, PurchaseType> purchasePurchaseTypeJoin = itemRoot.join("purchaseType");
+        Root<SupplyOrder> itemRoot = criteriaQuery.from(SupplyOrder.class);
+        Join<SupplyOrder, Warehouse> purchaseWarehouseJoin = itemRoot.join("warehouse");
 
         criteriaQuery.select(itemRoot);
 
@@ -50,12 +47,10 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
                 clientId,
                 ref,
                 warehouse,
-                purchaseType,
                 status,
                 criteriaBuilder,
                 itemRoot,
-                purchaseWarehouseJoin,
-                purchasePurchaseTypeJoin);
+                purchaseWarehouseJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -74,7 +69,7 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<Purchase> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<SupplyOrder> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
@@ -83,7 +78,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
                 clientId,
                 ref,
                 warehouse,
-                purchaseType,
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
@@ -92,12 +86,10 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             UUID clientId,
             String ref,
             String warehouse,
-            String purchaseType,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<Purchase> itemRoot,
-            Join<Purchase, Warehouse> purchaseWarehouseJoin,
-            Join<Purchase, PurchaseType> purchasePurchaseTypeJoin) {
+            Root<SupplyOrder> itemRoot,
+            Join<SupplyOrder, Warehouse> purchaseWarehouseJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -113,10 +105,6 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(purchaseWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
         }
 
-        if(purchaseType!=null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(purchaseWarehouseJoin.get("name")),"%"+purchaseType.toUpperCase()+"%"));
-        }
-
         if (status) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
@@ -128,7 +116,7 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
         return conditions;
     }
 
-    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Purchase> itemRoot) {
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<SupplyOrder> itemRoot) {
 
         List<Order> purchaseList = new ArrayList<>();
 
@@ -151,7 +139,7 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
         return purchaseList;
     }
 
-    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<Purchase> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<SupplyOrder> itemRoot) {
 
         List<Order> purchaseList = new ArrayList<>();
 
@@ -178,24 +166,20 @@ public class PurchaseRepositoryCustomImpl implements PurchaseRepositoryCustom {
             UUID clientId,
             String ref,
             String warehouse,
-            String purchaseType,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Purchase> itemRoot = criteriaQuery.from(Purchase.class);
-        Join<Purchase, Warehouse> purchaseWarehouseJoin = itemRoot.join("warehouse");
-        Join<Purchase, PurchaseType> purchasePurchaseTypeJoin = itemRoot.join("purchaseType");
+        Root<SupplyOrder> itemRoot = criteriaQuery.from(SupplyOrder.class);
+        Join<SupplyOrder, Warehouse> purchaseWarehouseJoin = itemRoot.join("warehouse");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
                 ref,
                 warehouse,
-                purchaseType,
                 status,
                 criteriaBuilder,
                 itemRoot,
-                purchaseWarehouseJoin,
-                purchasePurchaseTypeJoin);
+                purchaseWarehouseJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

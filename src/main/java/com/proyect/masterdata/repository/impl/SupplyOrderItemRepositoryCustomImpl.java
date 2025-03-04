@@ -13,20 +13,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.proyect.masterdata.repository.PurchaseItemRepositoryCustom;
+import com.proyect.masterdata.repository.SupplyOrderItemRepositoryCustom;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 
 @Repository
-public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryCustom {
+public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepositoryCustom {
 
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<PurchaseItem> searchForPurchaseItem(
+    public Page<SupplyOrderItem> searchForPurchaseItem(
             UUID clientId,
             Long purchaseNumber,
             String warehouse,
@@ -37,12 +37,12 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
             Integer pageSize) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<PurchaseItem> criteriaQuery = criteriaBuilder.createQuery(PurchaseItem.class);
+        CriteriaQuery<SupplyOrderItem> criteriaQuery = criteriaBuilder.createQuery(SupplyOrderItem.class);
 
-        Root<PurchaseItem> itemRoot = criteriaQuery.from(PurchaseItem.class);
-        Join<PurchaseItem, Purchase> purchasePurchaseItemJoin = itemRoot.join("purchase");
-        Join<PurchaseItem, Product> purchaseItemProductJoin = purchasePurchaseItemJoin.join("product");
-        Join<Purchase, Warehouse> purchaseWarehouseJoin = purchasePurchaseItemJoin.join("warehouse");
+        Root<SupplyOrderItem> itemRoot = criteriaQuery.from(SupplyOrderItem.class);
+        Join<SupplyOrderItem, SupplyOrder> purchasePurchaseItemJoin = itemRoot.join("supplyOrder");
+        Join<SupplyOrderItem, Product> purchaseItemProductJoin = purchasePurchaseItemJoin.join("product");
+        Join<SupplyOrder, Warehouse> purchaseWarehouseJoin = purchasePurchaseItemJoin.join("warehouse");
         Join<Product, Model> productModelJoin = purchaseItemProductJoin.join("model");
 
         criteriaQuery.select(itemRoot);
@@ -75,7 +75,7 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<PurchaseItem> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<SupplyOrderItem> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
@@ -94,10 +94,10 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
             String warehouse,
             String model,
             CriteriaBuilder criteriaBuilder,
-            Root<PurchaseItem> itemRoot,
-            Join<PurchaseItem, Purchase> purchaseItemPurchaseJoin,
+            Root<SupplyOrderItem> itemRoot,
+            Join<SupplyOrderItem, SupplyOrder> purchaseItemPurchaseJoin,
             Join<Product,Model> productModelJoin,
-            Join<Purchase,Warehouse> purchaseWarehouseJoin) {
+            Join<SupplyOrder,Warehouse> purchaseWarehouseJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -120,7 +120,7 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
         return conditions;
     }
 
-    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<PurchaseItem> itemRoot) {
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<SupplyOrderItem> itemRoot) {
 
         List<Order> purchaseItemList = new ArrayList<>();
 
@@ -139,7 +139,7 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
         return purchaseItemList;
     }
 
-    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<PurchaseItem> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<SupplyOrderItem> itemRoot) {
 
         List<Order> purchaseList = new ArrayList<>();
 
@@ -165,10 +165,10 @@ public class PurchaseItemRepositoryCustomImpl implements PurchaseItemRepositoryC
             String model) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<PurchaseItem> itemRoot = criteriaQuery.from(PurchaseItem.class);
-        Join<PurchaseItem, Purchase> purchasePurchaseItemJoin = itemRoot.join("purchase");
-        Join<PurchaseItem, Product> purchaseItemProductJoin = purchasePurchaseItemJoin.join("product");
-        Join<Purchase, Warehouse> purchaseWarehouseJoin = purchasePurchaseItemJoin.join("warehouse");
+        Root<SupplyOrderItem> itemRoot = criteriaQuery.from(SupplyOrderItem.class);
+        Join<SupplyOrderItem, SupplyOrder> purchasePurchaseItemJoin = itemRoot.join("supplyOrder");
+        Join<SupplyOrderItem, Product> purchaseItemProductJoin = purchasePurchaseItemJoin.join("product");
+        Join<SupplyOrder, Warehouse> purchaseWarehouseJoin = purchasePurchaseItemJoin.join("warehouse");
         Join<Product, Model> productModelJoin = purchaseItemProductJoin.join("model");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
