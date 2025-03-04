@@ -196,7 +196,7 @@ public class ProductController {
     @GetMapping("model")
     public ResponseEntity<List<ProductDTO>> listByModel(
             @RequestParam("user") String user,
-            @RequestParam("model") String model
+            @RequestParam(value = "model") String model // recibe el sku
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         System.out.println("Controller --->" + user + " " + model);
         CompletableFuture<List<ProductDTO>> result = iProduct.listByModel(model,user);
