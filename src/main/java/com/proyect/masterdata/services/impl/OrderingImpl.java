@@ -51,14 +51,12 @@ public class OrderingImpl implements IOrdering {
     private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     private final OrderPaymentStateRepository orderPaymentStateRepository;
     private final CourierRepository courierRepository;
-    private final OrderStockItemRepository orderStockItemRepository;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
     private final IOrderPaymentReceipt iOrderPaymentReceipt;
     private final OrderPaymentReceiptRepository orderPaymentReceiptRepository;
     private final ICourierPicture iCourierPicture;
     private final IStockTransaction iStockTransaction;
-    private final OrderStockRepository orderStockRepository;
     private final SaleChannelRepository saleChannelRepository;
     private final ManagementTypeRepository managementTypeRepository;
     private final CourierPictureRepository courierPictureRepository;
@@ -833,7 +831,6 @@ public class OrderingImpl implements IOrdering {
         OrderPaymentState orderPaymentState;
         Courier courier;
         CancellationReason cancellationReason;
-        OrderStock orderStock;
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -863,7 +860,7 @@ public class OrderingImpl implements IOrdering {
         if(ordering == null){
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }else {
-            orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
+//            orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
         }
 
         if(
@@ -965,7 +962,7 @@ public class OrderingImpl implements IOrdering {
             OrderPaymentState orderPaymentState;
             Courier courier;
             CancellationReason cancellationReason;
-            OrderStock orderStock;
+//            OrderStock orderStock;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -995,7 +992,7 @@ public class OrderingImpl implements IOrdering {
             if(ordering == null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
             }else {
-                orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
+//                orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
             }
 
             if(

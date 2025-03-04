@@ -38,9 +38,7 @@ public class CancelledOrderImpl implements ICancelledOrder {
     private final OrderStateRepository orderStateRepository;
     private final IStockTransaction iStockTransaction;
     private final OrderItemRepository orderItemRepository;
-    private final OrderStockItemRepository orderStockItemRepository;
     private final WarehouseRepository warehouseRepository;
-    private final OrderStockRepository orderStockRepository;
     private final IAudit iAudit;
     private final IUtil iUtil;
     @Override
@@ -53,7 +51,6 @@ public class CancelledOrderImpl implements ICancelledOrder {
             OrderState orderState;
             Warehouse warehouseData;
             List<OrderItem> orderItemList;
-            OrderStock orderStock;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -78,8 +75,6 @@ public class CancelledOrderImpl implements ICancelledOrder {
 
             if(ordering == null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
-            }else {
-                orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
             }
 
             if(warehouseData == null){
@@ -91,20 +86,6 @@ public class CancelledOrderImpl implements ICancelledOrder {
             }
 
             try {
-                if(ordering.getOrderState().getName().equals("ENTREGADO")){
-                    orderItemList = orderItemRepository.findAllByOrderId(ordering.getId());
-                    List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
-                    for(OrderItem orderItem : orderItemList){
-                        List<OrderStockItem> orderStockItemList = orderStockItemRepository.findByOrderStockIdAndOrderItemId(orderStock.getId(), orderItem.getId());
-                        for(OrderStockItem orderStockItem : orderStockItemList){
-                            stockTransactionList.add(RequestStockTransactionItem.builder()
-                                    .supplierProductId(orderStockItem.getSupplierProduct().getId())
-                                    .quantity(orderStockItem.getQuantity())
-                                    .build());
-                        }
-                    }
-                    iStockTransaction.save("C"+ordering.getId(),warehouseData,stockTransactionList,"DEVOLUCION-COMPRADOR",user);
-                }
                 cancelledOrderRepository.save(CancelledOrder.builder()
                         .ordering(ordering)
                         .orderingId(ordering.getId())

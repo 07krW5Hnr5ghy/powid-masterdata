@@ -28,9 +28,7 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
     @Override
     public Page<WarehouseStock> searchForWarehouseStock(
             UUID clientId,
-            List<UUID> warehouseIds,
-            String serial,
-            String productSku,
+            String warehouse,
             String model,
             String sort,
             String sortColumn,
@@ -40,22 +38,19 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<WarehouseStock> criteriaQuery = criteriaBuilder.createQuery(WarehouseStock.class);
         Root<WarehouseStock> itemRoot = criteriaQuery.from(WarehouseStock.class);
-        Join<WarehouseStock,SupplierProduct> warehouseStockSupplierProductJoin = itemRoot.join("supplierProduct");
-        Join<SupplierProduct, Product> supplierProductProductJoin = warehouseStockSupplierProductJoin.join("product");
-        Join<Product, Model> productModelJoin =supplierProductProductJoin.join("model");
+        Join<WarehouseStock,Product> warehouseStockProductJoin = itemRoot.join("product");
+        Join<Product, Model> productModelJoin = warehouseStockProductJoin.join("model");
+        Join<WarehouseStock,Warehouse> warehouseStockWarehouseJoin = itemRoot.join("warehouse");
 
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
-                warehouseIds,
-                serial,
-                productSku,
+                warehouse,
                 model,
                 clientId,
                 criteriaBuilder,
                 itemRoot,
-                warehouseStockSupplierProductJoin,
-                supplierProductProductJoin,
+                warehouseStockWarehouseJoin,
                 productModelJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
@@ -81,9 +76,7 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
-                warehouseIds,
-                serial,
-                productSku,
+                warehouse,
                 model,
                 clientId);
 
@@ -92,15 +85,12 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
     }
 
     private List<Predicate> predicate(
-            List<UUID> warehouseIds,
-            String serial,
-            String productSku,
+            String warehouse,
             String model,
             UUID clientId,
             CriteriaBuilder criteriaBuilder,
             Root<WarehouseStock> itemRoot,
-            Join<WarehouseStock,SupplierProduct> warehouseStockSupplierProductJoin,
-            Join<SupplierProduct,Product> supplierProductProductJoin,
+            Join<WarehouseStock,Warehouse> warehouseStockWarehouseJoin,
             Join<Product,Model> productModelJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
@@ -109,16 +99,8 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
-        if(!warehouseIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("warehouseId").in(warehouseIds)));
-        }
-
-        if(serial != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(warehouseStockSupplierProductJoin.get("serial")),"%"+serial.toUpperCase()+"%"));
-        }
-
-        if(productSku != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplierProductProductJoin.get("sku")),"%"+productSku.toUpperCase()+"%"));
+        if(warehouse!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(warehouseStockWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
         }
 
         if(model != null){
@@ -161,28 +143,23 @@ public class WarehouseStockRepositoryCustomImpl implements WarehouseStockReposit
     }
 
     private Long getOrderCount(
-            List<UUID> warehouseIds,
-            String serial,
-            String productSku,
+            String warehouse,
             String model,
             UUID clientId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<WarehouseStock> itemRoot = criteriaQuery.from(WarehouseStock.class);
-        Join<WarehouseStock,SupplierProduct> warehouseStockSupplierProductJoin = itemRoot.join("supplierProduct");
-        Join<SupplierProduct, Product> supplierProductProductJoin = warehouseStockSupplierProductJoin.join("product");
-        Join<Product, Model> productModelJoin =supplierProductProductJoin.join("model");
+        Join<WarehouseStock,Product> warehouseStockProductJoin = itemRoot.join("product");
+        Join<Product, Model> productModelJoin = warehouseStockProductJoin.join("model");
+        Join<WarehouseStock,Warehouse> warehouseStockWarehouseJoin = itemRoot.join("warehouse");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
-                warehouseIds,
-                serial,
-                productSku,
+                warehouse,
                 model,
                 clientId,
                 criteriaBuilder,
                 itemRoot,
-                warehouseStockSupplierProductJoin,
-                supplierProductProductJoin,
+                warehouseStockWarehouseJoin,
                 productModelJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();

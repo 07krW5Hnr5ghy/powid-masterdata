@@ -28,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
     private final DeliveryManifestItemRepository deliveryManifestItemRepository;
-    private final SupplierProductRepository supplierProductRepository;
     private final OrderItemRepository orderItemRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final DeliveryStatusRepository deliveryStatusRepository;
@@ -46,28 +45,20 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             Warehouse warehouse,
             User user) throws BadRequestExceptions, InterruptedException {
         return CompletableFuture.supplyAsync(()->{
-            SupplierProduct supplierProduct;
             OrderItem orderItem;
             WarehouseStock warehouseStock;
             DeliveryStatus deliveryStatus;
             try{
-                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestDeliveryManifestItem.getSupplierProductId());
                 orderItem = orderItemRepository.findByIdAndStatusTrue(requestDeliveryManifestItem.getOrderItemId());
                 deliveryStatus = deliveryStatusRepository.findByName("PENDIENTE");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-            if(supplierProduct==null){
-                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
-            }
             if(orderItem==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderItem);
             }else{
-                warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(),supplierProduct.getId());
-            }
-            if(supplierProduct.getProduct().getId()!=orderItem.getProductId()){
-                throw new BadRequestExceptions(Constants.ErrorProductSupplierProductMismatch);
+                warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),orderItem.getProduct().getId());
             }
             if(warehouseStock.getQuantity()<requestDeliveryManifestItem.getQuantity()){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
@@ -80,8 +71,6 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .collected(false)
                         .orderItem(orderItem)
                         .orderItemId(orderItem.getId())
-                        .supplierProduct(supplierProduct)
-                        .supplierProductId(supplierProduct.getId())
                         .deliveryStatus(deliveryStatus)
                         .deliveryStatusId(deliveryStatus.getId())
                         .build());
@@ -132,18 +121,18 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 deliveryManifestItemRepository.save(deliveryManifestItem);
                 iWarehouseStock.out(
                         deliveryManifestItem.getDeliveryManifest().getWarehouse(),
-                        deliveryManifestItem.getSupplierProduct(),
+                        deliveryManifestItem.getProduct(),
                         deliveryManifestItem.getQuantity(),
                         user
                 );
                 iGeneralStock.out(
-                        deliveryManifestItem.getSupplierProduct(),
+                        deliveryManifestItem.getProduct(),
                         deliveryManifestItem.getQuantity(),
                         user.getUsername()
                 );
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 stockTransactionList.add(RequestStockTransactionItem.builder()
-                        .supplierProductId(deliveryManifestItem.getSupplierProduct().getId())
+                        .productId(deliveryManifestItem.getProduct().getId())
                         .quantity(deliveryManifestItem.getQuantity())
                         .build());
                 iStockTransaction.save(
@@ -208,7 +197,6 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         color,
                         size,
                         model,
-                        supplier,
                         brand,
                         deliveryStatus,
                         courier,
@@ -238,8 +226,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                     .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
                     .quantity(deliveryManifestItem.getQuantity())
                     .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
-                    .skuInventory(iUtil.buildInventorySku(deliveryManifestItem.getSupplierProduct()))
-                    .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getSupplierProduct().getProduct()))
+                    .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getProduct()))
                     .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
                     .build()).toList();
             return new PageImpl<>(deliveryManifestItemDTOS,deliveryManifestItemPage.getPageable(),deliveryManifestItemPage.getTotalElements());

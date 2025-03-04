@@ -32,7 +32,6 @@ public class OrderItemImpl implements IOrderItem {
     private final UserRepository userRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
-    private final SupplierProductRepository supplierProductRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final OrderingRepository orderingRepository;
     private final ProductPriceRepository productPriceRepository;
@@ -174,7 +173,6 @@ public class OrderItemImpl implements IOrderItem {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
-            List<SupplierProduct> supplierProductList;
             List<CheckStockItemDTO> checkStockItemDTOList = new ArrayList<>();
 
             try {
@@ -191,30 +189,10 @@ public class OrderItemImpl implements IOrderItem {
 
             if(product == null){
                 throw new BadRequestExceptions(Constants.ErrorProduct);
-            }else {
-                supplierProductList = supplierProductRepository.findAllByProductIdAndStatusTrue(product.getId());
-            }
-
-            if(supplierProductList.isEmpty()){
-                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
             }
 
             try{
-
                 Integer stockUnits = 0;
-
-                for(SupplierProduct supplierProduct : supplierProductList){
-                    List<WarehouseStock> warehouseStockList = warehouseStockRepository.findAllBySupplierProductId(supplierProduct.getId());
-                    for(WarehouseStock warehouseStock : warehouseStockList){
-                        stockUnits += warehouseStock.getQuantity();
-                        checkStockItemDTOList.add(CheckStockItemDTO.builder()
-                                .key(warehouseStock.getWarehouse().getName())
-                                .stockQuantity(warehouseStock.getQuantity())
-                                .warehouse(warehouseStock.getWarehouse().getName())
-                                .build());
-                    }
-                }
-
                 if(stockUnits >= quantity){
                     return ResponseCheckStockItem.builder()
                             .itemStockList(checkStockItemDTOList)

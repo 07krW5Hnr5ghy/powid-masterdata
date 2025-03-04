@@ -11,9 +11,8 @@ import java.util.UUID;
 public interface PurchaseItemRepositoryCustom {
     Page<PurchaseItem> searchForPurchaseItem(
             UUID clientId,
-            List<UUID> purchaseIds,
-            List<UUID> warehouseIds,
-            List<UUID> supplierProductIds,
+            Long purchaseNumber,
+            String warehouse,
             String model,
             String sort,
             String sortColumn,

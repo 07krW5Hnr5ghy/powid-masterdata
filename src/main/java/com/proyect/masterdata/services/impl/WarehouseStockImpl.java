@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IUtil;
@@ -11,11 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import com.proyect.masterdata.domain.SupplierProduct;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.Warehouse;
 import com.proyect.masterdata.domain.WarehouseStock;
-import com.proyect.masterdata.dto.WarehouseDTO;
 import com.proyect.masterdata.dto.WarehouseStockDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -33,14 +32,12 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
     private final WarehouseStockRepository warehouseStockRepository;
     private final UserRepository userRepository;
-    private final SupplierProductRepository supplierProductRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepositoryCustom warehouseStockRepositoryCustom;
-    private final SupplierRepository supplierRepository;
     private final IAudit iAudit;
     private final IUtil iUtil;
     @Override
-    public ResponseSuccess in(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
+    public ResponseSuccess in(Warehouse warehouse, Product product, Integer quantity, User user)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         WarehouseStock warehouseStock;
@@ -49,8 +46,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if (supplierProduct == null) {
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        if (product == null) {
+            throw new BadRequestExceptions(Constants.ErrorProduct);
         }
 
         if (warehouse == null) {
@@ -62,8 +59,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
         }
 
         try {
-            warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(),
-                    supplierProduct.getId());
+            warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),
+                    product.getId());
 
             if (warehouseStock != null) {
                 warehouseStock.setQuantity(warehouseStock.getQuantity() + quantity);
@@ -75,8 +72,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
                 warehouseStockRepository.save(WarehouseStock.builder()
                         .quantity(quantity)
                         .registrationDate(OffsetDateTime.now())
-                        .supplierProduct(supplierProduct)
-                        .supplierProductId(supplierProduct.getId())
+                        .product(product)
+                        .productId(product.getId())
                         .warehouse(warehouse)
                         .warehouseId(warehouse.getId())
                         .client(user.getClient())
@@ -88,7 +85,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
                     "ADD_WAREHOUSE_STOCK",
                     "INGRESAN ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+
-                            iUtil.buildInventorySku(supplierProduct)+
+                            iUtil.buildProductSku(product)+
                             " EN ALMACEN "+warehouse.getName()+".",
                     warehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -102,7 +99,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
     }
 
     @Override
-    public ResponseSuccess out(Warehouse warehouse, SupplierProduct supplierProduct, Integer quantity, User user)
+    public ResponseSuccess out(Warehouse warehouse, Product product, Integer quantity, User user)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         WarehouseStock warehouseStock;
@@ -111,8 +108,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if (supplierProduct == null) {
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        if (product == null) {
+            throw new BadRequestExceptions(Constants.ErrorProduct);
         }
 
         if (warehouse == null) {
@@ -124,8 +121,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
         }
 
         try {
-            warehouseStock = warehouseStockRepository.findByWarehouseIdAndSupplierProductId(warehouse.getId(),
-                    supplierProduct.getId());
+            warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),
+                    product.getId());
 
             if (warehouseStock == null) {
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
@@ -140,7 +137,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
             iAudit.save(
                     "DELETE_WAREHOUSE_STOCK",
                     "SALIDA DE ("+quantity+") UNIDADES DE STOCK DE PRODUCTO DE INVENTARIO "+
-                            iUtil.buildInventorySku(supplierProduct)+
+                            iUtil.buildProductSku(product)+
                             " PARA ALMACEN "+warehouse.getName()+".",
                     warehouse.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -155,9 +152,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
     @Override
     public CompletableFuture<Page<WarehouseStockDTO>> list(
-            List<String> warehouses,
-            String serial,
-            String productSku,
+            String warehouse,
             String model,
             String user,
             String sort,
@@ -167,24 +162,12 @@ public class WarehouseStockImpl implements IWarehouseStock {
         return CompletableFuture.supplyAsync(()->{
             Page<WarehouseStock> warehouseStockPage;
             UUID clientId;
-            List<UUID> warehouseIds;
-
-            if(warehouses!=null && !warehouses.isEmpty()){
-                warehouseIds = warehouseRepository
-                        .findByNameIn(
-                                warehouses.stream().map(String::toUpperCase).toList()
-                        ).stream().map(Warehouse::getId).toList();
-            }else{
-                warehouseIds = new ArrayList<>();
-            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 warehouseStockPage = warehouseStockRepositoryCustom.searchForWarehouseStock(
                         clientId,
-                        warehouseIds,
-                        serial,
-                        productSku,
+                        warehouse,
                         model,
                         sort,
                         sortColumn,
@@ -201,15 +184,13 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
             List<WarehouseStockDTO> warehouseStockDTOs = warehouseStockPage.getContent().stream()
                     .map(warehouseStock -> {
-                        String finalSku = iUtil.buildProductSku(warehouseStock.getSupplierProduct().getProduct());
+                        String finalSku = iUtil.buildProductSku(warehouseStock.getProduct());
                         return WarehouseStockDTO.builder()
                                 .quantity(warehouseStock.getQuantity())
-                                .supplierProduct(iUtil.buildInventorySku(warehouseStock.getSupplierProduct()))
                                 .product(finalSku)
-                                .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
-                                .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
-                                .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
-                                .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
+                                .model(warehouseStock.getProduct().getModel().getName())
+                                .color(warehouseStock.getProduct().getColor().getName())
+                                .size(warehouseStock.getProduct().getSize().getName())
                                 .warehouse(warehouseStock.getWarehouse().getName())
                                 .registrationDate(warehouseStock.getRegistrationDate())
                                 .updateDate(warehouseStock.getUpdateDate())
@@ -235,7 +216,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
                     warehouseId = null;
                 }
                 if(warehouseId != null && supplierProductId != null){
-                    warehouseStocks = warehouseStockRepository.findAllByWarehouseIdAndSupplierProductId(warehouseId,supplierProductId);
+                    warehouseStocks = warehouseStockRepository.findAllByWarehouseIdAndProductId(warehouseId,supplierProductId);
                 }else if(warehouseId != null){
                     warehouseStocks = warehouseStockRepository.findAllByClientIdAndWarehouseId(clientId, warehouseId);
                 }else{
@@ -252,15 +233,13 @@ public class WarehouseStockImpl implements IWarehouseStock {
 
             return warehouseStocks.stream()
                     .map(warehouseStock -> {
-                        String finalSku = iUtil.buildProductSku(warehouseStock.getSupplierProduct().getProduct());
+                        String finalSku = iUtil.buildProductSku(warehouseStock.getProduct());
                         return WarehouseStockDTO.builder()
                                 .quantity(warehouseStock.getQuantity())
-                                .supplierProduct(iUtil.buildInventorySku(warehouseStock.getSupplierProduct()))
                                 .product(finalSku)
-                                .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
-                                .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
-                                .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
-                                .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
+                                .model(warehouseStock.getProduct().getModel().getName())
+                                .color(warehouseStock.getProduct().getColor().getName())
+                                .size(warehouseStock.getProduct().getSize().getName())
                                 .warehouse(warehouseStock.getWarehouse().getName())
                                 .registrationDate(warehouseStock.getRegistrationDate())
                                 .updateDate(warehouseStock.getUpdateDate())
@@ -268,60 +247,4 @@ public class WarehouseStockImpl implements IWarehouseStock {
                     }).toList();
         });
     }
-
-    @Override
-    public CompletableFuture<List<WarehouseStockDTO>> listWarehouseAndSupplier(String user, String warehouse, String supplier) throws BadRequestExceptions, InternalErrorExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            List<WarehouseStock> warehouseStocks;
-            UUID clientId;
-            UUID warehouseId;
-            UUID supplierId;
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                if(warehouse != null){
-                    warehouseId = warehouseRepository.findByNameAndStatusTrue(warehouse.toUpperCase()).getId();
-                }else{
-                    warehouseId = null;
-                }
-                if(supplier != null){
-                    supplierId = supplierRepository.findByClientIdAndRucAndStatusTrue(clientId,supplier).getId();
-                }else{
-                    supplierId = null;
-                }
-                if(warehouseId != null && supplierId != null){
-                    warehouseStocks = warehouseStockRepository.findByClientIdAndWarehouseIdAndSupplierProduct_Supplier_Id(clientId,warehouseId,supplierId);
-                }else if(warehouseId != null){
-                    warehouseStocks = warehouseStockRepository.findAllByClientIdAndWarehouseId(clientId, warehouseId);
-                }else{
-                    warehouseStocks = warehouseStockRepository.findAllByClientId(clientId);
-                }
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
-
-            if(warehouseStocks.isEmpty()){
-                return Collections.emptyList();
-            }
-
-            return warehouseStocks.stream()
-                    .filter(data -> data.getQuantity() > 0)
-                    .map(warehouseStock -> {
-                        String finalSku = iUtil.buildProductSku(warehouseStock.getSupplierProduct().getProduct());
-                        return WarehouseStockDTO.builder()
-                                .quantity(warehouseStock.getQuantity())
-                                .supplierProduct(iUtil.buildInventorySku(warehouseStock.getSupplierProduct()))
-                                .product(finalSku)
-                                .supplier(warehouseStock.getSupplierProduct().getSupplier().getBusinessName())
-                                .model(warehouseStock.getSupplierProduct().getProduct().getModel().getName())
-                                .color(warehouseStock.getSupplierProduct().getProduct().getColor().getName())
-                                .size(warehouseStock.getSupplierProduct().getProduct().getSize().getName())
-                                .warehouse(warehouseStock.getWarehouse().getName())
-                                .registrationDate(warehouseStock.getRegistrationDate())
-                                .updateDate(warehouseStock.getUpdateDate())
-                                .build();
-                    }).toList();
-        });
-    }
-
 }

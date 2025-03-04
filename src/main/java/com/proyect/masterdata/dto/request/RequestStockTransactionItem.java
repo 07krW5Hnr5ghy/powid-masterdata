@@ -13,5 +13,5 @@ import java.util.UUID;
 @Data
 public class RequestStockTransactionItem {
     private Integer quantity;
-    private UUID supplierProductId;
+    private UUID productId;
 }

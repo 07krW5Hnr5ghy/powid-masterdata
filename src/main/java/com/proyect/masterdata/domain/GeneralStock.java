@@ -44,8 +44,8 @@ public class GeneralStock {
     @CreationTimestamp
     private OffsetDateTime updateDate;
 
-    @Column(name = "supplier_product_id")
-    private UUID supplierProductId;
+    @Column(name = "product_id")
+    private UUID productId;
 
     @Column(name = "client_id")
     private UUID clientId;
@@ -54,8 +54,8 @@ public class GeneralStock {
     private UUID userId;
 
     @ManyToOne
-    @JoinColumn(name = "supplier_product_id", columnDefinition = "supplierProductId", insertable = false, updatable = false)
-    private SupplierProduct supplierProduct;
+    @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false, updatable = false)
+    private Product product;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
