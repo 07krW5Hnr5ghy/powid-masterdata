@@ -198,6 +198,7 @@ public class ProductController {
             @RequestParam("user") String user,
             @RequestParam("model") String model
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        System.out.println("Controller --->" + user + " " + model);
         CompletableFuture<List<ProductDTO>> result = iProduct.listByModel(model,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
