@@ -939,7 +939,7 @@ public class ProductImpl implements IProduct {
             UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                products = productRepository.findByModelNameAndClientIdAndStatusTrue(
+                products = productRepository.findByModelSkuAndClientIdAndStatusTrue(
                         modelSku.toUpperCase(),
                         clientId
                 );
